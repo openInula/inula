@@ -1,3 +1,1 @@
-# horizon-core
-
-null
+#horizon
