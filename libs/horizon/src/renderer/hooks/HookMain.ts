@@ -1,0 +1,78 @@
+import type {VNode} from '../Types';
+import hookMapping from './HookMapping';
+
+const {
+  UseStateHookMapping,
+  UseReducerHookMapping,
+  UseContextHookMapping,
+} = hookMapping;
+
+import {getNewContext} from '../components/context/Context';
+import {
+  getActivatedHook,
+  getProcessingVNode,
+  setActivatedHook,
+  setProcessingVNode,
+  setCurrentHook, getNextHook
+} from './BaseHook';
+import {useStateImpl,} from './UseStateHook';
+import {useReducerImpl,} from './UseReducerHook';
+import {HookStage, setHookStage} from './HookStage';
+
+// hook对外入口
+export function exeFunctionHook(
+  funcComp: (props: Object, arg: Object) => any,
+  props: Object,
+  arg: Object,
+  activated: VNode | null,
+  processing: VNode,
+): any {
+  // 重置全局变量
+  resetGlobalVariable();
+
+  // 初始化hook实现函数
+  initHookMapping();
+
+  setProcessingVNode(processing);
+
+  processing.hooks = [];
+  processing.effectList = [];
+
+  // 设置hook阶段
+  if (activated === null || !activated.hooks.length) {
+    setHookStage(HookStage.Init);
+  } else {
+    setHookStage(HookStage.Update);
+  }
+
+  let comp = funcComp(props, arg);
+
+  // 设置hook阶段为null，用于判断hook是否在函数组件中调用
+  setHookStage(null);
+
+  // 判断hook是否写在了if条件中，如果在if中会出现数量不对等的情况
+  const activatedHook = getActivatedHook();
+  if (activatedHook !== null) {
+    if (getNextHook(getActivatedHook(), activated) !== null) {
+      throw Error('Hooks are less than expected, please check whether the hook is written in the condition.');
+    }
+  }
+
+  // 重置全局变量
+  resetGlobalVariable();
+
+  return comp;
+}
+
+function resetGlobalVariable() {
+  setHookStage(null);
+  setProcessingVNode(null);
+  setActivatedHook(null);
+  setCurrentHook(null);
+}
+
+export function initHookMapping() {
+  UseContextHookMapping.val = {useContext: context => getNewContext(getProcessingVNode(), context, true)};
+  UseReducerHookMapping.val = {useReducer: useReducerImpl};
+  UseStateHookMapping.val = {useState: useStateImpl};
+}
