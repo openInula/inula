@@ -1,13 +1,14 @@
 import {HorizonDom} from './Interface';
+import {Props} from '../DOMOperator';
 
 /**
  * 获取当前聚焦的 input 或者 textarea 元素
- * @param currentDoc 指定 document
+ * @param doc 指定 document
  */
-export function getFocusedDom(currentDoc?: Document): HorizonDom | void {
+export function getFocusedDom(doc?: Document): HorizonDom | void {
   let currentDocument;
-  if (currentDoc) {
-    currentDocument = currentDoc;
+  if (doc) {
+    currentDocument = doc;
   } else {
     if (document) {
       currentDocument = document;
@@ -63,13 +64,13 @@ export function isDocumentFragment(dom) {
   return dom.nodeType === 11;
 }
 
-export function getRootElement(dom: HorizonDom): HorizonDom {
-  let rootElement = dom;
+export function getDomTag(dom) {
+  return dom.nodeName.toLowerCase();
+}
 
-  while (rootElement.parentNode) {
-    // @ts-ignore
-    rootElement = rootElement.parentNode;
-  }
+const types = ['button', 'input', 'select', 'textarea'];
 
-  return rootElement;
+// button、input、select、textarea、如果有 autoFocus 属性需要focus
+export function shouldAutoFocus(tagName: string, props: Props): boolean {
+  return types.includes(tagName) ? Boolean(props.autoFocus) : false;
 }

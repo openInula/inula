@@ -100,7 +100,7 @@ export function validateProps(type, props) {
     throw new Error('style should be a object.');
   }
 
-  if (__DEV__) {
+  if (isDev) {
     // 校验属性
     const invalidProps = Object.keys(props).filter(key => !isValidProp(type, key, props[key]));
 

@@ -11,7 +11,7 @@ import type {
 import {
   DomComponent,
   DomText,
-  DomRoot,
+  TreeRoot,
 } from '../renderer/vnode/VNodeTags';
 
 const suffixKey = new Date().getTime().toString();
@@ -20,7 +20,6 @@ const prefix = '_horizon';
 const internalKeys = {
   VNode: `${prefix}VNode@${suffixKey}`,
   props: `${prefix}Props@${suffixKey}`,
-  container: `${prefix}Container@${suffixKey}`,
   events: `${prefix}Events@${suffixKey}`,
   nonDelegatedEvents: `${prefix}NonDelegatedEvents@${suffixKey}`,
 };
@@ -42,33 +41,33 @@ export function saveVNode(
 }
 
 // 用 DOM 节点，来找其对应的 VNode 实例
-export function getVNode(dom: Node): VNode | null {
-  const vNode = dom[internalKeys.VNode] || dom[internalKeys.container];
+export function getVNode(dom: Node|Container): VNode | null {
+  const vNode = dom[internalKeys.VNode] || (dom as Container)._treeRoot;
   if (vNode) {
     const {tag} = vNode;
-    if (tag === DomComponent || tag === DomText || tag === DomRoot) {
+    if (tag === DomComponent || tag === DomText || tag === TreeRoot) {
       return vNode;
     }
   }
   return null;
 }
 
-// 用 DOM 对象，来寻找其对应或者说是最近的 VNode 实例
+// 用 DOM 对象，来寻找其对应或者说是最近父级的 vNode
 export function getNearestVNode(dom: Node): null | VNode {
   let vNode = dom[internalKeys.VNode];
   if (vNode) { // 如果是已经被框架标记过的 DOM 节点，那么直接返回其 VNode 实例
     return vNode;
   }
   // 下面处理的是为被框架标记过的 DOM 节点，向上找其父节点是否被框架标记过
-  let parent = dom.parentNode;
+  let parentDom = dom.parentNode;
   let nearVNode = null;
-  while (parent) {
-    vNode = parent[internalKeys.VNode];
+  while (parentDom) {
+    vNode = parentDom[internalKeys.VNode];
     if (vNode) {
       nearVNode = vNode;
       break;
     }
-    parent = parent.parentNode;
+    parentDom = parentDom.parentNode;
   }
   return nearVNode;
 }
@@ -98,12 +97,4 @@ export function getEventToListenerMap(target: EventTarget): Map<string, EventLis
     eventsMap = target[internalKeys.nonDelegatedEvents] = new Map();
   }
   return eventsMap;
-}
-
-export function saveContainer(dom: Container, domRoot: VNode): void {
-  dom[internalKeys.container] = domRoot;
-}
-
-export function clearContainer(dom: Container): void {
-  dom[internalKeys.container] = null;
 }

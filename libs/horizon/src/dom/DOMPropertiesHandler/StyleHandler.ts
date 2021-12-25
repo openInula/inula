@@ -7,29 +7,44 @@ export function setStyles(dom, styles) {
   }
 
   const style = dom.style;
-  const styleKeys = Object.keys(styles);
+  Object.keys(styles).forEach((name) => {
+    const styleVal = styles[name];
 
-  for (let i = 0; i < styleKeys.length; i++) {
-    const styleKey = styleKeys[i];
-    const styleVal = styles[styleKey];
+    const validStyleValue = adjustStyleValue(name, styleVal);
 
-    const validStyleValue = adjustStyleValue(styleKey, styleVal);
-
-    style[styleKey] = validStyleValue;
-  }
+    style[name] = validStyleValue;
+  });
 }
 
 /**
- * 1. 对空值或布尔值进行适配，转为空字符串
- * 2. 去掉多余空字符
+ * 不需要加长度单位的 css 属性
+ */
+const noUnitCSS = ['animationIterationCount', 'columnCount', 'columns', 'gridArea', 'fontWeight', 'lineClamp',
+  'lineHeight', 'opacity', 'order', 'orphans', 'tabSize', 'widows', 'zIndex', 'zoom'];
+
+function isNeedUnitCSS(propName: string) {
+  return !(noUnitCSS.includes(propName)
+    || propName.startsWith('borderImage')
+    || propName.startsWith('flex')
+    || propName.startsWith('gridRow')
+    || propName.startsWith('gridColumn')
+    || propName.startsWith('stroke')
+    || propName.startsWith('box')
+    || propName.endsWith('Opacity'));
+}
+
+/**
+ * 对一些没有写单位的样式进行适配，例如：width: 10 => width: 10px
+ * 对空值或布尔值进行适配，转为空字符串
+ * 去掉多余空字符
  */
 export function adjustStyleValue(name, value) {
-  let validValue;
+  let validValue = value;
 
-  if (value === '' || value == null || typeof value === 'boolean') {
+  if (typeof value === 'number' && value !== 0 && isNeedUnitCSS(name)) {
+    validValue = `${value}px`;
+  } else if (value === '' || value == null || typeof value === 'boolean') {
     validValue = '';
-  } else {
-    validValue = String(value).trim();
   }
 
   return validValue;

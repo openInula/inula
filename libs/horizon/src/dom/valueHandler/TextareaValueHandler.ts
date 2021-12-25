@@ -12,11 +12,7 @@ function getInitValue(properties: IProperty) {
     // children content存在时，会覆盖defaultValue
     if (children != null) {
       // 子节点不是纯文本，则取第一个子节点
-      if (children instanceof Array) {
-        initValue = children[0];
-      } else {
-        initValue = children;
-      }
+      initValue = children instanceof Array ? children[0] : children;
     }
 
     // defaultValue 属性未配置，置为空字符串

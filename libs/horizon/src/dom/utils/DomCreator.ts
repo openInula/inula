@@ -8,7 +8,6 @@ export const NSS = {
 // 创建DOM元素
 export function createDom(
   tagName: string,
-  props: Object,
   parentNamespace: string,
 ): Element {
   let dom: Element;
@@ -20,6 +19,5 @@ export function createDom(
   } else {
     dom = document.createElement(tagName);
   }
-
   return dom;
 }
