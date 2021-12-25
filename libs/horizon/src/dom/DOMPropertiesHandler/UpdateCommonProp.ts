@@ -5,6 +5,18 @@ import {
 import {isInvalidValue} from '../validators/ValidateProps';
 import {getNamespaceCtx} from '../../renderer/ContextSaver';
 import {NSS} from '../utils/DomCreator';
+import {getDomTag} from '../utils/Common';
+
+const svgHumpAttr = new Set(['allowReorder', 'autoReverse', 'baseFrequency', 'baseProfile', 'calcMode', 'clipPathUnits',
+      'contentScriptType', 'contentStyleType', 'diffuseConstant', 'edgeMode', 'externalResourcesRequired', 'filterRes',
+      'filterUnits', 'glyphRef', 'gradientTransform', 'gradientUnits', 'kernelMatrix', 'kernelUnitLength', 'keyPoints',
+      'keySplines', 'keyTimes', 'lengthAdjust', 'limitingConeAngle', 'markerHeight', 'markerUnits', 'markerWidth',
+      'maskContentUnits', 'maskUnits', 'numOctaves', 'pathLength', 'patternContentUnits', 'patternTransform,',
+      'patternUnits', 'pointsAtX', 'pointsAtY', 'pointsAtZ', 'preserveAlpha', 'preserveAspectRatio', 'primitiveUnits',
+      'referrerPolicy', 'refX', 'refY', 'repeatCount', 'repeatDur', 'requiredExtensions', 'requiredFeatures',
+      'specularConstant', 'specularExponent', 'spreadMethod', 'startOffset', 'stdDeviation', 'stitchTiles', 'surfaceScale',
+      'systemLanguage', 'tableValues', 'targetX', 'targetY', 'textLength', 'viewBox', 'viewTarget', 'xChannelSelector',
+      'yChannelSelector', 'zoomAndPan']);
 
 /**
  * 给 dom 设置属性
@@ -20,8 +32,10 @@ export function updateCommonProp(dom: Element, attrName: string, value: any, isN
 
   if (!isNativeTag || propDetails === null) {
     // 特殊处理svg的属性，把驼峰式的属性名称转成'-'
-    if (dom.tagName.toLowerCase() === 'svg' || getNamespaceCtx() === NSS.svg) {
-      attrName = convertToLowerCase(attrName);
+    if (getDomTag(dom) === 'svg' || getNamespaceCtx() === NSS.svg) {
+      if (!svgHumpAttr.has(attrName)) {
+        attrName = convertToLowerCase(attrName);
+      }
     }
 
     if (value === null) {

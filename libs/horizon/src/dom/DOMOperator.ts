@@ -1,7 +1,3 @@
-/**
- * Copyright (c) Huawei Technologies Co., Ltd. 2021-2021. All rights reserved.
- */
-
 import {
   saveVNode,
   updateVNodeProps,
@@ -10,7 +6,7 @@ import {
   createDom,
 } from './utils/DomCreator';
 import {getSelectionInfo, resetSelectionRange, selectionData} from './SelectionRangeHandler';
-import {isElement, isComment, isDocument, isDocumentFragment} from './utils/Common';
+import {isElement, isComment, isDocument, isDocumentFragment, getDomTag, shouldAutoFocus} from './utils/Common';
 import {NSS} from './utils/DomCreator';
 import {adjustStyleValue} from './DOMPropertiesHandler/StyleHandler';
 
@@ -20,7 +16,7 @@ import {
   setInitValue,
   getPropsWithoutValue,
   updateValue,
-} from './valueHandler/ValueHandler';
+} from './valueHandler';
 import {
   compareProps,
   setDomProps, updateDomProps
@@ -31,76 +27,39 @@ import {DomComponent, DomText} from '../renderer/vnode/VNodeTags';
 import {updateCommonProp} from './DOMPropertiesHandler/UpdateCommonProp';
 
 export type Props = {
-  autoFocus?: boolean,
-  children?: any,
-  dangerouslySetInnerHTML?: any,
-  disabled?: boolean,
-  hidden?: boolean,
-  style?: { display?: string },
+  autoFocus?: boolean;
+  children?: any;
+  dangerouslySetInnerHTML?: any;
+  disabled?: boolean;
+  hidden?: boolean;
+  style?: { display?: string };
 };
 
 export type Container = (Element & { _treeRoot?: VNode }) | (Document & { _treeRoot?: VNode });
 
 let selectionInfo: null | selectionData = null;
 
-const types = ['button', 'input', 'select', 'textarea'];
-
-// button、input、select、textarea、如果有 autoFocus 属性需要focus
-function shouldAutoFocus(type: string, props: Props): boolean {
-  return types.includes(type) ? Boolean(props.autoFocus) : false;
-}
-
-function getChildNS(parent: string | null, type: string,): string {
-  if (parent === NSS.svg && type === 'foreignObject') {
+function getChildNS(parentNS: string | null, tagName: string): string {
+  if (parentNS === NSS.svg && tagName === 'foreignObject') {
     return NSS.html;
   }
-  if (parent == null || parent === NSS.html) {
-    // 没有父命名空间
-    return Object.keys(NSS).includes(type) ? NSS[type] : NSS.html;
+
+  if (parentNS == null || parentNS === NSS.html) {
+    // 没有父命名空间，或父命名空间为xhtml
+    return NSS[tagName] ?? NSS.html;
   }
+
   // 默认返回parentNamespace.
-  return parent;
-}
-
-function getRootNS(dom, root, nextRoot) {
-  let namespace;
-  let tag;
-  let container, ownNamespace;
-
-  if (isDocument(dom)) {
-    tag = '#document';
-    namespace = root ? root.namespaceURI : getChildNS(null, '');
-  } else if (isDocumentFragment(dom)) {
-    tag = '#fragment';
-    namespace = root ? root.namespaceURI : getChildNS(null, '');
-  } else if (isComment(dom)) {
-    container = nextRoot.parentNode;
-    ownNamespace = container.namespaceURI || null;
-    tag = container.tagName;
-    namespace = getChildNS(ownNamespace, tag);
-  } else {
-    container = nextRoot;
-    ownNamespace = container.namespaceURI || null;
-    tag = container.tagName;
-    namespace = getChildNS(ownNamespace, tag);
-  }
-
-  return namespace;
+  return parentNS;
 }
 
 // 获取容器
-export function getNSCtx(
-  nextRoot: Container,
-  ctxNamespace: string,
-  type: string): string {
+export function getNSCtx(dom: Container, parentNS: string, type: string): string {
   let namespace;
-  if (nextRoot) {
-    // 获取并解析根节点容器
-    const root = nextRoot.documentElement;
-    namespace = getRootNS(nextRoot, root, nextRoot);
+  if (dom) {
+    namespace = getChildNS(dom.namespaceURI ?? null, dom.nodeName);
   } else {
-    // 获取子节点容器
-    namespace = getChildNS(ctxNamespace, type);
+    namespace = getChildNS(parentNS, type);
   }
   return namespace;
 }
@@ -114,21 +73,14 @@ export function resetAfterSubmit(): void {
   selectionInfo = null;
 }
 
-/**
- * 在内存中创建 DOM 对象
- * @param tagName 元素的类型
- * @param props 属性
- * @param parentNamespace 当前上下文
- * @param vNode 当前元素对应的 VNode
- * @returns DOM 对象
- */
+// 创建 DOM 对象
 export function newDom(
   tagName: string,
   props: Props,
   parentNamespace: string,
   vNode: VNode,
 ): Element {
-  const dom: Element = createDom(tagName, props, parentNamespace);
+  const dom: Element = createDom(tagName, parentNamespace);
   // 将 vNode 节点挂到 DOM 对象上
   saveVNode(vNode, dom);
   // 将属性挂到 DOM 对象上
@@ -164,7 +116,7 @@ export function getPropChangeList(
   type: string,
   lastRawProps: Props,
   nextRawProps: Props,
-): null | Array<any> {
+): Array<any> {
   // 校验两个对象的不同
   validateProps(type, nextRawProps);
 
@@ -177,15 +129,11 @@ export function getPropChangeList(
 }
 
 export function isTextChild(type: string, props: Props): boolean {
-  if (type === 'textarea') {
+  const typeArray = ['textarea', 'option', 'noscript'];
+  const typeOfPropsChild = ['string', 'number'];
+  if (typeArray.indexOf(type) >= 0) {
     return true;
-  } else if (type === 'option') {
-    return true;
-  } else if (type === 'noscript') {
-    return true;
-  } else if (typeof props.children === 'string') {
-    return true;
-  } else if (typeof props.children === 'number') {
+  } else if (typeOfPropsChild.indexOf(typeof props.children) >= 0) {
     return true;
   } else {
     return (
@@ -205,19 +153,8 @@ export function newTextDom(
   return textNode;
 }
 
-export function submitMount(
-  dom: Element,
-  type: string,
-  newProps: Props,
-): void {
-  if (shouldAutoFocus(type, newProps)) {
-    // button、input、select、textarea、如果有 autoFocus 属性需要focus
-    dom.focus();
-  }
-}
-
 // 提交vNode的类型为Component或者Text的更新
-export function submitDomUpdate(tag: number, vNode: VNode) {
+export function submitDomUpdate(tag: string, vNode: VNode) {
   const newProps = vNode.props;
   const element: Element = vNode.realNode;
 
@@ -251,71 +188,44 @@ export function clearText(dom: Element): void {
 }
 
 // 添加child元素
-export function appendChildElement(isContainer: boolean,
+export function appendChildElement(
   parent: Element | Container,
-  child: Element | Text): void {
-  if (isContainer && isComment(parent)) {
-    parent.parentNode.insertBefore(child, parent);
-  } else {
-    parent.appendChild(child);
-  }
+  child: Element | Text
+): void {
+  parent.appendChild(child);
 }
 
 // 插入dom元素
 export function insertDomBefore(
-  isContainer: boolean,
   parent: Element | Container,
   child: Element | Text,
   beforeChild: Element | Text,
 ) {
-  if (isContainer && isComment(parent)) {
-    parent.parentNode.insertBefore(child, beforeChild);
-  } else {
-    parent.insertBefore(child, beforeChild);
-  }
+  parent.insertBefore(child, beforeChild);
 }
 
 export function removeChildDom(
-  isContainer: boolean,
   parent: Element | Container,
   child: Element | Text
 ) {
-  if (isContainer && isComment(parent)) {
-    parent.parentNode.removeChild(child);
-  } else {
-    parent.removeChild(child);
-  }
+  parent.removeChild(child);
 }
 
 // 隐藏元素
-export function hideDom(tag: number, element: Element | Text) {
+export function hideDom(tag: string, dom: Element | Text) {
   if (tag === DomComponent) {
-    // DomComponent类型
-    const {style} = element;
-    if (style.setProperty && typeof style.setProperty === 'function') {
-      style.setProperty('display', 'none', 'important');
-    } else {
-      style.display = 'none';
-    }
+    dom.style.display = 'none';
   } else if (tag === DomText) {
-    // text类型
-    element.textContent = '';
+    dom.textContent = '';
   }
 }
 
 // 不隐藏元素
-export function unHideDom(tag: number, element: Element | Text, props: Props) {
+export function unHideDom(tag: string, dom: Element | Text, props: Props) {
   if (tag === DomComponent) {
-    // DomComponent类型
-    const style = props.style;
-    let display = null;
-    if (style !== undefined && style !== null && style.hasOwnProperty('display')) {
-      display = style.display;
-    }
-    element.style.display = adjustStyleValue('display', display);
+    dom.style.display = adjustStyleValue('display', props?.style?.display ?? '');
   } else if (tag === DomText) {
-    // text类型
-    element.textContent = props;
+    dom.textContent = props;
   }
 }
 

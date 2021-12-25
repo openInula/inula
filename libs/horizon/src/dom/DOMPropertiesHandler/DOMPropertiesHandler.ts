@@ -63,7 +63,7 @@ function updateOneProp(dom, propName, propVal, isNativeTag, isInit = false) {
 export function compareProps(
   oldProps: Object,
   newProps: Object,
-): null | Array<any> {
+): Array<any> {
   let updatesForStyle = {};
   const toBeDeletedProps = [];
   const toBeUpdatedProps = [];

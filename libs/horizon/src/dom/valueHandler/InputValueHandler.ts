@@ -1,7 +1,6 @@
 import {updateCommonProp} from '../DOMPropertiesHandler/UpdateCommonProp';
 import {getVNodeProps} from '../DOMInternalKeys';
 import {IProperty} from '../utils/Interface';
-import {getRootElement} from '../utils/Common';
 import {isInputValueChanged} from './ValueChangeHandler';
 
 function getInitValue(dom: HTMLInputElement, properties: IProperty) {
@@ -33,12 +32,12 @@ export function getInputPropsWithoutValue(dom: HTMLInputElement, properties: IPr
 export function updateInputValue(dom: HTMLInputElement, properties: IProperty) {
   const {value, checked} = properties;
 
-  if (checked != null) {
-    updateCommonProp(dom, 'checked', checked);
-  } else if (value != null) { // 处理 dom.value 逻辑
+  if (value != null) { // 处理 dom.value 逻辑
     if (dom.value !== String(value)) {
       dom.value = String(value);
     }
+  } else if (checked != null) {
+    updateCommonProp(dom, 'checked', checked);
   }
 }
 
@@ -64,17 +63,10 @@ export function resetInputValue(dom: HTMLInputElement, properties: IProperty) {
   const {name, type} = properties;
   // 如果是 radio，先更新相同 name 的 radio
   if (type === 'radio' && name != null) {
-    // radio 的根节点
-    const radioRoot = getRootElement(dom);
-
-    const radioList = radioRoot.querySelectorAll(`input[type="radio"]`);
+    const radioList = document.querySelectorAll(`input[type="radio"][name="${name}"]`);
 
     for (let i = 0; i < radioList.length; i++) {
       const radio = radioList[i];
-      // @ts-ignore
-      if (radio.name !== name) {
-        continue;
-      }
       if (radio === dom) {
         continue;
       }

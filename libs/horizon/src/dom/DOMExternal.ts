@@ -3,19 +3,17 @@ import {
   syncUpdates, startUpdate,
 } from '../renderer/Renderer';
 import {createPortal} from '../renderer/components/CreatePortal';
-import {
-  clearContainer, saveContainer,
-} from './DOMInternalKeys';
 import type {Container} from './DOMOperator';
 import {isElement} from './utils/Common';
 import {listenDelegatedEvents} from '../event/EventBinding';
 import {findDOMByClassInst} from '../renderer/vnode/VNodeUtils';
 import {TreeRoot} from '../renderer/vnode/VNodeTags';
+import {Callback} from '../renderer/UpdateHandler';
 
 function executeRender(
   children: any,
   container: Container,
-  callback?: Function,
+  callback?: Callback,
 ) {
   let treeRoot = container._treeRoot;
 
@@ -36,7 +34,7 @@ function executeRender(
   return getFirstCustomDom(treeRoot);
 }
 
-function createRoot(children: any, container: Container, callback?: Function) {
+function createRoot(children: any, container: Container, callback?: Callback) {
   // 清空容器
   let child = container.lastChild;
   while (child) {
@@ -46,11 +44,10 @@ function createRoot(children: any, container: Container, callback?: Function) {
 
   // 调度器创建根节点，并给容器dom赋vNode结构体
   const treeRoot = createVNode(TreeRoot, container);
-  saveContainer(container, treeRoot._domRoot);
   container._treeRoot = treeRoot;
 
   // 根节点挂接全量事件
-  listenDelegatedEvents(container);
+  listenDelegatedEvents(container as Element);
 
   // 执行回调
   if (typeof callback === 'function') {
@@ -89,7 +86,6 @@ function destroy(container: Container) {
     syncUpdates(() => {
       executeRender(null, container, () => {
         container._treeRoot = null;
-        clearContainer(container);
       });
     });
 
