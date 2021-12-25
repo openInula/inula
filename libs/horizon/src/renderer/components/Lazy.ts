@@ -15,7 +15,7 @@ type LazyContent<T> = {
 };
 
 export type LazyComponent<T, P> = {
-  vtype: Symbol | number,
+  vtype: number,
   _content: P,
   _load: (content: P) => T,
 };

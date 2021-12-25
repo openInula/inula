@@ -54,10 +54,9 @@ function insertUpdate<S, A>(action: A, hook: Hook<S, A>): Update<S, A> {
 // setState, setReducer触发函数
 export function TriggerAction<S, A, T>(vNode: VNode, hook: Hook<S, A>, action: A) {
   const newUpdate = insertUpdate(action, hook);
-  const twins = vNode.twins;
 
   // 判断是否需要刷新
-  if (!vNode.shouldUpdate && (twins === null || !twins.shouldUpdate)) {
+  if (!vNode.shouldUpdate) {
     const reducerObj = hook.state as Reducer<S, A>;
     const { stateValue, reducer } = reducerObj;
 

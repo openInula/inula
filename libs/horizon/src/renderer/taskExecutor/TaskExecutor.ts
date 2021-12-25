@@ -80,7 +80,7 @@ function callTasks(initialTime) {
         task.expirationTime > currentTime &&
         isOverTime()
       ) {
-        // 没到deadline
+        // 任务的过期时间大于当前时间（没达到此任务的过期时间）且超过了deadline
         break;
       }
 
