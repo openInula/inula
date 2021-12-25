@@ -1,5 +1,4 @@
 import {EffectConstant} from './EffectConstant';
-import {VNode} from '../Types';
 
 export interface Hook<S, A> {
   state: Reducer<S, A> | Effect | Memo<S> | CallBack<S> | Ref<S>;

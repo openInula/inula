@@ -3,7 +3,8 @@ import type {Hook} from './HookType';
 
 let processingVNode: VNode = null;
 
-let activatedHook: Hook<any, any> | null = null;
+// lastTimeHook是上一次执行func时产生的hooks中，与currentHook对应的hook
+let lastTimeHook: Hook<any, any> | null = null;
 
 // 当前hook函数对应的hook对象
 let currentHook: Hook<any, any> | null = null;
@@ -16,12 +17,12 @@ export function setProcessingVNode(vNode: VNode) {
   processingVNode = vNode;
 }
 
-export function getActivatedHook() {
-  return activatedHook;
+export function getLastTimeHook() {
+  return lastTimeHook;
 }
 
-export function setActivatedHook(hook: Hook<any, any>) {
-  activatedHook = hook;
+export function setLastTimeHook(hook: Hook<any, any>) {
+  lastTimeHook = hook;
 }
 
 export function setCurrentHook(hook: Hook<any, any>) {
@@ -47,24 +48,32 @@ export function createHook(state: any = null): Hook<any, any> {
   return currentHook;
 }
 
-export function getNextHook(hook: Hook<any, any>, vNode: VNode) {
-  return vNode.hooks[hook.hIndex + 1] || null;
+export function getNextHook(hook: Hook<any, any>, hooks: Array<Hook<any, any>>) {
+  return hooks[hook.hIndex + 1] || null;
 }
 
 // 获取当前hook函数对应的hook对象。
-// processing中的hook和activated中的hook，需要同时往前走，
-// 原因：1.比对hook的数量有没有变化（非必要）；2.从activated中的hook获取removeEffect
+// processing中的hook和上一次执行中的hook，需要同时往前走，
+// 原因：1.比对hook的数量有没有变化（非必要）；2.从上一次执行中的hook获取removeEffect
 export function getCurrentHook(): Hook<any, any> {
-  currentHook = currentHook !== null ? getNextHook(currentHook, processingVNode) : (processingVNode.hooks[0] || null);
-  const activated = processingVNode.twins;
-  activatedHook = activatedHook !== null ? getNextHook(activatedHook, activated) : ((activated && activated.hooks[0]) || null);
+  currentHook = currentHook !== null ? getNextHook(currentHook, processingVNode.hooks) : (processingVNode.hooks[0] || null);
+
+  if (lastTimeHook !== null) {
+    lastTimeHook = getNextHook(lastTimeHook, processingVNode.oldHooks);
+  } else {
+    if (processingVNode.oldHooks && processingVNode.oldHooks.length) {
+      lastTimeHook = processingVNode.oldHooks[0];
+    } else {
+      lastTimeHook = null;
+    }
+  }
 
   if (currentHook === null) {
-    if (activatedHook === null) {
+    if (lastTimeHook === null) {
       throw Error('Hooks are more than expected, please check whether the hook is written in the condition.');
     }
 
-    createHook(activatedHook.state);
+    createHook(lastTimeHook.state);
   }
 
   return currentHook;

@@ -1,11 +1,12 @@
 /**
  * Component的api setState和forceUpdate在实例生成阶段实现
  */
-class Component {
-  props;
-  context;
+class Component<P,S,C> {
+  props: P;
+  context: C;
+  state: S;
 
-  constructor(props, context) {
+  constructor(props: P, context: C) {
     this.props = props;
     this.context = context;
   }
@@ -16,8 +17,8 @@ Component.prototype.isReactComponent = true;
 /**
  * 支持PureComponent
  */
-class PureComponent extends Component {
-  constructor(props, context) {
+class PureComponent<P, S, C> extends Component<P, S, C> {
+  constructor(props: P, context: C) {
     super(props, context);
   }
 }

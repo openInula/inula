@@ -9,9 +9,9 @@ const {
 
 import {getNewContext} from '../components/context/Context';
 import {
-  getActivatedHook,
+  getLastTimeHook,
   getProcessingVNode,
-  setActivatedHook,
+  setLastTimeHook,
   setProcessingVNode,
   setCurrentHook, getNextHook
 } from './BaseHook';
@@ -24,7 +24,6 @@ export function exeFunctionHook(
   funcComp: (props: Object, arg: Object) => any,
   props: Object,
   arg: Object,
-  activated: VNode | null,
   processing: VNode,
 ): any {
   // 重置全局变量
@@ -35,11 +34,12 @@ export function exeFunctionHook(
 
   setProcessingVNode(processing);
 
+  processing.oldHooks = processing.hooks;
   processing.hooks = [];
   processing.effectList = [];
 
   // 设置hook阶段
-  if (activated === null || !activated.hooks.length) {
+  if (processing.isCreated || !processing.oldHooks.length) {
     setHookStage(HookStage.Init);
   } else {
     setHookStage(HookStage.Update);
@@ -51,9 +51,9 @@ export function exeFunctionHook(
   setHookStage(null);
 
   // 判断hook是否写在了if条件中，如果在if中会出现数量不对等的情况
-  const activatedHook = getActivatedHook();
-  if (activatedHook !== null) {
-    if (getNextHook(getActivatedHook(), activated) !== null) {
+  const lastTimeHook = getLastTimeHook();
+  if (lastTimeHook !== null) {
+    if (getNextHook(getLastTimeHook(), processing.oldHooks) !== null) {
       throw Error('Hooks are less than expected, please check whether the hook is written in the condition.');
     }
   }
@@ -67,7 +67,7 @@ export function exeFunctionHook(
 function resetGlobalVariable() {
   setHookStage(null);
   setProcessingVNode(null);
-  setActivatedHook(null);
+  setLastTimeHook(null);
   setCurrentHook(null);
 }
 
