@@ -1,0 +1,16 @@
+{
+  "name": "@cloudsop/horizon",
+  "description": "Horizon is a JavaScript framework library.",
+  "keywords": [
+    "horizon"
+  ],
+  "version": "1.0.0",
+  "homepage": "",
+  "bugs": "",
+  "main": "index.js",
+  "repository": {},
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "dependencies": {}
+}
