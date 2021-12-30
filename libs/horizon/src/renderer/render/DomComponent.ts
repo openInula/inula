@@ -126,6 +126,13 @@ function updateDom(
   );
   processing.changeList = changeList;
 
-  // 标记为更新
-  FlagUtils.markUpdate(processing);
+  // 输入类的直接标记更新
+  if (type === 'input' || type === 'textarea' || type === 'select' || type === 'option') {
+    FlagUtils.markUpdate(processing);
+  } else {
+    // 其它的类型，数据有变化才标记更新
+    if (changeList.length) {
+      FlagUtils.markUpdate(processing);
+    }
+  }
 }
