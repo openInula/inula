@@ -11,7 +11,7 @@ const plugins = [
   new ESLintPlugin({fix: true}),
   new webpack.DefinePlugin({
     'process.env.NODE_ENV': '"development"',
-    __DEV__: 'true',
+    isDev: 'true',
   }),
 ];
 
