@@ -15,7 +15,7 @@ import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
 import componentRenders from './index';
 
-export function captureVNode(processing: VNode): Array<VNode> | VNode | null {
+export function captureVNode(processing: VNode): VNode | null {
   const component = componentRenders[processing.tag];
 
   if (processing.tag !== SuspenseComponent) {
@@ -65,10 +65,9 @@ function handlerContext(processing: VNode) {
 
 // 创建孩子节点
 export function createVNodeChildren(processing: VNode, nextChildren: any) {
-  const currentChildren = !processing.isCreated ? (processing.children ?? []) : [];
   const isComparing = !processing.isCreated;
 
-  return createChildrenByDiff(processing, currentChildren, nextChildren, isComparing);
+  return createChildrenByDiff(processing, processing.child, nextChildren, isComparing);
 }
 
 export function markRef(processing: VNode) {

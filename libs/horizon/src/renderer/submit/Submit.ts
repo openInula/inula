@@ -202,6 +202,7 @@ export function clearDirtyNodes(dirtyNodes) {
   dirtyNodes.forEach(node => {
     if (node.flags.Deletion) {
       node.realNode = null;
+      node.next = null;
     }
   });
 }

@@ -14,7 +14,7 @@ import {launchUpdateFromVNode} from '../TreeBuilder';
 import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
 import {setParentsChildShouldUpdate} from '../vnode/VNodeShouldUpdate';
 
-export function captureRender(processing: VNode): Array<VNode> | null {
+export function captureRender(processing: VNode): VNode | null {
   return captureContextProvider(processing);
 }
 
@@ -22,7 +22,7 @@ export function bubbleRender(processing: VNode) {
   resetContextCtx(processing);
 }
 
-function captureContextProvider(processing: VNode): Array<VNode> | null {
+function captureContextProvider(processing: VNode): VNode | null {
   const providerType: ProviderType<any> = processing.type;
   const contextType: ContextType<any> = providerType._context;
 
@@ -50,8 +50,8 @@ function captureContextProvider(processing: VNode): Array<VNode> | null {
   }
 
   const newElements = newProps.children;
-  processing.children = createVNodeChildren(processing, newElements);
-  return processing.children;
+  processing.child = createVNodeChildren(processing, newElements);
+  return processing.child;
 }
 
 // 从依赖中找到匹配context的VNode
@@ -80,7 +80,7 @@ function matchDependencies(depContexts, context, vNode): boolean {
 
 // 从当前子节点开始向下遍历，找到消费此context的组件，并更新
 function handleContextChange(processing: VNode, context: ContextType<any>): void {
-  const vNode = getFirstChild(processing);
+  const vNode = processing.child;
   if (vNode === null) {
     return;
   }

@@ -30,7 +30,7 @@ import { getContextChangeCtx, setContextChangeCtx } from '../ContextSaver';
 import ProcessingVNode from '../vnode/ProcessingVNode';
 import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
 
-export function captureRender(processing: VNode): Array<VNode> | null {
+export function captureRender(processing: VNode): VNode | null {
   const clazz = processing.type;
   const props = processing.props;
   const nextProps = processing.isLazyComponent ? mergeDefaultProps(clazz, props) : props;
@@ -44,13 +44,13 @@ export function bubbleRender(processing: VNode) {
 }
 
 // 用于未完成的类组件
-export function getIncompleteClassComponent(clazz, processing: VNode, nextProps: object): Array<VNode> | null {
+export function getIncompleteClassComponent(clazz, processing: VNode, nextProps: object):VNode | null {
   mountInstance(clazz, processing, nextProps);
   return createChildren(clazz, processing);
 }
 
 // 用于类组件
-export function captureClassComponent(processing: VNode, clazz: any, nextProps: object): Array<VNode> | null {
+export function captureClassComponent(processing: VNode, clazz: any, nextProps: object): VNode | null {
   const isOldCxtExist = isOldProvider(clazz);
   cacheOldCtx(processing, isOldCxtExist);
 
@@ -169,8 +169,8 @@ function createChildren(clazz: any, processing: VNode) {
     ? null
     : inst.render();
 
-  processing.children = createVNodeChildren(processing, newElements);
-  return processing.children;
+  processing.child = createVNodeChildren(processing, newElements);
+  return processing.child;
 }
 
 // 获取当前节点的context

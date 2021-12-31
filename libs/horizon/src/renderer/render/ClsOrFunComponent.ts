@@ -7,7 +7,7 @@ import {FlagUtils} from '../vnode/VNodeFlags';
 import {exeFunctionHook} from '../hooks/HookMain';
 import {createVNodeChildren} from './BaseComponent';
 
-export function captureRender(processing: VNode): Array<VNode> | null {
+export function captureRender(processing: VNode): VNode | null {
   return captureIndeterminateComponent(processing);
 }
 
@@ -15,7 +15,7 @@ export function bubbleRender() {}
 
 function captureIndeterminateComponent(
   processing: VNode | null,
-): Array<VNode> | null {
+): VNode | null {
   const funcComp = processing.type;
 
   if (!processing.isCreated) {
@@ -31,6 +31,6 @@ function captureIndeterminateComponent(
   const newElements = exeFunctionHook(funcComp, props, context, processing);
 
   processing.tag = FunctionComponent;
-  processing.children = createVNodeChildren(processing, newElements);
-  return processing.children;
+  processing.child = createVNodeChildren(processing, newElements);
+  return processing.child;
 }

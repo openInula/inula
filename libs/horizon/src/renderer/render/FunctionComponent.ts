@@ -13,7 +13,7 @@ import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
 // 在useState, useReducer的时候，会触发state变化
 let stateChange = false;
 
-export function captureRender(processing: VNode, shouldUpdate?: boolean): Array<VNode> | null {
+export function captureRender(processing: VNode, shouldUpdate?: boolean): VNode | null {
   const Component = processing.type;
   const unresolvedProps = processing.props;
   const resolvedProps =
@@ -62,8 +62,8 @@ export function captureFunctionComponent(
     return onlyUpdateChildVNodes(processing);
   }
 
-  processing.children = createVNodeChildren(processing, newElements);
-  return processing.children;
+  processing.child = createVNodeChildren(processing, newElements);
+  return processing.child;
 }
 
 // 判断children是否可以复用

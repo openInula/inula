@@ -69,7 +69,7 @@ export function updateVNode(vNode: VNode, vNodeProps?: any): VNode {
 
   if (vNode.tag === SuspenseComponent) {
     vNode.oldSuspenseChildStatus = vNode.suspenseChildStatus;
-    vNode.oldChildren = vNode.children;
+    vNode.oldChild = vNode.child;
   }
 
   vNode.oldProps = vNode.props;
@@ -169,20 +169,22 @@ export function createVNodeFromElement(element: HorizonElement): VNode {
 }
 
 // 直接更新子节点属性即可，不需要diff
-export function onlyUpdateChildVNodes(processing: VNode): Array<VNode> | null {
+export function onlyUpdateChildVNodes(processing: VNode): VNode | null {
   // 检查子树是否需要更新
   if (processing.childShouldUpdate) {
     // 此vNode无需更新，但是子树需要
-    if (!processing.isCreated && processing.children && processing.children.length) {
+    if (!processing.isCreated && processing.child !== null) {
       // 更新子节点
-      processing.children.forEach(child => {
+      let child = processing.child;
+      while (child !== null) {
         updateVNode(child, child.props);
         updateVNodePath(child);
-      });
+        child = child.next;
+      }
     }
 
     // 返回子节点，继续遍历
-    return processing.children;
+    return processing.child;
   }
 
   // 子树无需工作
