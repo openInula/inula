@@ -14,7 +14,8 @@ export class VNode {
 
   // 关系结构
   parent: VNode | null = null; // 父节点
-  children: Array<VNode> | null = null; // 子节点
+  child: VNode | null = null; // 子节点
+  next: VNode | null = null; // 兄弟节点
   cIndex: number = 0; // 节点在children数组中的位置
   eIndex: number = 0; // HorizonElement在jsx中的位置，例如：jsx中的null不会生成vNode，所以eIndex和cIndex不一致
 
@@ -68,7 +69,7 @@ export class VNode {
   oldRef: RefType | ((handle: any) => void) | null = null;
   suspenseChildThrow = false;
   oldSuspenseChildStatus: string = ''; // 上一次Suspense的Children是否显示
-  oldChildren: Array<VNode> | null = null;
+  oldChild: VNode | null = null;
   suspenseDidCapture: boolean = false; // suspense是否捕获了异常
   promiseResolve: boolean = false; // suspense的promise是否resolve
 

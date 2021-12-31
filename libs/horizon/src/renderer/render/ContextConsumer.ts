@@ -3,7 +3,7 @@ import type {VNode, ContextType} from '../Types';
 import {resetDepContexts, getNewContext} from '../components/context/Context';
 import {createVNodeChildren} from './BaseComponent';
 
-export function captureRender(processing: VNode): Array<VNode> | null {
+export function captureRender(processing: VNode): VNode | null {
   return captureContextConsumer(processing);
 }
 
@@ -18,6 +18,6 @@ function captureContextConsumer(processing: VNode) {
   const contextVal = getNewContext(processing, context);
   const newChildren = renderFunc(contextVal);
 
-  processing.children = createVNodeChildren(processing, newChildren);
-  return processing.children;
+  processing.child = createVNodeChildren(processing, newChildren);
+  return processing.child;
 }

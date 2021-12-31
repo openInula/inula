@@ -38,11 +38,10 @@ export function startUpdate(
 }
 
 export function getFirstCustomDom(treeRoot: VNode): Element | Text | null {
-  const firstChild = getFirstChild(treeRoot);
-  if (!firstChild) {
+  if (!treeRoot.child) {
     return null;
   }
 
-  return firstChild.realNode;
+  return treeRoot.child.realNode;
 }
 

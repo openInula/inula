@@ -37,6 +37,6 @@ function updateTreeRoot(processing) {
   if (newElement === oldElement) {
     return onlyUpdateChildVNodes(processing);
   }
-  processing.children = createVNodeChildren(processing, newElement);
-  return processing.children;
+  processing.child = createVNodeChildren(processing, newElement);
+  return processing.child;
 }

@@ -25,15 +25,15 @@ export function updateShouldUpdateOfTree(vNode: VNode): VNode | null {
 
 // 设置节点的childShouldUpdate
 export function updateChildShouldUpdate(vNode: VNode) {
-  const children = vNode.children || [];
-
-  for (let i = 0; i < children.length; i++) {
-    const child = children[i];
-    if (child && (child.shouldUpdate || child.childShouldUpdate)) {
+  let child = vNode.child;
+  while (child !== null) {
+    if (child.shouldUpdate || child.childShouldUpdate) {
       vNode.childShouldUpdate = true;
       return;
     }
+    child = child.next;
   }
+
   vNode.childShouldUpdate = false;
 }
 

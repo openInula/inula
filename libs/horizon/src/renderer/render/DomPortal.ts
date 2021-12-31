@@ -4,7 +4,7 @@ import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 import { createVNodeChildren } from './BaseComponent';
 import { prePortal } from '../../dom/DOMOperator';
 
-export function captureRender(processing: VNode): Array<VNode> | null {
+export function captureRender(processing: VNode): VNode | null {
   return capturePortalComponent(processing);
 }
 
@@ -21,9 +21,9 @@ function capturePortalComponent(processing: VNode) {
 
   const newElements = processing.props;
   if (processing.isCreated) {
-    processing.children = createChildrenByDiff(processing, [], newElements);
+    processing.child = createChildrenByDiff(processing, null, newElements);
   } else {
-    processing.children = createVNodeChildren(processing, newElements);
+    processing.child = createVNodeChildren(processing, newElements);
   }
-  return processing.children;
+  return processing.child;
 }

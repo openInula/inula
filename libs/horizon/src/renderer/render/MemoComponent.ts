@@ -10,7 +10,7 @@ import {
 } from '../utils/elementType';
 import {Fragment} from '../vnode/VNodeTags';
 
-export function captureRender(processing: VNode, shouldUpdate: boolean): Array<VNode> | null {
+export function captureRender(processing: VNode, shouldUpdate: boolean): VNode | null {
   return captureMemoComponent(processing, shouldUpdate);
 }
 
@@ -19,7 +19,7 @@ export function bubbleRender() {}
 export function captureMemoComponent(
   processing: VNode,
   shouldUpdate: boolean,
-): Array<VNode> | null {
+): VNode | null {
   const Component = processing.type;
   // 合并 函数组件或类组件 的defaultProps
   const newProps = mergeDefaultProps(Component, processing.props);
@@ -35,12 +35,12 @@ export function captureMemoComponent(
     newChild.parent = processing;
     newChild.ref = processing.ref;
     updateVNodePath(newChild);
-    processing.children = [newChild];
+    processing.child = newChild;
 
-    return processing.children;
+    return newChild;
   }
 
-  const firstChild = processing.children.length ? processing.children[0] : null; // Memo只有一个child
+  const firstChild = processing.child; // Memo只有一个child
   if (!shouldUpdate) {
     const oldProps = firstChild.props;
     // 默认是浅对比
@@ -55,7 +55,7 @@ export function captureMemoComponent(
   newChild.cIndex = 0;
   updateVNodePath(newChild);
   newChild.ref = processing.ref;
-  processing.children = [newChild];
+  processing.child = newChild;
 
-  return processing.children;
+  return newChild;
 }

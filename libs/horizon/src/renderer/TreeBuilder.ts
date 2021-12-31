@@ -132,9 +132,17 @@ export function calcStartUpdateVNode(treeRoot: VNode) {
   let node = treeRoot;
   for (let i = 1; i < startNodePath.length; i++) {
     let pathIndex = startNodePath[i];
-    node = node.children[pathIndex];
+    node = getChildByIndex(node, pathIndex);
   }
 
+  return node;
+}
+
+function getChildByIndex(vNode: VNode, idx: number) {
+  let node = vNode.child;
+  for (let i = 0; i < idx; i++) {
+    node = node.next;
+  }
   return node;
 }
 
@@ -225,12 +233,11 @@ function buildVNodeTree(treeRoot: VNode) {
         // 捕获创建 vNodes
         const next = captureVNode(processing);
 
-        // @ts-ignore
-        if (!next || !next.length) {
+        if (next === null) {
           // 如果没有产生新的，那么就完成当前节点，向上遍历
           bubbleVNode(processing);
         } else {
-          processing = next[0];
+          processing = next;
         }
 
         ProcessingVNode.val = null;

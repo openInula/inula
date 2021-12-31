@@ -37,7 +37,7 @@ export function captureRender(processing: VNode, shouldUpdate: boolean): Array<V
 }
 
 function updateFallback(processing: VNode): Array<VNode> | VNode | null {
-  const childFragment: VNode = processing.children[0];
+  const childFragment: VNode = processing.child;
 
   if (childFragment.childShouldUpdate) {
     if (processing.promiseResolve) {
@@ -45,7 +45,7 @@ function updateFallback(processing: VNode): Array<VNode> | VNode | null {
       return captureSuspenseComponent(processing);
     } else {
       // promise未完成，继续显示fallback，不需要继续刷新子节点
-      const fallbackFragment: VNode = processing.children[1];
+      const fallbackFragment: VNode = processing.child.next;
       childFragment.childShouldUpdate = false;
       fallbackFragment.childShouldUpdate = false;
       return null;
@@ -92,10 +92,11 @@ export function captureSuspenseComponent(processing: VNode) {
 function createSuspenseChildren(processing: VNode, newChildren) {
   let childFragment: VNode;
   if (!processing.isCreated) {
-    const oldChildFragment: VNode = processing.children[0];
-    const oldFallbackFragment: VNode | null = processing.children.length > 1 ? processing.children[1] : null;
+    const oldChildFragment: VNode = processing.child;
+    const oldFallbackFragment: VNode | null = oldChildFragment.next;
 
     childFragment = updateVNode(oldChildFragment);
+    childFragment.next = null;
     // 将Suspense新的子参数传给子Fragment
     childFragment.props = processing.props.children;
     childFragment.shouldUpdate = true;
@@ -114,19 +115,19 @@ function createSuspenseChildren(processing: VNode, newChildren) {
   childFragment.parent = processing;
   childFragment.cIndex = 0;
   updateVNodePath(childFragment);
-  processing.children = [childFragment];
+  processing.child = childFragment;
   processing.promiseResolve = false;
-  return processing.children;
+  return processing.child;
 }
 
 // 创建fallback子节点
 function createFallback(processing: VNode, fallbackChildren) {
-  const childFragment: VNode = processing.children[0];
+  const childFragment: VNode = processing.child;
   let fallbackFragment;
   childFragment.childShouldUpdate = false;
 
   if (!processing.isCreated) {
-    const oldFallbackFragment: VNode | null = processing.oldChildren.length > 1 ? processing.oldChildren[1] : null;
+    const oldFallbackFragment: VNode | null = processing.oldChild ? processing.oldChild.next : null;
 
     if (oldFallbackFragment !== null) {
       fallbackFragment = updateVNode(oldFallbackFragment, fallbackChildren);
@@ -139,7 +140,8 @@ function createFallback(processing: VNode, fallbackChildren) {
     fallbackFragment = createVNode(Fragment, null, fallbackChildren);
   }
 
-  processing.children = [childFragment, fallbackFragment];
+  processing.child = childFragment;
+  childFragment.next = fallbackFragment;
   childFragment.parent = processing;
   fallbackFragment.parent = processing;
   fallbackFragment.eIndex = 1;
@@ -147,7 +149,7 @@ function createFallback(processing: VNode, fallbackChildren) {
   updateVNodePath(fallbackFragment);
   processing.suspenseChildStatus = SuspenseChildStatus.ShowFallback;
 
-  return [fallbackFragment];
+  return fallbackFragment;
 }
 
 // 处理Suspense子组件抛出的promise

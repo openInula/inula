@@ -17,7 +17,7 @@ import {createVNodeChildren, markRef} from './BaseComponent';
 import {DomComponent, DomPortal, DomText} from '../vnode/VNodeTags';
 import {getFirstChild, travelVNodeTree} from '../vnode/VNodeUtils';
 
-export function captureRender(processing: VNode): Array<VNode> | null {
+export function captureRender(processing: VNode): VNode | null {
   return captureDomComponent(processing);
 }
 
@@ -63,7 +63,7 @@ export function bubbleRender(processing: VNode) {
   }
 }
 
-function captureDomComponent(processing: VNode): Array<VNode> | null {
+function captureDomComponent(processing: VNode): VNode | null {
   setNamespaceCtx(processing);
 
   const type = processing.type;
@@ -82,13 +82,13 @@ function captureDomComponent(processing: VNode): Array<VNode> | null {
   }
 
   markRef(processing);
-  processing.children = createVNodeChildren(processing, nextChildren);
-  return processing.children;
+  processing.child = createVNodeChildren(processing, nextChildren);
+  return processing.child;
 }
 
 // 把dom类型的子节点append到parent dom中
 function appendAllChildren(parent: Element, processing: VNode) {
-  const vNode = getFirstChild(processing);
+  const vNode = processing.child;
   if (vNode === null) {
     return;
   }
@@ -126,7 +126,7 @@ function updateDom(
   );
   processing.changeList = changeList;
 
-  // 输入类的直接标记更新
+  // 输入类型的直接标记更新
   if (type === 'input' || type === 'textarea' || type === 'select' || type === 'option') {
     FlagUtils.markUpdate(processing);
   } else {

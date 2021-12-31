@@ -9,16 +9,21 @@ import {isComment} from '../../dom/utils/Common';
 import {getNearestVNode} from '../../dom/DOMInternalKeys';
 
 export function getSiblingVNode(node) {
-  let siblingVNode = null;
-  const index = node.cIndex;
-  if (node && node.parent && node.parent.children && node.parent.children.length > index + 1) {
-    siblingVNode = node.parent.children[index + 1];
-  }
-  return siblingVNode;
+  return node.next;
 }
 
-export function getFirstChild(vNode: VNode) {
-  return (vNode.children && vNode.children.length) ? vNode.children[0] : null;
+export function travelChildren(beginVNode: VNode, handleVNode: Function, isFinish?: Function) {
+  let node = beginVNode;
+
+  while (node !== null) {
+    if (isFinish && isFinish(node)) {
+      return;
+    }
+
+    handleVNode(node);
+
+    node = node.next;
+  }
 }
 
 // 从beginVNode开始深度遍历vNode树，对每个vNode调用handleVNode方法
@@ -40,7 +45,7 @@ export function travelVNodeTree(
     }
 
     // 找子节点
-    const childVNode = getFirstChild(node);
+    const childVNode = node.child;
     if (childVNode !== null && !childFilter(node)) {
       childVNode.parent = node;
       node = childVNode;
@@ -76,7 +81,8 @@ export function clearVNode(vNode: VNode) {
 }
 
 function clearOneVNode(vNode: VNode) {
-  vNode.children = [];
+  vNode.child = null;
+  vNode.next = null;
   vNode.depContexts = [];
   vNode.dirtyNodes = [];
   vNode.oldProps = null;
@@ -95,7 +101,7 @@ function clearOneVNode(vNode: VNode) {
   vNode.oldRef = null;
   vNode.suspenseChildThrow = false;
   vNode.oldSuspenseChildStatus = '';
-  vNode.oldChildren = null;
+  vNode.oldChild = null;
 
   vNode.path = [];
   vNode.toUpdateNodes = null;
@@ -193,10 +199,10 @@ export function getSiblingDom(vNode: VNode): Element | null {
       }
 
       // 没有子节点，或是DomPortal
-      if (!node.children || !node.children.length || node.tag === DomPortal) {
+      if (!node.child || node.tag === DomPortal) {
         continue findSibling;
       } else {
-        const childVNode = getFirstChild(node);
+        const childVNode = node.child;
         childVNode.parent = node;
         node = childVNode;
       }
@@ -274,5 +280,3 @@ export function getExactNode(targetVNode, targetContainer) {
   }
   return targetVNode;
 }
-
-

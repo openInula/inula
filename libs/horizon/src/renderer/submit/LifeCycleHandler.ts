@@ -124,8 +124,7 @@ function callAfterSubmitLifeCycles(
       return;
     }
     case TreeRoot: {
-      const childVNode = (vNode.children && vNode.children.length) ? vNode.children[0] : null;
-      const instance = childVNode !== null ? childVNode.realNode : null;
+      const instance = vNode.child !== null ? vNode.child.realNode : null;
       callStateCallback(vNode, instance);
       return;
     }
@@ -261,10 +260,11 @@ function insertOrAppendPlacementNode(
     // 这里不做处理，直接在portal中处理
   } else {
     // 插入子节点们
-    const children = node.children || [];
-    children.forEach(child => {
+    let child = node.child;
+    while (child !== null) {
       insertOrAppendPlacementNode(child, beforeDom, parent);
-    });
+      child = child.next;
+    }
   }
 }
 
@@ -289,7 +289,7 @@ function unmountDomComponents(vNode: VNode): void {
       // 在所有子项都卸载后，删除dom树中的节点
       removeChildDom(currentParent, node.realNode);
     } else if (node.tag === DomPortal) {
-      if (node.children.length) {
+      if (node.child !== null) {
         currentParent = node.outerDom;
       }
     } else {
@@ -336,10 +336,10 @@ function submitUpdate(vNode: VNode): void {
   }
 }
 
-function submitSuspenseComponent(finishedWork: VNode) {
-  const suspenseChildStatus = finishedWork.suspenseChildStatus;
+function submitSuspenseComponent(vNode: VNode) {
+  const suspenseChildStatus = vNode.suspenseChildStatus;
   if (suspenseChildStatus !== SuspenseChildStatus.Init) {
-    hideOrUnhideAllChildren(finishedWork.children[0], suspenseChildStatus === SuspenseChildStatus.ShowFallback);
+    hideOrUnhideAllChildren(vNode.child, suspenseChildStatus === SuspenseChildStatus.ShowFallback);
   }
 }
 

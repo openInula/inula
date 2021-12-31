@@ -164,6 +164,7 @@ export function submitDomUpdate(tag: string, vNode: VNode) {
       const type = vNode.type;
       const changeList = vNode.changeList;
       vNode.changeList = null;
+
       if (changeList !== null) {
         saveVNode(vNode, element);
         updateVNodeProps(element, newProps);
