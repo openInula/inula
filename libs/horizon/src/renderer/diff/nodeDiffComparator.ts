@@ -353,6 +353,12 @@ function diffArrayNodes(
   // 5. 新节点还有一部分，但是老节点也还有一部分
   // 把剩下的currentVNode转成Map
   const leftChildrenMap = transLeftChildrenToMap(oldNode, rightEndOldNode);
+  // 通过贪心算法+二分法获取最长递增子序列
+  const eIndexes = []; // 记录 eIndex 值
+  const result = []; // 记录最长子序列在eIndexes中的 index 值
+  const preIndex = []; // 贪心算法在替换的过程中会使得数组不正确，通过记录preIndex找到正确值
+  const reuseNodes = []; // 记录复用的 VNode
+  let i = 0;
   for (; leftIdx < rightIdx; leftIdx++) {
     const oldNodeFromMap = getOldNodeFromMap(leftChildrenMap, leftIdx, newChildren[leftIdx]);
     const newNode = getNewNode(parentNode, newChildren[leftIdx], oldNodeFromMap);
@@ -361,14 +367,60 @@ function diffArrayNodes(
         // 从Map删除，后面不会deleteVNode
         leftChildrenMap.delete(newNode.key || leftIdx);
       }
-
-      theLastPosition = setVNodeAdditionFlag(newNode, theLastPosition, isComparing);
+      if (oldNodeFromMap !== null) {
+        let eIndex = newNode.eIndex;
+        eIndexes.push(eIndex);
+        const last = eIndexes[result[result.length - 1]];
+        if (eIndex > last || last === undefined) { // 大的 eIndex直接放在最后
+          preIndex[i] = result[result.length - 1];
+          result.push(i);
+        } else {
+          let start = 0;
+          let end = result.length - 1;
+          let middle;
+          // 二分法找到需要替换的值
+          while (start < end) {
+            middle = Math.floor((start + end) / 2)
+            if (eIndexes[result[middle]] > eIndex) {
+              end = middle;
+            } else {
+              start = middle + 1;
+            }
+          }
+          if (eIndex < eIndexes[result[start]]) {
+            preIndex[i] = result[start - 1];
+            result[start] = i;
+          }
+        }
+        i++;
+        reuseNodes.push(newNode); // 记录所有复用的节点
+      } else {
+        if (isComparing) {
+          FlagUtils.setAddition(newNode); // 新增节点直接打上add标签
+        }
+      }
       newNode.eIndex = leftIdx;
       appendNode(newNode);
     }
   }
-
   if (isComparing) {
+    // 向前回溯找到正确的结果
+    let length = result.length;
+    let prev = result[length - 1];
+    while (length-- > 0) {
+      result[length] = prev;
+      prev = preIndex[result[length]];
+    }
+    result.forEach(i => {
+      // 把需要复用的节点从 restNodes 中清理掉，因为不需要打 add 标记，直接复用 dom 节点
+      reuseNodes[i] = null;
+    });
+    reuseNodes.forEach(node => {
+      if (node !== null) {
+        // 没有被清理的节点打上 add 标记，通过dom的append操作实现位置移动
+        FlagUtils.setAddition(node);
+      }
+    });
     leftChildrenMap.forEach(child => {
       deleteVNode(parentNode, child);
     });
