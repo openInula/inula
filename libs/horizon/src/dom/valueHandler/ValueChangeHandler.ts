@@ -7,7 +7,7 @@ const HANDLER_KEY = '_valueChangeHandler';
 
 // 判断是否是 check 类型
 function isCheckType(dom: HTMLInputElement): boolean {
-  const {type, nodeName} = dom;
+  const { type, nodeName } = dom;
   if (nodeName && nodeName.toLowerCase() === 'input') {
     return type === 'checkbox' || type === 'radio';
   }
@@ -27,7 +27,7 @@ export function watchValueChange(dom) {
     // 获取 value 属性的描述信息，其 value 在其 constructor 的 原型上
     const descriptor = Object.getOwnPropertyDescriptor(dom.constructor.prototype, keyForValue);
 
-    if (dom.hasOwnProperty(keyForValue)) {
+    if (Object.prototype.hasOwnProperty.call(dom, keyForValue)) {
       return;
     }
 
@@ -37,7 +37,7 @@ export function watchValueChange(dom) {
     const setFunc = descriptor.set;
     Object.defineProperty(dom, keyForValue, {
       ...descriptor,
-      set: function(value) {
+      set: function (value) {
         currentVal = String(value);
         setFunc.apply(this, [value]);
       },

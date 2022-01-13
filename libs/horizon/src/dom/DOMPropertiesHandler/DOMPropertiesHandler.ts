@@ -1,12 +1,12 @@
 import {
   allDelegatedHorizonEvents,
 } from '../../event/EventCollection';
-import {updateCommonProp} from './UpdateCommonProp';
-import {setStyles} from './StyleHandler';
+import { updateCommonProp } from './UpdateCommonProp';
+import { setStyles } from './StyleHandler';
 import {
   listenNonDelegatedEvent
 } from '../../event/EventBinding';
-import {isEventProp, isNativeElement} from '../validators/ValidateProps';
+import { isEventProp, isNativeElement } from '../validators/ValidateProps';
 
 // 初始化DOM属性
 export function setDomProps(
@@ -31,14 +31,14 @@ export function updateDomProps(
   changeList: Array<any>,
   isNativeTag: boolean,
 ): void {
-  for (let i = 0; i < changeList.length; i ++) {
-    const {propName, propVal} = changeList[i];
+  for (let i = 0; i < changeList.length; i++) {
+    const { propName, propVal } = changeList[i];
 
     updateOneProp(dom, propName, propVal, isNativeTag);
   }
 }
 
-function updateOneProp(dom, propName, propVal, isNativeTag, isInit = false) {
+function updateOneProp(dom, propName, propVal, isNativeTag, isInit?: boolean) {
   if (propName === 'style') {
     setStyles(dom, propVal);
   } else if (propName === 'dangerouslySetInnerHTML') {
@@ -65,8 +65,8 @@ export function compareProps(
   newProps: Object,
 ): Array<any> {
   let updatesForStyle = {};
-  const toBeDeletedProps = [];
-  const toBeUpdatedProps = [];
+  const toBeDeletedProps: Array<any> = [];
+  const toBeUpdatedProps: Array<any> = [];
   const keysOfOldProps = Object.keys(oldProps);
   const keysOfNewProps = Object.keys(newProps);
 
@@ -124,7 +124,7 @@ export function compareProps(
         const oldStyleProps = Object.keys(oldPropValue);
         for (let j = 0; j < oldStyleProps.length; j++) {
           const styleProp = oldStyleProps[j];
-          if (!newPropValue || !newPropValue.hasOwnProperty(styleProp)) {
+          if (!newPropValue || !Object.prototype.hasOwnProperty.call(newPropValue, styleProp)) {
             updatesForStyle[styleProp] = '';
           }
         }
