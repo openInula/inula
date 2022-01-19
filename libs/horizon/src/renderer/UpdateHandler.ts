@@ -1,10 +1,10 @@
-import type {VNode} from './Types';
-import {FlagUtils, ShouldCapture} from './vnode/VNodeFlags';
+import type { VNode } from './Types';
+import { FlagUtils, ShouldCapture } from './vnode/VNodeFlags';
 
 export type Update = {
-  type: 'Update' | 'Override' | 'ForceUpdate' | 'Error',
-  content: any,
-  callback: Callback | null,
+  type: 'Update' | 'Override' | 'ForceUpdate' | 'Error';
+  content: any;
+  callback: Callback | null;
 };
 
 export type Callback = () => any;
@@ -50,24 +50,25 @@ function calcState(
   oldState: any,
   props: any,
 ): any {
-  if (update.type === UpdateState.Override) {
-    const content = update.content;
-    return typeof content === 'function' ? content.call(inst, oldState, props) : content;
-  } else if (update.type === UpdateState.ForceUpdate) {
-    vNode.isForceUpdate = true;
-    return oldState;
-  } else if (update.type === UpdateState.Error || update.type === UpdateState.Update) {
-    if (update.type === UpdateState.Error) {
+  switch (update.type) {
+    case UpdateState.Override:
+      const content = update.content;
+      return typeof content === 'function' ? content.call(inst, oldState, props) : content;
+    case UpdateState.ForceUpdate:
+      vNode.isForceUpdate = true;
+      return oldState;
+    case UpdateState.Error:
       FlagUtils.removeFlag(vNode, ShouldCapture);
       FlagUtils.markDidCapture(vNode);
-    }
-    const content = update.content;
-    const newState = typeof content === 'function' ? content.call(inst, oldState, props) : content;
-    return (newState === null || newState === undefined)
-      ? oldState
-      : {...oldState, ...newState}
+    case UpdateState.Update:
+      const updateContent = update.content;
+      const newState = typeof updateContent === 'function' ? updateContent.call(inst, oldState, props) : updateContent;
+      return (newState === null || newState === undefined)
+        ? oldState
+        : { ...oldState, ...newState };
+    default:
+      return oldState;
   }
-  return oldState;
 }
 
 // 收集callback
