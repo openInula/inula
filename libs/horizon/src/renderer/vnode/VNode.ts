@@ -26,7 +26,7 @@ export class VNode {
   suspensePromises: any = null; // suspense组件的promise列表
   changeList: any = null; // DOM的变更列表
   effectList: any[] = []; // useEffect 的更新数组
-  updates: any[] = null; // TreeRoot和ClassComponent使用的更新数组
+  updates: any[] | null = null; // TreeRoot和ClassComponent使用的更新数组
   stateCallbacks: any[] = []; // 存放存在setState的第二个参数和HorizonDOM.render的第三个参数所在的node数组
   isForceUpdate: boolean = false; // 是否使用强制更新
 

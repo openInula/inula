@@ -1,5 +1,5 @@
-import type {VNode} from './Types';
-import type {Update} from './UpdateHandler';
+import type { VNode } from './Types';
+import type { Update } from './UpdateHandler';
 
 import {
   asyncUpdates,
@@ -7,12 +7,12 @@ import {
   runDiscreteUpdates,
   launchUpdateFromVNode,
 } from './TreeBuilder';
-import {runAsyncEffects} from './submit/HookEffectHandler';
-import {Callback, newUpdate, pushUpdate} from './UpdateHandler';
-import {getFirstChild} from './vnode/VNodeUtils';
+import { runAsyncEffects } from './submit/HookEffectHandler';
+import { Callback, newUpdate, pushUpdate } from './UpdateHandler';
+import { getFirstChild } from './vnode/VNodeUtils';
 
-export {createVNode} from './vnode/VNodeCreator';
-export {createPortal} from './components/CreatePortal';
+export { createVNode } from './vnode/VNodeCreator';
+export { createPortal } from './components/CreatePortal';
 export {
   asyncUpdates,
   syncUpdates,
@@ -26,7 +26,7 @@ export function startUpdate(
   callback?: Callback,
 ) {
   const update: Update = newUpdate();
-  update.content = {element};
+  update.content = { element };
 
   if (typeof callback === 'function') {
     update.callback = callback;
@@ -38,10 +38,9 @@ export function startUpdate(
 }
 
 export function getFirstCustomDom(treeRoot: VNode): Element | Text | null {
-  if (!treeRoot.child) {
-    return null;
+  if (treeRoot?.child) {
+    return treeRoot.child.realNode;
   }
-
-  return treeRoot.child.realNode;
+  return null;
 }
 
