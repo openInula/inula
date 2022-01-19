@@ -42,18 +42,6 @@ export function pushUpdate(vNode: VNode, update: Update) {
   updates.push(update);
 }
 
-function getCallback(
-  update: Update,
-  inst: any,
-  oldState: any,
-  props: any,): any {
-  const content = update.content;
-  const newState = typeof content === 'function' ? content.call(inst, oldState, props) : content;
-  return (newState === null || newState === undefined)
-    ? oldState
-    : { ...oldState, ...newState };
-}
-
 // 根据update获取新的state
 function calcState(
   vNode: VNode,
@@ -72,9 +60,12 @@ function calcState(
     case UpdateState.Error:
       FlagUtils.removeFlag(vNode, ShouldCapture);
       FlagUtils.markDidCapture(vNode);
-      return getCallback(update, inst, oldState, props);
     case UpdateState.Update:
-      return getCallback(update, inst, oldState, props);
+      const updateContent = update.content;
+      const newState = typeof updateContent === 'function' ? updateContent.call(inst, oldState, props) : updateContent;
+      return (newState === null || newState === undefined)
+        ? oldState
+        : { ...oldState, ...newState };
     default:
       return oldState;
   }
