@@ -47,7 +47,6 @@ function mapChildrenToArray(
         'Object is invalid as a Horizon child. '
       );
     default:
-      return;
   }
 }
 

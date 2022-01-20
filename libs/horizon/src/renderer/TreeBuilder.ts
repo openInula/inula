@@ -219,7 +219,7 @@ export function tryRenderRoot(treeRoot: VNode) {
 }
 
 // 发起更新
-export function launchUpdateFromVNode(vNode: VNode): null | void {
+export function launchUpdateFromVNode(vNode: VNode): void {
   // 检查循环调用
   checkLoopingUpdateLimit();
 
@@ -228,7 +228,7 @@ export function launchUpdateFromVNode(vNode: VNode): null | void {
   if (treeRoot === null) {
     // 可能场景是：the componentWillUnmount method 或 useEffect cleanup function 方法中写异步任务，并且修改state。
     // 因为异步回调的时候root都可能被清除了。
-    return null;
+    return;
   }
 
   // 保存待刷新的节点

@@ -1,23 +1,23 @@
-import type {VNode} from '../Types';
+import type { VNode } from '../Types';
 
-import {FlagUtils} from '../vnode/VNodeFlags';
-import {getLazyVNodeTag} from '../vnode/VNodeCreator';
+import { FlagUtils } from '../vnode/VNodeFlags';
+import { getLazyVNodeTag } from '../vnode/VNodeCreator';
 import {
   ClassComponent,
   ForwardRef,
   FunctionComponent,
   MemoComponent,
 } from '../vnode/VNodeTags';
-import {throwIfTrue} from '../utils/throwIfTrue';
-import {captureFunctionComponent} from './FunctionComponent';
-import {captureClassComponent} from './ClassComponent';
-import {captureMemoComponent} from './MemoComponent';
+import { throwIfTrue } from '../utils/throwIfTrue';
+import { captureFunctionComponent } from './FunctionComponent';
+import { captureClassComponent } from './ClassComponent';
+import { captureMemoComponent } from './MemoComponent';
 
 export function captureRender(processing: VNode, shouldUpdate: boolean): VNode | null {
   return captureLazyComponent(processing, processing.type, shouldUpdate);
 }
 
-export function bubbleRender() {}
+export function bubbleRender() { }
 
 const LazyRendererMap = {
   [FunctionComponent]: captureFunctionComponent,
@@ -30,7 +30,7 @@ function captureLazyComponent(
   processing,
   lazyComponent,
   shouldUpdate,
-) {
+): any | void {
   if (!processing.isCreated) {
     // 每次加载lazy都当作mount来处理
     processing.isCreated = true;
@@ -69,7 +69,7 @@ function captureLazyComponent(
 
 export function mergeDefaultProps(Component: any, props: object): object {
   if (Component && Component.defaultProps) {
-    const clonedProps = {...props};
+    const clonedProps = { ...props };
     const defaultProps = Component.defaultProps;
     Object.keys(defaultProps).forEach(key => {
       if (clonedProps[key] === undefined) {

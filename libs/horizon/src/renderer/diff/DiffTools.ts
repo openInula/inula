@@ -6,7 +6,7 @@ export const isSameType = (vNode: VNode, ele: HorizonElement) => {
   return vNode.type === ele.type || (vNode.isLazyComponent && vNode.lazyType === ele.type);
 };
 
-export function createRef(element: HorizonElement) {
+export function createRef(element: HorizonElement): any | void {
   const elementRef = element.ref;
   // 如果ref是null、function、object，直接返回
   if (elementRef === null || typeof elementRef === 'function' || typeof elementRef === 'object') {

@@ -69,7 +69,7 @@ function isNodeContainsByTargetNode(targetNode, node) {
   return false;
 }
 
-function isInDocument(dom) {
+function isInDocument(dom): any | void {
   if (dom && dom.ownerDocument) {
     return isNodeContainsByTargetNode(dom.ownerDocument.documentElement, dom);
   }
