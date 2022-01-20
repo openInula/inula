@@ -35,11 +35,8 @@ export function newUpdate(): Update {
 // 将update对象加入updates
 export function pushUpdate(vNode: VNode, update: Update) {
   const updates = vNode.updates;
-  if (updates === null) {
-    return;
-  }
 
-  updates.push(update);
+  updates?.push(update);
 }
 
 // 根据update获取新的state

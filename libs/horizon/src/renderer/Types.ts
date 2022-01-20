@@ -2,7 +2,6 @@ export { VNode } from './vnode/VNode';
 
 type Trigger<A> = (A) => void;
 
-export type ReadContextHookType = { readContext<T>(context: ContextType<T>): T };
 export type UseStateHookType = {
   useState<S>(
     initialState: (() => S) | S

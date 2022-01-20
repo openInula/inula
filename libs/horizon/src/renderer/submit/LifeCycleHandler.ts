@@ -186,11 +186,6 @@ function detachRef(vNode: VNode, isOldRef?: boolean) {
 
 // 卸载一个vNode，不会递归
 function unmountVNode(vNode: VNode): void {
-  // TODO 暂时用于规避error处理逻辑，后续删除
-  if (vNode.flags.Addition) {
-    return;
-  }
-
   switch (vNode.tag) {
     case FunctionComponent:
     case ForwardRef:

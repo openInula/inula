@@ -19,7 +19,7 @@ export const ShouldCapture = 'ShouldCapture';
 // For suspense
 export const ForceUpdate = 'ForceUpdate';
 
-const flagArr = [Addition, Update, Deletion, ResetText, Callback, DidCapture, Ref, Snapshot, Interrupted, ShouldCapture, ForceUpdate];
+const FlagArr = [Addition, Update, Deletion, ResetText, Callback, DidCapture, Ref, Snapshot, Interrupted, ShouldCapture, ForceUpdate];
 
 const LifecycleEffectArr = [Update, Callback, Ref, Snapshot];
 
@@ -38,9 +38,10 @@ export class FlagUtils {
   }
   static hasAnyFlag(node: VNode) { // 有标志位
     let keyFlag = false;
-    flagArr.forEach(key => {
+    FlagArr.forEach(key => {
       if (node.flags[key]) {
         keyFlag = true;
+        return;
       }
     });
     return keyFlag;

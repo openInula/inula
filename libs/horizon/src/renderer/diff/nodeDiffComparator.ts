@@ -354,9 +354,9 @@ function diffArrayNodes(
   // 把剩下的currentVNode转成Map
   const leftChildrenMap = transLeftChildrenToMap(oldNode, rightEndOldNode);
   // 通过贪心算法+二分法获取最长递增子序列
-  const eIndexes = []; // 记录 eIndex 值
-  const result = []; // 记录最长子序列在eIndexes中的 index 值
-  const preIndex = []; // 贪心算法在替换的过程中会使得数组不正确，通过记录preIndex找到正确值
+  const eIndexes: Array<number> = []; // 记录 eIndex 值
+  const result: Array<number> = []; // 记录最长子序列在eIndexes中的 index 值
+  const preIndex: Array<number> = []; // 贪心算法在替换的过程中会使得数组不正确，通过记录preIndex找到正确值
   const reuseNodes = []; // 记录复用的 VNode
   let i = 0;
   for (; leftIdx < rightIdx; leftIdx++) {
@@ -367,6 +367,7 @@ function diffArrayNodes(
         // 从Map删除，后面不会deleteVNode
         leftChildrenMap.delete(newNode.key || leftIdx);
       }
+
       if (oldNodeFromMap !== null) {
         let eIndex = newNode.eIndex;
         eIndexes.push(eIndex);
@@ -380,7 +381,7 @@ function diffArrayNodes(
           let middle;
           // 二分法找到需要替换的值
           while (start < end) {
-            middle = Math.floor((start + end) / 2)
+            middle = Math.floor((start + end) / 2);
             if (eIndexes[result[middle]] > eIndex) {
               end = middle;
             } else {
@@ -403,6 +404,7 @@ function diffArrayNodes(
       appendNode(newNode);
     }
   }
+
   if (isComparing) {
     // 向前回溯找到正确的结果
     let length = result.length;
@@ -411,9 +413,9 @@ function diffArrayNodes(
       result[length] = prev;
       prev = preIndex[result[length]];
     }
-    result.forEach(i => {
+    result.forEach(idx => {
       // 把需要复用的节点从 restNodes 中清理掉，因为不需要打 add 标记，直接复用 dom 节点
-      reuseNodes[i] = null;
+      reuseNodes[idx] = null;
     });
     reuseNodes.forEach(node => {
       if (node !== null) {
@@ -490,7 +492,7 @@ function diffStringNodeHandler(
   firstChildVNode: VNode,
   isComparing: boolean
 ) {
-  let newTextNode = null;
+  let newTextNode: VNode | null = null;
 
   // 第一个vNode是Text，则复用
   if (firstChildVNode !== null && firstChildVNode.tag === DomText) {
@@ -520,7 +522,7 @@ function diffObjectNodeHandler(
   firstChildVNode: VNode,
   isComparing: boolean
 ) {
-  let canReuseNode = null;
+  let canReuseNode: VNode | null = null;
 
   // 通过key比对是否有可以reuse
   const newKey = newChild.key;
@@ -535,7 +537,7 @@ function diffObjectNodeHandler(
     }
   }
 
-  let resultNode = null;
+  let resultNode: VNode | null = null;
   let startDelVNode = firstChildVNode;
   if (newChild.vtype === TYPE_ELEMENT) {
     if (canReuseNode) {
