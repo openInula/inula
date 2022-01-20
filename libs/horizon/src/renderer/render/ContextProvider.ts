@@ -14,14 +14,6 @@ import {launchUpdateFromVNode} from '../TreeBuilder';
 import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
 import {setParentsChildShouldUpdate} from '../vnode/VNodeShouldUpdate';
 
-export function captureRender(processing: VNode): VNode | null {
-  return captureContextProvider(processing);
-}
-
-export function bubbleRender(processing: VNode) {
-  resetContextCtx(processing);
-}
-
 function captureContextProvider(processing: VNode): VNode | null {
   const providerType: ProviderType<any> = processing.type;
   const contextType: ContextType<any> = providerType._context;
@@ -52,6 +44,14 @@ function captureContextProvider(processing: VNode): VNode | null {
   const newElements = newProps.children;
   processing.child = createVNodeChildren(processing, newElements);
   return processing.child;
+}
+
+export function captureRender(processing: VNode): VNode | null {
+  return captureContextProvider(processing);
+}
+
+export function bubbleRender(processing: VNode) {
+  resetContextCtx(processing);
 }
 
 // 从依赖中找到匹配context的VNode

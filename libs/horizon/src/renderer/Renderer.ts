@@ -37,7 +37,7 @@ export function startUpdate(
   launchUpdateFromVNode(treeRoot);
 }
 
-export function getFirstCustomDom(treeRoot: VNode): Element | Text | null {
+export function getFirstCustomDom(treeRoot: VNode | undefined | null): Element | Text | null {
   if (treeRoot?.child) {
     return treeRoot.child.realNode;
   }
