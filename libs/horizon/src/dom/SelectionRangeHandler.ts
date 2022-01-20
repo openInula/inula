@@ -69,10 +69,11 @@ function isNodeContainsByTargetNode(targetNode, node) {
   return false;
 }
 
-function isInDocument(dom): any | void {
+function isInDocument(dom) {
   if (dom && dom.ownerDocument) {
     return isNodeContainsByTargetNode(dom.ownerDocument.documentElement, dom);
   }
+  return false;
 }
 
 // 判断一个标签是否有设置选择范围的能力

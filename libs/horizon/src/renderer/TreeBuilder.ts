@@ -219,7 +219,7 @@ export function tryRenderRoot(treeRoot: VNode) {
 }
 
 // 发起更新
-export function launchUpdateFromVNode(vNode: VNode): void {
+export function launchUpdateFromVNode(vNode: VNode) {
   // 检查循环调用
   checkLoopingUpdateLimit();
 

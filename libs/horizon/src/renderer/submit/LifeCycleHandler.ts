@@ -71,6 +71,7 @@ function callBeforeSubmitLifeCycles(
       const root = vNode.realNode;
       clearContainer(root.outerDom);
     }
+    
     // No Default
   }
 }
@@ -137,7 +138,8 @@ function callAfterSubmitLifeCycles(
         }
       }
     }
-    //No Default
+
+    // No Default
   }
 }
 

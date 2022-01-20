@@ -46,7 +46,8 @@ function mapChildrenToArray(
       throw new Error(
         'Object is invalid as a Horizon child. '
       );
-    default:
+      
+    // No Default
   }
 }
 

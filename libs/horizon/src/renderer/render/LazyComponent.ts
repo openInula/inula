@@ -30,7 +30,7 @@ function captureLazyComponent(
   processing,
   lazyComponent,
   shouldUpdate,
-): any | void {
+) {
   if (!processing.isCreated) {
     // 每次加载lazy都当作mount来处理
     processing.isCreated = true;
@@ -64,6 +64,7 @@ function captureLazyComponent(
       Component,
       '',
     );
+    return null;
   }
 }
 
