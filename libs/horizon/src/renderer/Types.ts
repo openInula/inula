@@ -15,14 +15,14 @@ export type UseReducerHookType = {
 };
 export type UseContextHookType = { useContext<T>(context: ContextType<T>,): T };
 
-export type HorizonElement = {
+export type JSXElement = {
   vtype: any;
   type: any;
   key: any;
   ref: any;
   props: any;
-
   _vNode: any;
+  belongClassVNode: any;
 };
 
 export type ProviderType<T> = {

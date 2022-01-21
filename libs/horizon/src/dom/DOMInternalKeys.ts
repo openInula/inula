@@ -14,14 +14,13 @@ import {
   TreeRoot,
 } from '../renderer/vnode/VNodeTags';
 
-const suffixKey = new Date().getTime().toString();
 const prefix = '_horizon';
 
 const internalKeys = {
-  VNode: `${prefix}VNode@${suffixKey}`,
-  props: `${prefix}Props@${suffixKey}`,
-  events: `${prefix}Events@${suffixKey}`,
-  nonDelegatedEvents: `${prefix}NonDelegatedEvents@${suffixKey}`,
+  VNode: `${prefix}VNode`,
+  props: `${prefix}Props`,
+  events: `${prefix}Events`,
+  nonDelegatedEvents: `${prefix}NonDelegatedEvents`,
 };
 
 // 通过 VNode 实例获取 DOM 节点

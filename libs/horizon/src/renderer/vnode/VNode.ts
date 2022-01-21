@@ -76,6 +76,8 @@ export class VNode {
   path: Array<number> = []; // 保存从根到本节点的路径
   toUpdateNodes: Set<VNode> | null = null; // 保存要更新的节点
 
+  belongClassVNode: VNode | null = null; // 记录JSXElement所属class vNode，处理ref的时候使用
+
   constructor(tag: VNodeTag, props: any, key: null | string, outerDom) {
     this.tag = tag; // 对应组件的类型，比如ClassComponent等
     this.key = key;

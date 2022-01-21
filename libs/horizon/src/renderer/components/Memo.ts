@@ -1,4 +1,4 @@
-import {TYPE_MEMO} from '../utils/elementType';
+import {TYPE_MEMO} from '../../external/JSXElementType';
 
 export function memo<Props>(type, compare?: (oldProps: Props, newProps: Props) => boolean) {
   return {

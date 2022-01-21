@@ -1,4 +1,4 @@
-import {TYPE_PORTAL} from '../utils/elementType';
+import {TYPE_PORTAL} from '../../external/JSXElementType';
 import type {PortalType} from '../Types';
 
 export function createPortal(
