@@ -69,7 +69,7 @@ function mountInstance(clazz, processing: VNode, nextProps: object) {
 function createChildren(clazz: any, processing: VNode) {
   markRef(processing);
 
-  ProcessingVNode.val = processing;
+  setProcessingClassVNode(processing);
   processing.state = processing.realNode.state;
 
   const inst = processing.realNode;
