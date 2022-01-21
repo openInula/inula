@@ -91,7 +91,7 @@ export function getEventListeners(dom: EventTarget): Set<string> {
   return elementListeners;
 }
 
-export function getEventToListenerMap(target: EventTarget): Map<string, EventListener> {
+export function getNonDelegatedListenerMap(target: EventTarget): Map<string, EventListener> {
   let eventsMap = target[internalKeys.nonDelegatedEvents];
   if (!eventsMap) {
     eventsMap = target[internalKeys.nonDelegatedEvents] = new Map();

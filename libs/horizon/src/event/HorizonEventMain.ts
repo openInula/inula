@@ -1,4 +1,4 @@
-import type {AnyNativeEvent, ProcessingListenerList} from './types';
+import type {AnyNativeEvent, ProcessingListenerList} from './Types';
 import type {VNode} from '../renderer/Types';
 
 import {
@@ -34,12 +34,12 @@ function getCommonListeners(
   target: null | EventTarget,
   isCapture: boolean,
 ): ProcessingListenerList {
-  const customEventName = getCustomEventNameWithOn(CommonEventToHorizonMap[nativeEvtName]);
-  if (!customEventName) {
+  const horizonEvtName = getCustomEventNameWithOn(CommonEventToHorizonMap[nativeEvtName]);
+  if (!horizonEvtName) {
     return [];
   }
 
-  // 火狐浏览器兼容。火狐浏览器下功能键将触发keypress事件 火狐下keypress的charcode有值，keycode为0
+  // 火狐浏览器兼容。火狐浏览器下功能键将触发keypress事件 火狐下keypress的charCode有值，keyCode为0
   if (nativeEvtName === 'keypress' && uniqueCharCode(nativeEvent) === 0) {
     return [];
   }
@@ -52,23 +52,22 @@ function getCommonListeners(
   if (nativeEvtName === 'focusin') {
     nativeEvtName = 'focus';
   }
+
   if (nativeEvtName === 'focusout') {
     nativeEvtName = 'blur';
   }
 
-  const customEvent = createCommonCustomEvent(customEventName, nativeEvtName, nativeEvent, null, target);
+  const horizonEvent = createCommonCustomEvent(horizonEvtName, nativeEvtName, nativeEvent, null, target);
   return getListenersFromTree(
     vNode,
-    customEventName,
-    customEvent,
+    horizonEvtName,
+    horizonEvent,
     isCapture ? EVENT_TYPE_CAPTURE: EVENT_TYPE_BUBBLE,
   );
 }
 
 // 按顺序执行事件队列
-export function processListeners(
-  processingEventsList: ProcessingListenerList
-): void {
+function processListeners(processingEventsList: ProcessingListenerList): void {
   processingEventsList.forEach(eventUnitList => {
     let lastVNode;
     eventUnitList.forEach(eventUnit => {
@@ -148,7 +147,7 @@ function triggerHorizonEvents(
   nativeEvtName: string,
   isCapture: boolean,
   nativeEvent: AnyNativeEvent,
-  vNode: null | VNode,
+  vNode: VNode,
 ): void {
   const nativeEventTarget = getEventTarget(nativeEvent);
   const processingListenerList = getProcessListenersFacade(nativeEvtName, vNode, nativeEvent, nativeEventTarget, isCapture);
@@ -184,13 +183,7 @@ export function handleEventMain(
   // 没有事件在执行，经过调度再执行事件
   isInEventsExecution = true;
   try {
-    return asyncUpdates(() =>
-      triggerHorizonEvents(
-        nativeEvtName,
-        isCapture,
-        nativeEvent,
-        rootVNode,
-      ));
+    return asyncUpdates(() => triggerHorizonEvents(nativeEvtName, isCapture, nativeEvent, rootVNode));
   } finally {
     isInEventsExecution = false;
     if (shouldUpdateValue()) {

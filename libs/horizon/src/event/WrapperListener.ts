@@ -19,7 +19,7 @@ function triggerDelegatedEvent(
   nativeEvtName: string,
   isCapture: boolean,
   targetDom: EventTarget,
-  nativeEvent,
+  nativeEvent, // 事件对象event
 ) {
   // 执行之前的调度事件
   runDiscreteUpdates();
@@ -33,7 +33,7 @@ function triggerDelegatedEvent(
         targetVNode = null;
       }
     } else {
-      // vnode已销毁
+      // vNode已销毁
       targetVNode = null;
     }
   }

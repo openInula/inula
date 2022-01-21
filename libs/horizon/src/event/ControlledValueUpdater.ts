@@ -2,7 +2,7 @@ import {getVNodeProps} from '../dom/DOMInternalKeys';
 import {resetValue} from '../dom/valueHandler';
 import {getDomTag} from '../dom/utils/Common';
 
-let updateList = null;
+let updateList: Array<any> | null = null;
 
 // 受控组件值重新赋值
 function updateValue(target: Element) {
