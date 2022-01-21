@@ -14,6 +14,30 @@ import {launchUpdateFromVNode} from '../TreeBuilder';
 import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
 import {setParentsChildShouldUpdate} from '../vnode/VNodeShouldUpdate';
 
+// 从依赖中找到匹配context的VNode
+function matchDependencies(depContexts, context, vNode): boolean {
+  for (let i = 0; i < depContexts.length; i++) {
+    const contextItem = depContexts[i];
+    if (contextItem === context) {
+      // 匹配到了更新的context，需要创建update。
+      if (vNode.tag === ClassComponent) {
+        pushForceUpdate(vNode);
+      }
+
+      vNode.shouldUpdate = true;
+
+      // 找到需要更新的节点，所以祖先节点都需要改为shouldUpdate为true
+      setParentsChildShouldUpdate(vNode.parent);
+
+      vNode.isDepContextChange = true;
+      // 由于我们已经找到匹配项，我们可以停止遍历依赖项列表。
+      return true;
+    }
+  }
+
+  return false;
+}
+
 // 从当前子节点开始向下遍历，找到消费此context的组件，并更新
 function handleContextChange(processing: VNode, context: ContextType<any>): void {
   const vNode = processing.child;
@@ -24,15 +48,15 @@ function handleContextChange(processing: VNode, context: ContextType<any>): void
   let isMatch = false;
 
   // 从vNode开始遍历
-  travelVNodeTree(vNode, (node) => {
+  travelVNodeTree(vNode, node => {
     const depContexts = node.depContexts;
     if (depContexts.length) {
       isMatch = matchDependencies(depContexts, context, node) ?? isMatch;
     }
-  }, (node) => {
+  }, node =>
     // 如果这是匹配的provider，则不要更深入地扫描
-    return node.tag === ContextProvider && node.type === processing.type;
-  }, processing);
+    node.tag === ContextProvider && node.type === processing.type
+  , processing);
 
   // 找到了依赖context的子节点，触发一次更新
   if (isMatch) {
@@ -80,26 +104,3 @@ export function bubbleRender(processing: VNode) {
   resetContextCtx(processing);
 }
 
-// 从依赖中找到匹配context的VNode
-function matchDependencies(depContexts, context, vNode): boolean {
-  for (let i = 0; i < depContexts.length; i++) {
-    const contextItem = depContexts[i];
-    if (contextItem === context) {
-      // 匹配到了更新的context，需要创建update。
-      if (vNode.tag === ClassComponent) {
-        pushForceUpdate(vNode);
-      }
-
-      vNode.shouldUpdate = true;
-
-      // 找到需要更新的节点，所以祖先节点都需要改为shouldUpdate为true
-      setParentsChildShouldUpdate(vNode.parent);
-
-      vNode.isDepContextChange = true;
-      // 由于我们已经找到匹配项，我们可以停止遍历依赖项列表。
-      return true;
-    }
-  }
-
-  return false;
-}

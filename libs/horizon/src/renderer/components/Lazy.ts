@@ -10,14 +10,14 @@ enum LayStatus {
 }
 
 type LazyContent<T> = {
-  _status: string,
-  _value: () => PromiseType<{default: T}> | PromiseType<T> | T | any
+  _status: string;
+  _value: () => PromiseType<{default: T}> | PromiseType<T> | T | any;
 };
 
 export type LazyComponent<T, P> = {
-  vtype: number,
-  _content: P,
-  _load: (content: P) => T,
+  vtype: number;
+  _content: P;
+  _load: (content: P) => T;
 };
 
 // lazyContent随着阶段改变，_value改变:
