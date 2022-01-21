@@ -23,10 +23,18 @@ export function JSXElement(type, key, ref, vNode, props) {
     // 所属的class组件
     belongClassVNode: vNode,
   };
-};
+}
 
 function isValidKey(key) {
   return key !== 'key' && key !== 'ref' && key !== '__source';
+}
+
+function mergeDefault(sourceObj, defaultObj) {
+  Object.keys(defaultObj).forEach((key) => {
+    if (sourceObj[key] === undefined) {
+      sourceObj[key] = defaultObj[key];
+    }
+  });
 }
 
 function buildElement(isClone, type, setting, ...children) {
@@ -62,14 +70,6 @@ function buildElement(isClone, type, setting, ...children) {
 // 创建Element结构体，供JSX编译时调用
 export function createElement(type, setting, ...children) {
   return buildElement(false, type, setting, ...children);
-}
-
-function mergeDefault(sourceObj, defaultObj) {
-  Object.keys(defaultObj).forEach((key) => {
-    if (sourceObj[key] === undefined) {
-      sourceObj[key] = defaultObj[key];
-    }
-  });
 }
 
 export function cloneElement(element, setting, ...children) {

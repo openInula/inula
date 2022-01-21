@@ -142,6 +142,7 @@ export function findDomVNode(vNode: VNode): VNode | null {
     if (node.tag === DomComponent || node.tag === DomText) {
       return node;
     }
+    return null;
   });
 }
 

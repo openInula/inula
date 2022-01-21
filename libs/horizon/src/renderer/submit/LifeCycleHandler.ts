@@ -70,8 +70,9 @@ function callBeforeSubmitLifeCycles(
     case TreeRoot: {
       const root = vNode.realNode;
       clearContainer(root.outerDom);
-      return;
     }
+    
+    // No Default
   }
 }
 
@@ -136,8 +137,9 @@ function callAfterSubmitLifeCycles(
           vNode.realNode.focus();
         }
       }
-      return;
     }
+
+    // No Default
   }
 }
 

@@ -31,9 +31,9 @@ function useEffect(
   }
 
   if (stage === HookStage.Init) {
-    return useEffectForInit(effectFunc, deps, effectType);
+    useEffectForInit(effectFunc, deps, effectType);
   } else if (stage === HookStage.Update) {
-    return useEffectForUpdate(effectFunc, deps, effectType);
+    useEffectForUpdate(effectFunc, deps, effectType);
   }
 }
 
