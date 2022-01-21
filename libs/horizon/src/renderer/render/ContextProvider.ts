@@ -14,6 +14,32 @@ import {launchUpdateFromVNode} from '../TreeBuilder';
 import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
 import {setParentsChildShouldUpdate} from '../vnode/VNodeShouldUpdate';
 
+// 从当前子节点开始向下遍历，找到消费此context的组件，并更新
+function handleContextChange(processing: VNode, context: ContextType<any>): void {
+  const vNode = processing.child;
+  if (vNode === null) {
+    return;
+  }
+
+  let isMatch = false;
+
+  // 从vNode开始遍历
+  travelVNodeTree(vNode, (node) => {
+    const depContexts = node.depContexts;
+    if (depContexts.length) {
+      isMatch = matchDependencies(depContexts, context, node) ?? isMatch;
+    }
+  }, (node) => {
+    // 如果这是匹配的provider，则不要更深入地扫描
+    return node.tag === ContextProvider && node.type === processing.type;
+  }, processing);
+
+  // 找到了依赖context的子节点，触发一次更新
+  if (isMatch) {
+    launchUpdateFromVNode(processing);
+  }
+}
+
 function captureContextProvider(processing: VNode): VNode | null {
   const providerType: ProviderType<any> = processing.type;
   const contextType: ContextType<any> = providerType._context;
@@ -76,30 +102,4 @@ function matchDependencies(depContexts, context, vNode): boolean {
   }
 
   return false;
-}
-
-// 从当前子节点开始向下遍历，找到消费此context的组件，并更新
-function handleContextChange(processing: VNode, context: ContextType<any>): void {
-  const vNode = processing.child;
-  if (vNode === null) {
-    return;
-  }
-
-  let isMatch = false;
-
-  // 从vNode开始遍历
-  travelVNodeTree(vNode, (node) => {
-    const depContexts = node.depContexts;
-    if (depContexts.length) {
-      isMatch = matchDependencies(depContexts, context, node) ?? isMatch;
-    }
-  }, (node) => {
-    // 如果这是匹配的provider，则不要更深入地扫描
-    return node.tag === ContextProvider && node.type === processing.type;
-  }, processing);
-
-  // 找到了依赖context的子节点，触发一次更新
-  if (isMatch) {
-    launchUpdateFromVNode(processing);
-  }
 }
