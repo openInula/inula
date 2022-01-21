@@ -9,7 +9,15 @@ import { checkLoopingUpdateLimit, submitToRender } from './submit/Submit';
 import { runAsyncEffects } from './submit/HookEffectHandler';
 import { handleRenderThrowError } from './ErrorHandler';
 import componentRenders from './render';
-import ProcessingVNode from './vnode/ProcessingVNode';
+import {
+  BuildCompleted, BuildErrored,
+  BuildFatalErrored,
+  BuildInComplete, getBuildResult,
+  getStartVNode,
+  setBuildResult,
+  setProcessingClassVNode,
+  setStartVNode
+} from './GlobalVar';
 import { findDomParent, getSiblingVNode } from './vnode/VNodeUtils';
 import {
   ByAsync,
@@ -28,37 +36,14 @@ import {
   updateShouldUpdateOfTree
 } from './vnode/VNodeShouldUpdate';
 
-type BuildVNodeResult = 0 | 1 | 2 | 3;
-const BuildInComplete = 0;
-const BuildFatalErrored = 1;
-const BuildErrored = 2;
-const BuildCompleted = 3;
-
 // 当前运行的vNode节点
 let processing: VNode | null = null;
-// 根节点退出build tree时的状态，如: completed, incomplete, errored, fatalErrored.
-let buildVNodeResult: BuildVNodeResult = BuildInComplete;
+
 // 不可恢复错误
 let unrecoverableErrorDuringBuild: any = null;
 
-function setBuildResult(result: BuildVNodeResult) {
-  buildVNodeResult = result;
-}
-
-function getBuildResult(): BuildVNodeResult {
-  return buildVNodeResult;
-}
-
 export function setProcessing(vNode: VNode | null) {
   processing = vNode;
-}
-
-let startVNode: VNode | null = null;
-export function getStartVNode(): VNode | null {
-  return startVNode;
-}
-export function setStartVNode(vNode: VNode | null) {
-  startVNode = vNode;
 }
 
 // 为重新进行深度遍历做准备
@@ -141,7 +126,6 @@ function buildVNodeTree(treeRoot: VNode) {
 
   // 计算出开始节点
   const startUpdateVNode = calcStartUpdateVNode(treeRoot);
-
   // 缓存起来
   setStartVNode(startUpdateVNode);
 
@@ -163,7 +147,7 @@ function buildVNodeTree(treeRoot: VNode) {
     recoverParentsContextCtx(startUpdateVNode);
   }
 
-  // 重置环境变量
+  // 重置环境变量，为重新进行深度遍历做准备
   resetProcessingVariables(startUpdateVNode);
 
   do {
@@ -178,9 +162,10 @@ function buildVNodeTree(treeRoot: VNode) {
         } else {
           processing = next;
         }
-
-        ProcessingVNode.val = null;
       }
+
+      setProcessingClassVNode(null);
+
       break;
     } catch (thrownValue) {
       handleError(treeRoot, thrownValue);

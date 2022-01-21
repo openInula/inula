@@ -1,7 +1,7 @@
 import {throwIfTrue} from '../renderer/utils/throwIfTrue';
-import {TYPE_ELEMENT, TYPE_PORTAL} from '../renderer/utils/elementType';
+import {TYPE_COMMON_ELEMENT, TYPE_PORTAL} from './JSXElementType';
 
-import {isValidElement, HorizonElement} from './HorizonElement';
+import {isValidElement, JSXElement} from './JSXElement';
 
 // 生成key
 function getItemKey(item: any, index: number): string {
@@ -35,7 +35,7 @@ function mapChildrenToArray(
         return;
       }
       const vtype = children.vtype;
-      if (vtype === TYPE_ELEMENT || vtype === TYPE_PORTAL) {
+      if (vtype === TYPE_COMMON_ELEMENT || vtype === TYPE_PORTAL) {
         callMapFun(children, arr, prefix, callback) ;
         return;
       }
@@ -88,11 +88,11 @@ function callMapFun(
         ? '.$' + mappedChild.key
         : '');
       // 返回一个修改key的children
-      mappedChild = HorizonElement(
+      mappedChild = JSXElement(
         mappedChild.type,
         newKey,
         mappedChild.ref,
-        mappedChild._vNode,
+        mappedChild.belongClassVNode,
         mappedChild.props,
       );
     }

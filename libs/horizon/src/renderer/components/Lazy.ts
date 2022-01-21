@@ -1,6 +1,6 @@
 import type {PromiseType} from '../Types';
 
-import {TYPE_LAZY} from '../utils/elementType';
+import {TYPE_LAZY} from '../../external/JSXElementType';
 
 enum LayStatus {
   UnProcessed = 'UnProcessed',

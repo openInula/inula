@@ -1,5 +1,5 @@
 import type {ContextType} from '../../Types';
-import {TYPE_PROVIDER, TYPE_CONTEXT} from '../../utils/elementType';
+import {TYPE_PROVIDER, TYPE_CONTEXT} from '../../../external/JSXElementType';
 
 export function createContext<T>(val: T): ContextType<T> {
   const context: ContextType<T> = {

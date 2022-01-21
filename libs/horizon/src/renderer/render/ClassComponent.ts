@@ -27,8 +27,8 @@ import {
   processUpdates,
 } from '../UpdateHandler';
 import { getContextChangeCtx, setContextChangeCtx } from '../ContextSaver';
-import ProcessingVNode from '../vnode/ProcessingVNode';
-import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
+import { setProcessingClassVNode } from '../GlobalVar';
+import { onlyUpdateChildVNodes } from '../vnode/VNodeCreator';
 
 export function captureRender(processing: VNode): VNode | null {
   const clazz = processing.type;
@@ -158,7 +158,8 @@ function mountInstance(clazz, processing: VNode, nextProps: object) {
 function createChildren(clazz: any, processing: VNode) {
   markRef(processing);
 
-  ProcessingVNode.val = processing;
+  setProcessingClassVNode(processing);
+
   processing.state = processing.realNode.state;
 
   const inst = processing.realNode;

@@ -157,13 +157,19 @@ function hideOrUnhideAllChildren(vNode, isHidden) {
 
 function attachRef(vNode: VNode) {
   const ref = vNode.ref;
+
   if (ref !== null) {
     const instance = vNode.realNode;
 
-    if (typeof ref === 'function') {
+    let refType = typeof ref;
+    if (refType === 'function') {
       ref(instance);
-    } else {
+    } else if (refType === 'object') {
       (<RefType>ref).current = instance;
+    } else {
+      if (vNode.belongClassVNode && vNode.belongClassVNode.realNode) {
+        vNode.belongClassVNode.realNode.refs[String(ref)] = instance;
+      }
     }
   }
 }
@@ -172,14 +178,20 @@ function detachRef(vNode: VNode, isOldRef?: boolean) {
   let ref = (isOldRef ? vNode.oldRef : vNode.ref);
 
   if (ref !== null) {
-    if (typeof ref === 'function') {
+    let refType = typeof ref;
+
+    if (refType === 'function') {
       try {
         ref(null);
       } catch (error) {
         handleSubmitError(vNode, error);
       }
-    } else {
+    } else if (refType === 'object') {
       (<RefType>ref).current = null;
+    } else {
+      if (vNode.belongClassVNode && vNode.belongClassVNode.realNode) {
+        vNode.belongClassVNode.realNode.refs[String(ref)] = null;
+      }
     }
   }
 }
