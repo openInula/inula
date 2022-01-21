@@ -71,7 +71,7 @@ function callBeforeSubmitLifeCycles(
       const root = vNode.realNode;
       clearContainer(root.outerDom);
     }
-    
+
     // No Default
   }
 }
@@ -160,7 +160,7 @@ function hideOrUnhideAllChildren(vNode, isHidden) {
 function attachRef(vNode: VNode) {
   const ref = vNode.ref;
 
-  if (ref !== null) {
+  if (ref !== null && ref !== undefined) {
     const instance = vNode.realNode;
 
     let refType = typeof ref;
@@ -179,7 +179,7 @@ function attachRef(vNode: VNode) {
 function detachRef(vNode: VNode, isOldRef?: boolean) {
   let ref = (isOldRef ? vNode.oldRef : vNode.ref);
 
-  if (ref !== null) {
+  if (ref !== null && ref !== undefined) {
     let refType = typeof ref;
 
     if (refType === 'function') {
