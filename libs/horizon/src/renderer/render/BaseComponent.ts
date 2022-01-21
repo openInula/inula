@@ -15,29 +15,6 @@ import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
 import componentRenders from './index';
 
-export function captureVNode(processing: VNode): VNode | null {
-  const component = componentRenders[processing.tag];
-
-  if (processing.tag !== SuspenseComponent) {
-    // 该vNode没有变化，不用进入capture，直接复用。
-    if (
-      !processing.isCreated &&
-      processing.oldProps === processing.props &&
-      !getContextChangeCtx() &&
-      !processing.shouldUpdate
-    ) {
-      // 复用还需对stack进行处理
-      handlerContext(processing);
-
-      return onlyUpdateChildVNodes(processing);
-    }
-  }
-
-  const shouldUpdate = processing.shouldUpdate;
-  processing.shouldUpdate = false;
-  return component.captureRender(processing, shouldUpdate);
-}
-
 // 复用vNode时，也需对stack进行处理
 function handlerContext(processing: VNode) {
   switch (processing.tag) {
@@ -60,7 +37,31 @@ function handlerContext(processing: VNode) {
       setContextCtx(processing, newValue);
       break;
     }
+    // No Default
   }
+}
+
+export function captureVNode(processing: VNode): VNode | null {
+  const component = componentRenders[processing.tag];
+
+  if (processing.tag !== SuspenseComponent) {
+    // 该vNode没有变化，不用进入capture，直接复用。
+    if (
+      !processing.isCreated &&
+      processing.oldProps === processing.props &&
+      !getContextChangeCtx() &&
+      !processing.shouldUpdate
+    ) {
+      // 复用还需对stack进行处理
+      handlerContext(processing);
+
+      return onlyUpdateChildVNodes(processing);
+    }
+  }
+
+  const shouldUpdate = processing.shouldUpdate;
+  processing.shouldUpdate = false;
+  return component.captureRender(processing, shouldUpdate);
 }
 
 // 创建孩子节点
