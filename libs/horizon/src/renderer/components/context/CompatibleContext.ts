@@ -51,7 +51,7 @@ export function getOldContext(processing: VNode, clazz: Function, ifProvider: bo
 
   // 当组件既是提供者，也是消费者时，取上一个context，不能直接取最新context，因为已经被更新为当前组件的context；
   // 当组件只是消费者时，则取最新context
-  const parentContext = ((ifProvider && isOldProvider(clazz))) ?
+  const parentContext = (ifProvider && isOldProvider(clazz)) ?
     getOldPreviousContextCtx() :
     getOldContextCtx();
 

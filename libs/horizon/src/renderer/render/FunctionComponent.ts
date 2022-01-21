@@ -13,23 +13,40 @@ import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
 // 在useState, useReducer的时候，会触发state变化
 let stateChange = false;
 
-export function captureRender(processing: VNode, shouldUpdate?: boolean): VNode | null {
-  const Component = processing.type;
-  const unresolvedProps = processing.props;
-  const resolvedProps =
-    processing.isLazyComponent
-      ? mergeDefaultProps(Component, unresolvedProps)
-      : unresolvedProps;
+export function bubbleRender() {}
 
-  return captureFunctionComponent(
-    processing,
-    Component,
-    resolvedProps,
-    shouldUpdate
-  );
+// 判断children是否可以复用
+function checkIfCanReuseChildren(processing: VNode, shouldUpdate?: boolean) {
+  let isCanReuse = true;
+
+  if (!processing.isCreated) {
+    const oldProps = processing.oldProps;
+    const newProps = processing.props;
+
+    // 如果props或者context改变了
+    if (oldProps !== newProps || getContextChangeCtx() || processing.isDepContextChange) {
+      isCanReuse = false;
+    } else {
+      if (shouldUpdate && processing.suspenseChildThrow) {
+        // 使用完后恢复
+        processing.suspenseChildThrow = false;
+        isCanReuse = false;
+      }
+    }
+  } else {
+    isCanReuse = false;
+  }
+
+  return isCanReuse;
 }
 
-export function bubbleRender() {}
+export function setStateChange(isUpdate) {
+  stateChange = isUpdate;
+}
+
+export function isStateChange() {
+  return stateChange;
+}
 
 export function captureFunctionComponent(
   processing: VNode,
@@ -66,35 +83,19 @@ export function captureFunctionComponent(
   return processing.child;
 }
 
-// 判断children是否可以复用
-function checkIfCanReuseChildren(processing: VNode, shouldUpdate?: boolean) {
-  let isCanReuse = true;
+export function captureRender(processing: VNode, shouldUpdate?: boolean): VNode | null {
+  const Component = processing.type;
+  const unresolvedProps = processing.props;
+  const resolvedProps =
+    processing.isLazyComponent
+      ? mergeDefaultProps(Component, unresolvedProps)
+      : unresolvedProps;
 
-  if (!processing.isCreated) {
-    const oldProps = processing.oldProps;
-    const newProps = processing.props;
-
-    // 如果props或者context改变了
-    if (oldProps !== newProps || getContextChangeCtx() || processing.isDepContextChange) {
-      isCanReuse = false;
-    } else {
-      if (shouldUpdate && processing.suspenseChildThrow) {
-        // 使用完后恢复
-        processing.suspenseChildThrow = false;
-        isCanReuse = false;
-      }
-    }
-  } else {
-    isCanReuse = false;
-  }
-
-  return isCanReuse;
+  return captureFunctionComponent(
+    processing,
+    Component,
+    resolvedProps,
+    shouldUpdate
+  );
 }
 
-export function setStateChange(isUpdate) {
-  stateChange = isUpdate;
-}
-
-export function isStateChange() {
-  return stateChange;
-}
