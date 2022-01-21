@@ -24,9 +24,9 @@ import {
   TYPE_MEMO, TYPE_PROFILER,
   TYPE_PROVIDER, TYPE_STRICT_MODE,
   TYPE_SUSPENSE,
-} from '../utils/elementType';
+} from '../../external/JSXElementType';
 import { VNode } from './VNode';
-import {HorizonElement} from '../Types';
+import {JSXElement} from '../Types';
 
 const typeLazyMap = {
   [TYPE_FORWARD_REF]: ForwardRef,
@@ -156,7 +156,7 @@ export function updateVNodePath(vNode: VNode) {
   vNode.path = [...vNode.parent.path, vNode.cIndex];
 }
 
-export function createVNodeFromElement(element: HorizonElement): VNode {
+export function createVNodeFromElement(element: JSXElement): VNode {
   const type = element.type;
   const key = element.key;
   const props = element.props;

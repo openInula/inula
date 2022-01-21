@@ -2,28 +2,27 @@ export { VNode } from './vnode/VNode';
 
 type Trigger<A> = (A) => void;
 
-export type ReadContextHookType = { readContext<T>(context: ContextType<T>): T };
 export type UseStateHookType = {
   useState<S>(
     initialState: (() => S) | S
-  ): [S, Trigger<((S) => S) | S>]
+  ): [S, Trigger<((S) => S) | S>];
 };
 export type UseReducerHookType = {
   useReducer<S, P, A>(
     reducer: (S, A) => S,
     initArg: P, init?: (P) => S,
-  ): [S, Trigger<A>]
+  ): [S, Trigger<A>];
 };
 export type UseContextHookType = { useContext<T>(context: ContextType<T>,): T };
 
-export type HorizonElement = {
-  vtype: any,
-  type: any,
-  key: any,
-  ref: any,
-  props: any,
-
-  _vNode: any,
+export type JSXElement = {
+  vtype: any;
+  type: any;
+  key: any;
+  ref: any;
+  props: any;
+  
+  belongClassVNode: any;
 };
 
 export type ProviderType<T> = {

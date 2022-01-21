@@ -1,7 +1,7 @@
 import {throwIfTrue} from '../renderer/utils/throwIfTrue';
-import {TYPE_ELEMENT, TYPE_PORTAL} from '../renderer/utils/elementType';
+import {TYPE_COMMON_ELEMENT, TYPE_PORTAL} from './JSXElementType';
 
-import {isValidElement, HorizonElement} from './HorizonElement';
+import {isValidElement, JSXElement} from './JSXElement';
 
 // 生成key
 function getItemKey(item: any, index: number): string {
@@ -10,45 +10,6 @@ function getItemKey(item: any, index: number): string {
   }
   // 使用36进制减少生成字符串的长度以节省空间
   return '.' + index.toString(36);
-}
-
-function mapChildrenToArray(
-  children: any,
-  arr: Array<any>,
-  prefix: string,
-  callback?: Function,
-): number | void {
-  const type = typeof children;
-  switch (type) {
-    // 继承原有规格，undefined和boolean类型按照null处理
-    case 'undefined':
-    case 'boolean':
-      callMapFun(null, arr, prefix, callback);
-      return;
-    case 'number':
-    case 'string':
-      callMapFun(children, arr, prefix, callback);
-      return;
-    case 'object':
-      if (children === null) {
-        callMapFun(null, arr, prefix, callback);
-        return;
-      }
-      const vtype = children.vtype;
-      if (vtype === TYPE_ELEMENT || vtype === TYPE_PORTAL) {
-        callMapFun(children, arr, prefix, callback) ;
-        return;
-      }
-      if (Array.isArray(children)) {
-        processArrayChildren(children, arr, prefix, callback);
-        return;
-      }
-      throw new Error(
-        'Object is invalid as a Horizon child. '
-      );
-    default:
-      return;
-  }
 }
 
 function processArrayChildren(
@@ -88,15 +49,53 @@ function callMapFun(
         ? '.$' + mappedChild.key
         : '');
       // 返回一个修改key的children
-      mappedChild = HorizonElement(
+      mappedChild = JSXElement(
         mappedChild.type,
         newKey,
         mappedChild.ref,
-        mappedChild._vNode,
+        mappedChild.belongClassVNode,
         mappedChild.props,
       );
     }
     arr.push(mappedChild);
+  }
+}
+
+function mapChildrenToArray(
+  children: any,
+  arr: Array<any>,
+  prefix: string,
+  callback?: Function,
+): number | void {
+  const type = typeof children;
+  switch (type) {
+    // 继承原有规格，undefined和boolean类型按照null处理
+    case 'undefined':
+    case 'boolean':
+      callMapFun(null, arr, prefix, callback);
+      return;
+    case 'number':
+    case 'string':
+      callMapFun(children, arr, prefix, callback);
+      return;
+    case 'object':
+      if (children === null) {
+        callMapFun(null, arr, prefix, callback);
+        return;
+      }
+      const vtype = children.vtype;
+      if (vtype === TYPE_COMMON_ELEMENT || vtype === TYPE_PORTAL) {
+        callMapFun(children, arr, prefix, callback) ;
+        return;
+      }
+      if (Array.isArray(children)) {
+        processArrayChildren(children, arr, prefix, callback);
+        return;
+      }
+      throw new Error(
+        'Object is invalid as a Horizon child. '
+      );
+    // No Default
   }
 }
 
@@ -111,9 +110,7 @@ function mapChildren(
   }
   let count = 0;
   const result = [];
-  mapChildrenToArray(children, result, '', (child) => {
-    return func.call(context, child, count++);
-  });
+  mapChildrenToArray(children, result, '', child => func.call(context, child, count++));
   return result;
 }
 

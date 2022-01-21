@@ -4,10 +4,6 @@ import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 import { createVNodeChildren } from './BaseComponent';
 import { prePortal } from '../../dom/DOMOperator';
 
-export function captureRender(processing: VNode): VNode | null {
-  return capturePortalComponent(processing);
-}
-
 export function bubbleRender(processing: VNode) {
   resetNamespaceCtx(processing);
 
@@ -26,4 +22,8 @@ function capturePortalComponent(processing: VNode) {
     processing.child = createVNodeChildren(processing, newElements);
   }
   return processing.child;
+}
+
+export function captureRender(processing: VNode): VNode | null {
+  return capturePortalComponent(processing);
 }

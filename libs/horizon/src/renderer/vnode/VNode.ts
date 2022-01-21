@@ -26,7 +26,7 @@ export class VNode {
   suspensePromises: any = null; // suspense组件的promise列表
   changeList: any = null; // DOM的变更列表
   effectList: any[] = []; // useEffect 的更新数组
-  updates: any[] = null; // TreeRoot和ClassComponent使用的更新数组
+  updates: any[] | null = null; // TreeRoot和ClassComponent使用的更新数组
   stateCallbacks: any[] = []; // 存放存在setState的第二个参数和HorizonDOM.render的第三个参数所在的node数组
   isForceUpdate: boolean = false; // 是否使用强制更新
 
@@ -75,6 +75,8 @@ export class VNode {
 
   path: Array<number> = []; // 保存从根到本节点的路径
   toUpdateNodes: Set<VNode> | null = null; // 保存要更新的节点
+
+  belongClassVNode: VNode | null = null; // 记录JSXElement所属class vNode，处理ref的时候使用
 
   constructor(tag: VNodeTag, props: any, key: null | string, outerDom) {
     this.tag = tag; // 对应组件的类型，比如ClassComponent等

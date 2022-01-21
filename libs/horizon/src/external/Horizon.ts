@@ -3,7 +3,7 @@ import {
   TYPE_PROFILER,
   TYPE_STRICT_MODE,
   TYPE_SUSPENSE,
-} from '../renderer/utils/elementType';
+} from './JSXElementType';
 
 import {Component, PureComponent} from '../renderer/components/BaseClassComponent';
 import {createRef} from '../renderer/components/CreateRef';
@@ -12,7 +12,7 @@ import {
   createElement,
   cloneElement,
   isValidElement,
-} from './HorizonElement';
+} from './JSXElement';
 import {createContext} from '../renderer/components/context/CreateContext';
 import {lazy} from '../renderer/components/Lazy';
 import {forwardRef} from '../renderer/components/ForwardRef';

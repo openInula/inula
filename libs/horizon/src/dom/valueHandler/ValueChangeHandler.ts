@@ -34,12 +34,12 @@ export function watchValueChange(dom) {
     // currentVal存储最新值，并重写value的setter、getter
     let currentVal = String(dom[keyForValue]);
 
-    const setFunc = descriptor.set;
+    const setFunc = descriptor?.set;
     Object.defineProperty(dom, keyForValue, {
       ...descriptor,
-      set: function (value) {
+      set: function(value) {
         currentVal = String(value);
-        setFunc.apply(this, [value]);
+        setFunc?.apply(this, [value]);
       },
     });
 

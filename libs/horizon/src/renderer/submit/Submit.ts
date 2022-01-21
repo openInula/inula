@@ -11,7 +11,7 @@ import {
   callBeforeSubmitLifeCycles, submitDeletion, submitAddition,
   submitResetTextContent, submitUpdate, detachRef,
 } from './LifeCycleHandler';
-import {tryRenderRoot, setProcessing, getStartVNode} from '../TreeBuilder';
+import {tryRenderRoot, setProcessing} from '../TreeBuilder';
 import {
   BySync,
   InRender,
@@ -24,6 +24,7 @@ import {
   isSchedulingEffects,
   setSchedulingEffects, setHookEffectRoot,
 } from './HookEffectHandler';
+import {getStartVNode} from '../GlobalVar';
 
 let rootThrowError = null;
 

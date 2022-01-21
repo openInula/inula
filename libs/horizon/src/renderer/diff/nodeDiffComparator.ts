@@ -1,11 +1,10 @@
 import type { VNode } from '../Types';
 import { FlagUtils } from '../vnode/VNodeFlags';
-import { TYPE_ELEMENT, TYPE_FRAGMENT, TYPE_PORTAL } from '../utils/elementType';
+import { TYPE_COMMON_ELEMENT, TYPE_FRAGMENT, TYPE_PORTAL } from '../../external/JSXElementType';
 import { DomText, DomPortal, Fragment } from '../vnode/VNodeTags';
 import {updateVNode, createVNode, createVNodeFromElement, updateVNodePath} from '../vnode/VNodeCreator';
 import {
   isSameType,
-  createRef,
   getIteratorFn,
   isTextType,
   isArrayType,
@@ -60,7 +59,7 @@ function checkCanReuseNode(oldNode: VNode | null, newChild: any): boolean {
     if (isArrayType(newChild) || isIteratorType(newChild)) {
       return oldKey === null;
     }
-    if (newChild.vtype === TYPE_ELEMENT || newChild.vtype === TYPE_PORTAL) {
+    if (newChild.vtype === TYPE_COMMON_ELEMENT || newChild.vtype === TYPE_PORTAL) {
       return oldKey === newChild.key;
     }
   }
@@ -79,7 +78,7 @@ function getNodeType(newChild: any): string {
     if (isArrayType(newChild) || isIteratorType(newChild)) {
       return DiffCategory.ARR_NODE;
     }
-    if (newChild.vtype === TYPE_ELEMENT || newChild.vtype === TYPE_PORTAL) {
+    if (newChild.vtype === TYPE_COMMON_ELEMENT || newChild.vtype === TYPE_PORTAL) {
       return DiffCategory.OBJECT_NODE;
     }
   }
@@ -129,7 +128,7 @@ function getNewNode(parentNode: VNode, newChild: any, oldNode: VNode | null) {
       break;
     }
     case DiffCategory.OBJECT_NODE: {
-      if (newChild.vtype === TYPE_ELEMENT) {
+      if (newChild.vtype === TYPE_COMMON_ELEMENT) {
         if (newChild.type === TYPE_FRAGMENT) {
           if (oldNode === null || oldNode.tag !== Fragment) {
             const key = oldNode !== null ? oldNode.key : newChild.key;
@@ -142,10 +141,12 @@ function getNewNode(parentNode: VNode, newChild: any, oldNode: VNode | null) {
 
         if (oldNode === null || !isSameType(oldNode, newChild)) {
           resultNode = createVNodeFromElement(newChild);
-          resultNode.ref = createRef(newChild);
+          resultNode.ref = newChild.ref;
+          resultNode.belongClassVNode = newChild.belongClassVNode;
         } else {
           resultNode = updateVNode(oldNode, newChild.props);
-          resultNode.ref = createRef(newChild);
+          resultNode.ref = newChild.ref;
+          resultNode.belongClassVNode = newChild.belongClassVNode;
         }
         break;
       } else if (newChild.vtype === TYPE_PORTAL) {
@@ -200,7 +201,7 @@ function getOldNodeFromMap(nodeMap: Map<string | number, VNode>, newIdx: number,
     if (isArrayType(newChild) || isIteratorType(newChild)) {
       return nodeMap.get(newIdx) || null;
     }
-    if (newChild.vtype === TYPE_ELEMENT || newChild.vtype === TYPE_PORTAL) {
+    if (newChild.vtype === TYPE_COMMON_ELEMENT || newChild.vtype === TYPE_PORTAL) {
       return nodeMap.get(newChild.key === null ? newIdx : newChild.key) || null;
     }
   }
@@ -354,9 +355,9 @@ function diffArrayNodes(
   // 把剩下的currentVNode转成Map
   const leftChildrenMap = transLeftChildrenToMap(oldNode, rightEndOldNode);
   // 通过贪心算法+二分法获取最长递增子序列
-  const eIndexes = []; // 记录 eIndex 值
-  const result = []; // 记录最长子序列在eIndexes中的 index 值
-  const preIndex = []; // 贪心算法在替换的过程中会使得数组不正确，通过记录preIndex找到正确值
+  const eIndexes: Array<number> = []; // 记录 eIndex 值
+  const result: Array<number> = []; // 记录最长子序列在eIndexes中的 index 值
+  const preIndex: Array<number> = []; // 贪心算法在替换的过程中会使得数组不正确，通过记录preIndex找到正确值
   const reuseNodes = []; // 记录复用的 VNode
   let i = 0;
   for (; leftIdx < rightIdx; leftIdx++) {
@@ -367,6 +368,7 @@ function diffArrayNodes(
         // 从Map删除，后面不会deleteVNode
         leftChildrenMap.delete(newNode.key || leftIdx);
       }
+
       if (oldNodeFromMap !== null) {
         let eIndex = newNode.eIndex;
         eIndexes.push(eIndex);
@@ -380,7 +382,7 @@ function diffArrayNodes(
           let middle;
           // 二分法找到需要替换的值
           while (start < end) {
-            middle = Math.floor((start + end) / 2)
+            middle = Math.floor((start + end) / 2);
             if (eIndexes[result[middle]] > eIndex) {
               end = middle;
             } else {
@@ -403,6 +405,7 @@ function diffArrayNodes(
       appendNode(newNode);
     }
   }
+
   if (isComparing) {
     // 向前回溯找到正确的结果
     let length = result.length;
@@ -411,9 +414,9 @@ function diffArrayNodes(
       result[length] = prev;
       prev = preIndex[result[length]];
     }
-    result.forEach(i => {
+    result.forEach(idx => {
       // 把需要复用的节点从 restNodes 中清理掉，因为不需要打 add 标记，直接复用 dom 节点
-      reuseNodes[i] = null;
+      reuseNodes[idx] = null;
     });
     reuseNodes.forEach(node => {
       if (node !== null) {
@@ -490,7 +493,7 @@ function diffStringNodeHandler(
   firstChildVNode: VNode,
   isComparing: boolean
 ) {
-  let newTextNode = null;
+  let newTextNode: VNode | null = null;
 
   // 第一个vNode是Text，则复用
   if (firstChildVNode !== null && firstChildVNode.tag === DomText) {
@@ -520,7 +523,7 @@ function diffObjectNodeHandler(
   firstChildVNode: VNode,
   isComparing: boolean
 ) {
-  let canReuseNode = null;
+  let canReuseNode: VNode | null = null;
 
   // 通过key比对是否有可以reuse
   const newKey = newChild.key;
@@ -535,9 +538,9 @@ function diffObjectNodeHandler(
     }
   }
 
-  let resultNode = null;
+  let resultNode: VNode | null = null;
   let startDelVNode = firstChildVNode;
-  if (newChild.vtype === TYPE_ELEMENT) {
+  if (newChild.vtype === TYPE_COMMON_ELEMENT) {
     if (canReuseNode) {
       // 可以复用
       if (canReuseNode.tag === Fragment && newChild.type === TYPE_FRAGMENT) {
@@ -546,7 +549,8 @@ function diffObjectNodeHandler(
         resultNode.next = null;
       } else if (isSameType(canReuseNode, newChild)) {
         resultNode = updateVNode(canReuseNode, newChild.props);
-        resultNode.ref = createRef(newChild);
+        resultNode.ref = newChild.ref;
+        resultNode.belongClassVNode = newChild.belongClassVNode;
         startDelVNode = getSiblingVNode(resultNode);
         resultNode.next = null;
       }
@@ -558,7 +562,8 @@ function diffObjectNodeHandler(
         resultNode = createVNode(Fragment, newChild.key, newChild.props.children);
       } else {
         resultNode = createVNodeFromElement(newChild);
-        resultNode.ref = createRef(newChild);
+        resultNode.ref = newChild.ref;
+        resultNode.belongClassVNode = newChild.belongClassVNode;
       }
     }
   } else if (newChild.vtype === TYPE_PORTAL) {

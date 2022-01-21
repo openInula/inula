@@ -70,8 +70,9 @@ function callBeforeSubmitLifeCycles(
     case TreeRoot: {
       const root = vNode.realNode;
       clearContainer(root.outerDom);
-      return;
     }
+    
+    // No Default
   }
 }
 
@@ -136,8 +137,9 @@ function callAfterSubmitLifeCycles(
           vNode.realNode.focus();
         }
       }
-      return;
     }
+
+    // No Default
   }
 }
 
@@ -157,13 +159,19 @@ function hideOrUnhideAllChildren(vNode, isHidden) {
 
 function attachRef(vNode: VNode) {
   const ref = vNode.ref;
+
   if (ref !== null) {
     const instance = vNode.realNode;
 
-    if (typeof ref === 'function') {
+    let refType = typeof ref;
+    if (refType === 'function') {
       ref(instance);
-    } else {
+    } else if (refType === 'object') {
       (<RefType>ref).current = instance;
+    } else {
+      if (vNode.belongClassVNode && vNode.belongClassVNode.realNode) {
+        vNode.belongClassVNode.realNode.refs[String(ref)] = instance;
+      }
     }
   }
 }
@@ -172,25 +180,26 @@ function detachRef(vNode: VNode, isOldRef?: boolean) {
   let ref = (isOldRef ? vNode.oldRef : vNode.ref);
 
   if (ref !== null) {
-    if (typeof ref === 'function') {
+    let refType = typeof ref;
+
+    if (refType === 'function') {
       try {
         ref(null);
       } catch (error) {
         handleSubmitError(vNode, error);
       }
-    } else {
+    } else if (refType === 'object') {
       (<RefType>ref).current = null;
+    } else {
+      if (vNode.belongClassVNode && vNode.belongClassVNode.realNode) {
+        vNode.belongClassVNode.realNode.refs[String(ref)] = null;
+      }
     }
   }
 }
 
 // 卸载一个vNode，不会递归
 function unmountVNode(vNode: VNode): void {
-  // TODO 暂时用于规避error处理逻辑，后续删除
-  if (vNode.flags.Addition) {
-    return;
-  }
-
   switch (vNode.tag) {
     case FunctionComponent:
     case ForwardRef:
