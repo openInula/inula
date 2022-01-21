@@ -5,7 +5,7 @@ export const InRender = 'IN_RENDER';
 
 type RenderMode = typeof ByAsync | typeof BySync | typeof InRender;
 
-// 当前执行阶段标记
+// 当前执行模式标记
 let executeMode = {
   [ByAsync]: false,
   [BySync]: false,

@@ -7,7 +7,7 @@ import {
   TYPE_FRAGMENT,
   TYPE_PROFILER,
   TYPE_STRICT_MODE,
-} from '../utils/elementType';
+} from '../../external/JSXElementType';
 import {Fragment} from '../vnode/VNodeTags';
 
 export function captureRender(processing: VNode, shouldUpdate: boolean): VNode | null {

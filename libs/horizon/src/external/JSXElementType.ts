@@ -1,4 +1,4 @@
-export const TYPE_ELEMENT = 1;
+export const TYPE_COMMON_ELEMENT = 1;
 export const TYPE_PORTAL = 2;
 export const TYPE_FRAGMENT = 3;
 export const TYPE_STRICT_MODE = 4;

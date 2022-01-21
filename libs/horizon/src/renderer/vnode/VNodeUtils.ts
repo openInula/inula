@@ -13,7 +13,7 @@ export function getSiblingVNode(node) {
 }
 
 export function travelChildren(beginVNode: VNode, handleVNode: Function, isFinish?: Function) {
-  let node = beginVNode;
+  let node: VNode | null = beginVNode;
 
   while (node !== null) {
     if (isFinish && isFinish(node)) {
@@ -77,10 +77,6 @@ export function travelVNodeTree(
 
 // 置空vNode
 export function clearVNode(vNode: VNode) {
-  clearOneVNode(vNode);
-}
-
-function clearOneVNode(vNode: VNode) {
   vNode.child = null;
   vNode.next = null;
   vNode.depContexts = [];
@@ -105,6 +101,8 @@ function clearOneVNode(vNode: VNode) {
 
   vNode.path = [];
   vNode.toUpdateNodes = null;
+
+  vNode.belongClassVNode = null;
 }
 
 // 是dom类型的vNode
@@ -225,7 +223,7 @@ function isSameContainer(
   }
   // 注释类型的节点
   if (isComment(container) && container.parentNode === targetContainer) {
-    return true
+    return true;
   }
   return false;
 }

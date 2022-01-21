@@ -1,11 +1,10 @@
 import type { VNode } from '../Types';
 import { FlagUtils } from '../vnode/VNodeFlags';
-import { TYPE_ELEMENT, TYPE_FRAGMENT, TYPE_PORTAL } from '../utils/elementType';
+import { TYPE_COMMON_ELEMENT, TYPE_FRAGMENT, TYPE_PORTAL } from '../../external/JSXElementType';
 import { DomText, DomPortal, Fragment } from '../vnode/VNodeTags';
 import {updateVNode, createVNode, createVNodeFromElement, updateVNodePath} from '../vnode/VNodeCreator';
 import {
   isSameType,
-  createRef,
   getIteratorFn,
   isTextType,
   isArrayType,
@@ -60,7 +59,7 @@ function checkCanReuseNode(oldNode: VNode | null, newChild: any): boolean {
     if (isArrayType(newChild) || isIteratorType(newChild)) {
       return oldKey === null;
     }
-    if (newChild.vtype === TYPE_ELEMENT || newChild.vtype === TYPE_PORTAL) {
+    if (newChild.vtype === TYPE_COMMON_ELEMENT || newChild.vtype === TYPE_PORTAL) {
       return oldKey === newChild.key;
     }
   }
@@ -79,7 +78,7 @@ function getNodeType(newChild: any): string {
     if (isArrayType(newChild) || isIteratorType(newChild)) {
       return DiffCategory.ARR_NODE;
     }
-    if (newChild.vtype === TYPE_ELEMENT || newChild.vtype === TYPE_PORTAL) {
+    if (newChild.vtype === TYPE_COMMON_ELEMENT || newChild.vtype === TYPE_PORTAL) {
       return DiffCategory.OBJECT_NODE;
     }
   }
@@ -129,7 +128,7 @@ function getNewNode(parentNode: VNode, newChild: any, oldNode: VNode | null) {
       break;
     }
     case DiffCategory.OBJECT_NODE: {
-      if (newChild.vtype === TYPE_ELEMENT) {
+      if (newChild.vtype === TYPE_COMMON_ELEMENT) {
         if (newChild.type === TYPE_FRAGMENT) {
           if (oldNode === null || oldNode.tag !== Fragment) {
             const key = oldNode !== null ? oldNode.key : newChild.key;
@@ -142,10 +141,12 @@ function getNewNode(parentNode: VNode, newChild: any, oldNode: VNode | null) {
 
         if (oldNode === null || !isSameType(oldNode, newChild)) {
           resultNode = createVNodeFromElement(newChild);
-          resultNode.ref = createRef(newChild);
+          resultNode.ref = newChild.ref;
+          resultNode.belongClassVNode = newChild.belongClassVNode;
         } else {
           resultNode = updateVNode(oldNode, newChild.props);
-          resultNode.ref = createRef(newChild);
+          resultNode.ref = newChild.ref;
+          resultNode.belongClassVNode = newChild.belongClassVNode;
         }
         break;
       } else if (newChild.vtype === TYPE_PORTAL) {
@@ -200,7 +201,7 @@ function getOldNodeFromMap(nodeMap: Map<string | number, VNode>, newIdx: number,
     if (isArrayType(newChild) || isIteratorType(newChild)) {
       return nodeMap.get(newIdx) || null;
     }
-    if (newChild.vtype === TYPE_ELEMENT || newChild.vtype === TYPE_PORTAL) {
+    if (newChild.vtype === TYPE_COMMON_ELEMENT || newChild.vtype === TYPE_PORTAL) {
       return nodeMap.get(newChild.key === null ? newIdx : newChild.key) || null;
     }
   }
@@ -539,7 +540,7 @@ function diffObjectNodeHandler(
 
   let resultNode: VNode | null = null;
   let startDelVNode = firstChildVNode;
-  if (newChild.vtype === TYPE_ELEMENT) {
+  if (newChild.vtype === TYPE_COMMON_ELEMENT) {
     if (canReuseNode) {
       // 可以复用
       if (canReuseNode.tag === Fragment && newChild.type === TYPE_FRAGMENT) {
@@ -548,7 +549,8 @@ function diffObjectNodeHandler(
         resultNode.next = null;
       } else if (isSameType(canReuseNode, newChild)) {
         resultNode = updateVNode(canReuseNode, newChild.props);
-        resultNode.ref = createRef(newChild);
+        resultNode.ref = newChild.ref;
+        resultNode.belongClassVNode = newChild.belongClassVNode;
         startDelVNode = getSiblingVNode(resultNode);
         resultNode.next = null;
       }
@@ -560,7 +562,8 @@ function diffObjectNodeHandler(
         resultNode = createVNode(Fragment, newChild.key, newChild.props.children);
       } else {
         resultNode = createVNodeFromElement(newChild);
-        resultNode.ref = createRef(newChild);
+        resultNode.ref = newChild.ref;
+        resultNode.belongClassVNode = newChild.belongClassVNode;
       }
     }
   } else if (newChild.vtype === TYPE_PORTAL) {

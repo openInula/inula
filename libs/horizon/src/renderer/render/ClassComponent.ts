@@ -27,7 +27,7 @@ import {
   processUpdates,
 } from '../UpdateHandler';
 import { getContextChangeCtx, setContextChangeCtx } from '../ContextSaver';
-import ProcessingVNode from '../vnode/ProcessingVNode';
+import { setProcessingClassVNode } from '../GlobalVar';
 import { onlyUpdateChildVNodes } from '../vnode/VNodeCreator';
 
 // 获取当前节点的context
@@ -69,7 +69,7 @@ function mountInstance(clazz, processing: VNode, nextProps: object) {
 function createChildren(clazz: any, processing: VNode) {
   markRef(processing);
 
-  ProcessingVNode.val = processing;
+  setProcessingClassVNode(processing);
   processing.state = processing.realNode.state;
 
   const inst = processing.realNode;
