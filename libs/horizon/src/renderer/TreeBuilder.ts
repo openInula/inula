@@ -54,6 +54,16 @@ function resetProcessingVariables(startUpdateVNode: VNode) {
   unrecoverableErrorDuringBuild = null;
 }
 
+// 收集有变化的节点，在submit阶段继续处理
+function collectDirtyNodes(vNode: VNode, parent: VNode): void {
+  // 将子树和此vNode的所有效果附加到父树的效果列表中，子项的完成顺序会影响副作用顺序。
+  parent.dirtyNodes.push(...vNode.dirtyNodes);
+
+  if (FlagUtils.hasAnyFlag(vNode)) {
+    parent.dirtyNodes.push(vNode);
+  }
+}
+
 // ============================== 向上递归 ==============================
 
 // 尝试完成当前工作单元，然后移动到下一个兄弟工作单元。如果没有更多的同级，请返回父vNode。
@@ -117,6 +127,51 @@ function handleError(root, error): void {
   handleRenderThrowError(processing, error);
 
   bubbleVNode(processing);
+}
+
+// 从多个更新节点中，计算出开始节点。即：找到最近的共同的父辈节点
+export function calcStartUpdateVNode(treeRoot: VNode) {
+  const toUpdateNodes = Array.from(treeRoot.toUpdateNodes);
+
+  if (toUpdateNodes.length === 0) {
+    return treeRoot;
+  }
+
+  if (toUpdateNodes.length === 1) {
+    return toUpdateNodes[0];
+  }
+
+  // 要计算的节点过多，直接返回根节点
+  if (toUpdateNodes.length > 100) {
+    return treeRoot;
+  }
+
+  // 找到路径最短的长度
+  let minPath = toUpdateNodes[0].path.length;
+  for (let i = 1; i < toUpdateNodes.length; i++) {
+    let pathLen = toUpdateNodes[i].path.length;
+    if (pathLen < minPath) {
+      minPath = pathLen;
+    }
+  }
+
+  // 找出开始不相等的idx
+  let idx = 0;
+  for (; idx < minPath; idx++) {
+    if (!isEqualByIndex(idx, toUpdateNodes)) {
+      break;
+    }
+  }
+  // 得到相等的路径
+  let startNodePath = toUpdateNodes[0].path.slice(0, idx);
+
+  let node = treeRoot;
+  for (let i = 1; i < startNodePath.length; i++) {
+    let pathIndex = startNodePath[i];
+    node = getChildByIndex(node, pathIndex);
+  }
+
+  return node;
 }
 
 // ============================== 深度遍历 ==============================
@@ -258,64 +313,9 @@ function getChildByIndex(vNode: VNode, idx: number) {
   return node;
 }
 
-// 从多个更新节点中，计算出开始节点。即：找到最近的共同的父辈节点
-export function calcStartUpdateVNode(treeRoot: VNode) {
-  const toUpdateNodes = Array.from(treeRoot.toUpdateNodes);
-
-  if (toUpdateNodes.length === 0) {
-    return treeRoot;
-  }
-
-  if (toUpdateNodes.length === 1) {
-    return toUpdateNodes[0];
-  }
-
-  // 要计算的节点过多，直接返回根节点
-  if (toUpdateNodes.length > 100) {
-    return treeRoot;
-  }
-
-  // 找到路径最短的长度
-  let minPath = toUpdateNodes[0].path.length;
-  for (let i = 1; i < toUpdateNodes.length; i++) {
-    let pathLen = toUpdateNodes[i].path.length;
-    if (pathLen < minPath) {
-      minPath = pathLen;
-    }
-  }
-
-  // 找出开始不相等的idx
-  let idx = 0;
-  for (; idx < minPath; idx++) {
-    if (!isEqualByIndex(idx, toUpdateNodes)) {
-      break;
-    }
-  }
-  // 得到相等的路径
-  let startNodePath = toUpdateNodes[0].path.slice(0, idx);
-
-  let node = treeRoot;
-  for (let i = 1; i < startNodePath.length; i++) {
-    let pathIndex = startNodePath[i];
-    node = getChildByIndex(node, pathIndex);
-  }
-
-  return node;
-}
-
 export function setBuildResultError() {
   if (getBuildResult() !== BuildCompleted) {
     setBuildResult(BuildErrored);
-  }
-}
-
-// 收集有变化的节点，在submit阶段继续处理
-function collectDirtyNodes(vNode: VNode, parent: VNode): void {
-  // 将子树和此vNode的所有效果附加到父树的效果列表中，子项的完成顺序会影响副作用顺序。
-  parent.dirtyNodes.push(...vNode.dirtyNodes);
-
-  if (FlagUtils.hasAnyFlag(vNode)) {
-    parent.dirtyNodes.push(vNode);
   }
 }
 

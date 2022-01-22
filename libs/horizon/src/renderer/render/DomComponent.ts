@@ -17,8 +17,55 @@ import {createVNodeChildren, markRef} from './BaseComponent';
 import {DomComponent, DomPortal, DomText} from '../vnode/VNodeTags';
 import {getFirstChild, travelVNodeTree} from '../vnode/VNodeUtils';
 
-export function captureRender(processing: VNode): VNode | null {
-  return captureDomComponent(processing);
+function updateDom(
+  processing: VNode,
+  type: any,
+  newProps: Props,
+) {
+  // 如果oldProps !== newProps，意味着存在更新，并且需要处理其相关的副作用
+  const oldProps = processing.oldProps;
+  if (oldProps === newProps) {
+    // 如果props没有发生变化，即使它的children发生了变化，我们也不会改变它
+    return;
+  }
+
+  const dom: Element = processing.realNode;
+
+  const changeList = getPropChangeList(
+    dom,
+    type,
+    oldProps,
+    newProps,
+  );
+  processing.changeList = changeList;
+
+  // 输入类型的直接标记更新
+  if (type === 'input' || type === 'textarea' || type === 'select' || type === 'option') {
+    FlagUtils.markUpdate(processing);
+  } else {
+    // 其它的类型，数据有变化才标记更新
+    if (changeList.length) {
+      FlagUtils.markUpdate(processing);
+    }
+  }
+}
+
+// 把dom类型的子节点append到parent dom中
+function appendAllChildren(parent: Element, processing: VNode) {
+  const vNode = processing.child;
+  if (vNode === null) {
+    return;
+  }
+
+  // 向下递归它的子节点，查找所有终端节点。
+  travelVNodeTree(vNode, node => {
+    if (node.tag === DomComponent || node.tag === DomText) {
+      appendChildElement(parent, node.realNode);
+    }
+  }, node =>
+    // 已经append到父节点，或者是DomPortal都不需要处理child了
+    node.tag === DomComponent || node.tag === DomText || node.tag === DomPortal
+  , processing);
 }
 
 export function bubbleRender(processing: VNode) {
@@ -86,53 +133,6 @@ function captureDomComponent(processing: VNode): VNode | null {
   return processing.child;
 }
 
-// 把dom类型的子节点append到parent dom中
-function appendAllChildren(parent: Element, processing: VNode) {
-  const vNode = processing.child;
-  if (vNode === null) {
-    return;
-  }
-
-  // 向下递归它的子节点，查找所有终端节点。
-  travelVNodeTree(vNode, (node) => {
-    if (node.tag === DomComponent || node.tag === DomText) {
-      appendChildElement(parent, node.realNode);
-    }
-  }, (node) => {
-    // 已经append到父节点，或者是DomPortal都不需要处理child了
-    return node.tag === DomComponent || node.tag === DomText || node.tag === DomPortal;
-  }, processing);
-}
-
-function updateDom(
-  processing: VNode,
-  type: any,
-  newProps: Props,
-) {
-  // 如果oldProps !== newProps，意味着存在更新，并且需要处理其相关的副作用
-  const oldProps = processing.oldProps;
-  if (oldProps === newProps) {
-    // 如果props没有发生变化，即使它的children发生了变化，我们也不会改变它
-    return;
-  }
-
-  const dom: Element = processing.realNode;
-
-  const changeList = getPropChangeList(
-    dom,
-    type,
-    oldProps,
-    newProps,
-  );
-  processing.changeList = changeList;
-
-  // 输入类型的直接标记更新
-  if (type === 'input' || type === 'textarea' || type === 'select' || type === 'option') {
-    FlagUtils.markUpdate(processing);
-  } else {
-    // 其它的类型，数据有变化才标记更新
-    if (changeList.length) {
-      FlagUtils.markUpdate(processing);
-    }
-  }
+export function captureRender(processing: VNode): VNode | null {
+  return captureDomComponent(processing);
 }

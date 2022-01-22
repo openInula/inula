@@ -4,7 +4,7 @@ export enum HookStage {
   Update = 2,
 }
 
-let hookStage: HookStage = null;
+let hookStage: HookStage | null = null;
 
 export function getHookStage() {
   return hookStage;
