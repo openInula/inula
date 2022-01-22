@@ -46,9 +46,7 @@ function callRenderQueue() {
     try {
       for (; i < renderQueue.length; i++) {
         let callback = renderQueue[i];
-        do {
-          callback = callback();
-        } while (callback !== null);
+        callback();
       }
       renderQueue = null;
     } catch (error) {

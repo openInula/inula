@@ -5,7 +5,7 @@
 type Queue = Array<Node>;
 type Node = {
   id: number;
-  expirationTime: number;
+  order: number;
 };
 
 // 任务队列
@@ -15,9 +15,7 @@ export function add(node: Node): void {
   // 查找第一个大于等于 value 的下标，都比 value 小则返回 -1
   const idx = getBiggerIdx(node);
 
-  if (idx === 0) {
-    taskQueue.unshift(node);
-  } else if (idx === -1) {
+  if (idx === -1) {
     taskQueue.push(node);
   } else {
     taskQueue.splice(idx, 0, node);
@@ -32,10 +30,11 @@ function getBiggerIdx(node: Node) {
   while (left <= right) {
     const middle = left + ((right - left) >> 1);
 
-    if (compare(taskQueue[middle], node) > 0)
+    if (compare(taskQueue[middle], node) > 0) {
       right = middle - 1;
-    else
+    } else {
       left = middle + 1;
+    }
   }
 
   return (left < taskQueue.length) ? left : -1;
@@ -51,8 +50,12 @@ export function shift(): Node | null {
   return val !== undefined ? val : null;
 }
 
+export function remove(node: Node) {
+  taskQueue.splice(taskQueue.indexOf(node), 1);
+}
+
 function compare(a: Node, b: Node) {
   // 优先先用index排序，其次用id
-  const diff = a.expirationTime - b.expirationTime;
+  const diff = a.order - b.order;
   return diff !== 0 ? diff : a.id - b.id;
 }

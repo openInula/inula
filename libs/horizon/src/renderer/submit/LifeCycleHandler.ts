@@ -71,7 +71,7 @@ function callBeforeSubmitLifeCycles(
       const root = vNode.realNode;
       clearContainer(root.outerDom);
     }
-    
+
     // No Default
   }
 }
@@ -160,39 +160,26 @@ function hideOrUnhideAllChildren(vNode, isHidden) {
 function attachRef(vNode: VNode) {
   const ref = vNode.ref;
 
-  if (ref !== null) {
-    const instance = vNode.realNode;
-
-    let refType = typeof ref;
-    if (refType === 'function') {
-      ref(instance);
-    } else if (refType === 'object') {
-      (<RefType>ref).current = instance;
-    } else {
-      if (vNode.belongClassVNode && vNode.belongClassVNode.realNode) {
-        vNode.belongClassVNode.realNode.refs[String(ref)] = instance;
-      }
-    }
-  }
+  handleRef(vNode, ref, vNode.realNode);
 }
 
 function detachRef(vNode: VNode, isOldRef?: boolean) {
   let ref = (isOldRef ? vNode.oldRef : vNode.ref);
 
-  if (ref !== null) {
-    let refType = typeof ref;
+  handleRef(vNode, ref, null);
+}
+
+function handleRef(vNode: VNode, ref, val) {
+  if (ref !== null && ref !== undefined) {
+    const refType = typeof ref;
 
     if (refType === 'function') {
-      try {
-        ref(null);
-      } catch (error) {
-        handleSubmitError(vNode, error);
-      }
+      ref(val);
     } else if (refType === 'object') {
-      (<RefType>ref).current = null;
+      (<RefType>ref).current = val;
     } else {
       if (vNode.belongClassVNode && vNode.belongClassVNode.realNode) {
-        vNode.belongClassVNode.realNode.refs[String(ref)] = null;
+        vNode.belongClassVNode.realNode.refs[String(ref)] = val;
       }
     }
   }
