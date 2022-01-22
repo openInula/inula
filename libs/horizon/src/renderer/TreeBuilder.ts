@@ -172,6 +172,8 @@ function buildVNodeTree(treeRoot: VNode) {
     }
   } while (true);
 
+  processing = null;
+
   setExecuteMode(preMode);
 }
 
@@ -217,7 +219,7 @@ export function launchUpdateFromVNode(vNode: VNode) {
   }
 
   // 保存待刷新的节点
-  treeRoot.toUpdateNodes.add(vNode);
+  treeRoot.toUpdateNodes?.add(vNode);
 
   if (checkMode(BySync) && // 非批量
     !checkMode(InRender)) { // 不是渲染阶段触发

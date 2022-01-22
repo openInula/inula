@@ -35,13 +35,10 @@ let lastRoot: VNode | null = null;
 
 export function submitToRender(treeRoot) {
   treeRoot.shouldUpdate = treeRoot.childShouldUpdate;
-
-  const startVNode = getStartVNode();
-
   // 置空task，让才能加入新的render任务
   treeRoot.task = null;
 
-  setProcessing(null);
+  const startVNode = getStartVNode();
 
   if (FlagUtils.hasAnyFlag(startVNode)) {
     // 把自己加上
