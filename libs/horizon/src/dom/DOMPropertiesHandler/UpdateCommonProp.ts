@@ -14,9 +14,9 @@ const svgHumpAttr = new Set(['allowReorder', 'autoReverse', 'baseFrequency', 'ba
       'maskContentUnits', 'maskUnits', 'numOctaves', 'pathLength', 'patternContentUnits', 'patternTransform,',
       'patternUnits', 'pointsAtX', 'pointsAtY', 'pointsAtZ', 'preserveAlpha', 'preserveAspectRatio', 'primitiveUnits',
       'referrerPolicy', 'refX', 'refY', 'repeatCount', 'repeatDur', 'requiredExtensions', 'requiredFeatures',
-      'specularConstant', 'specularExponent', 'spreadMethod', 'startOffset', 'stdDeviation', 'stitchTiles', 'surfaceScale',
-      'systemLanguage', 'tableValues', 'targetX', 'targetY', 'textLength', 'viewBox', 'viewTarget', 'xChannelSelector',
-      'yChannelSelector', 'zoomAndPan']);
+      'specularConstant', 'specularExponent', 'spreadMethod', 'startOffset', 'stdDeviation',
+      'stitchTiles', 'surfaceScale','systemLanguage', 'tableValues', 'targetX', 'targetY',
+      'textLength','viewBox', 'viewTarget', 'xChannelSelector','yChannelSelector', 'zoomAndPan']);
 
 /**
  * 给 dom 设置属性

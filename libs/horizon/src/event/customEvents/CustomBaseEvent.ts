@@ -36,7 +36,9 @@ export class CustomBaseEvent {
     this.target = target;
     this.timeStamp = nativeEvt.timeStamp || Date.now();
 
-    const defaultPrevented = nativeEvt.defaultPrevented != null ? nativeEvt.defaultPrevented : nativeEvt.returnValue === false;
+    const defaultPrevented = nativeEvt.defaultPrevented != null ?
+                             nativeEvt.defaultPrevented :
+                             nativeEvt.returnValue === false;
     this.defaultPrevented = defaultPrevented;
 
     this.preventDefault = this.preventDefault.bind(this);
@@ -90,11 +92,14 @@ function extendAttribute(target, source) {
     // FocusEvent
     'relatedTarget',
     // KeyboardEvent
-    'key', 'keyCode', 'charCode', 'code', 'location', 'ctrlKey', 'shiftKey', 'altKey', 'metaKey', 'repeat', 'locale', 'getModifierState', 'clipboardData',
+    'key', 'keyCode', 'charCode', 'code', 'location', 'ctrlKey', 'shiftKey',
+    'altKey', 'metaKey', 'repeat', 'locale', 'getModifierState', 'clipboardData',
     // MouseEvent
-    'button', 'buttons', 'clientX', 'clientY', 'movementX', 'movementY', 'pageX', 'pageY', 'screenX', 'screenY', 'currentTarget',
+    'button', 'buttons', 'clientX', 'clientY', 'movementX', 'movementY',
+    'pageX', 'pageY', 'screenX', 'screenY', 'currentTarget',
     // PointerEvent
-    'pointerId', 'width', 'height', 'pressure', 'tangentialPressure', 'tiltX', 'tiltY', 'twist', 'pointerType', 'isPrimary',
+    'pointerId', 'width', 'height', 'pressure', 'tangentialPressure',
+    'tiltX', 'tiltY', 'twist', 'pointerType', 'isPrimary',
     // TouchEvent
     'touches', 'targetTouches', 'changedTouches',
     // TransitionEvent

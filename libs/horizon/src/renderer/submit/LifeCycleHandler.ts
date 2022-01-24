@@ -2,10 +2,10 @@
  * 该文件负责把更新应用到界面上 以及 和生命周期的相关调用
  */
 
-import type {Container} from '../../dom/DOMOperator';
-import type {RefType, VNode} from '../Types';
+import type { Container } from '../../dom/DOMOperator';
+import type { RefType, VNode } from '../Types';
 
-import {listenToPromise, SuspenseChildStatus} from '../render/SuspenseComponent';
+import { listenToPromise, SuspenseChildStatus } from '../render/SuspenseComponent';
 import {
   FunctionComponent,
   ForwardRef,
@@ -17,8 +17,8 @@ import {
   SuspenseComponent,
   MemoComponent,
 } from '../vnode/VNodeTags';
-import {FlagUtils, ResetText} from '../vnode/VNodeFlags';
-import {mergeDefaultProps} from '../render/LazyComponent';
+import { FlagUtils, ResetText } from '../vnode/VNodeFlags';
+import { mergeDefaultProps } from '../render/LazyComponent';
 import {
   submitDomUpdate,
   clearText,
@@ -29,15 +29,20 @@ import {
   unHideDom,
   clearContainer,
 } from '../../dom/DOMOperator';
-import {callEffectRemove, callUseEffects, callUseLayoutEffectCreate, callUseLayoutEffectRemove} from './HookEffectHandler';
-import {handleSubmitError} from '../ErrorHandler';
+import {
+  callEffectRemove,
+  callUseEffects,
+  callUseLayoutEffectCreate,
+  callUseLayoutEffectRemove
+} from './HookEffectHandler';
+import { handleSubmitError } from '../ErrorHandler';
 import {
   travelVNodeTree,
   clearVNode,
   isDomVNode,
   findDomParent, getSiblingDom,
 } from '../vnode/VNodeUtils';
-import {shouldAutoFocus} from '../../dom/utils/Common';
+import { shouldAutoFocus } from '../../dom/utils/Common';
 
 function callComponentWillUnmount(vNode: VNode, instance: any) {
   try {
@@ -227,7 +232,7 @@ function unmountNestedVNodes(vNode: VNode): void {
 }
 
 function submitAddition(vNode: VNode): void {
-  const {parent, parentDom} = findDomParent(vNode);
+  const { parent, parentDom } = findDomParent(vNode);
 
   if (parent.flags.ResetText) {
     // 在insert之前先reset
@@ -244,7 +249,7 @@ function insertOrAppendPlacementNode(
   beforeDom: Element | null,
   parent: Element | Container,
 ): void {
-  const {tag, realNode} = node;
+  const { tag, realNode } = node;
 
   if (isDomVNode(node)) {
     if (beforeDom) {

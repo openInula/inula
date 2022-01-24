@@ -19,7 +19,8 @@ export const ShouldCapture = 'ShouldCapture';
 // For suspense
 export const ForceUpdate = 'ForceUpdate';
 
-const FlagArr = [Addition, Update, Deletion, ResetText, Callback, DidCapture, Ref, Snapshot, Interrupted, ShouldCapture, ForceUpdate];
+const FlagArr = [Addition, Update, Deletion, ResetText, Callback,
+                 DidCapture, Ref, Snapshot, Interrupted, ShouldCapture, ForceUpdate];
 
 const LifecycleEffectArr = [Update, Callback, Ref, Snapshot];
 

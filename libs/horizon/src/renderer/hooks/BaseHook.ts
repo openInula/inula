@@ -1,5 +1,5 @@
-import type {VNode} from '../Types';
-import type {Hook} from './HookType';
+import type { VNode } from '../Types';
+import type { Hook } from './HookType';
 
 let processingVNode: VNode = null;
 
@@ -56,7 +56,9 @@ export function getNextHook(hook: Hook<any, any>, hooks: Array<Hook<any, any>>) 
 // processing中的hook和上一次执行中的hook，需要同时往前走，
 // 原因：1.比对hook的数量有没有变化（非必要）；2.从上一次执行中的hook获取removeEffect
 export function getCurrentHook(): Hook<any, any> {
-  currentHook = currentHook !== null ? getNextHook(currentHook, processingVNode.hooks) : (processingVNode.hooks[0] || null);
+  currentHook = currentHook !== null ?
+    getNextHook(currentHook, processingVNode.hooks) :
+    (processingVNode.hooks[0] || null);
 
   if (lastTimeHook !== null) {
     lastTimeHook = getNextHook(lastTimeHook, processingVNode.oldHooks);
