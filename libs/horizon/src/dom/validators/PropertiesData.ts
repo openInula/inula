@@ -9,10 +9,10 @@ export enum PROPERTY_TYPE {
 };
 
 export type PropDetails = {
-  propName: string,
-  type: PROPERTY_TYPE,
-  attrName: string,
-  attrNS: string | null,
+  propName: string;
+  type: PROPERTY_TYPE;
+  attrName: string;
+  attrNS: string | null;
 };
 
 export function getPropDetails(name: string): PropDetails | null {

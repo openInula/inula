@@ -1,5 +1,5 @@
-import type {AnyNativeEvent, ProcessingListenerList} from './types';
-import type {VNode} from '../renderer/Types';
+import type { AnyNativeEvent, ProcessingListenerList } from './types';
+import type { VNode } from '../renderer/Types';
 
 import {
   CommonEventToHorizonMap,
@@ -11,20 +11,20 @@ import {
   throwCaughtEventError,
   runListenerAndCatchFirstError,
 } from './EventError';
-import {getListeners as getBeforeInputListeners} from './simulatedEvtHandler/BeforeInputEventHandler';
-import {getListeners as getCompositionListeners} from './simulatedEvtHandler/CompositionEventHandler';
-import {getListeners as getChangeListeners} from './simulatedEvtHandler/ChangeEventHandler';
-import {getListeners as getSelectionListeners} from './simulatedEvtHandler/SelectionEventHandler';
+import { getListeners as getBeforeInputListeners } from './simulatedEvtHandler/BeforeInputEventHandler';
+import { getListeners as getCompositionListeners } from './simulatedEvtHandler/CompositionEventHandler';
+import { getListeners as getChangeListeners } from './simulatedEvtHandler/ChangeEventHandler';
+import { getListeners as getSelectionListeners } from './simulatedEvtHandler/SelectionEventHandler';
 import {
   getCustomEventNameWithOn,
   uniqueCharCode,
   getEventTarget
 } from './utils';
-import {createCommonCustomEvent} from './customEvents/EventFactory';
-import {getListenersFromTree} from './ListenerGetter';
-import {shouldUpdateValue, updateControlledValue} from './ControlledValueUpdater';
-import {asyncUpdates, runDiscreteUpdates} from '../renderer/Renderer';
-import {getExactNode} from '../renderer/vnode/VNodeUtils';
+import { createCommonCustomEvent } from './customEvents/EventFactory';
+import { getListenersFromTree } from './ListenerGetter';
+import { shouldUpdateValue, updateControlledValue } from './ControlledValueUpdater';
+import { asyncUpdates, runDiscreteUpdates } from '../renderer/Renderer';
+import { getExactNode } from '../renderer/vnode/VNodeUtils';
 
 // 获取事件触发的普通事件监听方法队列
 function getCommonListeners(
@@ -61,7 +61,7 @@ function getCommonListeners(
     vNode,
     customEventName,
     customEvent,
-    isCapture ? EVENT_TYPE_CAPTURE: EVENT_TYPE_BUBBLE,
+    isCapture ? EVENT_TYPE_CAPTURE : EVENT_TYPE_BUBBLE,
   );
 }
 
@@ -72,7 +72,7 @@ export function processListeners(
   processingEventsList.forEach(eventUnitList => {
     let lastVNode;
     eventUnitList.forEach(eventUnit => {
-      const {vNode, currentTarget, listener, event} = eventUnit;
+      const { vNode, currentTarget, listener, event } = eventUnit;
       if (vNode !== lastVNode && event.isPropagationStopped()) {
         return;
       }
@@ -151,7 +151,12 @@ function triggerHorizonEvents(
   vNode: null | VNode,
 ): void {
   const nativeEventTarget = getEventTarget(nativeEvent);
-  const processingListenerList = getProcessListenersFacade(nativeEvtName, vNode, nativeEvent, nativeEventTarget, isCapture);
+  const processingListenerList = getProcessListenersFacade(
+    nativeEvtName,
+    vNode,
+    nativeEvent,
+    nativeEventTarget,
+    isCapture);
 
   // 处理触发的事件队列
   processListeners(processingListenerList);

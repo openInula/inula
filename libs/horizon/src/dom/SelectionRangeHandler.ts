@@ -110,8 +110,8 @@ export interface selectionData {
   selectionRange: {
     start: number;
     end: number;
-  }
-};
+  };
+}
 
 // 防止选择范围内的信息因为节点删除或其他原因导致的信息丢失
 export function resetSelectionRange(preSelectionRangeData: selectionData) {

@@ -1,5 +1,5 @@
 export interface IProperty {
-  [propName: string]: any
+  [propName: string]: any;
 }
 
 export interface HorizonSelect extends HTMLSelectElement {
