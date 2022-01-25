@@ -60,8 +60,9 @@ export class VNode {
     Interrupted?: boolean;
     ShouldCapture?: boolean;
     ForceUpdate?: boolean;
+    Clear?: boolean;
   } = {};
-
+  ClearChild: VNode|null = null;
   // one tree相关属性
   isCreated: boolean = true;
   oldHooks: Array<Hook<any, any>> = []; // 保存上一次执行的hook

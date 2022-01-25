@@ -17,7 +17,7 @@ import {
   SuspenseComponent,
   MemoComponent,
 } from '../vnode/VNodeTags';
-import { FlagUtils, ResetText } from '../vnode/VNodeFlags';
+import { FlagUtils, ResetText, Clear } from '../vnode/VNodeFlags';
 import { mergeDefaultProps } from '../render/LazyComponent';
 import {
   submitDomUpdate,
@@ -43,6 +43,7 @@ import {
   findDomParent, getSiblingDom,
 } from '../vnode/VNodeUtils';
 import { shouldAutoFocus } from '../../dom/utils/Common';
+import { internalKeys } from '../../dom/DOMInternalKeys';
 
 function callComponentWillUnmount(vNode: VNode, instance: any) {
   try {
@@ -307,6 +308,55 @@ function unmountDomComponents(vNode: VNode): void {
   });
 }
 
+function submitClear(vNode: VNode): void {
+  const realNode = vNode.realNode;
+  const cloneDom = realNode.cloneNode(false); // 复制节点后horizon的两个属性消失
+  cloneDom[internalKeys.VNode] = realNode[internalKeys.VNode];
+  cloneDom[internalKeys.props] = realNode[internalKeys.props];
+  // 删除节点
+  let currentParentIsValid = false;
+
+  // 这两个变量要一起更新
+  let currentParent;
+
+  travelVNodeTree(vNode, (node) => {
+    if (!currentParentIsValid) {
+      const parentObj = findDomParent(node);
+      currentParent = parentObj.parentDom;
+      currentParentIsValid = true;
+    }
+    const tag = node.tag;
+    if (tag === DomComponent || tag === DomText) {
+      // 卸载子vNode，递归遍历子vNode
+      unmountNestedVNodes(node.ClearChild); // node.child 为空，需要添加原有的child
+      
+      // 在所有子项都卸载后，删除dom树中的节点
+      removeChildDom(currentParent, node.realNode);
+      console.log(currentParent);
+      currentParent.append(cloneDom);
+      vNode.realNode = cloneDom;
+      FlagUtils.removeFlag(vNode, Clear);
+      vNode.ClearChild = null;
+    } else if (tag === DomPortal) {
+      console.log(DomPortal);
+      if (node.child !== null) {
+        currentParent = node.outerDom;
+      }
+    } else {
+      unmountVNode(node);
+    }
+  }, (node) => {
+    // 如果是dom不用再遍历child
+    const tag = node.tag;
+    return tag === DomComponent || tag === DomText;
+  }, null, (node) => {
+    if (node.tag === DomPortal) {
+      // 当离开portal，需要重新设置parent
+      currentParentIsValid = false;
+    }
+  });
+}
+
 function submitDeletion(vNode: VNode): void {
   // 遍历所有子节点：删除dom节点，detach ref 和 调用componentWillUnmount()
   unmountDomComponents(vNode);
@@ -353,6 +403,7 @@ export {
   submitResetTextContent,
   submitAddition,
   submitDeletion,
+  submitClear,
   submitUpdate,
   callAfterSubmitLifeCycles,
   attachRef,
