@@ -323,7 +323,7 @@ function diffArrayNodes(
       if (firstChild && parentNode.tag === DomComponent && newChildren.length === 0) {
         // if (false) {
         FlagUtils.markClear(parentNode);
-        parentNode.ClearChild = firstChild;
+        parentNode.clearChild = firstChild;
       } else {
         deleteVNodes(parentNode, oldNode, rightEndOldNode);
       }

@@ -313,48 +313,20 @@ function submitClear(vNode: VNode): void {
   const cloneDom = realNode.cloneNode(false); // 复制节点后horizon的两个属性消失
   cloneDom[internalKeys.VNode] = realNode[internalKeys.VNode];
   cloneDom[internalKeys.props] = realNode[internalKeys.props];
-  // 删除节点
-  let currentParentIsValid = false;
 
-  // 这两个变量要一起更新
-  let currentParent;
-
-  travelVNodeTree(vNode, (node) => {
-    if (!currentParentIsValid) {
-      const parentObj = findDomParent(node);
-      currentParent = parentObj.parentDom;
-      currentParentIsValid = true;
-    }
-    const tag = node.tag;
-    if (tag === DomComponent || tag === DomText) {
-      // 卸载子vNode，递归遍历子vNode
-      unmountNestedVNodes(node.ClearChild); // node.child 为空，需要添加原有的child
-      
-      // 在所有子项都卸载后，删除dom树中的节点
-      removeChildDom(currentParent, node.realNode);
-      console.log(currentParent);
-      currentParent.append(cloneDom);
-      vNode.realNode = cloneDom;
-      FlagUtils.removeFlag(vNode, Clear);
-      vNode.ClearChild = null;
-    } else if (tag === DomPortal) {
-      console.log(DomPortal);
-      if (node.child !== null) {
-        currentParent = node.outerDom;
-      }
-    } else {
-      unmountVNode(node);
-    }
-  }, (node) => {
-    // 如果是dom不用再遍历child
-    const tag = node.tag;
-    return tag === DomComponent || tag === DomText;
-  }, null, (node) => {
-    if (node.tag === DomPortal) {
-      // 当离开portal，需要重新设置parent
-      currentParentIsValid = false;
-    }
-  });
+  const parentObj = findDomParent(vNode);
+  const currentParent = parentObj.parentDom;
+  const clearChild = vNode.clearChild as VNode;
+  // 卸载子vNode，递归遍历子vNode
+  unmountNestedVNodes(clearChild); // node.child 为空，需要添加原有的child
+  
+  // 在所有子项都卸载后，删除dom树中的节点
+  removeChildDom(currentParent, vNode.realNode);
+  clearVNode(clearChild);
+  currentParent.append(cloneDom);
+  vNode.realNode = cloneDom;
+  FlagUtils.removeFlag(vNode, Clear);
+  vNode.clearChild = null;
 }
 
 function submitDeletion(vNode: VNode): void {
