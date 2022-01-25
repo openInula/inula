@@ -54,7 +54,7 @@ function captureLazyComponent(
   processing.type = Component;
 
   const lazyVNodeTag = getLazyVNodeTag(Component);
-  processing.tag = getLazyVNodeTag(Component);
+  processing.tag = lazyVNodeTag;
   const lazyVNodeProps = mergeDefaultProps(Component, processing.props);
 
   const lazyRender = LazyRendererMap[lazyVNodeTag];

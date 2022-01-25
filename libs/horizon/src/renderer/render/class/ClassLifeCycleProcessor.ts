@@ -25,11 +25,9 @@ export function callDerivedStateFromProps(
     const newState = getDerivedStateFromProps(nextProps, oldState);
 
     // 组件未返回state,需要返回旧的preState
-    if (newState) {
-      processing.state = { ...oldState, ...newState };
-      return;
-    }
-    processing.state = oldState;
+    processing.state = newState === null || newState === undefined
+      ? oldState
+      : { ...oldState, ...newState };
   }
 }
 

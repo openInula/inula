@@ -94,7 +94,7 @@ export function getEventToListenerMap(target: EventTarget): Map<string, EventLis
   let eventsMap = target[internalKeys.nonDelegatedEvents];
   if (!eventsMap) {
     eventsMap = new Map();
-    target[internalKeys.nonDelegatedEvents] = new Map();
+    target[internalKeys.nonDelegatedEvents] = eventsMap;
   }
   return eventsMap;
 }

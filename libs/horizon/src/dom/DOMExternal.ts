@@ -66,8 +66,8 @@ function executeRender(
   return getFirstCustomDom(treeRoot);
 }
 
-function findDOMNode(domOrEle: Element): null | Element | Text {
-  if (!domOrEle) {
+function findDOMNode(domOrEle?: Element): null | Element | Text {
+  if (domOrEle == null) {
     return null;
   }
 

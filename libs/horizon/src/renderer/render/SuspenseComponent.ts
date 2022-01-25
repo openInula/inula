@@ -157,12 +157,12 @@ function canCapturePromise(vNode: VNode | null): boolean {
 }
 
 // 处理Suspense子组件抛出的promise
-export function handleSuspenseChildThrowError(parent: VNode | null, processing: VNode, error: any): boolean {
+export function handleSuspenseChildThrowError(parent: VNode, processing: VNode, error: any): boolean {
   let vNode = parent;
 
   // 向上找到最近的不在fallback状态的Suspense，并触发重新渲染
   do {
-    if (vNode?.tag === SuspenseComponent && canCapturePromise(vNode)) {
+    if (vNode.tag === SuspenseComponent && canCapturePromise(vNode)) {
       if (vNode.suspensePromises === null) {
         vNode.suspensePromises = new Set();
       }
