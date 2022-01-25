@@ -43,7 +43,6 @@ import {
   findDomParent, getSiblingDom,
 } from '../vnode/VNodeUtils';
 import { shouldAutoFocus } from '../../dom/utils/Common';
-import { internalKeys } from '../../dom/DOMInternalKeys';
 
 function callComponentWillUnmount(vNode: VNode, instance: any) {
   try {
@@ -311,8 +310,12 @@ function unmountDomComponents(vNode: VNode): void {
 function submitClear(vNode: VNode): void {
   const realNode = vNode.realNode;
   const cloneDom = realNode.cloneNode(false); // 复制节点后horizon的两个属性消失
-  cloneDom[internalKeys.VNode] = realNode[internalKeys.VNode];
-  cloneDom[internalKeys.props] = realNode[internalKeys.props];
+  const customizeKeys = Object.keys;
+  const keyLength = customizeKeys.length;
+  for(let i = 0; i < keyLength; i++) {
+    const key = customizeKeys[i];
+    cloneDom[key] = realNode(key);
+  }
 
   const parentObj = findDomParent(vNode);
   const currentParent = parentObj.parentDom;
