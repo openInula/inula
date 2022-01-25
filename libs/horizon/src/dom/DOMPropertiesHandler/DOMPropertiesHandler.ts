@@ -8,6 +8,27 @@ import {
 } from '../../event/EventBinding';
 import { isEventProp, isNativeElement } from '../validators/ValidateProps';
 
+function updateOneProp(dom, propName, propVal, isNativeTag, isInit?: boolean) {
+  if (propName === 'style') {
+    setStyles(dom, propVal);
+  } else if (propName === 'dangerouslySetInnerHTML') {
+    dom.innerHTML = propVal.__html;
+  } else if (propName === 'children') { // 只处理纯文本子节点，其他children在VNode树中处理
+    if (typeof propVal === 'string' || typeof propVal === 'number') {
+      dom.textContent = String(propVal);
+    }
+  } else if (isEventProp(propName)) {
+    // 事件监听属性处理
+    if (!allDelegatedHorizonEvents.has(propName)) {
+      listenNonDelegatedEvent(propName, dom, propVal);
+    }
+  } else {
+    if (!isInit || (isInit && propVal != null)) {
+      updateCommonProp(dom, propName, propVal, isNativeTag);
+    }
+  }
+}
+
 // 初始化DOM属性
 export function setDomProps(
   tagName: string,
@@ -35,27 +56,6 @@ export function updateDomProps(
     const { propName, propVal } = changeList[i];
 
     updateOneProp(dom, propName, propVal, isNativeTag);
-  }
-}
-
-function updateOneProp(dom, propName, propVal, isNativeTag, isInit?: boolean) {
-  if (propName === 'style') {
-    setStyles(dom, propVal);
-  } else if (propName === 'dangerouslySetInnerHTML') {
-    dom.innerHTML = propVal.__html;
-  } else if (propName === 'children') { // 只处理纯文本子节点，其他children在VNode树中处理
-    if (typeof propVal === 'string' || typeof propVal === 'number') {
-      dom.textContent = String(propVal);
-    }
-  } else if (isEventProp(propName)) {
-    // 事件监听属性处理
-    if (!allDelegatedHorizonEvents.has(propName)) {
-      listenNonDelegatedEvent(propName, dom, propVal);
-    }
-  } else {
-    if (!isInit || (isInit && propVal != null)) {
-      updateCommonProp(dom, propName, propVal, isNativeTag);
-    }
   }
 }
 
