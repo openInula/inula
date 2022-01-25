@@ -34,6 +34,11 @@ function isInvalidBoolean(
   return false;
 }
 
+// 是事件属性
+export function isEventProp(propName) {
+  return propName.substr(0, 2) === 'on';
+}
+
 function isValidProp(tagName, name, value) {
   // 校验事件名称
   if (isEventProp(name)) {
@@ -77,11 +82,6 @@ export function isInvalidValue(
   }
 
   return false;
-}
-
-// 是事件属性
-export function isEventProp(propName) {
-  return propName.substr(0, 2) === 'on';
 }
 
 // dev模式下校验属性是否合法

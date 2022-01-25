@@ -175,7 +175,7 @@ export function onlyUpdateChildVNodes(processing: VNode): VNode | null {
     // 此vNode无需更新，但是子树需要
     if (!processing.isCreated && processing.child !== null) {
       // 更新子节点
-      let child = processing.child;
+      let child: VNode | null = processing.child;
       while (child !== null) {
         updateVNode(child, child.props);
         updateVNodePath(child);

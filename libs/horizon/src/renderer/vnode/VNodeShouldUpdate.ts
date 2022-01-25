@@ -37,6 +37,19 @@ export function updateChildShouldUpdate(vNode: VNode) {
   vNode.childShouldUpdate = false;
 }
 
+// 更新从当前节点到根节点的childShouldUpdate为true
+export function setParentsChildShouldUpdate(parent: VNode | null) {
+  let node = parent;
+  while (node !== null) {
+    if (node.childShouldUpdate) {
+      break;
+    }
+    node.childShouldUpdate = true;
+
+    node = node.parent;
+  }
+}
+
 // 设置节点的所有父节点的childShouldUpdate
 export function updateParentsChildShouldUpdate(vNode: VNode) {
   let node = vNode.parent;
@@ -49,18 +62,5 @@ export function updateParentsChildShouldUpdate(vNode: VNode) {
       updateChildShouldUpdate(node);
       node = node.parent;
     }
-  }
-}
-
-// 更新从当前节点到根节点的childShouldUpdate为true
-export function setParentsChildShouldUpdate(parent: VNode | null) {
-  let node = parent;
-  while (node !== null) {
-    if (node.childShouldUpdate) {
-      break;
-    }
-    node.childShouldUpdate = true;
-
-    node = node.parent;
   }
 }

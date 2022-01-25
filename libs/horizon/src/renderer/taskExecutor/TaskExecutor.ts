@@ -2,6 +2,7 @@
  * 调度器的核心实现
  */
 
+import { Node } from '../taskExecutor/TaskQueue';
 import {
   requestBrowserCallback,
   isOverTime,
@@ -21,39 +22,11 @@ let isProcessing = false;
 // 调度中，等待浏览器回调
 let isWaiting = false;
 
-function runAsync(callback, priorityLevel= NormalPriority ) {
-  let increment;
-  switch (priorityLevel) {
-    case ImmediatePriority:
-      increment = -1;
-      break;
-    case NormalPriority:
-    default:
-      increment = 10000;
-      break;
-  }
-
-  const task = {
-    id: idCounter++,
-    callback,
-    order: idCounter + increment,
-  };
-
-  add(task);
-
-  if (!isWaiting && !isProcessing) {
-    isWaiting = true;
-    requestBrowserCallback(callTasks);
-  }
-
-  return task;
-}
-
 function callTasks() {
   isWaiting = false;
   isProcessing = true;
 
-  let task = null;
+  let task: Node | null= null;
   try {
     task = first();
 
@@ -87,6 +60,34 @@ function callTasks() {
   } finally {
     isProcessing = false;
   }
+}
+
+function runAsync(callback, priorityLevel= NormalPriority ) {
+  let increment;
+  switch (priorityLevel) {
+    case ImmediatePriority:
+      increment = -1;
+      break;
+    case NormalPriority:
+    default:
+      increment = 10000;
+      break;
+  }
+
+  const task = {
+    id: idCounter++,
+    callback,
+    order: idCounter + increment,
+  };
+
+  add(task);
+
+  if (!isWaiting && !isProcessing) {
+    isWaiting = true;
+    requestBrowserCallback(callTasks);
+  }
+
+  return task;
 }
 
 function cancelTask(task) {
