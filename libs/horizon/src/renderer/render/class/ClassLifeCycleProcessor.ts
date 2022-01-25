@@ -1,7 +1,7 @@
 import type { VNode } from '../../Types';
 import type { Callback } from '../../UpdateHandler';
 
-import {shallowCompare} from '../../utils/compare';
+import { shallowCompare } from '../../utils/compare';
 import {
   pushUpdate,
   newUpdate,
@@ -25,9 +25,11 @@ export function callDerivedStateFromProps(
     const newState = getDerivedStateFromProps(nextProps, oldState);
 
     // 组件未返回state,需要返回旧的preState
-    processing.state = newState === null || newState === undefined
-      ? oldState
-      : { ...oldState, ...newState };
+    if (newState) {
+      processing.state = { ...oldState, ...newState };
+      return;
+    }
+    processing.state = oldState;
   }
 }
 
@@ -40,7 +42,7 @@ function changeStateContent(type: UpdateState, content: object, callback: Callba
   if (type === UpdateState.Update || type === UpdateState.Override) {
     update.content = content;
   }
-  if (callback !== undefined && callback !== null) {
+  if (callback) {
     update.callback = callback;
   }
 

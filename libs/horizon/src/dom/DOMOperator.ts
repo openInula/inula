@@ -5,13 +5,13 @@ import {
 import {
   createDom,
 } from './utils/DomCreator';
-import {getSelectionInfo, resetSelectionRange, selectionData} from './SelectionRangeHandler';
-import {isElement, isComment, isDocument, isDocumentFragment, getDomTag, shouldAutoFocus} from './utils/Common';
-import {NSS} from './utils/DomCreator';
-import {adjustStyleValue} from './DOMPropertiesHandler/StyleHandler';
+import { getSelectionInfo, resetSelectionRange, selectionData } from './SelectionRangeHandler';
+import { isElement, isComment, isDocument, isDocumentFragment, getDomTag, shouldAutoFocus } from './utils/Common';
+import { NSS } from './utils/DomCreator';
+import { adjustStyleValue } from './DOMPropertiesHandler/StyleHandler';
 
-import {listenDelegatedEvents} from '../event/EventBinding';
-import type {VNode} from '../renderer/Types';
+import { listenDelegatedEvents } from '../event/EventBinding';
+import type { VNode } from '../renderer/Types';
 import {
   setInitValue,
   getPropsWithoutValue,
@@ -21,10 +21,10 @@ import {
   compareProps,
   setDomProps, updateDomProps
 } from './DOMPropertiesHandler/DOMPropertiesHandler';
-import {isNativeElement, validateProps} from './validators/ValidateProps';
-import {watchValueChange} from './valueHandler/ValueChangeHandler';
-import {DomComponent, DomText} from '../renderer/vnode/VNodeTags';
-import {updateCommonProp} from './DOMPropertiesHandler/UpdateCommonProp';
+import { isNativeElement, validateProps } from './validators/ValidateProps';
+import { watchValueChange } from './valueHandler/ValueChangeHandler';
+import { DomComponent, DomText } from '../renderer/vnode/VNodeTags';
+import { updateCommonProp } from './DOMPropertiesHandler/UpdateCommonProp';
 
 export type Props = {
   autoFocus?: boolean;
@@ -55,13 +55,7 @@ function getChildNS(parentNS: string | null, tagName: string): string {
 
 // 获取容器
 export function getNSCtx(dom: Container, parentNS: string, type: string): string {
-  let namespace;
-  if (dom) {
-    namespace = getChildNS(dom.namespaceURI ?? null, dom.nodeName);
-  } else {
-    namespace = getChildNS(parentNS, type);
-  }
-  return namespace;
+  return dom ? getChildNS(dom.namespaceURI ?? null, dom.nodeName) : getChildNS(parentNS, type);
 }
 
 export function prepareForSubmit(): void {
@@ -156,7 +150,7 @@ export function newTextDom(
 // 提交vNode的类型为Component或者Text的更新
 export function submitDomUpdate(tag: string, vNode: VNode) {
   const newProps = vNode.props;
-  const element: Element = vNode.realNode;
+  const element: Element | null = vNode.realNode;
 
   if (tag === DomComponent) {
     // DomComponent类型
@@ -179,8 +173,10 @@ export function submitDomUpdate(tag: string, vNode: VNode) {
       }
     }
   } else if (tag === DomText) {
-    // text类型
-    element.textContent = newProps;
+    if (element != null) {
+      // text类型
+      element.textContent = newProps;
+    }
   }
 }
 

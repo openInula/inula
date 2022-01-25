@@ -72,7 +72,7 @@ export class CustomKeyboardEvent extends CustomBaseEvent {
     super(customEvtName, nativeEvtName, nativeEvt, vNode, target);
     this.key = getKey(nativeEvt);
     this.charCode = nativeEvtName === 'keypress' ? uniqueCharCode(nativeEvt) : 0;
-    this.keyCode = (nativeEvtName === 'keydown' || nativeEvtName === 'keyup') ? nativeEvt.keyCode : 0;
+    this.keyCode = nativeEvtName === 'keydown' || nativeEvtName === 'keyup' ? nativeEvt.keyCode : 0;
     this.which = this.charCode || this.keyCode;
   }
 }

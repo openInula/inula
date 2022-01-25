@@ -13,10 +13,6 @@ import { captureFunctionComponent } from './FunctionComponent';
 import { captureClassComponent } from './ClassComponent';
 import { captureMemoComponent } from './MemoComponent';
 
-export function captureRender(processing: VNode, shouldUpdate: boolean): VNode | null {
-  return captureLazyComponent(processing, processing.type, shouldUpdate);
-}
-
 export function bubbleRender() { }
 
 const LazyRendererMap = {
@@ -25,6 +21,20 @@ const LazyRendererMap = {
   [ForwardRef]: captureFunctionComponent,
   [MemoComponent]: captureMemoComponent,
 };
+
+export function mergeDefaultProps(Component: any, props: object): object {
+  if (Component && Component.defaultProps) {
+    const clonedProps = { ...props };
+    const defaultProps = Component.defaultProps;
+    Object.keys(defaultProps).forEach(key => {
+      if (clonedProps[key] === undefined) {
+        clonedProps[key] = defaultProps[key];
+      }
+    });
+    return clonedProps;
+  }
+  return props;
+}
 
 function captureLazyComponent(
   processing,
@@ -43,7 +53,8 @@ function captureLazyComponent(
   // 加载得到的Component存在type中
   processing.type = Component;
 
-  const lazyVNodeTag = processing.tag = getLazyVNodeTag(Component);
+  const lazyVNodeTag = getLazyVNodeTag(Component);
+  processing.tag = getLazyVNodeTag(Component);
   const lazyVNodeProps = mergeDefaultProps(Component, processing.props);
 
   const lazyRender = LazyRendererMap[lazyVNodeTag];
@@ -68,16 +79,6 @@ function captureLazyComponent(
   }
 }
 
-export function mergeDefaultProps(Component: any, props: object): object {
-  if (Component && Component.defaultProps) {
-    const clonedProps = { ...props };
-    const defaultProps = Component.defaultProps;
-    Object.keys(defaultProps).forEach(key => {
-      if (clonedProps[key] === undefined) {
-        clonedProps[key] = defaultProps[key];
-      }
-    });
-    return clonedProps;
-  }
-  return props;
+export function captureRender(processing: VNode, shouldUpdate: boolean): VNode | null {
+  return captureLazyComponent(processing, processing.type, shouldUpdate);
 }

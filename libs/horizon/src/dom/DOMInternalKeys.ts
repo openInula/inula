@@ -72,7 +72,7 @@ export function getNearestVNode(dom: Node): null | VNode {
 }
 
 // 获取 vNode 上的属性相关信息
-export function getVNodeProps(dom: Element | Text): Props {
+export function getVNodeProps(dom: Element | Text): Props | null{
   return dom[internalKeys.props] || null;
 }
 
@@ -93,7 +93,8 @@ export function getEventListeners(dom: EventTarget): Set<string> {
 export function getEventToListenerMap(target: EventTarget): Map<string, EventListener> {
   let eventsMap = target[internalKeys.nonDelegatedEvents];
   if (!eventsMap) {
-    eventsMap = target[internalKeys.nonDelegatedEvents] = new Map();
+    eventsMap = new Map();
+    target[internalKeys.nonDelegatedEvents] = new Map();
   }
   return eventsMap;
 }

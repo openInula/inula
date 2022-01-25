@@ -10,30 +10,6 @@ import {findDOMByClassInst} from '../renderer/vnode/VNodeUtils';
 import {TreeRoot} from '../renderer/vnode/VNodeTags';
 import {Callback} from '../renderer/UpdateHandler';
 
-function executeRender(
-  children: any,
-  container: Container,
-  callback?: Callback,
-) {
-  let treeRoot = container._treeRoot;
-
-  if (!treeRoot) {
-    treeRoot = createRoot(children, container, callback);
-  } else { // container被render过
-    if (typeof callback === 'function') {
-      const cb = callback;
-      callback = function () {
-        const instance = getFirstCustomDom(treeRoot);
-        cb.call(instance);
-      };
-    }
-    // 执行更新操作
-    startUpdate(children, treeRoot, callback);
-  }
-
-  return getFirstCustomDom(treeRoot);
-}
-
 function createRoot(children: any, container: Container, callback?: Callback) {
   // 清空容器
   let child = container.lastChild;
@@ -66,8 +42,32 @@ function createRoot(children: any, container: Container, callback?: Callback) {
   return treeRoot;
 }
 
+function executeRender(
+  children: any,
+  container: Container,
+  callback?: Callback,
+) {
+  let treeRoot = container._treeRoot;
+
+  if (!treeRoot) {
+    treeRoot = createRoot(children, container, callback);
+  } else { // container被render过
+    if (typeof callback === 'function') {
+      const cb = callback;
+      callback = function () {
+        const instance = getFirstCustomDom(treeRoot);
+        cb.call(instance);
+      };
+    }
+    // 执行更新操作
+    startUpdate(children, treeRoot, callback);
+  }
+
+  return getFirstCustomDom(treeRoot);
+}
+
 function findDOMNode(domOrEle: Element): null | Element | Text {
-  if (domOrEle == null) {
+  if (!domOrEle) {
     return null;
   }
 

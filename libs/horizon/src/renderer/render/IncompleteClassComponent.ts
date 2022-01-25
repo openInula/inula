@@ -10,7 +10,18 @@ import {
   cacheOldCtx,
 } from '../components/context/CompatibleContext';
 
-export function captureRender(processing: VNode): Array<VNode> | null {
+function captureIncompleteClassComponent(processing, Component, nextProps) {
+  processing.tag = ClassComponent;
+
+  const hasOldContext = isOldProvider(Component);
+  cacheOldCtx(processing, hasOldContext);
+
+  resetDepContexts(processing);
+
+  return getIncompleteClassComponent(Component, processing, nextProps);
+}
+
+export function captureRender(processing: VNode): VNode | null {
   const Component = processing.type;
   const unresolvedProps = processing.props;
   const resolvedProps =
@@ -27,15 +38,4 @@ export function bubbleRender(processing: VNode) {
   if (isOldProvider(Component)) {
     resetOldCtx(processing);
   }
-}
-
-function captureIncompleteClassComponent(processing, Component, nextProps) {
-  processing.tag = ClassComponent;
-
-  const hasOldContext = isOldProvider(Component);
-  cacheOldCtx(processing, hasOldContext);
-
-  resetDepContexts(processing);
-
-  return getIncompleteClassComponent(Component, processing, nextProps);
 }
