@@ -37,7 +37,7 @@ function mergeDefault(sourceObj, defaultObj) {
   });
 }
 
-function buildElement(isClone, type, setting, ...children) {
+function buildElement(isClone, type, setting, children) {
   // setting中的值优先级最高，clone情况下从 type 中取值，创建情况下直接赋值为 null
   const key = (setting && setting.key !== undefined) ? String(setting.key) : (isClone ? type.key : null);
   const ref = (setting && setting.ref !== undefined) ? setting.ref : (isClone ? type.ref : null);
@@ -45,11 +45,14 @@ function buildElement(isClone, type, setting, ...children) {
   let vNode = isClone ? type.belongClassVNode : getProcessingClassVNode();
 
   if (setting != null) {
-    Object.keys(setting).forEach(k => {
+    const keys = Object.keys(setting);
+    const keyLength = keys.length;
+    for(let i = 0; i < keyLength; i++) {
+      const k = keys[i];
       if (isValidKey(k)) {
         props[k] = setting[k];
       }
-    });
+    }
     if (setting.ref !== undefined && isClone) {
       vNode = getProcessingClassVNode();
     }
@@ -69,11 +72,11 @@ function buildElement(isClone, type, setting, ...children) {
 
 // 创建Element结构体，供JSX编译时调用
 export function createElement(type, setting, ...children) {
-  return buildElement(false, type, setting, ...children);
+  return buildElement(false, type, setting, children);
 }
 
 export function cloneElement(element, setting, ...children) {
-  return buildElement(true, element, setting, ...children);
+  return buildElement(true, element, setting, children);
 }
 
 // 检测结构体是否为合法的Element
