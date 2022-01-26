@@ -2,10 +2,10 @@
  * 该文件负责把更新应用到界面上 以及 和生命周期的相关调用
  */
 
-import type {Container} from '../../dom/DOMOperator';
-import type {RefType, VNode} from '../Types';
+import type { Container } from '../../dom/DOMOperator';
+import type { RefType, VNode } from '../Types';
 
-import {listenToPromise, SuspenseChildStatus} from '../render/SuspenseComponent';
+import { listenToPromise, SuspenseChildStatus } from '../render/SuspenseComponent';
 import {
   FunctionComponent,
   ForwardRef,
@@ -17,8 +17,8 @@ import {
   SuspenseComponent,
   MemoComponent,
 } from '../vnode/VNodeTags';
-import {FlagUtils, ResetText} from '../vnode/VNodeFlags';
-import {mergeDefaultProps} from '../render/LazyComponent';
+import { FlagUtils, ResetText, Clear } from '../vnode/VNodeFlags';
+import { mergeDefaultProps } from '../render/LazyComponent';
 import {
   submitDomUpdate,
   clearText,
@@ -29,15 +29,20 @@ import {
   unHideDom,
   clearContainer,
 } from '../../dom/DOMOperator';
-import {callEffectRemove, callUseEffects, callUseLayoutEffectCreate, callUseLayoutEffectRemove} from './HookEffectHandler';
-import {handleSubmitError} from '../ErrorHandler';
+import {
+  callEffectRemove,
+  callUseEffects,
+  callUseLayoutEffectCreate,
+  callUseLayoutEffectRemove
+} from './HookEffectHandler';
+import { handleSubmitError } from '../ErrorHandler';
 import {
   travelVNodeTree,
   clearVNode,
   isDomVNode,
   findDomParent, getSiblingDom,
 } from '../vnode/VNodeUtils';
-import {shouldAutoFocus} from '../../dom/utils/Common';
+import { shouldAutoFocus } from '../../dom/utils/Common';
 
 function callComponentWillUnmount(vNode: VNode, instance: any) {
   try {
@@ -220,14 +225,14 @@ function unmountVNode(vNode: VNode): void {
 function unmountNestedVNodes(vNode: VNode): void {
   travelVNodeTree(vNode, (node) => {
     unmountVNode(node);
-  }, (node) => {
+  }, node =>
     // 如果是DomPortal，不需要遍历child
-    return node.tag === DomPortal;
-  });
+    node.tag === DomPortal
+  );
 }
 
 function submitAddition(vNode: VNode): void {
-  const {parent, parentDom} = findDomParent(vNode);
+  const { parent, parentDom } = findDomParent(vNode);
 
   if (parent.flags.ResetText) {
     // 在insert之前先reset
@@ -244,7 +249,7 @@ function insertOrAppendPlacementNode(
   beforeDom: Element | null,
   parent: Element | Container,
 ): void {
-  const {tag, realNode} = node;
+  const { tag, realNode } = node;
 
   if (isDomVNode(node)) {
     if (beforeDom) {
@@ -291,15 +296,51 @@ function unmountDomComponents(vNode: VNode): void {
     } else {
       unmountVNode(node);
     }
-  }, (node) => {
+  }, node =>
     // 如果是dom不用再遍历child
-    return node.tag === DomComponent || node.tag === DomText;
-  }, null, (node) => {
+    node.tag === DomComponent || node.tag === DomText, null, (node) => {
     if (node.tag === DomPortal) {
       // 当离开portal，需要重新设置parent
       currentParentIsValid = false;
     }
   });
+}
+
+function submitClear(vNode: VNode): void {
+  const realNode = vNode.realNode;
+  const cloneDom = realNode.cloneNode(false); // 复制节点后horizon添加给dom的属性未能复制
+  // 真实 dom 获取的keys只包含新增的属性
+  // 比如真实 dom 拿到的 keys 一般只有两个 horizon 自定义属性
+  // 但考虑到用户可能自定义其他属性，所以采用遍历赋值的方式
+  const customizeKeys = Object.keys(realNode);
+  const keyLength = customizeKeys.length;
+  for(let i = 0; i < keyLength; i++) {
+    const key = customizeKeys[i];
+    // 测试代码 mock 实例的全部可遍历属性都会被Object.keys方法读取到
+    // children 属性被复制意味着复制了子节点，因此要排除
+    if (key !== 'children') {
+      cloneDom[key] = realNode[key]; // 复制cloneNode未能复制的属性
+    }
+  }
+
+  const parentObj = findDomParent(vNode);
+  const currentParent = parentObj.parentDom;
+  let clearChild = vNode.clearChild as VNode; // 上次渲染的child保存在clearChild属性中
+  // 卸载 clearChild 和 它的兄弟节点
+  while(clearChild) {
+    // 卸载子vNode，递归遍历子vNode
+    unmountNestedVNodes(clearChild);
+    clearVNode(clearChild);
+    clearChild = clearChild.next as VNode;
+  }
+  
+  // 在所有子项都卸载后，删除dom树中的节点
+  removeChildDom(currentParent, vNode.realNode);
+  currentParent.append(cloneDom);
+  vNode.realNode = cloneDom;
+  attachRef(vNode);
+  FlagUtils.removeFlag(vNode, Clear);
+  vNode.clearChild = null;
 }
 
 function submitDeletion(vNode: VNode): void {
@@ -348,6 +389,7 @@ export {
   submitResetTextContent,
   submitAddition,
   submitDeletion,
+  submitClear,
   submitUpdate,
   callAfterSubmitLifeCycles,
   attachRef,

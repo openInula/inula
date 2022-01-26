@@ -31,7 +31,7 @@ let ctxOldPreviousContext: Object = {};
 
 // capture阶段设置
 function setNamespaceCtx(vNode: VNode, dom?: Container) {
-  const nextContext = getNSCtx(dom, ctxNamespace, vNode.type);
+  const nextContext = getNSCtx(ctxNamespace, vNode.type, dom);
 
   vNode.setContext(CTX_NAMESPACE, ctxNamespace);
   ctxNamespace = nextContext;

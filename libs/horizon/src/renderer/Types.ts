@@ -21,7 +21,6 @@ export type JSXElement = {
   key: any;
   ref: any;
   props: any;
-  
   belongClassVNode: any;
 };
 

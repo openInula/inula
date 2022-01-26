@@ -35,7 +35,8 @@ export const horizonEventToNativeMap = new Map([
   ['onCompositionUpdate', ['compositionupdate']],
   ['onBeforeInput', ['compositionend', 'keypress', 'textInput']],
   ['onChange', ['change', 'click', 'focusout', 'input',]],
-  ['onSelect', ['focusout', 'contextmenu', 'dragend', 'focusin', 'keydown', 'keyup', 'mousedown', 'mouseup', 'selectionchange']],
+  ['onSelect', ['focusout', 'contextmenu', 'dragend', 'focusin',
+                'keydown', 'keyup', 'mousedown', 'mouseup', 'selectionchange']],
 
   ['onAnimationEnd', [STYLE_AMT_END]],
   ['onAnimationIteration', [STYLE_AMT_ITERATION]],

@@ -129,6 +129,27 @@ function handleError(root, error): void {
   bubbleVNode(processing);
 }
 
+// 判断数组中节点的path的idx元素是否都相等
+function isEqualByIndex(idx: number, nodes: Array<VNode>) {
+  let val = nodes[0].path[idx];
+  for (let i = 1; i < nodes.length; i++) {
+    let node = nodes[i];
+    if (val !== node.path[idx]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function getChildByIndex(vNode: VNode, idx: number) {
+  let node = vNode.child;
+  for (let i = 0; i < idx; i++) {
+    node = node.next;
+  }
+  return node;
+}
+
 // 从多个更新节点中，计算出开始节点。即：找到最近的共同的父辈节点
 export function calcStartUpdateVNode(treeRoot: VNode) {
   const toUpdateNodes = Array.from(treeRoot.toUpdateNodes);
@@ -292,25 +313,10 @@ export function launchUpdateFromVNode(vNode: VNode) {
   }
 }
 
-// 判断数组中节点的path的idx元素是否都相等
-function isEqualByIndex(idx: number, nodes: Array<VNode>) {
-  let val = nodes[0].path[idx];
-  for (let i = 1; i < nodes.length; i++) {
-    let node = nodes[i];
-    if (val !== node.path[idx]) {
-      return false;
-    }
+export function setBuildResultError() {
+  if (getBuildResult() !== BuildCompleted) {
+    setBuildResult(BuildErrored);
   }
-
-  return true;
-}
-
-function getChildByIndex(vNode: VNode, idx: number) {
-  let node = vNode.child;
-  for (let i = 0; i < idx; i++) {
-    node = node.next;
-  }
-  return node;
 }
 
 // ============================== HorizonDOM使用 ==============================

@@ -1,7 +1,7 @@
 import type { VNode } from '../../Types';
 import type { Callback } from '../../UpdateHandler';
 
-import {shallowCompare} from '../../utils/compare';
+import { shallowCompare } from '../../utils/compare';
 import {
   pushUpdate,
   newUpdate,
@@ -40,7 +40,7 @@ function changeStateContent(type: UpdateState, content: object, callback: Callba
   if (type === UpdateState.Update || type === UpdateState.Override) {
     update.content = content;
   }
-  if (callback !== undefined && callback !== null) {
+  if (callback) {
     update.callback = callback;
   }
 

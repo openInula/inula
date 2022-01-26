@@ -4,6 +4,48 @@
 
 import {VNode} from '../../renderer/Types';
 
+// 从原生事件中复制属性到自定义事件中
+function extendAttribute(target, source) {
+  const attributes = [
+    // AnimationEvent
+    'animationName', 'elapsedTime', 'pseudoElement',
+    // CompositionEvent、InputEvent
+    'data',
+    // DragEvent
+    'dataTransfer',
+    // FocusEvent
+    'relatedTarget',
+    // KeyboardEvent
+    'key', 'keyCode', 'charCode', 'code', 'location', 'ctrlKey', 'shiftKey',
+    'altKey', 'metaKey', 'repeat', 'locale', 'getModifierState', 'clipboardData',
+    // MouseEvent
+    'button', 'buttons', 'clientX', 'clientY', 'movementX', 'movementY',
+    'pageX', 'pageY', 'screenX', 'screenY', 'currentTarget',
+    // PointerEvent
+    'pointerId', 'width', 'height', 'pressure', 'tangentialPressure',
+    'tiltX', 'tiltY', 'twist', 'pointerType', 'isPrimary',
+    // TouchEvent
+    'touches', 'targetTouches', 'changedTouches',
+    // TransitionEvent
+    'propertyName',
+    // UIEvent
+    'view', 'detail',
+    // WheelEvent
+    'deltaX', 'deltaY', 'deltaZ', 'deltaMode',
+  ];
+
+  attributes.forEach(attr => {
+    if (typeof source[attr] !== 'undefined') {
+      if (typeof source[attr] === 'function') {
+        target[attr] = function() {
+          return source[attr].apply(source, arguments);
+        };
+      } else {
+        target[attr] = source[attr];
+      }
+    }
+  })
+}
 export class CustomBaseEvent {
 
   data: string;
@@ -36,7 +78,9 @@ export class CustomBaseEvent {
     this.target = target;
     this.timeStamp = nativeEvt.timeStamp || Date.now();
 
-    const defaultPrevented = nativeEvt.defaultPrevented != null ? nativeEvt.defaultPrevented : nativeEvt.returnValue === false;
+    const defaultPrevented = nativeEvt.defaultPrevented != null ?
+                             nativeEvt.defaultPrevented :
+                             nativeEvt.returnValue === false;
     this.defaultPrevented = defaultPrevented;
 
     this.preventDefault = this.preventDefault.bind(this);
@@ -76,44 +120,4 @@ export class CustomBaseEvent {
     this.nativeEvent.cancelBubble = true;
     this.isPropagationStopped = () => true;
   }
-}
-
-// 从原生事件中复制属性到自定义事件中
-function extendAttribute(target, source) {
-  const attributes = [
-    // AnimationEvent
-    'animationName', 'elapsedTime', 'pseudoElement',
-    // CompositionEvent、InputEvent
-    'data',
-    // DragEvent
-    'dataTransfer',
-    // FocusEvent
-    'relatedTarget',
-    // KeyboardEvent
-    'key', 'keyCode', 'charCode', 'code', 'location', 'ctrlKey', 'shiftKey', 'altKey', 'metaKey', 'repeat', 'locale', 'getModifierState', 'clipboardData',
-    // MouseEvent
-    'button', 'buttons', 'clientX', 'clientY', 'movementX', 'movementY', 'pageX', 'pageY', 'screenX', 'screenY', 'currentTarget',
-    // PointerEvent
-    'pointerId', 'width', 'height', 'pressure', 'tangentialPressure', 'tiltX', 'tiltY', 'twist', 'pointerType', 'isPrimary',
-    // TouchEvent
-    'touches', 'targetTouches', 'changedTouches',
-    // TransitionEvent
-    'propertyName',
-    // UIEvent
-    'view', 'detail',
-    // WheelEvent
-    'deltaX', 'deltaY', 'deltaZ', 'deltaMode',
-  ];
-
-  attributes.forEach(attr => {
-    if (typeof source[attr] !== 'undefined') {
-      if (typeof source[attr] === 'function') {
-        target[attr] = function() {
-          return source[attr].apply(source, arguments);
-        };
-      } else {
-        target[attr] = source[attr];
-      }
-    }
-  })
 }

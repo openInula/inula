@@ -8,37 +8,7 @@ import {
 } from '../../event/EventBinding';
 import { isEventProp, isNativeElement } from '../validators/ValidateProps';
 
-// 初始化DOM属性
-export function setDomProps(
-  tagName: string,
-  dom: Element,
-  props: Object,
-): void {
-  const isNativeTag = isNativeElement(tagName, props);
-  const keysOfProps = Object.keys(props);
-
-  for (let i = 0; i < keysOfProps.length; i++) {
-    const propName = keysOfProps[i];
-    const propVal = props[propName];
-
-    updateOneProp(dom, propName, propVal, isNativeTag, true);
-  }
-}
-
-// 更新 DOM 属性
-export function updateDomProps(
-  dom: Element,
-  changeList: Array<any>,
-  isNativeTag: boolean,
-): void {
-  for (let i = 0; i < changeList.length; i++) {
-    const { propName, propVal } = changeList[i];
-
-    updateOneProp(dom, propName, propVal, isNativeTag);
-  }
-}
-
-function updateOneProp(dom, propName, propVal, isNativeTag, isInit?: boolean) {
+function updateOneProp(dom, propName, isNativeTag, propVal?, isInit?: boolean) {
   if (propName === 'style') {
     setStyles(dom, propVal);
   } else if (propName === 'dangerouslySetInnerHTML') {
@@ -56,6 +26,36 @@ function updateOneProp(dom, propName, propVal, isNativeTag, isInit?: boolean) {
     if (!isInit || (isInit && propVal != null)) {
       updateCommonProp(dom, propName, propVal, isNativeTag);
     }
+  }
+}
+
+// 初始化DOM属性
+export function setDomProps(
+  tagName: string,
+  dom: Element,
+  props: Object,
+): void {
+  const isNativeTag = isNativeElement(tagName, props);
+  const keysOfProps = Object.keys(props);
+
+  for (let i = 0; i < keysOfProps.length; i++) {
+    const propName = keysOfProps[i];
+    const propVal = props[propName];
+
+    updateOneProp(dom, propName, isNativeTag, propVal, true);
+  }
+}
+
+// 更新 DOM 属性
+export function updateDomProps(
+  dom: Element,
+  changeList: Array<any>,
+  isNativeTag: boolean,
+): void {
+  for (let i = 0; i < changeList.length; i++) {
+    const { propName, propVal } = changeList[i];
+
+    updateOneProp(dom, propName, isNativeTag, propVal);
   }
 }
 
@@ -111,7 +111,7 @@ export function compareProps(
   for (let i = 0; i < keysOfNewProps.length; i++) {
     const propName = keysOfNewProps[i];
     const newPropValue = newProps[propName];
-    const oldPropValue = oldProps != null ? oldProps[propName] : undefined;
+    const oldPropValue = oldProps != null ? oldProps[propName] : null;
 
     if (newPropValue === oldPropValue || (newPropValue == null && oldPropValue == null)) {
       // 新旧属性值未发生变化，或者新旧属性皆为空值，不需要进行处理

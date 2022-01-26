@@ -105,16 +105,16 @@ export function getSelectionInfo() {
   };
 }
 
-export interface selectionData {
+export interface SelectionData {
   focusedDom: HTMLInputElement | HTMLTextAreaElement | void;
-  selectionRange: {
+  selectionRange?: {
     start: number;
     end: number;
-  }
-};
+  };
+}
 
 // 防止选择范围内的信息因为节点删除或其他原因导致的信息丢失
-export function resetSelectionRange(preSelectionRangeData: selectionData) {
+export function resetSelectionRange(preSelectionRangeData: SelectionData) {
   // 当前 focus 的元素
   const currentFocusedDom = getIFrameFocusedDom();
 

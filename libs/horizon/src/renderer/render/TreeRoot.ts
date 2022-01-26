@@ -6,10 +6,6 @@ import {resetNamespaceCtx, setNamespaceCtx} from '../ContextSaver';
 import {resetOldCtx} from '../components/context/CompatibleContext';
 import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
 
-export function captureRender(processing: VNode): VNode | null {
-  return updateTreeRoot(processing);
-}
-
 export function bubbleRender(processing: VNode) {
   resetNamespaceCtx(processing);
   resetOldCtx(processing);
@@ -39,4 +35,8 @@ function updateTreeRoot(processing) {
   }
   processing.child = createVNodeChildren(processing, newElement);
   return processing.child;
+}
+
+export function captureRender(processing: VNode): VNode | null {
+  return updateTreeRoot(processing);
 }

@@ -13,7 +13,7 @@ const horizonEventName = 'onSelect'
 
 let currentElement = null;
 let currentVNode = null;
-let lastSelection = null;
+let lastSelection: Selection | null = null;
 
 function initTargetCache(dom, vNode) {
   if (isTextInputElement(dom) || dom.contentEditable === 'true') {
@@ -85,7 +85,7 @@ export function getListeners(
   target: null | EventTarget,
 ): ProcessingListenerList {
   const targetNode = vNode ? getDom(vNode) : window;
-  let eventUnitList = [];
+  let eventUnitList: ProcessingListenerList = [];
   switch (name) {
     case 'focusin':
       initTargetCache(targetNode, vNode);

@@ -5,15 +5,6 @@ import {handleEventMain} from './HorizonEventMain';
 import {runDiscreteUpdates} from '../renderer/Renderer';
 import {getEventTarget} from './utils';
 
-// 生成委托事件的监听方法
-export function createCustomEventListener(
-  target: EventTarget,
-  nativeEvtName: string,
-  isCapture: boolean,
-): EventListener {
-  return triggerDelegatedEvent.bind(null, nativeEvtName, isCapture, target);
-}
-
 // 触发委托事件
 function triggerDelegatedEvent(
   nativeEvtName: string,
@@ -38,4 +29,13 @@ function triggerDelegatedEvent(
     }
   }
   handleEventMain(nativeEvtName, isCapture, nativeEvent, targetVNode, targetDom);
+}
+
+// 生成委托事件的监听方法
+export function createCustomEventListener(
+  target: EventTarget,
+  nativeEvtName: string,
+  isCapture: boolean,
+): EventListener {
+  return triggerDelegatedEvent.bind(null, nativeEvtName, isCapture, target);
 }

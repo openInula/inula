@@ -14,6 +14,55 @@ import {handleSuspenseChildThrowError} from './render/SuspenseComponent';
 import {updateShouldUpdateOfTree} from './vnode/VNodeShouldUpdate';
 import {BuildErrored, setBuildResult} from './GlobalVar';
 
+function consoleError(error: any): void {
+  if (isDev) {
+    // 只打印message为了让测试用例能pass
+    console['error']('The codes throw the error: ' + error.message);
+  } else {
+    console['error'](error);
+  }
+}
+
+function handleRootError(
+  error: any,
+) {
+  // 注意：如果根节点抛出错误，不会销毁整棵树，只打印日志，抛出异常。
+  setRootThrowError(error);
+  consoleError(error);
+}
+
+function createClassErrorUpdate(
+  vNode: VNode,
+  error: any,
+): Update {
+  const update = newUpdate();
+  update.type = UpdateState.Error;
+
+  const getDerivedStateFromError = vNode.type.getDerivedStateFromError;
+  if (typeof getDerivedStateFromError === 'function') {
+    update.content = () => {
+      consoleError(error);
+      return getDerivedStateFromError(error);
+    };
+  }
+
+  const inst = vNode.realNode;
+  if (inst !== null && typeof inst.componentDidCatch === 'function') {
+    update.callback = function callback() {
+      if (typeof getDerivedStateFromError !== 'function') {
+        // 打印错误
+        consoleError(error);
+      }
+
+      // @ts-ignore
+      this.componentDidCatch(error, {
+        componentStack: '',
+      });
+    };
+  }
+  return update;
+}
+
 // 处理capture和bubble阶段抛出的错误
 export function handleRenderThrowError(
   sourceVNode: VNode,
@@ -77,6 +126,19 @@ export function handleRenderThrowError(
   } while (vNode !== null);
 }
 
+// 新增一个update，并且触发调度
+function triggerUpdate(vNode, state) {
+  const update = newUpdate();
+  update.content = state;
+  pushUpdate(vNode, update);
+
+  const root = updateShouldUpdateOfTree(vNode);
+  if (root !== null) {
+    tryRenderRoot(root);
+  }
+}
+
+
 // 处理submit阶段的异常
 export function handleSubmitError(vNode: VNode, error: any) {
   if (vNode.tag === TreeRoot) {
@@ -125,66 +187,5 @@ export function handleSubmitError(vNode: VNode, error: any) {
       }
     }
     node = node.parent;
-  }
-}
-
-function createClassErrorUpdate(
-  vNode: VNode,
-  error: any,
-): Update {
-  const update = newUpdate();
-  update.type = UpdateState.Error;
-
-  const getDerivedStateFromError = vNode.type.getDerivedStateFromError;
-  if (typeof getDerivedStateFromError === 'function') {
-    update.content = () => {
-      consoleError(error);
-      return getDerivedStateFromError(error);
-    };
-  }
-
-  const inst = vNode.realNode;
-  if (inst !== null && typeof inst.componentDidCatch === 'function') {
-    update.callback = function callback() {
-      if (typeof getDerivedStateFromError !== 'function') {
-        // 打印错误
-        consoleError(error);
-      }
-
-      // @ts-ignore
-      this.componentDidCatch(error, {
-        componentStack: '',
-      });
-    };
-  }
-  return update;
-}
-
-// 新增一个update，并且触发调度
-function triggerUpdate(vNode, state) {
-  const update = newUpdate();
-  update.content = state;
-  pushUpdate(vNode, update);
-
-  const root = updateShouldUpdateOfTree(vNode);
-  if (root !== null) {
-    tryRenderFromRoot(root);
-  }
-}
-
-function handleRootError(
-  error: any,
-) {
-  // 注意：如果根节点抛出错误，不会销毁整棵树，只打印日志，抛出异常。
-  setRootThrowError(error);
-  consoleError(error);
-}
-
-function consoleError(error: any): void {
-  if (isDev) {
-    // 只打印message为了让测试用例能pass
-    console['error']('The codes throw the error: ' + error.message);
-  } else {
-    console['error'](error);
   }
 }
