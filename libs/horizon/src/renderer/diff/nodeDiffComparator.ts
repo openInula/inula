@@ -1,7 +1,7 @@
 import type { VNode } from '../Types';
 import { FlagUtils } from '../vnode/VNodeFlags';
 import { TYPE_COMMON_ELEMENT, TYPE_FRAGMENT, TYPE_PORTAL } from '../../external/JSXElementType';
-import { DomText, DomPortal, Fragment } from '../vnode/VNodeTags';
+import { DomText, DomPortal, Fragment, DomComponent } from '../vnode/VNodeTags';
 import {updateVNode, createVNode, createVNodeFromElement, updateVNodePath} from '../vnode/VNodeCreator';
 import {
   isSameType,
@@ -320,7 +320,12 @@ function diffArrayNodes(
   // 3. 新节点已经处理完成
   if (leftIdx === rightIdx) {
     if (isComparing) {
-      deleteVNodes(parentNode, oldNode, rightEndOldNode);
+      if (firstChild && parentNode.tag === DomComponent && newChildren.length === 0) {
+        FlagUtils.markClear(parentNode);
+        parentNode.clearChild = firstChild;
+      } else {
+        deleteVNodes(parentNode, oldNode, rightEndOldNode);
+      }
     }
 
     if (rightNewNode) {

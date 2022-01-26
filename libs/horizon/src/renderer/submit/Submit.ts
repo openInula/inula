@@ -9,7 +9,7 @@ import {
   attachRef,
   callAfterSubmitLifeCycles,
   callBeforeSubmitLifeCycles, submitDeletion, submitAddition,
-  submitResetTextContent, submitUpdate, detachRef,
+  submitResetTextContent, submitUpdate, detachRef, submitClear,
 } from './LifeCycleHandler';
 import {tryRenderRoot, setProcessing} from '../TreeBuilder';
 import {
@@ -121,7 +121,7 @@ function submit(dirtyNodes: Array<VNode>) {
         }
       }
 
-      const {Addition, Update, Deletion} = node.flags;
+      const {Addition, Update, Deletion, Clear} = node.flags;
       if (Addition && Update) {
         // Addition
         submitAddition(node);
@@ -137,6 +137,9 @@ function submit(dirtyNodes: Array<VNode>) {
           submitUpdate(node);
         } else if (Deletion) {
           submitDeletion(node);
+        }
+        if (Clear) {
+          submitClear(node);
         }
       }
     } catch (error) {

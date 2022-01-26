@@ -17,7 +17,7 @@ import {
   SuspenseComponent,
   MemoComponent,
 } from '../vnode/VNodeTags';
-import { FlagUtils, ResetText } from '../vnode/VNodeFlags';
+import { FlagUtils, ResetText, Clear } from '../vnode/VNodeFlags';
 import { mergeDefaultProps } from '../render/LazyComponent';
 import {
   submitDomUpdate,
@@ -307,6 +307,42 @@ function unmountDomComponents(vNode: VNode): void {
   });
 }
 
+function submitClear(vNode: VNode): void {
+  const realNode = vNode.realNode;
+  const cloneDom = realNode.cloneNode(false); // 复制节点后horizon添加给dom的属性未能复制
+  // 真实 dom 获取的keys只包含新增的属性
+  // 比如真实 dom 拿到的 keys 一般只有两个 horizon 自定义属性
+  // 但考虑到用户可能自定义其他属性，所以采用遍历赋值的方式
+  const customizeKeys = Object.keys(realNode);
+  const keyLength = customizeKeys.length;
+  for(let i = 0; i < keyLength; i++) {
+    const key = customizeKeys[i];
+    // 测试代码 mock 实例的全部可遍历属性都会被Object.keys方法读取到
+    // children 属性被复制意味着复制了子节点，因此要排除
+    if (key !== 'children') {
+      cloneDom[key] = realNode[key]; // 复制cloneNode未能复制的属性
+    }
+  }
+
+  const parentObj = findDomParent(vNode);
+  const currentParent = parentObj.parentDom;
+  let clearChild = vNode.clearChild as VNode; // 上次渲染的child保存在clearChild属性中
+  // 卸载 clearChild 和 它的兄弟节点
+  while(clearChild) {
+    // 卸载子vNode，递归遍历子vNode
+    unmountNestedVNodes(clearChild);
+    clearVNode(clearChild);
+    clearChild = clearChild.next as VNode;
+  }
+  
+  // 在所有子项都卸载后，删除dom树中的节点
+  removeChildDom(currentParent, vNode.realNode);
+  currentParent.append(cloneDom);
+  vNode.realNode = cloneDom;
+  FlagUtils.removeFlag(vNode, Clear);
+  vNode.clearChild = null;
+}
+
 function submitDeletion(vNode: VNode): void {
   // 遍历所有子节点：删除dom节点，detach ref 和 调用componentWillUnmount()
   unmountDomComponents(vNode);
@@ -353,6 +389,7 @@ export {
   submitResetTextContent,
   submitAddition,
   submitDeletion,
+  submitClear,
   submitUpdate,
   callAfterSubmitLifeCycles,
   attachRef,
