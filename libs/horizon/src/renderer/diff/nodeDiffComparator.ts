@@ -321,7 +321,6 @@ function diffArrayNodes(
   if (leftIdx === rightIdx) {
     if (isComparing) {
       if (firstChild && parentNode.tag === DomComponent && newChildren.length === 0) {
-        // if (false) {
         FlagUtils.markClear(parentNode);
         parentNode.clearChild = firstChild;
       } else {
