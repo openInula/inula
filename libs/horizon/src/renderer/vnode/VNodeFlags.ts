@@ -18,9 +18,10 @@ export const Interrupted = 'Interrupted';
 export const ShouldCapture = 'ShouldCapture';
 // For suspense
 export const ForceUpdate = 'ForceUpdate';
+export const Clear = 'Clear';
 
-const FlagArr = [Addition, Update, Deletion, ResetText, Callback,
-                 DidCapture, Ref, Snapshot, Interrupted, ShouldCapture, ForceUpdate];
+const FlagArr = [Addition, Update, Deletion, Clear, ResetText, Callback,
+  DidCapture, Ref, Snapshot, Interrupted, ShouldCapture, ForceUpdate];
 
 const LifecycleEffectArr = [Update, Callback, Ref, Snapshot];
 
@@ -89,6 +90,10 @@ export class FlagUtils {
   }
   static markForceUpdate(node: VNode) {
     node.flags.ForceUpdate = true;
+  }
+
+  static markClear(node: VNode) {
+    node.flags.Clear = true;
   }
 }
 
