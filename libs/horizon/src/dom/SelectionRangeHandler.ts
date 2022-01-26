@@ -107,9 +107,9 @@ export function getSelectionInfo() {
 
 export interface SelectionData {
   focusedDom: HTMLInputElement | HTMLTextAreaElement | void;
-  selectionRange: {
-    start: number | null;
-    end: number | null;
+  selectionRange?: {
+    start: number;
+    end: number;
   };
 }
 
