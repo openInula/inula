@@ -24,11 +24,12 @@ const internalKeys = {
 };
 
 // 通过 VNode 实例获取 DOM 节点
-export function getDom(vNode: VNode): Element | Text | void {
+export function getDom(vNode: VNode): Element | Text | null {
   const {tag} = vNode;
   if (tag === DomComponent || tag === DomText) {
     return vNode.realNode;
   }
+  return null;
 }
 
 // 将 VNode 属性相关信息挂到 DOM 对象的特定属性上

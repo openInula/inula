@@ -5,7 +5,7 @@ import {
 import {
   createDom,
 } from './utils/DomCreator';
-import { getSelectionInfo, resetSelectionRange, selectionData } from './SelectionRangeHandler';
+import { getSelectionInfo, resetSelectionRange, SelectionData } from './SelectionRangeHandler';
 import { isElement, isComment, isDocument, isDocumentFragment, getDomTag, shouldAutoFocus } from './utils/Common';
 import { NSS } from './utils/DomCreator';
 import { adjustStyleValue } from './DOMPropertiesHandler/StyleHandler';
@@ -37,7 +37,7 @@ export type Props = {
 
 export type Container = (Element & { _treeRoot?: VNode }) | (Document & { _treeRoot?: VNode });
 
-let selectionInfo: null | selectionData = null;
+let selectionInfo: null | SelectionData = null;
 
 function getChildNS(parentNS: string | null, tagName: string): string {
   if (parentNS === NSS.svg && tagName === 'foreignObject') {
@@ -54,12 +54,12 @@ function getChildNS(parentNS: string | null, tagName: string): string {
 }
 
 // 获取容器
-export function getNSCtx(dom?: Container, parentNS: string, type: string): string {
+export function getNSCtx(parentNS: string, type: string, dom?: Container): string {
   return dom ? getChildNS(dom.namespaceURI ?? null, dom.nodeName) : getChildNS(parentNS, type);
 }
 
 export function prepareForSubmit(): void {
-  selectionInfo = <selectionData>getSelectionInfo();
+  selectionInfo = <SelectionData>getSelectionInfo();
 }
 
 export function resetAfterSubmit(): void {

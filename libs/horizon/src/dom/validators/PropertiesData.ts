@@ -6,7 +6,7 @@ export enum PROPERTY_TYPE {
   STRING, // 普通的字符串类型
   SPECIAL, // 需要特殊处理的属性类型
   BOOLEAN_STR, // 字符串类型的 true false
-};
+}
 
 export type PropDetails = {
   propName: string;
@@ -14,10 +14,6 @@ export type PropDetails = {
   attrName: string;
   attrNS: string | null;
 };
-
-export function getPropDetails(name: string): PropDetails | null {
-  return propsDetailData[name] || null;
-}
 
 // 属性相关数据
 // 依次为 propertyName、type、attributeName、attributeNamespace，不填则使用默认值
@@ -123,3 +119,7 @@ propertiesData.forEach(record => {
     attrNS,
   };
 });
+
+export function getPropDetails(name: string): PropDetails | null {
+  return propsDetailData[name] || null;
+}

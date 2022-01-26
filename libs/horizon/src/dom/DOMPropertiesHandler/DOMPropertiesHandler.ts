@@ -8,7 +8,7 @@ import {
 } from '../../event/EventBinding';
 import { isEventProp, isNativeElement } from '../validators/ValidateProps';
 
-function updateOneProp(dom, propName, propVal, isNativeTag, isInit?: boolean) {
+function updateOneProp(dom, propName, isNativeTag, propVal?, isInit?: boolean) {
   if (propName === 'style') {
     setStyles(dom, propVal);
   } else if (propName === 'dangerouslySetInnerHTML') {
@@ -42,7 +42,7 @@ export function setDomProps(
     const propName = keysOfProps[i];
     const propVal = props[propName];
 
-    updateOneProp(dom, propName, propVal, isNativeTag, true);
+    updateOneProp(dom, propName, isNativeTag, propVal, true);
   }
 }
 
@@ -55,7 +55,7 @@ export function updateDomProps(
   for (let i = 0; i < changeList.length; i++) {
     const { propName, propVal } = changeList[i];
 
-    updateOneProp(dom, propName, propVal, isNativeTag);
+    updateOneProp(dom, propName, isNativeTag, propVal);
   }
 }
 
@@ -111,7 +111,7 @@ export function compareProps(
   for (let i = 0; i < keysOfNewProps.length; i++) {
     const propName = keysOfNewProps[i];
     const newPropValue = newProps[propName];
-    const oldPropValue = oldProps != null ? oldProps[propName] : undefined;
+    const oldPropValue = oldProps != null ? oldProps[propName] : null;
 
     if (newPropValue === oldPropValue || (newPropValue == null && oldPropValue == null)) {
       // 新旧属性值未发生变化，或者新旧属性皆为空值，不需要进行处理
