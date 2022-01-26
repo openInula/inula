@@ -54,7 +54,7 @@ function getChildNS(parentNS: string | null, tagName: string): string {
 }
 
 // 获取容器
-export function getNSCtx(parentNS: string, type: string, dom: Container | undefined): string {
+export function getNSCtx(parentNS: string, type: string, dom?: Container): string {
   return dom ? getChildNS(dom.namespaceURI ?? null, dom.nodeName) : getChildNS(parentNS, type);
 }
 
