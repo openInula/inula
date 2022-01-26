@@ -62,7 +62,7 @@ export class VNode {
     ForceUpdate?: boolean;
     Clear?: boolean;
   } = {};
-  clearChild: VNode|null = null;
+  clearChild: VNode | null = null;
   // one tree相关属性
   isCreated: boolean = true;
   oldHooks: Array<Hook<any, any>> = []; // 保存上一次执行的hook

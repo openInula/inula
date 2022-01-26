@@ -16,7 +16,7 @@ import {
 
 const prefix = '_horizon';
 
-export const internalKeys = {
+const internalKeys = {
   VNode: `${prefix}VNode`,
   props: `${prefix}Props`,
   events: `${prefix}Events`,

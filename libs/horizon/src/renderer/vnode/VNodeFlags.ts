@@ -20,8 +20,8 @@ export const ShouldCapture = 'ShouldCapture';
 export const ForceUpdate = 'ForceUpdate';
 export const Clear = 'Clear';
 
-const FlagArr = [Addition, Update, Deletion, ResetText, Callback,
-                 DidCapture, Ref, Snapshot, Interrupted, ShouldCapture, ForceUpdate, Clear];
+const FlagArr = [Addition, Update, Deletion, Clear, ResetText, Callback,
+  DidCapture, Ref, Snapshot, Interrupted, ShouldCapture, ForceUpdate];
 
 const LifecycleEffectArr = [Update, Callback, Ref, Snapshot];
 
