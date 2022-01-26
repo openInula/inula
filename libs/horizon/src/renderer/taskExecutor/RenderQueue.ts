@@ -28,22 +28,14 @@ function callRenderQueue() {
     // 防止重入
     isCallingRenderQueue = true;
 
-    let i = 0;
     try {
-      for (; i < renderQueue.length; i++) {
-        let callback = renderQueue[i];
+      let callback;
+      while (callback = renderQueue.shift()) {
         callback();
       }
+
       renderQueue = null;
     } catch (error) {
-      // 如果有异常抛出，请将剩余的回调留在队列中
-      if (renderQueue !== null) {
-        renderQueue = renderQueue.slice(i + 1);
-      }
-
-      // 在下一个异步中再调用
-      runAsync(callRenderQueueImmediate, ImmediatePriority);
-
       throw error;
     } finally {
       isCallingRenderQueue = false;

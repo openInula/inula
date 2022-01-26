@@ -9,7 +9,7 @@ import {
   Fragment,
 } from '../vnode/VNodeTags';
 import {pushForceUpdate} from '../UpdateHandler';
-import {launchUpdateFromVNode, tryRenderRoot} from '../TreeBuilder';
+import {launchUpdateFromVNode, tryRenderFromRoot} from '../TreeBuilder';
 import {updateShouldUpdateOfTree} from '../vnode/VNodeShouldUpdate';
 import {getContextChangeCtx} from '../ContextSaver';
 
@@ -210,7 +210,7 @@ function resolvePromise(suspenseVNode: VNode, promise: PromiseType<any>) {
   suspenseVNode.promiseResolve = true;
   const root = updateShouldUpdateOfTree(suspenseVNode);
   if (root !== null) {
-    tryRenderRoot(root);
+    tryRenderFromRoot(root);
   }
 }
 

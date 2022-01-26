@@ -8,10 +8,11 @@ import type {Update} from './UpdateHandler';
 import {ClassComponent, TreeRoot} from './vnode/VNodeTags';
 import {FlagUtils, Interrupted} from './vnode/VNodeFlags';
 import {newUpdate, UpdateState, pushUpdate} from './UpdateHandler';
-import {launchUpdateFromVNode, setBuildResultError, tryRenderRoot} from './TreeBuilder';
+import {launchUpdateFromVNode, tryRenderFromRoot} from './TreeBuilder';
 import {setRootThrowError} from './submit/Submit';
 import {handleSuspenseChildThrowError} from './render/SuspenseComponent';
 import {updateShouldUpdateOfTree} from './vnode/VNodeShouldUpdate';
+import {BuildErrored, setBuildResult} from './GlobalVar';
 
 function consoleError(error: any): void {
   if (isDev) {
@@ -82,7 +83,7 @@ export function handleRenderThrowError(
   }
 
   // 抛出错误无法作为suspense内容处理（或无suspense来处理），这次当成真的错误来处理
-  setBuildResultError();
+  setBuildResult(BuildErrored);
 
   // 向上遍历寻找ClassComponent组件（同时也是Error Boundaries组件） 或者 TreeRoot
   let vNode = sourceVNode.parent;

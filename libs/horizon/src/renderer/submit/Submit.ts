@@ -11,7 +11,7 @@ import {
   callBeforeSubmitLifeCycles, submitDeletion, submitAddition,
   submitResetTextContent, submitUpdate, detachRef, submitClear,
 } from './LifeCycleHandler';
-import {tryRenderRoot, setProcessing} from '../TreeBuilder';
+import {tryRenderFromRoot, setProcessing} from '../TreeBuilder';
 import {
   BySync,
   InRender,
@@ -78,7 +78,7 @@ export function submitToRender(treeRoot) {
   countLoopingUpdate(treeRoot);
 
   // 在退出`submit` 之前始终调用此函数，以确保任何已计划在此根上执行的update被执行。
-  tryRenderRoot(treeRoot);
+  tryRenderFromRoot(treeRoot);
 
   if (rootThrowError) {
     const error = rootThrowError;

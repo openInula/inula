@@ -272,7 +272,7 @@ function renderFromRoot(treeRoot) {
 }
 
 // 尝试去渲染，已有任务就跳出
-export function tryRenderRoot(treeRoot: VNode) {
+export function tryRenderFromRoot(treeRoot: VNode) {
   if (treeRoot.shouldUpdate && treeRoot.task === null) {
     // 任务放进queue，但是调度开始还是异步的
     treeRoot.task = pushRenderCallback(
@@ -304,7 +304,7 @@ export function launchUpdateFromVNode(vNode: VNode) {
     // 不能改成下面的异步，否则会有时序问题，因为业务可能会依赖这个渲染的完成。
     renderFromRoot(treeRoot);
   } else {
-    tryRenderRoot(treeRoot);
+    tryRenderFromRoot(treeRoot);
 
     if (!isExecuting()) {
       // 同步执行
