@@ -339,6 +339,7 @@ function submitClear(vNode: VNode): void {
   removeChildDom(currentParent, vNode.realNode);
   currentParent.append(cloneDom);
   vNode.realNode = cloneDom;
+  attachRef(vNode);
   FlagUtils.removeFlag(vNode, Clear);
   vNode.clearChild = null;
 }
