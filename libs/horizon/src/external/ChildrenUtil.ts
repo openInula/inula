@@ -12,6 +12,44 @@ function getItemKey(item: any, index: number): string {
   return '.' + index.toString(36);
 }
 
+function mapChildrenToArray(
+  children: any,
+  arr: Array<any>,
+  prefix: string,
+  callback?: Function,
+): number | void {
+  const type = typeof children;
+  switch (type) {
+    // 继承原有规格，undefined和boolean类型按照null处理
+    case 'undefined':
+    case 'boolean':
+      callMapFun(null, arr, prefix, callback);
+      return;
+    case 'number':
+    case 'string':
+      callMapFun(children, arr, prefix, callback);
+      return;
+    case 'object':
+      if (children === null) {
+        callMapFun(null, arr, prefix, callback);
+        return;
+      }
+      const vtype = children.vtype;
+      if (vtype === TYPE_COMMON_ELEMENT || vtype === TYPE_PORTAL) {
+        callMapFun(children, arr, prefix, callback) ;
+        return;
+      }
+      if (Array.isArray(children)) {
+        processArrayChildren(children, arr, prefix, callback);
+        return;
+      }
+      throw new Error(
+        'Object is invalid as a Horizon child. '
+      );
+    // No Default
+  }
+}
+
 function processArrayChildren(
   children: any,
   arr: Array<any>,
@@ -58,44 +96,6 @@ function callMapFun(
       );
     }
     arr.push(mappedChild);
-  }
-}
-
-function mapChildrenToArray(
-  children: any,
-  arr: Array<any>,
-  prefix: string,
-  callback?: Function,
-): number | void {
-  const type = typeof children;
-  switch (type) {
-    // 继承原有规格，undefined和boolean类型按照null处理
-    case 'undefined':
-    case 'boolean':
-      callMapFun(null, arr, prefix, callback);
-      return;
-    case 'number':
-    case 'string':
-      callMapFun(children, arr, prefix, callback);
-      return;
-    case 'object':
-      if (children === null) {
-        callMapFun(null, arr, prefix, callback);
-        return;
-      }
-      const vtype = children.vtype;
-      if (vtype === TYPE_COMMON_ELEMENT || vtype === TYPE_PORTAL) {
-        callMapFun(children, arr, prefix, callback) ;
-        return;
-      }
-      if (Array.isArray(children)) {
-        processArrayChildren(children, arr, prefix, callback);
-        return;
-      }
-      throw new Error(
-        'Object is invalid as a Horizon child. '
-      );
-    // No Default
   }
 }
 

@@ -17,7 +17,7 @@ enum DiffCategory {
   TEXT_NODE = 'TEXT_NODE',
   OBJECT_NODE = 'OBJECT_NODE',
   ARR_NODE = 'ARR_NODE',
-};
+}
 
 // 检查是不是被 FRAGMENT 包裹
 function isNoKeyFragment(child: any) {
@@ -31,7 +31,7 @@ function deleteVNode(parentNode: VNode, delVNode: VNode): void {
 }
 
 // 清除多个节点
-function deleteVNodes(parentVNode: VNode, startDelVNode: VNode, endVNode?: VNode): void {
+function deleteVNodes(parentVNode: VNode, startDelVNode: VNode | null, endVNode?: VNode): void {
   let node = startDelVNode;
 
   while (node !== null) {
@@ -67,7 +67,7 @@ function checkCanReuseNode(oldNode: VNode | null, newChild: any): boolean {
   return false;
 }
 
-function getNodeType(newChild: any): string {
+function getNodeType(newChild: any): string | null {
   if (newChild === null) {
     return null;
   }
@@ -186,9 +186,7 @@ function transLeftChildrenToMap(
 
   travelChildren(startChild, (node) => {
     leftChildrenMap.set(node.key !== null ? node.key : node.eIndex, node);
-  }, (node) => {
-    return node === rightEndVNode;
-  });
+  }, node => node === rightEndVNode);
 
   return leftChildrenMap;
 }
@@ -206,6 +204,11 @@ function getOldNodeFromMap(nodeMap: Map<string | number, VNode>, newIdx: number,
     }
   }
   return null;
+}
+
+function setCIndex(vNode: VNode, idx: number) {
+  vNode.cIndex = idx;
+  updateVNodePath(vNode);
 }
 
 // diff数组类型的节点，核心算法
@@ -277,7 +280,7 @@ function diffArrayNodes(
   // 从后往前，新资源的位置还没有到最末端，旧的vNode也还没遍历完，则可以考虑从后往前开始
   if (rightIdx > leftIdx && oldNode !== null) {
     const rightRemainingOldChildren = transRightChildrenToArray(oldNode);
-    let rightOldIndex = rightRemainingOldChildren.length - 1;
+    let rightOldIndex: number | null = rightRemainingOldChildren.length - 1;
 
     // 2. 从右侧开始比对currentVNode和newChildren，若不能复用则跳出循环
     for (; rightIdx > leftIdx; rightIdx--) {
@@ -377,7 +380,7 @@ function diffArrayNodes(
       if (oldNodeFromMap !== null) {
         let eIndex = newNode.eIndex;
         eIndexes.push(eIndex);
-        const last = eIndexes[result[result.length - 1]];
+        const last: number | undefined = eIndexes[result[result.length - 1]];
         if (eIndex > last || last === undefined) { // 大的 eIndex直接放在最后
           preIndex[i] = result[result.length - 1];
           result.push(i);
@@ -453,11 +456,6 @@ function setVNodesCIndex(startChild: VNode, startIdx: number) {
     node = node.next;
     idx++;
   }
-}
-
-function setCIndex(vNode: VNode, idx: number) {
-  vNode.cIndex = idx;
-  updateVNodePath(vNode);
 }
 
 // 新节点是数组类型

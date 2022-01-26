@@ -21,7 +21,6 @@ const svgHumpAttr = new Set(['allowReorder', 'autoReverse', 'baseFrequency', 'ba
 // 驼峰 变 “-”
 function convertToLowerCase(str) {
   const replacer = (match, char) => `-${char.toLowerCase()}`;
-  
   return str.replace(/([A-Z])/g, replacer);
 }
 

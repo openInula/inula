@@ -1,3 +1,14 @@
+function isNeedUnitCSS(propName: string) {
+  return !(noUnitCSS.includes(propName)
+    || propName.startsWith('borderImage')
+    || propName.startsWith('flex')
+    || propName.startsWith('gridRow')
+    || propName.startsWith('gridColumn')
+    || propName.startsWith('stroke')
+    || propName.startsWith('box')
+    || propName.endsWith('Opacity'));
+}
+
 /**
  * 对一些没有写单位的样式进行适配，例如：width: 10 => width: 10px
  * 对空值或布尔值进行适配，转为空字符串
@@ -38,14 +49,3 @@ export function setStyles(dom, styles) {
  */
 const noUnitCSS = ['animationIterationCount', 'columnCount', 'columns', 'gridArea', 'fontWeight', 'lineClamp',
   'lineHeight', 'opacity', 'order', 'orphans', 'tabSize', 'widows', 'zIndex', 'zoom'];
-
-function isNeedUnitCSS(propName: string) {
-  return !(noUnitCSS.includes(propName)
-    || propName.startsWith('borderImage')
-    || propName.startsWith('flex')
-    || propName.startsWith('gridRow')
-    || propName.startsWith('gridColumn')
-    || propName.startsWith('stroke')
-    || propName.startsWith('box')
-    || propName.endsWith('Opacity'));
-}

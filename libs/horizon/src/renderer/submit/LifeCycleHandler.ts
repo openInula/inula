@@ -225,10 +225,10 @@ function unmountVNode(vNode: VNode): void {
 function unmountNestedVNodes(vNode: VNode): void {
   travelVNodeTree(vNode, (node) => {
     unmountVNode(node);
-  }, (node) => {
+  }, node =>
     // 如果是DomPortal，不需要遍历child
-    return node.tag === DomPortal;
-  });
+    node.tag === DomPortal
+  );
 }
 
 function submitAddition(vNode: VNode): void {
@@ -296,10 +296,9 @@ function unmountDomComponents(vNode: VNode): void {
     } else {
       unmountVNode(node);
     }
-  }, (node) => {
+  }, node =>
     // 如果是dom不用再遍历child
-    return node.tag === DomComponent || node.tag === DomText;
-  }, null, (node) => {
+    node.tag === DomComponent || node.tag === DomText, null, (node) => {
     if (node.tag === DomPortal) {
       // 当离开portal，需要重新设置parent
       currentParentIsValid = false;
