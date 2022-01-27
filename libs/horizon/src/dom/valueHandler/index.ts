@@ -21,6 +21,7 @@ import {
   getTextareaPropsWithoutValue,
   updateTextareaValue,
 } from './TextareaValueHandler';
+import {getDomTag} from "../utils/Common";
 
 // 获取元素除了被代理的值以外的属性
 function getPropsWithoutValue(type: string, dom: HorizonDom, properties: IProperty) {
@@ -72,7 +73,8 @@ function updateValue(type: string, dom: HorizonDom, properties: IProperty) {
   }
 }
 
-function resetValue(dom: HorizonDom, type: string, properties: IProperty) {
+function resetValue(dom: HorizonDom, properties: IProperty) {
+  const type = getDomTag(dom);
   switch (type) {
     case 'input':
       resetInputValue(<HTMLInputElement>dom, properties);

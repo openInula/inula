@@ -50,7 +50,5 @@ export function getCustomEventNameWithOn(name) {
   if (!name) {
     return '';
   }
-  const capitalizedEvent = name[0].toUpperCase() + name.slice(1);
-  const horizonEventName = 'on' + capitalizedEvent;
-  return horizonEventName;
+  return 'on' + name[0].toUpperCase() + name.slice(1);
 }
