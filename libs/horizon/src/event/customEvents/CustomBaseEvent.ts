@@ -34,9 +34,12 @@ function extendAttribute(target, source) {
     'deltaX', 'deltaY', 'deltaZ', 'deltaMode',
   ];
 
-  attributes.forEach(attr => {
-    if (typeof source[attr] !== 'undefined') {
-      if (typeof source[attr] === 'function') {
+  const length = attributes.length;
+  for (let i = 0; i < length; i++) {
+    const attr = attributes[i];
+    const type = source[attr];
+    if (type !== 'undefined') {
+      if (type === 'function') {
         target[attr] = function() {
           return source[attr].apply(source, arguments);
         };
@@ -44,7 +47,7 @@ function extendAttribute(target, source) {
         target[attr] = source[attr];
       }
     }
-  })
+  }
 }
 export class CustomBaseEvent {
 
