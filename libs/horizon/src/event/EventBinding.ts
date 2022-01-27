@@ -1,14 +1,19 @@
 /**
- * 事件绑定实现
+ * 事件绑定实现，分为绑定委托事件和非委托事件
  */
 import {allDelegatedNativeEvents} from './EventCollection';
 import {isDocument} from '../dom/utils/Common';
 import {
   getEventListeners,
+  getNearestVNode,
   getNonDelegatedListenerMap,
 } from '../dom/DOMInternalKeys';
-import {createCustomEventListener} from './WrapperListener';
 import {CustomBaseEvent} from './customEvents/CustomBaseEvent';
+import {runDiscreteUpdates} from '../renderer/TreeBuilder';
+import {getEventTarget} from './utils';
+import {isMounted} from '../renderer/vnode/VNodeUtils';
+import {SuspenseComponent} from '../renderer/vnode/VNodeTags';
+import {handleEventMain} from './HorizonEventMain';
 
 const listeningMarker = '_horizonListening' + Math.random().toString(36).slice(4);
 
@@ -18,6 +23,33 @@ function getListenerSetKey(nativeEvtName: string, isCapture: boolean): string {
   return `${nativeEvtName}__${sufix}`;
 }
 
+// 触发委托事件
+function triggerDelegatedEvent(
+  nativeEvtName: string,
+  isCapture: boolean,
+  targetDom: EventTarget,
+  nativeEvent, // 事件对象event
+) {
+  // 执行之前的调度事件
+  runDiscreteUpdates();
+
+  const nativeEventTarget = getEventTarget(nativeEvent);
+  let targetVNode = getNearestVNode(nativeEventTarget);
+
+  if (targetVNode !== null) {
+    if (isMounted(targetVNode)) {
+      if (targetVNode.tag === SuspenseComponent) {
+        targetVNode = null;
+      }
+    } else {
+      // vNode已销毁
+      targetVNode = null;
+    }
+  }
+  handleEventMain(nativeEvtName, isCapture, nativeEvent, targetVNode, targetDom);
+}
+
+// 监听委托事件
 function listenToNativeEvent(
   nativeEvtName: string,
   delegatedElement: Element,
@@ -33,7 +65,7 @@ function listenToNativeEvent(
   const listenerSetKey = getListenerSetKey(nativeEvtName, isCapture);
 
   if (!listenerSet.has(listenerSetKey)) {
-    const listener = createCustomEventListener(target, nativeEvtName, isCapture);
+    const listener = triggerDelegatedEvent.bind(null, nativeEvtName, isCapture, target);
     target.addEventListener(nativeEvtName, listener, isCapture);
     listenerSet.add(listenerSetKey);
   }

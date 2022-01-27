@@ -87,7 +87,7 @@ function processListeners(processingEventsList: ProcessingListenerList): void {
 
 function getProcessListenersFacade(
   nativeEvtName: string,
-  vNode: VNode,
+  vNode: VNode | null,
   nativeEvent: AnyNativeEvent,
   target,
   isCapture: boolean
@@ -147,9 +147,11 @@ function triggerHorizonEvents(
   nativeEvtName: string,
   isCapture: boolean,
   nativeEvent: AnyNativeEvent,
-  vNode: VNode,
+  vNode: VNode | null,
 ): void {
   const nativeEventTarget = getEventTarget(nativeEvent);
+
+  // 获取委托事件队列
   const processingListenerList = getProcessListenersFacade(nativeEvtName, vNode, nativeEvent, nativeEventTarget, isCapture);
 
   // 处理触发的事件队列
@@ -160,6 +162,7 @@ function triggerHorizonEvents(
 // 其他事件正在执行中标记
 let isInEventsExecution = false;
 
+// 处理委托事件入口
 export function handleEventMain(
   nativeEvtName: string,
   isCapture: boolean,

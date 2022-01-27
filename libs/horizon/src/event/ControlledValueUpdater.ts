@@ -1,6 +1,5 @@
 import {getVNodeProps} from '../dom/DOMInternalKeys';
 import {resetValue} from '../dom/valueHandler';
-import {getDomTag} from '../dom/utils/Common';
 
 let updateList: Array<any> | null = null;
 
@@ -8,8 +7,7 @@ let updateList: Array<any> | null = null;
 function updateValue(target: Element) {
   const props = getVNodeProps(target);
   if (props) {
-    const type = getDomTag(target);
-    resetValue(target, type, props);
+    resetValue(target, props);
   }
 }
 
