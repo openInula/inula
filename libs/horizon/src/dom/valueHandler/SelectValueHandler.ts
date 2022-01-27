@@ -1,14 +1,5 @@
 import {HorizonSelect, IProperty} from '../utils/Interface';
 
-// 更新 <option>
-function updateValue(options, newValues: any, isMultiple: boolean) {
-  if (isMultiple) {
-    updateMultipleValue(options, newValues);
-  } else {
-    updateSingleValue(options, newValues);
-  }
-}
-
 function updateMultipleValue(options, newValues) {
   const newValueSet = new Set();
 
@@ -36,6 +27,15 @@ function updateSingleValue(options, newValue) {
       option.selected = true;
       break;
     }
+  }
+}
+
+// 更新 <option>
+function updateValue(options, newValues: any, isMultiple: boolean) {
+  if (isMultiple) {
+    updateMultipleValue(options, newValues);
+  } else {
+    updateSingleValue(options, newValues);
   }
 }
 

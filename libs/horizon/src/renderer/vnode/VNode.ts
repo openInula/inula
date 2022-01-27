@@ -49,19 +49,20 @@ export class VNode {
   // 因为LazyComponent会修改type属性，为了在diff中判断是否可以复用，需要增加一个lazyType
   lazyType: any = null;
   flags: {
-    Addition?: boolean,
-    Update?: boolean,
-    Deletion?: boolean,
-    ResetText?: boolean,
-    Callback?: boolean,
-    DidCapture?: boolean,
-    Ref?: boolean,
-    Snapshot?: boolean,
-    Interrupted?: boolean,
-    ShouldCapture?: boolean,
-    ForceUpdate?: boolean,
+    Addition?: boolean;
+    Update?: boolean;
+    Deletion?: boolean;
+    ResetText?: boolean;
+    Callback?: boolean;
+    DidCapture?: boolean;
+    Ref?: boolean;
+    Snapshot?: boolean;
+    Interrupted?: boolean;
+    ShouldCapture?: boolean;
+    ForceUpdate?: boolean;
+    Clear?: boolean;
   } = {};
-
+  clearChild: VNode | null = null;
   // one tree相关属性
   isCreated: boolean = true;
   oldHooks: Array<Hook<any, any>> = []; // 保存上一次执行的hook

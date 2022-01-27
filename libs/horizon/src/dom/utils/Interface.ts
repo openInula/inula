@@ -1,9 +1,9 @@
 export interface IProperty {
-  [propName: string]: any
+  [propName: string]: any;
 }
 
 export interface HorizonSelect extends HTMLSelectElement {
-  _multiple: boolean;
+  _multiple?: boolean;
 }
 
 export type HorizonDom = Element | HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;

@@ -24,11 +24,12 @@ const internalKeys = {
 };
 
 // 通过 VNode 实例获取 DOM 节点
-export function getDom(vNode: VNode): Element | Text | void {
+export function getDom(vNode: VNode): Element | Text | null {
   const {tag} = vNode;
   if (tag === DomComponent || tag === DomText) {
     return vNode.realNode;
   }
+  return null;
 }
 
 // 将 VNode 属性相关信息挂到 DOM 对象的特定属性上
@@ -72,7 +73,7 @@ export function getNearestVNode(dom: Node): null | VNode {
 }
 
 // 获取 vNode 上的属性相关信息
-export function getVNodeProps(dom: Element | Text): Props {
+export function getVNodeProps(dom: Element | Text): Props | null{
   return dom[internalKeys.props] || null;
 }
 
@@ -93,7 +94,8 @@ export function getEventListeners(dom: EventTarget): Set<string> {
 export function getNonDelegatedListenerMap(target: EventTarget): Map<string, EventListener> {
   let eventsMap = target[internalKeys.nonDelegatedEvents];
   if (!eventsMap) {
-    eventsMap = target[internalKeys.nonDelegatedEvents] = new Map();
+    eventsMap = new Map();
+    target[internalKeys.nonDelegatedEvents] = eventsMap;
   }
   return eventsMap;
 }

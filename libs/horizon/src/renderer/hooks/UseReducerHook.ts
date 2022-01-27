@@ -1,4 +1,4 @@
-import type {Hook, Reducer, Trigger, Update} from './HookType';
+import type { Hook, Reducer, Trigger, Update } from './HookType';
 import {
   createHook,
   getCurrentHook,
@@ -8,12 +8,13 @@ import {
 import {
   launchUpdateFromVNode
 } from '../TreeBuilder';
-import {isSame} from '../utils/compare';
-import {setStateChange} from '../render/FunctionComponent';
-import {getHookStage, HookStage} from './HookStage';
-import type {VNode} from '../Types';
+import { isSame } from '../utils/compare';
+import { setStateChange } from '../render/FunctionComponent';
+import { getHookStage, HookStage } from './HookStage';
+import type { VNode } from '../Types';
 
-export function useReducerImpl<S, P, A>(reducer: (S, A) => S, initArg: P, init?: (P) => S, isUseState?: boolean): [S, Trigger<A>] {
+export function useReducerImpl<S, P, A>(reducer: (S, A) =>
+  S, initArg: P, init?: (P) => S, isUseState?: boolean): [S, Trigger<A>] | void {
   const stage = getHookStage();
   if (stage === null) {
     throwNotInFuncError();

@@ -14,9 +14,15 @@ const svgHumpAttr = new Set(['allowReorder', 'autoReverse', 'baseFrequency', 'ba
       'maskContentUnits', 'maskUnits', 'numOctaves', 'pathLength', 'patternContentUnits', 'patternTransform,',
       'patternUnits', 'pointsAtX', 'pointsAtY', 'pointsAtZ', 'preserveAlpha', 'preserveAspectRatio', 'primitiveUnits',
       'referrerPolicy', 'refX', 'refY', 'repeatCount', 'repeatDur', 'requiredExtensions', 'requiredFeatures',
-      'specularConstant', 'specularExponent', 'spreadMethod', 'startOffset', 'stdDeviation', 'stitchTiles', 'surfaceScale',
-      'systemLanguage', 'tableValues', 'targetX', 'targetY', 'textLength', 'viewBox', 'viewTarget', 'xChannelSelector',
-      'yChannelSelector', 'zoomAndPan']);
+      'specularConstant', 'specularExponent', 'spreadMethod', 'startOffset', 'stdDeviation',
+      'stitchTiles', 'surfaceScale','systemLanguage', 'tableValues', 'targetX', 'targetY',
+      'textLength','viewBox', 'viewTarget', 'xChannelSelector','yChannelSelector', 'zoomAndPan']);
+
+// 驼峰 变 “-”
+function convertToLowerCase(str) {
+  const replacer = (match, char) => `-${char.toLowerCase()}`;
+  return str.replace(/([A-Z])/g, replacer);
+}
 
 /**
  * 给 dom 设置属性
@@ -70,12 +76,3 @@ export function updateCommonProp(dom: Element, attrName: string, value: any, isN
     }
   }
 }
-
-// 驼峰 变 “-”
-function convertToLowerCase(str) {
-  const replacer = (match, char) => {
-    return `-${char.toLowerCase()}`;
-  }
-
-  return str.replace(/([A-Z])/g, replacer);
-};

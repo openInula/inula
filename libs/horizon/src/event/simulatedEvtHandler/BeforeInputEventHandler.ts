@@ -9,7 +9,7 @@ const SPACE_CHAR = String.fromCharCode(CHAR_CODE_SPACE);
 function getInputCharsByNative(
   eventName: string,
   nativeEvent: any,
-): string | void {
+): string | null {
   if (eventName === 'compositionend') {
     return (nativeEvent.detail && nativeEvent.detail.data) || null;
   }

@@ -2,13 +2,13 @@
  * 调度器的核心实现
  */
 
+import { Node } from '../taskExecutor/TaskQueue';
 import {
   requestBrowserCallback,
   isOverTime,
-  now,
 } from './BrowserAsync';
 
-import {add, shift, first} from './TaskQueue';
+import { add, shift, first, remove } from './TaskQueue';
 
 const ImmediatePriority = 1;
 const NormalPriority = 10;
@@ -16,89 +16,37 @@ const NormalPriority = 10;
 // 用于控制插入任务的顺序
 let idCounter = 1;
 
-let currentPriorityLevel = NormalPriority;
-
 // 正在执行task
 let isProcessing = false;
 
 // 调度中，等待浏览器回调
-let isScheduling = false;
+let isWaiting = false;
 
-function runSync(callback, priorityLevel = NormalPriority) {
-  const previousPriorityLevel = currentPriorityLevel;
-  currentPriorityLevel = priorityLevel;
-
-  try {
-    return callback();
-  } finally {
-    currentPriorityLevel = previousPriorityLevel;
-  }
-}
-
-function runAsync(callback, priorityLevel= NormalPriority ) {
-  let timeout;
-  switch (priorityLevel) {
-    case ImmediatePriority:
-      timeout = -1;
-      break;
-    case NormalPriority:
-    default:
-      timeout = 5000;
-      break;
-  }
-
-  const task = {
-    id: idCounter++,
-    callback,
-    priorityLevel,
-    expirationTime: now() + timeout,
-  };
-
-  add(task);
-
-  if (!isScheduling && !isProcessing) {
-    isScheduling = true;
-    requestBrowserCallback(callTasks);
-  }
-
-  return task;
-}
-
-function callTasks(initialTime) {
-  isScheduling = false;
+function callTasks() {
+  isWaiting = false;
   isProcessing = true;
 
-  let task = null;
-  const previousPriorityLevel = currentPriorityLevel;
+  let task: Node | null= null;
   try {
-    let currentTime = initialTime;
     task = first();
 
     // 循环执行task
     while (task !== null) {
-      if (
-        task.expirationTime > currentTime &&
-        isOverTime()
-      ) {
-        // 任务的过期时间大于当前时间（没达到此任务的过期时间）且超过了deadline
+      if (isOverTime()) {
+        // 超过了deadline
         break;
       }
 
       const callback = task.callback;
-      if (typeof callback === 'function') {
+      if (callback !== null) {
         task.callback = null;
-        currentPriorityLevel = task.priorityLevel;
-        const didUserCallbackTimeout = task.expirationTime <= currentTime;
 
-        const continuationCallback = callback(didUserCallbackTimeout);
-        currentTime = now();
-        // 执行callback返回函数，重置callback
-        if (typeof continuationCallback === 'function') {
-          task.callback = continuationCallback;
-        } else {
-          if (task === first()) {
-            shift();
-          }
+        callback();
+
+        if (task === first()) {
+          shift();
+        } else { // 执行任务中可能插入了新任务
+          remove(task);
         }
       } else {
         shift();
@@ -110,26 +58,45 @@ function callTasks(initialTime) {
     // 返回是否还有任务，如果有，说明是被中断了
     return task !== null;
   } finally {
-    task = null;
-    currentPriorityLevel = previousPriorityLevel;
     isProcessing = false;
   }
+}
+
+function runAsync(callback, priorityLevel= NormalPriority ) {
+  let increment;
+  switch (priorityLevel) {
+    case ImmediatePriority:
+      increment = -1;
+      break;
+    case NormalPriority:
+    default:
+      increment = 10000;
+      break;
+  }
+
+  const task = {
+    id: idCounter++,
+    callback,
+    order: idCounter + increment,
+  };
+
+  add(task);
+
+  if (!isWaiting && !isProcessing) {
+    isWaiting = true;
+    requestBrowserCallback(callTasks);
+  }
+
+  return task;
 }
 
 function cancelTask(task) {
   task.callback = null;
 }
 
-function getCurrentPriorityLevel() {
-  return currentPriorityLevel;
-}
-
 export {
   ImmediatePriority,
   NormalPriority,
-  runSync,
   runAsync,
   cancelTask,
-  getCurrentPriorityLevel,
-  now,
 };

@@ -9,7 +9,7 @@ import {
   Fragment,
 } from '../vnode/VNodeTags';
 import {pushForceUpdate} from '../UpdateHandler';
-import {launchUpdateFromVNode, tryRenderRoot} from '../TreeBuilder';
+import {launchUpdateFromVNode, tryRenderFromRoot} from '../TreeBuilder';
 import {updateShouldUpdateOfTree} from '../vnode/VNodeShouldUpdate';
 import {getContextChangeCtx} from '../ContextSaver';
 
@@ -19,73 +19,36 @@ export enum SuspenseChildStatus {
   ShowFallback = 'showFallback',
 }
 
-export function captureRender(processing: VNode, shouldUpdate: boolean): Array<VNode> | VNode | null {
-  if (
-    !processing.isCreated &&
-    processing.oldProps === processing.props &&
-    !getContextChangeCtx() &&
-    !shouldUpdate
-  ) {
-    if (processing.suspenseChildStatus === SuspenseChildStatus.ShowFallback) {
-      // 当显示fallback时，suspense的子组件要更新
-      return updateFallback(processing);
-    }
-    return onlyUpdateChildVNodes(processing);
-  }
-
-  return captureSuspenseComponent(processing);
-}
-
-function updateFallback(processing: VNode): Array<VNode> | VNode | null {
+// 创建fallback子节点
+function createFallback(processing: VNode, fallbackChildren) {
   const childFragment: VNode = processing.child;
+  let fallbackFragment;
+  childFragment.childShouldUpdate = false;
 
-  if (childFragment.childShouldUpdate) {
-    if (processing.promiseResolve) {
-      // promise已完成，展示promise返回的新节点
-      return captureSuspenseComponent(processing);
+  if (!processing.isCreated) {
+    const oldFallbackFragment: VNode | null = processing.oldChild ? processing.oldChild.next : null;
+
+    if (oldFallbackFragment !== null) {
+      fallbackFragment = updateVNode(oldFallbackFragment, fallbackChildren);
     } else {
-      // promise未完成，继续显示fallback，不需要继续刷新子节点
-      const fallbackFragment: VNode = processing.child.next;
-      childFragment.childShouldUpdate = false;
-      fallbackFragment.childShouldUpdate = false;
-      return null;
+      fallbackFragment = createVNode(Fragment, null, fallbackChildren);
+      FlagUtils.markAddition(fallbackFragment);
     }
   } else {
-    const children = onlyUpdateChildVNodes(processing);
-
-    if (children !== null) {
-      // child不需要更新，跳过child处理fallback
-      return children[1];
-    } else {
-      return null;
-    }
-  }
-}
-
-export function bubbleRender(processing: VNode) {
-  if (processing.suspenseChildStatus === SuspenseChildStatus.ShowFallback
-    || (!processing.isCreated && processing.oldSuspenseChildStatus === SuspenseChildStatus.ShowFallback)
-  ) {
-    FlagUtils.markUpdate(processing);
+    // 创建
+    fallbackFragment = createVNode(Fragment, null, fallbackChildren);
   }
 
-  return null;
-}
+  processing.child = childFragment;
+  childFragment.next = fallbackFragment;
+  childFragment.parent = processing;
+  fallbackFragment.parent = processing;
+  fallbackFragment.eIndex = 1;
+  fallbackFragment.cIndex = 1;
+  updateVNodePath(fallbackFragment);
+  processing.suspenseChildStatus = SuspenseChildStatus.ShowFallback;
 
-export function captureSuspenseComponent(processing: VNode) {
-  const nextProps = processing.props;
-
-  // suspense被捕获后需要展示fallback
-  const showFallback = processing.suspenseDidCapture;
-
-  if (showFallback) {
-    processing.suspenseDidCapture = false;
-    const nextFallbackChildren = nextProps.fallback;
-    return createFallback(processing, nextFallbackChildren);
-  } else {
-    const newChildren = nextProps.children;
-    return createSuspenseChildren(processing, newChildren);
-  }
+  return fallbackFragment;
 }
 
 // 创建子节点
@@ -120,36 +83,77 @@ function createSuspenseChildren(processing: VNode, newChildren) {
   return processing.child;
 }
 
-// 创建fallback子节点
-function createFallback(processing: VNode, fallbackChildren) {
-  const childFragment: VNode = processing.child;
-  let fallbackFragment;
-  childFragment.childShouldUpdate = false;
+export function captureSuspenseComponent(processing: VNode) {
+  const nextProps = processing.props;
 
-  if (!processing.isCreated) {
-    const oldFallbackFragment: VNode | null = processing.oldChild ? processing.oldChild.next : null;
+  // suspense被捕获后需要展示fallback
+  const showFallback = processing.suspenseDidCapture;
 
-    if (oldFallbackFragment !== null) {
-      fallbackFragment = updateVNode(oldFallbackFragment, fallbackChildren);
+  if (showFallback) {
+    processing.suspenseDidCapture = false;
+    const nextFallbackChildren = nextProps.fallback;
+    return createFallback(processing, nextFallbackChildren);
+  } else {
+    const newChildren = nextProps.children;
+    return createSuspenseChildren(processing, newChildren);
+  }
+}
+
+function updateFallback(processing: VNode): Array<VNode> | VNode | null {
+  const childFragment: VNode | null= processing.child;
+
+  if (childFragment?.childShouldUpdate) {
+    if (processing.promiseResolve) {
+      // promise已完成，展示promise返回的新节点
+      return captureSuspenseComponent(processing);
     } else {
-      fallbackFragment = createVNode(Fragment, null, fallbackChildren);
-      FlagUtils.markAddition(fallbackFragment);
+      // promise未完成，继续显示fallback，不需要继续刷新子节点
+      const fallbackFragment: VNode = processing.child.next;
+      childFragment.childShouldUpdate = false;
+      fallbackFragment.childShouldUpdate = false;
+      return null;
     }
   } else {
-    // 创建
-    fallbackFragment = createVNode(Fragment, null, fallbackChildren);
+    const children = onlyUpdateChildVNodes(processing);
+
+    if (children !== null) {
+      // child不需要更新，跳过child处理fallback
+      return children[1];
+    } else {
+      return null;
+    }
+  }
+}
+
+export function captureRender(processing: VNode, shouldUpdate: boolean): Array<VNode> | VNode | null {
+  if (
+    !processing.isCreated &&
+    processing.oldProps === processing.props &&
+    !getContextChangeCtx() &&
+    !shouldUpdate
+  ) {
+    if (processing.suspenseChildStatus === SuspenseChildStatus.ShowFallback) {
+      // 当显示fallback时，suspense的子组件要更新
+      return updateFallback(processing);
+    }
+    return onlyUpdateChildVNodes(processing);
   }
 
-  processing.child = childFragment;
-  childFragment.next = fallbackFragment;
-  childFragment.parent = processing;
-  fallbackFragment.parent = processing;
-  fallbackFragment.eIndex = 1;
-  fallbackFragment.cIndex = 1;
-  updateVNodePath(fallbackFragment);
-  processing.suspenseChildStatus = SuspenseChildStatus.ShowFallback;
+  return captureSuspenseComponent(processing);
+}
 
-  return fallbackFragment;
+export function bubbleRender(processing: VNode) {
+  if (processing.suspenseChildStatus === SuspenseChildStatus.ShowFallback
+    || (!processing.isCreated && processing.oldSuspenseChildStatus === SuspenseChildStatus.ShowFallback)
+  ) {
+    FlagUtils.markUpdate(processing);
+  }
+
+  return null;
+}
+
+function canCapturePromise(vNode: VNode | null): boolean {
+  return vNode?.suspenseChildStatus !== SuspenseChildStatus.ShowFallback && vNode?.props.fallback !== undefined;
 }
 
 // 处理Suspense子组件抛出的promise
@@ -196,11 +200,19 @@ export function handleSuspenseChildThrowError(parent: VNode, processing: VNode, 
   return false;
 }
 
-function canCapturePromise(vNode: VNode): boolean {
-  return vNode.suspenseChildStatus !== SuspenseChildStatus.ShowFallback && vNode.props.fallback !== undefined;
-}
-
 const PossiblyWeakSet = typeof WeakSet === 'function' ? WeakSet : Set;
+
+function resolvePromise(suspenseVNode: VNode, promise: PromiseType<any>) {
+  const promiseCache = suspenseVNode.realNode;
+  if (promiseCache !== null) {
+    promiseCache.delete(promise);
+  }
+  suspenseVNode.promiseResolve = true;
+  const root = updateShouldUpdateOfTree(suspenseVNode);
+  if (root !== null) {
+    tryRenderFromRoot(root);
+  }
+}
 
 // 对于每个promise，添加一个侦听器，以便当它resolve时，重新渲染
 export function listenToPromise(suspenseVNode: VNode) {
@@ -212,7 +224,8 @@ export function listenToPromise(suspenseVNode: VNode) {
     let promiseCache = suspenseVNode.realNode;
     if (promiseCache === null) {
       // @ts-ignore
-      promiseCache = suspenseVNode.realNode = new PossiblyWeakSet();
+      promiseCache = new PossiblyWeakSet();
+      suspenseVNode.realNode = new PossiblyWeakSet();
     }
 
     promises.forEach(promise => {
@@ -225,17 +238,3 @@ export function listenToPromise(suspenseVNode: VNode) {
     });
   }
 }
-
-function resolvePromise(suspenseVNode: VNode, promise: PromiseType<any>) {
-  const promiseCache = suspenseVNode.realNode;
-  if (promiseCache !== null) {
-    promiseCache.delete(promise);
-  }
-  suspenseVNode.promiseResolve = true;
-  const root = updateShouldUpdateOfTree(suspenseVNode);
-  if (root !== null) {
-    tryRenderRoot(root);
-  }
-}
-
-
