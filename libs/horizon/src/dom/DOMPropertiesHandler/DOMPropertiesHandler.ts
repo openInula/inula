@@ -14,8 +14,11 @@ function updateOneProp(dom, propName, isNativeTag, propVal?, isInit?: boolean) {
   } else if (propName === 'dangerouslySetInnerHTML') {
     dom.innerHTML = propVal.__html;
   } else if (propName === 'children') { // 只处理纯文本子节点，其他children在VNode树中处理
-    if (typeof propVal === 'string' || typeof propVal === 'number') {
-      dom.textContent = String(propVal);
+    const type = typeof propVal;
+    if (type === 'string') {
+      dom.textContent = propVal;
+    } else if (type === 'number') {
+      dom.textContent = propVal + ''; // 这种数字转字符串的方式效率最高
     }
   } else if (isEventProp(propName)) {
     // 事件监听属性处理

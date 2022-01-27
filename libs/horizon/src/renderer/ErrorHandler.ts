@@ -134,7 +134,7 @@ function triggerUpdate(vNode, state) {
 
   const root = updateShouldUpdateOfTree(vNode);
   if (root !== null) {
-    tryRenderRoot(root);
+    tryRenderFromRoot(root);
   }
 }
 
