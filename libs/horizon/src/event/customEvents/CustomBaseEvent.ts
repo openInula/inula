@@ -4,6 +4,51 @@
 
 import {VNode} from '../../renderer/Types';
 
+// 从原生事件中复制属性到自定义事件中
+function extendAttribute(target, source) {
+  const attributes = [
+    // AnimationEvent
+    'animationName', 'elapsedTime', 'pseudoElement',
+    // CompositionEvent、InputEvent
+    'data',
+    // DragEvent
+    'dataTransfer',
+    // FocusEvent
+    'relatedTarget',
+    // KeyboardEvent
+    'key', 'keyCode', 'charCode', 'code', 'location', 'ctrlKey', 'shiftKey',
+    'altKey', 'metaKey', 'repeat', 'locale', 'getModifierState', 'clipboardData',
+    // MouseEvent
+    'button', 'buttons', 'clientX', 'clientY', 'movementX', 'movementY',
+    'pageX', 'pageY', 'screenX', 'screenY', 'currentTarget',
+    // PointerEvent
+    'pointerId', 'width', 'height', 'pressure', 'tangentialPressure',
+    'tiltX', 'tiltY', 'twist', 'pointerType', 'isPrimary',
+    // TouchEvent
+    'touches', 'targetTouches', 'changedTouches',
+    // TransitionEvent
+    'propertyName',
+    // UIEvent
+    'view', 'detail',
+    // WheelEvent
+    'deltaX', 'deltaY', 'deltaZ', 'deltaMode',
+  ];
+
+  const length = attributes.length;
+  for (let i = 0; i < length; i++) {
+    const attr = attributes[i];
+    const type = source[attr];
+    if (type !== 'undefined') {
+      if (type === 'function') {
+        target[attr] = function() {
+          return source[attr].apply(source, arguments);
+        };
+      } else {
+        target[attr] = source[attr];
+      }
+    }
+  }
+}
 export class CustomBaseEvent {
 
   data: string;
@@ -77,51 +122,5 @@ export class CustomBaseEvent {
     }
     this.nativeEvent.cancelBubble = true;
     this.isPropagationStopped = () => true;
-  }
-}
-
-// 从原生事件中复制属性到自定义事件中
-function extendAttribute(target, source) {
-  const attributes = [
-    // AnimationEvent
-    'animationName', 'elapsedTime', 'pseudoElement',
-    // CompositionEvent、InputEvent
-    'data',
-    // DragEvent
-    'dataTransfer',
-    // FocusEvent
-    'relatedTarget',
-    // KeyboardEvent
-    'key', 'keyCode', 'charCode', 'code', 'location', 'ctrlKey', 'shiftKey',
-    'altKey', 'metaKey', 'repeat', 'locale', 'getModifierState', 'clipboardData',
-    // MouseEvent
-    'button', 'buttons', 'clientX', 'clientY', 'movementX', 'movementY',
-    'pageX', 'pageY', 'screenX', 'screenY', 'currentTarget',
-    // PointerEvent
-    'pointerId', 'width', 'height', 'pressure', 'tangentialPressure',
-    'tiltX', 'tiltY', 'twist', 'pointerType', 'isPrimary',
-    // TouchEvent
-    'touches', 'targetTouches', 'changedTouches',
-    // TransitionEvent
-    'propertyName',
-    // UIEvent
-    'view', 'detail',
-    // WheelEvent
-    'deltaX', 'deltaY', 'deltaZ', 'deltaMode',
-  ];
-
-  const length = attributes.length;
-  for (let i = 0; i < length; i++) {
-    const attr = attributes[i];
-    const type = source[attr];
-    if (type !== 'undefined') {
-      if (type === 'function') {
-        target[attr] = function() {
-          return source[attr].apply(source, arguments);
-        };
-      } else {
-        target[attr] = source[attr];
-      }
-    }
   }
 }

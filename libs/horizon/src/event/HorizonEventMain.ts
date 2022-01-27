@@ -122,7 +122,9 @@ function getProcessListenersFacade(
       ));
     }
 
-    if (nativeEvtName === 'compositionend' || nativeEvtName === 'compositionstart' || nativeEvtName === 'compositionupdate') {
+    if (nativeEvtName === 'compositionend' ||
+        nativeEvtName === 'compositionstart' ||
+        nativeEvtName === 'compositionupdate') {
       processingListenerList = processingListenerList.concat(getCompositionListeners(
         nativeEvtName,
         nativeEvent,
@@ -183,13 +185,14 @@ export function handleEventMain(
 
   // 有事件正在执行，同步执行事件
   if (isInEventsExecution) {
-    return triggerHorizonEvents(nativeEvtName, isCapture, nativeEvent, rootVNode);
+    triggerHorizonEvents(nativeEvtName, isCapture, nativeEvent, rootVNode);
+    return;
   }
 
   // 没有事件在执行，经过调度再执行事件
   isInEventsExecution = true;
   try {
-    return asyncUpdates(() =>
+    asyncUpdates(() =>
       triggerHorizonEvents(
         nativeEvtName,
         isCapture,

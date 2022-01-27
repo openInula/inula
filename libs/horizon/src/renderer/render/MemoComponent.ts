@@ -10,10 +10,6 @@ import {
 } from '../../external/JSXElementType';
 import {Fragment} from '../vnode/VNodeTags';
 
-export function captureRender(processing: VNode, shouldUpdate: boolean): VNode | null {
-  return captureMemoComponent(processing, shouldUpdate);
-}
-
 export function bubbleRender() {}
 
 export function captureMemoComponent(
@@ -58,4 +54,8 @@ export function captureMemoComponent(
   processing.child = newChild;
 
   return newChild;
+}
+
+export function captureRender(processing: VNode, shouldUpdate: boolean): VNode | null {
+  return captureMemoComponent(processing, shouldUpdate);
 }

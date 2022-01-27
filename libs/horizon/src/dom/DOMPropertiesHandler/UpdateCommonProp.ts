@@ -18,6 +18,12 @@ const svgHumpAttr = new Set(['allowReorder', 'autoReverse', 'baseFrequency', 'ba
       'stitchTiles', 'surfaceScale','systemLanguage', 'tableValues', 'targetX', 'targetY',
       'textLength','viewBox', 'viewTarget', 'xChannelSelector','yChannelSelector', 'zoomAndPan']);
 
+// 驼峰 变 “-”
+function convertToLowerCase(str) {
+  const replacer = (match, char) => `-${char.toLowerCase()}`;
+  return str.replace(/([A-Z])/g, replacer);
+}
+
 /**
  * 给 dom 设置属性
  * attrName 指代码中属性设置的属性名称（如 class）
@@ -70,12 +76,3 @@ export function updateCommonProp(dom: Element, attrName: string, value: any, isN
     }
   }
 }
-
-// 驼峰 变 “-”
-function convertToLowerCase(str) {
-  const replacer = (match, char) => {
-    return `-${char.toLowerCase()}`;
-  }
-
-  return str.replace(/([A-Z])/g, replacer);
-};

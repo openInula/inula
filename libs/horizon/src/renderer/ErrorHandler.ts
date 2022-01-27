@@ -8,10 +8,60 @@ import type {Update} from './UpdateHandler';
 import {ClassComponent, TreeRoot} from './vnode/VNodeTags';
 import {FlagUtils, Interrupted} from './vnode/VNodeFlags';
 import {newUpdate, UpdateState, pushUpdate} from './UpdateHandler';
-import {launchUpdateFromVNode, setBuildResultError, tryRenderRoot} from './TreeBuilder';
+import {launchUpdateFromVNode, tryRenderFromRoot} from './TreeBuilder';
 import {setRootThrowError} from './submit/Submit';
 import {handleSuspenseChildThrowError} from './render/SuspenseComponent';
 import {updateShouldUpdateOfTree} from './vnode/VNodeShouldUpdate';
+import {BuildErrored, setBuildResult} from './GlobalVar';
+
+function consoleError(error: any): void {
+  if (isDev) {
+    // 只打印message为了让测试用例能pass
+    console['error']('The codes throw the error: ' + error.message);
+  } else {
+    console['error'](error);
+  }
+}
+
+function handleRootError(
+  error: any,
+) {
+  // 注意：如果根节点抛出错误，不会销毁整棵树，只打印日志，抛出异常。
+  setRootThrowError(error);
+  consoleError(error);
+}
+
+function createClassErrorUpdate(
+  vNode: VNode,
+  error: any,
+): Update {
+  const update = newUpdate();
+  update.type = UpdateState.Error;
+
+  const getDerivedStateFromError = vNode.type.getDerivedStateFromError;
+  if (typeof getDerivedStateFromError === 'function') {
+    update.content = () => {
+      consoleError(error);
+      return getDerivedStateFromError(error);
+    };
+  }
+
+  const inst = vNode.realNode;
+  if (inst !== null && typeof inst.componentDidCatch === 'function') {
+    update.callback = function callback() {
+      if (typeof getDerivedStateFromError !== 'function') {
+        // 打印错误
+        consoleError(error);
+      }
+
+      // @ts-ignore
+      this.componentDidCatch(error, {
+        componentStack: '',
+      });
+    };
+  }
+  return update;
+}
 
 // 处理capture和bubble阶段抛出的错误
 export function handleRenderThrowError(
@@ -33,7 +83,7 @@ export function handleRenderThrowError(
   }
 
   // 抛出错误无法作为suspense内容处理（或无suspense来处理），这次当成真的错误来处理
-  setBuildResultError();
+  setBuildResult(BuildErrored);
 
   // 向上遍历寻找ClassComponent组件（同时也是Error Boundaries组件） 或者 TreeRoot
   let vNode = sourceVNode.parent;
@@ -75,6 +125,19 @@ export function handleRenderThrowError(
     vNode = vNode.parent;
   } while (vNode !== null);
 }
+
+// 新增一个update，并且触发调度
+function triggerUpdate(vNode, state) {
+  const update = newUpdate();
+  update.content = state;
+  pushUpdate(vNode, update);
+
+  const root = updateShouldUpdateOfTree(vNode);
+  if (root !== null) {
+    tryRenderFromRoot(root);
+  }
+}
+
 
 // 处理submit阶段的异常
 export function handleSubmitError(vNode: VNode, error: any) {
@@ -124,66 +187,5 @@ export function handleSubmitError(vNode: VNode, error: any) {
       }
     }
     node = node.parent;
-  }
-}
-
-function createClassErrorUpdate(
-  vNode: VNode,
-  error: any,
-): Update {
-  const update = newUpdate();
-  update.type = UpdateState.Error;
-
-  const getDerivedStateFromError = vNode.type.getDerivedStateFromError;
-  if (typeof getDerivedStateFromError === 'function') {
-    update.content = () => {
-      consoleError(error);
-      return getDerivedStateFromError(error);
-    };
-  }
-
-  const inst = vNode.realNode;
-  if (inst !== null && typeof inst.componentDidCatch === 'function') {
-    update.callback = function callback() {
-      if (typeof getDerivedStateFromError !== 'function') {
-        // 打印错误
-        consoleError(error);
-      }
-
-      // @ts-ignore
-      this.componentDidCatch(error, {
-        componentStack: '',
-      });
-    };
-  }
-  return update;
-}
-
-// 新增一个update，并且触发调度
-function triggerUpdate(vNode, state) {
-  const update = newUpdate();
-  update.content = state;
-  pushUpdate(vNode, update);
-
-  const root = updateShouldUpdateOfTree(vNode);
-  if (root !== null) {
-    tryRenderRoot(root);
-  }
-}
-
-function handleRootError(
-  error: any,
-) {
-  // 注意：如果根节点抛出错误，不会销毁整棵树，只打印日志，抛出异常。
-  setRootThrowError(error);
-  consoleError(error);
-}
-
-function consoleError(error: any): void {
-  if (isDev) {
-    // 只打印message为了让测试用例能pass
-    console['error']('The codes throw the error: ' + error.message);
-  } else {
-    console['error'](error);
   }
 }

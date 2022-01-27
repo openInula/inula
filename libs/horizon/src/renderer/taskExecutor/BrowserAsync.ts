@@ -4,6 +4,7 @@
 
 let isMessageLoopRunning = false;
 let browserCallback = null;
+const { port1, port2 } = new MessageChannel();
 
 
 export function isOverTime() {
@@ -33,7 +34,7 @@ const callRenderTasks = () => {
   }
 };
 
-const { port1, port2 } = new MessageChannel();
+
 port1.onmessage = callRenderTasks;
 
 export function requestBrowserCallback(callback) {

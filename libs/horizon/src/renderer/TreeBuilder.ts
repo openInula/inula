@@ -129,6 +129,27 @@ function handleError(root, error): void {
   bubbleVNode(processing);
 }
 
+// 判断数组中节点的path的idx元素是否都相等
+function isEqualByIndex(idx: number, nodes: Array<VNode>) {
+  let val = nodes[0].path[idx];
+  for (let i = 1; i < nodes.length; i++) {
+    let node = nodes[i];
+    if (val !== node.path[idx]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function getChildByIndex(vNode: VNode, idx: number) {
+  let node = vNode.child;
+  for (let i = 0; i < idx; i++) {
+    node = node.next;
+  }
+  return node;
+}
+
 // 从多个更新节点中，计算出开始节点。即：找到最近的共同的父辈节点
 export function calcStartUpdateVNode(treeRoot: VNode) {
   const toUpdateNodes = Array.from(treeRoot.toUpdateNodes);
@@ -251,7 +272,7 @@ function renderFromRoot(treeRoot) {
 }
 
 // 尝试去渲染，已有任务就跳出
-export function tryRenderRoot(treeRoot: VNode) {
+export function tryRenderFromRoot(treeRoot: VNode) {
   if (treeRoot.shouldUpdate && treeRoot.task === null) {
     // 任务放进queue，但是调度开始还是异步的
     treeRoot.task = pushRenderCallback(
@@ -283,34 +304,13 @@ export function launchUpdateFromVNode(vNode: VNode) {
     // 不能改成下面的异步，否则会有时序问题，因为业务可能会依赖这个渲染的完成。
     renderFromRoot(treeRoot);
   } else {
-    tryRenderRoot(treeRoot);
+    tryRenderFromRoot(treeRoot);
 
     if (!isExecuting()) {
       // 同步执行
       callRenderQueueImmediate();
     }
   }
-}
-
-// 判断数组中节点的path的idx元素是否都相等
-function isEqualByIndex(idx: number, nodes: Array<VNode>) {
-  let val = nodes[0].path[idx];
-  for (let i = 1; i < nodes.length; i++) {
-    let node = nodes[i];
-    if (val !== node.path[idx]) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-function getChildByIndex(vNode: VNode, idx: number) {
-  let node = vNode.child;
-  for (let i = 0; i < idx; i++) {
-    node = node.next;
-  }
-  return node;
 }
 
 export function setBuildResultError() {

@@ -14,7 +14,7 @@ import { getHookStage, HookStage } from './HookStage';
 import type { VNode } from '../Types';
 
 export function useReducerImpl<S, P, A>(reducer: (S, A) =>
-  S, initArg: P, init?: (P) => S, isUseState?: boolean): [S, Trigger<A>] {
+  S, initArg: P, init?: (P) => S, isUseState?: boolean): [S, Trigger<A>] | void {
   const stage = getHookStage();
   if (stage === null) {
     throwNotInFuncError();
