@@ -1,12 +1,11 @@
 import type {VNode, PromiseType} from '../Types';
 
 import {FlagUtils, Interrupted} from '../vnode/VNodeFlags';
-import {createVNode, onlyUpdateChildVNodes, updateVNode, updateVNodePath} from '../vnode/VNodeCreator';
+import {onlyUpdateChildVNodes, updateVNode, updateVNodePath, createFragmentVNode} from '../vnode/VNodeCreator';
 import {
   ClassComponent,
   IncompleteClassComponent,
   SuspenseComponent,
-  Fragment,
 } from '../vnode/VNodeTags';
 import {pushForceUpdate} from '../UpdateHandler';
 import {launchUpdateFromVNode, tryRenderFromRoot} from '../TreeBuilder';
@@ -31,12 +30,12 @@ function createFallback(processing: VNode, fallbackChildren) {
     if (oldFallbackFragment !== null) {
       fallbackFragment = updateVNode(oldFallbackFragment, fallbackChildren);
     } else {
-      fallbackFragment = createVNode(Fragment, null, fallbackChildren);
+      fallbackFragment = createFragmentVNode(null, fallbackChildren);
       FlagUtils.markAddition(fallbackFragment);
     }
   } else {
     // 创建
-    fallbackFragment = createVNode(Fragment, null, fallbackChildren);
+    fallbackFragment = createFragmentVNode(null, fallbackChildren);
   }
 
   processing.child = childFragment;
@@ -72,7 +71,7 @@ function createSuspenseChildren(processing: VNode, newChildren) {
     // SuspenseComponent 中使用
     processing.suspenseChildStatus = SuspenseChildStatus.ShowChild;
   } else {
-    childFragment = createVNode(Fragment, null, newChildren);
+    childFragment = createFragmentVNode(null, newChildren);
   }
 
   childFragment.parent = processing;
