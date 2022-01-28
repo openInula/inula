@@ -336,7 +336,12 @@ function submitClear(vNode: VNode): void {
   
   // 在所有子项都卸载后，删除dom树中的节点
   removeChildDom(currentParent, vNode.realNode);
-  currentParent.append(cloneDom);
+  const realNodeNext = getSiblingDom(vNode);
+  if (realNodeNext) {
+    insertDomBefore(currentParent, cloneDom, realNodeNext);
+  } else {
+    appendChildElement(currentParent, cloneDom);
+  }
   vNode.realNode = cloneDom;
   attachRef(vNode);
   FlagUtils.removeFlag(vNode, Clear);
