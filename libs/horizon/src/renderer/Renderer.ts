@@ -9,9 +9,9 @@ import {
 } from './TreeBuilder';
 import { runAsyncEffects } from './submit/HookEffectHandler';
 import { Callback, newUpdate, pushUpdate } from './UpdateHandler';
-import { getFirstChild } from './vnode/VNodeUtils';
 
-export { createVNode } from './vnode/VNodeCreator';
+
+export { createVNode, createTreeRootVNode } from './vnode/VNodeCreator';
 export { createPortal } from './components/CreatePortal';
 export {
   asyncUpdates,

@@ -1,13 +1,13 @@
 import {
-  asyncUpdates, createVNode, getFirstCustomDom,
+  asyncUpdates, getFirstCustomDom,
   syncUpdates, startUpdate,
+  createTreeRootVNode,
 } from '../renderer/Renderer';
 import {createPortal} from '../renderer/components/CreatePortal';
 import type {Container} from './DOMOperator';
 import {isElement} from './utils/Common';
 import {listenDelegatedEvents} from '../event/EventBinding';
 import {findDOMByClassInst} from '../renderer/vnode/VNodeUtils';
-import {TreeRoot} from '../renderer/vnode/VNodeTags';
 import {Callback} from '../renderer/UpdateHandler';
 
 function createRoot(children: any, container: Container, callback?: Callback) {
@@ -19,7 +19,7 @@ function createRoot(children: any, container: Container, callback?: Callback) {
   }
 
   // 调度器创建根节点，并给容器dom赋vNode结构体
-  const treeRoot = createVNode(TreeRoot, container);
+  const treeRoot = createTreeRootVNode(container);
   container._treeRoot = treeRoot;
 
   // 根节点挂接全量事件

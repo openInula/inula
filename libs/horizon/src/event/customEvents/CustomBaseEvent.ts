@@ -35,9 +35,11 @@ function extendAttribute(target, source) {
   ];
 
   const length = attributes.length;
+  let attr;
+  let type;
   for (let i = 0; i < length; i++) {
-    const attr = attributes[i];
-    const type = source[attr];
+    attr = attributes[i];
+    type = source[attr];
     if (type !== 'undefined') {
       if (type === 'function') {
         target[attr] = function() {
