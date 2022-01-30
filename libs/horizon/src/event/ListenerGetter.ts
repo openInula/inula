@@ -7,11 +7,7 @@ import {ProcessingListenerList, ListenerUnitList} from './Types';
 import {CustomBaseEvent} from './customEvents/CustomBaseEvent';
 
 // 返回是否应该阻止事件响应标记，disabled组件不响应鼠标事件
-function shouldPrevent(
-  name: string,
-  type: string,
-  props: Props,
-): boolean {
+function shouldPrevent(eventName: string, type: string, props: Props): boolean {
   const canPreventMouseEvents = [
     'onClick',
     'onClickCapture',
@@ -26,17 +22,14 @@ function shouldPrevent(
     'onMouseEnter',
   ];
   const interActiveElements = ['button', 'input', 'select', 'textarea'];
-  if (canPreventMouseEvents.includes(name)) {
+  if (canPreventMouseEvents.includes(eventName)) {
     return !!(props.disabled && interActiveElements.includes(type));
   }
   return false;
 }
 
 // 从vnode属性中获取事件listener
-function getListener(
-  vNode: VNode,
-  eventName: string,
-): Function | null {
+function getListener(vNode: VNode, eventName: string): Function | null {
   const realNode = vNode.realNode;
   if (realNode === null) {
     return null;
@@ -60,14 +53,14 @@ function getListener(
 // 获取监听事件
 export function getListenersFromTree(
   targetVNode: VNode | null,
-  name: string | null,
+  horizonEvtName: string | null,
   horizonEvent: CustomBaseEvent,
   eventType: string,
 ): ProcessingListenerList {
-  if (!name) {
+  if (!horizonEvtName) {
     return [];
   }
-  const captureName = name + EVENT_TYPE_CAPTURE;
+
   const listeners: ListenerUnitList = [];
 
   let vNode = targetVNode;
@@ -77,6 +70,7 @@ export function getListenersFromTree(
     const {realNode, tag} = vNode;
     if (tag === DomComponent && realNode !== null) {
       if (eventType === EVENT_TYPE_ALL || eventType === EVENT_TYPE_CAPTURE) {
+        const captureName = horizonEvtName + EVENT_TYPE_CAPTURE;
         const captureListener = getListener(vNode, captureName);
         if (captureListener) {
           listeners.unshift({
@@ -88,7 +82,7 @@ export function getListenersFromTree(
         }
       }
       if (eventType === EVENT_TYPE_ALL || eventType === EVENT_TYPE_BUBBLE) {
-        const bubbleListener = getListener(vNode, name);
+        const bubbleListener = getListener(vNode, horizonEvtName);
         if (bubbleListener) {
           listeners.push({
             vNode,

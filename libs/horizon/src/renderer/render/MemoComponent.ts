@@ -1,14 +1,13 @@
 import type {VNode} from '../Types';
 
 import {mergeDefaultProps} from './LazyComponent';
-import {updateVNode, createVNode, onlyUpdateChildVNodes, updateVNodePath} from '../vnode/VNodeCreator';
+import {updateVNode, onlyUpdateChildVNodes, updateVNodePath, createFragmentVNode, createUndeterminedVNode} from '../vnode/VNodeCreator';
 import {shallowCompare} from '../utils/compare';
 import {
   TYPE_FRAGMENT,
   TYPE_PROFILER,
   TYPE_STRICT_MODE,
 } from '../../external/JSXElementType';
-import {Fragment} from '../vnode/VNodeTags';
 
 export function bubbleRender() {}
 
@@ -24,9 +23,9 @@ export function captureMemoComponent(
     let newChild = null;
     const type = Component.type;
     if (type === TYPE_STRICT_MODE || type === TYPE_FRAGMENT || type === TYPE_PROFILER) {
-      newChild = createVNode(Fragment, null, newProps.children);
+      newChild = createFragmentVNode(null, newProps.children);
     } else {
-      newChild = createVNode('props', type, null, newProps, processing);
+      newChild = createUndeterminedVNode(type, null, newProps);
     }
     newChild.parent = processing;
     newChild.ref = processing.ref;

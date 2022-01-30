@@ -69,7 +69,7 @@ export class CustomBaseEvent {
     customEvtName: string | null,
     nativeEvtName: string,
     nativeEvt: { [propName: string]: any },
-    vNode: VNode,
+    vNode: VNode | null,
     target: null | EventTarget
   ) {
     // 复制原生属性到自定义事件

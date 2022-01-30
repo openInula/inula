@@ -22,10 +22,11 @@ import { findDomParent, getSiblingVNode } from './vnode/VNodeUtils';
 import {
   ByAsync,
   BySync,
+  InRender,
+  InEvent,
   changeMode,
   checkMode,
   copyExecuteMode,
-  InRender,
   isExecuting,
   setExecuteMode
 } from './ExecuteMode';
@@ -320,7 +321,7 @@ export function runDiscreteUpdates() {
 
 export function asyncUpdates(fn, ...param) {
   const preMode = copyExecuteMode();
-  changeMode(ByAsync, true);
+  changeMode(InEvent, true);
   try {
     return fn(...param);
   } finally {

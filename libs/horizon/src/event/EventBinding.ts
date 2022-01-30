@@ -1,20 +1,21 @@
 /**
- * 事件绑定实现
+ * 事件绑定实现，分为绑定委托事件和非委托事件
  */
 import {allDelegatedNativeEvents} from './EventCollection';
 import {isDocument} from '../dom/utils/Common';
 import {
   getEventListeners,
-  getEventToListenerMap,
+  getNearestVNode,
+  getNonDelegatedListenerMap,
 } from '../dom/DOMInternalKeys';
-import {createCustomEventListener} from './WrapperListener';
 import {CustomBaseEvent} from './customEvents/CustomBaseEvent';
+import {runDiscreteUpdates} from '../renderer/TreeBuilder';
+import {getEventTarget} from './utils';
+import {isMounted} from '../renderer/vnode/VNodeUtils';
+import {SuspenseComponent} from '../renderer/vnode/VNodeTags';
+import {handleEventMain} from './HorizonEventMain';
 
-const listeningMarker =
-  '_horizonListening' +
-  Math.random()
-    .toString(36)
-    .slice(4);
+const listeningMarker = '_horizonListening' + Math.random().toString(36).slice(4);
 
 // 获取节点上已经委托事件名称
 function getListenerSetKey(nativeEvtName: string, isCapture: boolean): string {
@@ -22,6 +23,33 @@ function getListenerSetKey(nativeEvtName: string, isCapture: boolean): string {
   return `${nativeEvtName}__${sufix}`;
 }
 
+// 触发委托事件
+function triggerDelegatedEvent(
+  nativeEvtName: string,
+  isCapture: boolean,
+  targetDom: EventTarget,
+  nativeEvent, // 事件对象event
+) {
+  // 执行之前的调度事件
+  runDiscreteUpdates();
+
+  const nativeEventTarget = getEventTarget(nativeEvent);
+  let targetVNode = getNearestVNode(nativeEventTarget);
+
+  if (targetVNode !== null) {
+    if (isMounted(targetVNode)) {
+      if (targetVNode.tag === SuspenseComponent) {
+        targetVNode = null;
+      }
+    } else {
+      // vNode已销毁
+      targetVNode = null;
+    }
+  }
+  handleEventMain(nativeEvtName, isCapture, nativeEvent, targetVNode, targetDom);
+}
+
+// 监听委托事件
 function listenToNativeEvent(
   nativeEvtName: string,
   delegatedElement: Element,
@@ -37,12 +65,8 @@ function listenToNativeEvent(
   const listenerSetKey = getListenerSetKey(nativeEvtName, isCapture);
 
   if (!listenerSet.has(listenerSetKey)) {
-    const listener = createCustomEventListener(
-      target,
-      nativeEvtName,
-      isCapture,
-    );
-    target.addEventListener(nativeEvtName, listener, !!isCapture);
+    const listener = triggerDelegatedEvent.bind(null, nativeEvtName, isCapture, target);
+    target.addEventListener(nativeEvtName, listener, isCapture);
     listenerSet.add(listenerSetKey);
   }
 }
@@ -54,11 +78,11 @@ export function listenDelegatedEvents(dom: Element) {
     return;
   }
   dom[listeningMarker] = true;
-  allDelegatedNativeEvents.forEach((eventName: string) => {
+  allDelegatedNativeEvents.forEach((nativeEvtName: string) => {
     // 委托冒泡事件
-    listenToNativeEvent(eventName, dom, false);
+    listenToNativeEvent(nativeEvtName, dom, false);
     // 委托捕获事件
-    listenToNativeEvent(eventName, dom, true);
+    listenToNativeEvent(nativeEvtName, dom, true);
   });
 }
 
@@ -86,7 +110,7 @@ function getIsCapture(horizonEventName) {
 
 // 封装监听函数
 function getWrapperListener(horizonEventName, nativeEvtName, targetElement, listener) {
-  return (event) => {
+  return event => {
     const customEvent = new CustomBaseEvent(horizonEventName, nativeEvtName, event, null, targetElement);
     listener(customEvent);
   };
@@ -102,19 +126,20 @@ export function listenNonDelegatedEvent(
   const nativeEvtName = getNativeEvtName(horizonEventName, isCapture);
 
   // 先判断是否存在老的监听事件，若存在则移除
-  const eventToListenerMap = getEventToListenerMap(domElement);
-  if (eventToListenerMap.get(horizonEventName)) {
-    domElement.removeEventListener(nativeEvtName, eventToListenerMap.get(horizonEventName));
+  const nonDelegatedListenerMap = getNonDelegatedListenerMap(domElement);
+  const currentListener = nonDelegatedListenerMap.get(horizonEventName);
+  if (currentListener) {
+    domElement.removeEventListener(nativeEvtName, currentListener);
   }
 
   if (typeof listener !== 'function') {
-    eventToListenerMap.delete(nativeEvtName);
+    nonDelegatedListenerMap.delete(nativeEvtName);
     return;
   }
 
   // 为了和委托事件对外行为一致，将事件对象封装成CustomBaseEvent
   const wrapperListener = getWrapperListener(horizonEventName, nativeEvtName, domElement, listener);
   // 添加新的监听
-  eventToListenerMap.set(horizonEventName, wrapperListener);
+  nonDelegatedListenerMap.set(horizonEventName, wrapperListener);
   domElement.addEventListener(nativeEvtName, wrapperListener, isCapture);
 }

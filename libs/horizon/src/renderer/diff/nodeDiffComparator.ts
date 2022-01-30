@@ -2,7 +2,7 @@ import type { VNode } from '../Types';
 import { FlagUtils } from '../vnode/VNodeFlags';
 import { TYPE_COMMON_ELEMENT, TYPE_FRAGMENT, TYPE_PORTAL } from '../../external/JSXElementType';
 import { DomText, DomPortal, Fragment, DomComponent } from '../vnode/VNodeTags';
-import {updateVNode, createVNode, createVNodeFromElement, updateVNodePath} from '../vnode/VNodeCreator';
+import {updateVNode, createVNodeFromElement, updateVNodePath, createFragmentVNode, createPortalVNode, createDomTextVNode} from '../vnode/VNodeCreator';
 import {
   isSameType,
   getIteratorFn,
@@ -113,7 +113,7 @@ function getNewNode(parentNode: VNode, newChild: any, oldNode: VNode | null) {
   switch (newNodeType) {
     case DiffCategory.TEXT_NODE: {
       if (oldNode === null || oldNode.tag !== DomText) {
-        resultNode = createVNode(DomText, String(newChild));
+        resultNode = createDomTextVNode(String(newChild));
       } else {
         resultNode = updateVNode(oldNode, String(newChild));
       }
@@ -121,7 +121,7 @@ function getNewNode(parentNode: VNode, newChild: any, oldNode: VNode | null) {
     }
     case DiffCategory.ARR_NODE: {
       if (oldNode === null || oldNode.tag !== Fragment) {
-        resultNode = createVNode(Fragment, null, newChild);
+        resultNode = createFragmentVNode(null, newChild);
       } else {
         resultNode = updateVNode(oldNode, newChild);
       }
@@ -132,7 +132,7 @@ function getNewNode(parentNode: VNode, newChild: any, oldNode: VNode | null) {
         if (newChild.type === TYPE_FRAGMENT) {
           if (oldNode === null || oldNode.tag !== Fragment) {
             const key = oldNode !== null ? oldNode.key : newChild.key;
-            resultNode = createVNode(Fragment, key, newChild.props.children);
+            resultNode = createFragmentVNode(key, newChild.props.children);
           } else {
             resultNode = updateVNode(oldNode, newChild);
           }
@@ -151,7 +151,7 @@ function getNewNode(parentNode: VNode, newChild: any, oldNode: VNode | null) {
         break;
       } else if (newChild.vtype === TYPE_PORTAL) {
         if (oldNode === null || oldNode.tag !== DomPortal || oldNode.outerDom !== newChild.outerDom) {
-          resultNode = createVNode(DomPortal, newChild);
+          resultNode = createPortalVNode(newChild);
         } else {
           resultNode = updateVNode(oldNode, newChild.children || []);
         }
@@ -504,7 +504,7 @@ function diffStringNodeHandler(
     deleteVNodes(parentNode, firstChildVNode.next);
     newTextNode.next = null;
   } else {
-    newTextNode = createVNode(DomText, String(newChild));
+    newTextNode = createDomTextVNode(String(newChild));
     deleteVNodes(parentNode, firstChildVNode);
   }
 
@@ -562,7 +562,7 @@ function diffObjectNodeHandler(
     if (resultNode === null) {
       // 新建
       if (newChild.type === TYPE_FRAGMENT) {
-        resultNode = createVNode(Fragment, newChild.key, newChild.props.children);
+        resultNode = createFragmentVNode(newChild.key, newChild.props.children);
       } else {
         resultNode = createVNodeFromElement(newChild);
         resultNode.ref = newChild.ref;
@@ -580,7 +580,7 @@ function diffObjectNodeHandler(
     }
     if (resultNode === null) {
       // 新建
-      resultNode = createVNode(DomPortal, newChild);
+      resultNode = createPortalVNode(newChild);
     }
   }
 
