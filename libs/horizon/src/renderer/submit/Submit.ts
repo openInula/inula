@@ -70,8 +70,6 @@ export function submitToRender(treeRoot) {
 
     // 记录root，说明这个root有副作用要执行
     setHookEffectRoot(treeRoot);
-  } else {
-    clearDirtyNodes(dirtyNodes);
   }
 
   // 统计root同步重渲染的次数，如果太多可能是无线循环
@@ -196,14 +194,4 @@ export function checkLoopingUpdateLimit() {
       A component maybe repeatedly invokes setState on componentWillUpdate or componentDidUpdate.`
     );
   }
-}
-
-// 清理dirtyNodes
-export function clearDirtyNodes(dirtyNodes) {
-  dirtyNodes.forEach(node => {
-    if (node.flags.Deletion) {
-      node.realNode = null;
-      node.next = null;
-    }
-  });
 }
