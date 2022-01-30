@@ -41,8 +41,9 @@ export class FlagUtils {
   static hasAnyFlag(node: VNode) { // 有标志位
     const flags = node.flags;
     const arrLength = FlagArr.length;
-    for(let i = 0; i < arrLength; i++) {
-      const key = FlagArr[i];
+    let key;
+    for (let i = 0; i < arrLength; i++) {
+      key = FlagArr[i];
       if (flags[key]) {
         return true;
       }
@@ -92,7 +93,6 @@ export class FlagUtils {
   static markForceUpdate(node: VNode) {
     node.flags.ForceUpdate = true;
   }
-
   static markClear(node: VNode) {
     node.flags.Clear = true;
   }

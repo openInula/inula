@@ -14,8 +14,6 @@ import {runAsync} from '../taskExecutor/TaskExecutor';
 import {
   copyExecuteMode, InRender, setExecuteMode,changeMode
 } from '../ExecuteMode';
-import {handleSubmitError} from '../ErrorHandler';
-import {clearDirtyNodes} from './Submit';
 import {EffectConstant} from '../hooks/EffectConstant';
 
 let hookEffects: Array<HookEffect | VNode> = [];
@@ -81,7 +79,7 @@ export function runAsyncEffects() {
       try {
         destroy();
       } catch (error) {
-        handleSubmitError(vNode, error);
+        // 不处理副作用阶段抛出的异常
       }
     }
   });
@@ -95,12 +93,9 @@ export function runAsyncEffects() {
 
       effect.removeEffect = create();
     } catch (error) {
-      handleSubmitError(vNode, error);
+      // 不处理副作用阶段抛出的异常
     }
   });
-
-  // 清理dirtyNodes
-  clearDirtyNodes(root.dirtyNodes);
 
   setExecuteMode(preMode);
 
