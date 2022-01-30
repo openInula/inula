@@ -7,9 +7,6 @@ import type {
   Effect as HookEffect,
   EffectList,
 } from '../hooks/HookType';
-import {
-  callRenderQueueImmediate,
-} from '../taskExecutor/RenderQueue';
 import {runAsync} from '../taskExecutor/TaskExecutor';
 import {
   copyExecuteMode, InRender, setExecuteMode,changeMode
@@ -20,20 +17,12 @@ let hookEffects: Array<HookEffect | VNode> = [];
 let hookRemoveEffects: Array<HookEffect | VNode> = [];
 // 是否正在异步调度effects
 let isScheduling: boolean = false;
-let hookEffectRoot: VNode | null = null;
 
 export function setSchedulingEffects(value) {
   isScheduling = value;
 }
 export function isSchedulingEffects() {
   return isScheduling;
-}
-
-export function setHookEffectRoot(root: VNode | null) {
-  hookEffectRoot = root;
-}
-export function getHookEffectRoot() {
-  return hookEffectRoot;
 }
 
 export function callUseEffects(vNode: VNode) {
@@ -58,20 +47,13 @@ export function callUseEffects(vNode: VNode) {
 }
 
 export function runAsyncEffects() {
-  if (hookEffectRoot === null) {
-    return false;
-  }
-
-  const root = hookEffectRoot;
-  hookEffectRoot = null;
-
   const preMode = copyExecuteMode();
   changeMode(InRender, true);
 
   // 调用effect destroy
   const removeEffects = hookRemoveEffects;
   hookRemoveEffects = [];
-  removeEffects.forEach(({effect, vNode}) => {
+  removeEffects.forEach(({effect}) => {
     const destroy = effect.removeEffect;
     effect.removeEffect = undefined;
 
@@ -87,7 +69,7 @@ export function runAsyncEffects() {
   // 调用effect create
   const createEffects = hookEffects;
   hookEffects = [];
-  createEffects.forEach(({effect, vNode}) => {
+  createEffects.forEach(({effect}) => {
     try {
       const create = effect.effect;
 
@@ -98,10 +80,6 @@ export function runAsyncEffects() {
   });
 
   setExecuteMode(preMode);
-
-  callRenderQueueImmediate();
-
-  return true;
 }
 
 // 在销毁vNode的时候调用remove
@@ -131,10 +109,10 @@ export function callUseLayoutEffectRemove(vNode: VNode) {
   const effectList: EffectList = vNode.effectList;
 
   const layoutLabel = EffectConstant.LayoutEffect | EffectConstant.DepsChange;
-  effectList.forEach(item => {
-    if ((item.effectConstant & layoutLabel) === layoutLabel) {
-      const remove = item.removeEffect;
-      item.removeEffect = undefined;
+  effectList.forEach(effect => {
+    if ((effect.effectConstant & layoutLabel) === layoutLabel) {
+      const remove = effect.removeEffect;
+      effect.removeEffect = undefined;
       if (typeof remove === 'function') {
         remove();
       }
@@ -147,10 +125,10 @@ export function callUseLayoutEffectCreate(vNode: VNode) {
   const effectList: EffectList = vNode.effectList;
 
   const layoutLabel = EffectConstant.LayoutEffect | EffectConstant.DepsChange;
-  effectList.forEach(item => {
-    if ((item.effectConstant & layoutLabel) === layoutLabel) {
-      const create = item.effect;
-      item.removeEffect = create();
+  effectList.forEach(effect => {
+    if ((effect.effectConstant & layoutLabel) === layoutLabel) {
+      const create = effect.effect;
+      effect.removeEffect = create();
     }
   });
 }

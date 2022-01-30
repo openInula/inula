@@ -22,7 +22,7 @@ import {
 } from '../ExecuteMode';
 import {
   isSchedulingEffects,
-  setSchedulingEffects, setHookEffectRoot,
+  setSchedulingEffects,
 } from './HookEffectHandler';
 import {getStartVNode} from '../GlobalVar';
 
@@ -67,9 +67,6 @@ export function submitToRender(treeRoot) {
 
   if (isSchedulingEffects()) {
     setSchedulingEffects(false);
-
-    // 记录root，说明这个root有副作用要执行
-    setHookEffectRoot(treeRoot);
   }
 
   // 统计root同步重渲染的次数，如果太多可能是无线循环
