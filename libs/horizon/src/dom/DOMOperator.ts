@@ -226,15 +226,6 @@ export function unHideDom(tag: string, dom: Element | Text, props: Props) {
   }
 }
 
-export function clearContainer(container: Container): void {
-  if (isElement(container)) {
-    container.textContent = '';
-  }
-  if (isDocument(container) && container.body != null) {
-    container.body.textContent = '';
-  }
-}
-
 export function prePortal(portal: Element): void {
   listenDelegatedEvents(portal);
 }
