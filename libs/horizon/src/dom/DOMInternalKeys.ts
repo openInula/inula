@@ -58,6 +58,7 @@ export function getNearestVNode(dom: Node): null | VNode {
   if (vNode) { // 如果是已经被框架标记过的 DOM 节点，那么直接返回其 VNode 实例
     return vNode;
   }
+
   // 下面处理的是为被框架标记过的 DOM 节点，向上找其父节点是否被框架标记过
   let parentDom = dom.parentNode;
   let nearVNode = null;

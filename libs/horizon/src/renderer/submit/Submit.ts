@@ -11,7 +11,7 @@ import {
   callBeforeSubmitLifeCycles, submitDeletion, submitAddition,
   submitResetTextContent, submitUpdate, detachRef, submitClear,
 } from './LifeCycleHandler';
-import {tryRenderFromRoot, setProcessing} from '../TreeBuilder';
+import {tryRenderFromRoot} from '../TreeBuilder';
 import {
   BySync,
   InRender,
@@ -81,11 +81,6 @@ export function submitToRender(treeRoot) {
     throw error;
   }
 
-  // 非批量：即同步执行的，没有必要去执行RenderQueue，RenderQueue放的是异步的
-  if (!checkMode(BySync)) { // 非批量
-    callRenderQueueImmediate();
-  }
-
   return null;
 }
 
@@ -96,7 +91,6 @@ function beforeSubmit(dirtyNodes: Array<VNode>) {
         callBeforeSubmitLifeCycles(node);
       }
     } catch (error) {
-      throwIfTrue(node === null, 'Should be working on an effect.');
       handleSubmitError(node, error);
     }
   });
@@ -138,7 +132,6 @@ function submit(dirtyNodes: Array<VNode>) {
         }
       }
     } catch (error) {
-      throwIfTrue(node === null, 'Should be working on an effect.');
       handleSubmitError(node, error);
     }
   });
@@ -155,7 +148,6 @@ function afterSubmit(dirtyNodes: Array<VNode>) {
         attachRef(node);
       }
     } catch (error) {
-      throwIfTrue(node === null, 'Should be working on an effect.');
       handleSubmitError(node, error);
     }
   });

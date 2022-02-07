@@ -4,7 +4,7 @@ import {isInputValueChanged} from '../../dom/valueHandler/ValueChangeHandler';
 import {addValueUpdateList} from '../ControlledValueUpdater';
 import {isTextInputElement} from '../utils';
 import {EVENT_TYPE_ALL} from '../const';
-import {AnyNativeEvent, ProcessingListenerList} from '../Types';
+import {AnyNativeEvent, ListenerUnitList} from '../Types';
 import {
   getListenersFromTree,
 } from '../ListenerGetter';
@@ -39,7 +39,7 @@ export function getListeners(
   nativeEvt: AnyNativeEvent,
   vNode: null | VNode,
   target: null | EventTarget,
-): ProcessingListenerList {
+): ListenerUnitList {
   if (!vNode) {
     return [];
   }

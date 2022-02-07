@@ -78,6 +78,7 @@ export function listenDelegatedEvents(dom: Element) {
     return;
   }
   dom[listeningMarker] = true;
+
   allDelegatedNativeEvents.forEach((nativeEvtName: string) => {
     // 委托冒泡事件
     listenToNativeEvent(nativeEvtName, dom, false);

@@ -34,8 +34,8 @@ export function callUseEffects(vNode: VNode) {
       (effectConstant & EffectConstant.Effect) !== EffectConstant.NoEffect &&
       (effectConstant & EffectConstant.DepsChange) !== EffectConstant.NoEffect
     ) {
-      hookEffects.push({effect, vNode});
-      hookRemoveEffects.push({effect, vNode});
+      hookEffects.push(effect);
+      hookRemoveEffects.push(effect);
 
       // 异步调用
       if (!isScheduling) {
@@ -53,7 +53,7 @@ export function runAsyncEffects() {
   // 调用effect destroy
   const removeEffects = hookRemoveEffects;
   hookRemoveEffects = [];
-  removeEffects.forEach(({effect}) => {
+  removeEffects.forEach((effect) => {
     const destroy = effect.removeEffect;
     effect.removeEffect = undefined;
 
@@ -69,7 +69,7 @@ export function runAsyncEffects() {
   // 调用effect create
   const createEffects = hookEffects;
   hookEffects = [];
-  createEffects.forEach(({effect}) => {
+  createEffects.forEach((effect) => {
     try {
       const create = effect.effect;
 
@@ -91,7 +91,7 @@ export function callEffectRemove(vNode: VNode) {
 
     if (removeEffect !== undefined) {
       if ((effectConstant & EffectConstant.Effect) !== EffectConstant.NoEffect) { // 如果是useEffect，就异步调用
-        hookRemoveEffects.push({effect, vNode});
+        hookRemoveEffects.push(effect);
 
         if (!isScheduling) {
           isScheduling = true;

@@ -261,14 +261,14 @@ export function getExactNode(targetVNode, targetContainer) {
       if (isPortalRoot(vNode, targetContainer)) {
         return null;
       }
+
       while (container !== null) {
         const parentNode = getNearestVNode(container);
         if (parentNode === null) {
           return null;
         }
         if (parentNode.tag === DomComponent || parentNode.tag === DomText) {
-          vNode = parentNode;
-          return getExactNode(vNode, targetContainer);
+          return getExactNode(parentNode, targetContainer);
         }
         container = container.parentNode;
       }
