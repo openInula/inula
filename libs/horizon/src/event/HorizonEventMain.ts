@@ -7,10 +7,6 @@ import {
   EVENT_TYPE_BUBBLE,
   EVENT_TYPE_CAPTURE,
 } from './const';
-import {
-  throwCaughtEventError,
-  runListenerAndCatchFirstError,
-} from './EventError';
 import { getListeners as getBeforeInputListeners } from './simulatedEvtHandler/BeforeInputEventHandler';
 import { getListeners as getCompositionListeners } from './simulatedEvtHandler/CompositionEventHandler';
 import { getListeners as getChangeListeners } from './simulatedEvtHandler/ChangeEventHandler';
@@ -75,12 +71,9 @@ function processListeners(listenerList: ListenerUnitList): void {
       return;
     }
     event.currentTarget = currentTarget;
-    runListenerAndCatchFirstError(listener, event);
+    listener(event);
     event.currentTarget = null;
   });
-
-  // 执行所有事件后，重新throw遇到的第一个错误
-  throwCaughtEventError();
 }
 
 function getProcessListenersFacade(
