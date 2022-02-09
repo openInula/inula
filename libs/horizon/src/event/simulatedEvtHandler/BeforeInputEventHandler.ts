@@ -1,7 +1,7 @@
 import type {VNode} from '../../renderer/Types';
 import type {AnyNativeEvent} from '../Types';
 import {getListenersFromTree} from '../ListenerGetter';
-import {createHandlerCustomEvent} from '../customEvents/EventFactory';
+import {createCustomEvent} from '../customEvents/EventFactory';
 import {CHAR_CODE_SPACE, EVENT_TYPE_ALL} from '../const';
 import {CustomBaseEvent} from '../customEvents/CustomBaseEvent';
 import {ListenerUnitList} from '../Types';
@@ -36,7 +36,7 @@ export function getListeners(
     return [];
   }
 
-  const event: CustomBaseEvent = createHandlerCustomEvent(
+  const event: CustomBaseEvent = createCustomEvent(
     'onBeforeInput',
     'beforeinput',
     nativeEvent,
