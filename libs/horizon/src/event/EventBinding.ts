@@ -10,7 +10,6 @@ import {
 } from '../dom/DOMInternalKeys';
 import {CustomBaseEvent} from './customEvents/CustomBaseEvent';
 import {runDiscreteUpdates} from '../renderer/TreeBuilder';
-import {getEventTarget} from './utils';
 import {isMounted} from '../renderer/vnode/VNodeUtils';
 import {SuspenseComponent} from '../renderer/vnode/VNodeTags';
 import {handleEventMain} from './HorizonEventMain';
@@ -33,7 +32,7 @@ function triggerDelegatedEvent(
   // 执行之前的调度事件
   runDiscreteUpdates();
 
-  const nativeEventTarget = getEventTarget(nativeEvent);
+  const nativeEventTarget = nativeEvent.target || nativeEvent.srcElement;
   let targetVNode = getNearestVNode(nativeEventTarget);
 
   if (targetVNode !== null) {

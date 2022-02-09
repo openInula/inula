@@ -1,4 +1,4 @@
-import {createHandlerCustomEvent} from '../customEvents/EventFactory';
+import {createCustomEvent} from '../customEvents/EventFactory';
 import {getDom} from '../../dom/DOMInternalKeys';
 import {isInputValueChanged} from '../../dom/valueHandler/ValueChangeHandler';
 import {addValueUpdateList} from '../ControlledValueUpdater';
@@ -48,7 +48,7 @@ export function getListeners(
   // 判断是否需要触发change事件
   if (shouldTriggerChangeEvent(targetDom, nativeEvtName)) {
     addValueUpdateList(target);
-    const event = createHandlerCustomEvent(
+    const event = createCustomEvent(
       'onChange',
       'change',
       nativeEvt,

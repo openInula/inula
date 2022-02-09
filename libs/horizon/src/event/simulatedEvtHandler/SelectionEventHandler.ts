@@ -1,4 +1,4 @@
-import {createHandlerCustomEvent} from '../customEvents/EventFactory';
+import {createCustomEvent} from '../customEvents/EventFactory';
 import {shallowCompare} from '../../renderer/utils/compare';
 import {getFocusedDom} from '../../dom/utils/Common';
 import {getDom} from '../../dom/DOMInternalKeys';
@@ -54,7 +54,7 @@ function getSelectEvent(nativeEvent, target) {
   if (!shallowCompare(lastSelection, currentSelection)) {
     lastSelection = currentSelection;
 
-    const event = createHandlerCustomEvent(
+    const event = createCustomEvent(
       horizonEventName,
       'select',
       nativeEvent,

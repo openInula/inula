@@ -1,4 +1,3 @@
-import {isText} from '../dom/utils/Common';
 import { CHAR_CODE_ENTER, CHAR_CODE_SPACE } from './const';
 
 export function uniqueCharCode(nativeEvent): number {
@@ -20,15 +19,6 @@ export function uniqueCharCode(nativeEvent): number {
   }
 
   return 0;
-}
-
-// 获取事件的target对象
-export function getEventTarget(nativeEvent) {
-  const target = nativeEvent.target || nativeEvent.srcElement || window;
-  if (isText(target)) {
-    return target.parentNode;
-  }
-  return target;
 }
 
 // 支持的输入框类型

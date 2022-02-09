@@ -1,7 +1,7 @@
 import type {VNode} from '../../renderer/Types';
 import type {AnyNativeEvent} from '../Types';
 import {getListenersFromTree} from '../ListenerGetter';
-import {createHandlerCustomEvent} from '../customEvents/EventFactory';
+import {createCustomEvent} from '../customEvents/EventFactory';
 import {EVENT_TYPE_ALL} from '../const';
 import {ListenerUnitList} from '../Types';
 
@@ -20,7 +20,7 @@ export function getListeners(
 ): ListenerUnitList {
   const evtType = compositionEventObj[evtName];
 
-  const event = createHandlerCustomEvent(
+  const event = createCustomEvent(
     evtType,
     evtName,
     nativeEvt,

@@ -14,9 +14,8 @@ import { getListeners as getSelectionListeners } from './simulatedEvtHandler/Sel
 import {
   getCustomEventNameWithOn,
   uniqueCharCode,
-  getEventTarget
 } from './utils';
-import { createCommonCustomEvent } from './customEvents/EventFactory';
+import { createCustomEvent } from './customEvents/EventFactory';
 import { getListenersFromTree } from './ListenerGetter';
 import { shouldUpdateValue, updateControlledValue } from './ControlledValueUpdater';
 import { asyncUpdates, runDiscreteUpdates } from '../renderer/Renderer';
@@ -54,7 +53,7 @@ function getCommonListeners(
     nativeEvtName = 'blur';
   }
 
-  const horizonEvent = createCommonCustomEvent(horizonEvtName, nativeEvtName, nativeEvent, null, target);
+  const horizonEvent = createCustomEvent(horizonEvtName, nativeEvtName, nativeEvent, null, target);
   return getListenersFromTree(
     vNode,
     horizonEvtName,
@@ -142,7 +141,7 @@ function triggerHorizonEvents(
   nativeEvent: AnyNativeEvent,
   vNode: VNode | null,
 ): void {
-  const nativeEventTarget = getEventTarget(nativeEvent);
+  const nativeEventTarget = nativeEvent.target || nativeEvent.srcElement;
 
   // 获取委托事件队列
   const listenerList = getProcessListenersFacade(nativeEvtName, vNode, nativeEvent, nativeEventTarget, isCapture);

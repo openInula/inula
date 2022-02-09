@@ -64,6 +64,7 @@ export class CustomBaseEvent {
   isDefaultPrevented: () => boolean;
   isPropagationStopped: () => boolean;
   currentTarget: EventTarget;
+  relatedTarget: EventTarget;
 
   constructor(
     customEvtName: string | null,
@@ -92,6 +93,7 @@ export class CustomBaseEvent {
     this.stopPropagation = this.stopPropagation.bind(this);
     this.isDefaultPrevented = () => defaultPrevented;
     this.isPropagationStopped = () => false;
+    this.relatedTarget = nativeEvt.relatedTarget;
   }
 
   // 兼容性方法
