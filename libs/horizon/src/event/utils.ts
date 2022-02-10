@@ -1,25 +1,3 @@
-import { CHAR_CODE_ENTER, CHAR_CODE_SPACE } from './const';
-
-export function uniqueCharCode(nativeEvent): number {
-  let charCode = nativeEvent.charCode;
-
-  // 火狐浏览器没有设置enter键的charCode，用keyCode
-  if (charCode === 0 && nativeEvent.keyCode === CHAR_CODE_ENTER) {
-    charCode = CHAR_CODE_ENTER;
-  }
-
-  // 当ctrl按下时10表示enter键按下
-  if (charCode === 10) {
-    charCode = CHAR_CODE_ENTER;
-  }
-
-  // 忽略非打印的Enter键
-  if (charCode >= CHAR_CODE_SPACE || charCode === CHAR_CODE_ENTER) {
-    return charCode;
-  }
-
-  return 0;
-}
 
 // 支持的输入框类型
 const supportedInputTypes = ['color', 'date', 'datetime', 'datetime-local', 'email', 'month',
@@ -36,7 +14,7 @@ export function isTextInputElement(dom?: HTMLElement): boolean {
 
 
 // 例：dragEnd -> onDragEnd
-export function getCustomEventNameWithOn(name) {
+export function addOnPrefix(name) {
   if (!name) {
     return '';
   }

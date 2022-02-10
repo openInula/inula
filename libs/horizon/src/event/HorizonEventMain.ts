@@ -12,8 +12,7 @@ import { getListeners as getCompositionListeners } from './simulatedEvtHandler/C
 import { getListeners as getChangeListeners } from './simulatedEvtHandler/ChangeEventHandler';
 import { getListeners as getSelectionListeners } from './simulatedEvtHandler/SelectionEventHandler';
 import {
-  getCustomEventNameWithOn,
-  uniqueCharCode,
+  addOnPrefix,
 } from './utils';
 import { createCustomEvent } from './customEvents/EventFactory';
 import { getListenersFromTree } from './ListenerGetter';
@@ -30,13 +29,8 @@ function getCommonListeners(
   target: null | EventTarget,
   isCapture: boolean,
 ): ListenerUnitList {
-  const horizonEvtName = getCustomEventNameWithOn(CommonEventToHorizonMap[nativeEvtName]);
+  const horizonEvtName = addOnPrefix(CommonEventToHorizonMap[nativeEvtName]);
   if (!horizonEvtName) {
-    return [];
-  }
-
-  // 火狐浏览器兼容。火狐浏览器下功能键将触发keypress事件 火狐下keypress的charCode有值，keyCode为0
-  if (nativeEvtName === 'keypress' && uniqueCharCode(nativeEvent) === 0) {
     return [];
   }
 
