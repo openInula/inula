@@ -3,7 +3,6 @@
  */
 
 import type {VNode} from '../../renderer/Types';
-import {uniqueCharCode} from '../utils';
 import {CustomBaseEvent} from './CustomBaseEvent';
 import {CHAR_CODE_ENTER} from '../const';
 
@@ -44,7 +43,7 @@ function getKey(event) {
   }
 
   if (event.type === 'keypress') {
-    const charCode = uniqueCharCode(event);
+    const charCode = event.charCode;
     return charCode === CHAR_CODE_ENTER ? 'Enter' : String.fromCharCode(charCode);
   }
 
@@ -71,7 +70,7 @@ export class CustomKeyboardEvent extends CustomBaseEvent {
   ) {
     super(customEvtName, nativeEvtName, nativeEvt, vNode, target);
     this.key = getKey(nativeEvt);
-    this.charCode = nativeEvtName === 'keypress' ? uniqueCharCode(nativeEvt) : 0;
+    this.charCode = nativeEvtName === 'keypress' ? nativeEvt.charCode : 0;
     this.keyCode = (nativeEvtName === 'keydown' || nativeEvtName === 'keyup') ? nativeEvt.keyCode : 0;
     this.which = this.charCode || this.keyCode;
   }
