@@ -13,11 +13,9 @@ import {
 } from './LifeCycleHandler';
 import {tryRenderFromRoot} from '../TreeBuilder';
 import {
-  BySync,
   InRender,
   copyExecuteMode,
   setExecuteMode,
-  checkMode,
   changeMode,
 } from '../ExecuteMode';
 import {
