@@ -4,7 +4,6 @@
 import {allDelegatedNativeEvents} from './EventCollection';
 import {isDocument} from '../dom/utils/Common';
 import {
-  getEventListeners,
   getNearestVNode,
   getNonDelegatedListenerMap,
 } from '../dom/DOMInternalKeys';
@@ -15,12 +14,6 @@ import {SuspenseComponent} from '../renderer/vnode/VNodeTags';
 import {handleEventMain} from './HorizonEventMain';
 
 const listeningMarker = '_horizonListening' + Math.random().toString(36).slice(4);
-
-// 获取节点上已经委托事件名称
-function getListenerSetKey(nativeEvtName: string, isCapture: boolean): string {
-  const sufix = isCapture ? 'capture' : 'bubble';
-  return `${nativeEvtName}__${sufix}`;
-}
 
 // 触发委托事件
 function triggerDelegatedEvent(
@@ -54,20 +47,14 @@ function listenToNativeEvent(
   delegatedElement: Element,
   isCapture: boolean,
 ): void {
-  let target: Element | Document = delegatedElement;
+  let dom: Element | Document = delegatedElement;
   // document层次可能触发selectionchange事件，为了捕获这类事件，selectionchange事件绑定在document节点上
   if (nativeEvtName === 'selectionchange' && !isDocument(delegatedElement)) {
-    target = delegatedElement.ownerDocument;
+    dom = delegatedElement.ownerDocument;
   }
 
-  const listenerSet = getEventListeners(target);
-  const listenerSetKey = getListenerSetKey(nativeEvtName, isCapture);
-
-  if (!listenerSet.has(listenerSetKey)) {
-    const listener = triggerDelegatedEvent.bind(null, nativeEvtName, isCapture, target);
-    target.addEventListener(nativeEvtName, listener, isCapture);
-    listenerSet.add(listenerSetKey);
-  }
+  const listener = triggerDelegatedEvent.bind(null, nativeEvtName, isCapture, dom);
+  dom.addEventListener(nativeEvtName, listener, isCapture);
 }
 
 // 监听所有委托事件
@@ -101,7 +88,7 @@ function getNativeEvtName(horizonEventName, capture) {
 }
 
 // 是否捕获事件
-function getIsCapture(horizonEventName) {
+function isCaptureEvent(horizonEventName) {
   if (horizonEventName === 'onLostPointerCapture' || horizonEventName === 'onGotPointerCapture') {
     return false;
   }
@@ -122,7 +109,7 @@ export function listenNonDelegatedEvent(
   domElement: Element,
   listener,
 ): void {
-  const isCapture = getIsCapture(horizonEventName);
+  const isCapture = isCaptureEvent(horizonEventName);
   const nativeEvtName = getNativeEvtName(horizonEventName, isCapture);
 
   // 先判断是否存在老的监听事件，若存在则移除
@@ -130,10 +117,10 @@ export function listenNonDelegatedEvent(
   const currentListener = nonDelegatedListenerMap.get(horizonEventName);
   if (currentListener) {
     domElement.removeEventListener(nativeEvtName, currentListener);
+    nonDelegatedListenerMap.delete(horizonEventName);
   }
 
   if (typeof listener !== 'function') {
-    nonDelegatedListenerMap.delete(nativeEvtName);
     return;
   }
 

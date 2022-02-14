@@ -35,6 +35,7 @@ export function getListenersFromTree(
           });
         }
       }
+
       if (eventType === EVENT_TYPE_ALL || eventType === EVENT_TYPE_BUBBLE) {
         const bubbleListener = vNode.props[horizonEvtName];
         if (bubbleListener) {
@@ -49,6 +50,7 @@ export function getListenersFromTree(
     }
     vNode = vNode.parent;
   }
+
   return listeners;
 }
 

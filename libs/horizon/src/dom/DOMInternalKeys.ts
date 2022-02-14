@@ -19,7 +19,6 @@ const prefix = '_horizon';
 const internalKeys = {
   VNode: `${prefix}VNode`,
   props: `${prefix}Props`,
-  events: `${prefix}Events`,
   nonDelegatedEvents: `${prefix}NonDelegatedEvents`,
 };
 
@@ -83,20 +82,11 @@ export function updateVNodeProps(dom: Element | Text, props: Props): void {
   dom[internalKeys.props] = props;
 }
 
-export function getEventListeners(dom: EventTarget): Set<string> {
-  let elementListeners = dom[internalKeys.events];
-  if (!elementListeners) {
-    elementListeners = new Set();
-    dom[internalKeys.events] = elementListeners;
-  }
-  return elementListeners;
-}
-
-export function getNonDelegatedListenerMap(target: EventTarget): Map<string, EventListener> {
-  let eventsMap = target[internalKeys.nonDelegatedEvents];
+export function getNonDelegatedListenerMap(dom: Element | Text): Map<string, EventListener> {
+  let eventsMap = dom[internalKeys.nonDelegatedEvents];
   if (!eventsMap) {
     eventsMap = new Map();
-    target[internalKeys.nonDelegatedEvents] = eventsMap;
+    dom[internalKeys.nonDelegatedEvents] = eventsMap;
   }
   return eventsMap;
 }
