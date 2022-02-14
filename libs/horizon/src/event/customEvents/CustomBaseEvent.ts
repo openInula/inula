@@ -7,7 +7,8 @@ import {VNode} from '../../renderer/Types';
 // 从原生事件中复制属性到自定义事件中
 function extendAttribute(target, source) {
   let val;
-  for (let attr in source) {
+  let attr;
+  for (attr in source) {
     // 这两个方法需要override
     if (attr === 'preventDefault' || attr === 'stopPropagation') {
       continue;
