@@ -19,7 +19,6 @@ const prefix = '_horizon';
 const internalKeys = {
   VNode: `${prefix}VNode`,
   props: `${prefix}Props`,
-  events: `${prefix}Events`,
   nonDelegatedEvents: `${prefix}NonDelegatedEvents`,
 };
 
@@ -58,6 +57,7 @@ export function getNearestVNode(dom: Node): null | VNode {
   if (vNode) { // 如果是已经被框架标记过的 DOM 节点，那么直接返回其 VNode 实例
     return vNode;
   }
+
   // 下面处理的是为被框架标记过的 DOM 节点，向上找其父节点是否被框架标记过
   let parentDom = dom.parentNode;
   let nearVNode = null;
@@ -82,20 +82,11 @@ export function updateVNodeProps(dom: Element | Text, props: Props): void {
   dom[internalKeys.props] = props;
 }
 
-export function getEventListeners(dom: EventTarget): Set<string> {
-  let elementListeners = dom[internalKeys.events];
-  if (!elementListeners) {
-    elementListeners = new Set();
-    dom[internalKeys.events] = elementListeners;
-  }
-  return elementListeners;
-}
-
-export function getEventToListenerMap(target: EventTarget): Map<string, EventListener> {
-  let eventsMap = target[internalKeys.nonDelegatedEvents];
+export function getNonDelegatedListenerMap(dom: Element | Text): Map<string, EventListener> {
+  let eventsMap = dom[internalKeys.nonDelegatedEvents];
   if (!eventsMap) {
     eventsMap = new Map();
-    target[internalKeys.nonDelegatedEvents] = eventsMap;
+    dom[internalKeys.nonDelegatedEvents] = eventsMap;
   }
   return eventsMap;
 }

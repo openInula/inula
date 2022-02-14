@@ -87,59 +87,71 @@ export function updateVNode(vNode: VNode, vNodeProps?: any): VNode {
 function getVNodeTag(type: any) {
   let vNodeTag = ClsOrFunComponent;
   let isLazy = false;
+  const componentType = typeof type;
 
-  if (typeof type === 'function') {
+  if (componentType === 'function') {
     if (isClassComponent(type)) {
       vNodeTag = ClassComponent;
     }
-  } else if (typeof type === 'string') {
+  } else if (componentType === 'string') {
     vNodeTag = DomComponent;
   } else if (type === TYPE_SUSPENSE) {
     vNodeTag = SuspenseComponent;
-  } else if (typeof type === 'object' && type !== null && typeMap[type.vtype]) {
+  } else if (componentType === 'object' && type !== null && typeMap[type.vtype]) {
     vNodeTag = typeMap[type.vtype];
     isLazy = type.vtype === TYPE_LAZY;
   } else {
-    throw Error(`Component type is invalid, got: ${type == null ? type : typeof type}`);
+    throw Error(`Component type is invalid, got: ${type == null ? type : componentType}`);
   }
   return { vNodeTag, isLazy };
 }
 
+export function createFragmentVNode(fragmentKey, fragmentProps) {
+  const vNode = newVirtualNode(Fragment, fragmentKey, fragmentProps);
+  vNode.shouldUpdate = true;
+  return vNode;
+}
+
+export function createDomTextVNode(content) {
+  const vNode = newVirtualNode(DomText, null, content);
+  vNode.shouldUpdate = true;
+  return vNode;
+}
+
+export function createPortalVNode(portal) {
+  const children = portal.children ?? [];
+  const vNode = newVirtualNode(DomPortal, portal.key, children);
+  vNode.shouldUpdate = true;
+  vNode.outerDom = portal.outerDom;
+  return vNode;
+}
+
+export function createUndeterminedVNode(type, key, props) {
+  const { vNodeTag, isLazy } = getVNodeTag(type);
+
+  const vNode = newVirtualNode(vNodeTag, key, props);
+  vNode.type = type;
+  vNode.shouldUpdate = true;
+
+  // lazy类型的特殊处理
+  vNode.isLazyComponent = isLazy;
+  if (isLazy) {
+    vNode.lazyType = type;
+  }
+  return vNode;
+}
+
+export function createTreeRootVNode(container) {
+  const vNode = newVirtualNode(TreeRoot, null, null, container);
+  vNode.path.push(0);
+  createUpdateArray(vNode);
+  return vNode;
+}
+
+// TODO: 暂时保留给测试用例使用，后续修改测试用例
 export function createVNode(tag: VNodeTag | string, ...secondArg) {
   let vNode = null;
   switch (tag) {
-    case Fragment:
-      const [fragmentKey, fragmentProps] = secondArg;
-      vNode = newVirtualNode(Fragment, fragmentKey, fragmentProps);
-      vNode.shouldUpdate = true;
-      break;
-    case DomText:
-      const content = secondArg[0];
-      vNode = newVirtualNode(DomText, null, content);
-      vNode.shouldUpdate = true;
-      break;
-    case DomPortal:
-      const portal = secondArg[0];
-      const children = portal.children ?? [];
-      vNode = newVirtualNode(DomPortal, portal.key, children);
-      vNode.shouldUpdate = true;
-      vNode.outerDom = portal.outerDom;
-      break;
-    case 'props':
-      const [type, key, props] = secondArg;
-
-      const { vNodeTag, isLazy } = getVNodeTag(type);
-
-      vNode = newVirtualNode(vNodeTag, key, props);
-      vNode.type = type;
-      vNode.shouldUpdate = true;
-
-      // lazy类型的特殊处理
-      vNode.isLazyComponent = isLazy;
-      if (isLazy) {
-        vNode.lazyType = type;
-      }
-      break;
     case TreeRoot:
       // 创建treeRoot
       vNode = newVirtualNode(TreeRoot, null, null, secondArg[0]);
@@ -162,9 +174,9 @@ export function createVNodeFromElement(element: JSXElement): VNode {
   const props = element.props;
 
   if (type === TYPE_STRICT_MODE || type === TYPE_FRAGMENT || type === TYPE_PROFILER) {
-    return createVNode(Fragment, key, props.children);
+    return createFragmentVNode(key, props.children);
   } else {
-    return createVNode('props', type, key, props);
+    return createUndeterminedVNode(type, key, props);
   }
 }
 

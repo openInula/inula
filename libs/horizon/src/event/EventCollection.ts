@@ -8,6 +8,7 @@ export const allDelegatedNativeEvents = new Set();
 horizonEventToNativeMap.forEach((dependencies, horizonEvent) => {
   allDelegatedHorizonEvents.set(horizonEvent, dependencies);
   allDelegatedHorizonEvents.set(horizonEvent + 'Capture', dependencies);
+
   dependencies.forEach(d => {
     allDelegatedNativeEvents.add(d);
   });

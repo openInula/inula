@@ -5,7 +5,7 @@ import {Props} from '../DOMOperator';
  * 获取当前聚焦的 input 或者 textarea 元素
  * @param doc 指定 document
  */
-export function getFocusedDom(doc?: Document): HorizonDom | void {
+export function getFocusedDom(doc?: Document): HorizonDom | null {
   let currentDocument;
   if (doc) {
     currentDocument = doc;

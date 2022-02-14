@@ -81,7 +81,6 @@ export function clearVNode(vNode: VNode) {
   vNode.next = null;
   vNode.depContexts = [];
   vNode.dirtyNodes = [];
-  vNode.oldProps = null;
   vNode.state = null;
   vNode.hooks = [];
   vNode.suspenseChildStatus = '';
@@ -91,7 +90,9 @@ export function clearVNode(vNode: VNode) {
   vNode.changeList = null;
   vNode.effectList = [];
   vNode.updates = null;
+  vNode.realNode = null;
 
+  vNode.oldProps = null;
   vNode.oldHooks = [];
   vNode.oldState = null;
   vNode.oldRef = null;
@@ -260,14 +261,14 @@ export function getExactNode(targetVNode, targetContainer) {
       if (isPortalRoot(vNode, targetContainer)) {
         return null;
       }
+
       while (container !== null) {
         const parentNode = getNearestVNode(container);
         if (parentNode === null) {
           return null;
         }
         if (parentNode.tag === DomComponent || parentNode.tag === DomText) {
-          vNode = parentNode;
-          return getExactNode(vNode, targetContainer);
+          return getExactNode(parentNode, targetContainer);
         }
         container = container.parentNode;
       }

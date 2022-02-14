@@ -27,7 +27,6 @@ import {
   removeChildDom,
   hideDom,
   unHideDom,
-  clearContainer,
 } from '../../dom/DOMOperator';
 import {
   callEffectRemove,
@@ -56,28 +55,17 @@ function callComponentWillUnmount(vNode: VNode, instance: any) {
 function callBeforeSubmitLifeCycles(
   vNode: VNode,
 ): void {
-  switch (vNode.tag) {
-    case ClassComponent: { // 调用instance.getSnapshotBeforeUpdate
-      if (!vNode.isCreated) {
-        const prevProps = vNode.isLazyComponent
-          ? mergeDefaultProps(vNode.type, vNode.oldProps)
-          : vNode.oldProps;
-        const prevState = vNode.oldState;
-        const instance = vNode.realNode;
+  if (vNode.tag === ClassComponent && !vNode.isCreated) { // 调用instance.getSnapshotBeforeUpdate
+    const prevProps = vNode.isLazyComponent
+      ? mergeDefaultProps(vNode.type, vNode.oldProps)
+      : vNode.oldProps;
+    const prevState = vNode.oldState;
+    const instance = vNode.realNode;
 
-        const snapshot = instance.getSnapshotBeforeUpdate(prevProps, prevState);
+    const snapshot = instance.getSnapshotBeforeUpdate(prevProps, prevState);
 
-        // __snapshotResult会在调用componentDidUpdate的时候作为第三个参数
-        instance.__snapshotResult = snapshot;
-      }
-      return;
-    }
-    case TreeRoot: {
-      const root = vNode.realNode;
-      clearContainer(root.outerDom);
-    }
-
-    // No Default
+    // __snapshotResult会在调用componentDidUpdate的时候作为第三个参数
+    instance.__snapshotResult = snapshot;
   }
 }
 
@@ -138,7 +126,6 @@ function callAfterSubmitLifeCycles(
       if (vNode.isCreated && vNode.flags.Update) {
         // button、input、select、textarea、如果有 autoFocus 属性需要focus
         if (shouldAutoFocus(vNode.type, vNode.props)) {
-          // button、input、select、textarea、如果有 autoFocus 属性需要focus
           vNode.realNode.focus();
         }
       }
@@ -333,11 +320,12 @@ function submitClear(vNode: VNode): void {
     clearVNode(clearChild);
     clearChild = clearChild.next as VNode;
   }
-  
+
   // 在所有子项都卸载后，删除dom树中的节点
   removeChildDom(currentParent, vNode.realNode);
   currentParent.append(cloneDom);
   vNode.realNode = cloneDom;
+  attachRef(vNode);
   FlagUtils.removeFlag(vNode, Clear);
   vNode.clearChild = null;
 }

@@ -1,4 +1,4 @@
-import type { AnyNativeEvent, ProcessingListenerList } from './types';
+import type { AnyNativeEvent } from './Types';
 import type { VNode } from '../renderer/Types';
 
 import {
@@ -7,24 +7,19 @@ import {
   EVENT_TYPE_BUBBLE,
   EVENT_TYPE_CAPTURE,
 } from './const';
-import {
-  throwCaughtEventError,
-  runListenerAndCatchFirstError,
-} from './EventError';
 import { getListeners as getBeforeInputListeners } from './simulatedEvtHandler/BeforeInputEventHandler';
 import { getListeners as getCompositionListeners } from './simulatedEvtHandler/CompositionEventHandler';
 import { getListeners as getChangeListeners } from './simulatedEvtHandler/ChangeEventHandler';
 import { getListeners as getSelectionListeners } from './simulatedEvtHandler/SelectionEventHandler';
 import {
-  getCustomEventNameWithOn,
-  uniqueCharCode,
-  getEventTarget
+  addOnPrefix,
 } from './utils';
-import { createCommonCustomEvent } from './customEvents/EventFactory';
+import { createCustomEvent } from './customEvents/EventFactory';
 import { getListenersFromTree } from './ListenerGetter';
 import { shouldUpdateValue, updateControlledValue } from './ControlledValueUpdater';
 import { asyncUpdates, runDiscreteUpdates } from '../renderer/Renderer';
 import { getExactNode } from '../renderer/vnode/VNodeUtils';
+import {ListenerUnitList} from './Types';
 
 // 获取事件触发的普通事件监听方法队列
 function getCommonListeners(
@@ -33,14 +28,9 @@ function getCommonListeners(
   nativeEvent: AnyNativeEvent,
   target: null | EventTarget,
   isCapture: boolean,
-): ProcessingListenerList {
-  const customEventName = getCustomEventNameWithOn(CommonEventToHorizonMap[nativeEvtName]);
-  if (!customEventName) {
-    return [];
-  }
-
-  // 火狐浏览器兼容。火狐浏览器下功能键将触发keypress事件 火狐下keypress的charcode有值，keycode为0
-  if (nativeEvtName === 'keypress' && uniqueCharCode(nativeEvent) === 0) {
+): ListenerUnitList {
+  const horizonEvtName = addOnPrefix(CommonEventToHorizonMap[nativeEvtName]);
+  if (!horizonEvtName) {
     return [];
   }
 
@@ -52,49 +42,42 @@ function getCommonListeners(
   if (nativeEvtName === 'focusin') {
     nativeEvtName = 'focus';
   }
+
   if (nativeEvtName === 'focusout') {
     nativeEvtName = 'blur';
   }
 
-  const customEvent = createCommonCustomEvent(customEventName, nativeEvtName, nativeEvent, null, target);
+  const horizonEvent = createCustomEvent(horizonEvtName, nativeEvtName, nativeEvent, null, target);
   return getListenersFromTree(
     vNode,
-    customEventName,
-    customEvent,
+    horizonEvtName,
+    horizonEvent,
     isCapture ? EVENT_TYPE_CAPTURE : EVENT_TYPE_BUBBLE,
   );
 }
 
 // 按顺序执行事件队列
-export function processListeners(
-  processingEventsList: ProcessingListenerList
-): void {
-  processingEventsList.forEach(eventUnitList => {
-    let lastVNode;
-    eventUnitList.forEach(eventUnit => {
-      const { vNode, currentTarget, listener, event } = eventUnit;
-      if (vNode !== lastVNode && event.isPropagationStopped()) {
-        return;
-      }
-      event.currentTarget = currentTarget;
-      runListenerAndCatchFirstError(listener, event);
-      event.currentTarget = null;
-      lastVNode = vNode;
-    });
+function processListeners(listenerList: ListenerUnitList): void {
+  listenerList.forEach(eventUnit => {
+    const { currentTarget, listener, event } = eventUnit;
+    if (event.isPropagationStopped()) {
+      return;
+    }
+    event.currentTarget = currentTarget;
+    listener(event);
+    event.currentTarget = null;
   });
-  // 执行所有事件后，重新throw遇到的第一个错误
-  throwCaughtEventError();
 }
 
 function getProcessListenersFacade(
   nativeEvtName: string,
-  vNode: VNode,
+  vNode: VNode | null,
   nativeEvent: AnyNativeEvent,
   target,
   isCapture: boolean
-): ProcessingListenerList {
+): ListenerUnitList {
   // 触发普通委托事件
-  let processingListenerList: ProcessingListenerList = getCommonListeners(
+  let listenerList: ListenerUnitList = getCommonListeners(
     nativeEvtName,
     vNode,
     nativeEvent,
@@ -105,7 +88,7 @@ function getProcessListenersFacade(
   // 触发特殊handler委托事件
   if (!isCapture) {
     if (horizonEventToNativeMap.get('onChange').includes(nativeEvtName)) {
-      processingListenerList = processingListenerList.concat(getChangeListeners(
+      listenerList = listenerList.concat(getChangeListeners(
         nativeEvtName,
         nativeEvent,
         vNode,
@@ -114,7 +97,7 @@ function getProcessListenersFacade(
     }
 
     if (horizonEventToNativeMap.get('onSelect').includes(nativeEvtName)) {
-      processingListenerList = processingListenerList.concat(getSelectionListeners(
+      listenerList = listenerList.concat(getSelectionListeners(
         nativeEvtName,
         nativeEvent,
         vNode,
@@ -125,7 +108,7 @@ function getProcessListenersFacade(
     if (nativeEvtName === 'compositionend' ||
         nativeEvtName === 'compositionstart' ||
         nativeEvtName === 'compositionupdate') {
-      processingListenerList = processingListenerList.concat(getCompositionListeners(
+      listenerList = listenerList.concat(getCompositionListeners(
         nativeEvtName,
         nativeEvent,
         vNode,
@@ -134,7 +117,7 @@ function getProcessListenersFacade(
     }
 
     if (horizonEventToNativeMap.get('onBeforeInput').includes(nativeEvtName)) {
-      processingListenerList = processingListenerList.concat(getBeforeInputListeners(
+      listenerList = listenerList.concat(getBeforeInputListeners(
         nativeEvtName,
         nativeEvent,
         vNode,
@@ -142,7 +125,7 @@ function getProcessListenersFacade(
       ));
     }
   }
-  return processingListenerList;
+  return listenerList;
 }
 
 // 触发可以被执行的horizon事件监听
@@ -150,55 +133,47 @@ function triggerHorizonEvents(
   nativeEvtName: string,
   isCapture: boolean,
   nativeEvent: AnyNativeEvent,
-  vNode: null | VNode,
+  vNode: VNode | null,
 ): void {
-  const nativeEventTarget = getEventTarget(nativeEvent);
-  const processingListenerList = getProcessListenersFacade(
-    nativeEvtName,
-    vNode,
-    nativeEvent,
-    nativeEventTarget,
-    isCapture);
+  const nativeEventTarget = nativeEvent.target || nativeEvent.srcElement;
+
+  // 获取委托事件队列
+  const listenerList = getProcessListenersFacade(nativeEvtName, vNode, nativeEvent, nativeEventTarget, isCapture);
 
   // 处理触发的事件队列
-  processListeners(processingListenerList);
+  processListeners(listenerList);
 }
 
 
 // 其他事件正在执行中标记
 let isInEventsExecution = false;
 
+// 处理委托事件入口
 export function handleEventMain(
   nativeEvtName: string,
   isCapture: boolean,
   nativeEvent: AnyNativeEvent,
   vNode: null | VNode,
-  target: EventTarget,
+  targetContainer: EventTarget,
 ): void {
-  let rootVNode = vNode;
-  if (vNode !== null) {
-    rootVNode = getExactNode(vNode, target);
-    if (!rootVNode) {
+  let startVNode = vNode;
+  if (startVNode !== null) {
+    startVNode = getExactNode(startVNode, targetContainer);
+    if (!startVNode) {
       return;
     }
   }
 
   // 有事件正在执行，同步执行事件
   if (isInEventsExecution) {
-    triggerHorizonEvents(nativeEvtName, isCapture, nativeEvent, rootVNode);
+    triggerHorizonEvents(nativeEvtName, isCapture, nativeEvent, startVNode);
     return;
   }
 
   // 没有事件在执行，经过调度再执行事件
   isInEventsExecution = true;
   try {
-    asyncUpdates(() =>
-      triggerHorizonEvents(
-        nativeEvtName,
-        isCapture,
-        nativeEvent,
-        rootVNode,
-      ));
+    asyncUpdates(() => triggerHorizonEvents(nativeEvtName, isCapture, nativeEvent, startVNode));
   } finally {
     isInEventsExecution = false;
     if (shouldUpdateValue()) {

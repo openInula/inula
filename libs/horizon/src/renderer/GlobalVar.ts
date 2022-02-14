@@ -1,6 +1,6 @@
 import type {VNode} from './Types';
 
-// 当前处理的classVNode，用于inst.refs用法中的
+// 当前处理的classVNode，用于设置inst.refs
 let processingClassVNode: VNode | null = null;
 export function getProcessingClassVNode(): VNode | null {
   return processingClassVNode;

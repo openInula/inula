@@ -1,13 +1,14 @@
-import {createHandlerCustomEvent} from '../customEvents/EventFactory';
+import {createCustomEvent} from '../customEvents/EventFactory';
 import {shallowCompare} from '../../renderer/utils/compare';
 import {getFocusedDom} from '../../dom/utils/Common';
 import {getDom} from '../../dom/DOMInternalKeys';
 import {isDocument} from '../../dom/utils/Common';
 import {isTextInputElement} from '../utils';
-import type {AnyNativeEvent, ProcessingListenerList} from '../Types';
+import type {AnyNativeEvent} from '../Types';
 import {getListenersFromTree} from '../ListenerGetter';
 import type {VNode} from '../../renderer/Types';
 import {EVENT_TYPE_ALL} from '../const';
+import {ListenerUnitList} from '../Types';
 
 const horizonEventName = 'onSelect'
 
@@ -53,7 +54,7 @@ function getSelectEvent(nativeEvent, target) {
   if (!shallowCompare(lastSelection, currentSelection)) {
     lastSelection = currentSelection;
 
-    const event = createHandlerCustomEvent(
+    const event = createCustomEvent(
       horizonEventName,
       'select',
       nativeEvent,
@@ -83,9 +84,9 @@ export function getListeners(
   nativeEvt: AnyNativeEvent,
   vNode: null | VNode,
   target: null | EventTarget,
-): ProcessingListenerList {
+): ListenerUnitList {
   const targetNode = vNode ? getDom(vNode) : window;
-  let eventUnitList: ProcessingListenerList = [];
+  let eventUnitList: ListenerUnitList = [];
   switch (name) {
     case 'focusin':
       initTargetCache(targetNode, vNode);

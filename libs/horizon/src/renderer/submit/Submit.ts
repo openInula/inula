@@ -11,18 +11,16 @@ import {
   callBeforeSubmitLifeCycles, submitDeletion, submitAddition,
   submitResetTextContent, submitUpdate, detachRef, submitClear,
 } from './LifeCycleHandler';
-import {tryRenderRoot, setProcessing} from '../TreeBuilder';
+import {tryRenderFromRoot} from '../TreeBuilder';
 import {
-  BySync,
   InRender,
   copyExecuteMode,
   setExecuteMode,
-  checkMode,
   changeMode,
 } from '../ExecuteMode';
 import {
   isSchedulingEffects,
-  setSchedulingEffects, setHookEffectRoot,
+  setSchedulingEffects,
 } from './HookEffectHandler';
 import {getStartVNode} from '../GlobalVar';
 
@@ -67,28 +65,18 @@ export function submitToRender(treeRoot) {
 
   if (isSchedulingEffects()) {
     setSchedulingEffects(false);
-
-    // 记录root，说明这个root有副作用要执行
-    setHookEffectRoot(treeRoot);
-  } else {
-    clearDirtyNodes(dirtyNodes);
   }
 
   // 统计root同步重渲染的次数，如果太多可能是无线循环
   countLoopingUpdate(treeRoot);
 
   // 在退出`submit` 之前始终调用此函数，以确保任何已计划在此根上执行的update被执行。
-  tryRenderRoot(treeRoot);
+  tryRenderFromRoot(treeRoot);
 
   if (rootThrowError) {
     const error = rootThrowError;
     rootThrowError = null;
     throw error;
-  }
-
-  // 非批量：即同步执行的，没有必要去执行RenderQueue，RenderQueue放的是异步的
-  if (!checkMode(BySync)) { // 非批量
-    callRenderQueueImmediate();
   }
 
   return null;
@@ -101,7 +89,6 @@ function beforeSubmit(dirtyNodes: Array<VNode>) {
         callBeforeSubmitLifeCycles(node);
       }
     } catch (error) {
-      throwIfTrue(node === null, 'Should be working on an effect.');
       handleSubmitError(node, error);
     }
   });
@@ -143,7 +130,6 @@ function submit(dirtyNodes: Array<VNode>) {
         }
       }
     } catch (error) {
-      throwIfTrue(node === null, 'Should be working on an effect.');
       handleSubmitError(node, error);
     }
   });
@@ -160,7 +146,6 @@ function afterSubmit(dirtyNodes: Array<VNode>) {
         attachRef(node);
       }
     } catch (error) {
-      throwIfTrue(node === null, 'Should be working on an effect.');
       handleSubmitError(node, error);
     }
   });
@@ -196,14 +181,4 @@ export function checkLoopingUpdateLimit() {
       A component maybe repeatedly invokes setState on componentWillUpdate or componentDidUpdate.`
     );
   }
-}
-
-// 清理dirtyNodes
-export function clearDirtyNodes(dirtyNodes) {
-  dirtyNodes.forEach(node => {
-    if (node.flags.Deletion) {
-      node.realNode = null;
-      node.next = null;
-    }
-  });
 }

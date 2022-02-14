@@ -12,5 +12,3 @@ export type ListenerUnit = {
 };
 
 export type ListenerUnitList = Array<ListenerUnit>;
-
-export type ProcessingListenerList = Array<ListenerUnitList>;

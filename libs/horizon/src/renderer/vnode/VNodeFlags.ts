@@ -39,14 +39,16 @@ export class FlagUtils {
     });
   }
   static hasAnyFlag(node: VNode) { // 有标志位
-    let keyFlag = false;
-    FlagArr.forEach(key => {
-      if (node.flags[key]) {
-        keyFlag = true;
-        return;
+    const flags = node.flags;
+    const arrLength = FlagArr.length;
+    let key;
+    for (let i = 0; i < arrLength; i++) {
+      key = FlagArr[i];
+      if (flags[key]) {
+        return true;
       }
-    });
-    return keyFlag;
+    }
+    return false;
   }
 
   static setNoFlags(node: VNode) {
@@ -91,7 +93,6 @@ export class FlagUtils {
   static markForceUpdate(node: VNode) {
     node.flags.ForceUpdate = true;
   }
-
   static markClear(node: VNode) {
     node.flags.Clear = true;
   }

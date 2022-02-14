@@ -10,7 +10,7 @@ import { runAsyncEffects } from './submit/HookEffectHandler';
 import { handleRenderThrowError } from './ErrorHandler';
 import componentRenders from './render';
 import {
-  BuildCompleted, BuildErrored,
+  BuildCompleted,
   BuildFatalErrored,
   BuildInComplete, getBuildResult,
   getStartVNode,
@@ -22,10 +22,11 @@ import { findDomParent, getSiblingVNode } from './vnode/VNodeUtils';
 import {
   ByAsync,
   BySync,
+  InRender,
+  InEvent,
   changeMode,
   checkMode,
   copyExecuteMode,
-  InRender,
   isExecuting,
   setExecuteMode
 } from './ExecuteMode';
@@ -36,12 +37,11 @@ import {
   updateShouldUpdateOfTree
 } from './vnode/VNodeShouldUpdate';
 
-// 当前运行的vNode节点
-let processing: VNode | null = null;
-
 // 不可恢复错误
 let unrecoverableErrorDuringBuild: any = null;
 
+// 当前运行的vNode节点
+let processing: VNode | null = null;
 export function setProcessing(vNode: VNode | null) {
   processing = vNode;
 }
@@ -64,7 +64,7 @@ function collectDirtyNodes(vNode: VNode, parent: VNode): void {
   }
 }
 
-// ============================== 向上递归 ==============================
+// ============================== 向上冒泡 ==============================
 
 // 尝试完成当前工作单元，然后移动到下一个兄弟工作单元。如果没有更多的同级，请返回父vNode。
 function bubbleVNode(vNode: VNode): void {
@@ -201,18 +201,18 @@ function buildVNodeTree(treeRoot: VNode) {
   changeMode(InRender, true);
 
   // 计算出开始节点
-  const startUpdateVNode = calcStartUpdateVNode(treeRoot);
+  const startVNode = calcStartUpdateVNode(treeRoot);
   // 缓存起来
-  setStartVNode(startUpdateVNode);
+  setStartVNode(startVNode);
 
   // 清空toUpdateNodes
   treeRoot.toUpdateNodes.clear();
 
-  if (startUpdateVNode.tag !== TreeRoot) { // 不是根节点
+  if (startVNode.tag !== TreeRoot) { // 不是根节点
     // 设置namespace，用于createElement
-    const parentObj = findDomParent(startUpdateVNode);
+    const parentObj = findDomParent(startVNode);
 
-    // 当在componentWillUnmount中调用setState，parent可能是null，因为startUpdateVNode会被clear
+    // 当在componentWillUnmount中调用setState，parent可能是null，因为startVNode会被clear
     if (parentObj !== null) {
       const domParent = parentObj.parent;
       resetNamespaceCtx(domParent);
@@ -220,20 +220,20 @@ function buildVNodeTree(treeRoot: VNode) {
     }
 
     // 恢复父节点的context
-    recoverParentsContextCtx(startUpdateVNode);
+    recoverParentsContextCtx(startVNode);
   }
 
   // 重置环境变量，为重新进行深度遍历做准备
-  resetProcessingVariables(startUpdateVNode);
+  resetProcessingVariables(startVNode);
 
-  do {
+  while (processing !== null) {
     try {
       while (processing !== null) {
         // 捕获创建 vNodes
         const next = captureVNode(processing);
 
         if (next === null) {
-          // 如果没有产生新的，那么就完成当前节点，向上遍历
+          // 如果没有子节点，那么就完成当前节点，开始冒泡
           bubbleVNode(processing);
         } else {
           processing = next;
@@ -241,14 +241,10 @@ function buildVNodeTree(treeRoot: VNode) {
       }
 
       setProcessingClassVNode(null);
-
-      break;
     } catch (thrownValue) {
       handleError(treeRoot, thrownValue);
     }
-  } while (true);
-
-  processing = null;
+  }
 
   setExecuteMode(preMode);
 }
@@ -272,7 +268,7 @@ function renderFromRoot(treeRoot) {
 }
 
 // 尝试去渲染，已有任务就跳出
-export function tryRenderRoot(treeRoot: VNode) {
+export function tryRenderFromRoot(treeRoot: VNode) {
   if (treeRoot.shouldUpdate && treeRoot.task === null) {
     // 任务放进queue，但是调度开始还是异步的
     treeRoot.task = pushRenderCallback(
@@ -304,18 +300,12 @@ export function launchUpdateFromVNode(vNode: VNode) {
     // 不能改成下面的异步，否则会有时序问题，因为业务可能会依赖这个渲染的完成。
     renderFromRoot(treeRoot);
   } else {
-    tryRenderRoot(treeRoot);
+    tryRenderFromRoot(treeRoot);
 
     if (!isExecuting()) {
       // 同步执行
       callRenderQueueImmediate();
     }
-  }
-}
-
-export function setBuildResultError() {
-  if (getBuildResult() !== BuildCompleted) {
-    setBuildResult(BuildErrored);
   }
 }
 
@@ -331,7 +321,7 @@ export function runDiscreteUpdates() {
 
 export function asyncUpdates(fn, ...param) {
   const preMode = copyExecuteMode();
-  changeMode(ByAsync, true);
+  changeMode(InEvent, true);
   try {
     return fn(...param);
   } finally {
