@@ -47,7 +47,7 @@ function getCommonListeners(
     nativeEvtName = 'blur';
   }
 
-  const horizonEvent = createCustomEvent(horizonEvtName, nativeEvtName, nativeEvent, null, target);
+  const horizonEvent = createCustomEvent(horizonEvtName, nativeEvtName, nativeEvent, target);
   return getListenersFromTree(
     vNode,
     horizonEvtName,
