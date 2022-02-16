@@ -52,7 +52,6 @@ export function getListeners(
       'onChange',
       'change',
       nativeEvt,
-      null,
       target,
     );
     return getListenersFromTree(vNode, 'onChange', event, EVENT_TYPE_ALL);

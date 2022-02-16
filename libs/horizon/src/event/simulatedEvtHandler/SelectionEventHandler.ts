@@ -58,7 +58,6 @@ function getSelectEvent(nativeEvent, target) {
       horizonEventName,
       'select',
       nativeEvent,
-      null,
       target,
     );
     event.target = currentElement;

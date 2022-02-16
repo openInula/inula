@@ -24,7 +24,6 @@ export function getListeners(
     evtType,
     evtName,
     nativeEvt,
-    null,
     target,
   );
   return getListenersFromTree(vNode, evtType, event, EVENT_TYPE_ALL);

@@ -40,7 +40,6 @@ export function getListeners(
     'onBeforeInput',
     'beforeinput',
     nativeEvent,
-    null,
     target,
   );
   event.data = chars;
