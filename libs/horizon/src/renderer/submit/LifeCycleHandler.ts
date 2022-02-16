@@ -239,11 +239,7 @@ function insertOrAppendPlacementNode(
   const { tag, realNode } = node;
 
   if (isDomVNode(node)) {
-    if (beforeDom) {
-      insertDomBefore(parent, realNode, beforeDom);
-    } else {
-      appendChildElement(parent, realNode);
-    }
+    insertDom(parent, realNode, beforeDom);
   } else if (tag === DomPortal) {
     // 这里不做处理，直接在portal中处理
   } else {
@@ -253,6 +249,14 @@ function insertOrAppendPlacementNode(
       insertOrAppendPlacementNode(child, beforeDom, parent);
       child = child.next;
     }
+  }
+}
+
+function insertDom(parent, realNode, beforeDom) {
+  if (beforeDom) {
+    insertDomBefore(parent, realNode, beforeDom);
+  } else {
+    appendChildElement(parent, realNode);
   }
 }
 
@@ -323,7 +327,8 @@ function submitClear(vNode: VNode): void {
 
   // 在所有子项都卸载后，删除dom树中的节点
   removeChildDom(currentParent, vNode.realNode);
-  currentParent.append(cloneDom);
+  const realNodeNext = getSiblingDom(vNode);
+  insertDom(currentParent, cloneDom, realNodeNext);
   vNode.realNode = cloneDom;
   attachRef(vNode);
   FlagUtils.removeFlag(vNode, Clear);
