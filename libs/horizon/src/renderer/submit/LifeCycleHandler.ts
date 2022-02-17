@@ -72,13 +72,14 @@ function callBeforeSubmitLifeCycles(
 // 调用vNode.stateCallbacks
 function callStateCallback(vNode: VNode, obj: any): void {
   const stateCallbacks = vNode.stateCallbacks;
-  vNode.stateCallbacks = [];
-
-  stateCallbacks.forEach(callback => {
-    if (typeof callback === 'function') {
-      callback.call(obj);
-    }
-  });
+  vNode.stateCallbacks = null;
+  if (stateCallbacks !== null) {
+    stateCallbacks.forEach(callback => {
+      if (typeof callback === 'function') {
+        callback.call(obj);
+      }
+    });
+  }
 }
 
 // 调用界面变化后的生命周期

@@ -27,7 +27,7 @@ export class VNode {
   changeList: any = null; // DOM的变更列表
   effectList: any[] | null = null; // useEffect 的更新数组
   updates: any[] | null = null; // TreeRoot和ClassComponent使用的更新数组
-  stateCallbacks: any[] | null = []; // 存放存在setState的第二个参数和HorizonDOM.render的第三个参数所在的node数组
+  stateCallbacks: any[] | null = null; // 存放存在setState的第二个参数和HorizonDOM.render的第三个参数所在的node数组
   isForceUpdate: boolean = false; // 是否使用强制更新
 
   state: any = null; // ClassComponent和TreeRoot的状态
