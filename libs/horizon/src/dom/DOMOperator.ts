@@ -6,7 +6,7 @@ import {
   createDom,
 } from './utils/DomCreator';
 import { getSelectionInfo, resetSelectionRange, SelectionData } from './SelectionRangeHandler';
-import { isElement, isComment, isDocument, isDocumentFragment, getDomTag, shouldAutoFocus } from './utils/Common';
+import { shouldAutoFocus } from './utils/Common';
 import { NSS } from './utils/DomCreator';
 import { adjustStyleValue } from './DOMPropertiesHandler/StyleHandler';
 
@@ -165,7 +165,7 @@ export function submitDomUpdate(tag: string, vNode: VNode) {
         // 应用diff更新Properties.
         // 当一个选中的radio改变名称,浏览器使另一个radio的复选框为false.
         if (type === 'input' && newProps.type === 'radio' && newProps.name != null && newProps.checked != null) {
-          updateCommonProp(element, 'checked', newProps.checked);
+          updateCommonProp(element, 'checked', newProps.checked, true);
         }
         const isNativeTag = isNativeElement(type, newProps);
         updateDomProps(element, changeList, isNativeTag);

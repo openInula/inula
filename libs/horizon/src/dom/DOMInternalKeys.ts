@@ -14,13 +14,9 @@ import {
   TreeRoot,
 } from '../renderer/vnode/VNodeTags';
 
-const prefix = '_horizon';
-
-const internalKeys = {
-  VNode: `${prefix}VNode`,
-  props: `${prefix}Props`,
-  nonDelegatedEvents: `${prefix}NonDelegatedEvents`,
-};
+const INTERNAL_VNODE = '_horizon_VNode';
+const INTERNAL_PROPS = '_horizon_Props';
+const INTERNAL_NONDELEGATEEVENTS = '_horizon_NonDelegatedEvents';
 
 // 通过 VNode 实例获取 DOM 节点
 export function getDom(vNode: VNode): Element | Text | null {
@@ -36,12 +32,12 @@ export function saveVNode(
   vNode: VNode,
   dom: Element | Text | Container,
 ): void {
-  dom[internalKeys.VNode] = vNode;
+  dom[INTERNAL_VNODE] = vNode;
 }
 
 // 用 DOM 节点，来找其对应的 VNode 实例
 export function getVNode(dom: Node|Container): VNode | null {
-  const vNode = dom[internalKeys.VNode] || (dom as Container)._treeRoot;
+  const vNode = dom[INTERNAL_VNODE] || (dom as Container)._treeRoot;
   if (vNode) {
     const {tag} = vNode;
     if (tag === DomComponent || tag === DomText || tag === TreeRoot) {
@@ -53,7 +49,7 @@ export function getVNode(dom: Node|Container): VNode | null {
 
 // 用 DOM 对象，来寻找其对应或者说是最近父级的 vNode
 export function getNearestVNode(dom: Node): null | VNode {
-  let vNode = dom[internalKeys.VNode];
+  let vNode = dom[INTERNAL_VNODE];
   if (vNode) { // 如果是已经被框架标记过的 DOM 节点，那么直接返回其 VNode 实例
     return vNode;
   }
@@ -62,7 +58,7 @@ export function getNearestVNode(dom: Node): null | VNode {
   let parentDom = dom.parentNode;
   let nearVNode = null;
   while (parentDom) {
-    vNode = parentDom[internalKeys.VNode];
+    vNode = parentDom[INTERNAL_VNODE];
     if (vNode) {
       nearVNode = vNode;
       break;
@@ -74,19 +70,19 @@ export function getNearestVNode(dom: Node): null | VNode {
 
 // 获取 vNode 上的属性相关信息
 export function getVNodeProps(dom: Element | Text): Props | null{
-  return dom[internalKeys.props] || null;
+  return dom[INTERNAL_PROPS] || null;
 }
 
 // 将 DOM 属性相关信息挂到 DOM 对象的特定属性上
 export function updateVNodeProps(dom: Element | Text, props: Props): void {
-  dom[internalKeys.props] = props;
+  dom[INTERNAL_PROPS] = props;
 }
 
 export function getNonDelegatedListenerMap(dom: Element | Text): Map<string, EventListener> {
-  let eventsMap = dom[internalKeys.nonDelegatedEvents];
+  let eventsMap = dom[INTERNAL_NONDELEGATEEVENTS];
   if (!eventsMap) {
     eventsMap = new Map();
-    dom[internalKeys.nonDelegatedEvents] = eventsMap;
+    dom[INTERNAL_NONDELEGATEEVENTS] = eventsMap;
   }
   return eventsMap;
 }

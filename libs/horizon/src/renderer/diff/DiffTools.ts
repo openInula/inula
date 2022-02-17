@@ -9,10 +9,6 @@ export function isTextType(newChild: any) {
   return typeof newChild === 'string' || typeof newChild === 'number';
 }
 
-export function isArrayType(newChild: any) {
-  return Array.isArray(newChild);
-}
-
 export function isIteratorType(newChild: any) {
   return (typeof Symbol === 'function' && newChild[Symbol.iterator]) || newChild['@@iterator'];
 }

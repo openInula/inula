@@ -37,7 +37,7 @@ export function updateInputValue(dom: HTMLInputElement, properties: IProperty) {
       dom.value = String(value);
     }
   } else if (checked != null) {
-    updateCommonProp(dom, 'checked', checked);
+    updateCommonProp(dom, 'checked', checked, true);
   }
 }
 
