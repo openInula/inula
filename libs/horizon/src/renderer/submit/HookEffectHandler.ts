@@ -27,23 +27,24 @@ export function isSchedulingEffects() {
 
 export function callUseEffects(vNode: VNode) {
   const effectList: EffectList = vNode.effectList;
-
-  effectList.forEach(effect => {
-    const {effectConstant} = effect;
-    if (
-      (effectConstant & EffectConstant.Effect) !== EffectConstant.NoEffect &&
-      (effectConstant & EffectConstant.DepsChange) !== EffectConstant.NoEffect
-    ) {
-      hookEffects.push(effect);
-      hookRemoveEffects.push(effect);
-
-      // 异步调用
-      if (!isScheduling) {
-        isScheduling = true;
-        runAsync(runAsyncEffects);
+  if (effectList !== null) {
+    effectList.forEach(effect => {
+      const {effectConstant} = effect;
+      if (
+        (effectConstant & EffectConstant.Effect) !== EffectConstant.NoEffect &&
+        (effectConstant & EffectConstant.DepsChange) !== EffectConstant.NoEffect
+      ) {
+        hookEffects.push(effect);
+        hookRemoveEffects.push(effect);
+  
+        // 异步调用
+        if (!isScheduling) {
+          isScheduling = true;
+          runAsync(runAsyncEffects);
+        }
       }
-    }
-  });
+    });
+  }
 }
 
 export function runAsyncEffects() {
@@ -85,23 +86,24 @@ export function runAsyncEffects() {
 // 在销毁vNode的时候调用remove
 export function callEffectRemove(vNode: VNode) {
   const effectList: EffectList = vNode.effectList;
-
-  effectList.forEach(effect => {
-    const {removeEffect, effectConstant} = effect;
-
-    if (removeEffect !== undefined) {
-      if ((effectConstant & EffectConstant.Effect) !== EffectConstant.NoEffect) { // 如果是useEffect，就异步调用
-        hookRemoveEffects.push(effect);
-
-        if (!isScheduling) {
-          isScheduling = true;
-          runAsync(runAsyncEffects);
+  if (effectList !== null) {
+    effectList.forEach(effect => {
+      const {removeEffect, effectConstant} = effect;
+  
+      if (removeEffect !== undefined) {
+        if ((effectConstant & EffectConstant.Effect) !== EffectConstant.NoEffect) { // 如果是useEffect，就异步调用
+          hookRemoveEffects.push(effect);
+  
+          if (!isScheduling) {
+            isScheduling = true;
+            runAsync(runAsyncEffects);
+          }
+        } else { // 是useLayoutEffect，直接执行
+          removeEffect();
         }
-      } else { // 是useLayoutEffect，直接执行
-        removeEffect();
       }
-    }
-  });
+    });
+  }
 }
 
 // 同步执行UseLayoutEffect的remove
@@ -109,26 +111,29 @@ export function callUseLayoutEffectRemove(vNode: VNode) {
   const effectList: EffectList = vNode.effectList;
 
   const layoutLabel = EffectConstant.LayoutEffect | EffectConstant.DepsChange;
-  effectList.forEach(effect => {
-    if ((effect.effectConstant & layoutLabel) === layoutLabel) {
-      const remove = effect.removeEffect;
-      effect.removeEffect = undefined;
-      if (typeof remove === 'function') {
-        remove();
+  if (effectList !== null) {
+    effectList.forEach(effect => {
+      if ((effect.effectConstant & layoutLabel) === layoutLabel) {
+        const remove = effect.removeEffect;
+        effect.removeEffect = undefined;
+        if (typeof remove === 'function') {
+          remove();
+        }
       }
-    }
-  });
+    });
+  }
 }
 
 // 同步执行UseLayoutEffect
 export function callUseLayoutEffectCreate(vNode: VNode) {
   const effectList: EffectList = vNode.effectList;
-
-  const layoutLabel = EffectConstant.LayoutEffect | EffectConstant.DepsChange;
-  effectList.forEach(effect => {
-    if ((effect.effectConstant & layoutLabel) === layoutLabel) {
-      const create = effect.effect;
-      effect.removeEffect = create();
-    }
-  });
+  if (effectList !== null) {
+    const layoutLabel = EffectConstant.LayoutEffect | EffectConstant.DepsChange;
+    effectList.forEach(effect => {
+      if ((effect.effectConstant & layoutLabel) === layoutLabel) {
+        const create = effect.effect;
+        effect.removeEffect = create();
+      }
+    });
+  }
 }
