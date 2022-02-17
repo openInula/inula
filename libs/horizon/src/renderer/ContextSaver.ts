@@ -30,10 +30,18 @@ let ctxOldChange: Boolean = false;
 let ctxOldPreviousContext: Object = {};
 
 function setContext(vNode: VNode, contextName, value) {
-  vNode.contexts[contextName] = value;
+  if (vNode.contexts === null) {
+    vNode.contexts = {
+      [contextName]: value,
+    };
+  } else {
+    vNode.contexts[contextName] = value;
+  }
 }
 function getContext(vNode: VNode, contextName) {
-  return vNode.contexts[contextName];
+  if (vNode.contexts !== null) {
+    return vNode.contexts[contextName];
+  }
 }
 
 // capture阶段设置

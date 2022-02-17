@@ -42,7 +42,7 @@ export class VNode {
   task: any;
 
   // 使用这个变量来记录修改前的值，用于恢复。
-  contexts = {};
+  contexts: any = null;
   // 因为LazyComponent会修改tag和type属性，为了能识别，增加一个属性
   isLazyComponent: boolean = false;
 
