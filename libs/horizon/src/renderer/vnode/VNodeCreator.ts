@@ -134,7 +134,6 @@ export function createUndeterminedVNode(type, key, props) {
   vNode.shouldUpdate = true;
 
   if (isLazy) {
-    vNode.isLazyComponent = isLazy;
     vNode.lazyType = type;
   }
   return vNode;
