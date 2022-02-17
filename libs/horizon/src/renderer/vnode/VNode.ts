@@ -5,6 +5,7 @@ import { TreeRoot, FunctionComponent, ClassComponent, DomPortal, DomText, Contex
 import type { VNodeTag } from './VNodeTags';
 import type { RefType, ContextType } from '../Types';
 import type { Hook } from '../hooks/HookType';
+import { InitFlag } from './VNodeFlags';
 
 export class VNode {
   tag: VNodeTag;
@@ -48,20 +49,7 @@ export class VNode {
 
   // 因为LazyComponent会修改type属性，为了在diff中判断是否可以复用，需要增加一个lazyType
   lazyType: any;
-  flags: {
-    Addition?: boolean;
-    Update?: boolean;
-    Deletion?: boolean;
-    ResetText?: boolean;
-    Callback?: boolean;
-    DidCapture?: boolean;
-    Ref?: boolean;
-    Snapshot?: boolean;
-    Interrupted?: boolean;
-    ShouldCapture?: boolean;
-    ForceUpdate?: boolean;
-    Clear?: boolean;
-  } = {};
+  flags = InitFlag;
   clearChild: VNode | null;
   // one tree相关属性
   isCreated: boolean = true;
@@ -75,7 +63,7 @@ export class VNode {
   promiseResolve: boolean; // suspense的promise是否resolve
 
   path: string = ''; // 保存从根到本节点的路径
-  toUpdateNodes: Set<VNode>; // 保存要更新的节点
+  toUpdateNodes: Set<VNode> | null; // 保存要更新的节点
 
   belongClassVNode: VNode | null = null; // 记录JSXElement所属class vNode，处理ref的时候使用
 

@@ -7,6 +7,7 @@ import type {VNode} from '../Types';
 import {DomComponent, DomPortal, DomText, TreeRoot} from './VNodeTags';
 import {isComment} from '../../dom/utils/Common';
 import {getNearestVNode} from '../../dom/DOMInternalKeys';
+import { Addition, InitFlag } from './VNodeFlags';
 
 export function travelChildren(beginVNode: VNode, handleVNode: Function, isFinish?: Function) {
   let node: VNode | null = beginVNode;
@@ -92,6 +93,7 @@ export function clearVNode(vNode: VNode) {
   vNode.oldState = null;
   vNode.oldRef = null;
   vNode.oldChild = null;
+  vNode.flags = InitFlag;
 
   vNode.toUpdateNodes = null;
 
@@ -186,7 +188,7 @@ export function getSiblingDom(vNode: VNode): Element | null {
     // 如果不是dom节点，往下找
     while (!isDomVNode(node)) {
       // 如果节点也是Addition
-      if (node.flags.Addition) {
+      if ((node.flags & Addition) ===Addition) {
         continue findSibling;
       }
 
@@ -200,7 +202,7 @@ export function getSiblingDom(vNode: VNode): Element | null {
       }
     }
 
-    if (!node.flags.Addition) {
+    if ((node.flags & Addition) ===InitFlag) {
       // 找到
       return node.realNode;
     }

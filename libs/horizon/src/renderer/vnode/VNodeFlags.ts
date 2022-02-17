@@ -4,97 +4,79 @@
 
 import type { VNode } from '../Types';
 
+
+export const InitFlag =   /**     */    0b000000000000;
 // vNode节点的flags
-export const Addition = 'Addition';
-export const Update = 'Update';
-export const Deletion = 'Deletion';
-export const ResetText = 'ResetText';
-export const Callback = 'Callback';
-export const DidCapture = 'DidCapture';
-export const Ref = 'Ref';
-export const Snapshot = 'Snapshot';
-// 被中断了，抛出错误的vNode以及它的父vNode
-export const Interrupted = 'Interrupted';
-export const ShouldCapture = 'ShouldCapture';
-// For suspense
-export const ForceUpdate = 'ForceUpdate';
-export const Clear = 'Clear';
-
-const FlagArr = [Addition, Update, Deletion, Clear, ResetText, Callback,
-  DidCapture, Ref, Snapshot, Interrupted, ShouldCapture, ForceUpdate];
-
-const LifecycleEffectArr = [Update, Callback, Ref, Snapshot];
-
-function resetFlag(node) {
-  node.flags = {};
-}
+export const Addition =  /**     */     0b100000000000;
+export const Update =     /**     */    0b010000000000;
+export const Deletion = /**     */      0b001000000000;
+export const ResetText =/**     */      0b000100000000;
+export const Callback =   /**     */    0b000010000000;
+export const DidCapture =/**     */     0b000001000000;
+export const Ref =       /**     */     0b000000100000;
+export const Snapshot =  /**     */     0b000000010000;
+export const Interrupted =  /**     */  0b000000001000; // 被中断了，抛出错误的vNode以及它的父vNode
+export const ShouldCapture =/**     */  0b000000000100;
+export const ForceUpdate = /**     */   0b000000000010; // For suspense
+export const Clear =     /**     */     0b000000000001;
+const LifecycleEffectArr = Update | Callback | Ref | Snapshot;
 
 export class FlagUtils {
-  static removeFlag(node: VNode, flag: string) {
-    node.flags[flag] = false;
+  static removeFlag(node: VNode, flag: number) {
+    const flags = node.flags;
+    node.flags = flags & (~flag);
   }
   static removeLifecycleEffectFlags(node) {
-    LifecycleEffectArr.forEach(key => {
-      node.flags[key] = false;
-    });
+    const flags = node.flags;
+    node.flags = flags & (~LifecycleEffectArr);
   }
   static hasAnyFlag(node: VNode) { // 有标志位
-    const flags = node.flags;
-    const arrLength = FlagArr.length;
-    let key;
-    for (let i = 0; i < arrLength; i++) {
-      key = FlagArr[i];
-      if (flags[key]) {
-        return true;
-      }
-    }
-    return false;
+    return node.flags !== InitFlag;
   }
 
   static setNoFlags(node: VNode) {
-    resetFlag(node);
+    node.flags = InitFlag;
   }
 
   static markAddition(node: VNode) {
-    node.flags.Addition = true;
+    node.flags |= Addition;
   }
   static setAddition(node: VNode) {
-    resetFlag(node);
-    node.flags.Addition = true;
+    node.flags = Addition;
   }
   static markUpdate(node: VNode) {
-    node.flags.Update = true;
+    node.flags |= Update;
   }
   static setDeletion(node: VNode) {
-    resetFlag(node);
-    node.flags.Deletion = true;
+    node.flags = Deletion;
   }
   static markContentReset(node: VNode) {
-    node.flags.ResetText = true;
+    node.flags |= ResetText;
   }
   static markCallback(node: VNode) {
-    node.flags.Callback = true;
+    node.flags |= Callback;
   }
   static markDidCapture(node: VNode) {
-    node.flags.DidCapture = true;
+    node.flags |= DidCapture;
   }
   static markShouldCapture(node: VNode) {
-    node.flags.ShouldCapture = true;
+    node.flags |= ShouldCapture;
   }
   static markRef(node: VNode) {
-    node.flags.Ref = true;
+    node.flags |= Ref;
   }
   static markSnapshot(node: VNode) {
-    node.flags.Snapshot = true;
+    node.flags |= Snapshot;
   }
   static markInterrupted(node: VNode) {
-    node.flags.Interrupted = true;
+    node.flags |= Interrupted;
   }
   static markForceUpdate(node: VNode) {
-    node.flags.ForceUpdate = true;
+    node.flags |= ForceUpdate;
   }
+
   static markClear(node: VNode) {
-    node.flags.Clear = true;
+    node.flags |= Clear;
   }
 }
 
