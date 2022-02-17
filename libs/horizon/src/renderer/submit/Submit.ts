@@ -65,6 +65,8 @@ export function submitToRender(treeRoot) {
     afterSubmit(dirtyNodes);
 
     setExecuteMode(preMode);
+    dirtyNodes.length = 0;
+    startVNode.dirtyNodes = null;
   }
 
   if (isSchedulingEffects()) {
