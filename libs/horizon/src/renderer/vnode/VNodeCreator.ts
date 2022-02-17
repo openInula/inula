@@ -133,9 +133,8 @@ export function createUndeterminedVNode(type, key, props) {
   vNode.type = type;
   vNode.shouldUpdate = true;
 
-  // lazy类型的特殊处理
-  vNode.isLazyComponent = isLazy;
   if (isLazy) {
+    vNode.isLazyComponent = isLazy;
     vNode.lazyType = type;
   }
   return vNode;
