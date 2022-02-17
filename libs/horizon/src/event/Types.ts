@@ -1,6 +1,5 @@
 
 import type {VNode} from '../renderer/Types';
-import {CustomBaseEvent} from './customEvents/CustomBaseEvent';
 
 export type AnyNativeEvent = KeyboardEvent | MouseEvent | TouchEvent | UIEvent | Event;
 
@@ -8,7 +7,7 @@ export type ListenerUnit = {
   vNode: null | VNode;
   listener: Function;
   currentTarget: EventTarget;
-  event: CustomBaseEvent;
+  event: AnyNativeEvent;
 };
 
 export type ListenerUnitList = Array<ListenerUnit>;

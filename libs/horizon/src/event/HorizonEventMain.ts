@@ -8,13 +8,12 @@ import {
   EVENT_TYPE_CAPTURE,
 } from './const';
 import { getListeners as getBeforeInputListeners } from './simulatedEvtHandler/BeforeInputEventHandler';
-import { getListeners as getCompositionListeners } from './simulatedEvtHandler/CompositionEventHandler';
 import { getListeners as getChangeListeners } from './simulatedEvtHandler/ChangeEventHandler';
 import { getListeners as getSelectionListeners } from './simulatedEvtHandler/SelectionEventHandler';
 import {
-  addOnPrefix,
+  addOnPrefix, setPropertyWritable,
 } from './utils';
-import { createCustomEvent } from './customEvents/EventFactory';
+import { decorateNativeEvent } from './customEvents/EventFactory';
 import { getListenersFromTree } from './ListenerGetter';
 import { shouldUpdateValue, updateControlledValue } from './ControlledValueUpdater';
 import { asyncUpdates, runDiscreteUpdates } from '../renderer/Renderer';
@@ -47,7 +46,7 @@ function getCommonListeners(
     nativeEvtName = 'blur';
   }
 
-  const horizonEvent = createCustomEvent(horizonEvtName, nativeEvtName, nativeEvent, target);
+  const horizonEvent = decorateNativeEvent(horizonEvtName, nativeEvtName, nativeEvent);
   return getListenersFromTree(
     vNode,
     horizonEvtName,
@@ -63,6 +62,8 @@ function processListeners(listenerList: ListenerUnitList): void {
     if (event.isPropagationStopped()) {
       return;
     }
+
+    setPropertyWritable(event, 'currentTarget');
     event.currentTarget = currentTarget;
     listener(event);
     event.currentTarget = null;
@@ -98,17 +99,6 @@ function getProcessListeners(
 
     if (horizonEventToNativeMap.get('onSelect').includes(nativeEvtName)) {
       listenerList = listenerList.concat(getSelectionListeners(
-        nativeEvtName,
-        nativeEvent,
-        vNode,
-        target,
-      ));
-    }
-
-    if (nativeEvtName === 'compositionend' ||
-        nativeEvtName === 'compositionstart' ||
-        nativeEvtName === 'compositionupdate') {
-      listenerList = listenerList.concat(getCompositionListeners(
         nativeEvtName,
         nativeEvent,
         vNode,
