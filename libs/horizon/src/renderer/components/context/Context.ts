@@ -4,17 +4,19 @@ import {throwNotInFuncError} from '../../hooks/BaseHook';
 
 // 重置依赖
 export function resetDepContexts(vNode: VNode): void {
-  vNode.depContexts = [];
+  vNode.depContexts = null;
 }
 
 // 收集依赖
 function collectDeps<T>(vNode: VNode, context: ContextType<T>) {
   const depContexts = vNode.depContexts;
-  if (!depContexts.length) {
+  if (depContexts === null) {
+    vNode.depContexts = [context];
+  } else {
     vNode.isDepContextChange = false;
-  }
-  if (!depContexts.includes(context)) {
-    depContexts.push(context);
+    if (!depContexts.includes(context)) {
+      depContexts.push(context);
+    }
   }
 }
 
