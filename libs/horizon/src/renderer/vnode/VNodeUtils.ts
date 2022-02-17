@@ -114,24 +114,6 @@ function isDomContainer(vNode: VNode): boolean {
   );
 }
 
-// 找到DOM类型的父
-export function findDomParent(vNode: VNode) {
-  let parent = vNode.parent;
-
-  while (parent !== null) {
-    switch (parent.tag) {
-      case DomComponent:
-        return {parent, parentDom: parent.realNode};
-      case TreeRoot:
-      case DomPortal:
-        return {parent, parentDom: parent.outerDom};
-    }
-    parent = parent.parent;
-  }
-
-  return null;
-}
-
 export function findDomVNode(vNode: VNode): VNode | null {
   return travelVNodeTree(vNode, (node) => {
     if (node.tag === DomComponent || node.tag === DomText) {
