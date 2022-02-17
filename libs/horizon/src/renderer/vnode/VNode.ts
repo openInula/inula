@@ -31,7 +31,7 @@ export class VNode {
   isForceUpdate: boolean = false; // 是否使用强制更新
 
   state: any = null; // ClassComponent和TreeRoot的状态
-  hooks: Array<Hook<any, any>> | null = []; // 保存hook
+  hooks: Array<Hook<any, any>> | null = null; // 保存hook
   suspenseChildStatus: string = ''; // Suspense的Children是否显示
   depContexts: Array<ContextType<any>> | null = []; // FunctionComponent和ClassComponent对context的依赖列表
   isDepContextChange: boolean = false; // context是否变更
