@@ -78,7 +78,7 @@ export function updateVNode(vNode: VNode, vNodeProps?: any): VNode {
   vNode.oldRef = vNode.ref;
 
   FlagUtils.setNoFlags(vNode);
-  vNode.dirtyNodes = [];
+  vNode.dirtyNodes = null;
   vNode.isCreated = false;
 
   return vNode;

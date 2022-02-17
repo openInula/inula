@@ -71,7 +71,7 @@ export function handleRenderThrowError(
   // vNode抛出了异常，标记Interrupted中断
   FlagUtils.markInterrupted(sourceVNode);
   // dirtyNodes 不再有效
-  sourceVNode.dirtyNodes = [];
+  sourceVNode.dirtyNodes = null;
 
   // error是个promise
   if (error !== null && typeof error === 'object' && typeof error.then === 'function') {

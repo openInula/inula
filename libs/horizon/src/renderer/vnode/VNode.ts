@@ -35,7 +35,7 @@ export class VNode {
   suspenseChildStatus: string = ''; // Suspense的Children是否显示
   depContexts: Array<ContextType<any>> | null = []; // FunctionComponent和ClassComponent对context的依赖列表
   isDepContextChange: boolean = false; // context是否变更
-  dirtyNodes: Array<VNode> | null = []; // 需要改动的节点数组
+  dirtyNodes: Array<VNode> | null = null; // 需要改动的节点数组
   shouldUpdate: boolean = false;
   childShouldUpdate: boolean = false;
   outerDom: any;
