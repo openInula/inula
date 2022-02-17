@@ -17,7 +17,7 @@ import {
   SuspenseComponent,
   MemoComponent,
 } from '../vnode/VNodeTags';
-import { FlagUtils, ResetText, Clear } from '../vnode/VNodeFlags';
+import { FlagUtils, ResetText, Clear, Update } from '../vnode/VNodeFlags';
 import { mergeDefaultProps } from '../render/LazyComponent';
 import {
   submitDomUpdate,
@@ -97,7 +97,7 @@ function callAfterSubmitLifeCycles(
     }
     case ClassComponent: {
       const instance = vNode.realNode;
-      if (vNode.flags.Update) {
+      if ((vNode.flags & Update) === Update) {
         if (vNode.isCreated) {
           instance.componentDidMount();
         } else {
@@ -124,7 +124,7 @@ function callAfterSubmitLifeCycles(
       return;
     }
     case DomComponent: {
-      if (vNode.isCreated && vNode.flags.Update) {
+      if (vNode.isCreated && (vNode.flags & Update) === Update) {
         // button、input、select、textarea、如果有 autoFocus 属性需要focus
         if (shouldAutoFocus(vNode.type, vNode.props)) {
           vNode.realNode.focus();
@@ -222,7 +222,7 @@ function unmountNestedVNodes(vNode: VNode): void {
 function submitAddition(vNode: VNode): void {
   const { parent, parentDom } = findDomParent(vNode);
 
-  if (parent.flags.ResetText) {
+  if ((vNode.flags & ResetText) === ResetText) {
     // 在insert之前先reset
     clearText(parentDom);
     FlagUtils.removeFlag(parent, ResetText);

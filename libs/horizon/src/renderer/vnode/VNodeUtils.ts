@@ -7,10 +7,7 @@ import type {VNode} from '../Types';
 import {DomComponent, DomPortal, DomText, TreeRoot} from './VNodeTags';
 import {isComment} from '../../dom/utils/Common';
 import {getNearestVNode} from '../../dom/DOMInternalKeys';
-
-export function getSiblingVNode(node) {
-  return node.next;
-}
+import { Addition, InitFlag } from './VNodeFlags';
 
 export function travelChildren(beginVNode: VNode, handleVNode: Function, isFinish?: Function) {
   let node: VNode | null = beginVNode;
@@ -58,7 +55,7 @@ export function travelVNodeTree(
     }
 
     // 找兄弟，没有就往上再找兄弟
-    while (getSiblingVNode(node) === null) {
+    while (node.next === null) {
       if (node.parent === null || node.parent === overVNode) {
         return null;
       }
@@ -69,7 +66,7 @@ export function travelVNodeTree(
       }
     }
     // 找到兄弟
-    const siblingVNode = getSiblingVNode(node);
+    const siblingVNode = node.next;
     siblingVNode.parent = node.parent;
     node = siblingVNode;
   }
@@ -96,6 +93,7 @@ export function clearVNode(vNode: VNode) {
   vNode.oldState = null;
   vNode.oldRef = null;
   vNode.oldChild = null;
+  vNode.flags = InitFlag;
 
   vNode.toUpdateNodes = null;
 
@@ -175,7 +173,7 @@ export function getSiblingDom(vNode: VNode): Element | null {
 
   findSibling: while (true) {
     // 没有兄弟节点，找父节点
-    while (getSiblingVNode(node) === null) {
+    while (node.next === null) {
       // 没父节点，或父节点已经是根节点，则返回
       if (node.parent === null || isDomContainer(node.parent)) {
         return null;
@@ -183,14 +181,14 @@ export function getSiblingDom(vNode: VNode): Element | null {
       node = node.parent;
     }
 
-    const siblingVNode = getSiblingVNode(node);
+    const siblingVNode = node.next;
     siblingVNode.parent = node.parent;
     node = siblingVNode;
 
     // 如果不是dom节点，往下找
     while (!isDomVNode(node)) {
       // 如果节点也是Addition
-      if (node.flags.Addition) {
+      if ((node.flags & Addition) ===Addition) {
         continue findSibling;
       }
 
@@ -204,7 +202,7 @@ export function getSiblingDom(vNode: VNode): Element | null {
       }
     }
 
-    if (!node.flags.Addition) {
+    if ((node.flags & Addition) ===InitFlag) {
       // 找到
       return node.realNode;
     }

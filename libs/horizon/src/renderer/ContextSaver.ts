@@ -29,17 +29,32 @@ let ctxOldContext: Object = {};
 let ctxOldChange: Boolean = false;
 let ctxOldPreviousContext: Object = {};
 
+function setContext(vNode: VNode, contextName, value) {
+  if (vNode.contexts === null) {
+    vNode.contexts = {
+      [contextName]: value,
+    };
+  } else {
+    vNode.contexts[contextName] = value;
+  }
+}
+function getContext(vNode: VNode, contextName) {
+  if (vNode.contexts !== null) {
+    return vNode.contexts[contextName];
+  }
+}
+
 // capture阶段设置
 function setNamespaceCtx(vNode: VNode, dom?: Container) {
   const nextContext = getNSCtx(ctxNamespace, vNode.type, dom);
 
-  vNode.setContext(CTX_NAMESPACE, ctxNamespace);
+  setContext(vNode, CTX_NAMESPACE, ctxNamespace);
   ctxNamespace = nextContext;
 }
 
 // bubble阶段恢复
 function resetNamespaceCtx(vNode: VNode) {
-  ctxNamespace = vNode.getContext(CTX_NAMESPACE);
+  ctxNamespace = getContext(vNode, CTX_NAMESPACE);
 }
 
 function getNamespaceCtx(): string {
@@ -49,14 +64,14 @@ function getNamespaceCtx(): string {
 function setContextCtx<T>(providerVNode: VNode, nextValue: T) {
   const context: ContextType<T> = providerVNode.type._context;
 
-  providerVNode.setContext(CTX_CONTEXT, context.value);
+  setContext(providerVNode, CTX_CONTEXT, context.value);
   context.value = nextValue;
 }
 
 function resetContextCtx(providerVNode: VNode) {
   const context: ContextType<any> = providerVNode.type._context;
 
-  context.value = providerVNode.getContext(CTX_CONTEXT);
+  context.value = getContext(providerVNode, CTX_CONTEXT);
 }
 
 // 在局部更新时，恢复父节点的context
@@ -74,11 +89,11 @@ function recoverParentsContextCtx(vNode: VNode) {
 
 // ctxOldContext是 旧context提供者的context
 function setVNodeOldContext(providerVNode: VNode, context: Object) {
-  providerVNode.setContext(CTX_OLD_CONTEXT, context);
+  setContext(providerVNode, CTX_OLD_CONTEXT, context);
 }
 
 function getVNodeOldContext(vNode: VNode) {
-  return vNode.getContext(CTX_OLD_CONTEXT);
+  return getContext(vNode, CTX_OLD_CONTEXT);
 }
 
 function setOldContextCtx(providerVNode: VNode, context: Object) {
@@ -95,11 +110,11 @@ function resetOldContextCtx(vNode: VNode) {
 }
 
 function setVNodeOldPreviousContext(providerVNode: VNode, context: Object) {
-  providerVNode.setContext(CTX_OLD_PREVIOUS_CONTEXT, context);
+  setContext(providerVNode, CTX_OLD_PREVIOUS_CONTEXT, context);
 }
 
 function getVNodeOldPreviousContext(vNode: VNode) {
-  return vNode.getContext(CTX_OLD_PREVIOUS_CONTEXT);
+  return getContext(vNode, CTX_OLD_PREVIOUS_CONTEXT);
 }
 
 function setOldPreviousContextCtx(context: Object) {
@@ -111,7 +126,7 @@ function getOldPreviousContextCtx() {
 }
 
 function setContextChangeCtx(providerVNode: VNode, didChange: boolean) {
-  providerVNode.setContext(CTX_OLD_CHANGE, didChange);
+  setContext(providerVNode, CTX_OLD_CHANGE, didChange);
   ctxOldChange = didChange;
 }
 
@@ -120,7 +135,7 @@ function getContextChangeCtx() {
 }
 
 function resetContextChangeCtx(vNode: VNode) {
-  ctxOldChange = vNode.getContext(CTX_OLD_CHANGE);
+  ctxOldChange = getContext(vNode, CTX_OLD_CHANGE);
 }
 
 export {

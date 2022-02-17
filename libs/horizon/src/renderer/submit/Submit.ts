@@ -1,8 +1,6 @@
 import type {VNode} from '../Types';
 
-import {callRenderQueueImmediate} from '../taskExecutor/RenderQueue';
-import {throwIfTrue} from '../utils/throwIfTrue';
-import {FlagUtils, Addition as AdditionFlag} from '../vnode/VNodeFlags';
+import {FlagUtils, Addition, Snapshot, ResetText, Ref, Update, Deletion, Clear, Callback} from '../vnode/VNodeFlags';
 import {prepareForSubmit, resetAfterSubmit} from '../../dom/DOMOperator';
 import {handleSubmitError} from '../ErrorHandler';
 import {
@@ -91,7 +89,7 @@ export function submitToRender(treeRoot) {
 function beforeSubmit(dirtyNodes: Array<VNode>) {
   dirtyNodes.forEach(node => {
     try {
-      if (node.flags.Snapshot) {
+      if ((node.flags & Snapshot) === Snapshot) {
         callBeforeSubmitLifeCycles(node);
       }
     } catch (error) {
@@ -103,35 +101,38 @@ function beforeSubmit(dirtyNodes: Array<VNode>) {
 function submit(dirtyNodes: Array<VNode>) {
   dirtyNodes.forEach(node => {
     try {
-      if (node.flags.ResetText) {
+      if ((node.flags & ResetText) === ResetText) {
         submitResetTextContent(node);
       }
 
-      if (node.flags.Ref) {
+      if ((node.flags & Ref) === Ref) {
         if (!node.isCreated) {
           // 需要执行
           detachRef(node, true);
         }
       }
 
-      const {Addition, Update, Deletion, Clear} = node.flags;
-      if (Addition && Update) {
+      const isAdd = (node.flags & Addition) === Addition;
+      const isUpdate = (node.flags & Update) === Update;
+      if (isAdd && isUpdate) {
         // Addition
         submitAddition(node);
-        FlagUtils.removeFlag(node, AdditionFlag);
+        FlagUtils.removeFlag(node, Addition);
 
         // Update
         submitUpdate(node);
       } else {
-        if (Addition) {
+        const isDeletion = (node.flags & Deletion) === Deletion;
+        const isClear = (node.flags & Clear) === Clear;
+        if (isAdd) {
           submitAddition(node);
-          FlagUtils.removeFlag(node, AdditionFlag);
-        } else if (Update) {
+          FlagUtils.removeFlag(node, Addition);
+        } else if (isUpdate) {
           submitUpdate(node);
-        } else if (Deletion) {
+        } else if (isDeletion) {
           submitDeletion(node);
         }
-        if (Clear) {
+        if (isClear) {
           submitClear(node);
         }
       }
@@ -144,11 +145,11 @@ function submit(dirtyNodes: Array<VNode>) {
 function afterSubmit(dirtyNodes: Array<VNode>) {
   dirtyNodes.forEach(node => {
     try {
-      if (node.flags.Update || node.flags.Callback) {
+      if ((node.flags & Update) === Update || (node.flags & Callback) === Callback) {
         callAfterSubmitLifeCycles(node);
       }
 
-      if (node.flags.Ref) {
+      if ((node.flags & Ref) === Ref) {
         attachRef(node);
       }
     } catch (error) {

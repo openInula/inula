@@ -66,9 +66,7 @@ export function captureVNode(processing: VNode): VNode | null {
 
 // 创建孩子节点
 export function createVNodeChildren(processing: VNode, nextChildren: any) {
-  const isComparing = !processing.isCreated;
-
-  return createChildrenByDiff(processing, processing.child, nextChildren, isComparing);
+  return createChildrenByDiff(processing, processing.child, nextChildren, !processing.isCreated);
 }
 
 export function markRef(processing: VNode) {

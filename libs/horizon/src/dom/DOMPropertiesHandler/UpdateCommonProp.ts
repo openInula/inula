@@ -29,7 +29,7 @@ function convertToLowerCase(str) {
  * attrName 指代码中属性设置的属性名称（如 class）
  * 多数情况 attrName 仅用作初始 DOM 节点对象使用，而 property 更多用于页面交互
  */
-export function updateCommonProp(dom: Element, attrName: string, value: any, isNativeTag: boolean = true) {
+export function updateCommonProp(dom: Element, attrName: string, value: any, isNativeTag: boolean) {
   const propDetails = getPropDetails(attrName);
 
   if (isInvalidValue(attrName, value, propDetails, isNativeTag)) {

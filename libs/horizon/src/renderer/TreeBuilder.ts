@@ -3,7 +3,7 @@ import type { VNode } from './Types';
 import { callRenderQueueImmediate, pushRenderCallback } from './taskExecutor/RenderQueue';
 import { updateVNode } from './vnode/VNodeCreator';
 import { TreeRoot } from './vnode/VNodeTags';
-import { FlagUtils } from './vnode/VNodeFlags';
+import { FlagUtils, InitFlag, Interrupted } from './vnode/VNodeFlags';
 import { captureVNode } from './render/BaseComponent';
 import { checkLoopingUpdateLimit, submitToRender } from './submit/Submit';
 import { runAsyncEffects } from './submit/HookEffectHandler';
@@ -18,7 +18,7 @@ import {
   setProcessingClassVNode,
   setStartVNode
 } from './GlobalVar';
-import { findDomParent, getSiblingVNode } from './vnode/VNodeUtils';
+import { findDomParent } from './vnode/VNodeUtils';
 import {
   ByAsync,
   BySync,
@@ -86,13 +86,13 @@ function bubbleVNode(vNode: VNode): void {
   do {
     const parent = node.parent;
 
-    if (!node.flags.Interrupted) { // vNode没有抛出异常
+    if ((node.flags & Interrupted) === InitFlag) { // vNode没有抛出异常
       componentRenders[node.tag].bubbleRender(node);
 
       // 设置node的childShouldUpdate属性
       updateChildShouldUpdate(node);
 
-      if (parent !== null && node !== getStartVNode() && !parent.flags.Interrupted) {
+      if (parent !== null && node !== getStartVNode() && (parent.flags & Interrupted) === InitFlag) {
         collectDirtyNodes(node, parent);
       }
     }
@@ -108,7 +108,7 @@ function bubbleVNode(vNode: VNode): void {
       break;
     }
 
-    const siblingVNode = getSiblingVNode(node);
+    const siblingVNode = node.next;
     if (siblingVNode !== null) { // 有兄弟vNode
       processing = siblingVNode;
       return;

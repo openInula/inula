@@ -6,7 +6,7 @@ import type {VNode} from './Types';
 import type {Update} from './UpdateHandler';
 
 import {ClassComponent, TreeRoot} from './vnode/VNodeTags';
-import {FlagUtils, Interrupted} from './vnode/VNodeFlags';
+import {FlagUtils, Interrupted, DidCapture, InitFlag} from './vnode/VNodeFlags';
 import {newUpdate, UpdateState, pushUpdate} from './UpdateHandler';
 import {launchUpdateFromVNode, tryRenderFromRoot} from './TreeBuilder';
 import {setRootThrowError} from './submit/Submit';
@@ -99,7 +99,7 @@ export function handleRenderThrowError(
         const ctor = vNode.type;
         const instance = vNode.realNode;
         if (
-          !vNode.flags.DidCapture &&
+          (vNode.flags & DidCapture) === InitFlag &&
           (
             typeof ctor.getDerivedStateFromError === 'function' ||
             (instance !== null && typeof instance.componentDidCatch === 'function')
