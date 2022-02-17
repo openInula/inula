@@ -215,11 +215,11 @@ function setCIndex(vNode: VNode, idx: number) {
 }
 
 // diff数组类型的节点，核心算法
-function diffArrayNodes(
+function diffArrayNodesHandler(
   parentNode: VNode,
   firstChild: VNode | null,
   newChildren: Array<any>,
-  isComparing: boolean = true
+  isComparing: boolean
 ): VNode | null {
   let resultingFirstChild: VNode | null = null;
 
@@ -241,6 +241,8 @@ function diffArrayNodes(
     prevNewNode = newNode;
   }
 
+  let canBeReuse;
+  let newNode;
   // 1. 从左侧开始比对currentVNode和newChildren，若不能复用则跳出循环
   for (; oldNode !== null && leftIdx < newChildren.length; leftIdx++) {
     if (oldNode.eIndex > leftIdx) {
@@ -251,14 +253,14 @@ function diffArrayNodes(
       nextOldNode = oldNode.next;
     }
 
-    const canBeReuse = checkCanReuseNode(oldNode, newChildren[leftIdx]);
+    canBeReuse = checkCanReuseNode(oldNode, newChildren[leftIdx]);
     // 不能复用，break
     if (!canBeReuse) {
       oldNode = oldNode ?? nextOldNode;
       break;
     }
 
-    const newNode = getNewNode(parentNode, newChildren[leftIdx], oldNode);
+    newNode = getNewNode(parentNode, newChildren[leftIdx], oldNode);
     // 没有生成新节点，break
     if (!newNode) {
       oldNode = oldNode ?? nextOldNode;
@@ -286,19 +288,20 @@ function diffArrayNodes(
     let rightOldIndex: number | null = rightRemainingOldChildren.length - 1;
 
     // 2. 从右侧开始比对currentVNode和newChildren，若不能复用则跳出循环
+    let rightOldNode;
     for (; rightIdx > leftIdx; rightIdx--) {
-      const rightOldNode = rightRemainingOldChildren[rightOldIndex];
+      rightOldNode = rightRemainingOldChildren[rightOldIndex];
       if (rightOldIndex < 0 || rightOldNode === null) {
         break;
       }
 
-      const canBeReuse = checkCanReuseNode(rightOldNode, newChildren[rightIdx - 1]);
+      canBeReuse = checkCanReuseNode(rightOldNode, newChildren[rightIdx - 1]);
       // 不能复用，break
       if (!canBeReuse) {
         break;
       }
 
-      const newNode = getNewNode(parentNode, newChildren[rightIdx - 1], rightOldNode);
+      newNode = getNewNode(parentNode, newChildren[rightIdx - 1], rightOldNode);
       // 没有生成新节点，break
       if (newNode === null) {
         break;
@@ -345,7 +348,7 @@ function diffArrayNodes(
   // 4. 新节点还有一部分，但是老节点已经没有了
   if (oldNode === null) {
     for (; leftIdx < rightIdx; leftIdx++) {
-      const newNode = getNewNode(parentNode, newChildren[leftIdx], null);
+      newNode = getNewNode(parentNode, newChildren[leftIdx], null);
 
       if (newNode !== null) {
         theLastPosition = setVNodeAdditionFlag(newNode, theLastPosition, isComparing);
@@ -371,9 +374,11 @@ function diffArrayNodes(
   const preIndex: Array<number> = []; // 贪心算法在替换的过程中会使得数组不正确，通过记录preIndex找到正确值
   const reuseNodes = []; // 记录复用的 VNode
   let i = 0;
+  let oldNodeFromMap;
+  let last;
   for (; leftIdx < rightIdx; leftIdx++) {
-    const oldNodeFromMap = getOldNodeFromMap(leftChildrenMap, leftIdx, newChildren[leftIdx]);
-    const newNode = getNewNode(parentNode, newChildren[leftIdx], oldNodeFromMap);
+    oldNodeFromMap = getOldNodeFromMap(leftChildrenMap, leftIdx, newChildren[leftIdx]);
+    newNode = getNewNode(parentNode, newChildren[leftIdx], oldNodeFromMap);
     if (newNode !== null) {
       if (isComparing && !newNode.isCreated) {
         // 从Map删除，后面不会deleteVNode
@@ -383,7 +388,7 @@ function diffArrayNodes(
       if (oldNodeFromMap !== null) {
         let eIndex = newNode.eIndex;
         eIndexes.push(eIndex);
-        const last: number | undefined = eIndexes[result[result.length - 1]];
+        last = eIndexes[result[result.length - 1]];
         if (eIndex > last || last === undefined) { // 大的 eIndex直接放在最后
           preIndex[i] = result[result.length - 1];
           result.push(i);
@@ -461,16 +466,6 @@ function setVNodesCIndex(startChild: VNode, startIdx: number) {
   }
 }
 
-// 新节点是数组类型
-function diffArrayNodesHandler(
-  parentNode: VNode,
-  firstChild: VNode | null,
-  newChildren: Array<any>,
-  isComparing: boolean = true
-): VNode | null {
-  return diffArrayNodes(parentNode, firstChild, newChildren, isComparing);
-}
-
 // 新节点是迭代器类型
 function diffIteratorNodesHandler(
   parentNode: VNode,
@@ -489,7 +484,7 @@ function diffIteratorNodesHandler(
     result = iteratorObj.next();
   }
 
-  return diffArrayNodes(parentNode, firstChild, childrenArray, isComparing);
+  return diffArrayNodesHandler(parentNode, firstChild, childrenArray, isComparing);
 }
 
 // 新节点是字符串类型
