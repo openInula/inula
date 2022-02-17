@@ -2,7 +2,7 @@ import {createCustomEvent} from '../customEvents/EventFactory';
 import {getDom} from '../../dom/DOMInternalKeys';
 import {isInputValueChanged} from '../../dom/valueHandler/ValueChangeHandler';
 import {addValueUpdateList} from '../ControlledValueUpdater';
-import {isTextInputElement} from '../utils';
+import {isInputElement} from '../utils';
 import {EVENT_TYPE_ALL} from '../const';
 import {AnyNativeEvent, ListenerUnitList} from '../Types';
 import {
@@ -18,12 +18,12 @@ function shouldTriggerChangeEvent(targetDom, evtName) {
 
   if (domTag === 'select' || (domTag === 'input' && type === 'file')) {
     return evtName === 'change';
-  } else if (isTextInputElement(targetDom)) {
-    if (evtName === 'input' || evtName === 'change') {
-      return isInputValueChanged(targetDom);
-    }
   } else if (domTag === 'input' && (type === 'checkbox' || type === 'radio')) {
     if (evtName === 'click') {
+      return isInputValueChanged(targetDom);
+    }
+  } else if (isInputElement(targetDom)) {
+    if (evtName === 'input' || evtName === 'change') {
       return isInputValueChanged(targetDom);
     }
   }

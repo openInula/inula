@@ -6,21 +6,9 @@ import {Props} from '../DOMOperator';
  * @param doc 指定 document
  */
 export function getFocusedDom(doc?: Document): HorizonDom | null {
-  let currentDocument;
-  if (doc) {
-    currentDocument = doc;
-  } else {
-    if (document) {
-      currentDocument = document;
-    }
-  }
-  if (!currentDocument) {
-    return null;
-  } else if (currentDocument.activeElement) {
-    return currentDocument.activeElement;
-  } else {
-    return currentDocument.body;
-  }
+  let currentDocument = doc ?? document;
+
+  return currentDocument.activeElement ?? currentDocument.body;
 }
 
 // 如果 input 或者 textarea 元素中有文字被选中时，activeElement 属性就会返回该元素
