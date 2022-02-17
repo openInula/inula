@@ -6,7 +6,7 @@ import {
   createDom,
 } from './utils/DomCreator';
 import { getSelectionInfo, resetSelectionRange, SelectionData } from './SelectionRangeHandler';
-import { isElement, isComment, isDocument, isDocumentFragment, getDomTag, shouldAutoFocus } from './utils/Common';
+import { shouldAutoFocus } from './utils/Common';
 import { NSS } from './utils/DomCreator';
 import { adjustStyleValue } from './DOMPropertiesHandler/StyleHandler';
 
