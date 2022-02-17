@@ -3,21 +3,21 @@ import {shallowCompare} from '../../renderer/utils/compare';
 import {getFocusedDom} from '../../dom/utils/Common';
 import {getDom} from '../../dom/DOMInternalKeys';
 import {isDocument} from '../../dom/utils/Common';
-import {isTextInputElement} from '../utils';
+import {isInputElement} from '../utils';
 import type {AnyNativeEvent} from '../Types';
 import {getListenersFromTree} from '../ListenerGetter';
 import type {VNode} from '../../renderer/Types';
 import {EVENT_TYPE_ALL} from '../const';
 import {ListenerUnitList} from '../Types';
 
-const horizonEventName = 'onSelect'
+const horizonEventName = 'onSelect';
 
 let currentElement = null;
 let currentVNode = null;
 let lastSelection: Selection | null = null;
 
 function initTargetCache(dom, vNode) {
-  if (isTextInputElement(dom) || dom.contentEditable === 'true') {
+  if (isInputElement(dom) || dom.contentEditable === 'true') {
     currentElement = dom;
     currentVNode = vNode;
     lastSelection = null;
@@ -79,23 +79,23 @@ function getSelectEvent(nativeEvent, target) {
  * 触发场景：用户输入、折叠选择、文本选择
  */
 export function getListeners(
-  name: string,
+  nativeEvtName: string,
   nativeEvt: AnyNativeEvent,
   vNode: null | VNode,
   target: null | EventTarget,
 ): ListenerUnitList {
   const targetNode = vNode ? getDom(vNode) : window;
   let eventUnitList: ListenerUnitList = [];
-  switch (name) {
+  switch (nativeEvtName) {
     case 'focusin':
       initTargetCache(targetNode, vNode);
-      return eventUnitList;
+      break;
     case 'focusout':
       clearTargetCache();
-      return eventUnitList;
+      break;
     case 'mousedown':
       isInMouseEvent = true;
-      return eventUnitList;
+      break;
     case 'contextmenu':
     case 'mouseup':
     case 'dragend':
@@ -107,5 +107,6 @@ export function getListeners(
     case 'keyup':
       eventUnitList = getSelectEvent(nativeEvt, target);
   }
+
   return eventUnitList;
 }

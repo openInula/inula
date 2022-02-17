@@ -69,7 +69,7 @@ function processListeners(listenerList: ListenerUnitList): void {
   });
 }
 
-function getProcessListenersFacade(
+function getProcessListeners(
   nativeEvtName: string,
   vNode: VNode | null,
   nativeEvent: AnyNativeEvent,
@@ -138,7 +138,7 @@ function triggerHorizonEvents(
   const nativeEventTarget = nativeEvent.target || nativeEvent.srcElement;
 
   // 获取委托事件队列
-  const listenerList = getProcessListenersFacade(nativeEvtName, vNode, nativeEvent, nativeEventTarget, isCapture);
+  const listenerList = getProcessListeners(nativeEvtName, vNode, nativeEvent, nativeEventTarget, isCapture);
 
   // 处理触发的事件队列
   processListeners(listenerList);

@@ -13,16 +13,16 @@ const compositionEventObj = {
 
 // compoisition事件主要处理中文输入法输入时的触发事件
 export function getListeners(
-  evtName: string,
+  nativeEvtName: string,
   nativeEvt: AnyNativeEvent,
   vNode: null | VNode,
   target: null | EventTarget,
 ): ListenerUnitList {
-  const evtType = compositionEventObj[evtName];
+  const evtType = compositionEventObj[nativeEvtName];
 
   const event = createCustomEvent(
     evtType,
-    evtName,
+    nativeEvtName,
     nativeEvt,
     target,
   );
