@@ -137,6 +137,7 @@ export class VNode {
         this.realNode = null;
         this.stateCallbacks = null;
         this.isLazyComponent = true;
+        this.lazyType = null;
         break;
       case Fragment:
         break;
