@@ -11,7 +11,7 @@ import {
   isIteratorType,
   isObjectType,
 } from './DiffTools';
-import {getSiblingVNode, travelChildren} from '../vnode/VNodeUtils';
+import { travelChildren } from '../vnode/VNodeUtils';
 
 enum DiffCategory {
   TEXT_NODE = 'TEXT_NODE',
@@ -249,7 +249,7 @@ function diffArrayNodes(
       nextOldNode = oldNode;
       oldNode = null;
     } else {
-      nextOldNode = getSiblingVNode(oldNode);
+      nextOldNode = oldNode.next;
     }
 
     const canBeReuse = checkCanReuseNode(oldNode, newChildren[leftIdx]);
@@ -552,13 +552,13 @@ function diffObjectNodeHandler(
       // 可以复用
       if (canReuseNode.tag === Fragment && newChild.type === TYPE_FRAGMENT) {
         resultNode = updateVNode(canReuseNode, newChild.props.children);
-        startDelVNode = getSiblingVNode(canReuseNode);
+        startDelVNode = canReuseNode.next;
         resultNode.next = null;
       } else if (isSameType(canReuseNode, newChild)) {
         resultNode = updateVNode(canReuseNode, newChild.props);
         resultNode.ref = newChild.ref;
         resultNode.belongClassVNode = newChild.belongClassVNode;
-        startDelVNode = getSiblingVNode(resultNode);
+        startDelVNode = resultNode.next;
         resultNode.next = null;
       }
     }
@@ -578,7 +578,7 @@ function diffObjectNodeHandler(
       // 可以复用
       if (canReuseNode.tag === DomPortal && canReuseNode.outerDom === newChild.outerDom) {
         resultNode = updateVNode(canReuseNode, newChild.children || []);
-        startDelVNode = getSiblingVNode(canReuseNode);
+        startDelVNode = canReuseNode.next;
         resultNode.next = null;
       }
     }

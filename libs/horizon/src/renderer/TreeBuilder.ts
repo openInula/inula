@@ -18,7 +18,7 @@ import {
   setProcessingClassVNode,
   setStartVNode
 } from './GlobalVar';
-import { findDomParent, getSiblingVNode } from './vnode/VNodeUtils';
+import { findDomParent } from './vnode/VNodeUtils';
 import {
   ByAsync,
   BySync,
@@ -108,7 +108,7 @@ function bubbleVNode(vNode: VNode): void {
       break;
     }
 
-    const siblingVNode = getSiblingVNode(node);
+    const siblingVNode = node.next;
     if (siblingVNode !== null) { // 有兄弟vNode
       processing = siblingVNode;
       return;
