@@ -1,9 +1,3 @@
-import {
-  STYLE_AMT_END,
-  STYLE_AMT_ITERATION,
-  STYLE_AMT_START,
-  STYLE_TRANS_END
-} from './StyleEventNames';
 
 // Horizon事件和原生事件对应关系
 export const horizonEventToNativeMap = new Map([
@@ -38,10 +32,10 @@ export const horizonEventToNativeMap = new Map([
   ['onSelect', ['focusout', 'contextmenu', 'dragend', 'focusin',
                 'keydown', 'keyup', 'mousedown', 'mouseup', 'selectionchange']],
 
-  ['onAnimationEnd', [STYLE_AMT_END]],
-  ['onAnimationIteration', [STYLE_AMT_ITERATION]],
-  ['onAnimationStart', [STYLE_AMT_START]],
-  ['onTransitionEnd', [STYLE_TRANS_END]]
+  ['onAnimationEnd', ['animationend']],
+  ['onAnimationIteration', ['animationiteration']],
+  ['onAnimationStart', ['animationstart']],
+  ['onTransitionEnd', ['transitionend']]
 ]);
 
 export const CommonEventToHorizonMap = {
@@ -68,10 +62,10 @@ export const CommonEventToHorizonMap = {
   selectionchange: 'selectChange',
   textInput: 'textInput',
   touchmove: 'touchMove',
-  [STYLE_AMT_END]: 'animationEnd',
-  [STYLE_AMT_ITERATION]: 'animationIteration',
-  [STYLE_AMT_START]: 'animationStart',
-  [STYLE_TRANS_END]: 'transitionEnd',
+  animationend: 'animationEnd',
+  animationiteration: 'animationIteration',
+  animationstart: 'animationStart',
+  transitionend: 'transitionEnd',
 };
 
 export const CHAR_CODE_ENTER = 13;
