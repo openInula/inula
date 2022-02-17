@@ -65,7 +65,7 @@ export class VNode {
   clearChild: VNode | null = null;
   // one tree相关属性
   isCreated: boolean = true;
-  oldHooks: Array<Hook<any, any>> | null = []; // 保存上一次执行的hook
+  oldHooks: Array<Hook<any, any>> | null = null; // 保存上一次执行的hook
   oldState: any = null;
   oldRef: RefType | ((handle: any) => void) | null = null;
   suspenseChildThrow = false;
