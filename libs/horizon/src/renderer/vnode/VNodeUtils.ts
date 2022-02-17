@@ -79,28 +79,24 @@ export function travelVNodeTree(
 export function clearVNode(vNode: VNode) {
   vNode.child = null;
   vNode.next = null;
-  vNode.depContexts = [];
-  vNode.dirtyNodes = [];
+  vNode.depContexts = null;
+  vNode.dirtyNodes = null;
   vNode.state = null;
-  vNode.hooks = [];
-  vNode.suspenseChildStatus = '';
+  vNode.hooks = null;
   vNode.props = null;
   vNode.parent = null;
   vNode.suspensePromises = null;
   vNode.changeList = null;
-  vNode.effectList = [];
+  vNode.effectList = null;
   vNode.updates = null;
   vNode.realNode = null;
 
   vNode.oldProps = null;
-  vNode.oldHooks = [];
+  vNode.oldHooks = null;
   vNode.oldState = null;
   vNode.oldRef = null;
-  vNode.suspenseChildThrow = false;
-  vNode.oldSuspenseChildStatus = '';
   vNode.oldChild = null;
 
-  vNode.path = [];
   vNode.toUpdateNodes = null;
 
   vNode.belongClassVNode = null;

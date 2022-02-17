@@ -25,17 +25,17 @@ export class VNode {
 
   suspensePromises: any = null; // suspense组件的promise列表
   changeList: any = null; // DOM的变更列表
-  effectList: any[] = []; // useEffect 的更新数组
+  effectList: any[] | null = []; // useEffect 的更新数组
   updates: any[] | null = null; // TreeRoot和ClassComponent使用的更新数组
-  stateCallbacks: any[] = []; // 存放存在setState的第二个参数和HorizonDOM.render的第三个参数所在的node数组
+  stateCallbacks: any[] | null = []; // 存放存在setState的第二个参数和HorizonDOM.render的第三个参数所在的node数组
   isForceUpdate: boolean = false; // 是否使用强制更新
 
   state: any = null; // ClassComponent和TreeRoot的状态
-  hooks: Array<Hook<any, any>> = []; // 保存hook
+  hooks: Array<Hook<any, any>> | null = []; // 保存hook
   suspenseChildStatus: string = ''; // Suspense的Children是否显示
-  depContexts: Array<ContextType<any>> = []; // FunctionComponent和ClassComponent对context的依赖列表
+  depContexts: Array<ContextType<any>> | null = []; // FunctionComponent和ClassComponent对context的依赖列表
   isDepContextChange: boolean = false; // context是否变更
-  dirtyNodes: Array<VNode> = []; // 需要改动的节点数组
+  dirtyNodes: Array<VNode> | null = []; // 需要改动的节点数组
   shouldUpdate: boolean = false;
   childShouldUpdate: boolean = false;
   outerDom: any;
@@ -65,7 +65,7 @@ export class VNode {
   clearChild: VNode | null = null;
   // one tree相关属性
   isCreated: boolean = true;
-  oldHooks: Array<Hook<any, any>> = []; // 保存上一次执行的hook
+  oldHooks: Array<Hook<any, any>> | null = []; // 保存上一次执行的hook
   oldState: any = null;
   oldRef: RefType | ((handle: any) => void) | null = null;
   suspenseChildThrow = false;
