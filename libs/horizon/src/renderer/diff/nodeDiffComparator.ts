@@ -7,7 +7,6 @@ import {
   isSameType,
   getIteratorFn,
   isTextType,
-  isArrayType,
   isIteratorType,
   isObjectType,
 } from './DiffTools';
@@ -60,7 +59,7 @@ function checkCanReuseNode(oldNode: VNode | null, newChild: any): boolean {
   }
 
   if (isObjectType(newChild)) {
-    if (isArrayType(newChild) || isIteratorType(newChild)) {
+    if (Array.isArray(newChild) || isIteratorType(newChild)) {
       return oldKey === null;
     }
     if (newChild.vtype === TYPE_COMMON_ELEMENT || newChild.vtype === TYPE_PORTAL) {
@@ -79,7 +78,7 @@ function getNodeType(newChild: any): string | null {
     return DiffCategory.TEXT_NODE;
   }
   if (isObjectType(newChild)) {
-    if (isArrayType(newChild) || isIteratorType(newChild)) {
+    if (Array.isArray(newChild) || isIteratorType(newChild)) {
       return DiffCategory.ARR_NODE;
     }
     if (newChild.vtype === TYPE_COMMON_ELEMENT || newChild.vtype === TYPE_PORTAL) {
@@ -200,7 +199,7 @@ function getOldNodeFromMap(nodeMap: Map<string | number, VNode>, newIdx: number,
     return nodeMap.get(newIdx) || null;
   }
   if (isObjectType(newChild)) {
-    if (isArrayType(newChild) || isIteratorType(newChild)) {
+    if (Array.isArray(newChild) || isIteratorType(newChild)) {
       return nodeMap.get(newIdx) || null;
     }
     if (newChild.vtype === TYPE_COMMON_ELEMENT || newChild.vtype === TYPE_PORTAL) {
@@ -629,7 +628,7 @@ export function createChildrenByDiff(
   }
 
   // 3. newChild是数组类型
-  if (isArrayType(newChild)) {
+  if (Array.isArray(newChild)) {
     return diffArrayNodesHandler(parentNode, firstChild, newChild, isComparing);
   }
 
