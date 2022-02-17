@@ -27,6 +27,10 @@ function isNoKeyFragment(child: any) {
 // 清除单个节点
 function deleteVNode(parentNode: VNode, delVNode: VNode): void {
   FlagUtils.setDeletion(delVNode);
+  if (parentNode.dirtyNodes === null) {
+    parentNode.dirtyNodes = [delVNode];
+    return;
+  }
   parentNode.dirtyNodes.push(delVNode);
 }
 

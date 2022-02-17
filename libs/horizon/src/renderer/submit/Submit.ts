@@ -40,11 +40,15 @@ export function submitToRender(treeRoot) {
 
   if (FlagUtils.hasAnyFlag(startVNode)) {
     // 把自己加上
-    startVNode.dirtyNodes.push(startVNode);
+    if (startVNode.dirtyNodes === null) {
+      startVNode.dirtyNodes = [startVNode];
+    } else {
+      startVNode.dirtyNodes.push(startVNode);
+    }
   }
 
   const dirtyNodes = startVNode.dirtyNodes;
-  if (dirtyNodes.length) {
+  if (dirtyNodes !== null && dirtyNodes.length) {
     const preMode = copyExecuteMode();
     changeMode(InRender, true);
 
@@ -60,7 +64,9 @@ export function submitToRender(treeRoot) {
     // after submit阶段
     afterSubmit(dirtyNodes);
 
-    setExecuteMode(preMode)
+    setExecuteMode(preMode);
+    dirtyNodes.length = 0;
+    startVNode.dirtyNodes = null;
   }
 
   if (isSchedulingEffects()) {

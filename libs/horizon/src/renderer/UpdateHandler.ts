@@ -72,7 +72,11 @@ function calcState(
 function collectCallbacks(vNode: VNode, update: Update) {
   if (update.callback !== null) {
     FlagUtils.markCallback(vNode);
-    vNode.stateCallbacks.push(update.callback);
+    if (vNode.stateCallbacks === null) {
+      vNode.stateCallbacks = [update.callback];
+    } else {
+      vNode.stateCallbacks.push(update.callback);
+    }
   }
 }
 

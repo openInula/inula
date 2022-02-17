@@ -57,10 +57,23 @@ function resetProcessingVariables(startUpdateVNode: VNode) {
 // 收集有变化的节点，在submit阶段继续处理
 function collectDirtyNodes(vNode: VNode, parent: VNode): void {
   // 将子树和此vNode的所有效果附加到父树的效果列表中，子项的完成顺序会影响副作用顺序。
-  parent.dirtyNodes.push(...vNode.dirtyNodes);
+  const dirtyNodes = vNode.dirtyNodes;
+  if (dirtyNodes !== null && dirtyNodes.length) {
+    if (parent.dirtyNodes === null) {
+      parent.dirtyNodes = [...vNode.dirtyNodes];
+    } else {
+      parent.dirtyNodes.push(...vNode.dirtyNodes);
+    }
+    dirtyNodes.length = 0;
+    vNode.dirtyNodes = null;
+  }
 
   if (FlagUtils.hasAnyFlag(vNode)) {
-    parent.dirtyNodes.push(vNode);
+    if (parent.dirtyNodes === null) {
+      parent.dirtyNodes = [vNode];
+    } else {
+      parent.dirtyNodes.push(vNode);
+    }
   }
 }
 
