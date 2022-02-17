@@ -74,7 +74,7 @@ export class VNode {
   suspenseDidCapture: boolean = false; // suspense是否捕获了异常
   promiseResolve: boolean = false; // suspense的promise是否resolve
 
-  path: Array<number> = []; // 保存从根到本节点的路径
+  path: string = ''; // 保存从根到本节点的路径
   toUpdateNodes: Set<VNode> | null = null; // 保存要更新的节点
 
   belongClassVNode: VNode | null = null; // 记录JSXElement所属class vNode，处理ref的时候使用

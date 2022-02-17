@@ -143,7 +143,7 @@ export function createUndeterminedVNode(type, key, props) {
 
 export function createTreeRootVNode(container) {
   const vNode = newVirtualNode(TreeRoot, null, null, container);
-  vNode.path.push(0);
+  vNode.path += 0;
   createUpdateArray(vNode);
   return vNode;
 }
@@ -155,7 +155,7 @@ export function createVNode(tag: VNodeTag | string, ...secondArg) {
     case TreeRoot:
       // 创建treeRoot
       vNode = newVirtualNode(TreeRoot, null, null, secondArg[0]);
-      vNode.path.push(0);
+      vNode.path += 0;
 
       createUpdateArray(vNode);
       break;
@@ -165,7 +165,7 @@ export function createVNode(tag: VNodeTag | string, ...secondArg) {
 }
 
 export function updateVNodePath(vNode: VNode) {
-  vNode.path = [...vNode.parent.path, vNode.cIndex];
+  vNode.path = vNode.parent.path + vNode.cIndex;
 }
 
 export function createVNodeFromElement(element: JSXElement): VNode {
