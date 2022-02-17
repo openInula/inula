@@ -92,11 +92,4 @@ export class VNode {
       this.toUpdateNodes = new Set<VNode>();
     }
   }
-
-  setContext(contextName, value) {
-    this.contexts[contextName] = value;
-  }
-  getContext(contextName) {
-    return this.contexts[contextName];
-  }
 }
