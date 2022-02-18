@@ -157,10 +157,6 @@ export function createVNode(tag: VNodeTag | string, ...secondArg) {
   return vNode;
 }
 
-export function updateVNodePath(vNode: VNode) {
-  vNode.path = vNode.parent.path + vNode.cIndex;
-}
-
 export function createVNodeFromElement(element: JSXElement): VNode {
   const type = element.type;
   const key = element.key;
@@ -183,7 +179,7 @@ export function onlyUpdateChildVNodes(processing: VNode): VNode | null {
       let child: VNode | null = processing.child;
       while (child !== null) {
         updateVNode(child, child.props);
-        updateVNodePath(child);
+        child.path = child.parent.path + child.cIndex;
         child = child.next;
       }
     }

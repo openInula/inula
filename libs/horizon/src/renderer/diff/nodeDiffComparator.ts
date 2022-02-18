@@ -1,8 +1,8 @@
 import type { VNode } from '../Types';
-import { FlagUtils, DirectAddition } from '../vnode/VNodeFlags';
+import { FlagUtils } from '../vnode/VNodeFlags';
 import { TYPE_COMMON_ELEMENT, TYPE_FRAGMENT, TYPE_PORTAL } from '../../external/JSXElementType';
 import { DomText, DomPortal, Fragment, DomComponent } from '../vnode/VNodeTags';
-import {updateVNode, createVNodeFromElement, updateVNodePath, createFragmentVNode, createPortalVNode, createDomTextVNode} from '../vnode/VNodeCreator';
+import {updateVNode, createVNodeFromElement, createFragmentVNode, createPortalVNode, createDomTextVNode} from '../vnode/VNodeCreator';
 import {
   isSameType,
   getIteratorFn,
@@ -270,7 +270,7 @@ function diffArrayNodesHandler(
     theLastPosition = setVNodeAdditionFlag(newNode, theLastPosition, isComparing);
     newNode.eIndex = leftIdx;
     newNode.cIndex = leftIdx;
-    updateVNodePath(newNode);
+    newNode.path = newNode.parent.path + newNode.cIndex;
     appendNode(newNode);
     oldNode = nextOldNode;
   }
@@ -468,7 +468,7 @@ function setVNodesCIndex(startChild: VNode, startIdx: number) {
 
   while (node !== null) {
     node.cIndex = idx;
-    updateVNodePath(node);
+    node.path = node.parent.path + node.cIndex;
     node = node.next;
     idx++;
   }
@@ -519,7 +519,7 @@ function diffStringNodeHandler(
   }
   newTextNode.parent = parentNode;
   newTextNode.cIndex = 0;
-  updateVNodePath(newTextNode);
+  newTextNode.path = newTextNode.parent.path + newTextNode.cIndex;
 
   return newTextNode;
 }
@@ -597,7 +597,7 @@ function diffObjectNodeHandler(
 
     resultNode.parent = parentNode;
     resultNode.cIndex = 0;
-    updateVNodePath(resultNode);
+    resultNode.path = resultNode.parent.path + resultNode.cIndex;
     if (startDelVNode) {
       deleteVNodes(parentNode, startDelVNode);
     }
