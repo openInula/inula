@@ -17,7 +17,7 @@ import {
   SuspenseComponent,
   MemoComponent,
 } from '../vnode/VNodeTags';
-import { FlagUtils, ResetText, Clear, Update } from '../vnode/VNodeFlags';
+import { FlagUtils, ResetText, Clear, Update, DirectAddition } from '../vnode/VNodeFlags';
 import { mergeDefaultProps } from '../render/LazyComponent';
 import {
   submitDomUpdate,
@@ -241,6 +241,11 @@ function submitAddition(vNode: VNode): void {
     FlagUtils.removeFlag(parent, ResetText);
   }
 
+  if ((vNode.flags & DirectAddition) === DirectAddition) {
+    insertOrAppendPlacementNode(vNode, null, parentDom);
+    FlagUtils.removeFlag(vNode, DirectAddition);
+    return;
+  }
   const before = getSiblingDom(vNode);
   insertOrAppendPlacementNode(vNode, before, parentDom);
 }

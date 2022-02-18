@@ -1,5 +1,5 @@
 import type { VNode } from '../Types';
-import { FlagUtils } from '../vnode/VNodeFlags';
+import { FlagUtils, DirectAddition } from '../vnode/VNodeFlags';
 import { TYPE_COMMON_ELEMENT, TYPE_FRAGMENT, TYPE_PORTAL } from '../../external/JSXElementType';
 import { DomText, DomPortal, Fragment, DomComponent } from '../vnode/VNodeTags';
 import {updateVNode, createVNodeFromElement, updateVNodePath, createFragmentVNode, createPortalVNode, createDomTextVNode} from '../vnode/VNodeCreator';
@@ -347,11 +347,23 @@ function diffArrayNodesHandler(
 
   // 4. 新节点还有一部分，但是老节点已经没有了
   if (oldNode === null) {
+    
+    let isDirectAdd = false;
+    // TODO: 是否可以扩大至非dom类型节点
+    // 如果dom节点在上次添加前没有节点，说明本次添加时，可以直接添加到最后，不需要通过 getSiblingDom 函数找到 before 节点
+    if (parentNode.tag === DomComponent && parentNode.oldProps?.children?.length === 0 && rightIdx - leftIdx === newChildren.length) {
+      isDirectAdd = true;
+    }
     for (; leftIdx < rightIdx; leftIdx++) {
       newNode = getNewNode(parentNode, newChildren[leftIdx], null);
 
       if (newNode !== null) {
-        theLastPosition = setVNodeAdditionFlag(newNode, theLastPosition, isComparing);
+        if (isComparing) {
+          FlagUtils.setAddition(newNode);
+        }
+        if (isDirectAdd) {
+          FlagUtils.markDirectAddition(newNode);
+        }
         newNode.eIndex = leftIdx;
         appendNode(newNode);
       }

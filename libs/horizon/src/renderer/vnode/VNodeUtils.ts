@@ -169,7 +169,7 @@ export function getSiblingDom(vNode: VNode): Element | null {
     // 如果不是dom节点，往下找
     while (!isDomVNode(node)) {
       // 如果节点也是Addition
-      if ((node.flags & Addition) ===Addition) {
+      if ((node.flags & Addition) === Addition) {
         continue findSibling;
       }
 
@@ -183,7 +183,7 @@ export function getSiblingDom(vNode: VNode): Element | null {
       }
     }
 
-    if ((node.flags & Addition) ===InitFlag) {
+    if ((node.flags & Addition) === InitFlag) {
       // 找到
       return node.realNode;
     }
