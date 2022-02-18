@@ -1,9 +1,9 @@
-import {createCustomEvent} from '../customEvents/EventFactory';
+import {decorateNativeEvent} from '../customEvents/EventFactory';
 import {shallowCompare} from '../../renderer/utils/compare';
 import {getFocusedDom} from '../../dom/utils/Common';
 import {getDom} from '../../dom/DOMInternalKeys';
 import {isDocument} from '../../dom/utils/Common';
-import {isInputElement} from '../utils';
+import {isInputElement, setPropertyWritable} from '../utils';
 import type {AnyNativeEvent} from '../Types';
 import {getListenersFromTree} from '../ListenerGetter';
 import type {VNode} from '../../renderer/Types';
@@ -54,12 +54,12 @@ function getSelectEvent(nativeEvent, target) {
   if (!shallowCompare(lastSelection, currentSelection)) {
     lastSelection = currentSelection;
 
-    const event = createCustomEvent(
+    const event = decorateNativeEvent(
       horizonEventName,
       'select',
       nativeEvent,
-      target,
     );
+    setPropertyWritable(nativeEvent, 'target');
     event.target = currentElement;
 
     return getListenersFromTree(
