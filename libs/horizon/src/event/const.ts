@@ -66,6 +66,9 @@ export const CommonEventToHorizonMap = {
   animationiteration: 'animationIteration',
   animationstart: 'animationStart',
   transitionend: 'transitionEnd',
+  compositionstart: 'compositionStart',
+  compositionend: 'compositionEnd',
+  compositionupdate: 'compositionUpdate',
 };
 
 export const CHAR_CODE_ENTER = 13;

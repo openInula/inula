@@ -14,3 +14,10 @@ export function addOnPrefix(name) {
   }
   return 'on' + name[0].toUpperCase() + name.slice(1);
 }
+
+export function setPropertyWritable(obj, propName) {
+  const desc = Object.getOwnPropertyDescriptor(obj, propName);
+  if (!desc || !desc.writable) {
+    Object.defineProperty(obj, propName, { writable : true });
+  }
+}

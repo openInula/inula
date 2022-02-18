@@ -1,4 +1,4 @@
-import {createCustomEvent} from '../customEvents/EventFactory';
+import {decorateNativeEvent} from '../customEvents/EventFactory';
 import {getDom} from '../../dom/DOMInternalKeys';
 import {isInputValueChanged} from '../../dom/valueHandler/ValueChangeHandler';
 import {addValueUpdateList} from '../ControlledValueUpdater';
@@ -48,11 +48,10 @@ export function getListeners(
   // 判断是否需要触发change事件
   if (shouldTriggerChangeEvent(targetDom, nativeEvtName)) {
     addValueUpdateList(target);
-    const event = createCustomEvent(
+    const event = decorateNativeEvent(
       'onChange',
       'change',
       nativeEvt,
-      target,
     );
     return getListenersFromTree(vNode, 'onChange', event, EVENT_TYPE_ALL);
   }

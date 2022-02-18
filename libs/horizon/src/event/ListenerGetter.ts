@@ -1,14 +1,13 @@
 import {VNode} from '../renderer/Types';
 import {DomComponent} from '../renderer/vnode/VNodeTags';
 import {EVENT_TYPE_ALL, EVENT_TYPE_CAPTURE, EVENT_TYPE_BUBBLE} from './const';
-import {ListenerUnitList} from './Types';
-import {CustomBaseEvent} from './customEvents/CustomBaseEvent';
+import {AnyNativeEvent, ListenerUnitList} from './Types';
 
 // 获取监听事件
 export function getListenersFromTree(
   targetVNode: VNode | null,
   horizonEvtName: string | null,
-  horizonEvent: CustomBaseEvent,
+  nativeEvent: AnyNativeEvent,
   eventType: string,
 ): ListenerUnitList {
   if (!horizonEvtName) {
@@ -31,7 +30,7 @@ export function getListenersFromTree(
             vNode,
             listener: captureListener,
             currentTarget: realNode,
-            event: horizonEvent,
+            event: nativeEvent,
           });
         }
       }
@@ -43,7 +42,7 @@ export function getListenersFromTree(
             vNode,
             listener: bubbleListener,
             currentTarget: realNode,
-            event: horizonEvent,
+            event: nativeEvent,
           });
         }
       }

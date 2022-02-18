@@ -1,9 +1,8 @@
 import type {VNode} from '../../renderer/Types';
 import type {AnyNativeEvent} from '../Types';
 import {getListenersFromTree} from '../ListenerGetter';
-import {createCustomEvent} from '../customEvents/EventFactory';
+import {decorateNativeEvent} from '../customEvents/EventFactory';
 import {CHAR_CODE_SPACE, EVENT_TYPE_ALL} from '../const';
-import {CustomBaseEvent} from '../customEvents/CustomBaseEvent';
 import {ListenerUnitList} from '../Types';
 const SPACE_CHAR = String.fromCharCode(CHAR_CODE_SPACE);
 
@@ -36,11 +35,10 @@ export function getListeners(
     return [];
   }
 
-  const event: CustomBaseEvent = createCustomEvent(
+  const event: AnyNativeEvent = decorateNativeEvent(
     'onBeforeInput',
     'beforeinput',
     nativeEvent,
-    target,
   );
   event.data = chars;
 
