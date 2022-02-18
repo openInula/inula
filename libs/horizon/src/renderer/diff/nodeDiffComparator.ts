@@ -471,7 +471,7 @@ function diffIteratorNodesHandler(
   parentNode: VNode,
   firstChild: VNode | null,
   newChildrenIterable: Iterable<any>,
-  isComparing: boolean = true
+  isComparing: boolean
 ): VNode | null {
   const iteratorFn = getIteratorFn(newChildrenIterable);
   const iteratorObj = iteratorFn.call(newChildrenIterable);
@@ -604,7 +604,7 @@ export function createChildrenByDiff(
   parentNode: VNode,
   firstChild: VNode | null,
   newChild: any,
-  isComparing: boolean = true
+  isComparing: boolean
 ): VNode | null {
   const isFragment = isNoKeyFragment(newChild);
   newChild = isFragment ? newChild.props.children : newChild;

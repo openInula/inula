@@ -147,7 +147,7 @@ function hideOrUnhideAllChildren(vNode, isHidden) {
         unHideDom(node.tag, instance, node.props);
       }
     }
-  });
+  }, null, vNode, null);
 }
 
 function attachRef(vNode: VNode) {
@@ -216,7 +216,7 @@ function unmountNestedVNodes(vNode: VNode): void {
   }, node =>
     // 如果是DomPortal，不需要遍历child
     node.tag === DomPortal
-  );
+  , vNode, null);
 }
 
 function submitAddition(vNode: VNode): void {
@@ -314,7 +314,7 @@ function unmountDomComponents(vNode: VNode): void {
     }
   }, node =>
     // 如果是dom不用再遍历child
-    node.tag === DomComponent || node.tag === DomText, null, (node) => {
+    node.tag === DomComponent || node.tag === DomText, vNode, (node) => {
     if (node.tag === DomPortal) {
       // 当离开portal，需要重新设置parent
       currentParentIsValid = false;

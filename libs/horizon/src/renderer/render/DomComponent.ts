@@ -88,7 +88,7 @@ export function bubbleRender(processing: VNode) {
       }, node =>
         // 已经append到父节点，或者是DomPortal都不需要处理child了
         node.tag === DomComponent || node.tag === DomText || node.tag === DomPortal
-        , processing);
+        , processing, null);
     }
 
     processing.realNode = dom;

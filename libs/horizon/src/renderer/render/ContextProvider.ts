@@ -56,7 +56,7 @@ function handleContextChange(processing: VNode, context: ContextType<any>): void
   }, node =>
     // 如果这是匹配的provider，则不要更深入地扫描
     node.tag === ContextProvider && node.type === processing.type
-  , processing);
+  , processing, null);
 
   // 找到了依赖context的子节点，触发一次更新
   if (isMatch) {

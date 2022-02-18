@@ -17,7 +17,7 @@ function capturePortalComponent(processing: VNode) {
 
   const newElements = processing.props;
   if (processing.isCreated) {
-    processing.child = createChildrenByDiff(processing, null, newElements);
+    processing.child = createChildrenByDiff(processing, null, newElements, true);
   } else {
     processing.child = createVNodeChildren(processing, newElements);
   }
