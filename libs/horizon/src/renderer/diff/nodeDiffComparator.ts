@@ -209,11 +209,6 @@ function getOldNodeFromMap(nodeMap: Map<string | number, VNode>, newIdx: number,
   return null;
 }
 
-function setCIndex(vNode: VNode, idx: number) {
-  vNode.cIndex = idx;
-  updateVNodePath(vNode);
-}
-
 // diff数组类型的节点，核心算法
 function diffArrayNodesHandler(
   parentNode: VNode,
@@ -274,7 +269,8 @@ function diffArrayNodesHandler(
 
     theLastPosition = setVNodeAdditionFlag(newNode, theLastPosition, isComparing);
     newNode.eIndex = leftIdx;
-    setCIndex(newNode, leftIdx);
+    newNode.cIndex = leftIdx;
+    updateVNodePath(newNode);
     appendNode(newNode);
     oldNode = nextOldNode;
   }
