@@ -235,7 +235,7 @@ function submitAddition(vNode: VNode): void {
     parent = parent.parent;
   }
 
-  if ((vNode.flags & ResetText) === ResetText) {
+  if ((parent.flags & ResetText) === ResetText) {
     // 在insert之前先reset
     clearText(parentDom);
     FlagUtils.removeFlag(parent, ResetText);

@@ -93,7 +93,6 @@ export function clearVNode(vNode: VNode) {
   vNode.oldState = null;
   vNode.oldRef = null;
   vNode.oldChild = null;
-  vNode.flags = InitFlag;
 
   vNode.toUpdateNodes = null;
 
