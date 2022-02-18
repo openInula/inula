@@ -71,8 +71,7 @@ export function compareProps(
   newProps: Object,
 ): Array<any> {
   let updatesForStyle = {};
-  const toBeDeletedProps: Array<any> = [];
-  const toBeUpdatedProps: Array<any> = [];
+  const toUpdateProps: Array<any> = [];
   const keysOfOldProps = Object.keys(oldProps);
   const keysOfNewProps = Object.keys(newProps);
 
@@ -104,14 +103,14 @@ export function compareProps(
       continue;
     } else if (isEventProp(propName)) {
       if (!allDelegatedHorizonEvents.has(propName)) {
-        toBeDeletedProps.push({
+        toUpdateProps.push({
           propName,
           propVal: null,
         });
       }
     } else {
       // 其它属性都要加入到删除队列里面，等待删除
-      toBeDeletedProps.push({
+      toUpdateProps.push({
         propName,
         propVal: null,
       });
@@ -156,7 +155,7 @@ export function compareProps(
         }
       } else { // 之前未设置 style 属性或者设置了空值
         if (Object.keys(updatesForStyle).length === 0) {
-          toBeUpdatedProps.push({
+          toUpdateProps.push({
             propName,
             propVal: null,
           });
@@ -168,7 +167,7 @@ export function compareProps(
       oldHTML = oldPropValue ? oldPropValue.__html : undefined;
       if (newHTML != null) {
         if (oldHTML !== newHTML) {
-          toBeUpdatedProps.push({
+          toUpdateProps.push({
             propName,
             propVal: newPropValue,
           });
@@ -176,20 +175,20 @@ export function compareProps(
       }
     } else if (propName === 'children') {
       if (typeof newPropValue === 'string' || typeof newPropValue === 'number') {
-        toBeUpdatedProps.push({
+        toUpdateProps.push({
           propName,
           propVal: String(newPropValue),
         });
       }
     } else if (isEventProp(propName)) {
       if (!allDelegatedHorizonEvents.has(propName)) {
-        toBeUpdatedProps.push({
+        toUpdateProps.push({
           propName,
           propVal: newPropValue,
         });
       }
     } else {
-      toBeUpdatedProps.push({
+      toUpdateProps.push({
         propName,
         propVal: newPropValue,
       });
@@ -198,11 +197,11 @@ export function compareProps(
 
   // 处理style
   if (Object.keys(updatesForStyle).length > 0) {
-    toBeUpdatedProps.push({
+    toUpdateProps.push({
       propName: 'style',
       propVal: updatesForStyle,
     });
   }
 
-  return [...toBeDeletedProps, ...toBeUpdatedProps];
+  return toUpdateProps;
 }
