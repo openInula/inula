@@ -2,7 +2,7 @@ import type { VNode } from './Types';
 
 import { callRenderQueueImmediate, pushRenderCallback } from './taskExecutor/RenderQueue';
 import { updateVNode } from './vnode/VNodeCreator';
-import { TreeRoot } from './vnode/VNodeTags';
+import { TreeRoot, DomComponent, DomPortal } from './vnode/VNodeTags';
 import { FlagUtils, InitFlag, Interrupted } from './vnode/VNodeFlags';
 import { captureVNode } from './render/BaseComponent';
 import { checkLoopingUpdateLimit, submitToRender } from './submit/Submit';
@@ -18,7 +18,6 @@ import {
   setProcessingClassVNode,
   setStartVNode
 } from './GlobalVar';
-import { findDomParent } from './vnode/VNodeUtils';
 import {
   ByAsync,
   BySync,
@@ -223,13 +222,21 @@ function buildVNodeTree(treeRoot: VNode) {
 
   if (startVNode.tag !== TreeRoot) { // 不是根节点
     // 设置namespace，用于createElement
-    const parentObj = findDomParent(startVNode);
-
+    let parent = startVNode.parent;
+    while (parent !== null) {
+      const tag = parent.tag;
+      if (tag === DomComponent) {
+        break;
+      } else if (tag === TreeRoot || tag === DomPortal) {
+        break;
+      }
+      parent = parent.parent;
+    }
+  
     // 当在componentWillUnmount中调用setState，parent可能是null，因为startVNode会被clear
-    if (parentObj !== null) {
-      const domParent = parentObj.parent;
-      resetNamespaceCtx(domParent);
-      setNamespaceCtx(domParent, domParent.outerDom);
+    if (parent !== null) {
+      resetNamespaceCtx(parent);
+      setNamespaceCtx(parent, parent.outerDom);
     }
 
     // 恢复父节点的context

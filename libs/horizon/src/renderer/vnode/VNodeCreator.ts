@@ -84,28 +84,6 @@ export function updateVNode(vNode: VNode, vNodeProps?: any): VNode {
   return vNode;
 }
 
-function getVNodeTag(type: any) {
-  let vNodeTag = ClsOrFunComponent;
-  let isLazy = false;
-  const componentType = typeof type;
-
-  if (componentType === 'function') {
-    if (isClassComponent(type)) {
-      vNodeTag = ClassComponent;
-    }
-  } else if (componentType === 'string') {
-    vNodeTag = DomComponent;
-  } else if (type === TYPE_SUSPENSE) {
-    vNodeTag = SuspenseComponent;
-  } else if (componentType === 'object' && type !== null && typeMap[type.vtype]) {
-    vNodeTag = typeMap[type.vtype];
-    isLazy = type.vtype === TYPE_LAZY;
-  } else {
-    throw Error(`Component type is invalid, got: ${type == null ? type : componentType}`);
-  }
-  return { vNodeTag, isLazy };
-}
-
 export function createFragmentVNode(fragmentKey, fragmentProps) {
   const vNode = newVirtualNode(Fragment, fragmentKey, fragmentProps);
   vNode.shouldUpdate = true;
@@ -127,14 +105,30 @@ export function createPortalVNode(portal) {
 }
 
 export function createUndeterminedVNode(type, key, props) {
-  const { vNodeTag, isLazy } = getVNodeTag(type);
+  let vNodeTag = ClsOrFunComponent;
+  let isLazy = false;
+  const componentType = typeof type;
+
+  if (componentType === 'function') {
+    if (isClassComponent(type)) {
+      vNodeTag = ClassComponent;
+    }
+  } else if (componentType === 'string') {
+    vNodeTag = DomComponent;
+  } else if (type === TYPE_SUSPENSE) {
+    vNodeTag = SuspenseComponent;
+  } else if (componentType === 'object' && type !== null && typeMap[type.vtype]) {
+    vNodeTag = typeMap[type.vtype];
+    isLazy = type.vtype === TYPE_LAZY;
+  } else {
+    throw Error(`Component type is invalid, got: ${type == null ? type : componentType}`);
+  }
 
   const vNode = newVirtualNode(vNodeTag, key, props);
   vNode.type = type;
   vNode.shouldUpdate = true;
 
   if (isLazy) {
-    vNode.isLazyComponent = isLazy;
     vNode.lazyType = type;
   }
   return vNode;

@@ -39,7 +39,7 @@ import {
   travelVNodeTree,
   clearVNode,
   isDomVNode,
-  findDomParent, getSiblingDom,
+  getSiblingDom,
 } from '../vnode/VNodeUtils';
 import { shouldAutoFocus } from '../../dom/utils/Common';
 
@@ -220,9 +220,22 @@ function unmountNestedVNodes(vNode: VNode): void {
 }
 
 function submitAddition(vNode: VNode): void {
-  const { parent, parentDom } = findDomParent(vNode);
+  let parent = vNode.parent;
+  let parentDom;
+  let tag;
+  while (parent !== null) {
+    tag = parent.tag;
+    if (tag === DomComponent) {
+      parentDom = parent.realNode;
+      break;
+    } else if (tag === TreeRoot || tag === DomPortal) {
+      parentDom = parent.outerDom;
+      break;
+    }
+    parent = parent.parent;
+  }
 
-  if ((vNode.flags & ResetText) === ResetText) {
+  if ((parent.flags & ResetText) === ResetText) {
     // 在insert之前先reset
     clearText(parentDom);
     FlagUtils.removeFlag(parent, ResetText);
@@ -270,8 +283,19 @@ function unmountDomComponents(vNode: VNode): void {
 
   travelVNodeTree(vNode, (node) => {
     if (!currentParentIsValid) {
-      const parentObj = findDomParent(node);
-      currentParent = parentObj.parentDom;
+      let parent = node.parent;
+      let tag;
+      while (parent !== null) {
+        tag = parent.tag;
+        if (tag === DomComponent) {
+          currentParent = parent.realNode;
+          break;
+        } else if (tag === TreeRoot || tag === DomPortal) {
+          currentParent = parent.outerDom;
+          break;
+        }
+        parent = parent.parent;
+      }
       currentParentIsValid = true;
     }
 
@@ -315,8 +339,20 @@ function submitClear(vNode: VNode): void {
     }
   }
 
-  const parentObj = findDomParent(vNode);
-  const currentParent = parentObj.parentDom;
+  let parent = vNode.parent;
+  let parentDom;
+  let tag;
+  while (parent !== null) {
+    tag = parent.tag;
+    if (tag === DomComponent) {
+      parentDom = parent.realNode;
+      break;
+    } else if (tag === TreeRoot || tag === DomPortal) {
+      parentDom = parent.outerDom;
+      break;
+    }
+    parent = parent.parent;
+  }
   let clearChild = vNode.clearChild as VNode; // 上次渲染的child保存在clearChild属性中
   // 卸载 clearChild 和 它的兄弟节点
   while(clearChild) {
@@ -327,9 +363,9 @@ function submitClear(vNode: VNode): void {
   }
 
   // 在所有子项都卸载后，删除dom树中的节点
-  removeChildDom(currentParent, vNode.realNode);
+  removeChildDom(parentDom, vNode.realNode);
   const realNodeNext = getSiblingDom(vNode);
-  insertDom(currentParent, cloneDom, realNodeNext);
+  insertDom(parentDom, cloneDom, realNodeNext);
   vNode.realNode = cloneDom;
   attachRef(vNode);
   FlagUtils.removeFlag(vNode, Clear);
