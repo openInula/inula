@@ -80,7 +80,6 @@ describe('Hook Test', () => {
   });
 
   it('简单使用useContext', () => {
-    //let root = createVNode(TreeRoot, container);
     const LanguageTypes = {
       JAVA: 'Java',
       JAVASCRIPT: 'JavaScript',
