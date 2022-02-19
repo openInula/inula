@@ -110,7 +110,7 @@ export function getPropChangeList(
   type: string,
   lastRawProps: Props,
   nextRawProps: Props,
-): Array<any> {
+): Map<string, any> {
   // 校验两个对象的不同
   validateProps(type, nextRawProps);
 

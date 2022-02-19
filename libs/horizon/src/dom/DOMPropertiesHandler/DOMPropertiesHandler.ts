@@ -52,15 +52,10 @@ export function setDomProps(
 // 更新 DOM 属性
 export function updateDomProps(
   dom: Element,
-  changeList: Array<any>,
+  changeList: Map<string, any>,
   isNativeTag: boolean,
 ): void {
-  const listLength = changeList.length;
-  let propName;
-  let propVal;
-  for (let i = 0; i < listLength; i++) {
-    propName = changeList[i].propName;
-    propVal = changeList[i].propVal;
+  for(const [propName, propVal] of changeList) {
     updateOneProp(dom, propName, isNativeTag, propVal);
   }
 }
@@ -69,9 +64,9 @@ export function updateDomProps(
 export function compareProps(
   oldProps: Object,
   newProps: Object,
-): Array<any> {
+): Map<string, any> {
   let updatesForStyle = {};
-  const toUpdateProps: Array<any> = [];
+  const toUpdateProps = new Map();
   const keysOfOldProps = Object.keys(oldProps);
   const keysOfNewProps = Object.keys(newProps);
 
@@ -103,17 +98,11 @@ export function compareProps(
       continue;
     } else if (isEventProp(propName)) {
       if (!allDelegatedHorizonEvents.has(propName)) {
-        toUpdateProps.push({
-          propName,
-          propVal: null,
-        });
+        toUpdateProps.set(propName, null);
       }
     } else {
       // 其它属性都要加入到删除队列里面，等待删除
-      toUpdateProps.push({
-        propName,
-        propVal: null,
-      });
+      toUpdateProps.set(propName, null);
     }
   }
 
@@ -155,10 +144,7 @@ export function compareProps(
         }
       } else { // 之前未设置 style 属性或者设置了空值
         if (Object.keys(updatesForStyle).length === 0) {
-          toUpdateProps.push({
-            propName,
-            propVal: null,
-          });
+          toUpdateProps.set(propName, null);
         }
         updatesForStyle = newPropValue;
       }
@@ -167,40 +153,25 @@ export function compareProps(
       oldHTML = oldPropValue ? oldPropValue.__html : undefined;
       if (newHTML != null) {
         if (oldHTML !== newHTML) {
-          toUpdateProps.push({
-            propName,
-            propVal: newPropValue,
-          });
+          toUpdateProps.set(propName, newPropValue);
         }
       }
     } else if (propName === 'children') {
       if (typeof newPropValue === 'string' || typeof newPropValue === 'number') {
-        toUpdateProps.push({
-          propName,
-          propVal: String(newPropValue),
-        });
+        toUpdateProps.set(propName, String(newPropValue));
       }
     } else if (isEventProp(propName)) {
       if (!allDelegatedHorizonEvents.has(propName)) {
-        toUpdateProps.push({
-          propName,
-          propVal: newPropValue,
-        });
+        toUpdateProps.set(propName, newPropValue);
       }
     } else {
-      toUpdateProps.push({
-        propName,
-        propVal: newPropValue,
-      });
+      toUpdateProps.set(propName, newPropValue);
     }
   }
 
   // 处理style
   if (Object.keys(updatesForStyle).length > 0) {
-    toUpdateProps.push({
-      propName: 'style',
-      propVal: updatesForStyle,
-    });
+    toUpdateProps.set('style', updatesForStyle);
   }
 
   return toUpdateProps;
