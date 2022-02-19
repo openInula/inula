@@ -1,18 +1,18 @@
-import type {VNode, ContextType, ProviderType} from '../Types';
+import type { VNode, ContextType, ProviderType } from '../Types';
 
-import {createVNodeChildren} from './BaseComponent';
-import {isSame} from '../utils/compare';
-import {ClassComponent, ContextProvider} from '../vnode/VNodeTags';
-import {pushForceUpdate} from '../UpdateHandler';
+import { isSame } from '../utils/compare';
+import { ClassComponent, ContextProvider } from '../vnode/VNodeTags';
+import { pushForceUpdate } from '../UpdateHandler';
 import {
   getContextChangeCtx,
   resetContextCtx,
   setContextCtx,
 } from '../ContextSaver';
-import {getFirstChild, travelVNodeTree} from '../vnode/VNodeUtils';
-import {launchUpdateFromVNode} from '../TreeBuilder';
-import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
-import {setParentsChildShouldUpdate} from '../vnode/VNodeShouldUpdate';
+import { travelVNodeTree } from '../vnode/VNodeUtils';
+import { launchUpdateFromVNode } from '../TreeBuilder';
+import { onlyUpdateChildVNodes } from '../vnode/VNodeCreator';
+import { setParentsChildShouldUpdate } from '../vnode/VNodeShouldUpdate';
+import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 
 // 从依赖中找到匹配context的VNode
 function matchDependencies(depContexts, context, vNode): boolean {
@@ -56,7 +56,7 @@ function handleContextChange(processing: VNode, context: ContextType<any>): void
   }, node =>
     // 如果这是匹配的provider，则不要更深入地扫描
     node.tag === ContextProvider && node.type === processing.type
-  , processing, null);
+    , processing, null);
 
   // 找到了依赖context的子节点，触发一次更新
   if (isMatch) {
@@ -92,7 +92,7 @@ function captureContextProvider(processing: VNode): VNode | null {
   }
 
   const newElements = newProps.children;
-  processing.child = createVNodeChildren(processing, newElements);
+  processing.child = createChildrenByDiff(processing, processing.child, newElements, !processing.isCreated);
   return processing.child;
 }
 

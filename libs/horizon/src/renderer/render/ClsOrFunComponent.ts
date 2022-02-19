@@ -5,7 +5,7 @@ import {resetDepContexts} from '../components/context/Context';
 import {getOldContext} from '../components/context/CompatibleContext';
 import {FlagUtils} from '../vnode/VNodeFlags';
 import {exeFunctionHook} from '../hooks/HookMain';
-import {createVNodeChildren} from './BaseComponent';
+import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 
 function captureIndeterminateComponent(
   processing: VNode,
@@ -25,7 +25,7 @@ function captureIndeterminateComponent(
   const newElements = exeFunctionHook(funcComp, props, context, processing);
 
   processing.tag = FunctionComponent;
-  processing.child = createVNodeChildren(processing, newElements);
+  processing.child = createChildrenByDiff(processing, processing.child, newElements, !processing.isCreated);
   return processing.child;
 }
 

@@ -13,9 +13,10 @@ import {
   isTextChild,
 } from '../../dom/DOMOperator';
 import { FlagUtils } from '../vnode/VNodeFlags';
-import { createVNodeChildren, markRef } from './BaseComponent';
+import { markRef } from './BaseComponent';
 import { DomComponent, DomPortal, DomText } from '../vnode/VNodeTags';
 import { travelVNodeTree } from '../vnode/VNodeUtils';
+import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 
 function updateDom(
   processing: VNode,
@@ -123,7 +124,7 @@ function captureDomComponent(processing: VNode): VNode | null {
   }
 
   markRef(processing);
-  processing.child = createVNodeChildren(processing, nextChildren);
+  processing.child = createChildrenByDiff(processing, processing.child, nextChildren, !processing.isCreated);
   return processing.child;
 }
 

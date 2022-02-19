@@ -1,7 +1,6 @@
 import type { VNode } from '../Types';
 import { resetNamespaceCtx, setNamespaceCtx } from '../ContextSaver';
 import { createChildrenByDiff } from '../diff/nodeDiffComparator';
-import { createVNodeChildren } from './BaseComponent';
 import { prePortal } from '../../dom/DOMOperator';
 
 export function bubbleRender(processing: VNode) {
@@ -19,7 +18,7 @@ function capturePortalComponent(processing: VNode) {
   if (processing.isCreated) {
     processing.child = createChildrenByDiff(processing, null, newElements, true);
   } else {
-    processing.child = createVNodeChildren(processing, newElements);
+    processing.child = createChildrenByDiff(processing, processing.child, newElements, !processing.isCreated);
   }
   return processing.child;
 }
