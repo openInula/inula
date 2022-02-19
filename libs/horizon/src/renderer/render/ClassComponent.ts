@@ -20,7 +20,7 @@ import {
   markComponentDidUpdate,
   markGetSnapshotBeforeUpdate,
 } from './class/ClassLifeCycleProcessor';
-import { FlagUtils } from '../vnode/VNodeFlags';
+import { FlagUtils, DidCapture } from '../vnode/VNodeFlags';
 import { createVNodeChildren, markRef } from './BaseComponent';
 import {
   createUpdateArray,
@@ -73,7 +73,7 @@ function createChildren(clazz: any, processing: VNode) {
   processing.state = processing.realNode.state;
 
   const inst = processing.realNode;
-  const isCatchError = processing.flags.DidCapture;
+  const isCatchError = (processing.flags & DidCapture) === DidCapture;
 
   // 按照已有规格，如果捕获了错误却没有定义getDerivedStateFromError函数，返回的child为null
   const newElements = isCatchError && typeof clazz.getDerivedStateFromError !== 'function'
@@ -122,7 +122,7 @@ export function captureClassComponent(processing: VNode, clazz: any, nextProps: 
     const newContext = getCurrentContext(clazz, processing);
 
     // 子节点抛出异常时，如果本class是个捕获异常的处理节点，这时候oldProps是null，所以需要使用props
-    let oldProps = processing.flags.DidCapture ? processing.props : processing.oldProps;
+    let oldProps = (processing.flags & DidCapture) === DidCapture ? processing.props : processing.oldProps;
     if (processing.isLazyComponent) {
       oldProps = mergeDefaultProps(processing.type, oldProps);
     }
@@ -161,7 +161,7 @@ export function captureClassComponent(processing: VNode, clazz: any, nextProps: 
     inst.props = nextProps;
   }
   // 如果捕获了 error，必须更新
-  const isCatchError = processing.flags.DidCapture;
+  const isCatchError = (processing.flags & DidCapture) === DidCapture;
   shouldUpdate = isCatchError || shouldUpdate;
 
   // 更新ref

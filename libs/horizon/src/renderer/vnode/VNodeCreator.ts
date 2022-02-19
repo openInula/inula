@@ -78,32 +78,10 @@ export function updateVNode(vNode: VNode, vNodeProps?: any): VNode {
   vNode.oldRef = vNode.ref;
 
   FlagUtils.setNoFlags(vNode);
-  vNode.dirtyNodes = [];
+  vNode.dirtyNodes = null;
   vNode.isCreated = false;
 
   return vNode;
-}
-
-function getVNodeTag(type: any) {
-  let vNodeTag = ClsOrFunComponent;
-  let isLazy = false;
-  const componentType = typeof type;
-
-  if (componentType === 'function') {
-    if (isClassComponent(type)) {
-      vNodeTag = ClassComponent;
-    }
-  } else if (componentType === 'string') {
-    vNodeTag = DomComponent;
-  } else if (type === TYPE_SUSPENSE) {
-    vNodeTag = SuspenseComponent;
-  } else if (componentType === 'object' && type !== null && typeMap[type.vtype]) {
-    vNodeTag = typeMap[type.vtype];
-    isLazy = type.vtype === TYPE_LAZY;
-  } else {
-    throw Error(`Component type is invalid, got: ${type == null ? type : componentType}`);
-  }
-  return { vNodeTag, isLazy };
 }
 
 export function createFragmentVNode(fragmentKey, fragmentProps) {
@@ -127,14 +105,29 @@ export function createPortalVNode(portal) {
 }
 
 export function createUndeterminedVNode(type, key, props) {
-  const { vNodeTag, isLazy } = getVNodeTag(type);
+  let vNodeTag = ClsOrFunComponent;
+  let isLazy = false;
+  const componentType = typeof type;
+
+  if (componentType === 'function') {
+    if (isClassComponent(type)) {
+      vNodeTag = ClassComponent;
+    }
+  } else if (componentType === 'string') {
+    vNodeTag = DomComponent;
+  } else if (type === TYPE_SUSPENSE) {
+    vNodeTag = SuspenseComponent;
+  } else if (componentType === 'object' && type !== null && typeMap[type.vtype]) {
+    vNodeTag = typeMap[type.vtype];
+    isLazy = type.vtype === TYPE_LAZY;
+  } else {
+    throw Error(`Component type is invalid, got: ${type == null ? type : componentType}`);
+  }
 
   const vNode = newVirtualNode(vNodeTag, key, props);
   vNode.type = type;
   vNode.shouldUpdate = true;
 
-  // lazy类型的特殊处理
-  vNode.isLazyComponent = isLazy;
   if (isLazy) {
     vNode.lazyType = type;
   }
@@ -143,7 +136,7 @@ export function createUndeterminedVNode(type, key, props) {
 
 export function createTreeRootVNode(container) {
   const vNode = newVirtualNode(TreeRoot, null, null, container);
-  vNode.path.push(0);
+  vNode.path += 0;
   createUpdateArray(vNode);
   return vNode;
 }
@@ -155,7 +148,7 @@ export function createVNode(tag: VNodeTag | string, ...secondArg) {
     case TreeRoot:
       // 创建treeRoot
       vNode = newVirtualNode(TreeRoot, null, null, secondArg[0]);
-      vNode.path.push(0);
+      vNode.path += 0;
 
       createUpdateArray(vNode);
       break;
@@ -165,7 +158,7 @@ export function createVNode(tag: VNodeTag | string, ...secondArg) {
 }
 
 export function updateVNodePath(vNode: VNode) {
-  vNode.path = [...vNode.parent.path, vNode.cIndex];
+  vNode.path = vNode.parent.path + vNode.cIndex;
 }
 
 export function createVNodeFromElement(element: JSXElement): VNode {

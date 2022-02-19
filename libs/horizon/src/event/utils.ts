@@ -1,15 +1,9 @@
 
-// 支持的输入框类型
-const supportedInputTypes = ['color', 'date', 'datetime', 'datetime-local', 'email', 'month',
-  'number', 'password', 'range', 'search', 'tel', 'text', 'time', 'url', 'week'];
-
-export function isTextInputElement(dom?: HTMLElement): boolean {
-  if (dom instanceof HTMLInputElement) {
-    return supportedInputTypes.includes(dom.type);
+export function isInputElement(dom?: HTMLElement): boolean {
+  if (dom instanceof HTMLInputElement || dom instanceof HTMLTextAreaElement) {
+    return true;
   }
-
-  const nodeName = dom && dom.nodeName && dom.nodeName.toLowerCase();
-  return nodeName === 'textarea';
+  return false;
 }
 
 
@@ -19,4 +13,11 @@ export function addOnPrefix(name) {
     return '';
   }
   return 'on' + name[0].toUpperCase() + name.slice(1);
+}
+
+export function setPropertyWritable(obj, propName) {
+  const desc = Object.getOwnPropertyDescriptor(obj, propName);
+  if (!desc || !desc.writable) {
+    Object.defineProperty(obj, propName, { writable : true });
+  }
 }

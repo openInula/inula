@@ -2,8 +2,8 @@ import type { VNode } from './Types';
 
 import { callRenderQueueImmediate, pushRenderCallback } from './taskExecutor/RenderQueue';
 import { updateVNode } from './vnode/VNodeCreator';
-import { TreeRoot } from './vnode/VNodeTags';
-import { FlagUtils } from './vnode/VNodeFlags';
+import { TreeRoot, DomComponent, DomPortal } from './vnode/VNodeTags';
+import { FlagUtils, InitFlag, Interrupted } from './vnode/VNodeFlags';
 import { captureVNode } from './render/BaseComponent';
 import { checkLoopingUpdateLimit, submitToRender } from './submit/Submit';
 import { runAsyncEffects } from './submit/HookEffectHandler';
@@ -18,7 +18,6 @@ import {
   setProcessingClassVNode,
   setStartVNode
 } from './GlobalVar';
-import { findDomParent, getSiblingVNode } from './vnode/VNodeUtils';
 import {
   ByAsync,
   BySync,
@@ -57,10 +56,23 @@ function resetProcessingVariables(startUpdateVNode: VNode) {
 // 收集有变化的节点，在submit阶段继续处理
 function collectDirtyNodes(vNode: VNode, parent: VNode): void {
   // 将子树和此vNode的所有效果附加到父树的效果列表中，子项的完成顺序会影响副作用顺序。
-  parent.dirtyNodes.push(...vNode.dirtyNodes);
+  const dirtyNodes = vNode.dirtyNodes;
+  if (dirtyNodes !== null && dirtyNodes.length) {
+    if (parent.dirtyNodes === null) {
+      parent.dirtyNodes = [...vNode.dirtyNodes];
+    } else {
+      parent.dirtyNodes.push(...vNode.dirtyNodes);
+    }
+    dirtyNodes.length = 0;
+    vNode.dirtyNodes = null;
+  }
 
   if (FlagUtils.hasAnyFlag(vNode)) {
-    parent.dirtyNodes.push(vNode);
+    if (parent.dirtyNodes === null) {
+      parent.dirtyNodes = [vNode];
+    } else {
+      parent.dirtyNodes.push(vNode);
+    }
   }
 }
 
@@ -73,13 +85,13 @@ function bubbleVNode(vNode: VNode): void {
   do {
     const parent = node.parent;
 
-    if (!node.flags.Interrupted) { // vNode没有抛出异常
+    if ((node.flags & Interrupted) === InitFlag) { // vNode没有抛出异常
       componentRenders[node.tag].bubbleRender(node);
 
       // 设置node的childShouldUpdate属性
       updateChildShouldUpdate(node);
 
-      if (parent !== null && node !== getStartVNode() && !parent.flags.Interrupted) {
+      if (parent !== null && node !== getStartVNode() && (parent.flags & Interrupted) === InitFlag) {
         collectDirtyNodes(node, parent);
       }
     }
@@ -95,7 +107,7 @@ function bubbleVNode(vNode: VNode): void {
       break;
     }
 
-    const siblingVNode = getSiblingVNode(node);
+    const siblingVNode = node.next;
     if (siblingVNode !== null) { // 有兄弟vNode
       processing = siblingVNode;
       return;
@@ -210,13 +222,21 @@ function buildVNodeTree(treeRoot: VNode) {
 
   if (startVNode.tag !== TreeRoot) { // 不是根节点
     // 设置namespace，用于createElement
-    const parentObj = findDomParent(startVNode);
-
+    let parent = startVNode.parent;
+    while (parent !== null) {
+      const tag = parent.tag;
+      if (tag === DomComponent) {
+        break;
+      } else if (tag === TreeRoot || tag === DomPortal) {
+        break;
+      }
+      parent = parent.parent;
+    }
+  
     // 当在componentWillUnmount中调用setState，parent可能是null，因为startVNode会被clear
-    if (parentObj !== null) {
-      const domParent = parentObj.parent;
-      resetNamespaceCtx(domParent);
-      setNamespaceCtx(domParent, domParent.outerDom);
+    if (parent !== null) {
+      resetNamespaceCtx(parent);
+      setNamespaceCtx(parent, parent.outerDom);
     }
 
     // 恢复父节点的context

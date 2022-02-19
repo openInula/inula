@@ -7,11 +7,11 @@ import {
   getNearestVNode,
   getNonDelegatedListenerMap,
 } from '../dom/DOMInternalKeys';
-import {CustomBaseEvent} from './customEvents/CustomBaseEvent';
 import {runDiscreteUpdates} from '../renderer/TreeBuilder';
 import {isMounted} from '../renderer/vnode/VNodeUtils';
 import {SuspenseComponent} from '../renderer/vnode/VNodeTags';
 import {handleEventMain} from './HorizonEventMain';
+import {decorateNativeEvent} from './customEvents/EventFactory';
 
 const listeningMarker = '_horizonListening' + Math.random().toString(36).slice(4);
 
@@ -98,7 +98,7 @@ function isCaptureEvent(horizonEventName) {
 // 封装监听函数
 function getWrapperListener(horizonEventName, nativeEvtName, targetElement, listener) {
   return event => {
-    const customEvent = new CustomBaseEvent(horizonEventName, nativeEvtName, event, null, targetElement);
+    const customEvent = decorateNativeEvent(horizonEventName, nativeEvtName, event);
     listener(customEvent);
   };
 }

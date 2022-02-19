@@ -22,7 +22,7 @@ module.exports = {
     ['@babel/plugin-transform-spread', { loose: true, useBuiltIns: true }],
     '@babel/plugin-transform-parameters',
     ['@babel/plugin-transform-destructuring', { loose: true, useBuiltIns: true }],
-    ['@babel/plugin-transform-block-scoping', { throwIfClosureRequired: true }],
+    ['@babel/plugin-transform-block-scoping', { throwIfClosureRequired: false }],
     '@babel/plugin-transform-classes',
     '@babel/plugin-transform-runtime',
     '@babel/plugin-proposal-nullish-coalescing-operator',

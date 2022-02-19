@@ -50,7 +50,7 @@ function handleContextChange(processing: VNode, context: ContextType<any>): void
   // 从vNode开始遍历
   travelVNodeTree(vNode, node => {
     const depContexts = node.depContexts;
-    if (depContexts.length) {
+    if (depContexts && depContexts.length) {
       isMatch = matchDependencies(depContexts, context, node) ?? isMatch;
     }
   }, node =>

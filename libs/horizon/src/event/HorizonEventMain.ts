@@ -8,13 +8,12 @@ import {
   EVENT_TYPE_CAPTURE,
 } from './const';
 import { getListeners as getBeforeInputListeners } from './simulatedEvtHandler/BeforeInputEventHandler';
-import { getListeners as getCompositionListeners } from './simulatedEvtHandler/CompositionEventHandler';
 import { getListeners as getChangeListeners } from './simulatedEvtHandler/ChangeEventHandler';
 import { getListeners as getSelectionListeners } from './simulatedEvtHandler/SelectionEventHandler';
 import {
-  addOnPrefix,
+  addOnPrefix, setPropertyWritable,
 } from './utils';
-import { createCustomEvent } from './customEvents/EventFactory';
+import { decorateNativeEvent } from './customEvents/EventFactory';
 import { getListenersFromTree } from './ListenerGetter';
 import { shouldUpdateValue, updateControlledValue } from './ControlledValueUpdater';
 import { asyncUpdates, runDiscreteUpdates } from '../renderer/Renderer';
@@ -47,7 +46,7 @@ function getCommonListeners(
     nativeEvtName = 'blur';
   }
 
-  const horizonEvent = createCustomEvent(horizonEvtName, nativeEvtName, nativeEvent, null, target);
+  const horizonEvent = decorateNativeEvent(horizonEvtName, nativeEvtName, nativeEvent);
   return getListenersFromTree(
     vNode,
     horizonEvtName,
@@ -63,13 +62,15 @@ function processListeners(listenerList: ListenerUnitList): void {
     if (event.isPropagationStopped()) {
       return;
     }
+
+    setPropertyWritable(event, 'currentTarget');
     event.currentTarget = currentTarget;
     listener(event);
     event.currentTarget = null;
   });
 }
 
-function getProcessListenersFacade(
+function getProcessListeners(
   nativeEvtName: string,
   vNode: VNode | null,
   nativeEvent: AnyNativeEvent,
@@ -105,17 +106,6 @@ function getProcessListenersFacade(
       ));
     }
 
-    if (nativeEvtName === 'compositionend' ||
-        nativeEvtName === 'compositionstart' ||
-        nativeEvtName === 'compositionupdate') {
-      listenerList = listenerList.concat(getCompositionListeners(
-        nativeEvtName,
-        nativeEvent,
-        vNode,
-        target,
-      ));
-    }
-
     if (horizonEventToNativeMap.get('onBeforeInput').includes(nativeEvtName)) {
       listenerList = listenerList.concat(getBeforeInputListeners(
         nativeEvtName,
@@ -138,7 +128,7 @@ function triggerHorizonEvents(
   const nativeEventTarget = nativeEvent.target || nativeEvent.srcElement;
 
   // 获取委托事件队列
-  const listenerList = getProcessListenersFacade(nativeEvtName, vNode, nativeEvent, nativeEventTarget, isCapture);
+  const listenerList = getProcessListeners(nativeEvtName, vNode, nativeEvent, nativeEventTarget, isCapture);
 
   // 处理触发的事件队列
   processListeners(listenerList);

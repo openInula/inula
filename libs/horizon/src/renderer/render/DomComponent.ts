@@ -1,5 +1,5 @@
-import type {VNode} from '../Types';
-import type {Props} from '../../dom/DOMOperator';
+import type { VNode } from '../Types';
+import type { Props } from '../../dom/DOMOperator';
 
 import {
   getNamespaceCtx,
@@ -12,10 +12,10 @@ import {
   initDomProps, getPropChangeList,
   isTextChild,
 } from '../../dom/DOMOperator';
-import {FlagUtils} from '../vnode/VNodeFlags';
-import {createVNodeChildren, markRef} from './BaseComponent';
-import {DomComponent, DomPortal, DomText} from '../vnode/VNodeTags';
-import {getFirstChild, travelVNodeTree} from '../vnode/VNodeUtils';
+import { FlagUtils } from '../vnode/VNodeFlags';
+import { createVNodeChildren, markRef } from './BaseComponent';
+import { DomComponent, DomPortal, DomText } from '../vnode/VNodeTags';
+import { travelVNodeTree } from '../vnode/VNodeUtils';
 
 function updateDom(
   processing: VNode,
@@ -50,24 +50,6 @@ function updateDom(
   }
 }
 
-// 把dom类型的子节点append到parent dom中
-function appendAllChildren(parent: Element, processing: VNode) {
-  const vNode = processing.child;
-  if (vNode === null) {
-    return;
-  }
-
-  // 向下递归它的子节点，查找所有终端节点。
-  travelVNodeTree(vNode, node => {
-    if (node.tag === DomComponent || node.tag === DomText) {
-      appendChildElement(parent, node.realNode);
-    }
-  }, node =>
-    // 已经append到父节点，或者是DomPortal都不需要处理child了
-    node.tag === DomComponent || node.tag === DomText || node.tag === DomPortal
-  , processing);
-}
-
 export function bubbleRender(processing: VNode) {
   resetNamespaceCtx(processing);
 
@@ -95,7 +77,19 @@ export function bubbleRender(processing: VNode) {
       processing,
     );
 
-    appendAllChildren(dom, processing);
+    // 把dom类型的子节点append到parent dom中
+    const vNode = processing.child;
+    if (vNode !== null) {
+      // 向下递归它的子节点，查找所有终端节点。
+      travelVNodeTree(vNode, node => {
+        if (node.tag === DomComponent || node.tag === DomText) {
+          appendChildElement(dom, node.realNode);
+        }
+      }, node =>
+        // 已经append到父节点，或者是DomPortal都不需要处理child了
+        node.tag === DomComponent || node.tag === DomText || node.tag === DomPortal
+        , processing);
+    }
 
     processing.realNode = dom;
 
