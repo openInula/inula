@@ -4,11 +4,18 @@
 class Component<P,S,C> {
   props: P;
   context: C;
-  state: S;
+  state: S | null;
+  refs: any;
+  setState: any;
+  forceUpdate: any;
 
   constructor(props: P, context: C) {
     this.props = props;
     this.context = context;
+    this.state = null;
+    this.refs = null;
+    this.setState = null;
+    this.forceUpdate = null;
   }
 }
 
