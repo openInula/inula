@@ -123,11 +123,11 @@ export function getPropChangeList(
 }
 
 export function isTextChild(type: string, props: Props): boolean {
-  const typeArray = ['textarea', 'option', 'noscript'];
-  const typeOfPropsChild = ['string', 'number'];
-  if (typeArray.indexOf(type) >= 0) {
+  if (type === 'textarea' || type === 'option' || type === 'noscript') {
     return true;
-  } else if (typeOfPropsChild.indexOf(typeof props.children) >= 0) {
+  }
+  const childType = typeof props.children;
+  if (childType === 'string' || childType === 'number') {
     return true;
   } else {
     return (
