@@ -12,10 +12,6 @@ class Component<P,S,C> {
   constructor(props: P, context: C) {
     this.props = props;
     this.context = context;
-    this.state = null;
-    this.refs = null;
-    this.setState = null;
-    this.forceUpdate = null;
   }
 }
 
