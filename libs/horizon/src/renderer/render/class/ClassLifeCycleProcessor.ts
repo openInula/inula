@@ -18,7 +18,7 @@ export function callDerivedStateFromProps(
   getDerivedStateFromProps: (props: object, state: object) => object,
   nextProps: object,
 ) {
-  if (typeof getDerivedStateFromProps === 'function') {
+  if (getDerivedStateFromProps) {
     const oldState = processing.state;
 
     // 调用class组件的getDerivedStateFromProps函数
@@ -57,7 +57,7 @@ export function callShouldComponentUpdate(
 ) {
   const inst = processing.realNode;
 
-  if (typeof inst.shouldComponentUpdate === 'function') {
+  if (inst.shouldComponentUpdate) {
     return inst.shouldComponentUpdate(newProps, newState, newContext);
   }
 
@@ -91,10 +91,10 @@ export function callConstructor(processing: VNode, ctor: any, props: any): any {
 export function callComponentWillMount(processing, inst, newProps?) {
   const oldState = inst.state;
 
-  if (typeof inst.componentWillMount === 'function') {
+  if (inst.componentWillMount) {
     inst.componentWillMount();
   }
-  if (typeof inst.UNSAFE_componentWillMount === 'function') {
+  if (inst.UNSAFE_componentWillMount) {
     inst.UNSAFE_componentWillMount();
   }
 
@@ -108,21 +108,21 @@ export function callComponentWillMount(processing, inst, newProps?) {
 }
 
 export function callComponentWillUpdate(inst, newProps, newState, nextContext) {
-  if (typeof inst.componentWillUpdate === 'function') {
+  if (inst.componentWillUpdate) {
     inst.componentWillUpdate(newProps, newState, nextContext);
   }
 
-  if (typeof inst.UNSAFE_componentWillUpdate === 'function') {
+  if (inst.UNSAFE_componentWillUpdate) {
     inst.UNSAFE_componentWillUpdate(newProps, newState, nextContext);
   }
 }
 
 export function callComponentWillReceiveProps(inst, newProps: object, newContext: object) {
   const oldState = inst.state;
-  if (typeof inst.componentWillReceiveProps === 'function') {
+  if (inst.componentWillReceiveProps) {
     inst.componentWillReceiveProps(newProps, newContext);
   }
-  if (typeof inst.UNSAFE_componentWillReceiveProps === 'function') {
+  if (inst.UNSAFE_componentWillReceiveProps) {
     inst.UNSAFE_componentWillReceiveProps(newProps, newContext);
   }
   if (inst.state !== oldState) {
@@ -132,21 +132,21 @@ export function callComponentWillReceiveProps(inst, newProps: object, newContext
 
 export function markComponentDidMount(processing: VNode) {
   const inst = processing.realNode;
-  if (typeof inst.componentDidMount === 'function') {
+  if (inst.componentDidMount) {
     FlagUtils.markUpdate(processing);
   }
 }
 
 export function markGetSnapshotBeforeUpdate(processing: VNode) {
   const inst = processing.realNode;
-  if (typeof inst.getSnapshotBeforeUpdate === 'function') {
+  if (inst.getSnapshotBeforeUpdate) {
     FlagUtils.markSnapshot(processing);
   }
 }
 
 export function markComponentDidUpdate(processing: VNode) {
   const inst = processing.realNode;
-  if (typeof inst.componentDidUpdate === 'function') {
+  if (inst.componentDidUpdate) {
     FlagUtils.markUpdate(processing);
   }
 }

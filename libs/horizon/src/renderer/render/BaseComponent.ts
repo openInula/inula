@@ -11,7 +11,6 @@ import {
 } from '../vnode/VNodeTags';
 import { getContextChangeCtx, setContextCtx, setNamespaceCtx } from '../ContextSaver';
 import { FlagUtils } from '../vnode/VNodeFlags';
-import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
 import componentRenders from './index';
 
@@ -62,11 +61,6 @@ export function captureVNode(processing: VNode): VNode | null {
   const shouldUpdate = processing.shouldUpdate;
   processing.shouldUpdate = false;
   return component.captureRender(processing, shouldUpdate);
-}
-
-// 创建孩子节点
-export function createVNodeChildren(processing: VNode, nextChildren: any) {
-  return createChildrenByDiff(processing, processing.child, nextChildren, !processing.isCreated);
 }
 
 export function markRef(processing: VNode) {

@@ -1,7 +1,7 @@
 import type {VNode, PromiseType} from '../Types';
 
 import {FlagUtils, Interrupted} from '../vnode/VNodeFlags';
-import {onlyUpdateChildVNodes, updateVNode, updateVNodePath, createFragmentVNode} from '../vnode/VNodeCreator';
+import {onlyUpdateChildVNodes, updateVNode, createFragmentVNode} from '../vnode/VNodeCreator';
 import {
   ClassComponent,
   IncompleteClassComponent,
@@ -44,7 +44,7 @@ function createFallback(processing: VNode, fallbackChildren) {
   fallbackFragment.parent = processing;
   fallbackFragment.eIndex = 1;
   fallbackFragment.cIndex = 1;
-  updateVNodePath(fallbackFragment);
+  fallbackFragment.path = fallbackFragment.parent.path + fallbackFragment.cIndex;
   processing.suspenseChildStatus = SuspenseChildStatus.ShowFallback;
 
   return fallbackFragment;
@@ -76,7 +76,7 @@ function createSuspenseChildren(processing: VNode, newChildren) {
 
   childFragment.parent = processing;
   childFragment.cIndex = 0;
-  updateVNodePath(childFragment);
+  childFragment.path = childFragment.parent.path + childFragment.cIndex;
   processing.child = childFragment;
   processing.promiseResolve = false;
   return processing.child;
