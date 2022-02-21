@@ -87,7 +87,10 @@ export function submitToRender(treeRoot) {
 }
 
 function beforeSubmit(dirtyNodes: Array<VNode>) {
-  dirtyNodes.forEach(node => {
+  let node;
+  const nodesLength = dirtyNodes.length;
+  for(let i = 0; i < nodesLength; i++) {
+    node = dirtyNodes[i];
     try {
       if ((node.flags & Snapshot) === Snapshot) {
         callBeforeSubmitLifeCycles(node);
@@ -95,35 +98,42 @@ function beforeSubmit(dirtyNodes: Array<VNode>) {
     } catch (error) {
       handleSubmitError(node, error);
     }
-  });
+  }
 }
 
 function submit(dirtyNodes: Array<VNode>) {
-  dirtyNodes.forEach(node => {
+  let node;
+  const nodesLength = dirtyNodes.length;
+  let isAdd;
+  let isUpdate;
+  let isDeletion;
+  let isClear;
+  for(let i = 0; i < nodesLength; i++) {
+    node = dirtyNodes[i];
     try {
       if ((node.flags & ResetText) === ResetText) {
         submitResetTextContent(node);
       }
-
+  
       if ((node.flags & Ref) === Ref) {
         if (!node.isCreated) {
           // 需要执行
           detachRef(node, true);
         }
       }
-
-      const isAdd = (node.flags & Addition) === Addition;
-      const isUpdate = (node.flags & Update) === Update;
+  
+      isAdd = (node.flags & Addition) === Addition;
+      isUpdate = (node.flags & Update) === Update;
       if (isAdd && isUpdate) {
         // Addition
         submitAddition(node);
         FlagUtils.removeFlag(node, Addition);
-
+  
         // Update
         submitUpdate(node);
       } else {
-        const isDeletion = (node.flags & Deletion) === Deletion;
-        const isClear = (node.flags & Clear) === Clear;
+        isDeletion = (node.flags & Deletion) === Deletion;
+        isClear = (node.flags & Clear) === Clear;
         if (isAdd) {
           submitAddition(node);
           FlagUtils.removeFlag(node, Addition);
@@ -139,23 +149,26 @@ function submit(dirtyNodes: Array<VNode>) {
     } catch (error) {
       handleSubmitError(node, error);
     }
-  });
+  }
 }
 
 function afterSubmit(dirtyNodes: Array<VNode>) {
-  dirtyNodes.forEach(node => {
+  let node;
+  const nodesLength = dirtyNodes.length;
+  for(let i = 0; i < nodesLength; i++) {
+    node = dirtyNodes[i];
     try {
       if ((node.flags & Update) === Update || (node.flags & Callback) === Callback) {
         callAfterSubmitLifeCycles(node);
       }
-
+  
       if ((node.flags & Ref) === Ref) {
         attachRef(node);
       }
     } catch (error) {
       handleSubmitError(node, error);
     }
-  });
+  }
 }
 
 export function setRootThrowError(error: any) {
