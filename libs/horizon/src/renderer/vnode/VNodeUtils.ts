@@ -27,11 +27,11 @@ export function travelChildren(beginVNode: VNode, handleVNode: Function, isFinis
 export function travelVNodeTree(
   beginVNode: VNode,
   handleVNode: Function,
-  childFilter: Function = () => false, // 返回true不处理child
-  finishVNode?: VNode, // 结束遍历节点，有时候和beginVNode不相同
-  handleWhenToParent?: Function
+  childFilter: ((node: VNode) => boolean) | null, // 返回true不处理child
+  finishVNode: VNode, // 结束遍历节点，有时候和beginVNode不相同
+  handleWhenToParent: Function | null
 ): VNode | null {
-  const overVNode = finishVNode || beginVNode;
+  const filter = childFilter === null;
   let node = beginVNode;
 
   while (true) {
@@ -43,20 +43,20 @@ export function travelVNodeTree(
 
     // 找子节点
     const childVNode = node.child;
-    if (childVNode !== null && !childFilter(node)) {
+    if (childVNode !== null && (filter || !childFilter(node))) {
       childVNode.parent = node;
       node = childVNode;
       continue;
     }
 
     // 回到开始节点
-    if (node === overVNode) {
+    if (node === finishVNode) {
       return null;
     }
 
     // 找兄弟，没有就往上再找兄弟
     while (node.next === null) {
-      if (node.parent === null || node.parent === overVNode) {
+      if (node.parent === null || node.parent === finishVNode) {
         return null;
       }
       node = node.parent;
@@ -93,7 +93,6 @@ export function clearVNode(vNode: VNode) {
   vNode.oldState = null;
   vNode.oldRef = null;
   vNode.oldChild = null;
-  vNode.flags = InitFlag;
 
   vNode.toUpdateNodes = null;
 
@@ -114,31 +113,13 @@ function isDomContainer(vNode: VNode): boolean {
   );
 }
 
-// 找到DOM类型的父
-export function findDomParent(vNode: VNode) {
-  let parent = vNode.parent;
-
-  while (parent !== null) {
-    switch (parent.tag) {
-      case DomComponent:
-        return {parent, parentDom: parent.realNode};
-      case TreeRoot:
-      case DomPortal:
-        return {parent, parentDom: parent.outerDom};
-    }
-    parent = parent.parent;
-  }
-
-  return null;
-}
-
 export function findDomVNode(vNode: VNode): VNode | null {
   return travelVNodeTree(vNode, (node) => {
     if (node.tag === DomComponent || node.tag === DomText) {
       return node;
     }
     return null;
-  });
+  }, null, vNode, null);
 }
 
 export function findDOMByClassInst(inst) {
@@ -188,7 +169,7 @@ export function getSiblingDom(vNode: VNode): Element | null {
     // 如果不是dom节点，往下找
     while (!isDomVNode(node)) {
       // 如果节点也是Addition
-      if ((node.flags & Addition) ===Addition) {
+      if ((node.flags & Addition) === Addition) {
         continue findSibling;
       }
 
@@ -202,7 +183,7 @@ export function getSiblingDom(vNode: VNode): Element | null {
       }
     }
 
-    if ((node.flags & Addition) ===InitFlag) {
+    if ((node.flags & Addition) === InitFlag) {
       // 找到
       return node.realNode;
     }

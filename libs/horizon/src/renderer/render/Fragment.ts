@@ -1,11 +1,11 @@
 import type {VNode} from '../Types';
-import {createVNodeChildren} from './BaseComponent';
+import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 
 export function bubbleRender() {}
 
 function captureFragment(processing: VNode) {
   const newElement = processing.props;
-  processing.child = createVNodeChildren(processing, newElement);
+  processing.child = createChildrenByDiff(processing, processing.child, newElement, !processing.isCreated);
   return processing.child;
 }
 
