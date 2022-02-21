@@ -27,7 +27,6 @@ export const horizonEventToNativeMap = new Map([
   ['onCompositionEnd', ['compositionend']],
   ['onCompositionStart', ['compositionstart']],
   ['onCompositionUpdate', ['compositionupdate']],
-  ['onBeforeInput', ['compositionend', 'keypress', 'textInput']],
   ['onChange', ['change', 'click', 'focusout', 'input']],
   ['onSelect', ['focusout', 'contextmenu', 'dragend', 'focusin',
                 'keydown', 'keyup', 'mousedown', 'mouseup', 'selectionchange']],
@@ -71,7 +70,6 @@ export const CommonEventToHorizonMap = {
   compositionupdate: 'compositionUpdate',
 };
 
-export const CHAR_CODE_ENTER = 13;
 export const CHAR_CODE_SPACE = 32;
 
 
