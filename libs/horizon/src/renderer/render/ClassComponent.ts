@@ -23,7 +23,6 @@ import {
 import { FlagUtils, DidCapture } from '../vnode/VNodeFlags';
 import { markRef } from './BaseComponent';
 import {
-  createUpdateArray,
   processUpdates,
 } from '../UpdateHandler';
 import { getContextChangeCtx, setContextChangeCtx } from '../ContextSaver';
@@ -55,7 +54,6 @@ function mountInstance(clazz, processing: VNode, nextProps: object) {
   inst.context = getCurrentContext(clazz, processing);
   inst.refs = {};
 
-  createUpdateArray(processing);
   processUpdates(processing, inst, nextProps);
   inst.state = processing.state;
 

@@ -105,7 +105,7 @@ export function bubbleRender(processing: VNode) {
   }
 }
 
-function captureDomComponent(processing: VNode): VNode | null {
+export function captureRender(processing: VNode): VNode | null {
   setNamespaceCtx(processing);
 
   const type = processing.type;
@@ -126,8 +126,4 @@ function captureDomComponent(processing: VNode): VNode | null {
   markRef(processing);
   processing.child = createChildrenByDiff(processing, processing.child, nextChildren, !processing.isCreated);
   return processing.child;
-}
-
-export function captureRender(processing: VNode): VNode | null {
-  return captureDomComponent(processing);
 }

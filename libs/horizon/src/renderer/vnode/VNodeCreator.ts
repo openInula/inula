@@ -16,7 +16,6 @@ import {
   MemoComponent,
   SuspenseComponent,
 } from './VNodeTags';
-import { createUpdateArray } from '../UpdateHandler';
 import {
   TYPE_CONTEXT,
   TYPE_FORWARD_REF, TYPE_FRAGMENT,
@@ -137,7 +136,7 @@ export function createUndeterminedVNode(type, key, props) {
 export function createTreeRootVNode(container) {
   const vNode = newVirtualNode(TreeRoot, null, null, container);
   vNode.path += 0;
-  createUpdateArray(vNode);
+  vNode.updates = [];
   return vNode;
 }
 
@@ -150,7 +149,7 @@ export function createVNode(tag: VNodeTag | string, ...secondArg) {
       vNode = newVirtualNode(TreeRoot, null, null, secondArg[0]);
       vNode.path += 0;
 
-      createUpdateArray(vNode);
+      vNode.updates = [];
       break;
   }
 
