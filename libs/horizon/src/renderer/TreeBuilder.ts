@@ -59,11 +59,11 @@ function collectDirtyNodes(vNode: VNode, parent: VNode): void {
   const dirtyNodes = vNode.dirtyNodes;
   if (dirtyNodes !== null && dirtyNodes.length) {
     if (parent.dirtyNodes === null) {
-      parent.dirtyNodes = [...vNode.dirtyNodes];
+      parent.dirtyNodes = dirtyNodes;
     } else {
       parent.dirtyNodes.push(...vNode.dirtyNodes);
+      dirtyNodes.length = 0;
     }
-    dirtyNodes.length = 0;
     vNode.dirtyNodes = null;
   }
 
