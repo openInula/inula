@@ -153,7 +153,7 @@ function getNewNode(parentNode: VNode, newChild: any, oldNode: VNode | null) {
         }
         break;
       } else if (newChild.vtype === TYPE_PORTAL) {
-        if (oldNode === null || oldNode.tag !== DomPortal || oldNode.outerDom !== newChild.outerDom) {
+        if (oldNode === null || oldNode.tag !== DomPortal || oldNode.realNode !== newChild.realNode) {
           resultNode = createPortalVNode(newChild);
         } else {
           resultNode = updateVNode(oldNode, newChild.children || []);
@@ -578,7 +578,7 @@ function diffObjectNodeHandler(
   } else if (newChild.vtype === TYPE_PORTAL) {
     if (canReuseNode) {
       // 可以复用
-      if (canReuseNode.tag === DomPortal && canReuseNode.outerDom === newChild.outerDom) {
+      if (canReuseNode.tag === DomPortal && canReuseNode.realNode === newChild.realNode) {
         resultNode = updateVNode(canReuseNode, newChild.children || []);
         startDelVNode = canReuseNode.next;
         resultNode.next = null;

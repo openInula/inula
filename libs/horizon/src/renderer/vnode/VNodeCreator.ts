@@ -38,8 +38,8 @@ const typeMap = {
   [TYPE_LAZY]: LazyComponent,
 };
 
-const newVirtualNode = function(tag: VNodeTag, key?: null | string, vNodeProps?: any, outerDom?: any): VNode {
-  return new VNode(tag, vNodeProps, key, outerDom);
+const newVirtualNode = function(tag: VNodeTag, key?: null | string, vNodeProps?: any, realNode?: any): VNode {
+  return new VNode(tag, vNodeProps, key, realNode);
 };
 
 function isClassComponent(comp: Function) {
@@ -99,7 +99,7 @@ export function createPortalVNode(portal) {
   const children = portal.children ?? [];
   const vNode = newVirtualNode(DomPortal, portal.key, children);
   vNode.shouldUpdate = true;
-  vNode.outerDom = portal.outerDom;
+  vNode.realNode = portal.realNode;
   return vNode;
 }
 

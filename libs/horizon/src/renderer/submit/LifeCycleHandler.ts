@@ -225,11 +225,8 @@ function submitAddition(vNode: VNode): void {
   let tag;
   while (parent !== null) {
     tag = parent.tag;
-    if (tag === DomComponent) {
+    if (tag === DomComponent || tag === TreeRoot || tag === DomPortal) {
       parentDom = parent.realNode;
-      break;
-    } else if (tag === TreeRoot || tag === DomPortal) {
-      parentDom = parent.outerDom;
       break;
     }
     parent = parent.parent;
@@ -292,11 +289,8 @@ function unmountDomComponents(vNode: VNode): void {
       let tag;
       while (parent !== null) {
         tag = parent.tag;
-        if (tag === DomComponent) {
+        if (tag === DomComponent || tag === TreeRoot || tag === DomPortal) {
           currentParent = parent.realNode;
-          break;
-        } else if (tag === TreeRoot || tag === DomPortal) {
-          currentParent = parent.outerDom;
           break;
         }
         parent = parent.parent;
@@ -312,7 +306,7 @@ function unmountDomComponents(vNode: VNode): void {
       removeChildDom(currentParent, node.realNode);
     } else if (node.tag === DomPortal) {
       if (node.child !== null) {
-        currentParent = node.outerDom;
+        currentParent = node.realNode;
       }
     } else {
       unmountVNode(node);
@@ -349,11 +343,8 @@ function submitClear(vNode: VNode): void {
   let tag;
   while (parent !== null) {
     tag = parent.tag;
-    if (tag === DomComponent) {
+    if (tag === DomComponent || tag === TreeRoot || tag === DomPortal) {
       parentDom = parent.realNode;
-      break;
-    } else if (tag === TreeRoot || tag === DomPortal) {
-      parentDom = parent.outerDom;
       break;
     }
     parent = parent.parent;

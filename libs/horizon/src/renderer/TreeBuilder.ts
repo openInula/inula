@@ -236,7 +236,7 @@ function buildVNodeTree(treeRoot: VNode) {
     // 当在componentWillUnmount中调用setState，parent可能是null，因为startVNode会被clear
     if (parent !== null) {
       resetNamespaceCtx(parent);
-      setNamespaceCtx(parent, parent.outerDom);
+      setNamespaceCtx(parent, parent.realNode);
     }
 
     // 恢复父节点的context

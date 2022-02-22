@@ -210,7 +210,7 @@ function isPortalRoot(vNode, targetContainer) {
     while (topVNode !== null) {
       const grandTag = topVNode.tag;
       if (grandTag === TreeRoot || grandTag === DomPortal) {
-        const topContainer = topVNode.outerDom;
+        const topContainer = topVNode.realNode;
         // 如果topContainer是targetContainer，不需要在这里处理
         if (isSameContainer(topContainer, targetContainer)) {
           return true;
@@ -229,7 +229,7 @@ export function getExactNode(targetVNode, targetContainer) {
   let vNode = targetVNode;
   while (vNode !== null) {
     if (vNode.tag === TreeRoot || vNode.tag === DomPortal) {
-      let container = vNode.outerDom;
+      let container = vNode.realNode;
       if (isSameContainer(container, targetContainer)) {
         break;
       }

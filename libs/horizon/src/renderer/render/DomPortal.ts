@@ -7,12 +7,12 @@ export function bubbleRender(processing: VNode) {
   resetNamespaceCtx(processing);
 
   if (processing.isCreated) {
-    prePortal(processing.outerDom);
+    prePortal(processing.realNode);
   }
 }
 
 function capturePortalComponent(processing: VNode) {
-  setNamespaceCtx(processing, processing.outerDom);
+  setNamespaceCtx(processing, processing.realNode);
 
   const newElements = processing.props;
   if (processing.isCreated) {
