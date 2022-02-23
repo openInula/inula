@@ -46,9 +46,8 @@ function mountInstance(clazz, processing: VNode, nextProps: object) {
   }
 
   // 构造实例
-  callConstructor(processing, clazz, nextProps);
+  const inst = callConstructor(processing, clazz, nextProps);
 
-  const inst = processing.realNode;
   inst.props = nextProps;
   inst.state = processing.state;
   inst.context = getCurrentContext(clazz, processing);
@@ -121,18 +120,13 @@ export function captureClassComponent(processing: VNode, clazz: any, nextProps: 
     const newContext = getCurrentContext(clazz, processing);
 
     // 子节点抛出异常时，如果本class是个捕获异常的处理节点，这时候oldProps是null，所以需要使用props
-    let oldProps = (processing.flags & DidCapture) === DidCapture ? processing.props : processing.oldProps;
-    if (processing.isLazyComponent) {
-      oldProps = mergeDefaultProps(processing.type, oldProps);
-    }
-    inst.props = oldProps;
+    const oldProps = (processing.flags & DidCapture) === DidCapture ? processing.props : processing.oldProps;
 
     if (oldProps !== processing.props || inst.context !== newContext) {
       // 在已挂载的组件接收新的 props 之前被调用
       callComponentWillReceiveProps(inst, nextProps, newContext);
     }
 
-    inst.state = processing.state;
     processUpdates(processing, inst, nextProps);
 
     // 如果 props, state, context 都没有变化且 isForceUpdate 为 false则不需要更新
