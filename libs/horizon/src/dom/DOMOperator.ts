@@ -19,7 +19,7 @@ import {
 } from './valueHandler';
 import {
   compareProps,
-  setDomProps, updateDomProps
+  setDomProps,
 } from './DOMPropertiesHandler/DOMPropertiesHandler';
 import { isNativeElement, validateProps } from './validators/ValidateProps';
 import { watchValueChange } from './valueHandler/ValueChangeHandler';
@@ -91,7 +91,8 @@ export function initDomProps(dom: Element, tagName: string, rawProps: Props): bo
   const props: Object = getPropsWithoutValue(tagName, dom, rawProps);
 
   // 初始化DOM属性（不包括value，defaultValue）
-  setDomProps(tagName, dom, props);
+  const isNativeTag = isNativeElement(tagName, props);
+  setDomProps(dom, props, isNativeTag, true);
 
   if (tagName === 'input' || tagName === 'textarea') {
     // 增加监听value和checked的set、get方法
@@ -167,7 +168,7 @@ export function submitDomUpdate(tag: string, vNode: VNode) {
           updateCommonProp(element, 'checked', newProps.checked, true);
         }
         const isNativeTag = isNativeElement(type, newProps);
-        updateDomProps(element, changeList, isNativeTag);
+        setDomProps(element, changeList, isNativeTag, false);
         updateValue(type, element, newProps);
       }
     }

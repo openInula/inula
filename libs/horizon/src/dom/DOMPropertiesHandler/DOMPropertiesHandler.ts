@@ -6,15 +6,15 @@ import { setStyles } from './StyleHandler';
 import {
   listenNonDelegatedEvent
 } from '../../event/EventBinding';
-import { isEventProp, isNativeElement } from '../validators/ValidateProps';
+import { isEventProp } from '../validators/ValidateProps';
 
-// 初始化DOM属性
+// 初始化DOM属性和更新 DOM 属性
 export function setDomProps(
-  tagName: string,
   dom: Element,
   props: Object,
+  isNativeTag: boolean,
+  isInit: boolean,
 ): void {
-  const isNativeTag = isNativeElement(tagName, props);
   const keysOfProps = Object.keys(props);
   let propName;
   let propVal;
@@ -37,42 +37,7 @@ export function setDomProps(
       }
     } else if (propName === 'dangerouslySetInnerHTML') {
       dom.innerHTML = propVal.__html;
-    } else {
-      if (propVal != null) {
-        updateCommonProp(dom, propName, propVal, isNativeTag);
-      }
-    }
-  }
-}
-
-// 更新 DOM 属性
-export function updateDomProps(
-  dom: Element,
-  changeList: Object,
-  isNativeTag: boolean,
-): void {
-  const keysOfProps = Object.keys(changeList);
-  let propName;
-  let propVal;
-  const keyLength = keysOfProps.length;
-  for(let i = 0; i < keyLength; i++) {
-    propName = keysOfProps[i];
-    propVal = changeList[propName];
-    if (propName === 'style') {
-      setStyles(dom, propVal);
-    } else if (isEventProp(propName)) {
-      // 事件监听属性处理
-      if (!allDelegatedHorizonEvents.has(propName)) {
-        listenNonDelegatedEvent(propName, dom, propVal);
-      }
-    } else if (propName === 'children') { // 只处理纯文本子节点，其他children在VNode树中处理
-      const type = typeof propVal;
-      if (type === 'string' || type === 'number') {
-        dom.textContent = propVal;
-      }
-    } else if (propName === 'dangerouslySetInnerHTML') {
-      dom.innerHTML = propVal.__html;
-    } else {
+    } else if (!isInit || (isInit && propVal != null)) {
       updateCommonProp(dom, propName, propVal, isNativeTag);
     }
   }
