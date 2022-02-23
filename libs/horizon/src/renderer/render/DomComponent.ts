@@ -45,7 +45,7 @@ function updateDom(
     FlagUtils.markUpdate(processing);
   } else {
     // 其它的类型，数据有变化才标记更新
-    if (changeList.size) {
+    if (Object.keys(changeList).length) {
       FlagUtils.markUpdate(processing);
     }
   }

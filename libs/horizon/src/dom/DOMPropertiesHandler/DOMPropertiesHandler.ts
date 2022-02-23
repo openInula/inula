@@ -48,10 +48,16 @@ export function setDomProps(
 // 更新 DOM 属性
 export function updateDomProps(
   dom: Element,
-  changeList: Map<string, any>,
+  changeList: Object,
   isNativeTag: boolean,
 ): void {
-  for(const [propName, propVal] of changeList) {
+  const keysOfProps = Object.keys(changeList);
+  let propName;
+  let propVal;
+  const keyLength = keysOfProps.length;
+  for(let i = 0; i < keyLength; i++) {
+    propName = keysOfProps[i];
+    propVal = changeList[propName];
     if (propName === 'style') {
       setStyles(dom, propVal);
     } else if (isEventProp(propName)) {
@@ -76,9 +82,9 @@ export function updateDomProps(
 export function compareProps(
   oldProps: Object,
   newProps: Object,
-): Map<string, any> {
+): Object {
   let updatesForStyle = {};
-  const toUpdateProps = new Map();
+  const toUpdateProps = {};
   const keysOfOldProps = Object.keys(oldProps);
   const keysOfNewProps = Object.keys(newProps);
 
@@ -110,11 +116,11 @@ export function compareProps(
       continue;
     } else if (isEventProp(propName)) {
       if (!allDelegatedHorizonEvents.has(propName)) {
-        toUpdateProps.set(propName, null);
+        toUpdateProps[propName] = null;
       }
     } else {
       // 其它属性都要加入到删除队列里面，等待删除
-      toUpdateProps.set(propName, null);
+      toUpdateProps[propName] = null;
     }
   }
 
@@ -156,7 +162,7 @@ export function compareProps(
         }
       } else { // 之前未设置 style 属性或者设置了空值
         if (Object.keys(updatesForStyle).length === 0) {
-          toUpdateProps.set(propName, null);
+          toUpdateProps[propName] = null;
         }
         updatesForStyle = newPropValue;
       }
@@ -165,25 +171,25 @@ export function compareProps(
       oldHTML = oldPropValue ? oldPropValue.__html : undefined;
       if (newHTML != null) {
         if (oldHTML !== newHTML) {
-          toUpdateProps.set(propName, newPropValue);
+          toUpdateProps[propName] = newPropValue;
         }
       }
     } else if (propName === 'children') {
       if (typeof newPropValue === 'string' || typeof newPropValue === 'number') {
-        toUpdateProps.set(propName, String(newPropValue));
+        toUpdateProps[propName] = String(newPropValue);
       }
     } else if (isEventProp(propName)) {
       if (!allDelegatedHorizonEvents.has(propName)) {
-        toUpdateProps.set(propName, newPropValue);
+        toUpdateProps[propName] = newPropValue;
       }
     } else {
-      toUpdateProps.set(propName, newPropValue);
+      toUpdateProps[propName] = newPropValue;
     }
   }
 
   // 处理style
   if (Object.keys(updatesForStyle).length > 0) {
-    toUpdateProps.set('style', updatesForStyle);
+    toUpdateProps['style'] = updatesForStyle;
   }
 
   return toUpdateProps;

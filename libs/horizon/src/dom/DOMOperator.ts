@@ -110,7 +110,7 @@ export function getPropChangeList(
   type: string,
   lastRawProps: Props,
   nextRawProps: Props,
-): Map<string, any> {
+): Object {
   // 校验两个对象的不同
   validateProps(type, nextRawProps);
 
@@ -118,8 +118,7 @@ export function getPropChangeList(
   const oldProps: Object = getPropsWithoutValue(type, dom, lastRawProps);
   const newProps: Object = getPropsWithoutValue(type, dom, nextRawProps);
 
-  const changeList = compareProps(oldProps, newProps);
-  return changeList;
+  return compareProps(oldProps, newProps);
 }
 
 export function isTextChild(type: string, props: Props): boolean {
