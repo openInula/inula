@@ -103,7 +103,15 @@ function markLifeCycle(processing: VNode, nextProps: object, shouldUpdate: Boole
 }
 
 // 用于类组件
-export function captureClassComponent(processing: VNode, clazz: any, nextProps: object): VNode | null {
+export function captureRender(processing: VNode): VNode | null {
+  let clazz = processing.type;
+  let nextProps = processing.props;
+  if (processing.isLazyComponent) {
+    nextProps = mergeDefaultProps(clazz, nextProps);
+    if (processing.promiseResolve) { // 该函数被 lazy 组件使用，未加载的组件需要加载组件的真实内容
+      clazz = clazz._load(clazz._content);
+    }
+  }
   const isOldCxtExist = isOldProvider(clazz);
   cacheOldCtx(processing, isOldCxtExist);
 
@@ -173,13 +181,6 @@ export function captureClassComponent(processing: VNode, clazz: any, nextProps: 
     }
     return onlyUpdateChildVNodes(processing);
   }
-}
-
-export function captureRender(processing: VNode): VNode | null {
-  const clazz = processing.type;
-  const props = processing.props;
-  const nextProps = processing.isLazyComponent ? mergeDefaultProps(clazz, props) : props;
-  return captureClassComponent(processing, clazz, nextProps);
 }
 
 export function bubbleRender(processing: VNode) {
