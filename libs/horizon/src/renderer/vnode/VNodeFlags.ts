@@ -5,20 +5,21 @@
 import type { VNode } from '../Types';
 
 
-export const InitFlag =   /**     */    0b000000000000;
+export const InitFlag =   /**     */    0;
 // vNode节点的flags
-export const Addition =  /**     */     0b100000000000;
-export const Update =     /**     */    0b010000000000;
-export const Deletion = /**     */      0b001000000000;
-export const ResetText =/**     */      0b000100000000;
-export const Callback =   /**     */    0b000010000000;
-export const DidCapture =/**     */     0b000001000000;
-export const Ref =       /**     */     0b000000100000;
-export const Snapshot =  /**     */     0b000000010000;
-export const Interrupted =  /**     */  0b000000001000; // 被中断了，抛出错误的vNode以及它的父vNode
-export const ShouldCapture =/**     */  0b000000000100;
-export const ForceUpdate = /**     */   0b000000000010; // For suspense
-export const Clear =     /**     */     0b000000000001;
+export const DirectAddition = /**  */  1 << 0; // 在本次更新前入股父dom没有子节点，说明本次可以直接添加至父节点，不需要通过 getSiblingDom 找到 before 节点
+export const Addition =  /**     */    1 << 1;
+export const Update =     /**     */   1 << 2;
+export const Deletion = /**     */     1 << 3;
+export const ResetText =/**     */     1 << 4;
+export const Callback =   /**     */   1 << 5;
+export const DidCapture =/**     */    1 << 6;
+export const Ref =       /**     */    1 << 7;
+export const Snapshot =  /**     */    1 << 8;
+export const Interrupted =  /**     */ 1 << 9; // 被中断了，抛出错误的vNode以及它的父vNode
+export const ShouldCapture =/**     */ 1 << 11;
+export const ForceUpdate = /**     */  1 << 12; // For suspense
+export const Clear =     /**     */    1 << 13;
 const LifecycleEffectArr = Update | Callback | Ref | Snapshot;
 
 export class FlagUtils {
@@ -43,6 +44,10 @@ export class FlagUtils {
   }
   static setAddition(node: VNode) {
     node.flags = Addition;
+  }
+
+  static markDirectAddition(node: VNode) {
+    node.flags |= DirectAddition;
   }
   static markUpdate(node: VNode) {
     node.flags |= Update;

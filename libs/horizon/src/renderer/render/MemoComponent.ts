@@ -1,7 +1,7 @@
 import type {VNode} from '../Types';
 
 import {mergeDefaultProps} from './LazyComponent';
-import {updateVNode, onlyUpdateChildVNodes, updateVNodePath, createFragmentVNode, createUndeterminedVNode} from '../vnode/VNodeCreator';
+import {updateVNode, onlyUpdateChildVNodes, createFragmentVNode, createUndeterminedVNode} from '../vnode/VNodeCreator';
 import {shallowCompare} from '../utils/compare';
 import {
   TYPE_FRAGMENT,
@@ -29,7 +29,7 @@ export function captureMemoComponent(
     }
     newChild.parent = processing;
     newChild.ref = processing.ref;
-    updateVNodePath(newChild);
+    newChild.path = newChild.parent.path + newChild.cIndex;
     processing.child = newChild;
 
     return newChild;
@@ -48,7 +48,7 @@ export function captureMemoComponent(
   const newChild = updateVNode(firstChild, newProps);
   newChild.parent = processing;
   newChild.cIndex = 0;
-  updateVNodePath(newChild);
+  newChild.path = newChild.parent.path + newChild.cIndex;
   newChild.ref = processing.ref;
   processing.child = newChild;
 

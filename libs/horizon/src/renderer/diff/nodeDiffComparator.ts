@@ -2,7 +2,7 @@ import type { VNode } from '../Types';
 import { FlagUtils } from '../vnode/VNodeFlags';
 import { TYPE_COMMON_ELEMENT, TYPE_FRAGMENT, TYPE_PORTAL } from '../../external/JSXElementType';
 import { DomText, DomPortal, Fragment, DomComponent } from '../vnode/VNodeTags';
-import {updateVNode, createVNodeFromElement, updateVNodePath, createFragmentVNode, createPortalVNode, createDomTextVNode} from '../vnode/VNodeCreator';
+import {updateVNode, createVNodeFromElement, createFragmentVNode, createPortalVNode, createDomTextVNode} from '../vnode/VNodeCreator';
 import {
   isSameType,
   getIteratorFn,
@@ -209,11 +209,6 @@ function getOldNodeFromMap(nodeMap: Map<string | number, VNode>, newIdx: number,
   return null;
 }
 
-function setCIndex(vNode: VNode, idx: number) {
-  vNode.cIndex = idx;
-  updateVNodePath(vNode);
-}
-
 // diff数组类型的节点，核心算法
 function diffArrayNodesHandler(
   parentNode: VNode,
@@ -274,7 +269,8 @@ function diffArrayNodesHandler(
 
     theLastPosition = setVNodeAdditionFlag(newNode, theLastPosition, isComparing);
     newNode.eIndex = leftIdx;
-    setCIndex(newNode, leftIdx);
+    newNode.cIndex = leftIdx;
+    newNode.path = newNode.parent.path + newNode.cIndex;
     appendNode(newNode);
     oldNode = nextOldNode;
   }
@@ -347,11 +343,23 @@ function diffArrayNodesHandler(
 
   // 4. 新节点还有一部分，但是老节点已经没有了
   if (oldNode === null) {
+    
+    let isDirectAdd = false;
+    // TODO: 是否可以扩大至非dom类型节点
+    // 如果dom节点在上次添加前没有节点，说明本次添加时，可以直接添加到最后，不需要通过 getSiblingDom 函数找到 before 节点
+    if (parentNode.tag === DomComponent && parentNode.oldProps?.children?.length === 0 && rightIdx - leftIdx === newChildren.length) {
+      isDirectAdd = true;
+    }
     for (; leftIdx < rightIdx; leftIdx++) {
       newNode = getNewNode(parentNode, newChildren[leftIdx], null);
 
       if (newNode !== null) {
-        theLastPosition = setVNodeAdditionFlag(newNode, theLastPosition, isComparing);
+        if (isComparing) {
+          FlagUtils.setAddition(newNode);
+        }
+        if (isDirectAdd) {
+          FlagUtils.markDirectAddition(newNode);
+        }
         newNode.eIndex = leftIdx;
         appendNode(newNode);
       }
@@ -460,7 +468,7 @@ function setVNodesCIndex(startChild: VNode, startIdx: number) {
 
   while (node !== null) {
     node.cIndex = idx;
-    updateVNodePath(node);
+    node.path = node.parent.path + node.cIndex;
     node = node.next;
     idx++;
   }
@@ -471,7 +479,7 @@ function diffIteratorNodesHandler(
   parentNode: VNode,
   firstChild: VNode | null,
   newChildrenIterable: Iterable<any>,
-  isComparing: boolean = true
+  isComparing: boolean
 ): VNode | null {
   const iteratorFn = getIteratorFn(newChildrenIterable);
   const iteratorObj = iteratorFn.call(newChildrenIterable);
@@ -511,7 +519,7 @@ function diffStringNodeHandler(
   }
   newTextNode.parent = parentNode;
   newTextNode.cIndex = 0;
-  updateVNodePath(newTextNode);
+  newTextNode.path = newTextNode.parent.path + newTextNode.cIndex;
 
   return newTextNode;
 }
@@ -589,7 +597,7 @@ function diffObjectNodeHandler(
 
     resultNode.parent = parentNode;
     resultNode.cIndex = 0;
-    updateVNodePath(resultNode);
+    resultNode.path = resultNode.parent.path + resultNode.cIndex;
     if (startDelVNode) {
       deleteVNodes(parentNode, startDelVNode);
     }
@@ -604,7 +612,7 @@ export function createChildrenByDiff(
   parentNode: VNode,
   firstChild: VNode | null,
   newChild: any,
-  isComparing: boolean = true
+  isComparing: boolean
 ): VNode | null {
   const isFragment = isNoKeyFragment(newChild);
   newChild = isFragment ? newChild.props.children : newChild;

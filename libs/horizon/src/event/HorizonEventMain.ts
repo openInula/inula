@@ -7,7 +7,6 @@ import {
   EVENT_TYPE_BUBBLE,
   EVENT_TYPE_CAPTURE,
 } from './const';
-import { getListeners as getBeforeInputListeners } from './simulatedEvtHandler/BeforeInputEventHandler';
 import { getListeners as getChangeListeners } from './simulatedEvtHandler/ChangeEventHandler';
 import { getListeners as getSelectionListeners } from './simulatedEvtHandler/SelectionEventHandler';
 import {
@@ -99,15 +98,6 @@ function getProcessListeners(
 
     if (horizonEventToNativeMap.get('onSelect').includes(nativeEvtName)) {
       listenerList = listenerList.concat(getSelectionListeners(
-        nativeEvtName,
-        nativeEvent,
-        vNode,
-        target,
-      ));
-    }
-
-    if (horizonEventToNativeMap.get('onBeforeInput').includes(nativeEvtName)) {
-      listenerList = listenerList.concat(getBeforeInputListeners(
         nativeEvtName,
         nativeEvent,
         vNode,

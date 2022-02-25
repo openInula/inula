@@ -4,11 +4,11 @@ import {mergeDefaultProps} from './LazyComponent';
 import {getOldContext} from '../components/context/CompatibleContext';
 import {resetDepContexts} from '../components/context/Context';
 import {exeFunctionHook} from '../hooks/HookMain';
-import {createVNodeChildren} from './BaseComponent';
 import {ForwardRef} from '../vnode/VNodeTags';
 import {FlagUtils, Update} from '../vnode/VNodeFlags';
 import {getContextChangeCtx} from '../ContextSaver';
 import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
+import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 
 // 在useState, useReducer的时候，会触发state变化
 let stateChange = false;
@@ -79,7 +79,7 @@ export function captureFunctionComponent(
     return onlyUpdateChildVNodes(processing);
   }
 
-  processing.child = createVNodeChildren(processing, newElements);
+  processing.child = createChildrenByDiff(processing, processing.child, newElements, !processing.isCreated);
   return processing.child;
 }
 

@@ -21,7 +21,7 @@ import {
   markGetSnapshotBeforeUpdate,
 } from './class/ClassLifeCycleProcessor';
 import { FlagUtils, DidCapture } from '../vnode/VNodeFlags';
-import { createVNodeChildren, markRef } from './BaseComponent';
+import { markRef } from './BaseComponent';
 import {
   createUpdateArray,
   processUpdates,
@@ -29,6 +29,7 @@ import {
 import { getContextChangeCtx, setContextChangeCtx } from '../ContextSaver';
 import { setProcessingClassVNode } from '../GlobalVar';
 import { onlyUpdateChildVNodes } from '../vnode/VNodeCreator';
+import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 
 // 获取当前节点的context
 export function getCurrentContext(clazz, processing: VNode) {
@@ -80,7 +81,7 @@ function createChildren(clazz: any, processing: VNode) {
     ? null
     : inst.render();
 
-  processing.child = createVNodeChildren(processing, newElements);
+  processing.child = createChildrenByDiff(processing, processing.child, newElements, !processing.isCreated);
   return processing.child;
 }
 

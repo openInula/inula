@@ -1,7 +1,7 @@
 import type {VNode, ContextType} from '../Types';
 
 import {resetDepContexts, getNewContext} from '../components/context/Context';
-import {createVNodeChildren} from './BaseComponent';
+import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 
 function captureContextConsumer(processing: VNode) {
   const context: ContextType<any> = processing.type;
@@ -12,7 +12,7 @@ function captureContextConsumer(processing: VNode) {
   const contextVal = getNewContext(processing, context);
   const newChildren = renderFunc(contextVal);
 
-  processing.child = createVNodeChildren(processing, newChildren);
+  processing.child = createChildrenByDiff(processing, processing.child, newChildren, !processing.isCreated);
   return processing.child;
 }
 
