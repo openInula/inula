@@ -4,7 +4,18 @@ import { act } from 'react-dom/test-utils';
 
 
 describe('Hook Test', () => {
-  const { useState, useReducer, useEffect, useLayoutEffect, useContext, useMemo, useCallback, useRef, useImperativeHandle, forwardRef } = React;
+  const { 
+    useState, 
+    useReducer, 
+    useEffect, 
+    useLayoutEffect, 
+    useContext, 
+    useMemo, 
+    useCallback, 
+    useRef, 
+    useImperativeHandle, 
+    forwardRef 
+  } = React;
   const { unmountComponentAtNode } = HorizonDOM;
   let container = null;
   beforeEach(() => {

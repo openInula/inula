@@ -88,14 +88,8 @@ describe('useState Hook Test', () => {
   });
 
   it('useState的惰性初始化', () => {
-    //let data = null;
     const App = forwardRef((props, ref) => {
       const [num, setNum] = useState(() => {
-        // if (data === null) {
-        //   data = ['initNum'];
-        // } else {
-        //   data.push('initNum');
-        // }
         Scheduler.unstable_yieldValue(props.initNum);
         return props.initNum
       });

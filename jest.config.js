@@ -127,10 +127,10 @@ module.exports = {
   // runner: "jest-runner",
 
   // The paths to modules that run some code to configure or set up the testing environment before each test
-  setupFilesAfterEnv: [require.resolve('./scripts/__tests__/jest/setupEnvironment.js')],
+  setupFiles: [require.resolve('./scripts/__tests__/jest/setupTests.js')],
 
   // A list of paths to modules that run some code to configure or set up the testing framework before each test
-  setupFiles: [require.resolve('./scripts/__tests__/jest/setupTests.js')],
+  setupFilesAfterEnv: [require.resolve('./scripts/__tests__/jest/setupEnvironment.js')],
 
   // A list of paths to snapshot serializer modules Jest should use for snapshot testing
   // snapshotSerializers: [],
