@@ -4,7 +4,7 @@ import { act } from 'react-dom/test-utils';
 
 
 describe('Hook Test', () => {
-  const { useState, useReducer, useEffect, useLayoutEffect, useContext } = React;
+  const { useState, useReducer, useEffect, useLayoutEffect, useContext, useMemo, useCallback, useRef, useImperativeHandle, forwardRef } = React;
   const { unmountComponentAtNode } = HorizonDOM;
   let container = null;
   beforeEach(() => {
@@ -33,7 +33,7 @@ describe('Hook Test', () => {
     }
     HorizonDOM.render(<App />, container);
     expect(container.querySelector('p').innerHTML).toBe('0');
-    //点击按钮触发num加1
+    // 点击按钮触发num加1
     container.querySelector('button').click();
     expect(container.querySelector('p').innerHTML).toBe('1');
   });
@@ -53,7 +53,7 @@ describe('Hook Test', () => {
     }
     HorizonDOM.render(<App />, container);
     expect(document.getElementById('p').style.display).toBe('block');
-    //点击按钮触发num加1
+    // 点击按钮触发num加1
     container.querySelector('button').click();
     expect(document.getElementById('p').style.display).toBe('none');
     container.querySelector('button').click();
@@ -111,13 +111,13 @@ describe('Hook Test', () => {
       )
     }
     HorizonDOM.render(<TestFunction />, container);
-    //测试当Provider未提供时，获取到的默认值'JavaScript'。
+    // 测试当Provider未提供时，获取到的默认值'JavaScript'。
     expect(container.querySelector('p').innerHTML).toBe('JavaScript');
     unmountComponentAtNode(container);
     HorizonDOM.render(<App />, container);
-    //测试当Provider提供时，可以获取到Provider的值'Java'。
+    // 测试当Provider提供时，可以获取到Provider的值'Java'。
     expect(container.querySelector('p').innerHTML).toBe('Java');
-    //测试当Provider改变时，可以获取到最新Provider的值。
+    // 测试当Provider改变时，可以获取到最新Provider的值。
     act(() => setValue(LanguageTypes.JAVASCRIPT));
     expect(container.querySelector('p').innerHTML).toBe('JavaScript');
   });
@@ -166,13 +166,136 @@ describe('Hook Test', () => {
     HorizonDOM.render(<App />, container);
     expect(container.querySelector('p').innerHTML).toBe('');
     expect(container.querySelector('#senP').innerHTML).toBe('0');
-    //触发bmw
+    // 触发bmw
     dispatch({ logo: 'bmw' });
     expect(container.querySelector('p').innerHTML).toBe('bmw');
     expect(container.querySelector('#senP').innerHTML).toBe('100');
-    //触发carReducer里的switch的default项
+    // 触发carReducer里的switch的default项
     dispatch({ logo: 'wrong logo' });
     expect(container.querySelector('p').innerHTML).toBe('audi');
     expect(container.querySelector('#senP').innerHTML).toBe('88');
+  });
+
+  it('测试useMemo', () => {
+    let setMemo;
+    const App = () => {
+      const [num, setNum] = useState(0);
+      const [memoDependent, _setMemo] = useState('App');
+      setMemo = _setMemo;
+      const text = useMemo(() => {
+        setNum(num + 1);
+        return memoDependent;
+      }, [memoDependent])
+      return (
+        <>
+          <p>{text}</p>
+          <p id="p">{num}</p>
+        </>
+      );
+    }
+    HorizonDOM.render(<App words="App" />, container);
+    expect(container.querySelector('p').innerHTML).toBe('App');
+    expect(container.querySelector('#p').innerHTML).toBe('1');
+    // 修改useMemo的依赖项，num会加一，text会改变。
+    setMemo('Apps')
+    expect(container.querySelector('p').innerHTML).toBe('Apps');
+    expect(container.querySelector('#p').innerHTML).toBe('2');
+    // useMemo的依赖项不变，num不会加一，text不会改变。
+    setMemo('Apps')
+    expect(container.querySelector('p').innerHTML).toBe('Apps');
+    expect(container.querySelector('#p').innerHTML).toBe('2');
+    // 修改useMemo的依赖项，num会加一，text会改变。
+    setMemo('App')
+    expect(container.querySelector('p').innerHTML).toBe('App');
+    expect(container.querySelector('#p').innerHTML).toBe('3');
+  });
+
+  it('测试useCallback', () => {
+    const App = (props) => {
+      const [num, setNum] = useState(0);
+      const NumUseCallback = useCallback(() => {
+        setNum(num + props.text)
+      }, [props]);
+      return (
+        <>
+          <p>{num}</p>
+          <button onClick={NumUseCallback} />
+        </>
+      )
+    }
+    HorizonDOM.render(<App text={1} />, container);
+    expect(container.querySelector('p').innerHTML).toBe('0');
+    // 点击按钮触发num加1
+    container.querySelector('button').click();
+    expect(container.querySelector('p').innerHTML).toBe('1');
+    // 再次点击，依赖项没变，num不增加
+    container.querySelector('button').click();
+    expect(container.querySelector('p').innerHTML).toBe('1');
+
+    HorizonDOM.render(<App text={2} />, container);
+    expect(container.querySelector('p').innerHTML).toBe('1');
+    // 依赖项有变化，点击按钮num增加
+    container.querySelector('button').click();
+    expect(container.querySelector('p').innerHTML).toBe('3');
+  });
+
+  it('测试useRef', () => {
+    const App = () => {
+      const [num, setNum] = useState(1);
+      const ref = useRef();
+      if (!ref.current) {
+        ref.current = num;
+      }
+      return (
+        <>
+          <p>{num}</p>
+          <p id="sp">{ref.current}</p>
+          <button onClick={() => setNum(num + 1)} />
+        </>
+      )
+    }
+    HorizonDOM.render(<App />, container);
+    expect(container.querySelector('p').innerHTML).toBe('1');
+    expect(container.querySelector('#sp').innerHTML).toBe('1');
+    // 点击按钮触发num加1,ref不变
+    container.querySelector('button').click();
+    expect(container.querySelector('p').innerHTML).toBe('2');
+    expect(container.querySelector('#sp').innerHTML).toBe('1');
+  });
+
+  it('测试useImperativeHandle', () => {
+
+    let App = (props, ref) => {
+      const [num, setNum] = useState(0);
+      useImperativeHandle(ref, () => ({num, setNum}), []);
+      return <p>{num}</p>;
+    }
+    let App1 = (props, ref) => {
+      const [num1, setNum1] = useState(0);
+      useImperativeHandle(ref, () => ({num1, setNum1}), [num1]);
+      return <p>{num1}</p>;
+    }
+
+    App = forwardRef(App);
+    App1 = forwardRef(App1);
+    const counter = React.createRef(null);
+    const counter1 = React.createRef(null);
+    HorizonDOM.render(<App ref={counter} />, container);
+    expect(counter.current.num).toBe(0);
+    act(() => {
+      counter.current.setNum(1);
+    });
+    // useImperativeHandle的dep为[],所以不会变
+    expect(counter.current.num).toBe(0);
+    // 清空container
+    unmountComponentAtNode(container);
+
+    HorizonDOM.render(<App1 ref={counter1} />, container);
+    expect(counter1.current.num1).toBe(0);
+    act(() => {
+      counter1.current.setNum1(1);
+    });
+    // useImperativeHandle的dep为[num1],所以会变
+    expect(counter1.current.num1).toBe(1);
   });
 });
