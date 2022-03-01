@@ -1,7 +1,7 @@
 let dataArray = null;
 let isWorking = false;
 
-const injectValue = (value) => {
+const log = (value) => {
   if (dataArray === null) {
     dataArray = [value];
   } else {
@@ -9,7 +9,7 @@ const injectValue = (value) => {
   }
 };
 
-const getAndClearValue = () => {
+const getAndClear = () => {
   if (dataArray === null) {
     return [];
   }
@@ -18,13 +18,13 @@ const getAndClearValue = () => {
   return values;
 };
 
-const reset = () => {
+const clear = () => {
   if (isWorking) {
     throw new Error('Cannot reset. There is a working task.');
   }
   dataArray = null;
 }
 
-exports.reset = reset;
-exports.injectValue = injectValue;
-exports.getAndClearValue = getAndClearValue;
+exports.clear = clear;
+exports.log = log;
+exports.getAndClear = getAndClear;

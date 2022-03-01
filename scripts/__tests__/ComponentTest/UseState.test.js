@@ -17,11 +17,11 @@ describe('useState Hook Test', () => {
     unmountComponentAtNode(container);
     container.remove();
     container = null;
-    LogUtils.reset();
+    LogUtils.clear();
   });
 
   const Text = (props) => {
-    LogUtils.injectValue(props.text);
+    LogUtils.log(props.text);
     return <p>{props.text}</p>;
   }
 
@@ -89,7 +89,7 @@ describe('useState Hook Test', () => {
   it('useState的惰性初始化', () => {
     const App = forwardRef((props, ref) => {
       const [num, setNum] = useState(() => {
-        LogUtils.injectValue(props.initNum);
+        LogUtils.log(props.initNum);
         return props.initNum
       });
       useImperativeHandle(ref, () => ({ setNum }))

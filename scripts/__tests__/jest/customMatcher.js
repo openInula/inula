@@ -12,7 +12,7 @@ function runAssertion(fn) {
 
 function toMatchValue(LogUtils, expectedValues) {
   return runAssertion(() => {
-    const actualValues = LogUtils.getAndClearValue();
+    const actualValues = LogUtils.getAndClear();
     expect(actualValues).toEqual(expectedValues);
   });
 }
