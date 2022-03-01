@@ -1,5 +1,4 @@
 let dataArray = null;
-let isWorking = false;
 
 const log = (value) => {
   if (dataArray === null) {
@@ -19,9 +18,6 @@ const getAndClear = () => {
 };
 
 const clear = () => {
-  if (isWorking) {
-    throw new Error('Cannot reset. There is a working task.');
-  }
   dataArray = null;
 }
 
