@@ -16,7 +16,6 @@ import {
   MemoComponent,
   SuspenseComponent,
 } from './VNodeTags';
-import { createUpdateArray } from '../UpdateHandler';
 import {
   TYPE_CONTEXT,
   TYPE_FORWARD_REF, TYPE_FRAGMENT,
@@ -39,8 +38,8 @@ const typeMap = {
   [TYPE_LAZY]: LazyComponent,
 };
 
-const newVirtualNode = function(tag: VNodeTag, key?: null | string, vNodeProps?: any, outerDom?: any): VNode {
-  return new VNode(tag, vNodeProps, key, outerDom);
+const newVirtualNode = function(tag: VNodeTag, key?: null | string, vNodeProps?: any, realNode?: any): VNode {
+  return new VNode(tag, vNodeProps, key, realNode);
 };
 
 function isClassComponent(comp: Function) {
@@ -100,7 +99,7 @@ export function createPortalVNode(portal) {
   const children = portal.children ?? [];
   const vNode = newVirtualNode(DomPortal, portal.key, children);
   vNode.shouldUpdate = true;
-  vNode.outerDom = portal.outerDom;
+  vNode.realNode = portal.realNode;
   return vNode;
 }
 
@@ -137,7 +136,7 @@ export function createUndeterminedVNode(type, key, props) {
 export function createTreeRootVNode(container) {
   const vNode = newVirtualNode(TreeRoot, null, null, container);
   vNode.path += 0;
-  createUpdateArray(vNode);
+  vNode.updates = [];
   return vNode;
 }
 
@@ -150,7 +149,7 @@ export function createVNode(tag: VNodeTag | string, ...secondArg) {
       vNode = newVirtualNode(TreeRoot, null, null, secondArg[0]);
       vNode.path += 0;
 
-      createUpdateArray(vNode);
+      vNode.updates = [];
       break;
   }
 

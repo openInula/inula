@@ -18,7 +18,7 @@ import componentRenders from './index';
 function handlerContext(processing: VNode) {
   switch (processing.tag) {
     case TreeRoot:
-      setNamespaceCtx(processing, processing.outerDom);
+      setNamespaceCtx(processing, processing.realNode);
       break;
     case DomComponent:
       setNamespaceCtx(processing);
@@ -29,7 +29,7 @@ function handlerContext(processing: VNode) {
       break;
     }
     case DomPortal:
-      setNamespaceCtx(processing, processing.outerDom);
+      setNamespaceCtx(processing, processing.realNode);
       break;
     case ContextProvider: {
       const newValue = processing.props.value;

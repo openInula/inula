@@ -10,7 +10,7 @@ import {
 import { getListeners as getChangeListeners } from './simulatedEvtHandler/ChangeEventHandler';
 import { getListeners as getSelectionListeners } from './simulatedEvtHandler/SelectionEventHandler';
 import {
-  addOnPrefix, setPropertyWritable,
+  setPropertyWritable,
 } from './utils';
 import { decorateNativeEvent } from './customEvents/EventFactory';
 import { getListenersFromTree } from './ListenerGetter';
@@ -27,7 +27,9 @@ function getCommonListeners(
   target: null | EventTarget,
   isCapture: boolean,
 ): ListenerUnitList {
-  const horizonEvtName = addOnPrefix(CommonEventToHorizonMap[nativeEvtName]);
+  const name = CommonEventToHorizonMap[nativeEvtName];
+  const horizonEvtName = !name ? '' : `on${name[0].toUpperCase()}${name.slice(1)}`; // 例：dragEnd -> onDragEnd
+  
   if (!horizonEvtName) {
     return [];
   }

@@ -24,12 +24,10 @@ const LifecycleEffectArr = Update | Callback | Ref | Snapshot;
 
 export class FlagUtils {
   static removeFlag(node: VNode, flag: number) {
-    const flags = node.flags;
-    node.flags = flags & (~flag);
+    node.flags &= ~flag;
   }
   static removeLifecycleEffectFlags(node) {
-    const flags = node.flags;
-    node.flags = flags & (~LifecycleEffectArr);
+    node.flags &= ~LifecycleEffectArr;
   }
   static hasAnyFlag(node: VNode) { // 有标志位
     return node.flags !== InitFlag;
