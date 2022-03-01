@@ -1,7 +1,6 @@
 import * as React from '../../../libs/horizon/src/external/Horizon';
 import * as HorizonDOM from '../../../libs/horizon/src/dom/DOMExternal';
-//import { act } from 'react-dom/test-utils';
-import * as Scheduler from 'scheduler';
+import * as LogUtils from '../jest/logUtils';
 
 describe('useState Hook Test', () => {
   const { useState, forwardRef, useImperativeHandle, memo } = React;
@@ -18,11 +17,11 @@ describe('useState Hook Test', () => {
     unmountComponentAtNode(container);
     container.remove();
     container = null;
-    Scheduler.reset();
+    LogUtils.reset();
   });
 
   const Text = (props) => {
-    Scheduler.unstable_yieldValue(props.text);
+    LogUtils.injectValue(props.text);
     return <p>{props.text}</p>;
   }
 
@@ -80,17 +79,17 @@ describe('useState Hook Test', () => {
     }
     HorizonDOM.render(<App />, container);
     expect(container.querySelector('p').innerHTML).toBe('0');
-    expect(Scheduler).toHaveYielded([0]);
+    expect(LogUtils).toMatchValue([0]);
     // useState修改state 时，设置相同的值，函数组件不会重新渲染
     setNum(0);
-    expect(Scheduler).toHaveYielded([]);
+    expect(LogUtils).toMatchValue([]);
     expect(container.querySelector('p').innerHTML).toBe('0');
   });
 
   it('useState的惰性初始化', () => {
     const App = forwardRef((props, ref) => {
       const [num, setNum] = useState(() => {
-        Scheduler.unstable_yieldValue(props.initNum);
+        LogUtils.injectValue(props.initNum);
         return props.initNum
       });
       useImperativeHandle(ref, () => ({ setNum }))
@@ -99,12 +98,12 @@ describe('useState Hook Test', () => {
     })
     const ref = React.createRef(null);
     HorizonDOM.render(<App initNum={1} ref={ref} />, container);
-    expect(Scheduler).toHaveYielded([1]);
+    expect(LogUtils).toMatchValue([1]);
     expect(container.querySelector('p').innerHTML).toBe('1');
     // 设置num为3
     ref.current.setNum(3);
     // 初始化函数只在初始渲染时被调用,所以Scheduler里的dataArray清空后没有新增。
-    expect(Scheduler).toHaveYielded([]);
+    expect(LogUtils).toMatchValue([]);
     expect(container.querySelector('p').innerHTML).toBe('3');
   });
 
@@ -116,15 +115,15 @@ describe('useState Hook Test', () => {
       return <Text text={num} />;
     })
     HorizonDOM.render(<App />, container);
-    expect(Scheduler).toHaveYielded([0]);
+    expect(LogUtils).toMatchValue([0]);
     expect(container.querySelector('p').innerHTML).toBe('0');
     // 不会重新渲染
     HorizonDOM.render(<App />, container);
-    expect(Scheduler).toHaveYielded([]);
+    expect(LogUtils).toMatchValue([]);
     expect(container.querySelector('p').innerHTML).toBe('0');
     // 会重新渲染
     setNum(1)
-    expect(Scheduler).toHaveYielded([1]);
+    expect(LogUtils).toMatchValue([1]);
     expect(container.querySelector('p').innerHTML).toBe('1');
   });
 });
