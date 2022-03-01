@@ -20,7 +20,7 @@ const getAndClearValue = () => {
 
 const reset = () => {
   if (isWorking) {
-    throw new Error('Cannot reset while already flushing work.');
+    throw new Error('Cannot reset. There is a working task.');
   }
   dataArray = null;
 }
