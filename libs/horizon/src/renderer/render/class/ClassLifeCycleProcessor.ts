@@ -118,15 +118,19 @@ export function callComponentWillUpdate(inst, newProps, newState, nextContext) {
 }
 
 export function callComponentWillReceiveProps(inst, newProps: object, newContext: object) {
-  const oldState = inst.state;
   if (inst.componentWillReceiveProps) {
+    const oldState = inst.state;
     inst.componentWillReceiveProps(newProps, newContext);
+    if (inst.state !== oldState) {
+      changeStateContent.call(inst, UpdateState.Override, inst.state, null);
+    }
   }
   if (inst.UNSAFE_componentWillReceiveProps) {
+    const oldState = inst.state;
     inst.UNSAFE_componentWillReceiveProps(newProps, newContext);
-  }
-  if (inst.state !== oldState) {
-    changeStateContent.call(inst, UpdateState.Override, inst.state, null);
+    if (inst.state !== oldState) {
+      changeStateContent.call(inst, UpdateState.Override, inst.state, null);
+    }
   }
 }
 

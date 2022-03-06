@@ -23,7 +23,6 @@ import {
 import { FlagUtils, DidCapture } from '../vnode/VNodeFlags';
 import { markRef } from './BaseComponent';
 import {
-  createUpdateArray,
   processUpdates,
 } from '../UpdateHandler';
 import { getContextChangeCtx, setContextChangeCtx } from '../ContextSaver';
@@ -47,15 +46,13 @@ function mountInstance(clazz, processing: VNode, nextProps: object) {
   }
 
   // 构造实例
-  callConstructor(processing, clazz, nextProps);
+  const inst = callConstructor(processing, clazz, nextProps);
 
-  const inst = processing.realNode;
   inst.props = nextProps;
   inst.state = processing.state;
   inst.context = getCurrentContext(clazz, processing);
   inst.refs = {};
 
-  createUpdateArray(processing);
   processUpdates(processing, inst, nextProps);
   inst.state = processing.state;
 
@@ -106,7 +103,15 @@ function markLifeCycle(processing: VNode, nextProps: object, shouldUpdate: Boole
 }
 
 // 用于类组件
-export function captureClassComponent(processing: VNode, clazz: any, nextProps: object): VNode | null {
+export function captureRender(processing: VNode): VNode | null {
+  let clazz = processing.type;
+  let nextProps = processing.props;
+  if (processing.isLazyComponent) {
+    nextProps = mergeDefaultProps(clazz, nextProps);
+    if (processing.promiseResolve) { // 该函数被 lazy 组件使用，未加载的组件需要加载组件的真实内容
+      clazz = clazz._load(clazz._content);
+    }
+  }
   const isOldCxtExist = isOldProvider(clazz);
   cacheOldCtx(processing, isOldCxtExist);
 
@@ -123,18 +128,13 @@ export function captureClassComponent(processing: VNode, clazz: any, nextProps: 
     const newContext = getCurrentContext(clazz, processing);
 
     // 子节点抛出异常时，如果本class是个捕获异常的处理节点，这时候oldProps是null，所以需要使用props
-    let oldProps = (processing.flags & DidCapture) === DidCapture ? processing.props : processing.oldProps;
-    if (processing.isLazyComponent) {
-      oldProps = mergeDefaultProps(processing.type, oldProps);
-    }
-    inst.props = oldProps;
+    const oldProps = (processing.flags & DidCapture) === DidCapture ? processing.props : processing.oldProps;
 
     if (oldProps !== processing.props || inst.context !== newContext) {
       // 在已挂载的组件接收新的 props 之前被调用
       callComponentWillReceiveProps(inst, nextProps, newContext);
     }
 
-    inst.state = processing.state;
     processUpdates(processing, inst, nextProps);
 
     // 如果 props, state, context 都没有变化且 isForceUpdate 为 false则不需要更新
@@ -181,13 +181,6 @@ export function captureClassComponent(processing: VNode, clazz: any, nextProps: 
     }
     return onlyUpdateChildVNodes(processing);
   }
-}
-
-export function captureRender(processing: VNode): VNode | null {
-  const clazz = processing.type;
-  const props = processing.props;
-  const nextProps = processing.isLazyComponent ? mergeDefaultProps(clazz, props) : props;
-  return captureClassComponent(processing, clazz, nextProps);
 }
 
 export function bubbleRender(processing: VNode) {

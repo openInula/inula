@@ -18,11 +18,6 @@ export enum UpdateState {
   Error = 'Error',
 }
 
-// 初始化更新数组
-export function createUpdateArray(vNode: VNode): void {
-  vNode.updates = []; // 新产生的update会加入这个数组
-}
-
 // 创建update对象
 export function newUpdate(): Update {
   return {
@@ -35,8 +30,11 @@ export function newUpdate(): Update {
 // 将update对象加入updates
 export function pushUpdate(vNode: VNode, update: Update) {
   const updates = vNode.updates;
-
-  updates?.push(update);
+  if (updates !== null) {
+    updates.push(update);
+  } else {
+    vNode.updates = [update];
+  }
 }
 
 // 根据update获取新的state
@@ -98,12 +96,14 @@ export function processUpdates(vNode: VNode, inst: any, props: any): void {
   const updates: Updates = vNode.updates;
   vNode.isForceUpdate = false;
 
-  const toProcessUpdates = [...updates];
-  updates.length = 0;
-
-  if (toProcessUpdates.length) {
-    calcUpdates(vNode, props, inst, toProcessUpdates);
+  if (updates !== null) {
+    const toProcessUpdates = [...updates];
+    updates.length = 0;
+    if (toProcessUpdates.length) {
+      calcUpdates(vNode, props, inst, toProcessUpdates);
+    }
   }
+
 }
 
 export function pushForceUpdate(vNode: VNode) {

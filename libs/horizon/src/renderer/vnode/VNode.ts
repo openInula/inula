@@ -39,7 +39,6 @@ export class VNode {
   dirtyNodes: Array<VNode> | null = null; // 需要改动的节点数组
   shouldUpdate: boolean = false;
   childShouldUpdate: boolean = false;
-  outerDom: any;
   task: any;
 
   // 使用这个变量来记录修改前的值，用于恢复。
@@ -67,7 +66,7 @@ export class VNode {
 
   belongClassVNode: VNode | null = null; // 记录JSXElement所属class vNode，处理ref的时候使用
 
-  constructor(tag: VNodeTag, props: any, key: null | string, outerDom) {
+  constructor(tag: VNodeTag, props: any, key: null | string, realNode) {
     this.tag = tag; // 对应组件的类型，比如ClassComponent等
     this.key = key;
 
@@ -75,10 +74,9 @@ export class VNode {
 
     switch (tag) {
       case TreeRoot:
-        this.outerDom = outerDom;
+        this.realNode = realNode;
         this.task = null;
         this.toUpdateNodes = new Set<VNode>();
-        this.realNode = null;
         this.updates = null;
         this.stateCallbacks = null;
         this.state = null;
@@ -138,6 +136,7 @@ export class VNode {
         this.stateCallbacks = null;
         this.isLazyComponent = true;
         this.lazyType = null;
+        this.updates = null;
         break;
       case Fragment:
         break;

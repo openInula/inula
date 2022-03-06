@@ -12,7 +12,7 @@ export function bubbleRender(processing: VNode) {
 }
 
 function updateTreeRoot(processing) {
-  setNamespaceCtx(processing, processing.outerDom);
+  setNamespaceCtx(processing, processing.realNode);
 
   const updates = processing.updates;
   throwIfTrue(

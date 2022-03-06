@@ -10,7 +10,7 @@ import {
 } from '../vnode/VNodeTags';
 import { throwIfTrue } from '../utils/throwIfTrue';
 import { captureFunctionComponent } from './FunctionComponent';
-import { captureClassComponent } from './ClassComponent';
+import { captureRender as captureClassComponent } from './ClassComponent';
 import { captureMemoComponent } from './MemoComponent';
 
 export function bubbleRender() { }

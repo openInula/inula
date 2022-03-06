@@ -39,7 +39,7 @@ export type ContextType<T> = {
 export type PortalType = {
   vtype: number;
   key: null | string;
-  outerDom: any;
+  realNode: any;
   children: any;
 };
 
