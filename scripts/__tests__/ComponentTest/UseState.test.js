@@ -79,10 +79,10 @@ describe('useState Hook Test', () => {
     }
     HorizonDOM.render(<App />, container);
     expect(container.querySelector('p').innerHTML).toBe('0');
-    expect(LogUtils).toMatchValue([0]);
+    expect(LogUtils.getAndClear()).toEqual([0]);
     // useState修改state 时，设置相同的值，函数组件不会重新渲染
     setNum(0);
-    expect(LogUtils).toMatchValue([]);
+    expect(LogUtils.getAndClear()).toEqual([]);
     expect(container.querySelector('p').innerHTML).toBe('0');
   });
 
@@ -98,12 +98,12 @@ describe('useState Hook Test', () => {
     })
     const ref = React.createRef(null);
     HorizonDOM.render(<App initNum={1} ref={ref} />, container);
-    expect(LogUtils).toMatchValue([1]);
+    expect(LogUtils.getAndClear()).toEqual([1]);
     expect(container.querySelector('p').innerHTML).toBe('1');
     // 设置num为3
     ref.current.setNum(3);
     // 初始化函数只在初始渲染时被调用,所以Scheduler里的dataArray清空后没有新增。
-    expect(LogUtils).toMatchValue([]);
+    expect(LogUtils.getAndClear()).toEqual([]);
     expect(container.querySelector('p').innerHTML).toBe('3');
   });
 
@@ -115,15 +115,15 @@ describe('useState Hook Test', () => {
       return <Text text={num} />;
     })
     HorizonDOM.render(<App />, container);
-    expect(LogUtils).toMatchValue([0]);
+    expect(LogUtils.getAndClear()).toEqual([0]);
     expect(container.querySelector('p').innerHTML).toBe('0');
     // 不会重新渲染
     HorizonDOM.render(<App />, container);
-    expect(LogUtils).toMatchValue([]);
+    expect(LogUtils.getAndClear()).toEqual([]);
     expect(container.querySelector('p').innerHTML).toBe('0');
     // 会重新渲染
     setNum(1)
-    expect(LogUtils).toMatchValue([1]);
+    expect(LogUtils.getAndClear()).toEqual([1]);
     expect(container.querySelector('p').innerHTML).toBe('1');
   });
 });

@@ -1,6 +1,6 @@
 import * as React from '../../../libs/horizon/src/external/Horizon';
 import * as HorizonDOM from '../../../libs/horizon/src/dom/DOMExternal';
-import { act } from 'react-dom/test-utils';
+import { act } from '../jest/customMatcher';
 
 
 describe('Hook Test', () => {
