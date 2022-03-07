@@ -18,7 +18,7 @@ const getAndClear = () => {
 };
 
 const clear = () => {
-  dataArray = null;
+  dataArray = dataArray ? null : dataArray;
 }
 
 exports.clear = clear;

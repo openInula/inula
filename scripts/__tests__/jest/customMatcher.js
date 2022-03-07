@@ -1,3 +1,6 @@
+import { runAsyncEffects } from '../../../libs/horizon/src/renderer/submit/HookEffectHandler'
+import { syncUpdates } from '../../../libs/horizon/src/renderer/TreeBuilder'
+
 function runAssertion(fn) {
   try {
     fn();
@@ -7,7 +10,7 @@ function runAssertion(fn) {
       message: () => error.message,
     };
   }
-  return {pass: true};
+  return { pass: true };
 }
 
 function toMatchValue(LogUtils, expectedValues) {
@@ -17,6 +20,12 @@ function toMatchValue(LogUtils, expectedValues) {
   });
 }
 
+const act = (fun) => {
+  syncUpdates(fun);
+  runAsyncEffects();
+}
+
 module.exports = {
   toMatchValue,
+  act
 };

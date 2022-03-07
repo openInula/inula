@@ -62,7 +62,7 @@ function callTasks() {
   }
 }
 
-function runAsync(callback, priorityLevel= NormalPriority ) {
+function runAsync(callback, priorityLevel= NormalPriority) {
   let increment;
   switch (priorityLevel) {
     case ImmediatePriority:
