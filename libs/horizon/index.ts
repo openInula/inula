@@ -23,7 +23,7 @@ import {
   createElement,
   cloneElement,
   isValidElement,
-} from './horizon/src/external/Horizon';
+} from './src/external/Horizon';
 
 import {
   render,
@@ -31,7 +31,7 @@ import {
   unstable_batchedUpdates,
   findDOMNode,
   unmountComponentAtNode,
-} from './horizon/src/dom/DOMExternal';
+} from './src/dom/DOMExternal';
 
 const Horizon = {
   Children,
