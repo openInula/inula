@@ -30,7 +30,7 @@ function isValidKey(key) {
 }
 
 function mergeDefault(sourceObj, defaultObj) {
-  Object.keys(defaultObj).forEach((key) => {
+  Object.keys(defaultObj).forEach(key => {
     if (sourceObj[key] === undefined) {
       sourceObj[key] = defaultObj[key];
     }
@@ -44,10 +44,10 @@ function buildElement(isClone, type, setting, children) {
   const props = isClone ? { ...type.props } : {};
   let vNode = isClone ? type.belongClassVNode : getProcessingClassVNode();
 
-  if (setting != null) {
+  if (setting !== null) {
     const keys = Object.keys(setting);
     const keyLength = keys.length;
-    for(let i = 0; i < keyLength; i++) {
+    for (let i = 0; i < keyLength; i++) {
       const k = keys[i];
       if (isValidKey(k)) {
         props[k] = setting[k];
@@ -81,5 +81,5 @@ export function cloneElement(element, setting, ...children) {
 
 // 检测结构体是否为合法的Element
 export function isValidElement(element) {
-  return !!(element && element.vtype === TYPE_COMMON_ELEMENT);
+  return (element && element.vtype === TYPE_COMMON_ELEMENT);
 }
