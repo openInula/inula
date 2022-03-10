@@ -10,11 +10,14 @@ const uniqueKeyMap = new Map([
   ['Del', 'Delete'],
 ]);
 
+const noop = () => {};
 // 创建普通自定义事件对象实例，和原生事件对应
 export function decorateNativeEvent(customEventName, nativeEvtName, nativeEvent) {
 
   nativeEvent.isDefaultPrevented = () => nativeEvent.defaultPrevented;
   nativeEvent.isPropagationStopped = () => nativeEvent.cancelBubble;
+  // 适配老版本事件api
+  nativeEvent.persist = noop;
 
   // custom事件自定义属性
   nativeEvent.customEventName = customEventName;
