@@ -16,7 +16,7 @@ export function decorateNativeEvent(customEventName, nativeEvtName, nativeEvent)
 
   nativeEvent.isDefaultPrevented = () => nativeEvent.defaultPrevented;
   nativeEvent.isPropagationStopped = () => nativeEvent.cancelBubble;
-  // 适配React16事件api
+  // 适配老版本事件api
   nativeEvent.persist = noop;
 
   // custom事件自定义属性
