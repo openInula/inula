@@ -2,9 +2,6 @@
 module.exports = {
   presets: [
     '@babel/preset-env',
-  ],
-  plugins: [
-    /* eslint-disable-next-line global-require */
-    [require('./dist/index.js')],
-  ],
+    '@babel/preset-typescript'
+  ]
 };
