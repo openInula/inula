@@ -4,7 +4,7 @@ import * as LogUtils from '../jest/logUtils';
 import { act } from '../jest/customMatcher';
 
 describe('useEffect Hook Test', () => {
-  const { useEffect, useLayoutEffect, useState, memo } = React;
+  const { useEffect, useLayoutEffect, useState, memo, forwardRef, useImperativeHandle } = React;
   const { unmountComponentAtNode } = HorizonDOM;
   let container = null;
   beforeEach(() => {
@@ -26,6 +26,30 @@ describe('useEffect Hook Test', () => {
     LogUtils.log(props.text);
     return <p>{props.text}</p>;
   }
+
+  it('act方法', () => {
+    const App = () => {
+      return <Text text={'op'} />;
+    }
+
+    act(() => {
+      HorizonDOM.render(<App />, container, () => {
+        LogUtils.log('num effect');
+      });
+      // 第一次渲染为同步，所以同步执行的可以写在act里做判断
+      expect(LogUtils.getAndClear()).toEqual(['op', 'num effect']);
+      expect(container.textContent).toBe('op');
+    });
+    act(() => {
+      HorizonDOM.render(null, container, () => {
+        LogUtils.log('num effect89');
+      });
+      // 第二次渲染为异步，所以同步执行的不可以写在act里做判断，act里拿到的为空数组
+      expect(LogUtils.getAndClear()).toEqual([]);
+    });
+    expect(LogUtils.getAndClear()).toEqual(['num effect89']);
+    expect(container.textContent).toBe('');
+  });
 
   it('兄弟节点被删除，useEffect依然正常', () => {
     const App = () => {
@@ -123,13 +147,19 @@ describe('useEffect Hook Test', () => {
       HorizonDOM.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
       expect(LogUtils.getAndClear()).toEqual(['num: 0', 'callback effect']);
       expect(container.textContent).toEqual('num: 0');
-      HorizonDOM.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
-      // 执行新的render前，会执行旧render的useEffect，所以会添加'First effect [0]'
-      expect(LogUtils.getAndClear()).toEqual(['First effect [0]', 'num: 1', 'callback effect']);
-      expect(container.textContent).toEqual('num: 1');
     })
-    // 最后在act执行完后会执行新render的useEffect
-    expect(LogUtils.getAndClear()).toEqual(['First effect [1]']);
+    expect(LogUtils.getAndClear()).toEqual(['First effect [0]']);
+    act(() => {
+      HorizonDOM.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
+
+    })
+    // 此时异步执行，act执行完后会执行新render的useEffect
+    expect(LogUtils.getAndClear()).toEqual([
+      'num: 1',
+      'callback effect',
+      'First effect [1]'
+    ]);
+    expect(container.textContent).toEqual('num: 1');
   });
 
   it('混合使用useEffect', () => {
@@ -150,10 +180,16 @@ describe('useEffect Hook Test', () => {
     expect(LogUtils.getAndClear()).toEqual(['First effect [0]', 'Second effect [0]']);
     act(() => {
       HorizonDOM.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
-      expect(LogUtils.getAndClear()).toEqual(['num: 1', 'callback effect']);
-      expect(container.textContent).toEqual('num: 1');
     })
-    expect(LogUtils.getAndClear()).toEqual(['First effect [1]', 'Second effect [1]']);
+    // 第二次render时异步执行，act保证所有效果都已更新，所以先常规记录日志
+    // 然后记录useEffect的日志
+    expect(LogUtils.getAndClear()).toEqual([
+      'num: 1',
+      'callback effect',
+      'First effect [1]',
+      'Second effect [1]'
+    ]);
+    expect(container.textContent).toEqual('num: 1');
   });
 
   it('创建，销毁useEffect', () => {
@@ -202,14 +238,13 @@ describe('useEffect Hook Test', () => {
     act(() => {
       // 此时word改变，num不变
       HorizonDOM.render(<App num={0} word={'React'} />, container, () => LogUtils.log('callback effect'));
-      expect(LogUtils.getAndClear()).toEqual([
-        'num: 0,word: React',
-        'word Layouteffect destroy',
-        'word Layouteffect [React]',
-        'callback effect'
-      ]);
     });
     expect(LogUtils.getAndClear()).toEqual([
+      'num: 0,word: React',
+      'word Layouteffect destroy',
+      'word Layouteffect [React]',
+      'callback effect',
+      // 最后执行异步的
       'word effect destroy',
       'word effect [React]',
     ]);
@@ -217,13 +252,12 @@ describe('useEffect Hook Test', () => {
     act(() => {
       // 此时num和word的所有effect都销毁
       HorizonDOM.render(null, container, () => LogUtils.log('callback effect'));
-      expect(LogUtils.getAndClear()).toEqual([
-        'num Layouteffect destroy',
-        'word Layouteffect destroy',
-        'callback effect'
-      ]);
     });
     expect(LogUtils.getAndClear()).toEqual([
+      'num Layouteffect destroy',
+      'word Layouteffect destroy',
+      'callback effect',
+      // 最后执行异步useEffect
       'num effect destroy',
       'word effect destroy',
     ]);
@@ -254,27 +288,26 @@ describe('useEffect Hook Test', () => {
 
     act(() => {
       HorizonDOM.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
-      expect(LogUtils.getAndClear()).toEqual([
-        'num: 1',
-        'callback effect'
-      ]);
-      expect(container.textContent).toEqual('num: 1');
     });
     expect(LogUtils.getAndClear()).toEqual([
+      'num: 1',
+      'callback effect',
+      // 最后执行异步
       'num effect destroy',
       'num effect [1]',
     ]);
+    expect(container.textContent).toEqual('num: 1');
+    expect(LogUtils.getAndClear()).toEqual([]);
 
     act(() => {
       HorizonDOM.render(null, container, () => LogUtils.log('callback effect'));
-      expect(LogUtils.getAndClear()).toEqual([
-        'callback effect'
-      ]);
-      expect(container.textContent).toEqual('');
     });
     expect(LogUtils.getAndClear()).toEqual([
+      'callback effect',
       'num effect destroy'
     ]);
+    expect(container.textContent).toEqual('');
+    expect(LogUtils.getAndClear()).toEqual([]);
   });
 
   it('销毁依赖空数组的useEffect', () => {
@@ -302,25 +335,24 @@ describe('useEffect Hook Test', () => {
 
     act(() => {
       HorizonDOM.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
-      expect(LogUtils.getAndClear()).toEqual([
-        'num: 1',
-        'callback effect'
-      ]);
-      expect(container.textContent).toEqual('num: 1');
     });
-    // 没有执行useEffect
+    expect(LogUtils.getAndClear()).toEqual([
+      'num: 1',
+      'callback effect'
+      // 依赖空数组，没有执行useEffect
+    ]);
+    expect(container.textContent).toEqual('num: 1');
     expect(LogUtils.getAndClear()).toEqual([]);
 
     act(() => {
       HorizonDOM.render(null, container, () => LogUtils.log('callback effect'));
-      expect(LogUtils.getAndClear()).toEqual([
-        'callback effect'
-      ]);
-      expect(container.textContent).toEqual('');
     });
     expect(LogUtils.getAndClear()).toEqual([
+      'callback effect',
       'num effect destroy'
     ]);
+    expect(container.textContent).toEqual('');
+    expect(LogUtils.getAndClear()).toEqual([]);
   });
 
   it('useEffect里使用useState(1', () => {
@@ -354,11 +386,12 @@ describe('useEffect Hook Test', () => {
 
     act(() => {
       setNum();
-      expect(LogUtils.getAndClear()).toEqual([
-        'num: 1'
-      ]);
     });
-    expect(LogUtils.getAndClear()).toEqual(['num effect [1]']);
+    expect(LogUtils.getAndClear()).toEqual([
+      'num: 1',
+      'num effect [1]'
+    ]);
+    expect(LogUtils.getAndClear()).toEqual([]);
   });
 
   it('useEffect里使用useState(2', () => {
@@ -389,7 +422,7 @@ describe('useEffect Hook Test', () => {
     expect(container.textContent).toEqual('Num: 1');
   });
 
-  it('useEffect与memo一起使用', () => {
+  it('useEffect与memo一起使用(1', () => {
     let setNum;
     const App = memo(() => {
       const [num, _setNum] = useState(0);
@@ -415,28 +448,284 @@ describe('useEffect Hook Test', () => {
     // 不会重新渲染
     act(() => {
       HorizonDOM.render(<App />, container, () => LogUtils.log('callback effect'));
-      expect(LogUtils.getAndClear()).toEqual(['callback effect']);
-      expect(container.textContent).toEqual('0');
     });
+    expect(LogUtils.getAndClear()).toEqual(['callback effect']);
+    expect(container.textContent).toEqual('0');
     expect(LogUtils.getAndClear()).toEqual([]);
 
     // 会重新渲染
     act(() => {
       setNum(1);
-      expect(LogUtils.getAndClear()).toEqual([1]);
-      expect(container.textContent).toEqual('1');
     });
     expect(LogUtils.getAndClear()).toEqual([
+      1,
       'num effect destroy 0',
       'num effect [1]'
     ]);
+    expect(container.textContent).toEqual('1');
+    expect(LogUtils.getAndClear()).toEqual([]);
 
     act(() => {
       HorizonDOM.render(null, container, () => LogUtils.log('callback effect'));
-      expect(LogUtils.getAndClear()).toEqual(['callback effect']);
-      expect(container.textContent).toEqual('');
     });
-    expect(LogUtils.getAndClear()).toEqual(['num effect destroy 1']);
+    expect(LogUtils.getAndClear()).toEqual([
+      'callback effect',
+      'num effect destroy 1'
+    ]);
+    expect(container.textContent).toEqual('');
+    expect(LogUtils.getAndClear()).toEqual([]);
   });
 
+  it('useEffect与memo一起使用(2', () => {
+    const compare = (prevProps, nextProps) => prevProps.num === nextProps.num;
+    const App = memo((props) => {
+      useEffect(() => {
+        LogUtils.log(`num effect [${props.num}]`);
+        return () => {
+          LogUtils.log(`num effect destroy ${props.num}`);
+        };
+      });
+      return <Text text={props.num} />;
+    }, compare)
+    act(() => {
+      HorizonDOM.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
+      expect(LogUtils.getAndClear()).toEqual([
+        0,
+        'callback effect'
+      ]);
+      expect(container.textContent).toEqual('0');
+    });
+    expect(LogUtils.getAndClear()).toEqual(['num effect [0]']);
+
+    // 不会重新渲染
+    act(() => {
+      HorizonDOM.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
+    });
+    expect(LogUtils.getAndClear()).toEqual(['callback effect']);
+    expect(container.textContent).toEqual('0');
+    expect(LogUtils.getAndClear()).toEqual([]);
+
+    // 会重新渲染
+    act(() => {
+      HorizonDOM.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
+    });
+    expect(LogUtils.getAndClear()).toEqual([
+      1,
+      'callback effect',
+      // 执行异步，先清除旧的，再执行新的
+      'num effect destroy 0',
+      'num effect [1]'
+    ]);
+    expect(container.textContent).toEqual('1');
+    expect(LogUtils.getAndClear()).toEqual([]);
+
+    act(() => {
+      HorizonDOM.render(null, container, () => LogUtils.log('callback effect'));
+    });
+    expect(LogUtils.getAndClear()).toEqual(['callback effect', 'num effect destroy 1']);
+    expect(container.textContent).toEqual('');
+    expect(LogUtils.getAndClear()).toEqual([]);
+  });
+
+  it('useEffect处理错误', () => {
+    const App = (props) => {
+      useEffect(() => {
+        LogUtils.log('throw Error');
+        throw new Error('mistake');
+        // eslint-disable-next-line no-unreachable
+        LogUtils.log(`Mount with [${props.num}]`);
+        return () => {
+          LogUtils.log(`Unmount with [${props.num}]`);
+        };
+      });
+      return <Text text={'Number: ' + props.num} />;
+    }
+    act(() => {
+      HorizonDOM.render(<App num={0} />, container, () =>
+        LogUtils.log('Sync effect'),
+      );
+      expect(LogUtils.getAndClear()).toEqual(['Number: 0', 'Sync effect']);
+      expect(container.textContent).toEqual('Number: 0');
+    });
+    // 处理错误，不会向下执行LogUtils.log(`Mount with [${props.num}]`);
+    expect(LogUtils.getAndClear()).toEqual(['throw Error']);
+
+    act(() => {
+      HorizonDOM.render(null, container, () =>
+        LogUtils.log('Sync effect'),
+      );
+    });
+    expect(LogUtils.getAndClear()).toEqual([
+      'Sync effect',
+      // 不会处理卸载部分 LogUtils.log(`Unmount with [${props.num}]`);
+    ]);
+    expect(container.textContent).toEqual('');
+    expect(LogUtils.getAndClear()).toEqual([]);
+  });
+
+  it('卸载useEffect', () => {
+    const App = (props) => {
+      useEffect(() => {
+        LogUtils.log(`num effect [${props.num}]`);
+        return () => {
+          LogUtils.log(`num effect destroy ${props.num}`);
+        };
+      }, []);
+      if (props.num < 0) {
+        useEffect(() => {
+          LogUtils.log(`New num effect [${props.num}]`);
+          return () => {
+            LogUtils.log(`New num effect destroy ${props.num}`);
+          };
+        }, []);
+      }
+      return <Text text={`Number: ${props.num}`} />;
+    }
+
+    act(() => {
+      HorizonDOM.render(<App num={0} />, container, () => LogUtils.log('num effect'));
+      expect(LogUtils.getAndClear()).toEqual(['Number: 0', 'num effect']);
+      expect(container.textContent).toBe('Number: 0');
+    });
+    expect(LogUtils.getAndClear()).toEqual(['num effect [0]']);
+
+    act(() => {
+      HorizonDOM.render(null, container, () => LogUtils.log('num effect'));
+    });
+    expect(LogUtils.getAndClear()).toEqual(['num effect', 'num effect destroy 0']);
+    expect(container.textContent).toBe('');
+    expect(LogUtils.getAndClear()).toEqual([]);
+  });
+
+  it('同步刷新不会导致effect执行', () => {
+    let setNum;
+    const App = () => {
+      const [num, _setNum] = useState(0);
+      setNum = _setNum;
+      useEffect(() => {
+        LogUtils.log(`num effect [${num}]`);
+        _setNum(1);
+      }, []);
+      return <Text text={`Number: ${num}`} />;
+    }
+
+    HorizonDOM.render(<App />, container, () => LogUtils.log('num effect'));
+    expect(LogUtils.getAndClear()).toEqual(['Number: 0', 'num effect']);
+    expect(container.textContent).toBe('Number: 0');
+
+    act(() => {
+      // 模拟同步刷新
+      (function () {
+        setNum(2);
+      })();
+    });
+    expect(LogUtils.getAndClear()).toEqual(['num effect [0]', 'Number: 1']);
+    expect(container.textContent).toBe('Number: 1');
+    expect(LogUtils.getAndClear()).toEqual([]);
+  });
+
+  it('当组件的更新方法在卸载函数中，组件更新不会告警', () => {
+    const App = () => {
+      LogUtils.log('useEffect');
+      const [num, setNum] = useState(0);
+      useEffect(() => {
+        LogUtils.log('effect');
+        return () => {
+          setNum(1);
+          LogUtils.log('effect destroy');
+        };
+      }, []);
+      return num;
+    }
+
+    act(() => {
+      HorizonDOM.render(<App />, container, () => LogUtils.log('num effect'));
+      expect(LogUtils.getAndClear()).toEqual(['useEffect', 'num effect']);
+    });
+    expect(LogUtils.getAndClear()).toEqual(['effect']);
+
+    act(() => {
+      HorizonDOM.render(null, container);
+    });
+    // 不会处理setNum(1)
+    expect(LogUtils.getAndClear()).toEqual(['effect destroy']);
+  });
+
+  it('当组件的更新方法在卸载函数中，组件的子组件更新不会告警', () => {
+const App = () => {
+      LogUtils.log('App');
+      const appRef = React.createRef(null);
+      useEffect(() => {
+        LogUtils.log('App effect');
+        return () => {
+          appRef.current(1);
+          LogUtils.log('App effect destroy');
+        };
+      }, []);
+      return <AppChild ref={appRef} />;
+    }
+
+    let AppChild = (props, ref) => {
+      LogUtils.log('AppChild')
+      const [num, setNum] = useState(0);
+      useEffect(() => {
+        LogUtils.log('Child effect');
+        ref.current = setNum;
+      }, []);
+      return num;
+    }
+    AppChild = forwardRef(AppChild);
+
+    act(() => {
+      HorizonDOM.render(<App />, container, () => LogUtils.log('num effect'));
+      expect(LogUtils.getAndClear()).toEqual([
+        'App', 
+        'AppChild',
+        'num effect'
+      ]);
+    });
+    expect(LogUtils.getAndClear()).toEqual(['Child effect','App effect']);
+
+    act(() => {
+      HorizonDOM.render(null, container);
+    });
+    // 销毁时执行appRef.current(1)不会报错
+    expect(LogUtils.getAndClear()).toEqual(['App effect destroy']);
+  });
+
+  it('当组件的更新方法在卸载函数中，组件的父组件更新不会告警', () => {
+    const App = () => {
+      LogUtils.log('App');
+      const [num, setNum] = useState(0);
+      return <AppChild num={num} setNum={setNum} />;
+    }
+
+    let AppChild = (props) => {
+      LogUtils.log('AppChild')
+      useEffect(() => {
+        LogUtils.log('Child effect');
+        return () => {
+          LogUtils.log('Child effect destroy');
+          props.setNum(1);
+        };
+      }, []);
+      return props.num;
+    }
+
+    act(() => {
+      HorizonDOM.render(<App />, container, () => LogUtils.log('num effect'));
+      expect(LogUtils.getAndClear()).toEqual([
+        'App', 
+        'AppChild',
+        'num effect'
+      ]);
+    });
+    expect(LogUtils.getAndClear()).toEqual(['Child effect']);
+
+    act(() => {
+      HorizonDOM.render(null, container);
+    });
+    // 销毁时执行 props.setNum(1);不会报错
+    expect(LogUtils.getAndClear()).toEqual(['Child effect destroy']);
+  });
 })

@@ -1,6 +1,7 @@
 import * as React from '../../../libs/horizon/src/external/Horizon';
 import * as HorizonDOM from '../../../libs/horizon/src/dom/DOMExternal';
 import * as LogUtils from '../jest/logUtils';
+import { act } from '../jest/customMatcher';
 
 describe('useState Hook Test', () => {
   const { useState, forwardRef, useImperativeHandle, memo } = React;
@@ -125,5 +126,46 @@ describe('useState Hook Test', () => {
     setNum(1)
     expect(LogUtils.getAndClear()).toEqual([1]);
     expect(container.querySelector('p').innerHTML).toBe('1');
+  });
+
+  it('卸载useState', () => {
+    let updateA;
+    let updateB;
+    let updateC;
+
+    const App = (props) => {
+      const [A, _updateA] = useState(0);
+      const [B, _updateB] = useState(0);
+      updateA = _updateA;
+      updateB = _updateB;
+
+      let C;
+      if (props.loadC) {
+        const [_C, _updateC] = useState(0);
+        C = _C;
+        updateC = _updateC;
+      } else {
+        C = '[not loaded]';
+      }
+
+      return <Text text={`A: ${A}, B: ${B}, C: ${C}`} />;
+    }
+
+    HorizonDOM.render(<App loadC={true} />, container);
+    expect(LogUtils.getAndClear()).toEqual(['A: 0, B: 0, C: 0']);
+    expect(container.textContent).toBe('A: 0, B: 0, C: 0');
+    act(() => {
+      updateA(2);
+      updateB(3);
+      updateC(4);
+    });
+    expect(LogUtils.getAndClear()).toEqual(['A: 2, B: 3, C: 4']);
+    expect(container.textContent).toBe('A: 2, B: 3, C: 4');
+
+    expect(() => {
+      HorizonDOM.render(<App loadC={false} />, container);
+    }).toThrow(
+      'Hooks are less than expected, please check whether the hook is written in the condition.',
+    );
   });
 });
