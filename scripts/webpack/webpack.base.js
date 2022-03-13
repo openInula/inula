@@ -1,7 +1,6 @@
-'use strict';
 const path = require('path');
 
-const libPath = path.join(__dirname, '../../libs');
+const libPath = path.join(__dirname, '../../libs/horizon');
 const baseConfig = {
   entry: path.resolve(libPath, 'index.ts'),
   module: {
@@ -10,7 +9,7 @@ const baseConfig = {
         test: /\.(js)|ts$/,
         exclude: /node_modules/,
         use: [
-          { 
+          {
             loader: 'babel-loader'
           }
         ]
