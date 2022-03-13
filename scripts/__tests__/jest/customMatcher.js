@@ -1,7 +1,6 @@
-import { runAsyncEffects, callUseEffects } from '../../../libs/horizon/src/renderer/submit/HookEffectHandler';
+import { runAsyncEffects } from '../../../libs/horizon/src/renderer/submit/HookEffectHandler';
 import { callRenderQueueImmediate } from '../../../libs/horizon/src/renderer/taskExecutor/RenderQueue';
 import { asyncUpdates } from '../../../libs/horizon/src/renderer/TreeBuilder';
-import { runAsync } from '../../../libs/horizon/src/renderer/taskExecutor/TaskExecutor';
 
 function runAssertion(fn) {
   try {

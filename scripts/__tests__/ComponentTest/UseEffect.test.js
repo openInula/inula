@@ -4,7 +4,7 @@ import * as LogUtils from '../jest/logUtils';
 import { act } from '../jest/customMatcher';
 
 describe('useEffect Hook Test', () => {
-  const { useEffect, useLayoutEffect, useState, memo, forwardRef, useImperativeHandle } = React;
+  const { useEffect, useLayoutEffect, useState, memo, forwardRef } = React;
   const { unmountComponentAtNode } = HorizonDOM;
   let container = null;
   beforeEach(() => {
