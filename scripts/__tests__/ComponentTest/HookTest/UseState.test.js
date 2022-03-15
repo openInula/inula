@@ -1,29 +1,34 @@
-import * as React from '../../../libs/horizon/src/external/Horizon';
-import * as HorizonDOM from '../../../libs/horizon/src/dom/DOMExternal';
-import * as LogUtils from '../jest/logUtils';
+/* eslint-disable no-undef */
+import * as React from '../../../../libs/horizon/src/external/Horizon';
+import * as HorizonDOM from '../../../../libs/horizon/src/dom/DOMExternal';
+import * as LogUtils from '../../jest/logUtils';
+import { act } from '../../jest/customMatcher';
+import Text from '../../jest/Text';
 
 describe('useState Hook Test', () => {
-  const { useState, forwardRef, useImperativeHandle, memo } = React;
-  const { unmountComponentAtNode } = HorizonDOM;
-  let container = null;
-  beforeEach(() => {
-    // 创建一个 DOM 元素作为渲染目标
-    container = document.createElement('div');
-    document.body.appendChild(container);
-  });
+  const {
+    useState,
+    forwardRef,
+    useImperativeHandle,
+    memo
+  } = React;
 
-  afterEach(() => {
-    // 退出时进行清理
-    unmountComponentAtNode(container);
-    container.remove();
-    container = null;
-    LogUtils.clear();
+  it('简单使用useState', () => {
+    const App = () => {
+      const [num, setNum] = useState(0);
+      return (
+        <>
+          <p>{num}</p>
+          <button onClick={() => setNum(num + 1)} />
+        </>
+      )
+    }
+    HorizonDOM.render(<App />, container);
+    expect(container.querySelector('p').innerHTML).toBe('0');
+    // 点击按钮触发num加1
+    container.querySelector('button').click();
+    expect(container.querySelector('p').innerHTML).toBe('1');
   });
-
-  const Text = (props) => {
-    LogUtils.log(props.text);
-    return <p>{props.text}</p>;
-  }
 
   it('多个useState', () => {
     const App = () => {
@@ -125,5 +130,43 @@ describe('useState Hook Test', () => {
     setNum(1)
     expect(LogUtils.getAndClear()).toEqual([1]);
     expect(container.querySelector('p').innerHTML).toBe('1');
+  });
+
+  it('卸载useState', () => {
+    // let updateA;
+    let setNum;
+    let setCount;
+
+    const App = (props) => {
+      const [num, setNum_1] = useState(0);
+      setNum = setNum_1;
+
+      let count;
+      if (props.hasCount) {
+        const [count_1, setCount_1] = useState(0);
+        count = count_1;
+        setCount = setCount_1;
+      } else {
+        count = 'null';
+      }
+
+      return <Text text={`Number: ${num}, Count: ${count}`} />;
+    }
+
+    HorizonDOM.render(<App hasCount={true} />, container);
+    expect(LogUtils.getAndClear()).toEqual(['Number: 0, Count: 0']);
+    expect(container.textContent).toBe('Number: 0, Count: 0');
+    act(() => {
+      setNum(1);
+      setCount(2);
+    });
+    expect(LogUtils.getAndClear()).toEqual(['Number: 1, Count: 2']);
+    expect(container.textContent).toBe('Number: 1, Count: 2');
+
+    expect(() => {
+      HorizonDOM.render(<App hasCount={false} />, container);
+    }).toThrow(
+      'Hooks are less than expected, please check whether the hook is written in the condition.',
+    );
   });
 });

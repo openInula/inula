@@ -1,5 +1,6 @@
-import { runAsyncEffects } from '../../../libs/horizon/src/renderer/submit/HookEffectHandler'
-import { syncUpdates } from '../../../libs/horizon/src/renderer/TreeBuilder'
+import { runAsyncEffects } from '../../../libs/horizon/src/renderer/submit/HookEffectHandler';
+import { callRenderQueueImmediate } from '../../../libs/horizon/src/renderer/taskExecutor/RenderQueue';
+import { asyncUpdates } from '../../../libs/horizon/src/renderer/TreeBuilder';
 
 function runAssertion(fn) {
   try {
@@ -21,7 +22,8 @@ function toMatchValue(LogUtils, expectedValues) {
 }
 
 const act = (fun) => {
-  syncUpdates(fun);
+  asyncUpdates(fun);
+  callRenderQueueImmediate();
   runAsyncEffects();
 }
 
