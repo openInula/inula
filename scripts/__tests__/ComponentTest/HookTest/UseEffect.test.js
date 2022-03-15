@@ -1,31 +1,34 @@
-import * as React from '../../../libs/horizon/src/external/Horizon';
-import * as HorizonDOM from '../../../libs/horizon/src/dom/DOMExternal';
-import * as LogUtils from '../jest/logUtils';
-import { act } from '../jest/customMatcher';
+/* eslint-disable no-undef */
+import * as React from '../../../../libs/horizon/src/external/Horizon';
+import * as HorizonDOM from '../../../../libs/horizon/src/dom/DOMExternal';
+import * as LogUtils from '../../jest/logUtils';
+import { act } from '../../jest/customMatcher';
+import Text from '../../jest/Text';
 
 describe('useEffect Hook Test', () => {
   const { useEffect, useLayoutEffect, useState, memo, forwardRef } = React;
-  const { unmountComponentAtNode } = HorizonDOM;
-  let container = null;
-  beforeEach(() => {
-    LogUtils.clear();
-    // 创建一个 DOM 元素作为渲染目标
-    container = document.createElement('div');
-    document.body.appendChild(container);
-  });
 
-  afterEach(() => {
-    // 退出时进行清理
-    unmountComponentAtNode(container);
-    container.remove();
-    container = null;
-    LogUtils.clear();
+  it('简单使用useEffect', () => {
+    const App = () => {
+      const [num, setNum] = useState(0);
+      useEffect(() => {
+        document.getElementById('p').style.display = num === 0 ? 'none' : 'inline';
+      });
+      return (
+        <>
+          <p style={{ display: 'block' }} id="p">{num}</p>
+          <button onClick={() => setNum(num + 1)} />
+        </>
+      )
+    }
+    HorizonDOM.render(<App />, container);
+    expect(document.getElementById('p').style.display).toBe('block');
+    // 点击按钮触发num加1
+    container.querySelector('button').click();
+    expect(document.getElementById('p').style.display).toBe('none');
+    container.querySelector('button').click();
+    expect(container.querySelector('p').style.display).toBe('inline');
   });
-
-  const Text = (props) => {
-    LogUtils.log(props.text);
-    return <p>{props.text}</p>;
-  }
 
   it('act方法', () => {
     const App = () => {
@@ -406,8 +409,8 @@ describe('useEffect Hook Test', () => {
       return <Text text={'Num: ' + num} />;
     }
 
-    HorizonDOM.render(<App />, container, () => LogUtils.log('Sync effect'));
-    expect(LogUtils.getAndClear()).toEqual(['Num: 0', 'Sync effect']);
+    HorizonDOM.render(<App />, container, () => LogUtils.log('App callback effect'));
+    expect(LogUtils.getAndClear()).toEqual(['Num: 0', 'App callback effect']);
     expect(container.textContent).toEqual('Num: 0');
     act(() => {
       setNum(2);
@@ -542,9 +545,9 @@ describe('useEffect Hook Test', () => {
     }
     act(() => {
       HorizonDOM.render(<App num={0} />, container, () =>
-        LogUtils.log('Sync effect'),
+        LogUtils.log('App callback effect'),
       );
-      expect(LogUtils.getAndClear()).toEqual(['Number: 0', 'Sync effect']);
+      expect(LogUtils.getAndClear()).toEqual(['Number: 0', 'App callback effect']);
       expect(container.textContent).toEqual('Number: 0');
     });
     // 处理错误，不会向下执行LogUtils.log(`Mount with [${props.num}]`);
@@ -552,11 +555,11 @@ describe('useEffect Hook Test', () => {
 
     act(() => {
       HorizonDOM.render(null, container, () =>
-        LogUtils.log('Sync effect'),
+        LogUtils.log('App callback effect'),
       );
     });
     expect(LogUtils.getAndClear()).toEqual([
-      'Sync effect',
+      'App callback effect',
       // 不会处理卸载部分 LogUtils.log(`Unmount with [${props.num}]`);
     ]);
     expect(container.textContent).toEqual('');
@@ -652,7 +655,7 @@ describe('useEffect Hook Test', () => {
   });
 
   it('当组件的更新方法在卸载函数中，组件的子组件更新不会告警', () => {
-const App = () => {
+    const App = () => {
       LogUtils.log('App');
       const appRef = React.createRef(null);
       useEffect(() => {
@@ -679,12 +682,12 @@ const App = () => {
     act(() => {
       HorizonDOM.render(<App />, container, () => LogUtils.log('num effect'));
       expect(LogUtils.getAndClear()).toEqual([
-        'App', 
+        'App',
         'AppChild',
         'num effect'
       ]);
     });
-    expect(LogUtils.getAndClear()).toEqual(['Child effect','App effect']);
+    expect(LogUtils.getAndClear()).toEqual(['Child effect', 'App effect']);
 
     act(() => {
       HorizonDOM.render(null, container);
@@ -715,7 +718,7 @@ const App = () => {
     act(() => {
       HorizonDOM.render(<App />, container, () => LogUtils.log('num effect'));
       expect(LogUtils.getAndClear()).toEqual([
-        'App', 
+        'App',
         'AppChild',
         'num effect'
       ]);
