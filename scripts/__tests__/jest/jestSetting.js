@@ -2,7 +2,6 @@ import { unmountComponentAtNode } from '../../../libs/horizon/src/dom/DOMExterna
 import * as LogUtils from '../jest/logUtils';
 
 global.isDev = process.env.NODE_ENV === 'development';
-
 global.container = null;
 global.beforeEach(() => {
   LogUtils.clear();

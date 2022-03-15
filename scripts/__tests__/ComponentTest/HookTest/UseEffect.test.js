@@ -6,7 +6,13 @@ import { act } from '../../jest/customMatcher';
 import Text from '../../jest/Text';
 
 describe('useEffect Hook Test', () => {
-  const { useEffect, useLayoutEffect, useState, memo, forwardRef } = React;
+  const { 
+    useEffect, 
+    useLayoutEffect, 
+    useState, 
+    memo, 
+    forwardRef 
+  } = React;
 
   it('简单使用useEffect', () => {
     const App = () => {

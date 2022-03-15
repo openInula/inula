@@ -2,6 +2,7 @@
 import * as React from '../../../../libs/horizon/src/external/Horizon';
 import * as HorizonDOM from '../../../../libs/horizon/src/dom/DOMExternal';
 import * as LogUtils from '../../jest/logUtils';
+import { act } from '../../jest/customMatcher';
 import Text from '../../jest/Text';
 
 describe('useImperativeHandle Hook Test', () => {
@@ -10,7 +11,8 @@ describe('useImperativeHandle Hook Test', () => {
     useImperativeHandle,
     forwardRef
   } = React;
-
+  const { unmountComponentAtNode } = HorizonDOM;
+  
   it('测试useImperativeHandle', () => {
 
     let App = (props, ref) => {
