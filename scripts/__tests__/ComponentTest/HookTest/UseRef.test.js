@@ -1,0 +1,58 @@
+/* eslint-disable no-undef */
+import * as React from '../../../../libs/horizon/src/external/Horizon';
+import * as HorizonDOM from '../../../../libs/horizon/src/dom/DOMExternal';
+import * as LogUtils from '../../jest/logUtils';
+import Text from '../../jest/Text';
+
+describe('useRef Hook Test', () => {
+  const { useState, useRef } = React;
+
+  it('测试useRef', () => {
+    const App = () => {
+      const [num, setNum] = useState(1);
+      const ref = useRef();
+      if (!ref.current) {
+        ref.current = num;
+      }
+      return (
+        <>
+          <p>{num}</p>
+          <p id="sp">{ref.current}</p>
+          <button onClick={() => setNum(num + 1)} />
+        </>
+      )
+    }
+    HorizonDOM.render(<App />, container);
+    expect(container.querySelector('p').innerHTML).toBe('1');
+    expect(container.querySelector('#sp').innerHTML).toBe('1');
+    // 点击按钮触发num加1,ref不变
+    container.querySelector('button').click();
+    expect(container.querySelector('p').innerHTML).toBe('2');
+    expect(container.querySelector('#sp').innerHTML).toBe('1');
+  });
+
+  it('更新current值时不会re-render', () => {
+    const App = () => {
+      const ref = useRef(1);
+      return (
+        <>
+          <button onClick={() => {
+            ref.current += 1;
+          }}>
+            button
+          </button>
+          <Text text={ref.current} />;
+        </>
+      )
+
+    }
+    HorizonDOM.render(<App />, container);
+    expect(LogUtils.getAndClear()).toEqual([1]);
+    expect(container.querySelector('p').innerHTML).toBe('1');
+    // 点击按钮触发ref.current加1
+    container.querySelector('button').click();
+    // ref.current改变不会触发重新渲染
+    expect(LogUtils.getAndClear()).toEqual([]);
+    expect(container.querySelector('p').innerHTML).toBe('1');
+  });
+});
