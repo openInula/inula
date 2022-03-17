@@ -2,7 +2,13 @@ import type { VNode } from '../Types';
 import { FlagUtils } from '../vnode/VNodeFlags';
 import { TYPE_COMMON_ELEMENT, TYPE_FRAGMENT, TYPE_PORTAL } from '../../external/JSXElementType';
 import { DomText, DomPortal, Fragment, DomComponent } from '../vnode/VNodeTags';
-import {updateVNode, createVNodeFromElement, createFragmentVNode, createPortalVNode, createDomTextVNode} from '../vnode/VNodeCreator';
+import {
+  updateVNode,
+  createVNodeFromElement,
+  createFragmentVNode,
+  createPortalVNode,
+  createDomTextVNode,
+} from '../vnode/VNodeCreator';
 import {
   isSameType,
   getIteratorFn,
@@ -112,7 +118,7 @@ function getNewNode(parentNode: VNode, newChild: any, oldNode: VNode | null) {
     return null;
   }
 
-  let resultNode = null;
+  let resultNode: VNode | null = null;
   switch (newNodeType) {
     case DiffCategory.TEXT_NODE: {
       if (oldNode === null || oldNode.tag !== DomText) {
@@ -172,9 +178,9 @@ function getNewNode(parentNode: VNode, newChild: any, oldNode: VNode | null) {
 }
 
 function transRightChildrenToArray(child) {
-  const rightChildrenArray = [];
+  const rightChildrenArray: VNode[] = [];
 
-  travelChildren(child, (node) => {
+  travelChildren(child, node => {
     rightChildrenArray.push(node);
   });
 
@@ -183,11 +189,11 @@ function transRightChildrenToArray(child) {
 
 function transLeftChildrenToMap(
   startChild: VNode,
-  rightEndVNode: VNode | null
+  rightEndVNode: VNode | null,
 ): Map<string | number, VNode> {
   const leftChildrenMap: Map<string | number, VNode> = new Map();
 
-  travelChildren(startChild, (node) => {
+  travelChildren(startChild, node => {
     leftChildrenMap.set(node.key !== null ? node.key : node.eIndex, node);
   }, node => node === rightEndVNode);
 
@@ -214,25 +220,28 @@ function diffArrayNodesHandler(
   parentNode: VNode,
   firstChild: VNode | null,
   newChildren: Array<any>,
-  isComparing: boolean
+  isComparing: boolean,
 ): VNode | null {
   let resultingFirstChild: VNode | null = null;
 
   let prevNewNode: VNode | null = null;
 
   let oldNode = firstChild;
-  let nextOldNode = null;
+  let nextOldNode: VNode | null = null;
 
   let theLastPosition = 0;
   // 从左边开始的位置
   let leftIdx = 0;
 
-  function appendNode(newNode) {
+  function appendNode(newNode: VNode) {
     if (prevNewNode === null) {
       resultingFirstChild = newNode;
+      newNode.cIndex = 0;
     } else {
       prevNewNode.next = newNode;
+      newNode.cIndex = prevNewNode.cIndex + 1;
     }
+    newNode.path = newNode.parent.path + newNode.cIndex;
     prevNewNode = newNode;
   }
 
@@ -269,15 +278,13 @@ function diffArrayNodesHandler(
 
     theLastPosition = setVNodeAdditionFlag(newNode, theLastPosition, isComparing);
     newNode.eIndex = leftIdx;
-    newNode.cIndex = leftIdx;
-    newNode.path = newNode.parent.path + newNode.cIndex;
     appendNode(newNode);
     oldNode = nextOldNode;
   }
 
   let rightIdx = newChildren.length;
   let rightEndOldNode; // 老节点中最右边匹配的节点引用 abcde --> abfde 则rightEndOldNode = c;
-  let rightNewNode = null; // 最右边匹配的节点引用 abcde --> abfde 则rightNewNode = d;
+  let rightNewNode: VNode | null = null; // 最右边匹配的节点引用 abcde --> abfde 则rightNewNode = d;
   // 从后往前，新资源的位置还没有到最末端，旧的vNode也还没遍历完，则可以考虑从后往前开始
   if (rightIdx > leftIdx && oldNode !== null) {
     const rightRemainingOldChildren = transRightChildrenToArray(oldNode);
@@ -343,11 +350,13 @@ function diffArrayNodesHandler(
 
   // 4. 新节点还有一部分，但是老节点已经没有了
   if (oldNode === null) {
-    
+
     let isDirectAdd = false;
     // TODO: 是否可以扩大至非dom类型节点
     // 如果dom节点在上次添加前没有节点，说明本次添加时，可以直接添加到最后，不需要通过 getSiblingDom 函数找到 before 节点
-    if (parentNode.tag === DomComponent && parentNode.oldProps?.children?.length === 0 && rightIdx - leftIdx === newChildren.length) {
+    if (parentNode.tag === DomComponent &&
+      parentNode.oldProps?.children?.length === 0 &&
+      rightIdx - leftIdx === newChildren.length) {
       isDirectAdd = true;
     }
     for (; leftIdx < rightIdx; leftIdx++) {
@@ -367,7 +376,7 @@ function diffArrayNodesHandler(
 
     if (rightNewNode) {
       appendNode(rightNewNode);
-      setVNodesCIndex(rightNewNode, prevNewNode.cIndex + 1);
+      setVNodesCIndex(rightNewNode.next, prevNewNode.cIndex + 1);
     }
 
     return resultingFirstChild;
@@ -380,7 +389,7 @@ function diffArrayNodesHandler(
   const eIndexes: Array<number> = []; // 记录 eIndex 值
   const result: Array<number> = []; // 记录最长子序列在eIndexes中的 index 值
   const preIndex: Array<number> = []; // 贪心算法在替换的过程中会使得数组不正确，通过记录preIndex找到正确值
-  const reuseNodes = []; // 记录复用的 VNode
+  const reuseNodes: (VNode | null)[] = []; // 记录复用的 VNode
   let i = 0;
   let oldNodeFromMap;
   let last;
@@ -394,7 +403,7 @@ function diffArrayNodesHandler(
       }
 
       if (oldNodeFromMap !== null) {
-        let eIndex = newNode.eIndex;
+        const eIndex = newNode.eIndex;
         eIndexes.push(eIndex);
         last = eIndexes[result[result.length - 1]];
         if (eIndex > last || last === undefined) { // 大的 eIndex直接放在最后
@@ -455,7 +464,7 @@ function diffArrayNodesHandler(
 
   if (rightNewNode) {
     appendNode(rightNewNode);
-    setVNodesCIndex(rightNewNode, prevNewNode.cIndex + 1);
+    setVNodesCIndex(rightNewNode.next, prevNewNode.cIndex + 1);
   }
 
   return resultingFirstChild;
@@ -463,7 +472,7 @@ function diffArrayNodesHandler(
 
 // 设置vNode中的cIndex属性，cIndex是节点在children中的位置
 function setVNodesCIndex(startChild: VNode, startIdx: number) {
-  let node = startChild;
+  let node: VNode | null = startChild;
   let idx = startIdx;
 
   while (node !== null) {
@@ -479,7 +488,7 @@ function diffIteratorNodesHandler(
   parentNode: VNode,
   firstChild: VNode | null,
   newChildrenIterable: Iterable<any>,
-  isComparing: boolean
+  isComparing: boolean,
 ): VNode | null {
   const iteratorFn = getIteratorFn(newChildrenIterable);
   const iteratorObj = iteratorFn.call(newChildrenIterable);
@@ -500,7 +509,7 @@ function diffStringNodeHandler(
   parentNode: VNode,
   newChild: any,
   firstChildVNode: VNode,
-  isComparing: boolean
+  isComparing: boolean,
 ) {
   let newTextNode: VNode | null = null;
 
@@ -530,7 +539,7 @@ function diffObjectNodeHandler(
   firstChild: VNode | null,
   newChild: any,
   firstChildVNode: VNode,
-  isComparing: boolean
+  isComparing: boolean,
 ) {
   let canReuseNode: VNode | null = null;
 
@@ -612,7 +621,7 @@ export function createChildrenByDiff(
   parentNode: VNode,
   firstChild: VNode | null,
   newChild: any,
-  isComparing: boolean
+  isComparing: boolean,
 ): VNode | null {
   const isFragment = isNoKeyFragment(newChild);
   newChild = isFragment ? newChild.props.children : newChild;
