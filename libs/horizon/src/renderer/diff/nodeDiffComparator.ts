@@ -220,7 +220,7 @@ function diffArrayNodesHandler(
   parentNode: VNode,
   firstChild: VNode | null,
   newChildren: Array<any>,
-  isComparing: boolean,
+  isComparing: boolean
 ): VNode | null {
   let resultingFirstChild: VNode | null = null;
 
@@ -488,7 +488,7 @@ function diffIteratorNodesHandler(
   parentNode: VNode,
   firstChild: VNode | null,
   newChildrenIterable: Iterable<any>,
-  isComparing: boolean,
+  isComparing: boolean
 ): VNode | null {
   const iteratorFn = getIteratorFn(newChildrenIterable);
   const iteratorObj = iteratorFn.call(newChildrenIterable);
@@ -509,7 +509,7 @@ function diffStringNodeHandler(
   parentNode: VNode,
   newChild: any,
   firstChildVNode: VNode,
-  isComparing: boolean,
+  isComparing: boolean
 ) {
   let newTextNode: VNode | null = null;
 
@@ -539,7 +539,7 @@ function diffObjectNodeHandler(
   firstChild: VNode | null,
   newChild: any,
   firstChildVNode: VNode,
-  isComparing: boolean,
+  isComparing: boolean
 ) {
   let canReuseNode: VNode | null = null;
 
@@ -621,7 +621,7 @@ export function createChildrenByDiff(
   parentNode: VNode,
   firstChild: VNode | null,
   newChild: any,
-  isComparing: boolean,
+  isComparing: boolean
 ): VNode | null {
   const isFragment = isNoKeyFragment(newChild);
   newChild = isFragment ? newChild.props.children : newChild;
