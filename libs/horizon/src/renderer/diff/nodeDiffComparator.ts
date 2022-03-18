@@ -376,7 +376,7 @@ function diffArrayNodesHandler(
 
     if (rightNewNode) {
       appendNode(rightNewNode);
-      setVNodesCIndex(rightNewNode.next, prevNewNode.cIndex + 1);
+      setVNodesCIndex(rightNewNode.next, rightNewNode.cIndex + 1);
     }
 
     return resultingFirstChild;
@@ -464,14 +464,14 @@ function diffArrayNodesHandler(
 
   if (rightNewNode) {
     appendNode(rightNewNode);
-    setVNodesCIndex(rightNewNode.next, prevNewNode.cIndex + 1);
+    setVNodesCIndex(rightNewNode.next, rightNewNode.cIndex + 1);
   }
 
   return resultingFirstChild;
 }
 
 // 设置vNode中的cIndex属性，cIndex是节点在children中的位置
-function setVNodesCIndex(startChild: VNode, startIdx: number) {
+function setVNodesCIndex(startChild: VNode | null, startIdx: number) {
   let node: VNode | null = startChild;
   let idx = startIdx;
 

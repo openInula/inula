@@ -187,15 +187,12 @@ export function onlyUpdateChildVNodes(processing: VNode): VNode | null {
     return processing.child;
   }
 
-  // 当跳过子树更新时，需要更新子树path
+  // 当跳过子树更新时，父节点path更新时，需要更新所有子树path
   if (processing.child && processing.path !== processing.child.path.slice(0, processing.path.length)) {
-    // 更新子树path
-    const queue: VNode[] = [processing];
-    while (queue.length) {
-      const vNode = queue.shift()!;
+    // bfs更新子树path
+    const queue: VNode[] = [];
 
-      // 忽略processing path重新计算
-      vNode.path = vNode.parent.path + vNode.cIndex;
+    const putChildrenIntoQueue = (vNode: VNode) => {
       const child = vNode.child;
       if (child) {
         queue.push(child);
@@ -205,6 +202,16 @@ export function onlyUpdateChildVNodes(processing: VNode): VNode | null {
           sibling = sibling.next;
         }
       }
+    }
+
+    putChildrenIntoQueue(processing.child);
+
+    while (queue.length) {
+      const vNode = queue.shift()!;
+
+      vNode.path = vNode.parent.path + vNode.cIndex;
+
+      putChildrenIntoQueue(vNode)
     }
   }
   // 子树无需工作
