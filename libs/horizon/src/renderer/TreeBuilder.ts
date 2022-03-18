@@ -196,11 +196,11 @@ export function calcStartUpdateVNode(treeRoot: VNode) {
     }
   }
   // 得到相等的路径
-  let startNodePath = toUpdateNodes[0].path.slice(0, idx);
+  const startNodePath = toUpdateNodes[0].path.slice(0, idx);
 
   let node = treeRoot;
   for (let i = 1; i < startNodePath.length; i++) {
-    let pathIndex = startNodePath[i];
+    const pathIndex = Number(startNodePath[i]);
     node = getChildByIndex(node, pathIndex);
   }
 
@@ -232,7 +232,7 @@ function buildVNodeTree(treeRoot: VNode) {
       }
       parent = parent.parent;
     }
-  
+
     // 当在componentWillUnmount中调用setState，parent可能是null，因为startVNode会被clear
     if (parent !== null) {
       resetNamespaceCtx(parent);

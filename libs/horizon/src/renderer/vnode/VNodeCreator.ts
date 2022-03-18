@@ -25,7 +25,7 @@ import {
   TYPE_SUSPENSE,
 } from '../../external/JSXElementType';
 import { VNode } from './VNode';
-import {JSXElement} from '../Types';
+import { JSXElement } from '../Types';
 
 const typeLazyMap = {
   [TYPE_FORWARD_REF]: ForwardRef,
@@ -187,6 +187,33 @@ export function onlyUpdateChildVNodes(processing: VNode): VNode | null {
     return processing.child;
   }
 
+  // 当跳过子树更新时，父节点path更新时，需要更新所有子树path
+  if (processing.child && processing.path !== processing.child.path.slice(0, processing.path.length)) {
+    // bfs更新子树path
+    const queue: VNode[] = [];
+
+    const putChildrenIntoQueue = (vNode: VNode) => {
+      const child = vNode.child;
+      if (child) {
+        queue.push(child);
+        let sibling = child.next;
+        while (sibling) {
+          queue.push(sibling);
+          sibling = sibling.next;
+        }
+      }
+    }
+
+    putChildrenIntoQueue(processing.child);
+
+    while (queue.length) {
+      const vNode = queue.shift()!;
+
+      vNode.path = vNode.parent.path + vNode.cIndex;
+
+      putChildrenIntoQueue(vNode)
+    }
+  }
   // 子树无需工作
   return null;
 }

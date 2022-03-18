@@ -1,10 +1,5 @@
 module.exports = {
   transform: {
-    '\\.(ts|tsx)$': 'ts-jest',
-  },
-  globals: {
-    'ts-jest': {
-      babelConfig: true,
-    },
-  },
+    '\\.(js|jsx|ts|tsx)$': 'babel-jest',
+  }
 };

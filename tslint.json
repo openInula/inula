@@ -51,7 +51,6 @@
     "prefer-object-spread": true,
     "typeof-compare": true,
     "cyclomatic-complexity": [true, 20],
-    "max-file-line-count": [true, 500],
     "prefer-readonly": true,
     "prefer-const": true,
     "radix": true,
