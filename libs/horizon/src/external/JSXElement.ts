@@ -44,7 +44,7 @@ function buildElement(isClone, type, setting, children) {
   const props = isClone ? { ...type.props } : {};
   let vNode = isClone ? type.belongClassVNode : getProcessingClassVNode();
 
-  if (setting !== null) {
+  if (setting !== null && setting !== undefined) {
     const keys = Object.keys(setting);
     const keyLength = keys.length;
     for (let i = 0; i < keyLength; i++) {
@@ -81,5 +81,5 @@ export function cloneElement(element, setting, ...children) {
 
 // 检测结构体是否为合法的Element
 export function isValidElement(element) {
-  return (element && element.vtype === TYPE_COMMON_ELEMENT);
+  return !!(element && element.vtype === TYPE_COMMON_ELEMENT);
 }
