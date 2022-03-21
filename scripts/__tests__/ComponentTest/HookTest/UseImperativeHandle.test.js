@@ -1,6 +1,4 @@
-/* eslint-disable no-undef */
-import * as React from '../../../../libs/horizon/src/external/Horizon';
-import * as HorizonDOM from '../../../../libs/horizon/src/dom/DOMExternal';
+import * as Horizon from '@cloudsop/horizon/index.ts';
 import * as LogUtils from '../../jest/logUtils';
 import { act } from '../../jest/customMatcher';
 import Text from '../../jest/Text';
@@ -10,9 +8,9 @@ describe('useImperativeHandle Hook Test', () => {
     useState,
     useImperativeHandle,
     forwardRef
-  } = React;
-  const { unmountComponentAtNode } = HorizonDOM;
-  
+  } = Horizon;
+  const { unmountComponentAtNode } = Horizon;
+
   it('测试useImperativeHandle', () => {
 
     let App = (props, ref) => {
@@ -28,9 +26,9 @@ describe('useImperativeHandle Hook Test', () => {
 
     App = forwardRef(App);
     App1 = forwardRef(App1);
-    const counter = React.createRef(null);
-    const counter1 = React.createRef(null);
-    HorizonDOM.render(<App ref={counter} />, container);
+    const counter = Horizon.createRef(null);
+    const counter1 = Horizon.createRef(null);
+    Horizon.render(<App ref={counter} />, container);
     expect(counter.current.num).toBe(0);
     act(() => {
       counter.current.setNum(1);
@@ -40,7 +38,7 @@ describe('useImperativeHandle Hook Test', () => {
     // 清空container
     unmountComponentAtNode(container);
 
-    HorizonDOM.render(<App1 ref={counter1} />, container);
+    Horizon.render(<App1 ref={counter1} />, container);
     expect(counter1.current.num1).toBe(0);
     act(() => {
       counter1.current.setNum1(1);
@@ -64,9 +62,9 @@ describe('useImperativeHandle Hook Test', () => {
 
     App = forwardRef(App);
     App1 = forwardRef(App1);
-    const counter = React.createRef(null);
-    const counter1 = React.createRef(null);
-    HorizonDOM.render(<App ref={counter} />, container);
+    const counter = Horizon.createRef(null);
+    const counter1 = Horizon.createRef(null);
+    Horizon.render(<App ref={counter} />, container);
     expect(LogUtils.getAndClear()).toEqual([0]);
     expect(counter.current.num).toBe(0);
     act(() => {
@@ -78,7 +76,7 @@ describe('useImperativeHandle Hook Test', () => {
     // 清空container
     unmountComponentAtNode(container);
 
-    HorizonDOM.render(<App1 ref={counter1} />, container);
+    Horizon.render(<App1 ref={counter1} />, container);
     expect(LogUtils.getAndClear()).toEqual([0]);
     expect(counter1.current.num1).toBe(0);
     act(() => {

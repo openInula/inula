@@ -1,11 +1,9 @@
-/* eslint-disable no-undef */
-import * as React from '../../../../libs/horizon/src/external/Horizon';
-import * as HorizonDOM from '../../../../libs/horizon/src/dom/DOMExternal';
+import * as Horizon from '@cloudsop/horizon/index.ts';
 import * as LogUtils from '../../jest/logUtils';
 import Text from '../../jest/Text';
 
 describe('useRef Hook Test', () => {
-  const { useState, useRef } = React;
+  const { useState, useRef } = Horizon;
 
   it('测试useRef', () => {
     const App = () => {
@@ -22,7 +20,7 @@ describe('useRef Hook Test', () => {
         </>
       )
     }
-    HorizonDOM.render(<App />, container);
+    Horizon.render(<App />, container);
     expect(container.querySelector('p').innerHTML).toBe('1');
     expect(container.querySelector('#sp').innerHTML).toBe('1');
     // 点击按钮触发num加1,ref不变
@@ -46,7 +44,7 @@ describe('useRef Hook Test', () => {
       )
 
     }
-    HorizonDOM.render(<App />, container);
+    Horizon.render(<App />, container);
     expect(LogUtils.getAndClear()).toEqual([1]);
     expect(container.querySelector('p').innerHTML).toBe('1');
     // 点击按钮触发ref.current加1

@@ -1,6 +1,4 @@
-/* eslint-disable no-undef */
-import * as React from '../../../../libs/horizon/src/external/Horizon';
-import * as HorizonDOM from '../../../../libs/horizon/src/dom/DOMExternal';
+import * as Horizon from '@cloudsop/horizon/index.ts';
 import * as LogUtils from '../../jest/logUtils';
 import { act } from '../../jest/customMatcher';
 import Text from '../../jest/Text';
@@ -10,7 +8,7 @@ describe('useLayoutEffect Hook Test', () => {
     useState,
     useEffect,
     useLayoutEffect
-  } = React;
+  } = Horizon;
 
   it('简单使用useLayoutEffect', () => {
     const App = () => {
@@ -25,7 +23,7 @@ describe('useLayoutEffect Hook Test', () => {
         </>
       )
     }
-    HorizonDOM.render(<App />, container);
+    Horizon.render(<App />, container);
     expect(document.getElementById('p').style.display).toBe('none');
     container.querySelector('button').click();
     expect(container.querySelector('p').style.display).toBe('inline');
@@ -38,7 +36,7 @@ describe('useLayoutEffect Hook Test', () => {
       });
       return <Text text={props.num} />;
     }
-    HorizonDOM.render(<App num={1} />, container, () => LogUtils.log('Sync effect'));
+    Horizon.render(<App num={1} />, container, () => LogUtils.log('Sync effect'));
     expect(LogUtils.getAndClear()).toEqual([
       1,
       // 同步在渲染之后
@@ -47,7 +45,7 @@ describe('useLayoutEffect Hook Test', () => {
     ]);
     expect(container.querySelector('p').innerHTML).toBe('1');
     // 更新
-    HorizonDOM.render(<App num={2} />, container, () => LogUtils.log('Sync effect'));
+    Horizon.render(<App num={2} />, container, () => LogUtils.log('Sync effect'));
     expect(LogUtils.getAndClear()).toEqual([
       2,
       'LayoutEffect',
@@ -74,7 +72,7 @@ describe('useLayoutEffect Hook Test', () => {
     }
 
     act(() => {
-      HorizonDOM.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
+      Horizon.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
       expect(LogUtils.getAndClear()).toEqual([
         'num: 0',
         'num Layouteffect [0]',
@@ -85,7 +83,7 @@ describe('useLayoutEffect Hook Test', () => {
 
     // 更新
     act(() => {
-      HorizonDOM.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
+      Horizon.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
     })
     expect(LogUtils.getAndClear()).toEqual([
       // 异步effect
@@ -103,7 +101,7 @@ describe('useLayoutEffect Hook Test', () => {
     ]);
 
     act(() => {
-      HorizonDOM.render(null, container, () => LogUtils.log('callback effect'));
+      Horizon.render(null, container, () => LogUtils.log('callback effect'));
     })
     expect(LogUtils.getAndClear()).toEqual([
       // 同步Layouteffect销毁
