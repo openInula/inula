@@ -1,4 +1,4 @@
-import * as React from '../../../libs/horizon/src/external/Horizon';
+import * as Horizon from '@cloudsop/horizon/index.ts';
 import * as LogUtils from '../jest/logUtils';
 
 const Text = (props) => {

@@ -1,10 +1,8 @@
-/* eslint-disable no-undef */
-import * as React from '../../../../libs/horizon/src/external/Horizon';
-import * as HorizonDOM from '../../../../libs/horizon/src/dom/DOMExternal';
+import * as Horizon from '@cloudsop/horizon/index.ts';
 
 describe('useReducer Hook Test', () => {
-  const { useReducer } = React;
-  
+  const { useReducer } = Horizon;
+
   it('简单使用useReducer', () => {
     const intlCar = { logo: '', price: 0 };
     let dispatch;
@@ -46,7 +44,7 @@ describe('useReducer Hook Test', () => {
         </div>
       )
     }
-    HorizonDOM.render(<App />, container);
+    Horizon.render(<App />, container);
     expect(container.querySelector('p').innerHTML).toBe('');
     expect(container.querySelector('#senP').innerHTML).toBe('0');
     // 触发bmw

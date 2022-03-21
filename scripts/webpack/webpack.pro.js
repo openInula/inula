@@ -45,11 +45,11 @@ const cjs = {
     ...plugins,
     new CopyWebpackPlugin([
       {
-        from: path.join(__dirname, '../../libs/index.js'),
+        from: path.join(__dirname, '../../libs/horizon/index.js'),
         to: path.join(__dirname, '../../build/horizon/index.js'),
       },
       {
-        from: path.join(__dirname, '../../libs/package.json'),
+        from: path.join(__dirname, '../../libs/horizon/package.json'),
         to: path.join(__dirname, '../../build/horizon/package.json'),
       }
     ])

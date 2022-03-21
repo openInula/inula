@@ -1,9 +1,7 @@
-/* eslint-disable no-undef */
-import * as React from '../../../../libs/horizon/src/external/Horizon';
-import * as HorizonDOM from '../../../../libs/horizon/src/dom/DOMExternal';
+import * as Horizon from '@cloudsop/horizon/index.ts';
 
 describe('useCallback Hook Test', () => {
-  const { useState, useCallback } = React;
+  const { useState, useCallback } = Horizon;
 
   it('测试useCallback', () => {
     const App = (props) => {
@@ -18,7 +16,7 @@ describe('useCallback Hook Test', () => {
         </>
       )
     }
-    HorizonDOM.render(<App text={1} />, container);
+    Horizon.render(<App text={1} />, container);
     expect(container.querySelector('p').innerHTML).toBe('0');
     // 点击按钮触发num加1
     container.querySelector('button').click();
@@ -27,7 +25,7 @@ describe('useCallback Hook Test', () => {
     container.querySelector('button').click();
     expect(container.querySelector('p').innerHTML).toBe('1');
 
-    HorizonDOM.render(<App text={2} />, container);
+    Horizon.render(<App text={2} />, container);
     expect(container.querySelector('p').innerHTML).toBe('1');
     // 依赖项有变化，点击按钮num增加
     container.querySelector('button').click();
