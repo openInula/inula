@@ -29,7 +29,6 @@ module.exports = {
     node: true,
     es6: true,
   },
-
   rules: {
     'accessor-pairs': 'off',
     'brace-style': ['error', '1tbs'],
@@ -42,4 +41,14 @@ module.exports = {
     'no-for-of-loops/no-for-of-loops': 'error',
     'no-function-declare-after-return/no-function-declare-after-return': 'error',
   },
+  overrides: [
+    {
+      files: [
+        'scripts/__tests__/**/*.js'
+      ],
+      globals: {
+        container: true
+      },
+    },
+  ],
 };

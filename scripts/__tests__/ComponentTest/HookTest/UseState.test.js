@@ -1,6 +1,4 @@
-/* eslint-disable no-undef */
-import * as React from '../../../../libs/horizon/src/external/Horizon';
-import * as HorizonDOM from '../../../../libs/horizon/src/dom/DOMExternal';
+import * as Horizon from '@cloudsop/horizon/index.ts';
 import * as LogUtils from '../../jest/logUtils';
 import { act } from '../../jest/customMatcher';
 import Text from '../../jest/Text';
@@ -11,7 +9,7 @@ describe('useState Hook Test', () => {
     forwardRef,
     useImperativeHandle,
     memo
-  } = React;
+  } = Horizon;
 
   it('简单使用useState', () => {
     const App = () => {
@@ -23,7 +21,7 @@ describe('useState Hook Test', () => {
         </>
       )
     }
-    HorizonDOM.render(<App />, container);
+    Horizon.render(<App />, container);
     expect(container.querySelector('p').innerHTML).toBe('0');
     // 点击按钮触发num加1
     container.querySelector('button').click();
@@ -45,7 +43,7 @@ describe('useState Hook Test', () => {
         </p>
       );
     }
-    HorizonDOM.render(<App />, container);
+    Horizon.render(<App />, container);
     expect(container.querySelector('p').innerHTML).toBe('00');
     container.querySelector('p').click();
     expect(container.querySelector('p').innerHTML).toBe('12');
@@ -67,7 +65,7 @@ describe('useState Hook Test', () => {
         </p>
       );
     }
-    HorizonDOM.render(<App />, container);
+    Horizon.render(<App />, container);
     expect(container.querySelector('p').innerHTML).toBe('0');
     container.querySelector('p').click();
     expect(container.querySelector('p').innerHTML).toBe('2');
@@ -82,7 +80,7 @@ describe('useState Hook Test', () => {
       setNum = _setNum;
       return <Text text={num} />;
     }
-    HorizonDOM.render(<App />, container);
+    Horizon.render(<App />, container);
     expect(container.querySelector('p').innerHTML).toBe('0');
     expect(LogUtils.getAndClear()).toEqual([0]);
     // useState修改state 时，设置相同的值，函数组件不会重新渲染
@@ -101,8 +99,8 @@ describe('useState Hook Test', () => {
       return <p>{num}</p>;
 
     })
-    const ref = React.createRef(null);
-    HorizonDOM.render(<App initNum={1} ref={ref} />, container);
+    const ref = Horizon.createRef(null);
+    Horizon.render(<App initNum={1} ref={ref} />, container);
     expect(LogUtils.getAndClear()).toEqual([1]);
     expect(container.querySelector('p').innerHTML).toBe('1');
     // 设置num为3
@@ -119,11 +117,11 @@ describe('useState Hook Test', () => {
       setNum = _setNum;
       return <Text text={num} />;
     })
-    HorizonDOM.render(<App />, container);
+    Horizon.render(<App />, container);
     expect(LogUtils.getAndClear()).toEqual([0]);
     expect(container.querySelector('p').innerHTML).toBe('0');
     // 不会重新渲染
-    HorizonDOM.render(<App />, container);
+    Horizon.render(<App />, container);
     expect(LogUtils.getAndClear()).toEqual([]);
     expect(container.querySelector('p').innerHTML).toBe('0');
     // 会重新渲染
@@ -153,7 +151,7 @@ describe('useState Hook Test', () => {
       return <Text text={`Number: ${num}, Count: ${count}`} />;
     }
 
-    HorizonDOM.render(<App hasCount={true} />, container);
+    Horizon.render(<App hasCount={true} />, container);
     expect(LogUtils.getAndClear()).toEqual(['Number: 0, Count: 0']);
     expect(container.textContent).toBe('Number: 0, Count: 0');
     act(() => {
@@ -164,7 +162,7 @@ describe('useState Hook Test', () => {
     expect(container.textContent).toBe('Number: 1, Count: 2');
 
     expect(() => {
-      HorizonDOM.render(<App hasCount={false} />, container);
+      Horizon.render(<App hasCount={false} />, container);
     }).toThrow(
       'Hooks are less than expected, please check whether the hook is written in the condition.',
     );

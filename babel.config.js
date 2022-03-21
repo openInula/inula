@@ -1,6 +1,6 @@
 module.exports = {
   presets: [
-    '@babel/react', 
+    '@babel/react',
     '@babel/preset-typescript',
     ['@babel/preset-env', { targets: { node: 'current' } }]
   ],
@@ -30,7 +30,10 @@ module.exports = {
     ['@babel/plugin-proposal-private-methods', { 'loose': true }],
     ['@babel/plugin-proposal-private-property-in-object', { 'loose': true }],
     '@babel/plugin-syntax-jsx',
-    '@babel/plugin-transform-react-jsx',
+    ['@babel/plugin-transform-react-jsx', {
+      pragma: 'Horizon.createElement',
+      pragmaFrag: 'Horizon.Fragment'
+    }],
     '@babel/plugin-transform-flow-strip-types',
   ],
 };
