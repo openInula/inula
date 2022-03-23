@@ -165,7 +165,7 @@ function getChildByIndex(vNode: VNode, idx: number) {
 
 // 从多个更新节点中，计算出开始节点。即：找到最近的共同的父辈节点
 export function calcStartUpdateVNode(treeRoot: VNode) {
-  const toUpdateNodes = Array.from(treeRoot.toUpdateNodes);
+  const toUpdateNodes = [...treeRoot.toUpdateNodes];
 
   if (toUpdateNodes.length === 0) {
     return treeRoot;

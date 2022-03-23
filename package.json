@@ -4,6 +4,7 @@
     "libs/*"
   ],
   "scripts": {
+    "lint": "eslint . --ext .ts",
     "build": " webpack --config ./scripts/webpack/webpack.config.js",
     "build-3rdLib": "node ./scripts/gen3rdLib.js",
     "build-3rdLib-dev": "npm run build & node ./scripts/gen3rdLib.js --dev",
