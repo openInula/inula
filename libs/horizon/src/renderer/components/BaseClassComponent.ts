@@ -1,13 +1,13 @@
 /**
  * Component的api setState和forceUpdate在实例生成阶段实现
  */
-
 class Component<P, S, C> {
   props: P;
   context: C;
   state: S | null;
   refs: any;
   forceUpdate: any;
+  isReactComponent: boolean;
 
   constructor(props: P, context: C) {
     this.props = props;

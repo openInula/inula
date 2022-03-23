@@ -8,6 +8,7 @@ import {
   TYPE_PROFILER,
   TYPE_STRICT_MODE,
 } from '../../external/JSXElementType';
+import { markVNodePath } from '../utils/vNodePath';
 
 export function bubbleRender() {}
 
@@ -20,7 +21,7 @@ export function captureMemoComponent(
   const newProps = mergeDefaultProps(Component, processing.props);
 
   if (processing.isCreated) {
-    let newChild = null;
+    let newChild: VNode | null = null;
     const type = Component.type;
     if (type === TYPE_STRICT_MODE || type === TYPE_FRAGMENT || type === TYPE_PROFILER) {
       newChild = createFragmentVNode(null, newProps.children);
@@ -29,7 +30,7 @@ export function captureMemoComponent(
     }
     newChild.parent = processing;
     newChild.ref = processing.ref;
-    newChild.path = newChild.parent.path + newChild.cIndex;
+    markVNodePath(newChild);
     processing.child = newChild;
 
     return newChild;
@@ -48,7 +49,7 @@ export function captureMemoComponent(
   const newChild = updateVNode(firstChild, newProps);
   newChild.parent = processing;
   newChild.cIndex = 0;
-  newChild.path = newChild.parent.path + newChild.cIndex;
+  markVNodePath(newChild);
   newChild.ref = processing.ref;
   processing.child = newChild;
 

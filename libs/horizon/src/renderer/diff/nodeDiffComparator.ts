@@ -17,6 +17,7 @@ import {
   isObjectType,
 } from './DiffTools';
 import { travelChildren } from '../vnode/VNodeUtils';
+import { markVNodePath } from '../utils/vNodePath';
 
 enum DiffCategory {
   TEXT_NODE = 'TEXT_NODE',
@@ -241,7 +242,7 @@ function diffArrayNodesHandler(
       prevNewNode.next = newNode;
       newNode.cIndex = prevNewNode.cIndex + 1;
     }
-    newNode.path = newNode.parent.path + newNode.cIndex;
+    markVNodePath(newNode);
     prevNewNode = newNode;
   }
 
@@ -477,7 +478,7 @@ function setVNodesCIndex(startChild: VNode | null, startIdx: number) {
 
   while (node !== null) {
     node.cIndex = idx;
-    node.path = node.parent.path + node.cIndex;
+    markVNodePath(node);
     node = node.next;
     idx++;
   }
@@ -528,7 +529,7 @@ function diffStringNodeHandler(
   }
   newTextNode.parent = parentNode;
   newTextNode.cIndex = 0;
-  newTextNode.path = newTextNode.parent.path + newTextNode.cIndex;
+  markVNodePath(newTextNode);
 
   return newTextNode;
 }
@@ -606,7 +607,8 @@ function diffObjectNodeHandler(
 
     resultNode.parent = parentNode;
     resultNode.cIndex = 0;
-    resultNode.path = resultNode.parent.path + resultNode.cIndex;
+    markVNodePath(resultNode);
+
     if (startDelVNode) {
       deleteVNodes(parentNode, startDelVNode);
     }
