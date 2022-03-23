@@ -35,6 +35,7 @@ import {
   updateParentsChildShouldUpdate,
   updateShouldUpdateOfTree
 } from './vnode/VNodeShouldUpdate';
+import { getPathArr } from './utils/vNodePath';
 
 // 不可恢复错误
 let unrecoverableErrorDuringBuild: any = null;
@@ -142,11 +143,11 @@ function handleError(root, error): void {
 }
 
 // 判断数组中节点的path的idx元素是否都相等
-function isEqualByIndex(idx: number, nodes: Array<VNode>) {
-  let val = nodes[0].path[idx];
-  for (let i = 1; i < nodes.length; i++) {
-    let node = nodes[i];
-    if (val !== node.path[idx]) {
+function isEqualByIndex(idx: number, pathArrays: string[][]) {
+  const first = pathArrays[0][idx];
+  for (let i = 1; i < pathArrays.length; i++) {
+    const pathArr = pathArrays[i];
+    if (idx >= pathArr.length || first !== pathArr[idx]) {
       return false;
     }
   }
@@ -179,29 +180,19 @@ export function calcStartUpdateVNode(treeRoot: VNode) {
     return treeRoot;
   }
 
-  // 找到路径最短的长度
-  let minPath = toUpdateNodes[0].path.length;
-  for (let i = 1; i < toUpdateNodes.length; i++) {
-    let pathLen = toUpdateNodes[i].path.length;
-    if (pathLen < minPath) {
-      minPath = pathLen;
-    }
-  }
-
+  const pathArrays = toUpdateNodes.map(node => getPathArr(node));
   // 找出开始不相等的idx
-  let idx = 0;
-  for (; idx < minPath; idx++) {
-    if (!isEqualByIndex(idx, toUpdateNodes)) {
-      break;
-    }
+  let commonPathEndIndex = 0;
+  while (isEqualByIndex(commonPathEndIndex, pathArrays)) {
+    commonPathEndIndex++;
   }
   // 得到相等的路径
-  const startNodePath = toUpdateNodes[0].path.slice(0, idx);
+  const startNodePath = pathArrays[0].slice(0, commonPathEndIndex);
 
   let node = treeRoot;
   for (let i = 1; i < startNodePath.length; i++) {
     const pathIndex = Number(startNodePath[i]);
-    node = getChildByIndex(node, pathIndex);
+    node = getChildByIndex(node, pathIndex)!;
   }
 
   return node;
