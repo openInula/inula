@@ -1,5 +1,6 @@
 import { useState } from 'horizon';
 import styles from './VTree.less';
+import Arrow from '../svgs/Arrow';
 
 export interface IData {
   id: string;
@@ -11,22 +12,24 @@ export interface IData {
 type IItem = {
   style: any,
   hasChild: boolean,
-  onExpand: (id: string) => void,
+  onCollapse: (id: string) => void,
+  isCollapsed: boolean,
 } & IData
 
 // TODO: 计算可以展示的最多数量，并且监听显示器高度变化修改数值
 const showNum = 50;
 const divHeight = 21;
+const indentationLength = 20;
 
-function Item({ name, style, userKey, hasChild, onExpand, id, indentation }: IItem) {
+function Item({ name, style, userKey, hasChild, onCollapse, isCollapsed, id, indentation }: IItem) {
   const key = userKey === '' ? '' : ` key = '${userKey}'`;
-  const showIcon = hasChild ? '△' : '';
-  const onClickExpand = () => {
-    onExpand(id);
+  const showIcon = hasChild ? <Arrow director={isCollapsed ? 'right' : 'down'} /> : '';
+  const onClickCollapse = () => {
+    onCollapse(id);
   }
   return (
     <div style={style} className={styles.tree_item}>
-      <div style={{ display: 'inline-block', marginLeft: indentation * 20, width: 10 }} onClick={onClickExpand} >{showIcon}</div>
+      <div style={{marginLeft: indentation* indentationLength}} className={styles.tree_icon} onClick={onClickCollapse} >{showIcon}</div>
       {name + key}
     </div>
   )
@@ -35,7 +38,7 @@ function Item({ name, style, userKey, hasChild, onExpand, id, indentation }: IIt
 function VTree({ data }: { data: IData[] }) {
   const [scrollTop, setScrollTop] = useState(0);
   const [collapseNode, setCollapseNode] = useState(new Set<string>());
-  const changeExpandNode = (id: string) => {
+  const changeCollapseNode = (id: string) => {
     const nodes = new Set<string>();
     collapseNode.forEach(value => {
       nodes.add(value);
@@ -50,7 +53,7 @@ function VTree({ data }: { data: IData[] }) {
   const showList: any[] = [];
 
   let totalHeight = 0;
-  let currentCollapseIndentation: null| number = null;
+  let currentCollapseIndentation: null | number = null;
   data.forEach((item, index) => {
     // 存在未处理完的收起节点
     if (currentCollapseIndentation !== null) {
@@ -63,6 +66,8 @@ function VTree({ data }: { data: IData[] }) {
         currentCollapseIndentation = null;
       }
     }
+    let id = item.id;
+    const isCollapsed = collapseNode.has(id);
     if (totalHeight >= scrollTop && showList.length <= showNum) {
       const nextItem = data[index + 1];
       const hasChild = nextItem ? nextItem.indentation > item.indentation : false;
@@ -71,16 +76,15 @@ function VTree({ data }: { data: IData[] }) {
           key={item.id}
           hasChild={hasChild}
           style={{
-            position: 'absolute',
             transform: `translateY(${totalHeight}px)`,
           }}
-          onExpand={changeExpandNode}
+          onCollapse={changeCollapseNode}
+          isCollapsed={isCollapsed}
           {...item} />
       )
     }
     totalHeight = totalHeight + divHeight;
-    let id = item.id;
-    if (collapseNode.has(id)) {
+    if (isCollapsed) {
       // 该节点需要收起子节点
       currentCollapseIndentation = item.indentation;
     }
@@ -88,6 +92,7 @@ function VTree({ data }: { data: IData[] }) {
 
   const scroll = (event: any) => {
     const scrollTop = event.target.scrollTop;
+    // 顶部留 100px 冗余高度
     setScrollTop(Math.max(scrollTop - 100, 0));
   }
 
