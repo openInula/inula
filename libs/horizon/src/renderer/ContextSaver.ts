@@ -51,7 +51,7 @@ export function recoverParentContext(vNode: VNode) {
 
   while (parent !== null) {
     if (parent.tag === ContextProvider) {
-      parent.context = parent.props.value;
+      setContext(parent, parent.props.value);
     }
     parent = parent.parent;
   }
