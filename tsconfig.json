@@ -34,8 +34,8 @@
     },
     "include": [
       "./libs/**/src/**/*.ts",
-      "libs/index.d.ts"
+      "libs/horizon/index.d.ts"
     ],
     "exclude": ["node_modules", "**/*.spec.ts", "dev"],
-    "types": ["node"], 
+    "types": ["node"]
 }

@@ -11,6 +11,7 @@ import {pushForceUpdate} from '../UpdateHandler';
 import {launchUpdateFromVNode, tryRenderFromRoot} from '../TreeBuilder';
 import {updateShouldUpdateOfTree} from '../vnode/VNodeShouldUpdate';
 import {getContextChangeCtx} from '../ContextSaver';
+import { markVNodePath } from '../utils/vNodePath';
 
 export enum SuspenseChildStatus {
   Init = '',
@@ -44,7 +45,7 @@ function createFallback(processing: VNode, fallbackChildren) {
   fallbackFragment.parent = processing;
   fallbackFragment.eIndex = 1;
   fallbackFragment.cIndex = 1;
-  fallbackFragment.path = fallbackFragment.parent.path + fallbackFragment.cIndex;
+  markVNodePath(fallbackFragment);
   processing.suspenseChildStatus = SuspenseChildStatus.ShowFallback;
 
   return fallbackFragment;
@@ -76,7 +77,7 @@ function createSuspenseChildren(processing: VNode, newChildren) {
 
   childFragment.parent = processing;
   childFragment.cIndex = 0;
-  childFragment.path = childFragment.parent.path + childFragment.cIndex;
+  markVNodePath(childFragment);
   processing.child = childFragment;
   processing.promiseResolve = false;
   return processing.child;
