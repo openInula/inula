@@ -16,24 +16,29 @@ module.exports = {
     extensions: ['.ts', '.tsx', '.js']
   },
   module: {
-    rules: [{
-      test: /\.tsx?$/,
-      exclude: /node_modules/,
-      use: [
-        {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env', 
-            '@babel/preset-typescript',
-            ['@babel/preset-react', {
-              runtime: 'classic',
-              "pragma": "Horizon.createElement",
-              "pragmaFrag": "Horizon.Fragment", 
-            }]],
+    rules: [
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-env',
+                '@babel/preset-typescript',
+                ['@babel/preset-react', {
+                  runtime: 'classic',
+                  "pragma": "Horizon.createElement",
+                  "pragmaFrag": "Horizon.Fragment",
+                }]],
+            }
           }
-        }
-      ]
-    }]
+        ]
+      },
+      {
+        test: /\.less/i,
+        use: ["style-loader", { loader: "css-loader", options: { modules: true } }, 'less-loader'],
+      }]
   },
   externals: {
     'horizon': 'Horizon',

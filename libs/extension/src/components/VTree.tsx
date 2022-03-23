@@ -1,4 +1,5 @@
 import { useState } from 'horizon';
+import styles from './VTree.less';
 
 export interface IData {
   id: string;
@@ -24,7 +25,7 @@ function Item({ name, style, userKey, hasChild, onExpand, id, indentation }: IIt
     onExpand(id);
   }
   return (
-    <div style={style}>
+    <div style={style} className={styles.tree_item}>
       <div style={{ display: 'inline-block', marginLeft: indentation * 20, width: 10 }} onClick={onClickExpand} >{showIcon}</div>
       {name + key}
     </div>
@@ -72,7 +73,6 @@ function VTree({ data }: { data: IData[] }) {
           style={{
             position: 'absolute',
             transform: `translateY(${totalHeight}px)`,
-            width: '100%'
           }}
           onExpand={changeExpandNode}
           {...item} />
@@ -92,7 +92,7 @@ function VTree({ data }: { data: IData[] }) {
   }
 
   return (
-    <div style={{ position: 'absolute', width: '100%', height: '100%', overflowY: 'auto' }} onScroll={scroll}>
+    <div className={styles.tree_container} onScroll={scroll}>
       {showList}
       {/* 确保有足够的高度 */}
       <div style={{ marginTop: totalHeight }} />
