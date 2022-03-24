@@ -11,7 +11,6 @@ import {
   DomPortal,
   TreeRoot,
   DomText,
-  ClsOrFunComponent,
   LazyComponent,
   MemoComponent,
   SuspenseComponent,
@@ -52,13 +51,12 @@ function isClassComponent(comp: Function) {
 
 // 解析懒组件的tag
 export function getLazyVNodeTag(lazyComp: any): string {
-  let vNodeTag = ClsOrFunComponent;
   if (typeof lazyComp === 'function') {
-    vNodeTag = isClassComponent(lazyComp) ? ClassComponent : FunctionComponent;
+    return isClassComponent(lazyComp) ? ClassComponent : FunctionComponent;
   } else if (lazyComp !== undefined && lazyComp !== null && typeLazyMap[lazyComp.vtype]) {
-    vNodeTag = typeLazyMap[lazyComp.vtype];
+    return typeLazyMap[lazyComp.vtype];
   }
-  return vNodeTag;
+  throw Error("Horizon can't resolve the content of lazy ")
 }
 
 // 创建processing
@@ -105,7 +103,7 @@ export function createPortalVNode(portal) {
 }
 
 export function createUndeterminedVNode(type, key, props) {
-  let vNodeTag = ClsOrFunComponent;
+  let vNodeTag = FunctionComponent;
   let isLazy = false;
   const componentType = typeof type;
 

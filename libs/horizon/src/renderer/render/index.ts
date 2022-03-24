@@ -10,7 +10,6 @@ import * as DomPortalRender from './DomPortal';
 import * as TreeRootRender from './TreeRoot';
 import * as DomTextRender from './DomText';
 import * as IncompleteClassComponentRender from './IncompleteClassComponent';
-import * as ClsOrFunComponentRender from './ClsOrFunComponent';
 import * as LazyComponentRender from './LazyComponent';
 import * as MemoComponentRender from './MemoComponent';
 import * as SuspenseComponentRender from './SuspenseComponent';
@@ -27,7 +26,6 @@ import {
   TreeRoot,
   DomText,
   IncompleteClassComponent,
-  ClsOrFunComponent,
   LazyComponent,
   MemoComponent,
   SuspenseComponent,
@@ -49,7 +47,6 @@ export default {
   [TreeRoot]: TreeRootRender,
   [DomText]: DomTextRender,
   [IncompleteClassComponent]: IncompleteClassComponentRender,
-  [ClsOrFunComponent]: ClsOrFunComponentRender,
   [LazyComponent]: LazyComponentRender,
   [MemoComponent]: MemoComponentRender,
   [SuspenseComponent]: SuspenseComponentRender,
