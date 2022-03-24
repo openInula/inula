@@ -1,7 +1,7 @@
 /**
  * 虚拟DOM结构体
  */
-import { TreeRoot, FunctionComponent, ClassComponent, DomPortal, DomText, ContextConsumer, ForwardRef, SuspenseComponent, LazyComponent, ClsOrFunComponent, DomComponent, Fragment, ContextProvider, Profiler, MemoComponent, IncompleteClassComponent } from './VNodeTags';
+import { TreeRoot, FunctionComponent, ClassComponent, DomPortal, DomText, ContextConsumer, ForwardRef, SuspenseComponent, LazyComponent, DomComponent, Fragment, ContextProvider, Profiler, MemoComponent, IncompleteClassComponent } from './VNodeTags';
 import type { VNodeTag } from './VNodeTags';
 import type { RefType, ContextType } from '../Types';
 import type { Hook } from '../hooks/HookType';
@@ -18,8 +18,8 @@ export class VNode {
   parent: VNode | null = null; // 父节点
   child: VNode | null = null; // 子节点
   next: VNode | null = null; // 兄弟节点
-  cIndex: number = 0; // 节点在children数组中的位置
-  eIndex: number = 0; // HorizonElement在jsx中的位置，例如：jsx中的null不会生成vNode，所以eIndex和cIndex不一致
+  cIndex = 0; // 节点在children数组中的位置
+  eIndex = 0; // HorizonElement在jsx中的位置，例如：jsx中的null不会生成vNode，所以eIndex和cIndex不一致
 
   ref: RefType | ((handle: any) => void) | null = null; // 包裹一个函数，submit阶段使用，比如将外部useRef生成的对象赋值到ref上
   oldProps: any = null;
@@ -33,12 +33,12 @@ export class VNode {
 
   state: any; // ClassComponent和TreeRoot的状态
   hooks: Array<Hook<any, any>> | null; // 保存hook
-  suspenseChildStatus: string = ''; // Suspense的Children是否显示
+  suspenseChildStatus = ''; // Suspense的Children是否显示
   depContexts: Array<ContextType<any>> | null; // FunctionComponent和ClassComponent对context的依赖列表
   isDepContextChange: boolean; // context是否变更
   dirtyNodes: Array<VNode> | null = null; // 需要改动的节点数组
-  shouldUpdate: boolean = false;
-  childShouldUpdate: boolean = false;
+  shouldUpdate = false;
+  childShouldUpdate = false;
   task: any;
 
   // 使用这个变量来记录修改前的值，用于恢复。
@@ -51,7 +51,7 @@ export class VNode {
   flags = InitFlag;
   clearChild: VNode | null;
   // one tree相关属性
-  isCreated: boolean = true;
+  isCreated = true;
   oldHooks: Array<Hook<any, any>> | null; // 保存上一次执行的hook
   oldState: any;
   oldRef: RefType | ((handle: any) => void) | null = null;
@@ -61,7 +61,7 @@ export class VNode {
   suspenseDidCapture: boolean; // suspense是否捕获了异常
   promiseResolve: boolean; // suspense的promise是否resolve
 
-  path: string = ''; // 保存从根到本节点的路径
+  path = ''; // 保存从根到本节点的路径
   toUpdateNodes: Set<VNode> | null; // 保存要更新的节点
 
   belongClassVNode: VNode | null = null; // 记录JSXElement所属class vNode，处理ref的时候使用
@@ -84,6 +84,7 @@ export class VNode {
         this.contexts = null;
         break;
       case FunctionComponent:
+        this.realNode = null;
         this.effectList = null;
         this.hooks = null;
         this.depContexts = null;
@@ -99,10 +100,6 @@ export class VNode {
         this.depContexts = null;
         this.isDepContextChange = false;
         this.oldState = null;
-        this.contexts = null;
-        break;
-      case ClsOrFunComponent:
-        this.realNode = null;
         this.contexts = null;
         break;
       case DomPortal:

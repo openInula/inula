@@ -32,6 +32,9 @@ module.exports = {
     es6: true,
   },
   rules: {
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off',
+    'semi': ["error", "always"],
     'accessor-pairs': 'off',
     'brace-style': ['error', '1tbs'],
     'func-style': ['warn', 'declaration', { allowArrowFunctions: true }],

@@ -10,6 +10,6 @@ export function getHookStage() {
   return hookStage;
 }
 
-export function setHookStage(phase: HookStage) {
+export function setHookStage(phase: HookStage | null) {
   hookStage = phase;
 }
