@@ -1,7 +1,7 @@
 import type { VNode } from '../Types';
 import type { Hook } from './HookType';
 
-let processingVNode: VNode = null;
+let processingVNode: VNode | null = null;
 
 // lastTimeHook是上一次执行func时产生的hooks中，与currentHook对应的hook
 let lastTimeHook: Hook<any, any> | null = null;
@@ -13,7 +13,7 @@ export function getProcessingVNode() {
   return processingVNode;
 }
 
-export function setProcessingVNode(vNode: VNode) {
+export function setProcessingVNode(vNode: VNode | null) {
   processingVNode = vNode;
 }
 
@@ -21,11 +21,11 @@ export function getLastTimeHook() {
   return lastTimeHook;
 }
 
-export function setLastTimeHook(hook: Hook<any, any>) {
+export function setLastTimeHook(hook: Hook<any, any> | null) {
   lastTimeHook = hook;
 }
 
-export function setCurrentHook(hook: Hook<any, any>) {
+export function setCurrentHook(hook: Hook<any, any> | null) {
   currentHook = hook;
 }
 

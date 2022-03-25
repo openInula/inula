@@ -6,7 +6,6 @@ export type VNodeTag = string;
 export const TreeRoot = 'TreeRoot'; // tree的根节点，用于存放一些tree级的变量
 export const FunctionComponent = 'FunctionComponent';
 export const ClassComponent = 'ClassComponent';
-export const ClsOrFunComponent = 'ClsOrFunComponent';
 export const DomPortal = 'DomPortal';
 export const DomComponent = 'DomComponent';
 export const DomText = 'DomText';
