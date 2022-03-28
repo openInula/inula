@@ -92,9 +92,11 @@ export function captureSuspenseComponent(processing: VNode) {
   if (showFallback) {
     processing.suspenseDidCapture = false;
     const nextFallbackChildren = nextProps.fallback;
+    debugger
     return createFallback(processing, nextFallbackChildren);
   } else {
     const newChildren = nextProps.children;
+    debugger
     return createSuspenseChildren(processing, newChildren);
   }
 }

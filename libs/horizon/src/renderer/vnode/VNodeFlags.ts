@@ -41,6 +41,7 @@ export class FlagUtils {
     node.flags |= Addition;
   }
   static setAddition(node: VNode) {
+    console.log('set addition', node.flags);
     node.flags = Addition;
   }
 

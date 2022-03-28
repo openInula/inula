@@ -1,7 +1,6 @@
 import type {VNode} from '../Types';
 
 import {mergeDefaultProps} from './LazyComponent';
-import {getOldContext} from '../components/context/CompatibleContext';
 import {resetDepContexts} from '../components/context/Context';
 import {exeFunctionHook} from '../hooks/HookMain';
 import {ForwardRef} from '../vnode/VNodeTags';
@@ -54,11 +53,6 @@ export function captureFunctionComponent(
   nextProps: any,
   shouldUpdate?: boolean
 ) {
-  let context;
-  if (processing.tag !== ForwardRef) {
-    context = getOldContext(processing, funcComp, true);
-  }
-
   resetDepContexts(processing);
 
   const isCanReuse = checkIfCanReuseChildren(processing, shouldUpdate);
@@ -68,7 +62,7 @@ export function captureFunctionComponent(
   const newElements = exeFunctionHook(
     processing.tag === ForwardRef ? funcComp.render : funcComp,
     nextProps,
-    processing.tag === ForwardRef ? processing.ref : context,
+    processing.tag === ForwardRef ? processing.ref : undefined,
     processing,
   );
 
