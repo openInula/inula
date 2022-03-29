@@ -23,14 +23,31 @@ const indentationLength = 20;
 
 function Item({ name, style, userKey, hasChild, onCollapse, isCollapsed, id, indentation }: IItem) {
   const key = userKey === '' ? '' : ` key = '${userKey}'`;
+  const isShowKey = userKey !== '';
   const showIcon = hasChild ? <Arrow director={isCollapsed ? 'right' : 'down'} /> : '';
   const onClickCollapse = () => {
     onCollapse(id);
   }
   return (
-    <div style={style} className={styles.tree_item}>
-      <div style={{marginLeft: indentation* indentationLength}} className={styles.tree_icon} onClick={onClickCollapse} >{showIcon}</div>
-      {name + key}
+    <div style={style} className={styles.treeItem}>
+      <div style={{ marginLeft: indentation * indentationLength }} className={styles.treeIcon} onClick={onClickCollapse} >
+        {showIcon}
+      </div>
+      <span className={styles.componentName} >
+        {name}
+      </span>
+      {isShowKey && (
+        <>
+          <span className={styles.componentKeyName}>
+            {' '}key
+          </span>
+          {'="'}
+          <span className={styles.componentKeyValue}>
+            {userKey}
+          </span>
+          {'"'}
+        </>
+      )}
     </div>
   )
 }
@@ -97,7 +114,7 @@ function VTree({ data }: { data: IData[] }) {
   }
 
   return (
-    <div className={styles.tree_container} onScroll={scroll}>
+    <div className={styles.treeContainer} onScroll={scroll}>
       {showList}
       {/* 确保有足够的高度 */}
       <div style={{ marginTop: totalHeight }} />
