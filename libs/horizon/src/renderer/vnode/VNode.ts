@@ -30,7 +30,7 @@ export class VNode {
   updates: any[] | null; // TreeRoot和ClassComponent使用的更新数组
   stateCallbacks: any[] | null; // 存放存在setState的第二个参数和HorizonDOM.render的第三个参数所在的node数组
   isForceUpdate: boolean; // 是否使用强制更新
-
+  isSuspended = false; // 是否被suspense打断更新
   state: any; // ClassComponent和TreeRoot的状态
   hooks: Array<Hook<any, any>> | null; // 保存hook
   suspenseChildStatus = ''; // Suspense的Children是否显示

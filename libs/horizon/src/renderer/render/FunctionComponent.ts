@@ -1,18 +1,19 @@
-import type {VNode} from '../Types';
+import type { VNode } from '../Types';
 
-import {mergeDefaultProps} from './LazyComponent';
-import {resetDepContexts} from '../components/context/Context';
-import {exeFunctionHook} from '../hooks/HookMain';
-import {ForwardRef} from '../vnode/VNodeTags';
-import {FlagUtils, Update} from '../vnode/VNodeFlags';
-import {getContextChangeCtx} from '../ContextSaver';
-import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
+import { mergeDefaultProps } from './LazyComponent';
+import { resetDepContexts } from '../components/context/Context';
+import { exeFunctionHook } from '../hooks/HookMain';
+import { ForwardRef } from '../vnode/VNodeTags';
+import { FlagUtils, Update } from '../vnode/VNodeFlags';
+import { getContextChangeCtx } from '../ContextSaver';
+import { onlyUpdateChildVNodes } from '../vnode/VNodeCreator';
 import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 
 // 在useState, useReducer的时候，会触发state变化
 let stateChange = false;
 
-export function bubbleRender() {}
+export function bubbleRender() {
+}
 
 // 判断children是否可以复用
 function checkIfCanReuseChildren(processing: VNode, shouldUpdate?: boolean) {
@@ -51,8 +52,14 @@ export function captureFunctionComponent(
   processing: VNode,
   funcComp: any,
   nextProps: any,
-  shouldUpdate?: boolean
+  shouldUpdate?: boolean,
 ) {
+  if (processing.isSuspended) {
+    processing.isCreated = true;
+    processing.isSuspended = false;
+
+    FlagUtils.markAddition(processing);
+  }
   resetDepContexts(processing);
 
   const isCanReuse = checkIfCanReuseChildren(processing, shouldUpdate);
@@ -89,7 +96,7 @@ export function captureRender(processing: VNode, shouldUpdate?: boolean): VNode 
     processing,
     Component,
     resolvedProps,
-    shouldUpdate
+    shouldUpdate,
   );
 }
 
