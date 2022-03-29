@@ -4,6 +4,7 @@ import {FlagUtils, Interrupted} from '../vnode/VNodeFlags';
 import {onlyUpdateChildVNodes, updateVNode, createFragmentVNode} from '../vnode/VNodeCreator';
 import {
   ClassComponent,
+  FunctionComponent,
   IncompleteClassComponent,
   SuspenseComponent,
 } from '../vnode/VNodeTags';
@@ -21,7 +22,7 @@ export enum SuspenseChildStatus {
 
 // 创建fallback子节点
 function createFallback(processing: VNode, fallbackChildren) {
-  const childFragment: VNode = processing.child;
+  const childFragment: VNode = processing.child!;
   let fallbackFragment;
   childFragment.childShouldUpdate = false;
 
@@ -185,6 +186,9 @@ export function handleSuspenseChildThrowError(parent: VNode, processing: VNode, 
         }
       }
 
+      if(processing.tag === FunctionComponent) {
+        processing.isSuspended = true;
+      }
       // 应该抛出promise未完成更新，标志待更新
       processing.shouldUpdate = true;
 
@@ -223,7 +227,6 @@ export function listenToPromise(suspenseVNode: VNode) {
     // 记录已经监听的 promise
     let promiseCache = suspenseVNode.realNode;
     if (promiseCache === null) {
-      // @ts-ignore
       promiseCache = new PossiblyWeakSet();
       suspenseVNode.realNode = new PossiblyWeakSet();
     }

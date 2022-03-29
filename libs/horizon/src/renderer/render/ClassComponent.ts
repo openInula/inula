@@ -3,13 +3,6 @@ import type { VNode } from '../Types';
 import { mergeDefaultProps } from './LazyComponent';
 import { getNewContext, resetDepContexts } from '../components/context/Context';
 import {
-  cacheOldCtx,
-  getOldContext,
-  isOldProvider,
-  resetOldCtx,
-  updateOldContext,
-} from '../components/context/CompatibleContext';
-import {
   callComponentWillMount,
   callComponentWillReceiveProps,
   callComponentWillUpdate,
@@ -25,17 +18,18 @@ import { markRef } from './BaseComponent';
 import {
   processUpdates,
 } from '../UpdateHandler';
-import { getContextChangeCtx, setContextChangeCtx } from '../ContextSaver';
+import { getContextChangeCtx } from '../ContextSaver';
 import { setProcessingClassVNode } from '../GlobalVar';
 import { onlyUpdateChildVNodes } from '../vnode/VNodeCreator';
 import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 
+const emptyContextObj = {};
 // 获取当前节点的context
 export function getCurrentContext(clazz, processing: VNode) {
   const context = clazz.contextType;
   return typeof context === 'object' && context !== null
     ? getNewContext(processing, context)
-    : getOldContext(processing, clazz, true);
+    : emptyContextObj;
 }
 
 // 挂载实例
@@ -112,8 +106,6 @@ export function captureRender(processing: VNode): VNode | null {
       clazz = clazz._load(clazz._content);
     }
   }
-  const isOldCxtExist = isOldProvider(clazz);
-  cacheOldCtx(processing, isOldCxtExist);
 
   resetDepContexts(processing);
 
@@ -170,24 +162,13 @@ export function captureRender(processing: VNode): VNode | null {
 
   // 不复用
   if (shouldUpdate) {
-    // 更新context
-    if (isOldCxtExist) {
-      updateOldContext(processing);
-    }
     return createChildren(clazz, processing);
   } else {
-    if (isOldCxtExist) {
-      setContextChangeCtx(processing, false);
-    }
     return onlyUpdateChildVNodes(processing);
   }
 }
 
-export function bubbleRender(processing: VNode) {
-  if (isOldProvider(processing.type)) {
-    resetOldCtx(processing);
-  }
-}
+export function bubbleRender(processing: VNode) {}
 
 // 用于未完成的类组件
 export function getIncompleteClassComponent(clazz, processing: VNode, nextProps: object): VNode | null {

@@ -1,8 +1,6 @@
 import type { VNode } from '../Types';
 
-import {cacheOldCtx, isOldProvider} from '../components/context/CompatibleContext';
 import {
-  ClassComponent,
   ContextProvider,
   DomComponent,
   DomPortal,
@@ -23,11 +21,6 @@ function handlerContext(processing: VNode) {
     case DomComponent:
       setNamespaceCtx(processing);
       break;
-    case ClassComponent: {
-      const isOldCxtExist = isOldProvider(processing.type);
-      cacheOldCtx(processing, isOldCxtExist);
-      break;
-    }
     case DomPortal:
       setNamespaceCtx(processing, processing.realNode);
       break;

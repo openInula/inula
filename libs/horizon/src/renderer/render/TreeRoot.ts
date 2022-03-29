@@ -2,13 +2,11 @@ import type {VNode} from '../Types';
 import {throwIfTrue} from '../utils/throwIfTrue';
 import {processUpdates} from '../UpdateHandler';
 import {resetNamespaceCtx, setNamespaceCtx} from '../ContextSaver';
-import {resetOldCtx} from '../components/context/CompatibleContext';
 import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
 import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 
 export function bubbleRender(processing: VNode) {
   resetNamespaceCtx(processing);
-  resetOldCtx(processing);
 }
 
 function updateTreeRoot(processing) {

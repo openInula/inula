@@ -3,11 +3,11 @@
  * 在深度遍历过程中，begin阶段会修改一些全局的值，在complete阶段会恢复。
  */
 
-import type {VNode, ContextType} from './Types';
-import type {Container} from '../dom/DOMOperator';
+import type { VNode, ContextType } from './Types';
+import type { Container } from '../dom/DOMOperator';
 
-import {getNSCtx} from '../dom/DOMOperator';
-import {ContextProvider} from './vnode/VNodeTags';
+import { getNSCtx } from '../dom/DOMOperator';
+import { ContextProvider } from './vnode/VNodeTags';
 
 // 保存的是“http://www.w3.org/1999/xhtml”或“http://www.w3.org/2000/svg”，
 // 用于识别是使用document.createElement()还是使用document.createElementNS()创建DOM
@@ -18,16 +18,8 @@ const CTX_CONTEXT = 'CTX_CONTEXT';
 
 // 旧版context API,是否更改。
 const CTX_OLD_CHANGE = 'CTX_OLD_CHANGE';
-// 旧版context API，保存的是的当前组件提供给子组件使用的context。
-const CTX_OLD_CONTEXT = 'CTX_OLD_CONTEXT';
-// 旧版context API，保存的是的上一个提供者提供给后代组件使用的context。
-const CTX_OLD_PREVIOUS_CONTEXT = 'CTX_OLD_PREVIOUS_CONTEXT';
-
-let ctxNamespace: string = '';
-
-let ctxOldContext: Object = {};
-let ctxOldChange: Boolean = false;
-let ctxOldPreviousContext: Object = {};
+let ctxOldChange = false;
+let ctxNamespace = '';
 
 function setContext(vNode: VNode, contextName, value) {
   if (vNode.contexts === null) {
@@ -38,6 +30,7 @@ function setContext(vNode: VNode, contextName, value) {
     vNode.contexts[contextName] = value;
   }
 }
+
 function getContext(vNode: VNode, contextName) {
   if (vNode.contexts !== null) {
     return vNode.contexts[contextName];
@@ -87,44 +80,6 @@ function recoverParentsContextCtx(vNode: VNode) {
   }
 }
 
-// ctxOldContext是 旧context提供者的context
-function setVNodeOldContext(providerVNode: VNode, context: Object) {
-  setContext(providerVNode, CTX_OLD_CONTEXT, context);
-}
-
-function getVNodeOldContext(vNode: VNode) {
-  return getContext(vNode, CTX_OLD_CONTEXT);
-}
-
-function setOldContextCtx(providerVNode: VNode, context: Object) {
-  setVNodeOldContext(providerVNode, context);
-  ctxOldContext = context;
-}
-
-function getOldContextCtx() {
-  return ctxOldContext;
-}
-
-function resetOldContextCtx(vNode: VNode) {
-  ctxOldContext = getVNodeOldContext(vNode);
-}
-
-function setVNodeOldPreviousContext(providerVNode: VNode, context: Object) {
-  setContext(providerVNode, CTX_OLD_PREVIOUS_CONTEXT, context);
-}
-
-function getVNodeOldPreviousContext(vNode: VNode) {
-  return getContext(vNode, CTX_OLD_PREVIOUS_CONTEXT);
-}
-
-function setOldPreviousContextCtx(context: Object) {
-  ctxOldPreviousContext = context;
-}
-
-function getOldPreviousContextCtx() {
-  return ctxOldPreviousContext;
-}
-
 function setContextChangeCtx(providerVNode: VNode, didChange: boolean) {
   setContext(providerVNode, CTX_OLD_CHANGE, didChange);
   ctxOldChange = didChange;
@@ -145,18 +100,9 @@ export {
   setContextCtx,
   resetContextCtx,
   recoverParentsContextCtx,
-  setOldContextCtx,
-  getOldContextCtx,
-  resetOldContextCtx,
   setContextChangeCtx,
   getContextChangeCtx,
   resetContextChangeCtx,
-  setOldPreviousContextCtx,
-  getOldPreviousContextCtx,
-  setVNodeOldContext,
-  getVNodeOldContext,
-  setVNodeOldPreviousContext,
-  getVNodeOldPreviousContext,
 };
 
 
