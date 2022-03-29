@@ -54,11 +54,13 @@ export function captureFunctionComponent(
   nextProps: any,
   shouldUpdate?: boolean,
 ) {
+  // 函数组件内已完成异步动作
   if (processing.isSuspended) {
+    // 由于首次被打断，应仍为首次渲染
     processing.isCreated = true;
-    processing.isSuspended = false;
-
     FlagUtils.markAddition(processing);
+
+    processing.isSuspended = false;
   }
   resetDepContexts(processing);
 
