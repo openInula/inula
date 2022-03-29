@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 
 // 用于 panel 页面开发
 
@@ -12,6 +13,7 @@ module.exports = {
     path: path.join(__dirname, 'dist'),
     filename: '[name].js'
   },
+  devtool: 'source-map',
   resolve: {
     extensions: ['.ts', '.tsx', '.js']
   },
@@ -31,13 +33,23 @@ module.exports = {
                   "pragma": "Horizon.createElement",
                   "pragmaFrag": "Horizon.Fragment",
                 }]],
+              plugins: ['@babel/plugin-proposal-class-properties'],
             }
           }
         ]
       },
       {
         test: /\.less/i,
-        use: ["style-loader", { loader: "css-loader", options: { modules: true } }, 'less-loader'],
+        use: [
+          "style-loader", 
+          { 
+            loader: "css-loader", 
+            options: { 
+              modules: true,
+              
+            } 
+          }, 
+          'less-loader'],
       }]
   },
   externals: {
@@ -55,6 +67,10 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: 'panel.html',
       template: './src/panel/panel.html'
+    }),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': '"development"',
+      isDev: 'true',
     }),
   ],
 };
