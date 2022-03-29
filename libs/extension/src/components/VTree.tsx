@@ -22,7 +22,6 @@ const divHeight = 21;
 const indentationLength = 20;
 
 function Item({ name, style, userKey, hasChild, onCollapse, isCollapsed, id, indentation }: IItem) {
-  const key = userKey === '' ? '' : ` key = '${userKey}'`;
   const isShowKey = userKey !== '';
   const showIcon = hasChild ? <Arrow director={isCollapsed ? 'right' : 'down'} /> : '';
   const onClickCollapse = () => {
