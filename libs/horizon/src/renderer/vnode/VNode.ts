@@ -16,7 +16,6 @@ import {
   ContextProvider,
   Profiler,
   MemoComponent,
-  IncompleteClassComponent,
 } from './VNodeTags';
 import type { VNodeTag } from './VNodeTags';
 import type { RefType, ContextType, SuspenseState } from '../Types';
@@ -157,8 +156,6 @@ export class VNode {
       case ForwardRef:
         break;
       case Profiler:
-        break;
-      case IncompleteClassComponent:
         break;
     }
   }

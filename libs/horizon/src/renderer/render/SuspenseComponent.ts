@@ -6,7 +6,6 @@ import {
   ClassComponent,
   ForwardRef,
   FunctionComponent,
-  IncompleteClassComponent,
   SuspenseComponent,
 } from '../vnode/VNodeTags';
 import {pushForceUpdate} from '../UpdateHandler';
@@ -179,7 +178,7 @@ export function handleSuspenseChildThrowError(parent: VNode, processing: VNode, 
       if (processing.tag === ClassComponent) {
         if (processing.isCreated) {
           // 渲染类组件场景，要标志未完成（否则会触发componentWillUnmount）
-          processing.tag = IncompleteClassComponent;
+          processing.isSuspended = true  ;
         } else {
           // 类组件更新，标记强制更新，否则被memo等优化跳过
           pushForceUpdate(processing);

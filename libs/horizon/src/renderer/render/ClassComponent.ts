@@ -106,6 +106,13 @@ export function captureRender(processing: VNode): VNode | null {
 
   resetDepContexts(processing);
 
+  // suspense打断后，再次render只需初次渲染
+  if (processing.isSuspended) {
+    mountInstance(ctor, processing, nextProps);
+    processing.isSuspended = false;
+    return createChildren(ctor, processing);
+  }
+
   // 通过 shouldUpdate 判断是否要复用 children，该值和props,state,context的变化，shouldComponentUpdate,forceUpdate api的调用结果有关
   let shouldUpdate;
   const inst = processing.realNode;
@@ -166,9 +173,3 @@ export function captureRender(processing: VNode): VNode | null {
 }
 
 export function bubbleRender(processing: VNode) {}
-
-// 用于未完成的类组件
-export function getIncompleteClassComponent(clazz, processing: VNode, nextProps: object): VNode | null {
-  mountInstance(clazz, processing, nextProps);
-  return createChildren(clazz, processing);
-}
