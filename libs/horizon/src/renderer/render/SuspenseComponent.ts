@@ -4,6 +4,7 @@ import {FlagUtils, Interrupted} from '../vnode/VNodeFlags';
 import {onlyUpdateChildVNodes, updateVNode, createFragmentVNode} from '../vnode/VNodeCreator';
 import {
   ClassComponent,
+  ForwardRef,
   FunctionComponent,
   IncompleteClassComponent,
   SuspenseComponent,
@@ -47,7 +48,7 @@ function createFallback(processing: VNode, fallbackChildren) {
   fallbackFragment.eIndex = 1;
   fallbackFragment.cIndex = 1;
   markVNodePath(fallbackFragment);
-  processing.suspenseChildStatus = SuspenseChildStatus.ShowFallback;
+  processing.suspenseState.childStatus = SuspenseChildStatus.ShowFallback;
 
   return fallbackFragment;
 }
@@ -71,7 +72,7 @@ function createSuspenseChildren(processing: VNode, newChildren) {
       processing.dirtyNodes = [oldFallbackFragment];
     }
     // SuspenseComponent 中使用
-    processing.suspenseChildStatus = SuspenseChildStatus.ShowChild;
+    processing.suspenseState.childStatus = SuspenseChildStatus.ShowChild;
   } else {
     childFragment = createFragmentVNode(null, newChildren);
   }
@@ -80,7 +81,7 @@ function createSuspenseChildren(processing: VNode, newChildren) {
   childFragment.cIndex = 0;
   markVNodePath(childFragment);
   processing.child = childFragment;
-  processing.promiseResolve = false;
+  processing.suspenseState.promiseResolved = false;
   return processing.child;
 }
 
@@ -88,10 +89,10 @@ export function captureSuspenseComponent(processing: VNode) {
   const nextProps = processing.props;
 
   // suspense被捕获后需要展示fallback
-  const showFallback = processing.suspenseDidCapture;
+  const showFallback = processing.suspenseState.didCapture;
 
   if (showFallback) {
-    processing.suspenseDidCapture = false;
+    processing.suspenseState.didCapture = false;
     const nextFallbackChildren = nextProps.fallback;
     return createFallback(processing, nextFallbackChildren);
   } else {
@@ -104,12 +105,12 @@ function updateFallback(processing: VNode): Array<VNode> | VNode | null {
   const childFragment: VNode | null= processing.child;
 
   if (childFragment?.childShouldUpdate) {
-    if (processing.promiseResolve) {
+    if (processing.suspenseState.promiseResolved) {
       // promise已完成，展示promise返回的新节点
       return captureSuspenseComponent(processing);
     } else {
       // promise未完成，继续显示fallback，不需要继续刷新子节点
-      const fallbackFragment: VNode = processing.child.next;
+      const fallbackFragment: VNode = processing.child!.next!;
       childFragment.childShouldUpdate = false;
       fallbackFragment.childShouldUpdate = false;
       return null;
@@ -133,7 +134,7 @@ export function captureRender(processing: VNode, shouldUpdate: boolean): Array<V
     !getContextChangeCtx() &&
     !shouldUpdate
   ) {
-    if (processing.suspenseChildStatus === SuspenseChildStatus.ShowFallback) {
+    if (processing.suspenseState.childStatus === SuspenseChildStatus.ShowFallback) {
       // 当显示fallback时，suspense的子组件要更新
       return updateFallback(processing);
     }
@@ -144,8 +145,9 @@ export function captureRender(processing: VNode, shouldUpdate: boolean): Array<V
 }
 
 export function bubbleRender(processing: VNode) {
-  if (processing.suspenseChildStatus === SuspenseChildStatus.ShowFallback
-    || (!processing.isCreated && processing.oldSuspenseChildStatus === SuspenseChildStatus.ShowFallback)
+  const { childStatus, oldChildStatus } = processing.suspenseState;
+  if (childStatus === SuspenseChildStatus.ShowFallback
+    || (!processing.isCreated && oldChildStatus === SuspenseChildStatus.ShowFallback)
   ) {
     FlagUtils.markUpdate(processing);
   }
@@ -154,22 +156,21 @@ export function bubbleRender(processing: VNode) {
 }
 
 function canCapturePromise(vNode: VNode | null): boolean {
-  return vNode?.suspenseChildStatus !== SuspenseChildStatus.ShowFallback && vNode?.props.fallback !== undefined;
+  return vNode?.suspenseState.childStatus !== SuspenseChildStatus.ShowFallback && vNode?.props.fallback !== undefined;
 }
 
 // 处理Suspense子组件抛出的promise
-export function handleSuspenseChildThrowError(parent: VNode, processing: VNode, error: any): boolean {
+export function handleSuspenseChildThrowError(parent: VNode, processing: VNode, promise: PromiseType<any>): boolean {
   let vNode = parent;
 
   // 向上找到最近的不在fallback状态的Suspense，并触发重新渲染
   do {
     if (vNode.tag === SuspenseComponent && canCapturePromise(vNode)) {
-      if (vNode.suspensePromises === null) {
-        vNode.suspensePromises = new Set();
+      if (vNode.suspenseState.promiseSet === null) {
+        vNode.suspenseState.promiseSet = new Set();
       }
-      vNode.suspensePromises.add(error);
+      vNode.suspenseState.promiseSet.add(promise);
 
-      processing.suspenseChildThrow = true;
 
       // 移除生命周期flag 和 中断flag
       FlagUtils.removeLifecycleEffectFlags(processing);
@@ -186,13 +187,13 @@ export function handleSuspenseChildThrowError(parent: VNode, processing: VNode, 
         }
       }
 
-      if(processing.tag === FunctionComponent) {
-        processing.isSuspended = true;
+      if (processing.tag === FunctionComponent || processing.tag === ForwardRef) {
+        processing.isSuspended= true;
       }
       // 应该抛出promise未完成更新，标志待更新
       processing.shouldUpdate = true;
 
-      vNode.suspenseDidCapture = true;
+      vNode.suspenseState.didCapture = true;
       launchUpdateFromVNode(vNode);
 
       return true;
@@ -211,7 +212,7 @@ function resolvePromise(suspenseVNode: VNode, promise: PromiseType<any>) {
   if (promiseCache !== null) {
     promiseCache.delete(promise);
   }
-  suspenseVNode.promiseResolve = true;
+  suspenseVNode.suspenseState.promiseResolved = true;
   const root = updateShouldUpdateOfTree(suspenseVNode);
   if (root !== null) {
     tryRenderFromRoot(root);
@@ -220,9 +221,9 @@ function resolvePromise(suspenseVNode: VNode, promise: PromiseType<any>) {
 
 // 对于每个promise，添加一个侦听器，以便当它resolve时，重新渲染
 export function listenToPromise(suspenseVNode: VNode) {
-  const promises: Set<PromiseType<any>> | null = suspenseVNode.suspensePromises;
+  const promises: Set<PromiseType<any>> | null = suspenseVNode.suspenseState.promiseSet;
   if (promises !== null) {
-    suspenseVNode.suspensePromises = null;
+    suspenseVNode.suspenseState.promiseSet = null;
 
     // 记录已经监听的 promise
     let promiseCache = suspenseVNode.realNode;

@@ -82,7 +82,8 @@ export function clearVNode(vNode: VNode) {
   vNode.hooks = null;
   vNode.props = null;
   vNode.parent = null;
-  vNode.suspensePromises = null;
+  // mark
+  vNode.suspenseState = null;
   vNode.changeList = null;
   vNode.effectList = null;
   vNode.updates = null;

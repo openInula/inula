@@ -399,9 +399,9 @@ function submitUpdate(vNode: VNode): void {
 }
 
 function submitSuspenseComponent(vNode: VNode) {
-  const suspenseChildStatus = vNode.suspenseChildStatus;
-  if (suspenseChildStatus !== SuspenseChildStatus.Init) {
-    hideOrUnhideAllChildren(vNode.child, suspenseChildStatus === SuspenseChildStatus.ShowFallback);
+  const { childStatus } = vNode.suspenseState;
+  if (childStatus !== SuspenseChildStatus.Init) {
+    hideOrUnhideAllChildren(vNode.child, childStatus === SuspenseChildStatus.ShowFallback);
   }
 }
 

@@ -32,8 +32,8 @@ import {
 } from '../vnode/VNodeTags';
 
 export {
-  BaseComponentRender
-}
+  BaseComponentRender,
+};
 
 export default {
   [ClassComponent]: ClassComponentRender,
@@ -50,4 +50,4 @@ export default {
   [LazyComponent]: LazyComponentRender,
   [MemoComponent]: MemoComponentRender,
   [SuspenseComponent]: SuspenseComponentRender,
-}
+};

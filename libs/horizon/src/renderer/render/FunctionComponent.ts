@@ -2,7 +2,7 @@ import type { VNode } from '../Types';
 
 import { mergeDefaultProps } from './LazyComponent';
 import { resetDepContexts } from '../components/context/Context';
-import { exeFunctionHook } from '../hooks/HookMain';
+import { runFunctionWithHooks } from '../hooks/HookMain';
 import { ForwardRef } from '../vnode/VNodeTags';
 import { FlagUtils, Update } from '../vnode/VNodeFlags';
 import { getContextChangeCtx } from '../ContextSaver';
@@ -26,12 +26,6 @@ function checkIfCanReuseChildren(processing: VNode, shouldUpdate?: boolean) {
     // 如果props或者context改变了
     if (oldProps !== newProps || getContextChangeCtx() || processing.isDepContextChange) {
       isCanReuse = false;
-    } else {
-      if (shouldUpdate && processing.suspenseChildThrow) {
-        // 使用完后恢复
-        processing.suspenseChildThrow = false;
-        isCanReuse = false;
-      }
     }
   } else {
     isCanReuse = false;
@@ -68,7 +62,7 @@ export function captureFunctionComponent(
   // 在执行exeFunctionHook前先设置stateChange为false
   setStateChange(false);
 
-  const newElements = exeFunctionHook(
+  const newElements = runFunctionWithHooks(
     processing.tag === ForwardRef ? funcComp.render : funcComp,
     nextProps,
     processing.tag === ForwardRef ? processing.ref : undefined,
