@@ -13,23 +13,45 @@ type IItem = {
   style: any,
   hasChild: boolean,
   onCollapse: (id: string) => void,
+  onClick: (id: string) => void,
   isCollapsed: boolean,
+  isSelect: boolean,
 } & IData
 
 // TODO: 计算可以展示的最多数量，并且监听显示器高度变化修改数值
-const showNum = 50;
-const divHeight = 21;
+const showNum = 70;
+const lineHeight = 18;
 const indentationLength = 20;
 
-function Item({ name, style, userKey, hasChild, onCollapse, isCollapsed, id, indentation }: IItem) {
+function Item(props: IItem) {
+  const { 
+    name, 
+    style, 
+    userKey,
+    hasChild, 
+    onCollapse, 
+    isCollapsed, 
+    id, 
+    indentation,
+    onClick,
+    isSelect,
+  } = props;
   const isShowKey = userKey !== '';
   const showIcon = hasChild ? <Arrow director={isCollapsed ? 'right' : 'down'} /> : '';
-  const onClickCollapse = () => {
+  const handleClickCollapse = () => {
     onCollapse(id);
   }
+  const handleClick = () => {
+    onClick(id);
+  }
+  const itemAttr: any = {style, className: styles.treeItem, onClick: handleClick};
+  if (isSelect) {
+    itemAttr.tabIndex = 0;
+    itemAttr.className = styles.treeItem + ' ' + styles.select
+  }
   return (
-    <div style={style} className={styles.treeItem}>
-      <div style={{ marginLeft: indentation * indentationLength }} className={styles.treeIcon} onClick={onClickCollapse} >
+    <div {...itemAttr}>
+      <div style={{ marginLeft: indentation * indentationLength }} className={styles.treeIcon} onClick={handleClickCollapse} >
         {showIcon}
       </div>
       <span className={styles.componentName} >
@@ -54,6 +76,7 @@ function Item({ name, style, userKey, hasChild, onCollapse, isCollapsed, id, ind
 function VTree({ data }: { data: IData[] }) {
   const [scrollTop, setScrollTop] = useState(0);
   const [collapseNode, setCollapseNode] = useState(new Set<string>());
+  const [selectItem, setSelectItem] = useState();
   const changeCollapseNode = (id: string) => {
     const nodes = new Set<string>();
     collapseNode.forEach(value => {
@@ -65,6 +88,9 @@ function VTree({ data }: { data: IData[] }) {
       nodes.add(id);
     }
     setCollapseNode(nodes);
+  };
+  const handleClickItem = (id: string) => {
+    setSelectItem(id);
   };
   const showList: any[] = [];
 
@@ -89,17 +115,19 @@ function VTree({ data }: { data: IData[] }) {
       const hasChild = nextItem ? nextItem.indentation > item.indentation : false;
       showList.push(
         <Item
-          key={item.id}
+          key={id}
           hasChild={hasChild}
           style={{
             transform: `translateY(${totalHeight}px)`,
           }}
           onCollapse={changeCollapseNode}
+          onClick={handleClickItem}
           isCollapsed={isCollapsed}
+          isSelect={id === selectItem}
           {...item} />
       )
     }
-    totalHeight = totalHeight + divHeight;
+    totalHeight = totalHeight + lineHeight;
     if (isCollapsed) {
       // 该节点需要收起子节点
       currentCollapseIndentation = item.indentation;
