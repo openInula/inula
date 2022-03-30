@@ -1,7 +1,19 @@
 import styles from './Search.less';
 
-export default function Search() {
+interface SearchProps {
+  onChange: (event: any) => void,
+}
+
+export default function Search(props: SearchProps) {
+  const { onChange } = props;
+  const handleChange = (event) => {
+    onChange(event.target.value);
+  }
   return (
-    <input className={styles.search} placeholder={'Search (text or /regex/)'}/>
+    <input
+      onChange={handleChange}
+      className={styles.search}
+      placeholder={'Search (text or /regex/)'}
+    />
   )
 }

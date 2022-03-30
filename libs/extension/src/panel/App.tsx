@@ -9,6 +9,7 @@ import { mockParsedVNodeData, parsedMockState } from '../devtools/mock';
 function App() {
   const [parsedVNodeData, setParsedVNodeData] = useState([]);
   const [componentInfo, setComponentInfo] = useState({name: null, attrs: {}});
+  const [filterValue, setFilterValue] = useState('');
   useEffect(() => {
     if (isDev) {
       setParsedVNodeData(mockParsedVNodeData);
@@ -42,6 +43,11 @@ function App() {
     };
     data.push(item);
   }
+
+  const handleSearchChange = (str: string) => {
+    setFilterValue(str);
+  }
+
   return (
     <div className={styles.app}>
       <div className={styles.left}>
@@ -51,11 +57,11 @@ function App() {
           </div>
           <div className={styles.divider} />
           <div className={styles.search}>
-          <Search />
+          <Search onChange={handleSearchChange}/>
           </div>
         </div>
         <div className={styles.left_bottom}>
-          <VTree data={data} />
+          <VTree data={data} highlightValue={filterValue}/>
         </div>
       </div>
       <div className={styles.right}>

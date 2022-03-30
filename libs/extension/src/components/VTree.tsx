@@ -1,6 +1,7 @@
 import { useState } from 'horizon';
 import styles from './VTree.less';
 import Arrow from '../svgs/Arrow';
+import { createRegExp } from './../utils';
 
 export interface IData {
   id: string;
@@ -16,6 +17,7 @@ type IItem = {
   onClick: (id: string) => void,
   isCollapsed: boolean,
   isSelect: boolean,
+  highlightValue: string,
 } & IData
 
 // TODO: 计算可以展示的最多数量，并且监听显示器高度变化修改数值
@@ -35,6 +37,7 @@ function Item(props: IItem) {
     indentation,
     onClick,
     isSelect,
+    highlightValue,
   } = props;
   const isShowKey = userKey !== '';
   const showIcon = hasChild ? <Arrow director={isCollapsed ? 'right' : 'down'} /> : '';
@@ -49,13 +52,30 @@ function Item(props: IItem) {
     itemAttr.tabIndex = 0;
     itemAttr.className = styles.treeItem + ' ' + styles.select
   }
+  const reg = createRegExp(highlightValue);
+  const heightCharacters = name.match(reg);
+  let showName;
+  if (heightCharacters) {
+    let cutName = name;
+    showName = [];
+    // 高亮第一次匹配即可
+    const char = heightCharacters[0];
+    let index = name.search(char);
+    const notHighlightStr = cutName.slice(0, index);
+    showName.push(notHighlightStr);
+    showName.push(<mark>{char}</mark>);
+    cutName = cutName.slice(index + char.length);
+    showName.push(cutName);
+  } else {
+    showName = name;
+  }
   return (
     <div {...itemAttr}>
       <div style={{ marginLeft: indentation * indentationLength }} className={styles.treeIcon} onClick={handleClickCollapse} >
         {showIcon}
       </div>
       <span className={styles.componentName} >
-        {name}
+        {showName}
       </span>
       {isShowKey && (
         <>
@@ -73,7 +93,7 @@ function Item(props: IItem) {
   )
 }
 
-function VTree({ data }: { data: IData[] }) {
+function VTree({ data, highlightValue }: { data: IData[], highlightValue: string }) {
   const [scrollTop, setScrollTop] = useState(0);
   const [collapseNode, setCollapseNode] = useState(new Set<string>());
   const [selectItem, setSelectItem] = useState();
@@ -124,6 +144,7 @@ function VTree({ data }: { data: IData[] }) {
           onClick={handleClickItem}
           isCollapsed={isCollapsed}
           isSelect={id === selectItem}
+          highlightValue={highlightValue}
           {...item} />
       )
     }
