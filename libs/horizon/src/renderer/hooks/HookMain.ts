@@ -15,17 +15,17 @@ import {
   setProcessingVNode,
   setCurrentHook, getNextHook
 } from './BaseHook';
-import {useStateImpl,} from './UseStateHook';
-import {useReducerImpl,} from './UseReducerHook';
+import {useStateImpl} from './UseStateHook';
+import {useReducerImpl} from './UseReducerHook';
 import {HookStage, setHookStage} from './HookStage';
 
 // hook对外入口
-export function exeFunctionHook(
-  funcComp: (props: Object, arg: Object) => any,
-  props: Object,
-  arg: Object,
+export function exeFunctionHook<Props extends Record<string, any>, Arg>(
+  funcComp: (props: Props, arg: Arg) => any,
+  props: Props,
+  arg: Arg,
   processing: VNode,
-): any {
+) {
   // 重置全局变量
   resetGlobalVariable();
 
@@ -39,13 +39,13 @@ export function exeFunctionHook(
   processing.effectList = [];
 
   // 设置hook阶段
-  if (processing.isCreated || !processing.oldHooks.length) {
+  if (processing.isCreated || !processing.oldHooks!.length) {
     setHookStage(HookStage.Init);
   } else {
     setHookStage(HookStage.Update);
   }
 
-  let comp = funcComp(props, arg);
+  const comp = funcComp(props, arg);
 
   // 设置hook阶段为null，用于判断hook是否在函数组件中调用
   setHookStage(null);

@@ -1,11 +1,9 @@
-/* eslint-disable no-undef */
-import * as React from '../../../../libs/horizon/src/external/Horizon';
-import * as HorizonDOM from '../../../../libs/horizon/src/dom/DOMExternal';
+import * as Horizon from '@cloudsop/horizon/index.ts';
 import * as LogUtils from '../../jest/logUtils';
 import Text from '../../jest/Text';
 
 describe('useMemo Hook Test', () => {
-  const { useMemo, useState } = React;
+  const { useMemo, useState } = Horizon;
 
   it('测试useMemo', () => {
     let setMemo;
@@ -24,7 +22,7 @@ describe('useMemo Hook Test', () => {
         </>
       );
     }
-    HorizonDOM.render(<App words="App" />, container);
+    Horizon.render(<App words="App" />, container);
     expect(container.querySelector('p').innerHTML).toBe('App');
     expect(container.querySelector('#p').innerHTML).toBe('1');
     // 修改useMemo的依赖项，num会加一，text会改变。
@@ -49,26 +47,26 @@ describe('useMemo Hook Test', () => {
       }, [props._num]);
       return <Text text={num} />;
     }
-    HorizonDOM.render(<App _num={0} />, container);
+    Horizon.render(<App _num={0} />, container);
     expect(LogUtils.getAndClear()).toEqual([
       0,
       1
     ]);
     expect(container.textContent).toBe('1');
 
-    HorizonDOM.render(<App _num={1} />, container);
+    Horizon.render(<App _num={1} />, container);
     expect(LogUtils.getAndClear()).toEqual([
       1,
       2
     ]);
     expect(container.textContent).toBe('2');
 
-    HorizonDOM.render(<App _num={1} />, container);
+    Horizon.render(<App _num={1} />, container);
     // 不会触发useMemo
     expect(LogUtils.getAndClear()).toEqual([2]);
     expect(container.textContent).toBe('2');
 
-    HorizonDOM.render(<App _num={2} />, container);
+    Horizon.render(<App _num={2} />, container);
     expect(LogUtils.getAndClear()).toEqual([
       2,
       3
@@ -92,16 +90,16 @@ describe('useMemo Hook Test', () => {
       return 2;
     }
 
-    HorizonDOM.render(<App _num={num1} />, container);
+    Horizon.render(<App _num={num1} />, container);
     expect(LogUtils.getAndClear()).toEqual(['num 1', 1]);
 
-    HorizonDOM.render(<App _num={num1} />, container);
+    Horizon.render(<App _num={num1} />, container);
     expect(LogUtils.getAndClear()).toEqual(['num 1', 1]);
 
-    HorizonDOM.render(<App _num={num1} />, container);
+    Horizon.render(<App _num={num1} />, container);
     expect(LogUtils.getAndClear()).toEqual(['num 1', 1]);
 
-    HorizonDOM.render(<App _num={num2} />, container);
+    Horizon.render(<App _num={num2} />, container);
     expect(LogUtils.getAndClear()).toEqual(['num 2', 2]);
   });
 });

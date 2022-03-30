@@ -11,7 +11,6 @@ import {
   DomPortal,
   TreeRoot,
   DomText,
-  ClsOrFunComponent,
   LazyComponent,
   MemoComponent,
   SuspenseComponent,
@@ -26,6 +25,7 @@ import {
 } from '../../external/JSXElementType';
 import { VNode } from './VNode';
 import { JSXElement } from '../Types';
+import { markVNodePath } from '../utils/vNodePath';
 
 const typeLazyMap = {
   [TYPE_FORWARD_REF]: ForwardRef,
@@ -51,13 +51,12 @@ function isClassComponent(comp: Function) {
 
 // 解析懒组件的tag
 export function getLazyVNodeTag(lazyComp: any): string {
-  let vNodeTag = ClsOrFunComponent;
   if (typeof lazyComp === 'function') {
-    vNodeTag = isClassComponent(lazyComp) ? ClassComponent : FunctionComponent;
+    return isClassComponent(lazyComp) ? ClassComponent : FunctionComponent;
   } else if (lazyComp !== undefined && lazyComp !== null && typeLazyMap[lazyComp.vtype]) {
-    vNodeTag = typeLazyMap[lazyComp.vtype];
+    return typeLazyMap[lazyComp.vtype];
   }
-  return vNodeTag;
+  throw Error('Horizon can\'t resolve the content of lazy');
 }
 
 // 创建processing
@@ -104,7 +103,7 @@ export function createPortalVNode(portal) {
 }
 
 export function createUndeterminedVNode(type, key, props) {
-  let vNodeTag = ClsOrFunComponent;
+  let vNodeTag = FunctionComponent;
   let isLazy = false;
   const componentType = typeof type;
 
@@ -135,7 +134,7 @@ export function createUndeterminedVNode(type, key, props) {
 
 export function createTreeRootVNode(container) {
   const vNode = newVirtualNode(TreeRoot, null, null, container);
-  vNode.path += 0;
+  vNode.path = '0';
   vNode.updates = [];
   return vNode;
 }
@@ -147,7 +146,7 @@ export function createVNode(tag: VNodeTag | string, ...secondArg) {
     case TreeRoot:
       // 创建treeRoot
       vNode = newVirtualNode(TreeRoot, null, null, secondArg[0]);
-      vNode.path += 0;
+      vNode.path = '0';
 
       vNode.updates = [];
       break;
@@ -178,7 +177,7 @@ export function onlyUpdateChildVNodes(processing: VNode): VNode | null {
       let child: VNode | null = processing.child;
       while (child !== null) {
         updateVNode(child, child.props);
-        child.path = child.parent.path + child.cIndex;
+        markVNodePath(child);
         child = child.next;
       }
     }
@@ -209,7 +208,7 @@ export function onlyUpdateChildVNodes(processing: VNode): VNode | null {
     while (queue.length) {
       const vNode = queue.shift()!;
 
-      vNode.path = vNode.parent.path + vNode.cIndex;
+      markVNodePath(vNode);
 
       putChildrenIntoQueue(vNode)
     }

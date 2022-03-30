@@ -1,6 +1,8 @@
 module.exports = {
   extends: [
     'eslint:recommended',
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
     'prettier',
   ],
   root: true,
@@ -29,8 +31,11 @@ module.exports = {
     node: true,
     es6: true,
   },
-
   rules: {
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off',
+    'semi': ['warn', 'always'],
+    'quotes': ['warn', 'single'],
     'accessor-pairs': 'off',
     'brace-style': ['error', '1tbs'],
     'func-style': ['warn', 'declaration', { allowArrowFunctions: true }],
@@ -42,4 +47,17 @@ module.exports = {
     'no-for-of-loops/no-for-of-loops': 'error',
     'no-function-declare-after-return/no-function-declare-after-return': 'error',
   },
+  globals: {
+    isDev: true
+  },
+  overrides: [
+    {
+      files: [
+        'scripts/__tests__/**/*.js'
+      ],
+      globals: {
+        container: true
+      },
+    },
+  ],
 };
