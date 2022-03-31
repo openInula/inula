@@ -1,6 +1,13 @@
+
+// 将状态的值解析成固定格式
 export function parseAttr(rootAttr: any) {
-  const result = [];
-  let indentation = 0;
+  const result: {
+    name: string,
+    type: string,
+    value: string,
+    indentation: number
+  }[] = [];
+  const indentation = 0;
   const parseSubAttr = (attr: any, parentIndentation: number, attrName: string) => {
     const stateType = typeof attr;
     let value: any;
@@ -20,7 +27,7 @@ export function parseAttr(rootAttr: any) {
     } else if (stateType === 'object') {
       if (attr === null) {
         showType = 'null';
-      }else if (attr instanceof Map) {
+      } else if (attr instanceof Map) {
         showType = 'map';
         const size = attr.size;
         value = `Map(${size})`;
@@ -28,7 +35,7 @@ export function parseAttr(rootAttr: any) {
           attr.forEach((value, key) => {
             parseSubAttr(value, parentIndentation + 2, key);
           });
-        }
+        };
       } else if (attr instanceof Set) {
         showType = 'set';
         const size = attr.size;
@@ -46,8 +53,8 @@ export function parseAttr(rootAttr: any) {
         addSubState = () => {
           attr.forEach((value, index) => {
             parseSubAttr(value, parentIndentation + 2, String(index));
-          })
-        }
+          });
+        };
       } else {
         showType = stateType;
         value = '{...}';

@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'horizon';
+import { useState, useEffect } from 'horizon';
 import VTree, { IData } from '../components/VTree';
 import Search from '../components/Search';
 import ComponentInfo from '../components/ComponentInfo';
@@ -8,7 +8,7 @@ import { mockParsedVNodeData, parsedMockState } from '../devtools/mock';
 
 function App() {
   const [parsedVNodeData, setParsedVNodeData] = useState([]);
-  const [componentInfo, setComponentInfo] = useState({name: null, attrs: {}});
+  const [componentInfo, setComponentInfo] = useState({ name: null, attrs: {} });
   const [filterValue, setFilterValue] = useState('');
   useEffect(() => {
     if (isDev) {
@@ -19,7 +19,7 @@ function App() {
           state: parsedMockState,
           props: parsedMockState,
         },
-      })
+      });
     }
   }, []);
   const idIndentationMap: {
@@ -27,7 +27,7 @@ function App() {
   } = {};
   const data: IData[] = [];
   let i = 0;
-  while(i < parsedVNodeData.length) {
+  while (i < parsedVNodeData.length) {
     const id = parsedVNodeData[i] as string;
     i++;
     const name = parsedVNodeData[i] as string;
@@ -46,7 +46,7 @@ function App() {
 
   const handleSearchChange = (str: string) => {
     setFilterValue(str);
-  }
+  };
 
   return (
     <div className={styles.app}>
@@ -57,15 +57,15 @@ function App() {
           </div>
           <div className={styles.divider} />
           <div className={styles.search}>
-          <Search onChange={handleSearchChange}/>
+            <Search onChange={handleSearchChange} />
           </div>
         </div>
         <div className={styles.left_bottom}>
-          <VTree data={data} highlightValue={filterValue}/>
+          <VTree data={data} highlightValue={filterValue} />
         </div>
       </div>
       <div className={styles.right}>
-        <ComponentInfo name={componentInfo.name} attrs={componentInfo.attrs}/>
+        <ComponentInfo name={componentInfo.name} attrs={componentInfo.attrs} />
       </div>
     </div>
   );

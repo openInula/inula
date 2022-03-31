@@ -30,8 +30,8 @@ module.exports = {
                 '@babel/preset-typescript',
                 ['@babel/preset-react', {
                   runtime: 'classic',
-                  "pragma": "Horizon.createElement",
-                  "pragmaFrag": "Horizon.Fragment",
+                  'pragma': 'Horizon.createElement',
+                  'pragmaFrag': 'Horizon.Fragment',
                 }]],
               plugins: ['@babel/plugin-proposal-class-properties'],
             }
@@ -41,14 +41,14 @@ module.exports = {
       {
         test: /\.less/i,
         use: [
-          "style-loader", 
-          { 
-            loader: "css-loader", 
-            options: { 
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
               modules: true,
-              
-            } 
-          }, 
+
+            }
+          },
           'less-loader'],
       }]
   },

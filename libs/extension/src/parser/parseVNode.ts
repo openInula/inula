@@ -1,7 +1,8 @@
-import { travelVNodeTree } from "../../../../libs/horizon/src/renderer/vnode/VNodeUtils";
-import { VNode } from "../../../../libs/horizon/src/renderer/Types";
-import { ClassComponent, FunctionComponent } from "../../../../libs/horizon/src/renderer/vnode/VNodeTags";
+import { travelVNodeTree } from '../../../../libs/horizon/src/renderer/vnode/VNodeUtils';
+import { VNode } from '../../../../libs/horizon/src/renderer/Types';
+import { ClassComponent, FunctionComponent } from '../../../../libs/horizon/src/renderer/vnode/VNodeTags';
 
+// 建立双向映射关系，当用户在修改属性值后，可以找到对应的 VNode
 const VNodeToIdMap = new Map<VNode, number>();
 const IdToVNodeMap = new Map<number, VNode>();
 
@@ -34,7 +35,7 @@ function parseTreeRoot(treeRoot: VNode) {
     if (isUserComponent(tag)) {
       const id = generateUid();
       result.push(id);
-      const name = (node.type as Function).name;
+      const name = node.type.name;
       result.push(name);
       const parent = getParentUserComponent(node);
       if (parent) {

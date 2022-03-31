@@ -35,7 +35,7 @@ function ComponentAttr({ name, attr }: { name: string, attr: IAttr[] }) {
       newSet.add(index);
     }
     setCollapsedNode(newSet);
-  }
+  };
 
   const showAttr = [];
   let currentIndentation = null;
@@ -76,7 +76,7 @@ function ComponentAttr({ name, attr }: { name: string, attr: IAttr[] }) {
         {showAttr}
       </div>
     </div>
-  )
+  );
 }
 
 export default function ComponentInfo({ name, attrs }: IComponentInfo) {
@@ -104,5 +104,5 @@ export default function ComponentInfo({ name, attrs }: IComponentInfo) {
         </div>
       </div>
     </div>
-  )
+  );
 }

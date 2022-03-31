@@ -1,7 +1,7 @@
-import {render} from 'horizon';
+import { render } from 'horizon';
 import App from './App';
 
 render(
-    <App />,
+  <App />,
   document.getElementById('root')
 );

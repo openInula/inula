@@ -26,14 +26,14 @@ const lineHeight = 18;
 const indentationLength = 20;
 
 function Item(props: IItem) {
-  const { 
-    name, 
-    style, 
+  const {
+    name,
+    style,
     userKey,
-    hasChild, 
-    onCollapse, 
-    isCollapsed, 
-    id, 
+    hasChild,
+    onCollapse,
+    isCollapsed,
+    id,
     indentation,
     onClick,
     isSelect,
@@ -43,14 +43,14 @@ function Item(props: IItem) {
   const showIcon = hasChild ? <Arrow director={isCollapsed ? 'right' : 'down'} /> : '';
   const handleClickCollapse = () => {
     onCollapse(id);
-  }
+  };
   const handleClick = () => {
     onClick(id);
-  }
-  const itemAttr: any = {style, className: styles.treeItem, onClick: handleClick};
+  };
+  const itemAttr: any = { style, className: styles.treeItem, onClick: handleClick };
   if (isSelect) {
     itemAttr.tabIndex = 0;
-    itemAttr.className = styles.treeItem + ' ' + styles.select
+    itemAttr.className = styles.treeItem + ' ' + styles.select;
   }
   const reg = createRegExp(highlightValue);
   const heightCharacters = name.match(reg);
@@ -60,7 +60,7 @@ function Item(props: IItem) {
     showName = [];
     // 高亮第一次匹配即可
     const char = heightCharacters[0];
-    let index = name.search(char);
+    const index = name.search(char);
     const notHighlightStr = cutName.slice(0, index);
     showName.push(notHighlightStr);
     showName.push(<mark>{char}</mark>);
@@ -90,7 +90,7 @@ function Item(props: IItem) {
         </>
       )}
     </div>
-  )
+  );
 }
 
 function VTree({ data, highlightValue }: { data: IData[], highlightValue: string }) {
@@ -128,10 +128,11 @@ function VTree({ data, highlightValue }: { data: IData[], highlightValue: string
         currentCollapseIndentation = null;
       }
     }
-    let id = item.id;
+    const id = item.id;
     const isCollapsed = collapseNode.has(id);
     if (totalHeight >= scrollTop && showList.length <= showNum) {
       const nextItem = data[index + 1];
+      // 如果存在下一个节点，并且节点缩进比自己大，说明下个节点是子节点，节点本身需要显示展开收起图标
       const hasChild = nextItem ? nextItem.indentation > item.indentation : false;
       showList.push(
         <Item
@@ -146,7 +147,7 @@ function VTree({ data, highlightValue }: { data: IData[], highlightValue: string
           isSelect={id === selectItem}
           highlightValue={highlightValue}
           {...item} />
-      )
+      );
     }
     totalHeight = totalHeight + lineHeight;
     if (isCollapsed) {
@@ -155,19 +156,19 @@ function VTree({ data, highlightValue }: { data: IData[], highlightValue: string
     }
   });
 
-  const scroll = (event: any) => {
+  const handleScroll = (event: any) => {
     const scrollTop = event.target.scrollTop;
     // 顶部留 100px 冗余高度
     setScrollTop(Math.max(scrollTop - 100, 0));
-  }
+  };
 
   return (
-    <div className={styles.treeContainer} onScroll={scroll}>
+    <div className={styles.treeContainer} onScroll={handleScroll}>
       {showList}
       {/* 确保有足够的高度 */}
       <div style={{ marginTop: totalHeight }} />
     </div>
-  )
+  );
 }
 
 export default VTree;
