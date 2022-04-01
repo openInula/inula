@@ -1,13 +1,13 @@
 import * as Horizon from '@cloudsop/horizon/index.ts';
 import * as LogUtils from '../../jest/logUtils';
-import { act } from '../../jest/customMatcher';
-import Text from '../../jest/Text';
+import { Text } from '../../jest/commonComponents';
 
 describe('useImperativeHandle Hook Test', () => {
   const {
     useState,
     useImperativeHandle,
-    forwardRef
+    forwardRef,
+    act,
   } = Horizon;
   const { unmountComponentAtNode } = Horizon;
 

@@ -1,14 +1,14 @@
 import * as Horizon from '@cloudsop/horizon/index.ts';
 import * as LogUtils from '../../jest/logUtils';
-import { act } from '../../jest/customMatcher';
-import Text from '../../jest/Text';
+import { Text } from '../../jest/commonComponents';
 
 describe('useState Hook Test', () => {
   const {
     useState,
     forwardRef,
     useImperativeHandle,
-    memo
+    memo,
+    act,
   } = Horizon;
 
   it('简单使用useState', () => {

@@ -17,7 +17,6 @@ import {createContext} from '../renderer/components/context/CreateContext';
 import {lazy} from '../renderer/components/Lazy';
 import {forwardRef} from '../renderer/components/ForwardRef';
 import {memo} from '../renderer/components/Memo';
-import hookMapping from '../renderer/hooks/HookMapping';
 
 import {
   useCallback,
@@ -30,6 +29,16 @@ import {
   useRef,
   useState,
 } from '../renderer/hooks/HookExternal';
+import {launchUpdateFromVNode, asyncUpdates} from '../renderer/TreeBuilder';
+import {callRenderQueueImmediate} from '../renderer/taskExecutor/RenderQueue';
+import {runAsyncEffects} from '../renderer/submit/HookEffectHandler';
+import { getProcessingVNode } from '../renderer/hooks/BaseHook';
+
+const act = (fun) => {
+  asyncUpdates(fun);
+  callRenderQueueImmediate();
+  runAsyncEffects();
+}
 
 export {
   Children,
@@ -56,5 +65,7 @@ export {
   createElement,
   cloneElement,
   isValidElement,
-  hookMapping,
+  act,
+  launchUpdateFromVNode,
+  getProcessingVNode,
 };
