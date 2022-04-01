@@ -55,7 +55,7 @@ export class VNode {
   task: any;
 
   // 使用这个变量来记录修改前的值，用于恢复。
-  contexts: any;
+  context: any;
   // 因为LazyComponent会修改tag和type属性，为了能识别，增加一个属性
   isLazyComponent: boolean;
 
@@ -93,7 +93,7 @@ export class VNode {
         this.stateCallbacks = null;
         this.state = null;
         this.oldState = null;
-        this.contexts = null;
+        this.context = null;
         break;
       case FunctionComponent:
         this.realNode = null;
@@ -112,16 +112,16 @@ export class VNode {
         this.depContexts = null;
         this.isDepContextChange = false;
         this.oldState = null;
-        this.contexts = null;
+        this.context = null;
         break;
       case DomPortal:
         this.realNode = null;
-        this.contexts = null;
+        this.context = null;
         break;
       case DomComponent:
         this.realNode = null;
         this.changeList = null;
-        this.contexts = null;
+        this.context = null;
         break;
       case DomText:
         this.realNode = null;
@@ -137,7 +137,7 @@ export class VNode {
         };
         break;
       case ContextProvider:
-        this.contexts = null;
+        this.context = null;
         break;
       case MemoComponent:
         this.effectList = null;

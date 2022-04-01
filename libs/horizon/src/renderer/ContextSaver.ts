@@ -17,14 +17,14 @@ let ctxNamespace = '';
 export function setNamespaceCtx(vNode: VNode, dom?: Container) {
   const nextContext = getNSCtx(ctxNamespace, vNode.type, dom);
 
-  vNode.contexts = ctxNamespace;
+  vNode.context = ctxNamespace;
 
   ctxNamespace = nextContext;
 }
 
 // bubble阶段恢复
 export function resetNamespaceCtx(vNode: VNode) {
-  ctxNamespace = vNode.contexts;
+  ctxNamespace = vNode.context;
 }
 
 export function getNamespaceCtx(): string {
@@ -34,7 +34,7 @@ export function getNamespaceCtx(): string {
 export function setContext<T>(providerVNode: VNode, nextValue: T) {
   const context: ContextType<T> = providerVNode.type._context;
 
-  providerVNode.contexts = context.value;
+  providerVNode.context = context.value;
 
   context.value = nextValue;
 }
@@ -42,7 +42,7 @@ export function setContext<T>(providerVNode: VNode, nextValue: T) {
 export function resetContext(providerVNode: VNode) {
   const context: ContextType<any> = providerVNode.type._context;
 
-  context.value = providerVNode.contexts;
+  context.value = providerVNode.context;
 }
 
 // 在局部更新时，恢复父节点的context
@@ -51,7 +51,7 @@ export function recoverParentContext(vNode: VNode) {
 
   while (parent !== null) {
     if (parent.tag === ContextProvider) {
-      parent.contexts = parent.props.value;
+      parent.context = parent.props.value;
     }
     parent = parent.parent;
   }
