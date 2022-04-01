@@ -7,7 +7,7 @@ import {
   TreeRoot,
   SuspenseComponent,
 } from '../vnode/VNodeTags';
-import { getContextChangeCtx, setContextCtx, setNamespaceCtx } from '../ContextSaver';
+import { setContext, setNamespaceCtx } from '../ContextSaver';
 import { FlagUtils } from '../vnode/VNodeFlags';
 import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
 import componentRenders from './index';
@@ -26,7 +26,7 @@ function handlerContext(processing: VNode) {
       break;
     case ContextProvider: {
       const newValue = processing.props.value;
-      setContextCtx(processing, newValue);
+      setContext(processing, newValue);
       break;
     }
     // No Default
@@ -41,7 +41,6 @@ export function captureVNode(processing: VNode): VNode | null {
     if (
       !processing.isCreated &&
       processing.oldProps === processing.props &&
-      !getContextChangeCtx() &&
       !processing.shouldUpdate
     ) {
       // 复用还需对stack进行处理

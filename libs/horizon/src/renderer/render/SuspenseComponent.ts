@@ -1,17 +1,16 @@
-import type {VNode, PromiseType} from '../Types';
+import type { VNode, PromiseType } from '../Types';
 
-import {FlagUtils, Interrupted} from '../vnode/VNodeFlags';
-import {onlyUpdateChildVNodes, updateVNode, createFragmentVNode} from '../vnode/VNodeCreator';
+import { FlagUtils, Interrupted } from '../vnode/VNodeFlags';
+import { onlyUpdateChildVNodes, updateVNode, createFragmentVNode } from '../vnode/VNodeCreator';
 import {
   ClassComponent,
   ForwardRef,
   FunctionComponent,
   SuspenseComponent,
 } from '../vnode/VNodeTags';
-import {pushForceUpdate} from '../UpdateHandler';
-import {launchUpdateFromVNode, tryRenderFromRoot} from '../TreeBuilder';
-import {updateShouldUpdateOfTree} from '../vnode/VNodeShouldUpdate';
-import {getContextChangeCtx} from '../ContextSaver';
+import { pushForceUpdate } from '../UpdateHandler';
+import { launchUpdateFromVNode, tryRenderFromRoot } from '../TreeBuilder';
+import { updateShouldUpdateOfTree } from '../vnode/VNodeShouldUpdate';
 import { markVNodePath } from '../utils/vNodePath';
 
 export enum SuspenseChildStatus {
@@ -101,7 +100,7 @@ export function captureSuspenseComponent(processing: VNode) {
 }
 
 function updateFallback(processing: VNode): Array<VNode> | VNode | null {
-  const childFragment: VNode | null= processing.child;
+  const childFragment: VNode | null = processing.child;
 
   if (childFragment?.childShouldUpdate) {
     if (processing.suspenseState.promiseResolved) {
@@ -130,7 +129,6 @@ export function captureRender(processing: VNode, shouldUpdate: boolean): Array<V
   if (
     !processing.isCreated &&
     processing.oldProps === processing.props &&
-    !getContextChangeCtx() &&
     !shouldUpdate
   ) {
     if (processing.suspenseState.childStatus === SuspenseChildStatus.ShowFallback) {
@@ -178,7 +176,7 @@ export function handleSuspenseChildThrowError(parent: VNode, processing: VNode, 
       if (processing.tag === ClassComponent) {
         if (processing.isCreated) {
           // 渲染类组件场景，要标志未完成（否则会触发componentWillUnmount）
-          processing.isSuspended = true  ;
+          processing.isSuspended = true;
         } else {
           // 类组件更新，标记强制更新，否则被memo等优化跳过
           pushForceUpdate(processing);
@@ -187,7 +185,7 @@ export function handleSuspenseChildThrowError(parent: VNode, processing: VNode, 
       }
 
       if (processing.tag === FunctionComponent || processing.tag === ForwardRef) {
-        processing.isSuspended= true;
+        processing.isSuspended = true;
       }
       // 应该抛出promise未完成更新，标志待更新
       processing.shouldUpdate = true;

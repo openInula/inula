@@ -18,7 +18,6 @@ import { markRef } from './BaseComponent';
 import {
   processUpdates,
 } from '../UpdateHandler';
-import { getContextChangeCtx } from '../ContextSaver';
 import { setProcessingClassVNode } from '../GlobalVar';
 import { onlyUpdateChildVNodes } from '../vnode/VNodeCreator';
 import { createChildrenByDiff } from '../diff/nodeDiffComparator';
@@ -87,7 +86,7 @@ function callUpdateLifeCycle(processing: VNode, nextProps: object, clazz) {
   }
 }
 
-function markLifeCycle(processing: VNode, nextProps: object, shouldUpdate: Boolean) {
+function markLifeCycle(processing: VNode, nextProps: object, shouldUpdate: boolean) {
   if (processing.isCreated) {
     markComponentDidMount(processing);
   } else if (processing.state !== processing.oldState || shouldUpdate) {
@@ -136,7 +135,6 @@ export function captureRender(processing: VNode): VNode | null {
     // 如果 props, state, context 都没有变化且 isForceUpdate 为 false则不需要更新
     shouldUpdate = oldProps !== processing.props ||
       inst.state !== processing.state ||
-      getContextChangeCtx() ||
       processing.isForceUpdate;
 
     if (shouldUpdate) {
@@ -172,4 +170,4 @@ export function captureRender(processing: VNode): VNode | null {
   }
 }
 
-export function bubbleRender(processing: VNode) {}
+export function bubbleRender() {}
