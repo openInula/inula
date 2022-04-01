@@ -5,7 +5,6 @@ import { resetDepContexts } from '../components/context/Context';
 import { runFunctionWithHooks } from '../hooks/HookMain';
 import { ForwardRef } from '../vnode/VNodeTags';
 import { FlagUtils, Update } from '../vnode/VNodeFlags';
-import { getContextChangeCtx } from '../ContextSaver';
 import { onlyUpdateChildVNodes } from '../vnode/VNodeCreator';
 import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 
@@ -16,22 +15,10 @@ export function bubbleRender() {
 }
 
 // 判断children是否可以复用
-function checkIfCanReuseChildren(processing: VNode, shouldUpdate?: boolean) {
-  let isCanReuse = true;
-
-  if (!processing.isCreated) {
-    const oldProps = processing.oldProps;
-    const newProps = processing.props;
-
-    // 如果props或者context改变了
-    if (oldProps !== newProps || getContextChangeCtx() || processing.isDepContextChange) {
-      isCanReuse = false;
-    }
-  } else {
-    isCanReuse = false;
-  }
-
-  return isCanReuse;
+function checkIfCanReuseChildren(processing: VNode) {
+  return !processing.isCreated &&
+    processing.oldProps === processing.props &&
+    !processing.isDepContextChange;
 }
 
 export function setStateChange(isUpdate) {
@@ -46,7 +33,6 @@ export function captureFunctionComponent(
   processing: VNode,
   funcComp: any,
   nextProps: any,
-  shouldUpdate?: boolean,
 ) {
   // 函数组件内已完成异步动作
   if (processing.isSuspended) {
@@ -58,7 +44,7 @@ export function captureFunctionComponent(
   }
   resetDepContexts(processing);
 
-  const isCanReuse = checkIfCanReuseChildren(processing, shouldUpdate);
+  const isCanReuse = checkIfCanReuseChildren(processing);
   // 在执行exeFunctionHook前先设置stateChange为false
   setStateChange(false);
 
@@ -80,7 +66,7 @@ export function captureFunctionComponent(
   return processing.child;
 }
 
-export function captureRender(processing: VNode, shouldUpdate?: boolean): VNode | null {
+export function captureRender(processing: VNode): VNode | null {
   const Component = processing.type;
   const unresolvedProps = processing.props;
   const resolvedProps =
@@ -92,7 +78,6 @@ export function captureRender(processing: VNode, shouldUpdate?: boolean): VNode 
     processing,
     Component,
     resolvedProps,
-    shouldUpdate,
   );
 }
 
