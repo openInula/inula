@@ -78,6 +78,10 @@ export class VNode {
 
   belongClassVNode: VNode | null = null; // 记录JSXElement所属class vNode，处理ref的时候使用
 
+  // 状态管理器使用
+  isStoreChange: boolean;
+  functionToObserver: FunctionToObserver | null; // 记录这个函数组件依赖哪些Observer
+
   constructor(tag: VNodeTag, props: any, key: null | string, realNode) {
     this.tag = tag; // 对应组件的类型，比如ClassComponent等
     this.key = key;
@@ -102,6 +106,8 @@ export class VNode {
         this.depContexts = null;
         this.isDepContextChange = false;
         this.oldHooks = null;
+        this.isStoreChange = false;
+        this.functionToObserver = null;
         break;
       case ClassComponent:
         this.realNode = null;

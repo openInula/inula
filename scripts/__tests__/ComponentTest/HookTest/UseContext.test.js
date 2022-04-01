@@ -1,9 +1,7 @@
 import * as Horizon from '@cloudsop/horizon/index.ts';
-import { act } from '../../jest/customMatcher';
 
 describe('useContext Hook Test', () => {
-  const { useState, useContext } = Horizon;
-  const { unmountComponentAtNode } = Horizon;
+  const { useState, useContext, act, unmountComponentAtNode } = Horizon;
 
   it('简单使用useContext', () => {
     const LanguageTypes = {

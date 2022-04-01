@@ -1,6 +1,6 @@
 import * as Horizon from '@cloudsop/horizon/index.ts';
 import * as LogUtils from '../../jest/logUtils';
-import Text from '../../jest/Text';
+import { Text } from '../../jest/commonComponents';
 
 describe('useRef Hook Test', () => {
   const { useState, useRef } = Horizon;

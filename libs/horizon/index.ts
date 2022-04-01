@@ -23,6 +23,9 @@ import {
   createElement,
   cloneElement,
   isValidElement,
+  act,
+  launchUpdateFromVNode as _launchUpdateFromVNode,
+  getProcessingVNode as _getProcessingVNode,
 } from './src/external/Horizon';
 
 import {
@@ -63,6 +66,9 @@ const Horizon = {
   unstable_batchedUpdates,
   findDOMNode,
   unmountComponentAtNode,
+  act,
+  _launchUpdateFromVNode,
+  _getProcessingVNode,
 };
 
 export {
@@ -95,6 +101,9 @@ export {
   unstable_batchedUpdates,
   findDOMNode,
   unmountComponentAtNode,
+  act,
+  _launchUpdateFromVNode,
+  _getProcessingVNode,
 };
 
 export default Horizon;
