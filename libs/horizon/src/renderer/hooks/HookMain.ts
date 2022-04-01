@@ -9,7 +9,7 @@ import {
 import {HookStage, setHookStage} from './HookStage';
 
 // hook对外入口
-export function exeFunctionHook<Props extends Record<string, any>, Arg>(
+export function runFunctionWithHooks<Props extends Record<string, any>, Arg>(
   funcComp: (props: Props, arg: Arg) => any,
   props: Props,
   arg: Arg,

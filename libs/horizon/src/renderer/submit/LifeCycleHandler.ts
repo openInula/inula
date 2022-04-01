@@ -32,7 +32,7 @@ import {
   callEffectRemove,
   callUseEffects,
   callUseLayoutEffectCreate,
-  callUseLayoutEffectRemove
+  callUseLayoutEffectRemove,
 } from './HookEffectHandler';
 import { handleSubmitError } from '../ErrorHandler';
 import {
@@ -192,7 +192,8 @@ function unmountVNode(vNode: VNode): void {
 
       const instance = vNode.realNode;
       // 当constructor中抛出异常时，instance会是null，这里判断一下instance是否为空
-      if (instance && typeof instance.componentWillUnmount === 'function') {
+      // suspense打断时不需要触发WillUnmount
+      if (instance && typeof instance.componentWillUnmount === 'function' && !vNode.isSuspended) {
         callComponentWillUnmount(vNode, instance);
       }
       break;
@@ -212,11 +213,11 @@ function unmountVNode(vNode: VNode): void {
 // 卸载vNode，递归遍历子vNode
 function unmountNestedVNodes(vNode: VNode): void {
   travelVNodeTree(vNode, (node) => {
-    unmountVNode(node);
-  }, node =>
-    // 如果是DomPortal，不需要遍历child
-    node.tag === DomPortal
-  , vNode, null);
+      unmountVNode(node);
+    }, node =>
+      // 如果是DomPortal，不需要遍历child
+      node.tag === DomPortal
+    , vNode, null);
 }
 
 function submitAddition(vNode: VNode): void {
@@ -329,7 +330,7 @@ function submitClear(vNode: VNode): void {
   // 但考虑到用户可能自定义其他属性，所以采用遍历赋值的方式
   const customizeKeys = Object.keys(realNode);
   const keyLength = customizeKeys.length;
-  for(let i = 0; i < keyLength; i++) {
+  for (let i = 0; i < keyLength; i++) {
     const key = customizeKeys[i];
     // 测试代码 mock 实例的全部可遍历属性都会被Object.keys方法读取到
     // children 属性被复制意味着复制了子节点，因此要排除
@@ -351,7 +352,7 @@ function submitClear(vNode: VNode): void {
   }
   let clearChild = vNode.clearChild as VNode; // 上次渲染的child保存在clearChild属性中
   // 卸载 clearChild 和 它的兄弟节点
-  while(clearChild) {
+  while (clearChild) {
     // 卸载子vNode，递归遍历子vNode
     unmountNestedVNodes(clearChild);
     clearVNode(clearChild);
@@ -399,9 +400,9 @@ function submitUpdate(vNode: VNode): void {
 }
 
 function submitSuspenseComponent(vNode: VNode) {
-  const suspenseChildStatus = vNode.suspenseChildStatus;
-  if (suspenseChildStatus !== SuspenseChildStatus.Init) {
-    hideOrUnhideAllChildren(vNode.child, suspenseChildStatus === SuspenseChildStatus.ShowFallback);
+  const { childStatus } = vNode.suspenseState;
+  if (childStatus !== SuspenseChildStatus.Init) {
+    hideOrUnhideAllChildren(vNode.child, childStatus === SuspenseChildStatus.ShowFallback);
   }
 }
 

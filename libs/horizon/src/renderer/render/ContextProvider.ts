@@ -4,9 +4,8 @@ import { isSame } from '../utils/compare';
 import { ClassComponent, ContextProvider } from '../vnode/VNodeTags';
 import { pushForceUpdate } from '../UpdateHandler';
 import {
-  getContextChangeCtx,
-  resetContextCtx,
-  setContextCtx,
+  resetContext,
+  setContext,
 } from '../ContextSaver';
 import { travelVNodeTree } from '../vnode/VNodeUtils';
 import { launchUpdateFromVNode } from '../TreeBuilder';
@@ -75,14 +74,14 @@ function captureContextProvider(processing: VNode): VNode | null {
   const newCtx = newProps.value;
 
   // 更新processing的context值为newProps.value
-  setContextCtx(processing, newCtx);
+  setContext(processing, newCtx);
 
   if (oldProps !== null) {
     const oldCtx = oldProps.value;
     const isSameContext = isSame(oldCtx, newCtx);
     if (isSameContext) {
       // context没有改变，复用
-      if (oldProps.children === newProps.children && !getContextChangeCtx()) {
+      if (oldProps.children === newProps.children) {
         return onlyUpdateChildVNodes(processing);
       }
     } else {
@@ -101,6 +100,6 @@ export function captureRender(processing: VNode): VNode | null {
 }
 
 export function bubbleRender(processing: VNode) {
-  resetContextCtx(processing);
+  resetContext(processing);
 }
 
