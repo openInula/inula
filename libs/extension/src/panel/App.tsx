@@ -5,11 +5,14 @@ import ComponentInfo from '../components/ComponentInfo';
 import styles from './App.less';
 import Select from '../svgs/Select';
 import { mockParsedVNodeData, parsedMockState } from '../devtools/mock';
+import { FilterTree } from '../components/FilterTree';
+import Close from '../svgs/Close';
+import Arrow from './../svgs/Arrow';
 
 function App() {
   const [parsedVNodeData, setParsedVNodeData] = useState([]);
   const [componentInfo, setComponentInfo] = useState({ name: null, attrs: {} });
-  const [filterValue, setFilterValue] = useState('');
+
   useEffect(() => {
     if (isDev) {
       setParsedVNodeData(mockParsedVNodeData);
@@ -43,9 +46,23 @@ function App() {
     };
     data.push(item);
   }
+  const {
+    filterValue,
+    setFilterValue,
+    onClear,
+    selectId,
+    matchItems,
+    onSelectNext,
+    onSelectLast,
+    setShowItems,
+  } = FilterTree({ data });
 
   const handleSearchChange = (str: string) => {
     setFilterValue(str);
+  };
+
+  const onRendered = (info) => {
+    setShowItems(info.visibleItems);
   };
 
   return (
@@ -57,11 +74,22 @@ function App() {
           </div>
           <div className={styles.divider} />
           <div className={styles.search}>
-            <Search onChange={handleSearchChange} />
+            <Search onChange={handleSearchChange} value={filterValue} />
           </div>
+          {filterValue !== '' && <>
+            <span className={styles.searchResult}>{`${matchItems.indexOf(selectId) + 1}/${matchItems.length}`}</span>
+            <div className={styles.divider} />
+            <button className={styles.searchAction} onClick={onSelectLast}><Arrow direction={'up'}/></button>
+            <button className={styles.searchAction} onClick={onSelectNext}><Arrow direction={'down'}/></button>
+            <button className={styles.searchAction} onClick={onClear}><Close/></button>
+          </>}
         </div>
         <div className={styles.left_bottom}>
-          <VTree data={data} highlightValue={filterValue} />
+          <VTree
+            data={data}
+            highlightValue={filterValue}
+            onRendered={onRendered}
+            selectedId={selectId} />
         </div>
       </div>
       <div className={styles.right}>

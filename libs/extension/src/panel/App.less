@@ -17,6 +17,7 @@
     flex: 0 0 @top-height;
     display: flex;
     align-items: center;
+    padding-right: 0.4rem;
 
     .select {
       padding: 0 0.25rem 0 0.25rem;
@@ -32,6 +33,23 @@
 
     .search {
       flex: 1 1 0;
+    }
+
+    .searchResult{
+      flex: 0 0 ;
+      padding: 0 0.4rem;
+    }
+
+    .searchAction {
+      padding: 0;
+      flex: 0 0 1rem;
+      border: none;
+      background: none;
+      height: 1rem;
+      color: @arrow-color;
+      &:hover{
+        color: @hover-color;
+      }
     }
   }
 
