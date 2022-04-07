@@ -62,7 +62,7 @@ function App() {
     onSelectLast,
     setShowItems,
     collapsedNodes,
-    setcollapsedNodes,
+    setCollapsedNodes,
   } = FilterTree({ data: parsedVNodeData });
 
   const handleSearchChange = (str: string) => {
@@ -98,7 +98,7 @@ function App() {
             highlightValue={filterValue}
             onRendered={onRendered}
             collapsedNodes={collapsedNodes}
-            onCollapseNode={setcollapsedNodes}
+            onCollapseNode={setCollapsedNodes}
             scrollToItem={currentItem} />
         </div>
       </div>

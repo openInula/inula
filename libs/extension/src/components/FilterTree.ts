@@ -61,7 +61,7 @@ export function FilterTree<T extends BaseType>(props: { data: T[] }) {
   const matchItems = matchItemsRef.current;
   const collapsedNodes = collapsedNodesRef.current;
 
-  const updatecollapsedNodes = (item: BaseType) => {
+  const updateCollapsedNodes = (item: BaseType) => {
     const newcollapsedNodes = expandItemParent(item, data, collapsedNodes);
     // 如果新旧收起节点数组长度不一样，说明存在收起节点
     if (newcollapsedNodes.length !== collapsedNodes.length) {
@@ -93,7 +93,7 @@ export function FilterTree<T extends BaseType>(props: { data: T[] }) {
         if (newCurrentItem === null) {
           const item = newMatchItems[0];
           // 不处于当前展示页面，需要展开父节点
-          updatecollapsedNodes(item);
+          updateCollapsedNodes(item);
           setCurrentItem(item);
         } else {
           setCurrentItem(newCurrentItem);
@@ -108,22 +108,18 @@ export function FilterTree<T extends BaseType>(props: { data: T[] }) {
   const onSelectNext = () => {
     const index = matchItems.indexOf(currentItem);
     const nextIndex = index + 1;
-    if (nextIndex < matchItemsRef.current.length) {
-      const item = matchItems[nextIndex];
-      // 不处于当前展示页面，需要展开父节点
-      updatecollapsedNodes(item);
-      setCurrentItem(item);
-    }
+    const item = nextIndex < matchItemsRef.current.length ? matchItems[nextIndex] : matchItems[0];
+    // 可能不处于当前展示页面，需要展开父节点
+    updateCollapsedNodes(item);
+    setCurrentItem(item);
   };
   const onSelectLast = () => {
     const index = matchItems.indexOf(currentItem);
     const last = index - 1;
-    if (last >= 0) {
-      const item = matchItems[last];
-      // 不处于当前展示页面，需要展开父节点
-      updatecollapsedNodes(item);
-      setCurrentItem(matchItems[last]);
-    }
+    const item = last >= 0 ? matchItems[last] : matchItems[matchItems.length - 1];
+    // 可能不处于当前展示页面，需要展开父节点
+    updateCollapsedNodes(item);
+    setCurrentItem(item);
   };
   const setShowItems = (items) => {
     showItemsRef.current = [...items];
@@ -131,7 +127,7 @@ export function FilterTree<T extends BaseType>(props: { data: T[] }) {
   const onClear = () => {
     onChangeSearchValue('');
   };
-  const setcollapsedNodes = (items) => {
+  const setCollapsedNodes = (items) => {
     // 不更新引用，避免子组件的重复渲染
     collapsedNodesRef.current.length = 0;
     collapsedNodesRef.current.push(...items);
@@ -146,6 +142,6 @@ export function FilterTree<T extends BaseType>(props: { data: T[] }) {
     onSelectLast,
     setShowItems,
     collapsedNodes,
-    setcollapsedNodes,
+    setCollapsedNodes,
   };
 }
