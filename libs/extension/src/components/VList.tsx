@@ -8,16 +8,15 @@ interface IProps<T extends { id: string }> {
   height: number, // VList 的高度
   children: any, // horizon 组件，组件类型是 T
   itemHeight: number,
-  scrollIndex?: number,
-  onRendered:(renderInfo: renderInfoType) => void;
+  scrollToItem?: T, // 滚动到指定项位置，如果该项在可见区域内，不滚动，如果不在，则滚动到中间位置
+  onRendered: (renderInfo: renderInfoType<T>) => void;
   filter?(data: T): boolean, // false 表示该行不显示
 }
 
-const defaultRenderInfo = {
-  visibleItems: ([] as string[])
+export type renderInfoType<T> = {
+  visibleItems: T[],
+  skipItemCountBeforeScrollItem: number,
 };
-
-export type renderInfoType = typeof defaultRenderInfo;
 
 export function VList<T extends { id: string }>(props: IProps<T>) {
   const {
@@ -25,15 +24,31 @@ export function VList<T extends { id: string }>(props: IProps<T>) {
     height,
     children,
     itemHeight,
-    scrollIndex = 0,
+    scrollToItem,
     filter,
     onRendered,
   } = props;
-  const [scrollTop, setScrollTop] = useState(scrollIndex * itemHeight);
-  const renderInfo = useRef({visibleItems: []});
+  const [scrollTop, setScrollTop] = useState(data.indexOf(scrollToItem) * itemHeight);
+  const renderInfoRef: { current: renderInfoType<T> } = useRef({ visibleItems: [], skipItemCountBeforeScrollItem: 0 });
+  const containerRef = useRef();
   useEffect(() => {
-    onRendered(renderInfo.current);
+    onRendered(renderInfoRef.current);
   });
+
+  useEffect(() => {
+    if (scrollToItem) {
+      const renderInfo = renderInfoRef.current;
+      // 在滚动区域，不滚动
+      if (!renderInfo.visibleItems.includes(scrollToItem)) {
+        const index = data.indexOf(scrollToItem);
+        // top值计算需要减掉filter条件判定不显示项
+        const totalCount = index - renderInfoRef.current.skipItemCountBeforeScrollItem;
+        // 显示在页面中间
+        const top = totalCount * itemHeight - height / 2;
+        containerRef.current.scrollTo({ top: top });
+      }
+    }
+  }, [scrollToItem]);
 
   const handleScroll = (event: any) => {
     const scrollTop = event.target.scrollTop;
@@ -48,9 +63,14 @@ export function VList<T extends { id: string }>(props: IProps<T>) {
   // 如果最后一个显示不全，不统计在显示 ids 内
   const maxTop = scrollTop + height - itemHeight;
   // 清空记录的上次渲染的数据
-  renderInfo.current.visibleItems.length = 0;
+  renderInfoRef.current.visibleItems.length = 0;
+  const scrollItemIndex = data.indexOf(scrollToItem);
+  renderInfoRef.current.skipItemCountBeforeScrollItem = 0;
   data.forEach((item, i) => {
     if (filter && !filter(item)) {
+      if (scrollItemIndex > i) {
+        renderInfoRef.current.skipItemCountBeforeScrollItem++;
+      }
       return;
     }
     if (totalHeight >= startShowTopValue && showList.length <= showNum) {
@@ -63,14 +83,14 @@ export function VList<T extends { id: string }>(props: IProps<T>) {
         </div>
       );
       if (totalHeight >= scrollTop && totalHeight < maxTop) {
-        renderInfo.current.visibleItems.push(item);
+        renderInfoRef.current.visibleItems.push(item);
       }
     }
     totalHeight += itemHeight;
   });
 
   return (
-    <div className={styles.container} onScroll={handleScroll}>
+    <div ref={containerRef} className={styles.container} onScroll={handleScroll}>
       {showList}
       <div style={{ marginTop: totalHeight }} />
     </div>

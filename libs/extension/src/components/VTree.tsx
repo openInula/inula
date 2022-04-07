@@ -14,8 +14,8 @@ export interface IData {
 
 interface IItem {
   hasChild: boolean,
-  onCollapse: (id: string) => void,
-  onClick: (id: string) => void,
+  onCollapse: (data: IData) => void,
+  onClick: (id: IData) => void,
   isCollapsed: boolean,
   isSelect: boolean,
   highlightValue: string,
@@ -34,21 +34,20 @@ function Item(props: IItem) {
     isSelect,
     highlightValue = '',
   } = props;
-  
+
   const {
     name,
     userKey,
-    id,
-    indentation,  
+    indentation,
   } = data;
 
   const isShowKey = userKey !== '';
   const showIcon = hasChild ? <Triangle director={isCollapsed ? 'right' : 'down'} /> : '';
   const handleClickCollapse = () => {
-    onCollapse(id);
+    onCollapse(data);
   };
   const handleClick = () => {
-    onClick(id);
+    onClick(data);
   };
   const itemAttr: any = { className: styles.treeItem, onClick: handleClick };
   if (isSelect) {
@@ -96,31 +95,39 @@ function Item(props: IItem) {
   );
 }
 
-function VTree({ data, highlightValue, selectedId, onRendered }: {
+function VTree(props: {
   data: IData[],
   highlightValue: string,
-  selectedId: number,
-  onRendered: (renderInfo: renderInfoType) => void
+  scrollToItem: IData,
+  onRendered: (renderInfo: renderInfoType<IData>) => void,
+  collapsedNodes?: IData[],
+  onCollapseNode?: (item: IData[]) => void,
 }) {
-  const [collapseNode, setCollapseNode] = useState(new Set<string>());
-  const [selectItem, setSelectItem] = useState(selectedId);
+  const { data, highlightValue, scrollToItem, onRendered, onCollapseNode } = props;
+  const [collapseNode, setCollapseNode] = useState(props.collapsedNodes || []);
+  const [selectItem, setSelectItem] = useState(scrollToItem);
   useEffect(() => {
-    setSelectItem(selectedId);
-  }, [selectedId]);
-  const changeCollapseNode = (id: string) => {
-    const nodes = new Set<string>();
-    collapseNode.forEach(value => {
-      nodes.add(value);
-    });
-    if (nodes.has(id)) {
-      nodes.delete(id);
+    setSelectItem(scrollToItem);
+  }, [scrollToItem]);
+  useEffect(() => {
+    setCollapseNode(props.collapsedNodes || []);
+  }, [props.collapsedNodes]);
+
+  const changeCollapseNode = (item: IData) => {
+    const nodes: IData[] = [...collapseNode];
+    const index = nodes.indexOf(item);
+    if (index === -1) {
+      nodes.push(item);
     } else {
-      nodes.add(id);
+      nodes.splice(index, 1);
     }
     setCollapseNode(nodes);
+    if (onCollapseNode) {
+      onCollapseNode(nodes);
+    }
   };
-  const handleClickItem = (id: string) => {
-    setSelectItem(id);
+  const handleClickItem = (item: IData) => {
+    setSelectItem(item);
   };
 
   let currentCollapseIndentation: null | number = null;
@@ -135,8 +142,7 @@ function VTree({ data, highlightValue, selectedId, onRendered }: {
         currentCollapseIndentation = null;
       }
     }
-    const id = item.id;
-    const isCollapsed = collapseNode.has(id);
+    const isCollapsed = collapseNode.includes(item);
     if (isCollapsed) {
       // 该节点需要收起子节点
       currentCollapseIndentation = item.indentation;
@@ -146,14 +152,14 @@ function VTree({ data, highlightValue, selectedId, onRendered }: {
 
   return (
     <SizeObserver className={styles.treeContainer}>
-      {(width, height) => {
+      {(width: number, height: number) => {
         return (
           <VList
             data={data}
             width={width}
             height={height}
             itemHeight={18}
-            scrollIndex={data.indexOf(selectItem)}
+            scrollToItem={scrollToItem}
             filter={filter}
             onRendered={onRendered}
           >
@@ -164,8 +170,8 @@ function VTree({ data, highlightValue, selectedId, onRendered }: {
               return (
                 <Item
                   hasChild={hasChild}
-                  isCollapsed={collapseNode.has(item.id)}
-                  isSelect={selectItem === item.id}
+                  isCollapsed={collapseNode.includes(item)}
+                  isSelect={selectItem === item}
                   onCollapse={changeCollapseNode}
                   onClick={handleClickItem}
                   highlightValue={highlightValue}

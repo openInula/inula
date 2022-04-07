@@ -9,13 +9,39 @@ import { FilterTree } from '../components/FilterTree';
 import Close from '../svgs/Close';
 import Arrow from './../svgs/Arrow';
 
+const parseVNodeData = (rawData) => {
+  const idIndentationMap: {
+    [id: string]: number;
+  } = {};
+  const data: IData[] = [];
+  let i = 0;
+  while (i < rawData.length) {
+    const id = rawData[i] as string;
+    i++;
+    const name = rawData[i] as string;
+    i++;
+    const parentId = rawData[i] as string;
+    i++;
+    const userKey = rawData[i] as string;
+    i++;
+    const indentation = parentId === '' ? 0 : idIndentationMap[parentId] + 1;
+    idIndentationMap[id] = indentation;
+    const item = {
+      id, name, indentation, userKey
+    };
+    data.push(item);
+  }
+  return data;
+};
+
 function App() {
   const [parsedVNodeData, setParsedVNodeData] = useState([]);
   const [componentInfo, setComponentInfo] = useState({ name: null, attrs: {} });
 
   useEffect(() => {
     if (isDev) {
-      setParsedVNodeData(mockParsedVNodeData);
+      const parsedData = parseVNodeData(mockParsedVNodeData);
+      setParsedVNodeData(parsedData);
       setComponentInfo({
         name: 'Demo',
         attrs: {
@@ -25,37 +51,19 @@ function App() {
       });
     }
   }, []);
-  const idIndentationMap: {
-    [id: string]: number;
-  } = {};
-  const data: IData[] = [];
-  let i = 0;
-  while (i < parsedVNodeData.length) {
-    const id = parsedVNodeData[i] as string;
-    i++;
-    const name = parsedVNodeData[i] as string;
-    i++;
-    const parentId = parsedVNodeData[i] as string;
-    i++;
-    const userKey = parsedVNodeData[i] as string;
-    i++;
-    const indentation = parentId === '' ? 0 : idIndentationMap[parentId] + 1;
-    idIndentationMap[id] = indentation;
-    const item = {
-      id, name, indentation, userKey
-    };
-    data.push(item);
-  }
+
   const {
     filterValue,
-    setFilterValue,
+    onChangeSearchValue: setFilterValue,
     onClear,
-    selectId,
+    currentItem,
     matchItems,
     onSelectNext,
     onSelectLast,
     setShowItems,
-  } = FilterTree({ data });
+    collapsedNodes,
+    setcollapsedNodes,
+  } = FilterTree({ data: parsedVNodeData });
 
   const handleSearchChange = (str: string) => {
     setFilterValue(str);
@@ -77,19 +85,21 @@ function App() {
             <Search onChange={handleSearchChange} value={filterValue} />
           </div>
           {filterValue !== '' && <>
-            <span className={styles.searchResult}>{`${matchItems.indexOf(selectId) + 1}/${matchItems.length}`}</span>
+            <span className={styles.searchResult}>{`${matchItems.indexOf(currentItem) + 1}/${matchItems.length}`}</span>
             <div className={styles.divider} />
-            <button className={styles.searchAction} onClick={onSelectLast}><Arrow direction={'up'}/></button>
-            <button className={styles.searchAction} onClick={onSelectNext}><Arrow direction={'down'}/></button>
-            <button className={styles.searchAction} onClick={onClear}><Close/></button>
+            <button className={styles.searchAction} onClick={onSelectLast}><Arrow direction={'up'} /></button>
+            <button className={styles.searchAction} onClick={onSelectNext}><Arrow direction={'down'} /></button>
+            <button className={styles.searchAction} onClick={onClear}><Close /></button>
           </>}
         </div>
         <div className={styles.left_bottom}>
           <VTree
-            data={data}
+            data={parsedVNodeData}
             highlightValue={filterValue}
             onRendered={onRendered}
-            selectedId={selectId} />
+            collapsedNodes={collapsedNodes}
+            onCollapseNode={setcollapsedNodes}
+            scrollToItem={currentItem} />
         </div>
       </div>
       <div className={styles.right}>
