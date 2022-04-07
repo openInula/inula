@@ -2,7 +2,7 @@ import styles from './ComponentsInfo.less';
 import Eye from '../svgs/Eye';
 import Debug from '../svgs/Debug';
 import Copy from '../svgs/Copy';
-import Arrow from '../svgs/Arrow';
+import Triangle from '../svgs/Triangle';
 import { useState } from 'horizon';
 
 type IComponentInfo = {
@@ -53,7 +53,7 @@ function ComponentAttr({ name, attr }: { name: string, attr: IAttr[] }) {
     const isCollapsed = collapsedNode.has(index);
     showAttr.push(
       <div style={{ paddingLeft: item.indentation * 10 }} key={index} onClick={() => (handleCollapse(index))}>
-        <span className={styles.attrArrow}>{hasChild && <Arrow director={isCollapsed ? 'right' : 'down'} />}</span>
+        <span className={styles.attrArrow}>{hasChild && <Triangle director={isCollapsed ? 'right' : 'down'} />}</span>
         <span className={styles.attrName}>{`${item.name}`}</span>
         {' :'}
         <span className={styles.attrValue}>{item.value}</span>
