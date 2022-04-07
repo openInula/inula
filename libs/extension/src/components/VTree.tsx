@@ -12,30 +12,36 @@ export interface IData {
   userKey: string;
 }
 
-type IItem = {
+interface IItem {
   hasChild: boolean,
   onCollapse: (id: string) => void,
   onClick: (id: string) => void,
   isCollapsed: boolean,
   isSelect: boolean,
   highlightValue: string,
-} & IData
+  data: IData,
+}
 
 const indentationLength = 20;
 
 function Item(props: IItem) {
   const {
-    name,
-    userKey,
     hasChild,
     onCollapse,
     isCollapsed,
-    id,
-    indentation,
+    data,
     onClick,
     isSelect,
     highlightValue = '',
   } = props;
+  
+  const {
+    name,
+    userKey,
+    id,
+    indentation,  
+  } = data;
+
   const isShowKey = userKey !== '';
   const showIcon = hasChild ? <Triangle director={isCollapsed ? 'right' : 'down'} /> : '';
   const handleClickCollapse = () => {
@@ -163,7 +169,7 @@ function VTree({ data, highlightValue, selectedId, onRendered }: {
                   onCollapse={changeCollapseNode}
                   onClick={handleClickItem}
                   highlightValue={highlightValue}
-                  {...item} />
+                  data={item} />
               );
             }}
           </VList>
