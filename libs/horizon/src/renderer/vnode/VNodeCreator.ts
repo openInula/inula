@@ -38,7 +38,7 @@ const typeMap = {
   [TYPE_LAZY]: LazyComponent,
 };
 
-function newVirtualNode (tag: VNodeTag, key?: null | string, vNodeProps?: any, realNode?: any): VNode {
+function newVirtualNode(tag: VNodeTag, key?: null | string, vNodeProps?: any, realNode?: any): VNode {
   return new VNode(tag, vNodeProps, key, realNode);
 }
 
@@ -201,7 +201,7 @@ export function onlyUpdateChildVNodes(processing: VNode): VNode | null {
           sibling = sibling.next;
         }
       }
-    }
+    };
 
     putChildrenIntoQueue(processing.child);
 
@@ -210,7 +210,7 @@ export function onlyUpdateChildVNodes(processing: VNode): VNode | null {
 
       markVNodePath(vNode);
 
-      putChildrenIntoQueue(vNode)
+      putChildrenIntoQueue(vNode);
     }
   }
   // 子树无需工作

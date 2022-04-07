@@ -53,7 +53,7 @@ export function setParentsChildShouldUpdate(parent: VNode | null) {
 // 设置节点的所有父节点的childShouldUpdate
 export function updateParentsChildShouldUpdate(vNode: VNode) {
   let node = vNode.parent;
-  let isShouldUpdate = vNode.shouldUpdate || vNode.childShouldUpdate;
+  const isShouldUpdate = vNode.shouldUpdate || vNode.childShouldUpdate;
 
   if (isShouldUpdate) { // 开始节点是shouldUpdate或childShouldUpdate
     // 更新从当前节点到根节点的childShouldUpdate为true
