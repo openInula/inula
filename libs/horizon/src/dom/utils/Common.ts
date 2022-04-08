@@ -6,7 +6,7 @@ import {Props} from '../DOMOperator';
  * @param doc 指定 document
  */
 export function getFocusedDom(doc?: Document): HorizonDom | null {
-  let currentDocument = doc ?? document;
+  const currentDocument = doc ?? document;
 
   return currentDocument.activeElement ?? currentDocument.body;
 }
