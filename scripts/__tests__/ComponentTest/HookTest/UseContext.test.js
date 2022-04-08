@@ -1,6 +1,6 @@
 import * as Horizon from '@cloudsop/horizon/index.ts';
 
-describe('useContext Hook Test', () => {;
+describe('useContext Hook Test', () => {
   const { useState, useContext, createContext, act, unmountComponentAtNode } = Horizon;
 
   it('简单使用useContext', () => {
