@@ -1,6 +1,5 @@
 import * as Horizon from '@cloudsop/horizon/index.ts';
 import * as LogUtils from '../jest/logUtils';
-import { act } from '../jest/customMatcher';
 
 describe('合成焦点事件', () => {
 

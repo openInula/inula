@@ -56,11 +56,13 @@ export function captureFunctionComponent(
   );
 
   // 这里需要判断是否可以复用，因为函数组件比起其他组价，多了context和stateChange两个因素
-  if (isCanReuse && !isStateChange()) {
+  if (isCanReuse && !isStateChange() && !processing.isStoreChange) {
     FlagUtils.removeFlag(processing, Update);
 
     return onlyUpdateChildVNodes(processing);
   }
+
+  processing.isStoreChange = false;
 
   processing.child = createChildrenByDiff(processing, processing.child, newElements, !processing.isCreated);
   return processing.child;

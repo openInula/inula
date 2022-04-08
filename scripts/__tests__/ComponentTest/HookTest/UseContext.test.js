@@ -1,9 +1,7 @@
 import * as Horizon from '@cloudsop/horizon/index.ts';
-import { act } from '../../jest/customMatcher';
 
-describe('useContext Hook Test', () => {
-  const { useState, useContext, createContext } = Horizon;
-  const { unmountComponentAtNode } = Horizon;
+describe('useContext Hook Test', () => {;
+  const { useState, useContext, createContext, act, unmountComponentAtNode } = Horizon;
 
   it('简单使用useContext', () => {
     const LanguageTypes = {
@@ -14,12 +12,16 @@ describe('useContext Hook Test', () => {
     const SystemLanguageContext = Horizon.createContext(defaultValue);
 
     const SystemLanguageProvider = ({ type, children }) => {
-      return <SystemLanguageContext.Provider value={{ type }}>{children}</SystemLanguageContext.Provider>;
+      return (
+        <SystemLanguageContext.Provider value={{ type }}>
+          {children}
+        </SystemLanguageContext.Provider>
+      );
     };
     const TestFunction = () => {
       const context = useContext(SystemLanguageContext);
       return <p id="p">{context.type}</p>;
-    };
+    }
     let setValue;
     const App = () => {
       const [value, _setValue] = useState(LanguageTypes.JAVA);
@@ -30,8 +32,8 @@ describe('useContext Hook Test', () => {
             <TestFunction />
           </SystemLanguageProvider>
         </div>
-      );
-    };
+      )
+    }
     Horizon.render(<TestFunction />, container);
     // 测试当Provider未提供时，获取到的默认值'JavaScript'。
     expect(container.querySelector('p').innerHTML).toBe('JavaScript');
