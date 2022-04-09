@@ -27,7 +27,7 @@ function expandItemParent(item: BaseType, data: BaseType[], collapsedNodes: Base
   const index = data.indexOf(item);
   let currentIndentation = item.indentation;
   // 不对原始数据进行修改
-  const newcollapsedNodes = [...collapsedNodes];
+  const newCollapsedNodes = [...collapsedNodes];
   for (let i = index - 1; i >= 0; i--) {
     const lastData = data[i];
     const lastIndentation = lastData.indentation;
@@ -35,13 +35,13 @@ function expandItemParent(item: BaseType, data: BaseType[], collapsedNodes: Base
     if (lastIndentation < currentIndentation) {
       // 更新缩进值，只找父节点的父节点，避免修改父节点的兄弟节点的展开状态
       currentIndentation = lastIndentation;
-      const cIndex = newcollapsedNodes.indexOf(lastData);
+      const cIndex = newCollapsedNodes.indexOf(lastData);
       if (cIndex !== -1) {
-        newcollapsedNodes.splice(cIndex, 1);
+        newCollapsedNodes.splice(cIndex, 1);
       }
     }
   }
-  return newcollapsedNodes;
+  return newCollapsedNodes;
 }
 
 type BaseType = {
