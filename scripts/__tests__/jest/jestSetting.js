@@ -17,7 +17,27 @@ global.afterEach(() => {
   LogUtils.clear();
 });
 
+
+function runAssertion(fn) {
+  try {
+    fn();
+  } catch (error) {
+    return {
+      pass: false,
+      message: () => error.message,
+    };
+  }
+  return { pass: true };
+}
+
+function toMatchValue(LogUtils, expectedValues) {
+  return runAssertion(() => {
+    const actualValues = LogUtils.getAndClear();
+    expect(actualValues).toEqual(expectedValues);
+  });
+}
+
 // 使Jest感知自定义匹配器
 expect.extend({
-  ...require('./customMatcher'),
+  toMatchValue,
 });

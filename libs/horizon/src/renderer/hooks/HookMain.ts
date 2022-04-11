@@ -1,26 +1,15 @@
 import type {VNode} from '../Types';
-import hookMapping from './HookMapping';
 
-const {
-  UseStateHookMapping,
-  UseReducerHookMapping,
-  UseContextHookMapping,
-} = hookMapping;
-
-import {getNewContext} from '../components/context/Context';
 import {
   getLastTimeHook,
-  getProcessingVNode,
   setLastTimeHook,
   setProcessingVNode,
   setCurrentHook, getNextHook
 } from './BaseHook';
-import {useStateImpl} from './UseStateHook';
-import {useReducerImpl} from './UseReducerHook';
 import {HookStage, setHookStage} from './HookStage';
 
 // hook对外入口
-export function exeFunctionHook<Props extends Record<string, any>, Arg>(
+export function runFunctionWithHooks<Props extends Record<string, any>, Arg>(
   funcComp: (props: Props, arg: Arg) => any,
   props: Props,
   arg: Arg,
@@ -28,9 +17,6 @@ export function exeFunctionHook<Props extends Record<string, any>, Arg>(
 ) {
   // 重置全局变量
   resetGlobalVariable();
-
-  // 初始化hook实现函数
-  initHookMapping();
 
   setProcessingVNode(processing);
 
@@ -71,8 +57,3 @@ function resetGlobalVariable() {
   setCurrentHook(null);
 }
 
-export function initHookMapping() {
-  UseContextHookMapping.val = {useContext: context => getNewContext(getProcessingVNode(), context, true)};
-  UseReducerHookMapping.val = {useReducer: useReducerImpl};
-  UseStateHookMapping.val = {useState: useStateImpl};
-}

@@ -38,9 +38,9 @@ const typeMap = {
   [TYPE_LAZY]: LazyComponent,
 };
 
-const newVirtualNode = function(tag: VNodeTag, key?: null | string, vNodeProps?: any, realNode?: any): VNode {
+function newVirtualNode(tag: VNodeTag, key?: null | string, vNodeProps?: any, realNode?: any): VNode {
   return new VNode(tag, vNodeProps, key, realNode);
-};
+}
 
 function isClassComponent(comp: Function) {
   // 如果使用 getPrototypeOf 方法获取构造函数，不能兼容业务组组件继承组件的使用方式，会误认为是函数组件
@@ -66,7 +66,7 @@ export function updateVNode(vNode: VNode, vNodeProps?: any): VNode {
   }
 
   if (vNode.tag === SuspenseComponent) {
-    vNode.oldSuspenseChildStatus = vNode.suspenseChildStatus;
+    vNode.suspenseState.oldChildStatus = vNode.suspenseState.childStatus;
     vNode.oldChild = vNode.child;
   }
 
@@ -201,7 +201,7 @@ export function onlyUpdateChildVNodes(processing: VNode): VNode | null {
           sibling = sibling.next;
         }
       }
-    }
+    };
 
     putChildrenIntoQueue(processing.child);
 
@@ -210,7 +210,7 @@ export function onlyUpdateChildVNodes(processing: VNode): VNode | null {
 
       markVNodePath(vNode);
 
-      putChildrenIntoQueue(vNode)
+      putChildrenIntoQueue(vNode);
     }
   }
   // 子树无需工作
