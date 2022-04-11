@@ -32,11 +32,11 @@
   .componentInfoMain {
     overflow-y: auto;
 
-    :last-child {
+    >:last-child {
       border-bottom: unset;
     }
 
-    :first-child {
+    >:first-child {
       padding: unset;
     }
 
@@ -57,15 +57,11 @@
         .attrType {
           flex: 1 1 0;
         }
-
-
         .attrCopy {
           flex: 0 0 1rem;
           padding-right: 1rem;
         }
       }
-
-
       .attrDetail {
         padding-bottom: 0.5rem;
 
@@ -84,9 +80,19 @@
         }
       }
     }
+  }
 
-    .renderInfo {
-      flex: 1 1 0;
+  .parentsInfo {
+    flex: 1 1 0;
+    .parent {
+      display: block;
+      cursor: pointer;
+      text-align: left;
+      color: @component-name-color;
+      width: 100%;
+      &:hover {
+        background-color: @select-color;
+      }
     }
   }
 }

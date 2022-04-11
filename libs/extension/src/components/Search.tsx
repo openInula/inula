@@ -2,10 +2,11 @@ import styles from './Search.less';
 
 interface SearchProps {
   onChange: (event: any) => void,
+  value: string,
 }
 
 export default function Search(props: SearchProps) {
-  const { onChange } = props;
+  const { onChange, value } = props;
   const handleChange = (event) => {
     onChange(event.target.value);
   };
@@ -13,6 +14,7 @@ export default function Search(props: SearchProps) {
     <input
       onChange={handleChange}
       className={styles.search}
+      value={value}
       placeholder={'Search (text or /regex/)'}
     />
   );
