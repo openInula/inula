@@ -102,13 +102,20 @@ function VTree(props: {
   onRendered: (renderInfo: renderInfoType<IData>) => void,
   collapsedNodes?: IData[],
   onCollapseNode?: (item: IData[]) => void,
+  selectItem: IData[],
+  onSelectItem: (item: IData) => void,
 }) {
-  const { data, highlightValue, scrollToItem, onRendered, onCollapseNode } = props;
+  const { data, highlightValue, scrollToItem, onRendered, onCollapseNode, onSelectItem } = props;
   const [collapseNode, setCollapseNode] = useState(props.collapsedNodes || []);
-  const [selectItem, setSelectItem] = useState(scrollToItem);
+  const [selectItem, setSelectItem] = useState(props.selectItem);
   useEffect(() => {
     setSelectItem(scrollToItem);
   }, [scrollToItem]);
+  useEffect(() => {
+    if (props.selectItem !== selectItem) {
+      setSelectItem(props.selectItem);
+    }
+  }, [props.selectItem]);
   useEffect(() => {
     setCollapseNode(props.collapsedNodes || []);
   }, [props.collapsedNodes]);
@@ -128,6 +135,9 @@ function VTree(props: {
   };
   const handleClickItem = (item: IData) => {
     setSelectItem(item);
+    if (onSelectItem) {
+      onSelectItem(item);
+    }
   };
 
   let currentCollapseIndentation: null | number = null;
@@ -159,7 +169,7 @@ function VTree(props: {
             width={width}
             height={height}
             itemHeight={18}
-            scrollToItem={scrollToItem}
+            scrollToItem={selectItem}
             filter={filter}
             onRendered={onRendered}
           >

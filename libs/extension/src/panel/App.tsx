@@ -34,23 +34,27 @@ const parseVNodeData = (rawData) => {
   return data;
 };
 
+const getParents = (item: IData | null, parsedVNodeData: IData[]) => {
+  const parents: IData[] = [];
+  if (item) {
+    const index = parsedVNodeData.indexOf(item);
+    let indentation = item.indentation;
+    for (let i = index; i >= 0; i--) {
+      const last = parsedVNodeData[i];
+      const lastIndentation = last.indentation;
+      if (lastIndentation < indentation) {
+        parents.push(last);
+        indentation = lastIndentation;
+      }
+    }
+  }
+  return parents;
+};
+
 function App() {
   const [parsedVNodeData, setParsedVNodeData] = useState([]);
-  const [componentInfo, setComponentInfo] = useState({ name: null, attrs: {} });
-
-  useEffect(() => {
-    if (isDev) {
-      const parsedData = parseVNodeData(mockParsedVNodeData);
-      setParsedVNodeData(parsedData);
-      setComponentInfo({
-        name: 'Demo',
-        attrs: {
-          state: parsedMockState,
-          props: parsedMockState,
-        },
-      });
-    }
-  }, []);
+  const [componentAttrs, setComponentAttrs] = useState({});
+  const [selectComp, setSelectComp] = useState(null);
 
   const {
     filterValue,
@@ -65,13 +69,37 @@ function App() {
     setCollapsedNodes,
   } = FilterTree({ data: parsedVNodeData });
 
+  useEffect(() => {
+    if (isDev) {
+      const parsedData = parseVNodeData(mockParsedVNodeData);
+      setParsedVNodeData(parsedData);
+      setComponentAttrs({
+        state: parsedMockState,
+        props: parsedMockState,
+      });
+    }
+  }, []);
+
   const handleSearchChange = (str: string) => {
     setFilterValue(str);
+  };
+
+  const handleSelectComp = (item: IData) => {
+    setComponentAttrs({
+      state: parsedMockState,
+      props: parsedMockState,
+    });
+    setSelectComp(item);
+  };
+
+  const handleClickParent = (item: IData) => {
+    setSelectComp(item);
   };
 
   const onRendered = (info) => {
     setShowItems(info.visibleItems);
   };
+  const parents = getParents(selectComp, parsedVNodeData);
 
   return (
     <div className={styles.app}>
@@ -99,11 +127,17 @@ function App() {
             onRendered={onRendered}
             collapsedNodes={collapsedNodes}
             onCollapseNode={setCollapsedNodes}
-            scrollToItem={currentItem} />
+            scrollToItem={currentItem}
+            selectItem={selectComp}
+            onSelectItem={handleSelectComp} />
         </div>
       </div>
       <div className={styles.right}>
-        <ComponentInfo name={componentInfo.name} attrs={componentInfo.attrs} />
+        <ComponentInfo
+          name={selectComp ? selectComp.name: null}
+          attrs={selectComp ? componentAttrs: {}}
+          parents={parents}
+          onClickParent={handleClickParent} />
       </div>
     </div>
   );

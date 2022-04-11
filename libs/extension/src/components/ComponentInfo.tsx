@@ -4,6 +4,7 @@ import Debug from '../svgs/Debug';
 import Copy from '../svgs/Copy';
 import Triangle from '../svgs/Triangle';
 import { useState } from 'horizon';
+import { IData } from './VTree';
 
 type IComponentInfo = {
   name: string;
@@ -12,7 +13,9 @@ type IComponentInfo = {
     context?: IAttr[];
     state?: IAttr[];
     hooks?: IAttr[];
-  }
+  };
+  parents: IData[];
+  onClickParent: (item: IData) => void;
 };
 
 type IAttr = {
@@ -84,28 +87,38 @@ function ComponentAttr({ name, attrs }: { name: string, attrs: IAttr[] }) {
   );
 }
 
-export default function ComponentInfo({ name, attrs }: IComponentInfo) {
+export default function ComponentInfo({ name, attrs, parents, onClickParent }: IComponentInfo) {
   const { state, props, context, hooks } = attrs;
   return (
     <div className={styles.infoContainer} >
       <div className={styles.componentInfoHead}>
-        <span className={styles.name}>
-          {name}
-        </span>
-        <span className={styles.eye} >
-          <Eye />
-        </span>
-        <span className={styles.debug}>
-          <Debug />
-        </span>
+        {name && <>
+          <span className={styles.name}>
+            {name}
+          </span>
+          <span className={styles.eye} >
+            <Eye />
+          </span>
+          <span className={styles.debug}>
+            <Debug />
+          </span>
+        </>}
       </div>
       <div className={styles.componentInfoMain}>
         {context && <ComponentAttr name={'context'} attrs={context} />}
         {props && <ComponentAttr name={'props'} attrs={props} />}
         {state && <ComponentAttr name={'state'} attrs={state} />}
         {hooks && <ComponentAttr name={'hook'} attrs={hooks} />}
-        <div className={styles.renderInfo}>
-          rendered by
+        <div className={styles.parentsInfo}>
+          {name && <div>
+            parents: {
+              parents.map(item => (<button
+              className={styles.parent}
+                onClick={() => (onClickParent(item))}>
+                {item.name}
+              </button>))
+            }
+          </div>}
         </div>
       </div>
     </div>
