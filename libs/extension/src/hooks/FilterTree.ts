@@ -62,11 +62,11 @@ export function FilterTree<T extends BaseType>(props: { data: T[] }) {
   const collapsedNodes = collapsedNodesRef.current;
 
   const updateCollapsedNodes = (item: BaseType) => {
-    const newcollapsedNodes = expandItemParent(item, data, collapsedNodes);
+    const newCollapsedNodes = expandItemParent(item, data, collapsedNodes);
     // 如果新旧收起节点数组长度不一样，说明存在收起节点
-    if (newcollapsedNodes.length !== collapsedNodes.length) {
+    if (newCollapsedNodes.length !== collapsedNodes.length) {
       // 更新引用，确保 VTree 拿到新的 collapsedNodes
-      collapsedNodesRef.current = newcollapsedNodes;
+      collapsedNodesRef.current = newCollapsedNodes;
     }
   };
 

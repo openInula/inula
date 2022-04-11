@@ -5,7 +5,7 @@ import ComponentInfo from '../components/ComponentInfo';
 import styles from './App.less';
 import Select from '../svgs/Select';
 import { mockParsedVNodeData, parsedMockState } from '../devtools/mock';
-import { FilterTree } from '../components/FilterTree';
+import { FilterTree } from '../hooks/FilterTree';
 import Close from '../svgs/Close';
 import Arrow from './../svgs/Arrow';
 
