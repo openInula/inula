@@ -41,5 +41,5 @@ describe('合成焦点事件', () => {
       'onBlurCapture: blur',
       'onBlur: blur',
     ]);
-  })
-})
+  });
+});

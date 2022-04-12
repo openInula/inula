@@ -21,7 +21,7 @@ describe('useContext Hook Test', () => {
     const TestFunction = () => {
       const context = useContext(SystemLanguageContext);
       return <p id="p">{context.type}</p>;
-    }
+    };
     let setValue;
     const App = () => {
       const [value, _setValue] = useState(LanguageTypes.JAVA);
@@ -32,8 +32,8 @@ describe('useContext Hook Test', () => {
             <TestFunction />
           </SystemLanguageProvider>
         </div>
-      )
-    }
+      );
+    };
     Horizon.render(<TestFunction />, container);
     // 测试当Provider未提供时，获取到的默认值'JavaScript'。
     expect(container.querySelector('p').innerHTML).toBe('JavaScript');
