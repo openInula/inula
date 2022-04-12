@@ -1,7 +1,9 @@
-import { useState } from 'horizon';
+import { useState, useEffect } from 'horizon';
 import styles from './VTree.less';
-import Arrow from '../svgs/Arrow';
+import Triangle from '../svgs/Triangle';
 import { createRegExp } from './../utils';
+import { SizeObserver } from './SizeObserver';
+import { renderInfoType, VList } from './VList';
 
 export interface IData {
   id: string;
@@ -10,44 +12,44 @@ export interface IData {
   userKey: string;
 }
 
-type IItem = {
-  style: any,
+interface IItem {
   hasChild: boolean,
-  onCollapse: (id: string) => void,
-  onClick: (id: string) => void,
+  onCollapse: (data: IData) => void,
+  onClick: (id: IData) => void,
   isCollapsed: boolean,
   isSelect: boolean,
   highlightValue: string,
-} & IData
+  data: IData,
+}
 
-// TODO: 计算可以展示的最多数量，并且监听显示器高度变化修改数值
-const showNum = 70;
-const lineHeight = 18;
 const indentationLength = 20;
 
 function Item(props: IItem) {
   const {
-    name,
-    style,
-    userKey,
     hasChild,
     onCollapse,
     isCollapsed,
-    id,
-    indentation,
+    data,
     onClick,
     isSelect,
-    highlightValue,
+    highlightValue = '',
   } = props;
+
+  const {
+    name,
+    userKey,
+    indentation,
+  } = data;
+
   const isShowKey = userKey !== '';
-  const showIcon = hasChild ? <Arrow director={isCollapsed ? 'right' : 'down'} /> : '';
+  const showIcon = hasChild ? <Triangle director={isCollapsed ? 'right' : 'down'} /> : '';
   const handleClickCollapse = () => {
-    onCollapse(id);
+    onCollapse(data);
   };
   const handleClick = () => {
-    onClick(id);
+    onClick(data);
   };
-  const itemAttr: any = { style, className: styles.treeItem, onClick: handleClick };
+  const itemAttr: any = { className: styles.treeItem, onClick: handleClick };
   if (isSelect) {
     itemAttr.tabIndex = 0;
     itemAttr.className = styles.treeItem + ' ' + styles.select;
@@ -93,81 +95,103 @@ function Item(props: IItem) {
   );
 }
 
-function VTree({ data, highlightValue }: { data: IData[], highlightValue: string }) {
-  const [scrollTop, setScrollTop] = useState(0);
-  const [collapseNode, setCollapseNode] = useState(new Set<string>());
-  const [selectItem, setSelectItem] = useState();
-  const changeCollapseNode = (id: string) => {
-    const nodes = new Set<string>();
-    collapseNode.forEach(value => {
-      nodes.add(value);
-    });
-    if (nodes.has(id)) {
-      nodes.delete(id);
+function VTree(props: {
+  data: IData[],
+  highlightValue: string,
+  scrollToItem: IData,
+  onRendered: (renderInfo: renderInfoType<IData>) => void,
+  collapsedNodes?: IData[],
+  onCollapseNode?: (item: IData[]) => void,
+  selectItem: IData[],
+  onSelectItem: (item: IData) => void,
+}) {
+  const { data, highlightValue, scrollToItem, onRendered, onCollapseNode, onSelectItem } = props;
+  const [collapseNode, setCollapseNode] = useState(props.collapsedNodes || []);
+  const [selectItem, setSelectItem] = useState(props.selectItem);
+  useEffect(() => {
+    setSelectItem(scrollToItem);
+  }, [scrollToItem]);
+  useEffect(() => {
+    if (props.selectItem !== selectItem) {
+      setSelectItem(props.selectItem);
+    }
+  }, [props.selectItem]);
+  useEffect(() => {
+    setCollapseNode(props.collapsedNodes || []);
+  }, [props.collapsedNodes]);
+
+  const changeCollapseNode = (item: IData) => {
+    const nodes: IData[] = [...collapseNode];
+    const index = nodes.indexOf(item);
+    if (index === -1) {
+      nodes.push(item);
     } else {
-      nodes.add(id);
+      nodes.splice(index, 1);
     }
     setCollapseNode(nodes);
+    if (onCollapseNode) {
+      onCollapseNode(nodes);
+    }
   };
-  const handleClickItem = (id: string) => {
-    setSelectItem(id);
+  const handleClickItem = (item: IData) => {
+    setSelectItem(item);
+    if (onSelectItem) {
+      onSelectItem(item);
+    }
   };
-  const showList: any[] = [];
 
-  let totalHeight = 0;
   let currentCollapseIndentation: null | number = null;
-  data.forEach((item, index) => {
-    // 存在未处理完的收起节点
+  // 过滤掉折叠的 item，不展示在 VList 中
+  const filter = (item: IData) => {
     if (currentCollapseIndentation !== null) {
-      const indentation = item.indentation;
       // 缩进更大，不显示
-      if (indentation > currentCollapseIndentation) {
-        return;
+      if (item.indentation > currentCollapseIndentation) {
+        return false;
       } else {
         // 缩进小，说明完成了该收起节点的子节点处理。
         currentCollapseIndentation = null;
       }
     }
-    const id = item.id;
-    const isCollapsed = collapseNode.has(id);
-    if (totalHeight >= scrollTop && showList.length <= showNum) {
-      const nextItem = data[index + 1];
-      // 如果存在下一个节点，并且节点缩进比自己大，说明下个节点是子节点，节点本身需要显示展开收起图标
-      const hasChild = nextItem ? nextItem.indentation > item.indentation : false;
-      showList.push(
-        <Item
-          key={id}
-          hasChild={hasChild}
-          style={{
-            transform: `translateY(${totalHeight}px)`,
-          }}
-          onCollapse={changeCollapseNode}
-          onClick={handleClickItem}
-          isCollapsed={isCollapsed}
-          isSelect={id === selectItem}
-          highlightValue={highlightValue}
-          {...item} />
-      );
-    }
-    totalHeight = totalHeight + lineHeight;
+    const isCollapsed = collapseNode.includes(item);
     if (isCollapsed) {
       // 该节点需要收起子节点
       currentCollapseIndentation = item.indentation;
     }
-  });
-
-  const handleScroll = (event: any) => {
-    const scrollTop = event.target.scrollTop;
-    // 顶部留 100px 冗余高度
-    setScrollTop(Math.max(scrollTop - 100, 0));
+    return true;
   };
 
   return (
-    <div className={styles.treeContainer} onScroll={handleScroll}>
-      {showList}
-      {/* 确保有足够的高度 */}
-      <div style={{ marginTop: totalHeight }} />
-    </div>
+    <SizeObserver className={styles.treeContainer}>
+      {(width: number, height: number) => {
+        return (
+          <VList
+            data={data}
+            width={width}
+            height={height}
+            itemHeight={18}
+            scrollToItem={selectItem}
+            filter={filter}
+            onRendered={onRendered}
+          >
+            {(index: number, item: IData) => {
+              // 如果存在下一个节点，并且节点缩进比自己大，说明下个节点是子节点，节点本身需要显示展开收起图标
+              const nextItem = data[index + 1];
+              const hasChild = nextItem && nextItem.indentation > item.indentation;
+              return (
+                <Item
+                  hasChild={hasChild}
+                  isCollapsed={collapseNode.includes(item)}
+                  isSelect={selectItem === item}
+                  onCollapse={changeCollapseNode}
+                  onClick={handleClickItem}
+                  highlightValue={highlightValue}
+                  data={item} />
+              );
+            }}
+          </VList>
+        );
+      }}
+    </SizeObserver>
   );
 }
 
