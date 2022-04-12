@@ -73,3 +73,6 @@ export function useImperativeHandle<T>(
 ): void {
   return useImperativeHandleImpl(ref, create, deps);
 }
+
+// 兼容react-redux
+export const useDebugValue = () => {};
