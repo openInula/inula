@@ -6,10 +6,11 @@ describe('事件', () => {
   it('根节点挂载全量事件', () => {
     const App = () => {
       return <div />;
-    }
+    };
     Horizon.render(<App />, container);
     console.log(TestUtils.getEventListeners(container));
-  })
+    //expect(TestUtils.getEventListeners(container)).toBe(true);
+  });
 
   it('事件捕获与冒泡', () => {
     const App = () => {
@@ -22,7 +23,7 @@ describe('事件', () => {
           </div>
         </>
       );
-    }
+    };
     Horizon.render(<App />, container);
     const a = container.querySelector('button');
     a.click();
@@ -35,7 +36,7 @@ describe('事件', () => {
       'p bubble',
       'div bubble'
     ]);
-  })
+  });
 
   it('returns 0', () => {
     let keyCode = null;
@@ -68,7 +69,7 @@ describe('事件', () => {
           </div>
         </>
       );
-    }
+    };
     Horizon.render(<App />, container);
     container.querySelector('button').click();
 
@@ -79,7 +80,7 @@ describe('事件', () => {
       'btn capture',
       'btn bubble'
     ]);
-  })
+  });
 
   it('阻止事件捕获', () => {
     const App = () => {
@@ -92,7 +93,7 @@ describe('事件', () => {
           </div>
         </>
       );
-    }
+    };
     Horizon.render(<App />, container);
     container.querySelector('button').click();
 
@@ -100,7 +101,7 @@ describe('事件', () => {
       // 阻止捕获，不再继续向下执行
       'div capture'
     ]);
-  })
+  });
 
   it('阻止原生事件冒泡', () => {
     const App = () => {
@@ -111,7 +112,7 @@ describe('事件', () => {
           </p>
         </div>
       );
-    }
+    };
     Horizon.render(<App />, container);
     container.querySelector('div').addEventListener('click', () => {
       LogUtils.log('div bubble');
@@ -127,5 +128,5 @@ describe('事件', () => {
     expect(LogUtils.getAndClear()).toEqual([
       'btn bubble'
     ]);
-  })
-})
+  });
+});

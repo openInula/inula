@@ -19,7 +19,7 @@ const getAndClear = () => {
 
 const clear = () => {
   dataArray = dataArray ? null : dataArray;
-}
+};
 
 exports.clear = clear;
 exports.log = log;

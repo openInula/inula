@@ -34,7 +34,7 @@ describe('useReducer Hook Test', () => {
               price: 88
             };
         }
-      }
+      };
       const [car, carDispatch] = useReducer(carReducer, intlCar);
       dispatch = carDispatch;
       return (
@@ -42,8 +42,8 @@ describe('useReducer Hook Test', () => {
           <p>{car.logo}</p>
           <p id={'senP'}>{car.price}</p>
         </div>
-      )
-    }
+      );
+    };
     Horizon.render(<App />, container);
     expect(container.querySelector('p').innerHTML).toBe('');
     expect(container.querySelector('#senP').innerHTML).toBe('0');

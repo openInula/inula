@@ -18,8 +18,8 @@ describe('useRef Hook Test', () => {
           <p id="sp">{ref.current}</p>
           <button onClick={() => setNum(num + 1)} />
         </>
-      )
-    }
+      );
+    };
     Horizon.render(<App />, container);
     expect(container.querySelector('p').innerHTML).toBe('1');
     expect(container.querySelector('#sp').innerHTML).toBe('1');
@@ -41,9 +41,8 @@ describe('useRef Hook Test', () => {
           </button>
           <Text text={ref.current} />;
         </>
-      )
-
-    }
+      );
+    };
     Horizon.render(<App />, container);
     expect(LogUtils.getAndClear()).toEqual([1]);
     expect(container.querySelector('p').innerHTML).toBe('1');
