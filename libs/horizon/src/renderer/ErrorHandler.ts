@@ -2,7 +2,7 @@
  * 异常错误处理
  */
 
-import type {VNode} from './Types';
+import type { PromiseType, VNode } from './Types';
 import type {Update} from './UpdateHandler';
 
 import {ClassComponent, TreeRoot} from './vnode/VNodeTags';
@@ -62,7 +62,9 @@ function createClassErrorUpdate(
   }
   return update;
 }
-
+function isPromise(error: any): error is PromiseType<any> {
+  return error !== null && typeof error === 'object' && typeof error.then === 'function'
+}
 // 处理capture和bubble阶段抛出的错误
 export function handleRenderThrowError(
   sourceVNode: VNode,
@@ -74,7 +76,7 @@ export function handleRenderThrowError(
   sourceVNode.dirtyNodes = null;
 
   // error是个promise
-  if (error !== null && typeof error === 'object' && typeof error.then === 'function') {
+  if (isPromise(error)) {
     // 抛出异常的节点，向上寻找，是否有suspense组件
     const foundSuspense = handleSuspenseChildThrowError(sourceVNode.parent, sourceVNode, error);
     if (foundSuspense) {

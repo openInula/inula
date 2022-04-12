@@ -1,17 +1,15 @@
 import type {ContextType} from '../Types';
 
-import hookMapping from './HookMapping';
 import {useRefImpl} from './UseRefHook';
 import {useEffectImpl, useLayoutEffectImpl} from './UseEffectHook';
 import {useCallbackImpl} from './UseCallbackHook';
 import {useMemoImpl} from './UseMemoHook';
 import {useImperativeHandleImpl} from './UseImperativeHook';
-
-const {
-  UseContextHookMapping,
-  UseReducerHookMapping,
-  UseStateHookMapping
-} = hookMapping;
+import {useReducerImpl} from './UseReducerHook';
+import {useStateImpl} from './UseStateHook';
+import {getNewContext} from '../components/context/Context';
+import {getProcessingVNode} from './BaseHook';
+import {Ref, Trigger} from './HookType';
 
 type BasicStateAction<S> = ((S) => S) | S;
 type Dispatch<A> = (A) => void;
@@ -20,22 +18,23 @@ type Dispatch<A> = (A) => void;
 export function useContext<T>(
   Context: ContextType<T>,
 ): T {
-  return UseContextHookMapping.val.useContext(Context);
+  const processingVNode = getProcessingVNode();
+  return getNewContext(processingVNode!, Context, true);
 }
 
 export function useState<S>(initialState: (() => S) | S,): [S, Dispatch<BasicStateAction<S>>] {
-  return UseStateHookMapping.val.useState(initialState);
+  return useStateImpl(initialState);
 }
 
 export function useReducer<S, I, A>(
   reducer: (S, A) => S,
   initialArg: I,
   init?: (I) => S,
-): [S, Dispatch<A>] {
-  return UseReducerHookMapping.val.useReducer(reducer, initialArg, init);
+): [S, Trigger<A>] | void {
+  return useReducerImpl(reducer, initialArg, init);
 }
 
-export function useRef<T>(initialValue: T): {current: T} {
+export function useRef<T>(initialValue: T): Ref<T> {
   return useRefImpl(initialValue);
 }
 
@@ -74,3 +73,6 @@ export function useImperativeHandle<T>(
 ): void {
   return useImperativeHandleImpl(ref, create, deps);
 }
+
+// 兼容react-redux
+export const useDebugValue = () => {};

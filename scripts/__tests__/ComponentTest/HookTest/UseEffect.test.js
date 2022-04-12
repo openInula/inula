@@ -1,7 +1,6 @@
 import * as Horizon from '@cloudsop/horizon/index.ts';
 import * as LogUtils from '../../jest/logUtils';
-import { act } from '../../jest/customMatcher';
-import Text from '../../jest/Text';
+import { Text } from '../../jest/commonComponents';
 
 describe('useEffect Hook Test', () => {
   const {
@@ -9,7 +8,8 @@ describe('useEffect Hook Test', () => {
     useLayoutEffect,
     useState,
     memo,
-    forwardRef
+    forwardRef,
+    act,
   } = Horizon;
 
   it('简单使用useEffect', () => {

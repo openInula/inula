@@ -2,7 +2,7 @@
  * vNode结构的变化标志
  */
 
-import type { VNode } from '../Types';
+import type { VNode } from './VNode';
 
 
 export const InitFlag =   /**     */    0;

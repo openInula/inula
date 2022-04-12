@@ -3,13 +3,6 @@ import type { VNode } from '../Types';
 import { mergeDefaultProps } from './LazyComponent';
 import { getNewContext, resetDepContexts } from '../components/context/Context';
 import {
-  cacheOldCtx,
-  getOldContext,
-  isOldProvider,
-  resetOldCtx,
-  updateOldContext,
-} from '../components/context/CompatibleContext';
-import {
   callComponentWillMount,
   callComponentWillReceiveProps,
   callComponentWillUpdate,
@@ -25,39 +18,39 @@ import { markRef } from './BaseComponent';
 import {
   processUpdates,
 } from '../UpdateHandler';
-import { getContextChangeCtx, setContextChangeCtx } from '../ContextSaver';
 import { setProcessingClassVNode } from '../GlobalVar';
 import { onlyUpdateChildVNodes } from '../vnode/VNodeCreator';
 import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 
+const emptyContextObj = {};
 // 获取当前节点的context
 export function getCurrentContext(clazz, processing: VNode) {
   const context = clazz.contextType;
   return typeof context === 'object' && context !== null
     ? getNewContext(processing, context)
-    : getOldContext(processing, clazz, true);
+    : emptyContextObj;
 }
 
 // 挂载实例
-function mountInstance(clazz, processing: VNode, nextProps: object) {
+function mountInstance(ctor, processing: VNode, nextProps: object) {
   if (!processing.isCreated) {
     processing.isCreated = true;
     FlagUtils.markAddition(processing);
   }
 
   // 构造实例
-  const inst = callConstructor(processing, clazz, nextProps);
+  const inst = callConstructor(processing, ctor, nextProps);
 
   inst.props = nextProps;
   inst.state = processing.state;
-  inst.context = getCurrentContext(clazz, processing);
+  inst.context = getCurrentContext(ctor, processing);
   inst.refs = {};
 
   processUpdates(processing, inst, nextProps);
   inst.state = processing.state;
 
   // 在调用类组建的渲染方法之前调用 并且在初始挂载及后续更新时都会被调用
-  callDerivedStateFromProps(processing, clazz.getDerivedStateFromProps, nextProps);
+  callDerivedStateFromProps(processing, ctor.getDerivedStateFromProps, nextProps);
   callComponentWillMount(processing, inst, nextProps);
 
   markComponentDidMount(processing);
@@ -93,7 +86,7 @@ function callUpdateLifeCycle(processing: VNode, nextProps: object, clazz) {
   }
 }
 
-function markLifeCycle(processing: VNode, nextProps: object, shouldUpdate: Boolean) {
+function markLifeCycle(processing: VNode, nextProps: object, shouldUpdate: boolean) {
   if (processing.isCreated) {
     markComponentDidMount(processing);
   } else if (processing.state !== processing.oldState || shouldUpdate) {
@@ -104,28 +97,30 @@ function markLifeCycle(processing: VNode, nextProps: object, shouldUpdate: Boole
 
 // 用于类组件
 export function captureRender(processing: VNode): VNode | null {
-  let clazz = processing.type;
+  const ctor = processing.type;
   let nextProps = processing.props;
   if (processing.isLazyComponent) {
-    nextProps = mergeDefaultProps(clazz, nextProps);
-    if (processing.promiseResolve) { // 该函数被 lazy 组件使用，未加载的组件需要加载组件的真实内容
-      clazz = clazz._load(clazz._content);
-    }
+    nextProps = mergeDefaultProps(ctor, nextProps);
   }
-  const isOldCxtExist = isOldProvider(clazz);
-  cacheOldCtx(processing, isOldCxtExist);
 
   resetDepContexts(processing);
+
+  // suspense打断后，再次render只需初次渲染
+  if (processing.isSuspended) {
+    mountInstance(ctor, processing, nextProps);
+    processing.isSuspended = false;
+    return createChildren(ctor, processing);
+  }
 
   // 通过 shouldUpdate 判断是否要复用 children，该值和props,state,context的变化，shouldComponentUpdate,forceUpdate api的调用结果有关
   let shouldUpdate;
   const inst = processing.realNode;
   if (inst === null) {
     // 挂载新组件，一定会更新
-    mountInstance(clazz, processing, nextProps);
+    mountInstance(ctor, processing, nextProps);
     shouldUpdate = true;
   } else { // 更新
-    const newContext = getCurrentContext(clazz, processing);
+    const newContext = getCurrentContext(ctor, processing);
 
     // 子节点抛出异常时，如果本class是个捕获异常的处理节点，这时候oldProps是null，所以需要使用props
     const oldProps = (processing.flags & DidCapture) === DidCapture ? processing.props : processing.oldProps;
@@ -140,18 +135,17 @@ export function captureRender(processing: VNode): VNode | null {
     // 如果 props, state, context 都没有变化且 isForceUpdate 为 false则不需要更新
     shouldUpdate = oldProps !== processing.props ||
       inst.state !== processing.state ||
-      getContextChangeCtx() ||
       processing.isForceUpdate;
 
     if (shouldUpdate) {
       // derivedStateFromProps会修改nextState，因此需要调用
-      callDerivedStateFromProps(processing, clazz.getDerivedStateFromProps, nextProps);
+      callDerivedStateFromProps(processing, ctor.getDerivedStateFromProps, nextProps);
       if (!processing.isForceUpdate) {
         // 业务可以通过 shouldComponentUpdate 函数进行优化阻止更新
         shouldUpdate = callShouldComponentUpdate(processing, oldProps, nextProps, processing.state, newContext);
       }
       if (shouldUpdate) {
-        callUpdateLifeCycle(processing, nextProps, clazz);
+        callUpdateLifeCycle(processing, nextProps, ctor);
       }
       inst.state = processing.state;
       inst.context = newContext;
@@ -170,27 +164,10 @@ export function captureRender(processing: VNode): VNode | null {
 
   // 不复用
   if (shouldUpdate) {
-    // 更新context
-    if (isOldCxtExist) {
-      updateOldContext(processing);
-    }
-    return createChildren(clazz, processing);
+    return createChildren(ctor, processing);
   } else {
-    if (isOldCxtExist) {
-      setContextChangeCtx(processing, false);
-    }
     return onlyUpdateChildVNodes(processing);
   }
 }
 
-export function bubbleRender(processing: VNode) {
-  if (isOldProvider(processing.type)) {
-    resetOldCtx(processing);
-  }
-}
-
-// 用于未完成的类组件
-export function getIncompleteClassComponent(clazz, processing: VNode, nextProps: object): VNode | null {
-  mountInstance(clazz, processing, nextProps);
-  return createChildren(clazz, processing);
-}
+export function bubbleRender() {}

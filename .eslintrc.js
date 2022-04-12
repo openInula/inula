@@ -1,19 +1,13 @@
 module.exports = {
   extends: [
     'eslint:recommended',
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
     'prettier',
   ],
   root: true,
 
-  plugins: [
-    'jest',
-    'no-for-of-loops',
-    'no-function-declare-after-return',
-    'react',
-    '@typescript-eslint',
-  ],
+  plugins: ['jest', 'no-for-of-loops', 'no-function-declare-after-return', 'react', '@typescript-eslint'],
 
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -34,7 +28,9 @@ module.exports = {
   rules: {
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
-    'semi': ["error", "always"],
+    '@typescript-eslint/no-empty-function': 'off',
+    semi: ['warn', 'always'],
+    quotes: ['warn', 'single'],
     'accessor-pairs': 'off',
     'brace-style': ['error', '1tbs'],
     'func-style': ['warn', 'declaration', { allowArrowFunctions: true }],
@@ -43,19 +39,18 @@ module.exports = {
     // 尾随逗号
     'comma-dangle': ['error', 'only-multiline'],
 
+    'no-constant-condition': 'off',
     'no-for-of-loops/no-for-of-loops': 'error',
     'no-function-declare-after-return/no-function-declare-after-return': 'error',
   },
   globals: {
-    isDev: true
+    isDev: true,
   },
   overrides: [
     {
-      files: [
-        'scripts/__tests__/**/*.js'
-      ],
+      files: ['scripts/__tests__/**/*.js'],
       globals: {
-        container: true
+        container: true,
       },
     },
   ],

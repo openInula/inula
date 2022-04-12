@@ -1,0 +1,38 @@
+@import 'assets.less';
+
+.treeContainer {
+  height: 100%;
+
+  .treeItem {
+    width: 100%;
+    position: absolute;
+    line-height: 18px;
+
+    &:hover {
+      background-color: @select-color;
+    }
+
+    .treeIcon {
+      color: @arrow-color;
+      display: inline-block;
+      width: 12px;
+      padding-left: 0.5rem;
+    }
+
+    .componentName {
+      color: @component-name-color;
+    }
+
+    .componentKeyName {
+      color: @component-key-color;
+    }
+
+    .componentKeyValue {
+      color: @componentKeyValue-color;
+    }
+  }
+
+  .select {
+    background-color: rgb(141 199 248 / 60%);
+  }
+}

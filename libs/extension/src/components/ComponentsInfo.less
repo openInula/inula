@@ -1,0 +1,98 @@
+@import 'assets.less';
+
+.infoContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+
+  .componentInfoHead {
+    flex: 0 0 @top-height;
+    display: flex;
+    align-items: center;
+    border-bottom: @divider-style;
+
+    .name {
+      flex: 1 1 0;
+      padding: 0 1rem 0 1rem;
+    }
+
+    .eye {
+      flex: 0 0 1rem;
+      padding-right: 1rem;
+    }
+
+    .debug {
+      flex: 0 0 1rem;
+      padding-right: 1rem;
+    }
+  }
+
+
+  .componentInfoMain {
+    overflow-y: auto;
+
+    >:last-child {
+      border-bottom: unset;
+    }
+
+    >:first-child {
+      padding: unset;
+    }
+
+    >div {
+      border-bottom: @divider-style;
+      padding: 0.5rem
+    }
+
+    .attrContainer {
+      flex: 0 0;
+
+      .attrHead {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0.5rem 0.5rem 0 0.5rem;
+
+        .attrType {
+          flex: 1 1 0;
+        }
+        .attrCopy {
+          flex: 0 0 1rem;
+          padding-right: 1rem;
+        }
+      }
+      .attrDetail {
+        padding-bottom: 0.5rem;
+
+        .attrArrow {
+          color: @arrow-color;
+          width: 12px;
+          display: inline-block;
+        }
+
+        .attrName {
+          color: @attr-name-color;
+        }
+
+        .attrValue {
+          margin-left: 4px;
+        }
+      }
+    }
+  }
+
+  .parentsInfo {
+    flex: 1 1 0;
+    .parent {
+      display: block;
+      cursor: pointer;
+      text-align: left;
+      color: @component-name-color;
+      width: 100%;
+      &:hover {
+        background-color: @select-color;
+      }
+    }
+  }
+}

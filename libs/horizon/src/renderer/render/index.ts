@@ -9,7 +9,6 @@ import * as DomComponentRender from './DomComponent';
 import * as DomPortalRender from './DomPortal';
 import * as TreeRootRender from './TreeRoot';
 import * as DomTextRender from './DomText';
-import * as IncompleteClassComponentRender from './IncompleteClassComponent';
 import * as LazyComponentRender from './LazyComponent';
 import * as MemoComponentRender from './MemoComponent';
 import * as SuspenseComponentRender from './SuspenseComponent';
@@ -25,15 +24,14 @@ import {
   DomPortal,
   TreeRoot,
   DomText,
-  IncompleteClassComponent,
   LazyComponent,
   MemoComponent,
   SuspenseComponent,
 } from '../vnode/VNodeTags';
 
 export {
-  BaseComponentRender
-}
+  BaseComponentRender,
+};
 
 export default {
   [ClassComponent]: ClassComponentRender,
@@ -46,8 +44,7 @@ export default {
   [DomPortal]: DomPortalRender,
   [TreeRoot]: TreeRootRender,
   [DomText]: DomTextRender,
-  [IncompleteClassComponent]: IncompleteClassComponentRender,
   [LazyComponent]: LazyComponentRender,
   [MemoComponent]: MemoComponentRender,
   [SuspenseComponent]: SuspenseComponentRender,
-}
+};

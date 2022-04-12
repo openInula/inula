@@ -54,3 +54,10 @@ export interface PromiseType<R> {
   ): void | PromiseType<U>;
 }
 
+export interface SuspenseState {
+  promiseSet: Set<PromiseType<any>> | null; // suspense组件的promise列表
+  childStatus: string;
+  oldChildStatus: string; // 上一次Suspense的Children是否显示
+  didCapture: boolean; // suspense是否捕获了异常
+  promiseResolved: boolean; // suspense的promise是否resolve
+}

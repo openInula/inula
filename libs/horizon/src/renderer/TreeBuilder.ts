@@ -29,7 +29,7 @@ import {
   isExecuting,
   setExecuteMode
 } from './ExecuteMode';
-import { recoverParentsContextCtx, resetNamespaceCtx, setNamespaceCtx } from './ContextSaver';
+import { recoverParentContext, resetNamespaceCtx, setNamespaceCtx } from './ContextSaver';
 import {
   updateChildShouldUpdate,
   updateParentsChildShouldUpdate,
@@ -231,7 +231,7 @@ function buildVNodeTree(treeRoot: VNode) {
     }
 
     // 恢复父节点的context
-    recoverParentsContextCtx(startVNode);
+    recoverParentContext(startVNode);
   }
 
   // 重置环境变量，为重新进行深度遍历做准备
