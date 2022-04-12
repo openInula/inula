@@ -28,6 +28,7 @@ module.exports = {
   rules: {
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/no-empty-function': 'off',
     semi: ['warn', 'always'],
     quotes: ['warn', 'single'],
     'accessor-pairs': 'off',

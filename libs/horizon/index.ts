@@ -24,6 +24,7 @@ import {
   useReducer,
   useRef,
   useState,
+  useDebugValue
 } from './src/renderer/hooks/HookExternal';
 import { launchUpdateFromVNode as _launchUpdateFromVNode, asyncUpdates } from './src/renderer/TreeBuilder';
 import { callRenderQueueImmediate } from './src/renderer/taskExecutor/RenderQueue';
@@ -54,6 +55,7 @@ const Horizon = {
   forwardRef,
   lazy,
   memo,
+  useDebugValue,
   useCallback,
   useContext,
   useEffect,
@@ -89,6 +91,7 @@ export {
   forwardRef,
   lazy,
   memo,
+  useDebugValue,
   useCallback,
   useContext,
   useEffect,
