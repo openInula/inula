@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import * as Horizon from '@cloudsop/horizon/index.ts';
 import * as LogUtils from '../jest/logUtils';
-import { act } from '../jest/customMatcher';
 
 describe('Dom Input', () => {
+  const { act } = Horizon;
 
   describe('type checkbox', () => {
     it('没有设置checked属性时，控制台不会报错', () => {
