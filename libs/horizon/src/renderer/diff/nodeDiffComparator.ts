@@ -402,8 +402,9 @@ function diffArrayNodesHandler(
         // 从Map删除，后面不会deleteVNode
         leftChildrenMap.delete(newNode.key || leftIdx);
       }
-
-      if (oldNodeFromMap !== null) {
+      if (newNode.isCreated) {
+        FlagUtils.setAddition(newNode);
+      } else if (oldNodeFromMap !== null) {
         const eIndex = newNode.eIndex;
         eIndexes.push(eIndex);
         last = eIndexes[result[result.length - 1]];
