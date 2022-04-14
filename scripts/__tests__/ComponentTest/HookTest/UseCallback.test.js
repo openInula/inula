@@ -7,15 +7,15 @@ describe('useCallback Hook Test', () => {
     const App = (props) => {
       const [num, setNum] = useState(0);
       const NumUseCallback = useCallback(() => {
-        setNum(num + props.text)
+        setNum(num + props.text);
       }, [props]);
       return (
         <>
           <p>{num}</p>
           <button onClick={NumUseCallback} />
         </>
-      )
-    }
+      );
+    };
     Horizon.render(<App text={1} />, container);
     expect(container.querySelector('p').innerHTML).toBe('0');
     // 点击按钮触发num加1

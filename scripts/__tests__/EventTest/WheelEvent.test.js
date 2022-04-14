@@ -22,7 +22,7 @@ describe('合成滚轮事件', () => {
     ]);
   });
 
-  it('可以执行preventDefault和 stopPropagation', () => {
+  it('可以执行preventDefault和stopPropagation', () => {
     const eventHandler = e => {
       expect(e.isDefaultPrevented()).toBe(false);
       e.preventDefault();
@@ -49,4 +49,4 @@ describe('合成滚轮事件', () => {
     ]);
   });
 
-})
+});

@@ -21,8 +21,8 @@ describe('useLayoutEffect Hook Test', () => {
           <p style={{ display: 'block' }} id="p">{num}</p>
           <button onClick={() => setNum(num + 1)} />
         </>
-      )
-    }
+      );
+    };
     Horizon.render(<App />, container);
     expect(document.getElementById('p').style.display).toBe('none');
     container.querySelector('button').click();
@@ -35,7 +35,7 @@ describe('useLayoutEffect Hook Test', () => {
         LogUtils.log('LayoutEffect');
       });
       return <Text text={props.num} />;
-    }
+    };
     Horizon.render(<App num={1} />, container, () => LogUtils.log('Sync effect'));
     expect(LogUtils.getAndClear()).toEqual([
       1,
@@ -69,7 +69,7 @@ describe('useLayoutEffect Hook Test', () => {
         };
       }, [props.num]);
       return <Text text={'num: ' + props.num} />;
-    }
+    };
 
     act(() => {
       Horizon.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
@@ -79,12 +79,12 @@ describe('useLayoutEffect Hook Test', () => {
         'callback effect'
       ]);
       expect(container.textContent).toBe('num: 0');
-    })
+    });
 
     // 更新
     act(() => {
       Horizon.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
-    })
+    });
     expect(LogUtils.getAndClear()).toEqual([
       // 异步effect
       'num effect [0]',
@@ -102,7 +102,7 @@ describe('useLayoutEffect Hook Test', () => {
 
     act(() => {
       Horizon.render(null, container, () => LogUtils.log('callback effect'));
-    })
+    });
     expect(LogUtils.getAndClear()).toEqual([
       // 同步Layouteffect销毁
       'num [1] Layouteffect destroy',

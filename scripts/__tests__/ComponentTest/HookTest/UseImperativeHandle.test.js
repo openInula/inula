@@ -17,12 +17,12 @@ describe('useImperativeHandle Hook Test', () => {
       const [num, setNum] = useState(0);
       useImperativeHandle(ref, () => ({ num, setNum }), []);
       return <p>{num}</p>;
-    }
+    };
     let App1 = (props, ref) => {
       const [num1, setNum1] = useState(0);
       useImperativeHandle(ref, () => ({ num1, setNum1 }), [num1]);
       return <p>{num1}</p>;
-    }
+    };
 
     App = forwardRef(App);
     App1 = forwardRef(App1);
@@ -53,12 +53,12 @@ describe('useImperativeHandle Hook Test', () => {
       const [num, setNum] = useState(0);
       useImperativeHandle(ref, () => ({ num, setNum }));
       return <Text text={num} />;
-    }
+    };
     let App1 = (props, ref) => {
       const [num1, setNum1] = useState(0);
       useImperativeHandle(ref, () => ({ num1, setNum1 }), []);
       return <Text text={num1} />;
-    }
+    };
 
     App = forwardRef(App);
     App1 = forwardRef(App1);

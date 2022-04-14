@@ -10,7 +10,7 @@ describe('Keyboard Event', () => {
           LogUtils.log('onKeyUp: keycode: ' + e.keyCode + ',charcode: ' + e.charCode);
         }}
         onKeyDown={(e) => {
-          LogUtils.log('onKeyDown: keycode: ' + e.keyCode + ',charcode: ' + e.charCode)
+          LogUtils.log('onKeyDown: keycode: ' + e.keyCode + ',charcode: ' + e.charCode);
         }}
       />,
       container,

@@ -12,6 +12,9 @@ export const getEventListeners = (dom) => {
   for (let key in dom) {
     keyArray.push(key);
   }
+  console.log(keyArray);
+  console.log('---------------------------------');
+  console.log(allDelegatedNativeEvents);
   try {
     allDelegatedNativeEvents.forEach(event => {
       if (!keyArray.includes(event)) {

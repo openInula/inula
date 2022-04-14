@@ -14,19 +14,11 @@ describe('MouseEvent Test', () => {
         }
 
         setNum() {
-          this.setState(
-            {
-              num: this.state.num + 1
-            }
-          )
+          this.setState({ num: this.state.num + 1 });
         }
 
         setPrice = (e) => {
-          this.setState(
-            {
-              num: this.state.price + 1
-            }
-          )
+          this.setState({ num: this.state.price + 1 });
         }
 
         render() {
@@ -53,15 +45,15 @@ describe('MouseEvent Test', () => {
 
     it('点击触发', () => {
       const handleClick = jest.fn();
-      Horizon.render(<button onClick={handleClick}>Click Me</button>, container)
+      Horizon.render(<button onClick={handleClick}>Click Me</button>, container);
       container.querySelector('button').click();
       expect(handleClick).toHaveBeenCalledTimes(1);
       for (let i = 0; i < 5; i++) {
         container.querySelector('button').click();
       }
       expect(handleClick).toHaveBeenCalledTimes(6);
-    })
-  })
+    });
+  });
 
   const test = (name, config) => {
     const node = Horizon.render(config, container);
@@ -89,7 +81,7 @@ describe('MouseEvent Test', () => {
       `${name} capture`,
       `${name} bubble`
     ]);
-  }
+  };
 
   describe('合成鼠标事件', () => {
     it('onMouseMove', () => {
@@ -102,7 +94,7 @@ describe('MouseEvent Test', () => {
       test('mousemove', <div
         onMouseMove={onMouseMove}
         onMouseMoveCapture={onMouseMoveCapture}
-      />)
+      />);
     });
 
     it('onMouseDown', () => {
@@ -115,7 +107,7 @@ describe('MouseEvent Test', () => {
       test('mousedown', <div
         onMousedown={onMousedown}
         onMousedownCapture={onMousedownCapture}
-      />)
+      />);
     });
 
     it('onMouseUp', () => {
@@ -128,7 +120,7 @@ describe('MouseEvent Test', () => {
       test('mouseup', <div
         onMouseUp={onMouseUp}
         onMouseUpCapture={onMouseUpCapture}
-      />)
+      />);
     });
 
     it('onMouseOut', () => {
@@ -141,7 +133,7 @@ describe('MouseEvent Test', () => {
       test('mouseout', <div
         onMouseOut={onMouseOut}
         onMouseOutCapture={onMouseOutCapture}
-      />)
+      />);
     });
 
     it('onMouseOver', () => {
@@ -154,7 +146,7 @@ describe('MouseEvent Test', () => {
       test('mouseover', <div
         onMouseOver={onMouseOver}
         onMouseOverCapture={onMouseOverCapture}
-      />)
+      />);
     });
-  })
-})
+  });
+});

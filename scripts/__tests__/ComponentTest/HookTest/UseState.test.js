@@ -19,8 +19,8 @@ describe('useState Hook Test', () => {
           <p>{num}</p>
           <button onClick={() => setNum(num + 1)} />
         </>
-      )
-    }
+      );
+    };
     Horizon.render(<App />, container);
     expect(container.querySelector('p').innerHTML).toBe('0');
     // 点击按钮触发num加1
@@ -42,7 +42,7 @@ describe('useState Hook Test', () => {
           {num}{count}
         </p>
       );
-    }
+    };
     Horizon.render(<App />, container);
     expect(container.querySelector('p').innerHTML).toBe('00');
     container.querySelector('p').click();
@@ -64,7 +64,7 @@ describe('useState Hook Test', () => {
           {num}
         </p>
       );
-    }
+    };
     Horizon.render(<App />, container);
     expect(container.querySelector('p').innerHTML).toBe('0');
     container.querySelector('p').click();
@@ -79,7 +79,7 @@ describe('useState Hook Test', () => {
       const [num, _setNum] = useState(0);
       setNum = _setNum;
       return <Text text={num} />;
-    }
+    };
     Horizon.render(<App />, container);
     expect(container.querySelector('p').innerHTML).toBe('0');
     expect(LogUtils.getAndClear()).toEqual([0]);
@@ -93,12 +93,12 @@ describe('useState Hook Test', () => {
     const App = forwardRef((props, ref) => {
       const [num, setNum] = useState(() => {
         LogUtils.log(props.initNum);
-        return props.initNum
+        return props.initNum;
       });
-      useImperativeHandle(ref, () => ({ setNum }))
+      useImperativeHandle(ref, () => ({ setNum }));
       return <p>{num}</p>;
 
-    })
+    });
     const ref = Horizon.createRef(null);
     Horizon.render(<App initNum={1} ref={ref} />, container);
     expect(LogUtils.getAndClear()).toEqual([1]);
@@ -116,7 +116,7 @@ describe('useState Hook Test', () => {
       const [num, _setNum] = useState(0);
       setNum = _setNum;
       return <Text text={num} />;
-    })
+    });
     Horizon.render(<App />, container);
     expect(LogUtils.getAndClear()).toEqual([0]);
     expect(container.querySelector('p').innerHTML).toBe('0');
@@ -125,13 +125,12 @@ describe('useState Hook Test', () => {
     expect(LogUtils.getAndClear()).toEqual([]);
     expect(container.querySelector('p').innerHTML).toBe('0');
     // 会重新渲染
-    setNum(1)
+    setNum(1);
     expect(LogUtils.getAndClear()).toEqual([1]);
     expect(container.querySelector('p').innerHTML).toBe('1');
   });
 
   it('卸载useState', () => {
-    // let updateA;
     let setNum;
     let setCount;
 
@@ -149,7 +148,7 @@ describe('useState Hook Test', () => {
       }
 
       return <Text text={`Number: ${num}, Count: ${count}`} />;
-    }
+    };
 
     Horizon.render(<App hasCount={true} />, container);
     expect(LogUtils.getAndClear()).toEqual(['Number: 0, Count: 0']);
@@ -161,10 +160,9 @@ describe('useState Hook Test', () => {
     expect(LogUtils.getAndClear()).toEqual(['Number: 1, Count: 2']);
     expect(container.textContent).toBe('Number: 1, Count: 2');
 
+    jest.spyOn(console, 'error').mockImplementation();
     expect(() => {
       Horizon.render(<App hasCount={false} />, container);
-    }).toThrow(
-      'Hooks are less than expected, please check whether the hook is written in the condition.',
-    );
+    }).toThrow('Hooks are less than expected, please check whether the hook is written in the condition.');
   });
 });

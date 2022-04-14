@@ -1,6 +1,8 @@
 import { unmountComponentAtNode } from '../../../libs/horizon/src/dom/DOMExternal';
 import * as LogUtils from '../jest/logUtils';
+import failOnConsole from 'jest-fail-on-console';
 
+failOnConsole();
 global.isDev = process.env.NODE_ENV === 'development';
 global.container = null;
 global.beforeEach(() => {

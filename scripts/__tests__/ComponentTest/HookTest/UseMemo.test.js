@@ -14,27 +14,27 @@ describe('useMemo Hook Test', () => {
       const text = useMemo(() => {
         setNum(num + 1);
         return memoDependent;
-      }, [memoDependent])
+      }, [memoDependent]);
       return (
         <>
           <p>{text}</p>
           <p id="p">{num}</p>
         </>
       );
-    }
+    };
     Horizon.render(<App words="App" />, container);
     expect(container.querySelector('p').innerHTML).toBe('App');
     expect(container.querySelector('#p').innerHTML).toBe('1');
     // 修改useMemo的依赖项，num会加一，text会改变。
-    setMemo('Apps')
+    setMemo('Apps');
     expect(container.querySelector('p').innerHTML).toBe('Apps');
     expect(container.querySelector('#p').innerHTML).toBe('2');
     // useMemo的依赖项不变，num不会加一，text不会改变。
-    setMemo('Apps')
+    setMemo('Apps');
     expect(container.querySelector('p').innerHTML).toBe('Apps');
     expect(container.querySelector('#p').innerHTML).toBe('2');
     // 修改useMemo的依赖项，num会加一，text会改变。
-    setMemo('App')
+    setMemo('App');
     expect(container.querySelector('p').innerHTML).toBe('App');
     expect(container.querySelector('#p').innerHTML).toBe('3');
   });
@@ -46,7 +46,7 @@ describe('useMemo Hook Test', () => {
         return props._num + 1;
       }, [props._num]);
       return <Text text={num} />;
-    }
+    };
     Horizon.render(<App _num={0} />, container);
     expect(LogUtils.getAndClear()).toEqual([
       0,
@@ -78,17 +78,17 @@ describe('useMemo Hook Test', () => {
     const App = (props) => {
       const num = useMemo(props._num);
       return <Text text={num} />;
-    }
+    };
 
     const num1 = () => {
       LogUtils.log('num 1');
       return 1;
-    }
+    };
 
     const num2 = () => {
       LogUtils.log('num 2');
       return 2;
-    }
+    };
 
     Horizon.render(<App _num={num1} />, container);
     expect(LogUtils.getAndClear()).toEqual(['num 1', 1]);
