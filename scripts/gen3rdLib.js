@@ -23,7 +23,7 @@ const readLib = (lib) => {
 ejs.renderFile(path.resolve(__dirname, './template.ejs'), {
   Horizon: readLib(`horizon.${suffix}`),
 }, null, function(err, result) {
-  const common3rdLibPath = path.resolve(__dirname, `${libPathPrefix}/common3rdlib.min.js`)
+  const common3rdLibPath = path.resolve(__dirname, `${libPathPrefix}/horizonCommon3rdlib.min.js`)
   rimRaf(common3rdLibPath, e => {
     if (e) {
       console.log(e)

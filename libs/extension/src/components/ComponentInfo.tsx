@@ -18,7 +18,7 @@ type IComponentInfo = {
   onClickParent: (item: IData) => void;
 };
 
-type IAttr = {
+export type IAttr = {
   name: string;
   type: string;
   value: string | boolean;

@@ -2,7 +2,6 @@
 devtools_page: devtool主页面
 default_popup: 拓展图标点击时弹窗页面
 content_scripts: 内容脚本，在项目中负责在页面初始化时调用注入全局变量代码和消息传递
-web_accessible_resources: 注入全局变量代码
 
 ## 打开 panel 页面调试面板的方式
 
@@ -53,5 +52,12 @@ sequenceDiagram
 - 每个vNode有唯一的 path 属性，可以作为标识使用
 - 通过解析 path 值可以分析出组件树的结构
 
+## 组件props/state/hook等数据的传输和解析
+将数据格式进行转换后进行传递。对于 props 和 类组件的 state，他们都是对象，可以将对象进行解析然后以 k-v 的形式，树的结构显示。函数组件的 Hooks 是以数组的形式存储在 vNode 的属性中的，每个 hook 的唯一标识符是 hIndex 属性值，在对象展示的时候不能展示该属性值，需要根据 hook 类型展示一个 state/ref/effect 等值。hook 中存储的值也可能不是对象，只是一个简单的字符串，他们的解析和 props/state 的解析同样存在差异。
+
+
 ## 滚动动态渲染 Tree
 考虑到组件树可能很大，所以并不适合一次性全部渲染出来，可以通过滚动渲染的方式减少页面 dom 的数量。我们可以把树看成有不同缩进长度的列表，动态渲染滚动列表的实现可以参考谷歌的这篇文章：https://developers.google.com/web/updates/2016/07/infinite-scroller 这样，我们需要的组件树数据可以由树结构转变为数组，可以减少动态渲染时对树结构进行解析时的计算工作。
+
+## 测试框架
+jest测试框架不提供浏览器插件的相关 api，我们在封装好相关 api 后需要模拟这些 api 的行为从而展开测试工作。

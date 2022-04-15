@@ -60,7 +60,7 @@ export function addResizeListener(element: any, fn: any) {
     observer.data = 'about:blank';
     observer.onload = loadObserver;
     observer.type = 'text/html';
-    observer.__observeElement__ = element;
+    observer['__observeElement__'] = element;
     element.__observer__ = observer;
     element.appendChild(observer);
   } else {
