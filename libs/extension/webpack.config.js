@@ -7,7 +7,6 @@ const config = {
     injector: './src/injector/index.ts',
     contentScript: './src/contentScript/index.ts',
     panel: './src/panel/index.tsx',
-    popup: './src/popup/index.ts',
   },
   output: {
     path: path.resolve(__dirname, './build'),
