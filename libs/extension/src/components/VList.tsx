@@ -1,3 +1,5 @@
+// TODO:当前的 item 渲染效果较差，每次滚动所有项在数组中的位置都会发生变更。
+// 建议修改成选项增加减少时，未变更项在原数组中位置不变更
 
 import { useState, useRef, useEffect } from 'horizon';
 import styles from './VList.less';
@@ -30,7 +32,7 @@ export function VList<T extends { id: string }>(props: IProps<T>) {
   } = props;
   const [scrollTop, setScrollTop] = useState(data.indexOf(scrollToItem) * itemHeight);
   const renderInfoRef: { current: renderInfoType<T> } = useRef({ visibleItems: [], skipItemCountBeforeScrollItem: 0 });
-  const containerRef = useRef();
+  const containerRef = useRef<HTMLDivElement>();
   useEffect(() => {
     onRendered(renderInfoRef.current);
   });

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'horizon';
 import styles from './VTree.less';
 import Triangle from '../svgs/Triangle';
-import { createRegExp } from './../utils';
+import { createRegExp } from '../utils/regExpUtils';
 import { SizeObserver } from './SizeObserver';
 import { renderInfoType, VList } from './VList';
 
@@ -102,7 +102,7 @@ function VTree(props: {
   onRendered: (renderInfo: renderInfoType<IData>) => void,
   collapsedNodes?: IData[],
   onCollapseNode?: (item: IData[]) => void,
-  selectItem: IData[],
+  selectItem: IData,
   onSelectItem: (item: IData) => void,
 }) {
   const { data, highlightValue, scrollToItem, onRendered, onCollapseNode, onSelectItem } = props;

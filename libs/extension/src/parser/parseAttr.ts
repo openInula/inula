@@ -1,12 +1,8 @@
+import { IAttr } from "../components/ComponentInfo";
 
 // 将状态的值解析成固定格式
 export function parseAttr(rootAttr: any) {
-  const result: {
-    name: string,
-    type: string,
-    value: string,
-    indentation: number
-  }[] = [];
+  const result: IAttr[] = [];
   const indentation = 0;
   const parseSubAttr = (attr: any, parentIndentation: number, attrName: string) => {
     const stateType = typeof attr;

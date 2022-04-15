@@ -13,7 +13,7 @@
 // 找到该节点的缩进值，和index值，在data中向上遍历，通过缩进值判断父节点
 
 import { useState, useRef } from 'horizon';
-import { createRegExp } from '../utils';
+import { createRegExp } from '../utils/regExpUtils';
 
 /**
  * 把节点的父节点从收起节点数组中删除，并返回新的收起节点数组

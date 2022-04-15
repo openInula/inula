@@ -4,8 +4,8 @@ import { addResizeListener, removeResizeListener } from './ResizeEvent';
 
 export function SizeObserver(props) {
   const { children, ...rest } = props;
-  const containerRef = useRef();
-  const [size, setSize] = useState();
+  const containerRef = useRef<HTMLDivElement>();
+  const [size, setSize] = useState<{width: number, height: number}>();
   const notifyChild = (element) => {
     setSize({
       width: element.offsetWidth,
