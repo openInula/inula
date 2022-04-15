@@ -354,13 +354,12 @@ function diffArrayNodesHandler(
       rightIdx - leftIdx === newChildren.length) {
       isDirectAdd = true;
     }
+    const isAddition = parentNode.tag === DomPortal || !parentNode.isCreated;
     for (; leftIdx < rightIdx; leftIdx++) {
       newNode = getNewNode(parentNode, newChildren[leftIdx], null);
 
       if (newNode !== null) {
-        if (parentNode.tag === DomPortal) {
-          FlagUtils.setAddition(newNode);
-        } else if (!parentNode.isCreated) {
+        if (isAddition) {
           FlagUtils.setAddition(newNode);
         }
         if (isDirectAdd) {
