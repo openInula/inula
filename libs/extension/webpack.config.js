@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 
 const config = {
   entry: {
@@ -45,6 +46,12 @@ const config = {
   externals: {
     'horizon': 'Horizon',
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': '"development"',
+      isDev: 'false',
+    }),
+  ],
 };
 
 module.exports = config;
