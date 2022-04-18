@@ -27,24 +27,44 @@ sequenceDiagram
     participant panel
 
     Note over web_page: window.postMessage
-    web_page ->> script_content : {}
+    web_page ->> script_content : data
     Note over script_content: window.addEventListener
     Note over script_content: chrome.runtime.sendMessage
-    script_content ->> background : {}
+    script_content ->> background : data
     Note over background: chrome.runtime.onMessage
     Note over background: port.postMessage
-    background ->> panel : {}
+    background ->> panel : data
     Note over panel: connection.onMessage.addListener
     Note over panel: connection.postMessage
-    panel ->> background : {}
+    panel ->> background : data
     Note over background: port.onMessage.addListener
     Note over background: chrome.tabs.sendMessage
-    background ->> script_content : {}
+    background ->> script_content : data
     Note over script_content: chrome.runtime.onMessage
     Note over script_content: window.postMessage
-    script_content ->> web_page : {}
+    script_content ->> web_page : data
     Note over web_page: window.addEventListener
 ```
+
+## 传输数据结构
+```ts
+type passData = {
+  type: 'HORIZON_DEV_TOOLS',
+  payload: {
+    type: string,
+    data: any,
+  }
+}
+```
+
+## horizon和devTools的主要交互
+- 页面初始渲染
+- 页面更新
+- 页面销毁
+- devTools触发组件属性更新
+
+## VNode的清理
+全局 hook 中保存了root VNode，在解析 VNode 树的时候也会保存 VNode 的引用，在清理VNode的时候这些 VNode 的引用也需要删除。
 
 ## 数据压缩
 渲染组件树需要知道组件名和层次信息，如果把整个vNode树传递过来，传递对象太大，最好将数据进行压缩然后传递。
@@ -59,5 +79,13 @@ sequenceDiagram
 ## 滚动动态渲染 Tree
 考虑到组件树可能很大，所以并不适合一次性全部渲染出来，可以通过滚动渲染的方式减少页面 dom 的数量。我们可以把树看成有不同缩进长度的列表，动态渲染滚动列表的实现可以参考谷歌的这篇文章：https://developers.google.com/web/updates/2016/07/infinite-scroller 这样，我们需要的组件树数据可以由树结构转变为数组，可以减少动态渲染时对树结构进行解析时的计算工作。
 
+## 开发者页面打开场景
+- 先有页面，然后打开开发者工具：工具建立连接，发送通知，页面hook收到后发送VNode树信息给工具页面
+- 已经打开开发者工具，然后打开页面：业务页面渲染完毕，发送VNode树信息给工具页面
+
+## 开发者工具页面响应组件树变更
+组件树变更会带来新旧两个组件树信息数组，新旧数组存在数据一致而引用不一致的情况，而VTree和VList组件中相关信息的计算依赖引用而非数据本身，在收到新的组件树信息后需要对数据本身进行判断，将新数组中的相同数据使用旧对象代替。
+
 ## 测试框架
 jest测试框架不提供浏览器插件的相关 api，我们在封装好相关 api 后需要模拟这些 api 的行为从而展开测试工作。
+
