@@ -275,6 +275,11 @@ function renderFromRoot(treeRoot) {
   // 2. 提交变更
   submitToRender(treeRoot);
 
+  if (window.__HORIZON_DEV_HOOK__) {
+    const hook = window.__HORIZON_DEV_HOOK__;
+    hook.addIfNotInclude(treeRoot);
+    hook.send(treeRoot);
+  }
   return null;
 }
 

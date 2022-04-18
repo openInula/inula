@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'horizon';
+import { useState, useEffect, useRef } from 'horizon';
 import VTree, { IData } from '../components/VTree';
 import Search from '../components/Search';
 import ComponentInfo from '../components/ComponentInfo';
@@ -8,6 +8,8 @@ import { mockParsedVNodeData, parsedMockState } from '../devtools/mock';
 import { FilterTree } from '../hooks/FilterTree';
 import Close from '../svgs/Close';
 import Arrow from './../svgs/Arrow';
+import { initDevToolPageConnection, allVNodeTreesInfos, requestComponentAttrs } from './../utils/constants';
+import { packagePayload } from './../utils/transferTool';
 
 const parseVNodeData = (rawData) => {
   const idIndentationMap: {
@@ -55,6 +57,7 @@ function App() {
   const [parsedVNodeData, setParsedVNodeData] = useState([]);
   const [componentAttrs, setComponentAttrs] = useState({});
   const [selectComp, setSelectComp] = useState(null);
+  const treeRootInfos = useRef<{[id: string]: number}>({}); // 记录保存的根节点 id 和长度
 
   const {
     filterValue,
@@ -77,6 +80,34 @@ function App() {
         state: parsedMockState,
         props: parsedMockState,
       });
+    } else {
+      const connection = chrome.runtime.connect({
+        name: 'panel'
+      });
+      // 页面打开后发送初始化请求
+      connection.postMessage(packagePayload({
+        type: initDevToolPageConnection,
+        data: chrome.devtools.inspectedWindow.tabId
+      }));
+      // 监听 background消息
+      connection.onMessage.addListener(function (message) {
+        const { payload } = message;
+        if (payload) {
+          const { type, data } = payload;
+          if (type === allVNodeTreesInfos) {
+            const allTreeData = data.reduce((pre, current) => {
+              const parsedTreeData = parseVNodeData(current);
+              const length = parsedTreeData.length;
+              if (length) {
+                const treeRoot = parsedTreeData[0];
+                treeRootInfos.current[treeRoot.id] = length;
+              }
+              return pre.concat(parsedTreeData);
+            }, []);
+            setParsedVNodeData(allTreeData);
+          }
+        }
+      });
     }
   }, []);
 
@@ -85,10 +116,17 @@ function App() {
   };
 
   const handleSelectComp = (item: IData) => {
-    setComponentAttrs({
-      state: parsedMockState,
-      props: parsedMockState,
-    });
+    if (isDev) {
+      setComponentAttrs({
+        state: parsedMockState,
+        props: parsedMockState,
+      });
+    } else {
+      connection.postMessage({
+        name: requestComponentAttrs,
+        data: item.id
+      });
+    }
     setSelectComp(item);
   };
 
@@ -134,8 +172,8 @@ function App() {
       </div>
       <div className={styles.right}>
         <ComponentInfo
-          name={selectComp ? selectComp.name: null}
-          attrs={selectComp ? componentAttrs: {}}
+          name={selectComp ? selectComp.name : null}
+          attrs={selectComp ? componentAttrs : {}}
           parents={parents}
           onClickParent={handleClickParent} />
       </div>
