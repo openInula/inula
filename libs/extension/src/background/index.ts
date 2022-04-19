@@ -66,5 +66,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   } else {
     console.log('sender.tab not defined.');
   }
-  return true;
+  // 需要返回消息告知完成通知，否则会出现报错 message port closed before a response was received
+  sendResponse({status: 'ok'});
 });

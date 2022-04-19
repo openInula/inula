@@ -68,10 +68,22 @@ if (!isDev) {
 }
 
 function postMessage(type: string, data: any) {
-  connection.postMessage(packagePayload({
-    type: type,
-    data: data,
-  }, DevToolPanel));
+  try {
+    connection.postMessage(packagePayload({
+      type: type,
+      data: data,
+    }, DevToolPanel));
+  } catch(err) {
+    // 可能出现 port 关闭的场景，需要重新建立连接，增加可靠性
+    console.error(err);
+    connection = chrome.runtime.connect({
+      name: 'panel'
+    });
+    connection.postMessage(packagePayload({
+      type: type,
+      data: data,
+    }, DevToolPanel));
+  }
 }
 
 function App() {

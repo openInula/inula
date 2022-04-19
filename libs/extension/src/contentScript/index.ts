@@ -25,7 +25,7 @@ window.addEventListener('message', event => {
 
 // 监听来自background的消息
 chrome.runtime.onMessage.addListener(
-  function (message, sender) {
+  function (message, sender, sendResponse) {
     // 该方法可以监听页面 contentScript 和插件的消息
     // 没有 tab 信息说明消息来自插件
     if (!sender.tab && checkMessage(message, DevToolBackground)) {
@@ -33,5 +33,6 @@ chrome.runtime.onMessage.addListener(
       // 传递消息给页面
       window.postMessage(message, '*');
     }
+    sendResponse({status: 'ok'});
   }
 );
