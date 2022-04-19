@@ -8,7 +8,13 @@ import { mockParsedVNodeData, parsedMockState } from '../devtools/mock';
 import { FilterTree } from '../hooks/FilterTree';
 import Close from '../svgs/Close';
 import Arrow from './../svgs/Arrow';
-import { initDevToolPageConnection, allVNodeTreesInfos, requestComponentAttrs } from './../utils/constants';
+import {
+  InitDevToolPageConnection,
+  AllVNodeTreesInfos,
+  RequestComponentAttrs,
+  ComponentAttrs,
+  DevToolPanel,
+} from './../utils/constants';
 import { packagePayload } from './../utils/transferTool';
 
 const parseVNodeData = (rawData) => {
@@ -18,7 +24,7 @@ const parseVNodeData = (rawData) => {
   const data: IData[] = [];
   let i = 0;
   while (i < rawData.length) {
-    const id = rawData[i] as string;
+    const id = rawData[i] as number;
     i++;
     const name = rawData[i] as string;
     i++;
@@ -53,11 +59,26 @@ const getParents = (item: IData | null, parsedVNodeData: IData[]) => {
   return parents;
 };
 
+let connection;
+if (!isDev) {
+  // 与 background 的唯一连接
+  connection = chrome.runtime.connect({
+    name: 'panel'
+  });
+}
+
+function postMessage(type: string, data: any) {
+  connection.postMessage(packagePayload({
+    type: type,
+    data: data,
+  }, DevToolPanel));
+}
+
 function App() {
   const [parsedVNodeData, setParsedVNodeData] = useState([]);
   const [componentAttrs, setComponentAttrs] = useState({});
   const [selectComp, setSelectComp] = useState(null);
-  const treeRootInfos = useRef<{[id: string]: number}>({}); // 记录保存的根节点 id 和长度
+  const treeRootInfos = useRef<{id: number, length: number}[]>([]); // 记录保存的根节点 id 和长度，
 
   const {
     filterValue,
@@ -81,30 +102,31 @@ function App() {
         props: parsedMockState,
       });
     } else {
-      const connection = chrome.runtime.connect({
-        name: 'panel'
-      });
       // 页面打开后发送初始化请求
-      connection.postMessage(packagePayload({
-        type: initDevToolPageConnection,
-        data: chrome.devtools.inspectedWindow.tabId
-      }));
+      postMessage(InitDevToolPageConnection, chrome.devtools.inspectedWindow.tabId);
       // 监听 background消息
       connection.onMessage.addListener(function (message) {
         const { payload } = message;
         if (payload) {
           const { type, data } = payload;
-          if (type === allVNodeTreesInfos) {
+          if (type === AllVNodeTreesInfos) {
             const allTreeData = data.reduce((pre, current) => {
               const parsedTreeData = parseVNodeData(current);
               const length = parsedTreeData.length;
+              treeRootInfos.current.length = 0;
               if (length) {
                 const treeRoot = parsedTreeData[0];
-                treeRootInfos.current[treeRoot.id] = length;
+                treeRootInfos.current.push({id: treeRoot.id, length: length});
               }
               return pre.concat(parsedTreeData);
             }, []);
             setParsedVNodeData(allTreeData);
+          } else if (type === ComponentAttrs) {
+            const {parsedProps, parsedState} = data;
+            setComponentAttrs({
+              state: parsedProps,
+              props: parsedState,
+            });
           }
         }
       });
@@ -122,10 +144,7 @@ function App() {
         props: parsedMockState,
       });
     } else {
-      connection.postMessage({
-        name: requestComponentAttrs,
-        data: item.id
-      });
+      postMessage(RequestComponentAttrs, item.id);
     }
     setSelectComp(item);
   };
