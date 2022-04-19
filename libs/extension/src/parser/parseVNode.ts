@@ -61,7 +61,7 @@ export function queryVNode(id: number) {
   return IdToVNodeMap.get(id);
 }
 
-export function deleteVNode(vNode: VNode) {
+export function clearVNode(vNode: VNode) {
   if (VNodeToIdMap.has(vNode)) {
     const id = VNodeToIdMap.get(vNode);
     VNodeToIdMap.delete(vNode);
