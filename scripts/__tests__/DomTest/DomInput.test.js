@@ -172,6 +172,11 @@ describe('Dom Input', () => {
       expect(realNode.getAttribute('value')).toBe('default');
     });
 
+    it('value为0、defaultValue为1，input 的value应该为0', () => {
+      const input = Horizon.render(<input defaultValue={1} value={0} />, container);
+      expect(input.getAttribute('value')).toBe('0');
+    });
+
     it('name属性', () => {
       let realNode = Horizon.render(<input type='text' name={'name'} />, container);
       expect(realNode.name).toBe('name');

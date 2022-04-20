@@ -31,7 +31,6 @@ export function travelVNodeTree(
   finishVNode: VNode, // 结束遍历节点，有时候和beginVNode不相同
   handleWhenToParent: Function | null
 ): VNode | null {
-  const filter = childFilter === null;
   let node = beginVNode;
 
   while (true) {
@@ -43,7 +42,7 @@ export function travelVNodeTree(
 
     // 找子节点
     const childVNode = node.child;
-    if (childVNode !== null && (filter || !childFilter(node))) {
+    if (childVNode !== null && (childFilter === null || !childFilter(node))) {
       childVNode.parent = node;
       node = childVNode;
       continue;
@@ -194,20 +193,6 @@ export function getSiblingDom(vNode: VNode): Element | null {
   }
 }
 
-function isSameContainer(
-  container: Element,
-  targetContainer: EventTarget,
-): boolean {
-  if (container === targetContainer) {
-    return true;
-  }
-  // 注释类型的节点
-  if (isComment(container) && container.parentNode === targetContainer) {
-    return true;
-  }
-  return false;
-}
-
 function isPortalRoot(vNode, targetContainer) {
   if (vNode.tag === DomPortal) {
     let topVNode = vNode.parent;
@@ -216,7 +201,7 @@ function isPortalRoot(vNode, targetContainer) {
       if (grandTag === TreeRoot || grandTag === DomPortal) {
         const topContainer = topVNode.realNode;
         // 如果topContainer是targetContainer，不需要在这里处理
-        if (isSameContainer(topContainer, targetContainer)) {
+        if (topContainer === targetContainer) {
           return true;
         }
       }
@@ -228,28 +213,28 @@ function isPortalRoot(vNode, targetContainer) {
 }
 
 // 获取根vNode节点
-export function getExactNode(targetVNode, targetContainer) {
+export function findRoot(targetVNode, targetDom) {
   // 确认vNode节点是否准确，portal场景下可能祖先节点不准确
   let vNode = targetVNode;
   while (vNode !== null) {
     if (vNode.tag === TreeRoot || vNode.tag === DomPortal) {
-      let container = vNode.realNode;
-      if (isSameContainer(container, targetContainer)) {
+      let dom = vNode.realNode;
+      if (dom === targetDom) {
         break;
       }
-      if (isPortalRoot(vNode, targetContainer)) {
+      if (isPortalRoot(vNode, targetDom)) {
         return null;
       }
 
-      while (container !== null) {
-        const parentNode = getNearestVNode(container);
+      while (dom !== null) {
+        const parentNode = getNearestVNode(dom);
         if (parentNode === null) {
           return null;
         }
         if (parentNode.tag === DomComponent || parentNode.tag === DomText) {
-          return getExactNode(parentNode, targetContainer);
+          return findRoot(parentNode, targetDom);
         }
-        container = container.parentNode;
+        dom = dom.parentNode;
       }
     }
     vNode = vNode.parent;

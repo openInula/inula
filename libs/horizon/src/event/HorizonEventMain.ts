@@ -16,8 +16,11 @@ import { decorateNativeEvent } from './customEvents/EventFactory';
 import { getListenersFromTree } from './ListenerGetter';
 import { shouldUpdateValue, updateControlledValue } from './ControlledValueUpdater';
 import { asyncUpdates, runDiscreteUpdates } from '../renderer/Renderer';
-import { getExactNode } from '../renderer/vnode/VNodeUtils';
-import {ListenerUnitList} from './Types';
+import { findRoot } from '../renderer/vnode/VNodeUtils';
+import { ListenerUnitList } from './Types';
+
+// web规范，鼠标右键key值
+const RIGHT_MOUSE_BUTTON = 2;
 
 // 获取事件触发的普通事件监听方法队列
 function getCommonListeners(
@@ -29,13 +32,13 @@ function getCommonListeners(
 ): ListenerUnitList {
   const name = CommonEventToHorizonMap[nativeEvtName];
   const horizonEvtName = !name ? '' : `on${name[0].toUpperCase()}${name.slice(1)}`; // 例：dragEnd -> onDragEnd
-  
+
   if (!horizonEvtName) {
     return [];
   }
 
   // 鼠标点击右键
-  if (nativeEvent instanceof MouseEvent && nativeEvtName === 'click' && nativeEvent.button === 2) {
+  if (nativeEvent instanceof MouseEvent && nativeEvtName === 'click' && nativeEvent.button === RIGHT_MOUSE_BUTTON) {
     return [];
   }
 
@@ -76,7 +79,7 @@ function getProcessListeners(
   vNode: VNode | null,
   nativeEvent: AnyNativeEvent,
   target,
-  isCapture: boolean
+  isCapture: boolean,
 ): ListenerUnitList {
   // 触发普通委托事件
   let listenerList: ListenerUnitList = getCommonListeners(
@@ -136,11 +139,11 @@ export function handleEventMain(
   isCapture: boolean,
   nativeEvent: AnyNativeEvent,
   vNode: null | VNode,
-  targetContainer: EventTarget,
+  targetDom: EventTarget,
 ): void {
   let startVNode = vNode;
   if (startVNode !== null) {
-    startVNode = getExactNode(startVNode, targetContainer);
+    startVNode = findRoot(startVNode, targetDom);
     if (!startVNode) {
       return;
     }

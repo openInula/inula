@@ -21,7 +21,7 @@ import {
   getTextareaPropsWithoutValue,
   updateTextareaValue,
 } from './TextareaValueHandler';
-import {getDomTag} from "../utils/Common";
+import {getDomTag} from '../utils/Common';
 
 // 获取元素除了被代理的值以外的属性
 function getPropsWithoutValue(type: string, dom: HorizonDom, properties: IProperty) {
