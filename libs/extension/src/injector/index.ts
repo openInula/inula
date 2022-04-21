@@ -10,7 +10,8 @@ import {
 } from './../utils/constants';
 import { VNode } from './../../../horizon/src/renderer/vnode/VNode';
 import { ClassComponent } from '../../../horizon/src/renderer/vnode/VNodeTags';
-import { parseAttr } from '../parser/parseAttr';
+import { parseAttr, parseHooks } from '../parser/parseAttr';
+import { FunctionComponent } from './../../../horizon/src/renderer/vnode/VNodeTags';
 
 const roots = [];
 
@@ -55,6 +56,14 @@ function parseCompAttrs(id: number) {
     postMessage(ComponentAttrs, {
       parsedProps,
       parsedState,
+    });
+  } else if (tag === FunctionComponent) {
+    const { props, hooks } = vNode;
+    const parsedProps = parseAttr(props);
+    const parsedHooks = parseHooks(hooks);
+    postMessage(ComponentAttrs, {
+      parsedProps,
+      parsedHooks,
     });
   }
 }

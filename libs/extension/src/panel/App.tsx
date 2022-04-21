@@ -67,6 +67,8 @@ if (!isDev) {
   });
 }
 
+let reconnectTimes = 0;
+
 function postMessage(type: string, data: any) {
   try {
     connection.postMessage(packagePayload({
@@ -75,14 +77,21 @@ function postMessage(type: string, data: any) {
     }, DevToolPanel));
   } catch(err) {
     // 可能出现 port 关闭的场景，需要重新建立连接，增加可靠性
+    if (reconnectTimes === 20) {
+      reconnectTimes = 0;
+      console.error('reconnect failed');
+      return;
+    }
     console.error(err);
+    reconnectTimes++;
+    // 重建连接
     connection = chrome.runtime.connect({
       name: 'panel'
     });
-    connection.postMessage(packagePayload({
-      type: type,
-      data: data,
-    }, DevToolPanel));
+    // 重新发送初始化消息
+    postMessage(InitDevToolPageConnection, chrome.devtools.inspectedWindow.tabId);
+    // 初始化成功后才会重新发送消息
+    postMessage(type, data);
   }
 }
 
@@ -134,10 +143,11 @@ function App() {
             }, []);
             setParsedVNodeData(allTreeData);
           } else if (type === ComponentAttrs) {
-            const {parsedProps, parsedState} = data;
+            const {parsedProps, parsedState, parsedHooks} = data;
             setComponentAttrs({
-              state: parsedProps,
-              props: parsedState,
+              props: parsedProps,
+              state: parsedState,
+              hooks: parsedHooks,
             });
           }
         }
