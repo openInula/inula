@@ -1,12 +1,26 @@
-import { useState, useEffect, useRef, createContext } from 'horizon';
+import { useState, useEffect, useRef, useContext, useReducer } from 'horizon';
+import { MockContext } from './MockContext';
 
-const Ctx = createContext();
+const initialState = {count: 0};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'increment':
+      return {count: state.count + 1};
+    case 'decrement':
+      return {count: state.count - 1};
+    default:
+      throw new Error();
+  }
+}
 
 export default function MockFunctionComponent(props) {
+  const [state, dispatch] = useReducer(reducer, initialState);
   const [age, setAge] = useState(0);
   const domRef = useRef<HTMLDivElement>();
   const objRef = useRef({ str: 'string' });
-  
+  const context = useContext(MockContext);
+
   useEffect(() => { }, []);
 
   return (
@@ -16,7 +30,7 @@ export default function MockFunctionComponent(props) {
       count: {props.count}
       <div ref={domRef} />
       <div>{objRef.current.str}</div>
-      <Ctx.Provider value={{ctx: 'I am ctx'}}></Ctx.Provider>
+      <div>{context.ctx}</div>
     </div>
   );
 }
