@@ -1,4 +1,7 @@
 import { injectCode } from '../utils/injectUtils';
+import { checkMessage } from '../utils/transferTool';
+import { DevToolContentScript, DevToolHook, DevToolBackground } from './../utils/constants';
+import { changeSource } from './../utils/transferTool';
 
 // 页面的window对象不能直接通过 contentScript 代码修改，只能通过添加 js 代码往页面 window 注入hook
 injectCode(chrome.runtime.getURL('/injector.js'));
@@ -10,12 +13,11 @@ window.addEventListener('message', event => {
     return;
   }
 
-  if (event.data.type && (event.data.type === 'HORIZON_DEV_TOOLS')) {
-    console.log('Content script received: ' + JSON.stringify(event.data.vNode));
+  const data = event.data;
+  if (checkMessage(data, DevToolHook)) {
+    changeSource(data, DevToolContentScript);
     // 传递给background
-    chrome.runtime.sendMessage(event.data.vNode, function (response) {
-      console.log(response);
-    });
+    chrome.runtime.sendMessage(data);
   }
 }, false);
 
@@ -23,14 +25,14 @@ window.addEventListener('message', event => {
 
 // 监听来自background的消息
 chrome.runtime.onMessage.addListener(
-  function (request, sender, sendResponse) {
-    console.log(sender.tab ?
-      'from a content script:' + sender.tab.url :
-      'from the extension');
-    if (request.tag === 'init horizon info') {
+  function (message, sender, sendResponse) {
+    // 该方法可以监听页面 contentScript 和插件的消息
+    // 没有 tab 信息说明消息来自插件
+    if (!sender.tab && checkMessage(message, DevToolBackground)) {
+      changeSource(message, DevToolContentScript);
       // 传递消息给页面
-      console.log('start pass info to webpage');
-      window.postMessage({type: 'HORIZON_DEV_TOOLS', id: 1}, '*');
+      window.postMessage(message, '*');
     }
+    sendResponse({status: 'ok'});
   }
 );

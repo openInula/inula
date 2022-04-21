@@ -4,7 +4,7 @@
 import { useState, useRef, useEffect } from 'horizon';
 import styles from './VList.less';
 
-interface IProps<T extends { id: string }> {
+interface IProps<T extends { id: number | string }> {
   data: T[],
   width: number, // 暂时未用到，当需要支持横向滚动时使用
   height: number, // VList 的高度
@@ -20,7 +20,7 @@ export type renderInfoType<T> = {
   skipItemCountBeforeScrollItem: number,
 };
 
-export function VList<T extends { id: string }>(props: IProps<T>) {
+export function VList<T extends { id: number | string }>(props: IProps<T>) {
   const {
     data,
     height,

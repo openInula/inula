@@ -6,7 +6,7 @@ import { SizeObserver } from './SizeObserver';
 import { renderInfoType, VList } from './VList';
 
 export interface IData {
-  id: string;
+  id: number;
   name: string;
   indentation: number;
   userKey: string;
