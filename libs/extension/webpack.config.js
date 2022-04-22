@@ -1,22 +1,20 @@
 const path = require('path');
 const webpack = require('webpack');
 
-// 用于 panel 页面开发
-
-module.exports = {
-  mode: 'development',
+const config = {
   entry: {
-    panel: path.join(__dirname, './src/panel/index.tsx'),
-    mockPage: path.join(__dirname, './src/devtools/mockPage/index.tsx'),
+    background: './src/background/index.ts',
+    main: './src/main/index.ts',
+    injector: './src/injector/index.ts',
+    contentScript: './src/contentScript/index.ts',
+    panel: './src/panel/index.tsx',
   },
   output: {
-    path: path.join(__dirname, 'dist'),
-    filename: '[name].js'
+    path: path.resolve(__dirname, './build'),
+    filename: '[name].js',
   },
-  devtool: 'source-map',
-  resolve: {
-    extensions: ['.ts', '.tsx', '.js'],
-  },
+  mode: 'development',
+  devtool: 'inline-source-map',
   module: {
     rules: [
       {
@@ -42,21 +40,18 @@ module.exports = {
           'less-loader'],
       }]
   },
+  resolve: {
+    extensions: ['.js', '.ts', '.tsx'],
+  },
   externals: {
     'horizon': 'Horizon',
-  },
-  devServer: {
-    static: {
-      directory: path.join(__dirname, 'dist'),
-    },
-    open: 'panel.html',
-    port: 9000,
-    magicHtml: true,
   },
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': '"development"',
-      isDev: 'true',
+      isDev: 'false',
     }),
   ],
 };
+
+module.exports = config;

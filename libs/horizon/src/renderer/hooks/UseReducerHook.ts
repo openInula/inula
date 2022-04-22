@@ -87,6 +87,7 @@ export function useReducerForInit<S, A>(reducer, initArg, init, isUseState?: boo
   }
 
   const hook = createHook();
+  hook.type = isUseState ? 'useState' : 'useReducer';
   // 为hook.state赋值{状态值, 触发函数, reducer, updates更新数组, 是否是useState}
   hook.state = {
     stateValue: stateValue,

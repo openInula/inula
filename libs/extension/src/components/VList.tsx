@@ -1,8 +1,10 @@
+// TODO:当前的 item 渲染效果较差，每次滚动所有项在数组中的位置都会发生变更。
+// 建议修改成选项增加减少时，未变更项在原数组中位置不变更
 
 import { useState, useRef, useEffect } from 'horizon';
 import styles from './VList.less';
 
-interface IProps<T extends { id: string }> {
+interface IProps<T extends { id: number | string }> {
   data: T[],
   width: number, // 暂时未用到，当需要支持横向滚动时使用
   height: number, // VList 的高度
@@ -18,7 +20,7 @@ export type renderInfoType<T> = {
   skipItemCountBeforeScrollItem: number,
 };
 
-export function VList<T extends { id: string }>(props: IProps<T>) {
+export function VList<T extends { id: number | string }>(props: IProps<T>) {
   const {
     data,
     height,
@@ -30,7 +32,7 @@ export function VList<T extends { id: string }>(props: IProps<T>) {
   } = props;
   const [scrollTop, setScrollTop] = useState(data.indexOf(scrollToItem) * itemHeight);
   const renderInfoRef: { current: renderInfoType<T> } = useRef({ visibleItems: [], skipItemCountBeforeScrollItem: 0 });
-  const containerRef = useRef();
+  const containerRef = useRef<HTMLDivElement>();
   useEffect(() => {
     onRendered(renderInfoRef.current);
   });

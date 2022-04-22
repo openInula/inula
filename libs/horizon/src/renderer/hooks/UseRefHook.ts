@@ -12,6 +12,7 @@ export function useRefImpl<V>(value: V): Ref<V> {
   if (stage === HookStage.Init) {
     hook = createHook();
     hook.state = {current: value};
+    hook.type = 'useRef';
   } else if (stage === HookStage.Update) {
     hook = getCurrentHook();
   }

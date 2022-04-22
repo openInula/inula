@@ -57,4 +57,16 @@ function parseTreeRoot(treeRoot: VNode) {
   return result;
 }
 
+export function queryVNode(id: number) {
+  return IdToVNodeMap.get(id);
+}
+
+export function clearVNode(vNode: VNode) {
+  if (VNodeToIdMap.has(vNode)) {
+    const id = VNodeToIdMap.get(vNode);
+    VNodeToIdMap.delete(vNode);
+    IdToVNodeMap.delete(id);
+  }
+}
+
 export default parseTreeRoot;
