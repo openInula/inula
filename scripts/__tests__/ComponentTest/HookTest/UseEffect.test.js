@@ -1,5 +1,5 @@
 import * as Horizon from '@cloudsop/horizon/index.ts';
-import * as LogUtils from '../../jest/logUtils';
+import { getLogUtils } from '../../jest/testUtils';
 import { Text } from '../../jest/commonComponents';
 
 describe('useEffect Hook Test', () => {
@@ -12,6 +12,7 @@ describe('useEffect Hook Test', () => {
     act,
   } = Horizon;
 
+  const LogUtils =getLogUtils();
   it('简单使用useEffect', () => {
     const App = () => {
       const [num, setNum] = useState(0);

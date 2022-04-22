@@ -1,0 +1,361 @@
+import * as Horizon from '@cloudsop/horizon/index.ts';
+import { getLogUtils } from '../jest/testUtils';
+
+describe('Context Test', () => {
+  const LogUtils =getLogUtils();
+  it('Provider及其内部consumer组件都不受制于shouldComponentUpdate函数或者Horizon.memo()', () => {
+    const LanguageTypes = {
+      JAVA: 'Java',
+      JAVASCRIPT: 'JavaScript',
+    };
+    const defaultValue = { type: LanguageTypes.JAVASCRIPT };
+    const SystemLanguageContext = Horizon.createContext(defaultValue);
+    const SystemLanguageConsumer = SystemLanguageContext.Consumer;
+    const SystemLanguageProvider = (props) => {
+      LogUtils.log('SystemLanguageProvider');
+      return (
+        <SystemLanguageContext.Provider value={props.type}>
+          {props.children}
+        </SystemLanguageContext.Provider>
+      );
+    };
+
+    const Consumer = () => {
+      LogUtils.log('Consumer');
+      return (
+        <SystemLanguageConsumer>
+          {type => {
+            LogUtils.log('Consumer DOM mutations');
+            return <p>{type}</p>;
+          }}
+        </SystemLanguageConsumer>
+      );
+    };
+
+    class Middle extends Horizon.Component {
+      shouldComponentUpdate() {
+        return false;
+      }
+      render() {
+        LogUtils.log('Middle');
+        return this.props.children;
+      }
+    }
+
+    const App = (props) => {
+      LogUtils.log('App');
+      return (
+        <SystemLanguageProvider type={props.value}>
+          <Middle>
+            <Middle>
+              <Consumer />
+            </Middle>
+          </Middle>
+        </SystemLanguageProvider>
+      );
+    };
+
+    Horizon.render(<App value={LanguageTypes.JAVA} />, container);
+    expect(container.querySelector('p').innerHTML).toBe('Java');
+    expect(LogUtils.getAndClear()).toEqual([
+      'App',
+      'SystemLanguageProvider',
+      'Middle',
+      'Middle',
+      'Consumer',
+      'Consumer DOM mutations'
+    ]);
+
+    // 组件不变，Middle没有更新，消费者也不会执行
+    Horizon.render(<App value={LanguageTypes.JAVA} />, container);
+    expect(container.querySelector('p').innerHTML).toBe('Java');
+    expect(LogUtils.getAndClear()).toEqual([
+      'App',
+      'SystemLanguageProvider'
+    ]);
+
+    Horizon.render(<App value={LanguageTypes.JAVASCRIPT} />, container);
+    expect(container.querySelector('p').innerHTML).toBe('JavaScript');
+    // 组件更新，但是Middle没有更新，会绕过Middle
+    expect(LogUtils.getAndClear()).toEqual([
+      'App',
+      'SystemLanguageProvider',
+      'Consumer DOM mutations'
+    ]);
+  });
+
+  it('嵌套consumer provider', () => {
+    const Num = {
+      ONE: 1,
+      TWO: 2,
+    };
+    const NumberContext = Horizon.createContext(0);
+    const NumberConsumer = NumberContext.Consumer;
+    const NumberProvider = (props) => {
+      LogUtils.log(`SystemLanguageProvider: ${props.type}`);
+      return (
+        <NumberContext.Provider value={props.type}>
+          {props.children}
+        </NumberContext.Provider>
+      );
+    };
+
+    const Consumer = () => {
+      LogUtils.log('Consumer');
+      return (
+        <NumberConsumer>
+          {type => {
+            LogUtils.log('Consumer DOM mutations');
+            return <p>{type}</p>;
+          }}
+        </NumberConsumer>
+      );
+    };
+
+    class Middle extends Horizon.Component {
+      shouldComponentUpdate() {
+        return false;
+      }
+      render() {
+        LogUtils.log('Middle');
+        return this.props.children;
+      }
+    }
+
+    const App = (props) => {
+      LogUtils.log('App');
+      return (
+        <NumberProvider type={props.value}>
+          <NumberProvider type={props.value + 1}>
+            <Middle>
+              <Consumer />
+            </Middle>
+          </NumberProvider>
+        </NumberProvider>
+      );
+    };
+
+    // Consumer决定于距离它最近的provider
+    Horizon.render(<App value={Num.ONE} />, container);
+    expect(container.querySelector('p').innerHTML).toBe('2');
+    expect(LogUtils.getAndClear()).toEqual([
+      'App',
+      'SystemLanguageProvider: 1',
+      'SystemLanguageProvider: 2',
+      'Middle',
+      'Consumer',
+      'Consumer DOM mutations'
+    ]);
+    // 更新
+    Horizon.render(<App value={Num.TWO} />, container);
+    expect(container.querySelector('p').innerHTML).toBe('3');
+    expect(LogUtils.getAndClear()).toEqual([
+      'App',
+      'SystemLanguageProvider: 2',
+      'SystemLanguageProvider: 3',
+      'Consumer DOM mutations'
+    ]);
+  });
+
+  it('设置defaultValue', () => {
+    const Num = {
+      ONE: 1,
+      TWO: 2,
+    };
+    const NumberContext = Horizon.createContext(0);
+    const NewNumberContext = Horizon.createContext(1);
+    const NumberConsumer = NumberContext.Consumer;
+    const NumberProvider = props => {
+      return (
+        <NumberContext.Provider value={props.type}>
+          {props.children}
+        </NumberContext.Provider>
+      );
+    };
+    const NewNumberProvider = props => {
+      return (
+        <NewNumberContext.Provider value={props.type}>
+          {props.children}
+        </NewNumberContext.Provider>
+      );
+    };
+
+    class Middle extends Horizon.Component {
+      shouldComponentUpdate() {
+        return false;
+      }
+      render() {
+        return this.props.children;
+      }
+    }
+
+    const NewApp = (props) => {
+      return (
+        <NewNumberProvider value={props.value}>
+          <Middle>
+            <NumberConsumer>
+              {type => {
+                LogUtils.log('Consumer DOM mutations');
+                return <p>{type}</p>;
+              }}
+            </NumberConsumer>
+          </Middle>
+        </NewNumberProvider>
+      );
+    };
+
+    const App = (props) => {
+      return (
+        <NumberProvider value={props.value}>
+          <Middle>
+            <NumberConsumer>
+              {type => {
+                LogUtils.log('Consumer DOM mutations');
+                return <p>{type}</p>;
+              }}
+            </NumberConsumer>
+          </Middle>
+        </NumberProvider>
+      );
+    };
+
+    Horizon.render(<NewApp value={Num.ONE} />, container);
+    // 没有匹配到Provider,会使用defaultValue
+    expect(container.querySelector('p').innerHTML).toBe('0');
+
+    // 更新,设置value为undefined
+    Horizon.render(<App value={undefined} />, container);
+    // 设置value为undefined时，defaultValue不生效
+    expect(container.querySelector('p').innerHTML).toBe('');
+  });
+
+  it('不同provider下的多个consumer', () => {
+    const NumContext = Horizon.createContext(1);
+    const Consumer = NumContext.Consumer;
+
+    function Provider(props) {
+      return (
+        <Consumer>
+          {value => (
+            <NumContext.Provider value={props.value || value * 2}>
+              {props.children}
+            </NumContext.Provider>
+          )}
+        </Consumer>
+      );
+    }
+
+    class Middle extends Horizon.Component {
+      shouldComponentUpdate() {
+        return false;
+      }
+      render() {
+        return this.props.children;
+      }
+    }
+
+    const App = props => {
+      return (
+        <Provider value={props.value}>
+          <Middle>
+            <Middle>
+              <Provider>
+                <Consumer>
+                  {value => <p>{value}</p>}
+                </Consumer>
+              </Provider>
+            </Middle>
+            <Middle>
+              <Consumer>
+                {value => <p id='p'>{value}</p>}
+              </Consumer>
+            </Middle>
+          </Middle>
+        </Provider>
+      );
+    };
+
+    Horizon.render(<App value={2} />, container);
+    expect(container.querySelector('p').innerHTML).toBe('4');
+    expect(container.querySelector('#p').innerHTML).toBe('2');
+
+    Horizon.render(<App value={3} />, container);
+    expect(container.querySelector('p').innerHTML).toBe('6');
+    expect(container.querySelector('#p').innerHTML).toBe('3');
+  });
+
+  it('consumer里的child更新是不会重新渲染', () => {
+    const NumContext = Horizon.createContext(1);
+    const Consumer = NumContext.Consumer;
+
+    let setNum;
+    const ReturnDom = props => {
+      const [num, _setNum] = Horizon.useState(0);
+      setNum = _setNum;
+      LogUtils.log('ReturnDom');
+      return (
+        <p>{`Context: ${props.context}, Num: ${num}`}</p>
+      );
+    };
+
+    const App = props => {
+      return (
+        <NumContext.Provider value={props.value}>
+          <Consumer>
+            {value => {
+              LogUtils.log('Consumer');
+              return <ReturnDom context={value} />;
+            }}
+          </Consumer>
+        </NumContext.Provider>
+      );
+    };
+
+    Horizon.render(<App value={2} />, container);
+    expect(container.querySelector('p').innerHTML).toBe('Context: 2, Num: 0');
+    expect(LogUtils.getAndClear()).toEqual([
+      'Consumer',
+      'ReturnDom'
+    ]);
+    setNum(3);
+    expect(container.querySelector('p').innerHTML).toBe('Context: 2, Num: 3');
+    expect(LogUtils.getAndClear()).toEqual(['ReturnDom']);
+  });
+
+
+  it('consumer可以拿到其他context的值', () => {
+    const NumContext = Horizon.createContext(1);
+    const TypeContext = Horizon.createContext('typeA');
+
+    const NumAndType = () => {
+      const type = Horizon.useContext(TypeContext);
+      return (
+        <NumContext.Consumer>
+          {value => {
+            LogUtils.log('Consumer');
+            return <p>{`Num: ${value}, Type: ${type}`}</p>;
+          }}
+        </NumContext.Consumer>
+      );
+    };
+
+    const App = props => {
+      return (
+        <NumContext.Provider value={props.num}>
+          <TypeContext.Provider value={props.type}>
+            <NumAndType />
+          </TypeContext.Provider>
+        </NumContext.Provider>
+      );
+    };
+
+    Horizon.render(<App num={2} type={'typeB'} />, container);
+    expect(container.querySelector('p').innerHTML).toBe('Num: 2, Type: typeB');
+
+    Horizon.render(<App num={2} type={'typeR'} />, container);
+    expect(container.querySelector('p').innerHTML).toBe('Num: 2, Type: typeR');
+
+    Horizon.render(<App num={8} type={'typeR'} />, container);
+    expect(container.querySelector('p').innerHTML).toBe('Num: 8, Type: typeR');
+  });
+});

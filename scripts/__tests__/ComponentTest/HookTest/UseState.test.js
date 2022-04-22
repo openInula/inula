@@ -1,5 +1,5 @@
 import * as Horizon from '@cloudsop/horizon/index.ts';
-import * as LogUtils from '../../jest/logUtils';
+import { getLogUtils } from '../../jest/testUtils';
 import { Text } from '../../jest/commonComponents';
 
 describe('useState Hook Test', () => {
@@ -10,6 +10,7 @@ describe('useState Hook Test', () => {
     memo,
     act,
   } = Horizon;
+  const LogUtils =getLogUtils();
 
   it('简单使用useState', () => {
     const App = () => {
@@ -112,7 +113,7 @@ describe('useState Hook Test', () => {
 
   it('useState与memo一起使用', () => {
     let setNum;
-    const App = memo((props) => {
+    const App = memo(() => {
       const [num, _setNum] = useState(0);
       setNum = _setNum;
       return <Text text={num} />;

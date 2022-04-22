@@ -1,5 +1,5 @@
 import * as Horizon from '@cloudsop/horizon/index.ts';
-import * as LogUtils from '../../jest/logUtils';
+import { getLogUtils } from '../../jest/testUtils';
 import { Text } from '../../jest/commonComponents';
 
 describe('useLayoutEffect Hook Test', () => {
@@ -9,7 +9,7 @@ describe('useLayoutEffect Hook Test', () => {
     useLayoutEffect,
     act,
   } = Horizon;
-
+  const LogUtils =getLogUtils();
   it('简单使用useLayoutEffect', () => {
     const App = () => {
       const [num, setNum] = useState(0);
