@@ -4,7 +4,7 @@ import { getLogUtils } from '../jest/testUtils';
 
 describe('Dom Input', () => {
   const { act } = Horizon;
-  const LogUtils =getLogUtils();
+  const LogUtils = getLogUtils();
 
   describe('type checkbox', () => {
     it('没有设置checked属性时，控制台不会报错', () => {

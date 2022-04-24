@@ -2,7 +2,7 @@ import * as Horizon from '@cloudsop/horizon/index.ts';
 import * as TestUtils from '../jest/testUtils';
 
 describe('事件', () => {
-  const LogUtils =TestUtils.getLogUtils();
+  const LogUtils = TestUtils.getLogUtils();
   it('根节点挂载全量事件', () => {
     const App = () => {
       return <div />;

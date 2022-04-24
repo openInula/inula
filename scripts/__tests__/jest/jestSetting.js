@@ -3,7 +3,7 @@ import { getLogUtils } from './testUtils';
 //import failOnConsole from 'jest-fail-on-console';
 
 //failOnConsole();
-const LogUtils =getLogUtils();
+const LogUtils = getLogUtils();
 global.isDev = process.env.NODE_ENV === 'development';
 global.container = null;
 global.beforeEach(() => {

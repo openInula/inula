@@ -10,7 +10,7 @@ describe('useImperativeHandle Hook Test', () => {
     act,
   } = Horizon;
   const { unmountComponentAtNode } = Horizon;
-  const LogUtils =getLogUtils();
+  const LogUtils = getLogUtils();
   it('测试useImperativeHandle', () => {
 
     let App = (props, ref) => {

@@ -4,8 +4,8 @@ import { Text } from '../../jest/commonComponents';
 
 describe('useRef Hook Test', () => {
   const { useState, useRef } = Horizon;
-  const LogUtils =getLogUtils();
-  
+  const LogUtils = getLogUtils();
+
   it('测试useRef', () => {
     const App = () => {
       const [num, setNum] = useState(1);

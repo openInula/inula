@@ -2,7 +2,7 @@ import * as Horizon from '@cloudsop/horizon/index.ts';
 import { getLogUtils } from '../jest/testUtils';
 
 describe('LifeCycle Test', () => {
-  const LogUtils =getLogUtils();
+  const LogUtils = getLogUtils();
   describe('LifeCycle function', () => {
     it('不能在componentWillMount里setState', () => {
       class App extends Horizon.Component {
@@ -195,7 +195,7 @@ describe('LifeCycle Test', () => {
           return nextState.num !== this.state.num;
         }
 
-        componentDidUpdate(){
+        componentDidUpdate() {
           LogUtils.log('componentDidUpdate');
         }
 
@@ -275,7 +275,7 @@ describe('LifeCycle Test', () => {
       expect(container.querySelector('p').innerHTML).toBe('2');
     });
 
-    it('无论什么原因触发了渲染,只要有渲染就会触发getDerivedStateFromProps',() => {
+    it('无论什么原因触发了渲染,只要有渲染就会触发getDerivedStateFromProps', () => {
       class App extends Horizon.Component {
         constructor(props) {
           super(props);
@@ -306,28 +306,28 @@ describe('LifeCycle Test', () => {
   });
 
   it('生命周期执行顺序', () => {
-    class InnerApp extends Horizon.Component {
+    class ChildApp extends Horizon.Component {
       UNSAFE_componentWillMount() {
-        LogUtils.log('Inner componentWillMount');
+        LogUtils.log('Child componentWillMount');
       }
       componentDidMount() {
-        LogUtils.log('Inner componentDidMount');
+        LogUtils.log('Child componentDidMount');
       }
       UNSAFE_componentWillReceiveProps() {
-        LogUtils.log('Inner componentWillReceiveProps');
+        LogUtils.log('Child componentWillReceiveProps');
       }
       shouldComponentUpdate(nextProps, nextState) {
-        LogUtils.log('Inner shouldComponentUpdates');
+        LogUtils.log('Child shouldComponentUpdates');
         return this.props.number !== nextProps.number;
       }
       UNSAFE_componentWillUpdate() {
-        LogUtils.log('Inner componentWillUpdate');
+        LogUtils.log('Child componentWillUpdate');
       }
       componentDidUpdate() {
-        LogUtils.log('Inner componentDidUpdate');
+        LogUtils.log('Child componentDidUpdate');
       }
       componentWillUnmount() {
-        LogUtils.log('Inner componentWillUnmount');
+        LogUtils.log('Child componentWillUnmount');
       }
 
       render() {
@@ -360,7 +360,7 @@ describe('LifeCycle Test', () => {
       }
 
       render() {
-        return <InnerApp number={this.props.num} />;
+        return <ChildApp number={this.props.num} />;
       }
     }
 
@@ -368,8 +368,8 @@ describe('LifeCycle Test', () => {
     expect(container.textContent).toBe('1');
     expect(LogUtils.getAndClear()).toEqual([
       'componentWillMount',
-      'Inner componentWillMount',
-      'Inner componentDidMount',
+      'Child componentWillMount',
+      'Child componentDidMount',
       'componentDidMount'
     ]);
     Horizon.render(<App num={2} />, container);
@@ -378,40 +378,40 @@ describe('LifeCycle Test', () => {
       'componentWillReceiveProps',
       'shouldComponentUpdates',
       'componentWillUpdate',
-      'Inner componentWillReceiveProps',
-      'Inner shouldComponentUpdates',
-      'Inner componentWillUpdate',
-      'Inner componentDidUpdate',
+      'Child componentWillReceiveProps',
+      'Child shouldComponentUpdates',
+      'Child componentWillUpdate',
+      'Child componentDidUpdate',
       'componentDidUpdate'
     ]);
     Horizon.unmountComponentAtNode(container);
     expect(container.textContent).toBe('');
     expect(LogUtils.getAndClear()).toEqual([
       'componentWillUnmount',
-      'Inner componentWillUnmount'
+      'Child componentWillUnmount'
     ]);
   });
 
   it('新生命周期执行顺序', () => {
-    class InnerApp extends Horizon.Component {
+    class ChildApp extends Horizon.Component {
       static getDerivedStateFromProps(props, state) {
-        LogUtils.log('Inner getDerivedStateFromProps');
+        LogUtils.log('Child getDerivedStateFromProps');
       }
       componentDidMount() {
-        LogUtils.log('Inner componentDidMount');
+        LogUtils.log('Child componentDidMount');
       }
       shouldComponentUpdate(nextProps, nextState) {
-        LogUtils.log('Inner shouldComponentUpdates');
+        LogUtils.log('Child shouldComponentUpdates');
         return this.props.number !== nextProps.number;
       }
       componentDidUpdate() {
-        LogUtils.log('Inner componentDidUpdate');
+        LogUtils.log('Child componentDidUpdate');
       }
       getSnapshotBeforeUpdate() {
-        LogUtils.log('Inner getSnapshotBeforeUpdate');
+        LogUtils.log('Child getSnapshotBeforeUpdate');
       }
       componentWillUnmount() {
-        LogUtils.log('Inner componentWillUnmount');
+        LogUtils.log('Child componentWillUnmount');
       }
 
       render() {
@@ -441,7 +441,7 @@ describe('LifeCycle Test', () => {
       }
 
       render() {
-        return <InnerApp number={this.props.num} />;
+        return <ChildApp number={this.props.num} />;
       }
     }
 
@@ -449,8 +449,8 @@ describe('LifeCycle Test', () => {
     expect(container.textContent).toBe('1');
     expect(LogUtils.getAndClear()).toEqual([
       'getDerivedStateFromProps',
-      'Inner getDerivedStateFromProps',
-      'Inner componentDidMount',
+      'Child getDerivedStateFromProps',
+      'Child componentDidMount',
       'componentDidMount'
     ]);
     Horizon.render(<App num={2} />, container);
@@ -458,18 +458,18 @@ describe('LifeCycle Test', () => {
     expect(LogUtils.getAndClear()).toEqual([
       'getDerivedStateFromProps',
       'shouldComponentUpdates',
-      'Inner getDerivedStateFromProps',
-      'Inner shouldComponentUpdates',
-      'Inner getSnapshotBeforeUpdate',
+      'Child getDerivedStateFromProps',
+      'Child shouldComponentUpdates',
+      'Child getSnapshotBeforeUpdate',
       'getSnapshotBeforeUpdate',
-      'Inner componentDidUpdate',
+      'Child componentDidUpdate',
       'componentDidUpdate'
     ]);
     Horizon.unmountComponentAtNode(container);
     expect(container.textContent).toBe('');
     expect(LogUtils.getAndClear()).toEqual([
       'componentWillUnmount',
-      'Inner componentWillUnmount'
+      'Child componentWillUnmount'
     ]);
   });
 });

@@ -9,7 +9,7 @@ describe('useLayoutEffect Hook Test', () => {
     useLayoutEffect,
     act,
   } = Horizon;
-  const LogUtils =getLogUtils();
+  const LogUtils = getLogUtils();
   it('简单使用useLayoutEffect', () => {
     const App = () => {
       const [num, setNum] = useState(0);

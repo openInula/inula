@@ -12,7 +12,7 @@ describe('useEffect Hook Test', () => {
     act,
   } = Horizon;
 
-  const LogUtils =getLogUtils();
+  const LogUtils = getLogUtils();
   it('简单使用useEffect', () => {
     const App = () => {
       const [num, setNum] = useState(0);

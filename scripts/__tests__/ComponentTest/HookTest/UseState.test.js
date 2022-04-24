@@ -10,7 +10,7 @@ describe('useState Hook Test', () => {
     memo,
     act,
   } = Horizon;
-  const LogUtils =getLogUtils();
+  const LogUtils = getLogUtils();
 
   it('简单使用useState', () => {
     const App = () => {

@@ -2,7 +2,7 @@ import * as Horizon from '@cloudsop/horizon/index.ts';
 import { getLogUtils } from '../jest/testUtils';
 
 describe('Context Test', () => {
-  const LogUtils =getLogUtils();
+  const LogUtils = getLogUtils();
   it('Provider及其内部consumer组件都不受制于shouldComponentUpdate函数或者Horizon.memo()', () => {
     const LanguageTypes = {
       JAVA: 'Java',

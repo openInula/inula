@@ -128,14 +128,14 @@ describe('Dom Textarea', () => {
     // 非受控切换为受控
     let realNode = Horizon.render(<textarea defaultValue='text' />, container);
     expect(realNode.value).toBe('text');
-    Horizon.render(<textarea value='newtext' onChange={() => {}} />, container);
+    Horizon.render(<textarea value='newtext' onChange={() => { }} />, container);
     expect(realNode.value).toBe('newtext');
 
     Horizon.unmountComponentAtNode(container);
     // 受控切换为非受控
-    realNode = Horizon.render(<textarea value='text' onChange={() => {}} />, container);
+    realNode = Horizon.render(<textarea value='text' onChange={() => { }} />, container);
     expect(realNode.value).toBe('text');
-    Horizon.render(<textarea defaultValue='newtext' onChange={() => {}} />, container);
+    Horizon.render(<textarea defaultValue='newtext' onChange={() => { }} />, container);
     expect(realNode.value).toBe('text');
   });
 

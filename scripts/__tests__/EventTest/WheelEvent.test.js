@@ -2,7 +2,7 @@ import * as Horizon from '@cloudsop/horizon/index.ts';
 import { getLogUtils } from '../jest/testUtils';
 
 describe('合成滚轮事件', () => {
-  const LogUtils =getLogUtils();
+  const LogUtils = getLogUtils();
 
   it('onWheel', () => {
     const realNode = Horizon.render(
@@ -36,7 +36,7 @@ describe('合成滚轮事件', () => {
       LogUtils.log(e.type + ' handle');
     };
     const realNode = Horizon.render(
-      <div onWheel={eventHandler}/>,
+      <div onWheel={eventHandler} />,
       container
     );
 
