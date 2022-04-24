@@ -1,5 +1,7 @@
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as Horizon from '@cloudsop/horizon/index.ts';
-import * as LogUtils from './logUtils';
+import { getLogUtils } from './testUtils';
 
 export const App = (props) => {
   const Parent = props.parent;
@@ -12,9 +14,10 @@ export const App = (props) => {
       </Parent>
     </div>
   );
-}
+};
 
 export const Text = (props) => {
+  const LogUtils =getLogUtils();
   LogUtils.log(props.text);
   return <p id={props.id}>{props.text}</p>;
-}
+};

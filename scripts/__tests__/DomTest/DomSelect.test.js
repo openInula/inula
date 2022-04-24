@@ -130,7 +130,7 @@ describe('Dom Select', () => {
     expect(realNode.options[1].selected).toBe(true);
   });
 
-  it('设置defaultValue后，select不受控', () => {
+  it('设置defaultValue后,select不受控', () => {
     const selectNode = (
       <select defaultValue={'Vue'}>
         <option value='React'>React.js</option>

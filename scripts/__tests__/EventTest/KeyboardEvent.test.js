@@ -1,7 +1,8 @@
 import * as Horizon from '@cloudsop/horizon/index.ts';
-import * as LogUtils from '../jest/logUtils';
+import { getLogUtils } from '../jest/testUtils';
 
 describe('Keyboard Event', () => {
+  const LogUtils = getLogUtils();
 
   it('keydown,keypress,keyup的keycode,charcode', () => {
     const node = Horizon.render(
