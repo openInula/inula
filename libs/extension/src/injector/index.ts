@@ -1,5 +1,5 @@
 import parseTreeRoot, { clearVNode, queryVNode } from '../parser/parseVNode';
-import { packagePayload, checkMessage } from './../utils/transferTool';
+import { packagePayload, checkMessage } from '../utils/transferTool';
 import {
   RequestAllVNodeTreeInfos,
   AllVNodeTreesInfos,
@@ -7,11 +7,9 @@ import {
   ComponentAttrs,
   DevToolHook,
   DevToolContentScript
-} from './../utils/constants';
-import { VNode } from './../../../horizon/src/renderer/vnode/VNode';
-import { ClassComponent } from '../../../horizon/src/renderer/vnode/VNodeTags';
-import { parseAttr, parseHooks } from '../parser/parseAttr';
-import { FunctionComponent } from './../../../horizon/src/renderer/vnode/VNodeTags';
+} from '../utils/constants';
+import { VNode } from '../../../horizon/src/renderer/vnode/VNode';
+import { parseVNodeAttrs } from '../parser/parseAttr';
 
 const roots = [];
 
@@ -48,24 +46,8 @@ function postMessage(type: string, data) {
 
 function parseCompAttrs(id: number) {
   const vNode: VNode = queryVNode(id);
-  const tag = vNode.tag;
-  if (tag === ClassComponent) {
-    const { props, state } = vNode;
-    const parsedProps = parseAttr(props);
-    const parsedState = parseAttr(state);
-    postMessage(ComponentAttrs, {
-      parsedProps,
-      parsedState,
-    });
-  } else if (tag === FunctionComponent) {
-    const { props, hooks } = vNode;
-    const parsedProps = parseAttr(props);
-    const parsedHooks = parseHooks(hooks);
-    postMessage(ComponentAttrs, {
-      parsedProps,
-      parsedHooks,
-    });
-  }
+  const parsedAttrs = parseVNodeAttrs(vNode);
+  postMessage(ComponentAttrs, parsedAttrs);
 }
 
 function injectHook() {

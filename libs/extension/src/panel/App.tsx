@@ -9,13 +9,16 @@ import { FilterTree } from '../hooks/FilterTree';
 import Close from '../svgs/Close';
 import Arrow from './../svgs/Arrow';
 import {
-  InitDevToolPageConnection,
   AllVNodeTreesInfos,
   RequestComponentAttrs,
   ComponentAttrs,
-  DevToolPanel,
-} from './../utils/constants';
-import { packagePayload } from './../utils/transferTool';
+} from '../utils/constants';
+import {
+  addBackgroundMessageListener,
+  initBackgroundConnection,
+  postMessageToBackground, removeBackgroundMessageListener,
+} from '../panelConnection';
+import { IAttr } from '../parser/parseAttr';
 
 const parseVNodeData = (rawData) => {
   const idIndentationMap: {
@@ -59,45 +62,13 @@ const getParents = (item: IData | null, parsedVNodeData: IData[]) => {
   return parents;
 };
 
-let connection;
-if (!isDev) {
-  // 与 background 的唯一连接
-  connection = chrome.runtime.connect({
-    name: 'panel'
-  });
-}
-
-let reconnectTimes = 0;
-
-function postMessage(type: string, data: any) {
-  try {
-    connection.postMessage(packagePayload({
-      type: type,
-      data: data,
-    }, DevToolPanel));
-  } catch(err) {
-    // 可能出现 port 关闭的场景，需要重新建立连接，增加可靠性
-    if (reconnectTimes === 20) {
-      reconnectTimes = 0;
-      console.error('reconnect failed');
-      return;
-    }
-    console.error(err);
-    reconnectTimes++;
-    // 重建连接
-    connection = chrome.runtime.connect({
-      name: 'panel'
-    });
-    // 重新发送初始化消息
-    postMessage(InitDevToolPageConnection, chrome.devtools.inspectedWindow.tabId);
-    // 初始化成功后才会重新发送消息
-    postMessage(type, data);
-  }
-}
-
 function App() {
   const [parsedVNodeData, setParsedVNodeData] = useState([]);
-  const [componentAttrs, setComponentAttrs] = useState({});
+  const [componentAttrs, setComponentAttrs] = useState<{
+    parsedProps?: IAttr[],
+    parsedState?: IAttr[],
+    parsedHooks?: IAttr[],
+  }>();
   const [selectComp, setSelectComp] = useState(null);
   const treeRootInfos = useRef<{id: number, length: number}[]>([]); // 记录保存的根节点 id 和长度，
 
@@ -119,14 +90,11 @@ function App() {
       const parsedData = parseVNodeData(mockParsedVNodeData);
       setParsedVNodeData(parsedData);
       setComponentAttrs({
-        state: parsedMockState,
-        props: parsedMockState,
+        parsedProps: parsedMockState,
+        parsedState: parsedMockState,
       });
     } else {
-      // 页面打开后发送初始化请求
-      postMessage(InitDevToolPageConnection, chrome.devtools.inspectedWindow.tabId);
-      // 监听 background消息
-      connection.onMessage.addListener(function (message) {
+      const handleBackgroundMessage = (message) => {
         const { payload } = message;
         if (payload) {
           const { type, data } = payload;
@@ -145,13 +113,21 @@ function App() {
           } else if (type === ComponentAttrs) {
             const {parsedProps, parsedState, parsedHooks} = data;
             setComponentAttrs({
-              props: parsedProps,
-              state: parsedState,
-              hooks: parsedHooks,
+              parsedProps,
+              parsedState,
+              parsedHooks,
             });
           }
         }
-      });
+      };
+      console.log('handle connection');
+      // 在页面渲染后初始化连接
+      initBackgroundConnection();
+      // 监听 background消息
+      addBackgroundMessageListener(handleBackgroundMessage);
+      return () => {
+        removeBackgroundMessageListener(handleBackgroundMessage);
+      };
     }
   }, []);
 
@@ -162,11 +138,11 @@ function App() {
   const handleSelectComp = (item: IData) => {
     if (isDev) {
       setComponentAttrs({
-        state: parsedMockState,
-        props: parsedMockState,
+        parsedProps: parsedMockState,
+        parsedState: parsedMockState,
       });
     } else {
-      postMessage(RequestComponentAttrs, item.id);
+      postMessageToBackground(RequestComponentAttrs, item.id);
     }
     setSelectComp(item);
   };
@@ -216,6 +192,7 @@ function App() {
           name={selectComp ? selectComp.name : null}
           attrs={selectComp ? componentAttrs : {}}
           parents={parents}
+          id={selectComp ? selectComp.id : null}
           onClickParent={handleClickParent} />
       </div>
     </div>

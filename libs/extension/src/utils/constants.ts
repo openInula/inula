@@ -11,6 +11,14 @@ export const RequestComponentAttrs = 'get component attrs';
 // 返回组件属性
 export const ComponentAttrs = 'component attrs';
 
+export const ModifyAttrs = 'modify attrs';
+
+export const ModifyProps = 'modify props';
+
+export const ModifyState = 'modify state';
+
+export const ModifyHooks = 'modify hooks';
+
 
 // 传递消息来源标志
 export const DevToolPanel = 'dev tool panel';

@@ -1,6 +1,6 @@
 import { checkMessage, packagePayload, changeSource } from '../utils/transferTool';
 import { RequestAllVNodeTreeInfos, InitDevToolPageConnection, DevToolBackground } from '../utils/constants';
-import { DevToolPanel, DevToolContentScript } from './../utils/constants';
+import { DevToolPanel, DevToolContentScript } from '../utils/constants';
 
 // 多个页面、tab页共享一个 background，需要建立连接池，给每个tab建立连接
 const connections = {};

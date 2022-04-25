@@ -1,5 +1,8 @@
 
-import { Hook, Reducer, Ref } from './../../../horizon/src/renderer/hooks/HookType';
+import { Hook, Reducer, Ref } from '../../../horizon/src/renderer/hooks/HookType';
+import { ModifyHooks, ModifyProps, ModifyState } from '../utils/constants';
+import { VNode } from '../../../horizon/src/renderer/vnode/VNode';
+import { ClassComponent, FunctionComponent } from '../../../horizon/src/renderer/vnode/VNodeTags';
 
 // 展示值为 string 的可编辑类型
 type editableStringType = 'string' | 'number' | 'undefined' | 'null';
@@ -12,7 +15,7 @@ type showAsStringType = editableStringType | unEditableStringType;
 
 
 export type IAttr = {
-  name: string;
+  name: string | number;
   indentation: number;
   hIndex?: number; // 用于记录 hook 的 hIndex 值
 } & ({
@@ -130,4 +133,62 @@ export function parseHooks(hooks: Hook<any, any>[]) {
     }
   });
   return result;
+}
+
+export function parseVNodeAttrs(vNode: VNode) {
+  const tag = vNode.tag;
+  if (tag === ClassComponent) {
+    const { props, state } = vNode;
+    const parsedProps = parseAttr(props);
+    const parsedState = parseAttr(state);
+    return {
+      parsedProps,
+      parsedState,
+    };
+  } else if (tag === FunctionComponent) {
+    const { props, hooks } = vNode;
+    const parsedProps = parseAttr(props);
+    const parsedHooks = parseHooks(hooks);
+    return {
+      parsedProps,
+      parsedHooks,
+    };
+  }
+}
+
+// 计算属性的访问顺序
+function calculateAttrAccessPath(item: IAttr, index: number, attrs: IAttr[]) {
+  let currentIndentation = item.indentation;
+  const path = [item.name];
+  for(let i = index - 1; i >= 0; i--) {
+    const lastItem = attrs[i];
+    const lastIndentation = lastItem.indentation;
+    if (lastIndentation < currentIndentation) {
+      path.push(lastItem.name);
+      currentIndentation = lastIndentation;
+    }
+  }
+  path.reverse();
+  return path;
+}
+
+export function buildAttrModifyData(parsedAttrsType: string, attrs: IAttr[], value, item: IAttr, index: number, id: number) {
+  const path = calculateAttrAccessPath(item, index, attrs);
+  let type;
+  if (parsedAttrsType === 'parsedProps') {
+    type = ModifyProps;
+  } else if (parsedAttrsType === 'parsedState') {
+    type = ModifyState;
+    path[0] = item.hIndex;
+  } else if (parsedAttrsType === 'parsedHooks') {
+    type = ModifyHooks;
+  } else {
+    return null;
+  }
+  return {
+    id: id,
+    type: type,
+    value: value,
+    path: path,
+  };
 }
