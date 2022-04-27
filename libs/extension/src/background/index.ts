@@ -14,10 +14,9 @@ chrome.runtime.onConnect.addListener(function (port) {
       const { type, data } = payload;
       let passMessage;
       if (type === InitDevToolPageConnection) {
-        if (!connections[data]) {
-          // 获取 panel 所在 tab 页的tabId
-          connections[data] = port;
-        }
+        // 记录 panel 所在 tab 页的tabId，如果已经记录了，覆盖原有port，因为原有port可能关闭了
+        // 可能这次是 panel 发起的重新建立请求
+        connections[data] = port;
         passMessage = packagePayload({ type: RequestAllVNodeTreeInfos }, DevToolBackground);
       } else {
         passMessage = message;
