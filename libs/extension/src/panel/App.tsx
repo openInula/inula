@@ -19,8 +19,11 @@ import {
   postMessageToBackground, removeBackgroundMessageListener,
 } from '../panelConnection';
 import { IAttr } from '../parser/parseAttr';
+import { createLogger } from '../utils/logUtil';
 
-const parseVNodeData = (rawData) => {
+const logger = createLogger('panelApp');
+
+const parseVNodeData = (rawData, idToTreeNodeMap , nextIdToTreeNodeMap) => {
   const idIndentationMap: {
     [id: string]: number;
   } = {};
@@ -37,10 +40,18 @@ const parseVNodeData = (rawData) => {
     i++;
     const indentation = parentId === '' ? 0 : idIndentationMap[parentId] + 1;
     idIndentationMap[id] = indentation;
-    const item = {
-      id, name, indentation, userKey
-    };
-    data.push(item);
+    const lastItem = idToTreeNodeMap[id];
+    if (lastItem) {
+      // 由于 diff 算法限制，一个 vNode 的 name，userKey，indentation 属性不会发生变化
+      nextIdToTreeNodeMap[id] = lastItem;
+      data.push(lastItem);
+    } else {
+      const item = {
+        id, name, indentation, userKey
+      };
+      nextIdToTreeNodeMap[id] = item;
+      data.push(item);
+    }
   }
   return data;
 };
@@ -62,15 +73,19 @@ const getParents = (item: IData | null, parsedVNodeData: IData[]) => {
   return parents;
 };
 
+interface IIdToNodeMap {
+  [id: number]: IData;
+}
+
 function App() {
   const [parsedVNodeData, setParsedVNodeData] = useState([]);
   const [componentAttrs, setComponentAttrs] = useState<{
     parsedProps?: IAttr[],
     parsedState?: IAttr[],
     parsedHooks?: IAttr[],
-  }>();
+  }>({});
   const [selectComp, setSelectComp] = useState(null);
-  const treeRootInfos = useRef<{id: number, length: number}[]>([]); // 记录保存的根节点 id 和长度，
+  const idToTreeNodeMapRef = useRef<IIdToNodeMap>({});
 
   const {
     filterValue,
@@ -87,7 +102,9 @@ function App() {
 
   useEffect(() => {
     if (isDev) {
-      const parsedData = parseVNodeData(mockParsedVNodeData);
+      const nextIdToTreeNodeMap: IIdToNodeMap = {};
+      const parsedData = parseVNodeData(mockParsedVNodeData, idToTreeNodeMapRef.current, nextIdToTreeNodeMap);
+      idToTreeNodeMapRef.current = nextIdToTreeNodeMap;
       setParsedVNodeData(parsedData);
       setComponentAttrs({
         parsedProps: parsedMockState,
@@ -96,19 +113,18 @@ function App() {
     } else {
       const handleBackgroundMessage = (message) => {
         const { payload } = message;
+        // 对象数据只是记录了引用，内容可能在后续被修改，打印字符串可以获取当前真正内容，不被后续修改影响
+        logger.info(JSON.stringify(payload));
         if (payload) {
           const { type, data } = payload;
           if (type === AllVNodeTreesInfos) {
+            const idToTreeNodeMap = idToTreeNodeMapRef.current;
+            const nextIdToTreeNodeMap: IIdToNodeMap = {};
             const allTreeData = data.reduce((pre, current) => {
-              const parsedTreeData = parseVNodeData(current);
-              const length = parsedTreeData.length;
-              treeRootInfos.current.length = 0;
-              if (length) {
-                const treeRoot = parsedTreeData[0];
-                treeRootInfos.current.push({id: treeRoot.id, length: length});
-              }
+              const parsedTreeData = parseVNodeData(current, idToTreeNodeMap, nextIdToTreeNodeMap);
               return pre.concat(parsedTreeData);
             }, []);
+            idToTreeNodeMapRef.current = nextIdToTreeNodeMap;
             setParsedVNodeData(allTreeData);
           } else if (type === ComponentAttrs) {
             const {parsedProps, parsedState, parsedHooks} = data;
@@ -120,7 +136,6 @@ function App() {
           }
         }
       };
-      console.log('handle connection');
       // 在页面渲染后初始化连接
       initBackgroundConnection();
       // 监听 background消息
