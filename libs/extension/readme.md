@@ -47,6 +47,9 @@ sequenceDiagram
 ```
 
 ## 传输数据结构
+**<font color=#8B0000>限制：chrome.runtime.sendMessage只能传递 JSON-serializable 数据</font>**
+
+
 ```ts
 type passData = {
   type: 'HORIZON_DEV_TOOLS',
@@ -58,10 +61,21 @@ type passData = {
 ```
 
 ## horizon和devTools的主要交互
-- 页面初始渲染
-- 页面更新
-- 页面销毁
+- App初始渲染
+- App更新
+- App销毁
+- 整个页面刷新
 - devTools触发组件属性更新
+
+## 对 hook 类型的判断和值的获取
+Horizon 是一个底层框架，在 Horizon 与插件的交互过程中，我们不希望 Horizon 额外的增加一些代码和接口给插件使用，这可能会影响到 Horizon 的性能。
+所以我们决定直接感知 hook 的属性值，通过其属性值判断 hook 类型，并直接调用 Reducer 的 trigger 函数触发更新。
+
+## 触发组件更新方式
+- 类组件的state：调用实例的 setState 函数触发更新
+- 类组件的props：浅复制props后更新props值并调用 forceUpdate 触发更新
+- 函数组件的props：
+- 函数组件的state：调用 useState 函数触发更新
 
 ## VNode的清理
 全局 hook 中保存了root VNode，在解析 VNode 树的时候也会保存 VNode 的引用，在清理VNode的时候这些 VNode 的引用也需要删除。
@@ -73,7 +87,7 @@ type passData = {
 - 通过解析 path 值可以分析出组件树的结构
 
 ## 组件props/state/hook等数据的传输和解析
-将数据格式进行转换后进行传递。对于 props 和 类组件的 state，他们都是对象，可以将对象进行解析然后以 k-v 的形式，树的结构显示。函数组件的 Hooks 是以数组的形式存储在 vNode 的属性中的，每个 hook 的唯一标识符是 hIndex 属性值，在对象展示的时候不能展示该属性值，需要根据 hook 类型展示一个 state/ref/effect 等值。hook 中存储的值也可能不是对象，只是一个简单的字符串，他们的解析和 props/state 的解析同样存在差异。
+将数据格式进行转换后进行传递。对于 props 和 类组件的 state，他们都是对象，可以将对象进行解析然后以 k-v 的形式，树的结构显示。函数组件的 Hooks 是以数组的形式存储在 vNode 的属性中的，每个 hook 的唯一标识符是 hIndex 属性值，在对象展示的时候不能展示该属性值，需要根据 hook 类型展示一个 state/ref/effect 等值。hook 中存储的值也可能不是对象，只是一个简单的字符串或者 dom 元素，他们的解析和 props/state 的解析同样存在差异，需要单独处理。
 
 
 ## 滚动动态渲染 Tree
