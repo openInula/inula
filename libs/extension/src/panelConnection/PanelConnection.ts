@@ -56,6 +56,6 @@ export function postMessageToBackground(type: string, data: any) {
     // 重建连接
     initBackgroundConnection();
     // 初始化成功后才会重新发送消息
-    postMessage(type, data);
+    postMessageToBackground(type, data);
   }
 }
