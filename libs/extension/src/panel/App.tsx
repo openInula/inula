@@ -43,7 +43,12 @@ const parseVNodeData = (rawData, idToTreeNodeMap , nextIdToTreeNodeMap) => {
     const lastItem = idToTreeNodeMap[id];
     if (lastItem) {
       // 由于 diff 算法限制，一个 vNode 的 name，userKey，indentation 属性不会发生变化
+      // 但是在跳转到新页面时，id 值重置，此时原有 id 对应的节点都发生了变化，需要更新
+      // 为了让架构尽可能简单，我们不区分是否是页面跳转，所以每次都需要重新赋值
       nextIdToTreeNodeMap[id] = lastItem;
+      lastItem.name = name;
+      lastItem.indentation = indentation;
+      lastItem.userKey = userKey;
       data.push(lastItem);
     } else {
       const item = {
