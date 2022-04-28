@@ -11,28 +11,18 @@ chrome.runtime.onConnect.addListener(function (port) {
     const isHorizonMessage = checkMessage(message, DevToolPanel);
     if (isHorizonMessage) {
       const { payload } = message;
-      const { type, data } = payload;
+      // tabId 值指当前浏览器分配给 web_page 的 id 值。是panel页面查询得到，指定向该页面发送消息
+      const { type, data, tabId } = payload;
       let passMessage;
       if (type === InitDevToolPageConnection) {
         // 记录 panel 所在 tab 页的tabId，如果已经记录了，覆盖原有port，因为原有port可能关闭了
         // 可能这次是 panel 发起的重新建立请求
-        connections[data] = port; // data 是 tabId 值，该值指当前浏览器分配给 web_page 的 id 值。是panel页面查询得到
+        connections[tabId] = port;
         passMessage = packagePayload({ type: RequestAllVNodeTreeInfos }, DevToolBackground);
       } else {
-        passMessage = message;
-        changeSource(passMessage, DevToolBackground);
+        passMessage = packagePayload({type, data}, DevToolBackground);
       }
-      // 查询参数有 active 和 currentWindow， 如果开发者工具与页面分离，会导致currentWindow为false才能找到
-      // 所以只用 active 参数查找，但不确定这么写是否会引发查询错误的情况
-      // 或许需要用不同的查询参数查找两次
-      chrome.tabs.query({ active: true }, function (tabs) {
-        if (tabs.length) {
-          chrome.tabs.sendMessage(tabs[0].id, passMessage);
-          console.log('post message end');
-        } else {
-          console.log('do not find message');
-        }
-      });
+      chrome.tabs.sendMessage(tabId, passMessage);
     }
   }
   // Listen to messages sent from the DevTools page

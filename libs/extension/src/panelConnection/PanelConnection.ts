@@ -29,7 +29,7 @@ export function initBackgroundConnection() {
       // 监听 background 消息
       connection.onMessage.addListener(notice);
       // 页面打开后发送初始化请求
-      postMessageToBackground(InitDevToolPageConnection, chrome.devtools.inspectedWindow.tabId);
+      postMessageToBackground(InitDevToolPageConnection);
     } catch (e) {
       console.error('create connection failed');
       console.error(e);
@@ -38,12 +38,12 @@ export function initBackgroundConnection() {
 }
 
 let reconnectTimes = 0;
-export function postMessageToBackground(type: string, data: any) {
+export function postMessageToBackground(type: string, data?: any) {
   try{
-    connection.postMessage(packagePayload({
-      type: type,
-      data: data,
-    }, DevToolPanel));
+    const payLoad = data
+      ? { type, tabId: chrome.devtools.inspectedWindow.tabId, data }
+      : { type, tabId: chrome.devtools.inspectedWindow.tabId };
+    connection.postMessage(packagePayload(payLoad, DevToolPanel));
   } catch(err) {
     // 可能出现 port 关闭的场景，需要重新建立连接，增加可靠性
     if (reconnectTimes === 20) {
