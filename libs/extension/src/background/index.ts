@@ -16,7 +16,7 @@ chrome.runtime.onConnect.addListener(function (port) {
       if (type === InitDevToolPageConnection) {
         // 记录 panel 所在 tab 页的tabId，如果已经记录了，覆盖原有port，因为原有port可能关闭了
         // 可能这次是 panel 发起的重新建立请求
-        connections[data] = port;
+        connections[data] = port; // data 是 tabId 值，该值指当前浏览器分配给 web_page 的 id 值。是panel页面查询得到
         passMessage = packagePayload({ type: RequestAllVNodeTreeInfos }, DevToolBackground);
       } else {
         passMessage = message;
@@ -56,6 +56,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   // Messages from content scripts should have sender.tab set
   if (sender.tab) {
     const tabId = sender.tab.id;
+    // 和 InitDevToolPageConnection 时得到的 tabId 值一致时，向指定的 panel 页面 port 发送消息
     if (tabId in connections && checkMessage(message, DevToolContentScript)) {
       changeSource(message, DevToolBackground);
       connections[tabId].postMessage(message);
