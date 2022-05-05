@@ -6,10 +6,11 @@ import {
   RequestComponentAttrs,
   ComponentAttrs,
   DevToolHook,
-  DevToolContentScript
+  DevToolContentScript, ModifyAttrs, ModifyHooks, ModifyState,
 } from '../utils/constants';
 import { VNode } from '../../../horizon/src/renderer/vnode/VNode';
 import { parseVNodeAttrs } from '../parser/parseAttr';
+import { Reducer } from '../../../horizon/src/renderer/hooks/HookType';
 
 const roots = [];
 
@@ -54,6 +55,56 @@ function parseCompAttrs(id: number) {
   postMessage(ComponentAttrs, parsedAttrs);
 }
 
+function modifyVNodeAttrs(data) {
+  const {type, id, value, path} = data;
+  const vNode = queryVNode(id);
+  if (!vNode) {
+    console.error('Do not find match vNode, this is a bug, please report us');
+    return;
+  }
+  if (type === ModifyHooks) {
+    const hooks = vNode.hooks;
+    const editHook = hooks[path[0]];
+    if ((editHook.state as Reducer<any, any>).trigger) {
+      const editState = editHook.state as Reducer<any, any>;
+      const editValue = editState.stateValue;
+      const editValueType = typeof editValue;
+      if (editValueType === 'string') {
+        editState.trigger(value);
+      } else if (editValueType === 'number') {
+        const numValue = Number(value);
+        const targetValue = isNaN(numValue) ? value : numValue; // 如果能转为数字，转数字，不能转数字，用原值
+        editState.trigger(targetValue);
+      } else if(editValueType === 'object') {
+        if (editValue === null) {
+          editState.trigger(value);
+        } else {
+          const newValue = {...editValue};
+          // 遍历读取到直接指向需要修改值的对象
+          const attrPath = path.slice(1);
+          let attr = newValue;
+          for(let i = 0; i < attrPath.length - 1; i++) {
+            attr = attr[attrPath[i]];
+          }
+          // 修改对象上的值
+          attr[attrPath[attrPath.length - 1]] = value;
+          editState.trigger(newValue);
+        }
+      }
+    }
+  } else if (type === ModifyState) {
+    const instance = vNode.realNode;
+    const oldState = instance.state || {};
+    const nextState = Object.assign({}, oldState);
+    let accessRef = nextState;
+    for(let i = 0; i < path.length - 1; i++) {
+      accessRef = accessRef[path[i]];
+    }
+    accessRef[path[path.length - 1]] = value;
+    instance.setState(nextState);
+  }
+}
+
 function injectHook() {
   if (window.__HORIZON_DEV_HOOK__) {
     return;
@@ -79,6 +130,8 @@ function injectHook() {
         send();
       } else if (type === RequestComponentAttrs) {
         parseCompAttrs(data);
+      } else if (type === ModifyAttrs) {
+        modifyVNodeAttrs(data);
       }
     }
   });

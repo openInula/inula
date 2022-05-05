@@ -127,11 +127,9 @@ export function parseHooks(hooks: Hook<any, any>[]) {
     // 不同 hook 的 state 有不同属性，根据是否存在该属性判断 hook 类型
     // 采用这种方式是因为要拿到需要的属性值，和后续触发更新，必然要感知 hook 的属性值
     // 既然已经感知了属性，就不额外添加属性进行类型判断了
-    if ((state as Reducer<any, any>).stateValue) {
+    if ((state as Reducer<any, any>).trigger) {
       if ((state as Reducer<any, any>).isUseState) {
         parseSubAttr((state as Reducer<any, any>).stateValue, indentation, 'state', result, hIndex);
-      } else {
-        parseSubAttr((state as Reducer<any, any>).stateValue, indentation, 'reducer', result, hIndex);
       }
     } else if ((state as  Ref<any>).current) {
       parseSubAttr((state as Ref<any>).current, indentation, 'ref', result, hIndex);
@@ -162,23 +160,31 @@ export function parseVNodeAttrs(vNode: VNode) {
 }
 
 // 计算属性的访问顺序
-function calculateAttrAccessPath(item: IAttr, index: number, attrs: IAttr[]) {
+function calculateAttrAccessPath(item: IAttr, index: number, attrs: IAttr[], isHook: boolean) {
   let currentIndentation = item.indentation;
   const path = [item.name];
+  let hookRootItem: IAttr = item;
   for(let i = index - 1; i >= 0; i--) {
     const lastItem = attrs[i];
     const lastIndentation = lastItem.indentation;
     if (lastIndentation < currentIndentation) {
+      hookRootItem = lastItem;
       path.push(lastItem.name);
       currentIndentation = lastIndentation;
     }
   }
   path.reverse();
+  if (isHook) {
+    if (hookRootItem) {
+      path[0] = hookRootItem.hIndex;
+    } else {
+      console.error('There is a bug, please report');
+    }
+  }
   return path;
 }
 
 export function buildAttrModifyData(parsedAttrsType: string, attrs: IAttr[], value, item: IAttr, index: number, id: number) {
-  const path = calculateAttrAccessPath(item, index, attrs);
   let type;
   if (parsedAttrsType === 'parsedProps') {
     type = ModifyProps;
@@ -186,10 +192,10 @@ export function buildAttrModifyData(parsedAttrsType: string, attrs: IAttr[], val
     type = ModifyState;
   } else if (parsedAttrsType === 'parsedHooks') {
     type = ModifyHooks;
-    path[0] = item.hIndex;
   } else {
     return null;
   }
+  const path = calculateAttrAccessPath(item, index, attrs, parsedAttrsType === 'parsedHooks');
   return {
     id: id,
     type: type,
