@@ -61,7 +61,7 @@ function parseTreeRoot(treeRoot: VNode) {
   return result;
 }
 
-export function queryVNode(id: number) {
+export function queryVNode(id: number): VNode|undefined {
   return IdToVNodeMap.get(id);
 }
 

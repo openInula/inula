@@ -45,7 +45,11 @@ function postMessage(type: string, data) {
 }
 
 function parseCompAttrs(id: number) {
-  const vNode: VNode = queryVNode(id);
+  const vNode = queryVNode(id);
+  if (!vNode) {
+    console.error('Do not find match vNode, this is a bug, please report us');
+    return;
+  }
   const parsedAttrs = parseVNodeAttrs(vNode);
   postMessage(ComponentAttrs, parsedAttrs);
 }
