@@ -160,23 +160,26 @@ function VTree(props: {
     return true;
   };
 
+  const showList = data.filter(filter);
+
   return (
     <SizeObserver className={styles.treeContainer}>
       {(width: number, height: number) => {
         return (
           <VList
-            data={data}
+            data={showList}
             width={width}
             height={height}
             itemHeight={18}
             scrollToItem={selectItem}
-            filter={filter}
             onRendered={onRendered}
           >
-            {(index: number, item: IData) => {
-              // 如果存在下一个节点，并且节点缩进比自己大，说明下个节点是子节点，节点本身需要显示展开收起图标
-              const nextItem = data[index + 1];
-              const hasChild = nextItem && nextItem.indentation > item.indentation;
+            {(item: IData) => {
+              const isCollapsed = collapseNode.includes(item);
+              const index = showList.indexOf(item);
+              // 如果收起，一定有 child
+              // 不收起场景，如果存在下一个节点，并且节点缩进比自己大，说明下个节点是子节点，节点本身需要显示展开收起图标
+              const hasChild = isCollapsed || (showList[index + 1]?.indentation > item.indentation);
               return (
                 <Item
                   hasChild={hasChild}
