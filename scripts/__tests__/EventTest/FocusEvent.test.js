@@ -1,7 +1,8 @@
 import * as Horizon from '@cloudsop/horizon/index.ts';
-import * as LogUtils from '../jest/logUtils';
+import { getLogUtils } from '../jest/testUtils';
 
 describe('合成焦点事件', () => {
+  const LogUtils = getLogUtils();
 
   it('onFocus', () => {
     const realNode = Horizon.render(

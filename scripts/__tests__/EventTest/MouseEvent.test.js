@@ -1,7 +1,9 @@
 import * as Horizon from '@cloudsop/horizon/index.ts';
-import * as LogUtils from '../jest/logUtils';
+import { getLogUtils } from '../jest/testUtils';
 
 describe('MouseEvent Test', () => {
+  const LogUtils =getLogUtils();
+  
   describe('onClick Test', () => {
     it('绑定this', () => {
       class App extends Horizon.Component {

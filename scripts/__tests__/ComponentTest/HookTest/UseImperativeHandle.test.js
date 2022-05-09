@@ -1,6 +1,6 @@
 import * as Horizon from '@cloudsop/horizon/index.ts';
-import * as LogUtils from '../../jest/logUtils';
 import { Text } from '../../jest/commonComponents';
+import { getLogUtils } from '../../jest/testUtils';
 
 describe('useImperativeHandle Hook Test', () => {
   const {
@@ -10,7 +10,7 @@ describe('useImperativeHandle Hook Test', () => {
     act,
   } = Horizon;
   const { unmountComponentAtNode } = Horizon;
-
+  const LogUtils = getLogUtils();
   it('测试useImperativeHandle', () => {
 
     let App = (props, ref) => {
@@ -48,7 +48,6 @@ describe('useImperativeHandle Hook Test', () => {
   });
 
   it('useImperativeHandle没有配置dep时自动更新', () => {
-
     let App = (props, ref) => {
       const [num, setNum] = useState(0);
       useImperativeHandle(ref, () => ({ num, setNum }));
