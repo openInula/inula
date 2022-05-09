@@ -13,6 +13,7 @@ import { createContext } from './src/renderer/components/context/CreateContext';
 import { lazy } from './src/renderer/components/Lazy';
 import { forwardRef } from './src/renderer/components/ForwardRef';
 import { memo } from './src/renderer/components/Memo';
+import './src/external/devtools';
 
 import {
   useCallback,

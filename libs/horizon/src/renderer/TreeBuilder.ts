@@ -236,7 +236,11 @@ function buildVNodeTree(treeRoot: VNode) {
 
   // 重置环境变量，为重新进行深度遍历做准备
   resetProcessingVariables(startVNode);
-
+  // devProps 用于插件手动更新props值
+  if (startVNode.devProps !== undefined) {
+    startVNode.props = startVNode.devProps;
+    startVNode.devProps = undefined;
+  }
   while (processing !== null) {
     try {
       while (processing !== null) {

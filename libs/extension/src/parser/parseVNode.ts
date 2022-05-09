@@ -1,4 +1,3 @@
-import { travelVNodeTree } from '../../../horizon/src/renderer/vnode/VNodeUtils';
 import { VNode } from '../../../horizon/src/renderer/vnode/VNode';
 import { ClassComponent, FunctionComponent } from '../../../horizon/src/renderer/vnode/VNodeTags';
 
@@ -32,7 +31,7 @@ function getParentUserComponent(node: VNode) {
   return parent;
 }
 
-function parseTreeRoot(treeRoot: VNode) {
+function parseTreeRoot(travelVNodeTree, treeRoot: VNode) {
   const result: any[] = [];
   travelVNodeTree(treeRoot, (node: VNode) => {
     const tag = node.tag;
@@ -57,7 +56,7 @@ function parseTreeRoot(treeRoot: VNode) {
       VNodeToIdMap.set(node, id);
       IdToVNodeMap.set(id, node);
     }
-  }, null, treeRoot, null);
+  });
   return result;
 }
 
