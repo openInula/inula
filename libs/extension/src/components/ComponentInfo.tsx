@@ -70,9 +70,9 @@ function ComponentAttr({ attrsName, attrsType, attrs, id }: {
         <span className={styles.attrArrow}>{hasChild && <Triangle director={isCollapsed ? 'right' : 'down'} />}</span>
         <span className={styles.attrName}>{`${item.name}`}</span>
         {' :'}
-        {item.type === 'string' || item.type === 'number' ? (
-          <input
-            value={item.value}
+        {item.type === 'string' || item.type === 'number' || item.type === 'undefined' || item.type === 'null'
+          ? <input
+            value={String(item.value)}
             className={styles.attrValue}
             onChange={(event) => {
               const nextAttrs = [...editableAttrs];
@@ -93,8 +93,23 @@ function ComponentAttr({ attrsName, attrsType, attrs, id }: {
               }
             }}
           />
-        ) : (
-          <span className={styles.attrValue}>{item.value}</span>
+         : (item.type === 'boolean'
+            ? <input
+              type={'checkbox'}
+              checked={item.value}
+              className={styles.attrValue}
+              onChange={(event) => {
+                const nextAttrs = [...editableAttrs];
+                const nextItem = {...item};
+                nextItem.value = event.target.checked;
+                nextAttrs[index] = nextItem;
+                setEditableAttrs(nextAttrs);
+                if (!isDev) {
+                const data = buildAttrModifyData(attrsType,attrs, nextItem.value,item, index, id);
+                postMessageToBackground(ModifyAttrs, data);
+                }
+              }}/>
+            : <span className={styles.attrValue}>{item.value}</span>
         )}
       </div>
     );
