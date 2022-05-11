@@ -2,6 +2,7 @@ import { travelVNodeTree } from '../renderer/vnode/VNodeUtils';
 import { Hook, Reducer, Ref } from '../renderer/hooks/HookType';
 import { VNode } from '../renderer/vnode/VNode';
 import { launchUpdateFromVNode } from '../renderer/TreeBuilder';
+import { DomComponent } from '../renderer/vnode/VNodeTags';
 
 export const helper = {
   travelVNodeTree: (rootVNode, fun) => {
@@ -40,6 +41,36 @@ export const helper = {
     } else {
       console.error('Target vNode is not a hook vNode: ', vNode);
     }
+  },
+  getComponentInfo: (vNode: VNode) => {
+    const { props, state, hooks } = vNode;
+    const info:any = {};
+    if (props && Object.keys(props).length !== 0) {
+      info['Props'] = props;
+    }
+    if (state && Object.keys(state).length !== 0) {
+      info['State'] = state;
+    }
+    if (hooks && hooks.length !== 0) {
+      const logHookInfo: any[] = [];
+      hooks.forEach((hook) =>{
+        const state = hook.state as Reducer<any, any>;
+        if (state.trigger && state.isUseState) {
+          logHookInfo.push(state.stateValue);
+        }
+      });
+      info['Hooks'] = logHookInfo;
+    }
+    travelVNodeTree(vNode, (node: VNode) => {
+      if (node.tag === DomComponent) {
+        // 找到组件的第一个dom元素，返回它所在父节点的全部子节点
+        const dom = node.realNode;
+        info['Nodes'] = dom?.parentNode?.childNodes;
+        return true;
+      }
+      return false;
+    }, null, vNode, null);
+    return info;
   },
 };
 
