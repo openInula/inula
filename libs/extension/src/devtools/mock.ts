@@ -5,8 +5,9 @@
 
 import { parseAttr } from '../parser/parseAttr';
 import parseTreeRoot from '../parser/parseVNode';
-import { VNode } from './../../../horizon/src/renderer/vnode/VNode';
-import { FunctionComponent, ClassComponent } from './../../../horizon/src/renderer/vnode/VNodeTags';
+import { VNode } from '../../../horizon/src/renderer/vnode/VNode';
+import { FunctionComponent, ClassComponent } from '../../../horizon/src/renderer/vnode/VNodeTags';
+import { helper } from '../../../horizon/src/external/devtools';
 
 const mockComponentNames = ['Apple', 'Pear', 'Banana', 'Orange', 'Jenny', 'Kiwi', 'Coconut'];
 
@@ -50,7 +51,7 @@ addOneThousandNode(tree);
 
 /**
  * 将mock数据转变为 VNode 树
- * 
+ *
  * @param node 树节点
  * @param vNode VNode节点
  */
@@ -78,7 +79,7 @@ function getMockVNodeTree(node: IMockTree, vNode: VNode) {
 const rootVNode = MockVNode(tree.tag);
 getMockVNodeTree(tree, rootVNode);
 
-export const mockParsedVNodeData = parseTreeRoot(rootVNode);
+export const mockParsedVNodeData = parseTreeRoot(helper.travelVNodeTree, rootVNode);
 
 const mockState = {
   str: 'jenny',
