@@ -1,3 +1,60 @@
+## 为什么要做 devTool 插件
+让Horizon开发者获得更好的开发体验，获取准确的组件树结构、状态信息和真实dom对应关系。
+
+## 上下文关系
+devTool功能的实现依赖浏览器 extension 开放的能力，用于绘制展示组件信息和获取真实 dom 元素。同时也需要 Horizon 提供相关接口获取组件树信息和提供调试能力。
+
+## 目标
+1. 查看组件树结构并支持过滤
+2. 查看组件与真实dom的关系
+3. 查看组件props, state, hooks 等信息
+4. 调试单个组件及其子组件
+5. 支持状态管理解决方案调试
+
+## 和 react devTool 能力对比
+||react | Horizon|
+|-|-|-|
+|查看组件树|Y |Y |
+|查看真实DOM|Y|Y|
+|查看组件信息|Y|Y|
+|调试能力|Y| Y |
+|性能调试|Y|N|
+|解析Hook名|Y|N|
+|状态管理解决方案调试|N|Y|
+
+## 架构草图
+```plantuml
+@startuml
+package "Horizon" {
+  [U I]
+  [Helper]
+}
+
+package "Script Content" {
+  [GlobalHook]
+  [MessageHandler]
+    [Parser]
+
+}
+package "Browser" {
+  [Background]
+  [Panel]
+}
+
+[GlobalHook] <-- [U I]
+[GlobalHook] --> [MessageHandler]
+[Helper] <-- [MessageHandler]
+[Helper] --> [U I]
+[MessageHandler] <--> [Background]
+[Background] <--> [Panel]
+[Parser] --> [MessageHandler]
+@enduml
+```
+
+#### 说明
+Helper: 提供接口给插件操控组件以及提供工具方法。
+Parser: 负责将组件树结构和组件信息解析成特定的数据结构，供Panel展示。
+
 ## 文件清单说明：
 devtools_page: devtool主页面
 default_popup: 拓展图标点击时弹窗页面
@@ -14,9 +71,6 @@ Optional: Feel free to dock the developer tools again if you had undocked it at 
 
 ## 全局变量注入
 通过content_scripts在document初始化时给页面添加script脚本，在新添加的脚本中给window注入全局变量
-
-## horizon页面判断
-在页面完成渲染后往全局变量中添加信息，并传递 tabId 给 background 告知这是 horizon 页面
 
 ## 通信方式：
 ```mermaid
@@ -56,7 +110,8 @@ type passData = {
   payload: {
     type: string,
     data: any,
-  }
+  },
+  from: string,
 }
 ```
 
@@ -67,14 +122,14 @@ type passData = {
 - 整个页面刷新
 - devTools触发组件属性更新
 
-## 对 hook 类型的判断和值的获取
-Horizon 是一个底层框架，在 Horizon 与插件的交互过程中，我们不希望 Horizon 额外的增加一些代码和接口给插件使用，这可能会影响到 Horizon 的性能。
-所以我们决定直接感知 hook 的属性值，通过其属性值判断 hook 类型，并直接调用 Reducer 的 trigger 函数触发更新。
+
+## 对组件的操作
+我们希望插件和Horizon能够尽量解耦，所以Horizon提供了Helper注入给插件，提供相关方法操作组件。
 
 ## 触发组件更新方式
 - 类组件的state：调用实例的 setState 函数触发更新
 - 类组件的props：浅复制props后更新props值并调用 forceUpdate 触发更新
-- 函数组件的props：
+- 函数组件的props：新增了devProps属性，在特定时刻重新给props赋值，触发更新
 - 函数组件的state：调用 useState 函数触发更新
 
 ## VNode的清理
