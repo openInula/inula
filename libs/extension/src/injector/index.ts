@@ -11,6 +11,8 @@ import {
   ModifyHooks,
   ModifyState,
   ModifyProps,
+  InspectDom,
+  LogComponentData
 } from '../utils/constants';
 import { VNode } from '../../../horizon/src/renderer/vnode/VNode';
 import { parseVNodeAttrs } from '../parser/parseAttr';
@@ -54,7 +56,7 @@ function parseCompAttrs(id: number) {
     console.error('Do not find match vNode, this is a bug, please report us');
     return;
   }
-  const parsedAttrs = parseVNodeAttrs(vNode);
+  const parsedAttrs = parseVNodeAttrs(vNode, helper.getHookInfo);
   postMessage(ComponentAttrs, parsedAttrs);
 }
 
@@ -120,6 +122,14 @@ function modifyVNodeAttrs(data) {
   }
 }
 
+function logComponentData(id: number) {
+  const vNode = queryVNode(id);
+  if (vNode) {
+    const info = helper.getComponentInfo(vNode);
+    console.log('Component Info: ', info);
+  }
+}
+
 let helper;
 
 function init(horizonHelper) {
@@ -154,6 +164,12 @@ function injectHook() {
         parseCompAttrs(data);
       } else if (type === ModifyAttrs) {
         modifyVNodeAttrs(data);
+      } else if (type === InspectDom) {
+        console.log(data);
+      } else if (type === LogComponentData) {
+        logComponentData(data);
+      } else {
+        console.warn('unknown command', type);
       }
     }
   });

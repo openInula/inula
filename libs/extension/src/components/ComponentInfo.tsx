@@ -1,13 +1,12 @@
 import styles from './ComponentsInfo.less';
 import Eye from '../svgs/Eye';
 import Debug from '../svgs/Debug';
-import Copy from '../svgs/Copy';
 import Triangle from '../svgs/Triangle';
 import { useState, useEffect } from 'horizon';
 import { IData } from './VTree';
 import { buildAttrModifyData, IAttr } from '../parser/parseAttr';
 import { postMessageToBackground } from '../panelConnection';
-import { ModifyAttrs } from '../utils/constants';
+import { InspectDom, LogComponentData, ModifyAttrs } from '../utils/constants';
 
 type IComponentInfo = {
   name: string;
@@ -122,9 +121,6 @@ function ComponentAttr({ attrsName, attrsType, attrs, id }: {
     <div className={styles.attrContainer}>
       <div className={styles.attrHead}>
         <span className={styles.attrType}>{attrsName}</span>
-        <span className={styles.attrCopy}>
-          <Copy />
-        </span>
       </div>
       <div className={styles.attrDetail}>
         {showAttr}
@@ -141,10 +137,14 @@ export default function ComponentInfo({ name, attrs, parents, id, onClickParent 
           <span className={styles.name}>
             {name}
           </span>
-          <span className={styles.eye} >
+          <span className={styles.eye} title={'Inspect dom element'} onClick={() => {
+            postMessageToBackground(InspectDom, id);
+          }}>
             <Eye />
           </span>
-          <span className={styles.debug}>
+          <span className={styles.debug} title={'Log this component data'} onClick={() => {
+            postMessageToBackground(LogComponentData, id);
+          }}>
             <Debug />
           </span>
         </>}
