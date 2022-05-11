@@ -1,5 +1,5 @@
 
-import { Hook, Reducer, Ref } from '../../../horizon/src/renderer/hooks/HookType';
+import { Hook } from '../../../horizon/src/renderer/hooks/HookType';
 import { ModifyHooks, ModifyProps, ModifyState } from '../utils/constants';
 import { VNode } from '../../../horizon/src/renderer/vnode/VNode';
 import { ClassComponent, FunctionComponent } from '../../../horizon/src/renderer/vnode/VNodeTags';
@@ -119,26 +119,20 @@ export function parseAttr(rootAttr: any) {
   return result;
 }
 
-export function parseHooks(hooks: Hook<any, any>[]) {
+export function parseHooks(hooks: Hook<any, any>[], getHookInfo) {
   const result: IAttr[] = [];
   const indentation = 0;
   hooks.forEach(hook => {
-    const { hIndex, state } = hook;
-    // 不同 hook 的 state 有不同属性，根据是否存在该属性判断 hook 类型
-    // 采用这种方式是因为要拿到需要的属性值，和后续触发更新，必然要感知 hook 的属性值
-    // 既然已经感知了属性，就不额外添加属性进行类型判断了
-    if ((state as Reducer<any, any>).trigger) {
-      if ((state as Reducer<any, any>).isUseState) {
-        parseSubAttr((state as Reducer<any, any>).stateValue, indentation, 'state', result, hIndex);
-      }
-    } else if ((state as  Ref<any>).current) {
-      parseSubAttr((state as Ref<any>).current, indentation, 'ref', result, hIndex);
+    const hookInfo = getHookInfo(hook);
+    if (hookInfo) {
+      const {name, hIndex, value} = hookInfo;
+      parseSubAttr(value, indentation, name, result, hIndex);
     }
   });
   return result;
 }
 
-export function parseVNodeAttrs(vNode: VNode) {
+export function parseVNodeAttrs(vNode: VNode, getHookInfo) {
   const tag = vNode.tag;
   if (tag === ClassComponent) {
     const { props, state } = vNode;
@@ -151,7 +145,7 @@ export function parseVNodeAttrs(vNode: VNode) {
   } else if (tag === FunctionComponent) {
     const { props, hooks } = vNode;
     const parsedProps = parseAttr(props);
-    const parsedHooks = parseHooks(hooks);
+    const parsedHooks = parseHooks(hooks, getHookInfo);
     return {
       parsedProps,
       parsedHooks,
