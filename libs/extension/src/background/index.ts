@@ -51,6 +51,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       changeSource(message, DevToolBackground);
       connections[tabId].postMessage(message);
     } else {
+      // TODO: 如果查询失败，发送 chrome message，请求 panel 主动建立连接
       console.log('Tab not found in connection list.');
     }
   } else {
