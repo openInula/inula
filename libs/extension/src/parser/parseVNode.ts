@@ -1,13 +1,16 @@
-import { travelVNodeTree } from '../../../../libs/horizon/src/renderer/vnode/VNodeUtils';
-import { VNode } from '../../../../libs/horizon/src/renderer/Types';
-import { ClassComponent, FunctionComponent } from '../../../../libs/horizon/src/renderer/vnode/VNodeTags';
+import { VNode } from '../../../horizon/src/renderer/vnode/VNode';
+import { ClassComponent, FunctionComponent } from '../../../horizon/src/renderer/vnode/VNodeTags';
 
 // 建立双向映射关系，当用户在修改属性值后，可以找到对应的 VNode
 const VNodeToIdMap = new Map<VNode, number>();
 const IdToVNodeMap = new Map<number, VNode>();
 
 let uid = 0;
-function generateUid () {
+function generateUid (vNode: VNode) {
+  const id = VNodeToIdMap.get(vNode);
+  if (id !== undefined) {
+    return id;
+  }
   uid++;
   return uid;
 }
@@ -28,12 +31,12 @@ function getParentUserComponent(node: VNode) {
   return parent;
 }
 
-function parseTreeRoot(treeRoot: VNode) {
+function parseTreeRoot(travelVNodeTree, treeRoot: VNode) {
   const result: any[] = [];
   travelVNodeTree(treeRoot, (node: VNode) => {
     const tag = node.tag;
     if (isUserComponent(tag)) {
-      const id = generateUid();
+      const id = generateUid(node);
       result.push(id);
       const name = node.type.name;
       result.push(name);
@@ -53,11 +56,11 @@ function parseTreeRoot(treeRoot: VNode) {
       VNodeToIdMap.set(node, id);
       IdToVNodeMap.set(id, node);
     }
-  }, null, treeRoot, null);
+  });
   return result;
 }
 
-export function queryVNode(id: number) {
+export function queryVNode(id: number): VNode|undefined {
   return IdToVNodeMap.get(id);
 }
 

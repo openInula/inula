@@ -2,7 +2,7 @@
 // data 数组更新后不修改滚动位置，
 // 只有修改scrollToItem才会修改滚动位置
 
-import { useState, useRef, useEffect, useMemo } from 'libs/extension/src/components/VList/node_modules/horizon';
+import { useState, useRef, useEffect, useMemo } from 'horizon';
 import styles from './VList.less';
 import ItemMap from './ItemMap';
 

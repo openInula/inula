@@ -97,6 +97,10 @@ export function clearVNode(vNode: VNode) {
   vNode.toUpdateNodes = null;
 
   vNode.belongClassVNode = null;
+  if (window.__HORIZON_DEV_HOOK__) {
+    const hook = window.__HORIZON_DEV_HOOK__;
+    hook.delete(vNode);
+  }
 }
 
 // 是dom类型的vNode

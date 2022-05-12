@@ -17,6 +17,7 @@ function reducer(state, action) {
 export default function MockFunctionComponent(props) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [age, setAge] = useState(0);
+  const [name, setName] = useState({test: 1});
   const domRef = useRef<HTMLDivElement>();
   const objRef = useRef({ str: 'string' });
   const context = useContext(MockContext);
@@ -26,6 +27,7 @@ export default function MockFunctionComponent(props) {
   return (
     <div>
       age: {age}
+      name: {name.test}
       <button onClick={() => setAge(age + 1)} >update age</button>
       count: {props.count}
       <div ref={domRef} />

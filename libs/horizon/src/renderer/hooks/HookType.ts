@@ -3,7 +3,6 @@ import {EffectConstant} from './EffectConstant';
 export interface Hook<S, A> {
   state: Reducer<S, A> | Effect | Memo<S> | CallBack<S> | Ref<S>;
   hIndex: number;
-  type?: 'useState' | 'useRef' | 'useReducer'; 
 }
 
 export interface Reducer<S, A> {
