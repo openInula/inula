@@ -2,8 +2,8 @@ import * as Horizon from '@cloudsop/horizon/index.ts';
 import { getLogUtils } from '../jest/testUtils';
 
 describe('MouseEvent Test', () => {
-  const LogUtils =getLogUtils();
-  
+  const LogUtils = getLogUtils();
+
   describe('onClick Test', () => {
     it('绑定this', () => {
       class App extends Horizon.Component {
@@ -11,7 +11,7 @@ describe('MouseEvent Test', () => {
           super(props);
           this.state = {
             num: this.props.num,
-            price: this.props.price
+            price: this.props.price,
           };
         }
 
@@ -19,21 +19,24 @@ describe('MouseEvent Test', () => {
           this.setState({ num: this.state.num + 1 });
         }
 
-        setPrice = (e) => {
+        setPrice = e => {
           this.setState({ num: this.state.price + 1 });
-        }
+        };
 
         render() {
           return (
             <>
               <p>{this.state.num}</p>
               <p id="p">{this.state.price}</p>
-              <button onClick={this.setNum.bind(this)} >button</button>
-              <button id="btn" onClick={() => this.setPrice()} >button</button>
+              <button onClick={this.setNum.bind(this)}>button</button>
+              <button id="btn" onClick={() => this.setPrice()}>
+                button
+              </button>
             </>
           );
         }
       }
+
       Horizon.render(<App num={0} price={100} />, container);
       expect(container.querySelector('p').innerHTML).toBe('0');
       expect(container.querySelector('#p').innerHTML).toBe('100');
@@ -55,6 +58,20 @@ describe('MouseEvent Test', () => {
       }
       expect(handleClick).toHaveBeenCalledTimes(6);
     });
+
+    it('disable不触发click', () => {
+      const handleClick = jest.fn();
+      const spanRef = Horizon.createRef();
+      Horizon.render(
+        <button onClick={handleClick} disabled={true}>
+          <span ref={spanRef}>Click Me</span>
+        </button>,
+        container
+      );
+      spanRef.current.click();
+
+      expect(handleClick).toHaveBeenCalledTimes(0);
+    });
   });
 
   const test = (name, config) => {
@@ -62,27 +79,21 @@ describe('MouseEvent Test', () => {
     let event = new MouseEvent(name, {
       relatedTarget: null,
       bubbles: true,
-      screenX: 1
+      screenX: 1,
     });
     node.dispatchEvent(event);
 
-    expect(LogUtils.getAndClear()).toEqual([
-      `${name} capture`,
-      `${name} bubble`
-    ]);
+    expect(LogUtils.getAndClear()).toEqual([`${name} capture`, `${name} bubble`]);
 
     event = new MouseEvent(name, {
       relatedTarget: null,
       bubbles: true,
-      screenX: 2
+      screenX: 2,
     });
     node.dispatchEvent(event);
 
     // 再次触发新事件
-    expect(LogUtils.getAndClear()).toEqual([
-      `${name} capture`,
-      `${name} bubble`
-    ]);
+    expect(LogUtils.getAndClear()).toEqual([`${name} capture`, `${name} bubble`]);
   };
 
   describe('合成鼠标事件', () => {
@@ -93,10 +104,7 @@ describe('MouseEvent Test', () => {
       const onMouseMoveCapture = () => {
         LogUtils.log('mousemove capture');
       };
-      test('mousemove', <div
-        onMouseMove={onMouseMove}
-        onMouseMoveCapture={onMouseMoveCapture}
-      />);
+      test('mousemove', <div onMouseMove={onMouseMove} onMouseMoveCapture={onMouseMoveCapture} />);
     });
 
     it('onMouseDown', () => {
@@ -106,10 +114,7 @@ describe('MouseEvent Test', () => {
       const onMousedownCapture = () => {
         LogUtils.log('mousedown capture');
       };
-      test('mousedown', <div
-        onMousedown={onMousedown}
-        onMousedownCapture={onMousedownCapture}
-      />);
+      test('mousedown', <div onMousedown={onMousedown} onMousedownCapture={onMousedownCapture} />);
     });
 
     it('onMouseUp', () => {
@@ -119,10 +124,7 @@ describe('MouseEvent Test', () => {
       const onMouseUpCapture = () => {
         LogUtils.log('mouseup capture');
       };
-      test('mouseup', <div
-        onMouseUp={onMouseUp}
-        onMouseUpCapture={onMouseUpCapture}
-      />);
+      test('mouseup', <div onMouseUp={onMouseUp} onMouseUpCapture={onMouseUpCapture} />);
     });
 
     it('onMouseOut', () => {
@@ -132,10 +134,7 @@ describe('MouseEvent Test', () => {
       const onMouseOutCapture = () => {
         LogUtils.log('mouseout capture');
       };
-      test('mouseout', <div
-        onMouseOut={onMouseOut}
-        onMouseOutCapture={onMouseOutCapture}
-      />);
+      test('mouseout', <div onMouseOut={onMouseOut} onMouseOutCapture={onMouseOutCapture} />);
     });
 
     it('onMouseOver', () => {
@@ -145,10 +144,7 @@ describe('MouseEvent Test', () => {
       const onMouseOverCapture = () => {
         LogUtils.log('mouseover capture');
       };
-      test('mouseover', <div
-        onMouseOver={onMouseOver}
-        onMouseOverCapture={onMouseOverCapture}
-      />);
+      test('mouseover', <div onMouseOver={onMouseOver} onMouseOverCapture={onMouseOverCapture} />);
     });
   });
 });

@@ -9,7 +9,7 @@ const argv = require('minimist')(process.argv.slice(2));
 
 const libPathPrefix = '../build';
 const suffix = argv.dev ? 'development.js' : 'production.js';
-
+const template = argv.type === 'horizon' ? 'horizon3rdTemplate.ejs' : 'template.ejs';
 const readLib = (lib) => {
   const libName = lib.split('.')[0];
   const libPath = path.resolve(__dirname, `${libPathPrefix}/${libName}/umd/${lib}`);
@@ -20,7 +20,7 @@ const readLib = (lib) => {
   }
 };
 
-ejs.renderFile(path.resolve(__dirname, './template.ejs'), {
+ejs.renderFile(path.resolve(__dirname, `./${template}`), {
   Horizon: readLib(`horizon.${suffix}`),
 }, null, function(err, result) {
   const common3rdLibPath = path.resolve(__dirname, `${libPathPrefix}/horizonCommon3rdlib.min.js`)
