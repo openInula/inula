@@ -74,7 +74,7 @@ export const helper = {
   },
 };
 
-function injectUpdater() {
+export function injectUpdater() {
   const hook = window.__HORIZON_DEV_HOOK__;
   if (hook) {
     hook.init(helper);

@@ -134,6 +134,7 @@ let helper;
 
 function init(horizonHelper) {
   helper = horizonHelper;
+  window.__HORIZON_DEV_HOOK__.isInit = true;
 }
 
 function injectHook() {
@@ -144,6 +145,7 @@ function injectHook() {
     enumerable: false,
     value: {
       init,
+      isInit: false,
       addIfNotInclude,
       send,
       deleteVNode,

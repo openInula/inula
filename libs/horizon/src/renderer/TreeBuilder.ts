@@ -36,6 +36,7 @@ import {
   updateShouldUpdateOfTree
 } from './vnode/VNodeShouldUpdate';
 import { getPathArr } from './utils/vNodePath';
+import { injectUpdater } from '../external/devtools';
 
 // 不可恢复错误
 let unrecoverableErrorDuringBuild: any = null;
@@ -281,6 +282,11 @@ function renderFromRoot(treeRoot) {
 
   if (window.__HORIZON_DEV_HOOK__) {
     const hook = window.__HORIZON_DEV_HOOK__;
+    // injector.js 可能在 Horizon 代码之后加载，此时无 __HORIZON_DEV_HOOK__ 全局变量
+    // Horizon 代码初次加载时不会初始化 helper
+    if (!hook.isInit) {
+      injectUpdater();
+    }
     hook.addIfNotInclude(treeRoot);
     hook.send(treeRoot);
   }
