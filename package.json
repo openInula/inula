@@ -8,6 +8,7 @@
     "build": " webpack --config ./scripts/webpack/webpack.config.js",
     "build-3rdLib": "node ./scripts/gen3rdLib.js",
     "build-3rdLib-dev": "npm run build & node ./scripts/gen3rdLib.js --dev",
+    "build-horizon3rdLib-dev": "npm run build & node ./scripts/gen3rdLib.js --dev --type horizon",
     "debug-test": "yarn test --debug",
     "test": "jest --config=jest.config.js",
     "watch-test": "yarn test --watch --dev"
