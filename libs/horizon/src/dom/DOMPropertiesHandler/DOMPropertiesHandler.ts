@@ -4,9 +4,11 @@ import {
 import { updateCommonProp } from './UpdateCommonProp';
 import { setStyles } from './StyleHandler';
 import {
-  listenNonDelegatedEvent
+  lazyDelegateOnRoot,
+  listenNonDelegatedEvent,
 } from '../../event/EventBinding';
 import { isEventProp } from '../validators/ValidateProps';
+import { getCurrentRoot } from '../../renderer/TreeBuilder';
 
 // 初始化DOM属性和更新 DOM 属性
 export function setDomProps(
@@ -27,8 +29,12 @@ export function setDomProps(
       setStyles(dom, propVal);
     } else if (isEventProp(propName)) {
       // 事件监听属性处理
+      // TODO
+      const currentRoot = getCurrentRoot();
       if (!allDelegatedHorizonEvents.has(propName)) {
         listenNonDelegatedEvent(propName, dom, propVal);
+      } else if (currentRoot && !currentRoot.delegatedEvents.has(propName)) {
+        lazyDelegateOnRoot(currentRoot, propName);
       }
     } else if (propName === 'children') { // 只处理纯文本子节点，其他children在VNode树中处理
       const type = typeof propVal;
@@ -147,6 +153,7 @@ export function compareProps(
       if (!allDelegatedHorizonEvents.has(propName)) {
         toUpdateProps[propName] = newPropValue;
       }
+      // TODO
     } else {
       toUpdateProps[propName] = newPropValue;
     }

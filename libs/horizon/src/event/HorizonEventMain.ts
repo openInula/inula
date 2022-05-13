@@ -8,7 +8,6 @@ import {
   EVENT_TYPE_CAPTURE,
 } from './const';
 import { getListeners as getChangeListeners } from './simulatedEvtHandler/ChangeEventHandler';
-import { getListeners as getSelectionListeners } from './simulatedEvtHandler/SelectionEventHandler';
 import {
   setPropertyWritable,
 } from './utils';
@@ -81,6 +80,7 @@ function getProcessListeners(
   target,
   isCapture: boolean,
 ): ListenerUnitList {
+  // TODO 重复从树中获取监听器
   // 触发普通委托事件
   let listenerList: ListenerUnitList = getCommonListeners(
     nativeEvtName,
@@ -94,15 +94,6 @@ function getProcessListeners(
   if (!isCapture) {
     if (horizonEventToNativeMap.get('onChange').includes(nativeEvtName)) {
       listenerList = listenerList.concat(getChangeListeners(
-        nativeEvtName,
-        nativeEvent,
-        vNode,
-        target,
-      ));
-    }
-
-    if (horizonEventToNativeMap.get('onSelect').includes(nativeEvtName)) {
-      listenerList = listenerList.concat(getSelectionListeners(
         nativeEvtName,
         nativeEvent,
         vNode,

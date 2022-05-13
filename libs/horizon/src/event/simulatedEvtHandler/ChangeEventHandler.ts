@@ -12,6 +12,11 @@ import {VNode} from '../../renderer/Types';
 import {getDomTag} from '../../dom/utils/Common';
 
 // 返回是否需要触发change事件标记
+// | 元素 | 事件 |  需要值变更 |
+// | --- | ---  | ---------------  |
+// | <select/> / <input type="file/> | change | NO |
+// | <input type="checkbox" /> <input type="radio" /> | click | YES |
+// | <input type="input /> / <input type="text" /> | input / change | YES |
 function shouldTriggerChangeEvent(targetDom, evtName) {
   const { type } = targetDom;
   const domTag = getDomTag(targetDom);

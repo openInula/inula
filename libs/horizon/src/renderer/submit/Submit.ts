@@ -114,21 +114,21 @@ function submit(dirtyNodes: Array<VNode>) {
       if ((node.flags & ResetText) === ResetText) {
         submitResetTextContent(node);
       }
-  
+
       if ((node.flags & Ref) === Ref) {
         if (!node.isCreated) {
           // 需要执行
           detachRef(node, true);
         }
       }
-  
+
       isAdd = (node.flags & Addition) === Addition;
       isUpdate = (node.flags & Update) === Update;
       if (isAdd && isUpdate) {
         // Addition
         submitAddition(node);
         FlagUtils.removeFlag(node, Addition);
-  
+
         // Update
         submitUpdate(node);
       } else {
@@ -161,7 +161,7 @@ function afterSubmit(dirtyNodes: Array<VNode>) {
       if ((node.flags & Update) === Update || (node.flags & Callback) === Callback) {
         callAfterSubmitLifeCycles(node);
       }
-  
+
       if ((node.flags & Ref) === Ref) {
         attachRef(node);
       }

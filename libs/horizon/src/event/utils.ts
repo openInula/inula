@@ -1,9 +1,7 @@
 
 export function isInputElement(dom?: HTMLElement): boolean {
-  if (dom instanceof HTMLInputElement || dom instanceof HTMLTextAreaElement) {
-    return true;
-  }
-  return false;
+  return dom instanceof HTMLInputElement || dom instanceof HTMLTextAreaElement;
+
 }
 
 export function setPropertyWritable(obj, propName) {

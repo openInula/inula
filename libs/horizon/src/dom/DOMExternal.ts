@@ -23,7 +23,7 @@ function createRoot(children: any, container: Container, callback?: Callback) {
   container._treeRoot = treeRoot;
 
   // 根节点挂接全量事件
-  listenDelegatedEvents(container as Element);
+  // listenDelegatedEvents(container as Element);
 
   // 执行回调
   if (typeof callback === 'function') {
