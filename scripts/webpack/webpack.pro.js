@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const baseConfig = require('./webpack.base');
 const path = require('path');
+const horizonVersion = require('../../libs/horizon/package.json').version;
 
 const mode = 'production';
 const devtool = 'none';
@@ -11,6 +12,7 @@ const plugins = [
   new webpack.DefinePlugin({
     'process.env.NODE_ENV': '"production"',
     isDev: 'false',
+    __VERSION__: `"${horizonVersion}"`,
   })
 ];
 

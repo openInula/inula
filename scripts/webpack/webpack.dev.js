@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const baseConfig = require('./webpack.base');
 const path = require('path');
+const horizonVersion = require('../../libs/horizon/package.json').version;
 
 const mode = 'development';
 const devtool = 'inline-source-map';
@@ -12,6 +13,7 @@ const plugins = [
   new webpack.DefinePlugin({
     'process.env.NODE_ENV': '"development"',
     isDev: 'true',
+    __VERSION__: `"${horizonVersion}"`,
   }),
 ];
 
