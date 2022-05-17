@@ -5,3 +5,4 @@ global.MessageChannel = function MessageChannel() {
     postMessage() { }
   };
 };
+global.__VERSION__ = require('../../../libs/horizon/package.json').version;

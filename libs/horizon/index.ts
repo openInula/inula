@@ -83,6 +83,7 @@ const Horizon = {
   _getProcessingVNode,
 };
 
+export const version = __VERSION__;
 export {
   Children,
   createRef,
@@ -115,7 +116,6 @@ export {
   findDOMNode,
   unmountComponentAtNode,
   act,
-
   // 暂时给HorizonX使用
   _launchUpdateFromVNode,
   _getProcessingVNode,
