@@ -13,6 +13,7 @@ import { createContext } from './src/renderer/components/context/CreateContext';
 import { lazy } from './src/renderer/components/Lazy';
 import { forwardRef } from './src/renderer/components/ForwardRef';
 import { memo } from './src/renderer/components/Memo';
+import './src/external/devtools';
 
 import {
   useCallback,
@@ -82,6 +83,7 @@ const Horizon = {
   _getProcessingVNode,
 };
 
+export const version = __VERSION__;
 export {
   Children,
   createRef,
@@ -114,7 +116,6 @@ export {
   findDOMNode,
   unmountComponentAtNode,
   act,
-
   // 暂时给HorizonX使用
   _launchUpdateFromVNode,
   _getProcessingVNode,

@@ -1,3 +1,60 @@
+## 为什么要做 devTool 插件
+让Horizon开发者获得更好的开发体验，获取准确的组件树结构、状态信息和真实dom对应关系。
+
+## 上下文关系
+devTool功能的实现依赖浏览器 extension 开放的能力，用于绘制展示组件信息和获取真实 dom 元素。同时也需要 Horizon 提供相关接口获取组件树信息和提供调试能力。
+
+## 目标
+1. 查看组件树结构并支持过滤
+2. 查看组件与真实dom的关系
+3. 查看组件props, state, hooks 等信息
+4. 调试单个组件及其子组件
+5. 支持状态管理解决方案调试
+
+## 和 react devTool 能力对比
+||react | Horizon|
+|-|-|-|
+|查看组件树|Y |Y |
+|查看真实DOM|Y|Y|
+|查看组件信息|Y|Y|
+|调试能力|Y| Y |
+|性能调试|Y|N|
+|解析Hook名|Y|N|
+|状态管理解决方案调试|N|Y|
+
+## 架构草图
+```plantuml
+@startuml
+package "Horizon" {
+  [U I]
+  [Helper]
+}
+
+package "Script Content" {
+  [GlobalHook]
+  [MessageHandler]
+    [Parser]
+
+}
+package "Browser" {
+  [Background]
+  [Panel]
+}
+
+[GlobalHook] <-- [U I]
+[GlobalHook] --> [MessageHandler]
+[Helper] <-- [MessageHandler]
+[Helper] --> [U I]
+[MessageHandler] <--> [Background]
+[Background] <--> [Panel]
+[Parser] --> [MessageHandler]
+@enduml
+```
+
+#### 说明
+Helper: 提供接口给插件操控组件以及提供工具方法。
+Parser: 负责将组件树结构和组件信息解析成特定的数据结构，供Panel展示。
+
 ## 文件清单说明：
 devtools_page: devtool主页面
 default_popup: 拓展图标点击时弹窗页面
@@ -14,9 +71,6 @@ Optional: Feel free to dock the developer tools again if you had undocked it at 
 
 ## 全局变量注入
 通过content_scripts在document初始化时给页面添加script脚本，在新添加的脚本中给window注入全局变量
-
-## horizon页面判断
-在页面完成渲染后往全局变量中添加信息，并传递 tabId 给 background 告知这是 horizon 页面
 
 ## 通信方式：
 ```mermaid
@@ -47,21 +101,36 @@ sequenceDiagram
 ```
 
 ## 传输数据结构
+**<font color=#8B0000>限制：chrome.runtime.sendMessage只能传递 JSON-serializable 数据</font>**
+
+
 ```ts
 type passData = {
   type: 'HORIZON_DEV_TOOLS',
   payload: {
     type: string,
     data: any,
-  }
+  },
+  from: string,
 }
 ```
 
 ## horizon和devTools的主要交互
-- 页面初始渲染
-- 页面更新
-- 页面销毁
+- App初始渲染
+- App更新
+- App销毁
+- 整个页面刷新
 - devTools触发组件属性更新
+
+
+## 对组件的操作
+我们希望插件和Horizon能够尽量解耦，所以Horizon提供了Helper注入给插件，提供相关方法操作组件。
+
+## 触发组件更新方式
+- 类组件的state：调用实例的 setState 函数触发更新
+- 类组件的props：浅复制props后更新props值并调用 forceUpdate 触发更新
+- 函数组件的props：新增了devProps属性，在特定时刻重新给props赋值，触发更新
+- 函数组件的state：调用 useState 函数触发更新
 
 ## VNode的清理
 全局 hook 中保存了root VNode，在解析 VNode 树的时候也会保存 VNode 的引用，在清理VNode的时候这些 VNode 的引用也需要删除。
@@ -73,7 +142,7 @@ type passData = {
 - 通过解析 path 值可以分析出组件树的结构
 
 ## 组件props/state/hook等数据的传输和解析
-将数据格式进行转换后进行传递。对于 props 和 类组件的 state，他们都是对象，可以将对象进行解析然后以 k-v 的形式，树的结构显示。函数组件的 Hooks 是以数组的形式存储在 vNode 的属性中的，每个 hook 的唯一标识符是 hIndex 属性值，在对象展示的时候不能展示该属性值，需要根据 hook 类型展示一个 state/ref/effect 等值。hook 中存储的值也可能不是对象，只是一个简单的字符串，他们的解析和 props/state 的解析同样存在差异。
+将数据格式进行转换后进行传递。对于 props 和 类组件的 state，他们都是对象，可以将对象进行解析然后以 k-v 的形式，树的结构显示。函数组件的 Hooks 是以数组的形式存储在 vNode 的属性中的，每个 hook 的唯一标识符是 hIndex 属性值，在对象展示的时候不能展示该属性值，需要根据 hook 类型展示一个 state/ref/effect 等值。hook 中存储的值也可能不是对象，只是一个简单的字符串或者 dom 元素，他们的解析和 props/state 的解析同样存在差异，需要单独处理。
 
 
 ## 滚动动态渲染 Tree

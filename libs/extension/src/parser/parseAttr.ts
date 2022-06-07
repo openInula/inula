@@ -1,5 +1,8 @@
 
-import { Hook, Reducer, Ref } from './../../../horizon/src/renderer/hooks/HookType';
+import { Hook } from '../../../horizon/src/renderer/hooks/HookType';
+import { ModifyHooks, ModifyProps, ModifyState } from '../utils/constants';
+import { VNode } from '../../../horizon/src/renderer/vnode/VNode';
+import { ClassComponent, FunctionComponent } from '../../../horizon/src/renderer/vnode/VNodeTags';
 
 // 展示值为 string 的可编辑类型
 type editableStringType = 'string' | 'number' | 'undefined' | 'null';
@@ -12,7 +15,7 @@ type showAsStringType = editableStringType | unEditableStringType;
 
 
 export type IAttr = {
-  name: string;
+  name: string | number;
   indentation: number;
   hIndex?: number; // 用于记录 hook 的 hIndex 值
 } & ({
@@ -96,7 +99,7 @@ const parseSubAttr = (
     value,
     indentation: parentIndentation + 1,
   };
-  if (hIndex) {
+  if (hIndex !== undefined) {
     item.hIndex = hIndex;
   }
   result.push(item);
@@ -116,18 +119,81 @@ export function parseAttr(rootAttr: any) {
   return result;
 }
 
-export function parseHooks(hooks: Hook<any, any>[]) {
+export function parseHooks(hooks: Hook<any, any>[], getHookInfo) {
   const result: IAttr[] = [];
   const indentation = 0;
   hooks.forEach(hook => {
-    const { hIndex, state ,type } = hook;
-    if (type === 'useState') {
-      parseSubAttr((state as Reducer<any, any>).stateValue, indentation, 'state', result, hIndex);
-    } else if (type === 'useRef') {
-      parseSubAttr((state as Ref<any>).current, indentation, 'ref', result, hIndex);
-    } else if (type === 'useReducer') {
-      parseSubAttr((state as Reducer<any, any>).stateValue, indentation, 'reducer', result, hIndex);
+    const hookInfo = getHookInfo(hook);
+    if (hookInfo) {
+      const {name, hIndex, value} = hookInfo;
+      parseSubAttr(value, indentation, name, result, hIndex);
     }
   });
   return result;
+}
+
+export function parseVNodeAttrs(vNode: VNode, getHookInfo) {
+  const tag = vNode.tag;
+  if (tag === ClassComponent) {
+    const { props, state } = vNode;
+    const parsedProps = parseAttr(props);
+    const parsedState = parseAttr(state);
+    return {
+      parsedProps,
+      parsedState,
+    };
+  } else if (tag === FunctionComponent) {
+    const { props, hooks } = vNode;
+    const parsedProps = parseAttr(props);
+    const parsedHooks = parseHooks(hooks, getHookInfo);
+    return {
+      parsedProps,
+      parsedHooks,
+    };
+  }
+}
+
+// 计算属性的访问顺序
+function calculateAttrAccessPath(item: IAttr, index: number, attrs: IAttr[], isHook: boolean) {
+  let currentIndentation = item.indentation;
+  const path = [item.name];
+  let hookRootItem: IAttr = item;
+  for(let i = index - 1; i >= 0; i--) {
+    const lastItem = attrs[i];
+    const lastIndentation = lastItem.indentation;
+    if (lastIndentation < currentIndentation) {
+      hookRootItem = lastItem;
+      path.push(lastItem.name);
+      currentIndentation = lastIndentation;
+    }
+  }
+  path.reverse();
+  if (isHook) {
+    if (hookRootItem) {
+      path[0] = hookRootItem.hIndex;
+    } else {
+      console.error('There is a bug, please report');
+    }
+  }
+  return path;
+}
+
+export function buildAttrModifyData(parsedAttrsType: string, attrs: IAttr[], value, item: IAttr, index: number, id: number) {
+  let type;
+  if (parsedAttrsType === 'parsedProps') {
+    type = ModifyProps;
+  } else if (parsedAttrsType === 'parsedState') {
+    type = ModifyState;
+  } else if (parsedAttrsType === 'parsedHooks') {
+    type = ModifyHooks;
+  } else {
+    return null;
+  }
+  const path = calculateAttrAccessPath(item, index, attrs, parsedAttrsType === 'parsedHooks');
+  return {
+    id: id,
+    type: type,
+    value: value,
+    path: path,
+  };
 }

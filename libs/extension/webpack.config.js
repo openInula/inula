@@ -1,5 +1,21 @@
 const path = require('path');
 const webpack = require('webpack');
+const fs = require('fs');
+
+function handleBuildDir() {
+  const staticDir = path.join(__dirname, 'build');
+  console.log('staticDir: ', staticDir);
+  const isBuildExist = fs.existsSync(staticDir);
+  console.log('isBuildExist: ', isBuildExist);
+  if (!isBuildExist) {
+    fs.mkdirSync(staticDir);
+  }
+  fs.copyFileSync(path.join(__dirname, 'src', 'panel', 'panel.html'),path.join(staticDir, 'panel.html'));
+  fs.copyFileSync(path.join(__dirname, 'src', 'main', 'main.html'),path.join(staticDir, 'main.html'));
+  fs.copyFileSync(path.join(__dirname, 'src', 'manifest.json'),path.join(staticDir, 'manifest.json'));
+}
+handleBuildDir();
+
 
 const config = {
   entry: {

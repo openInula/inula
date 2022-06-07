@@ -1,6 +1,6 @@
 import { checkMessage, packagePayload, changeSource } from '../utils/transferTool';
 import { RequestAllVNodeTreeInfos, InitDevToolPageConnection, DevToolBackground } from '../utils/constants';
-import { DevToolPanel, DevToolContentScript } from './../utils/constants';
+import { DevToolPanel, DevToolContentScript } from '../utils/constants';
 
 // 多个页面、tab页共享一个 background，需要建立连接池，给每个tab建立连接
 const connections = {};
@@ -11,29 +11,18 @@ chrome.runtime.onConnect.addListener(function (port) {
     const isHorizonMessage = checkMessage(message, DevToolPanel);
     if (isHorizonMessage) {
       const { payload } = message;
-      const { type, data } = payload;
+      // tabId 值指当前浏览器分配给 web_page 的 id 值。是panel页面查询得到，指定向该页面发送消息
+      const { type, data, tabId } = payload;
       let passMessage;
       if (type === InitDevToolPageConnection) {
-        if (!connections[data]) {
-          // 获取 panel 所在 tab 页的tabId
-          connections[data] = port;
-        }
+        // 记录 panel 所在 tab 页的tabId，如果已经记录了，覆盖原有port，因为原有port可能关闭了
+        // 可能这次是 panel 发起的重新建立请求
+        connections[tabId] = port;
         passMessage = packagePayload({ type: RequestAllVNodeTreeInfos }, DevToolBackground);
       } else {
-        passMessage = message;
-        changeSource(passMessage, DevToolBackground);
+        passMessage = packagePayload({type, data}, DevToolBackground);
       }
-      // 查询参数有 active 和 currentWindow， 如果开发者工具与页面分离，会导致currentWindow为false才能找到
-      // 所以只用 active 参数查找，但不确定这么写是否会引发查询错误的情况
-      // 或许需要用不同的查询参数查找两次
-      chrome.tabs.query({ active: true }, function (tabs) {
-        if (tabs.length) {
-          chrome.tabs.sendMessage(tabs[0].id, passMessage);
-          console.log('post message end');
-        } else {
-          console.log('do not find message');
-        }
-      });
+      chrome.tabs.sendMessage(tabId, passMessage);
     }
   }
   // Listen to messages sent from the DevTools page
@@ -57,10 +46,12 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   // Messages from content scripts should have sender.tab set
   if (sender.tab) {
     const tabId = sender.tab.id;
+    // 和 InitDevToolPageConnection 时得到的 tabId 值一致时，向指定的 panel 页面 port 发送消息
     if (tabId in connections && checkMessage(message, DevToolContentScript)) {
       changeSource(message, DevToolBackground);
       connections[tabId].postMessage(message);
     } else {
+      // TODO: 如果查询失败，发送 chrome message，请求 panel 主动建立连接
       console.log('Tab not found in connection list.');
     }
   } else {
