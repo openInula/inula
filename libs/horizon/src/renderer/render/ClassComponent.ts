@@ -58,6 +58,8 @@ function mountInstance(ctor, processing: VNode, nextProps: object) {
 
 // 构建子节点
 function createChildren(clazz: any, processing: VNode) {
+  processing.isStoreChange = false;
+
   markRef(processing);
 
   setProcessingClassVNode(processing);
@@ -157,7 +159,7 @@ export function captureRender(processing: VNode): VNode | null {
   }
   // 如果捕获了 error，必须更新
   const isCatchError = (processing.flags & DidCapture) === DidCapture;
-  shouldUpdate = isCatchError || shouldUpdate;
+  shouldUpdate = isCatchError || shouldUpdate || processing.isStoreChange;
 
   // 更新ref
   markRef(processing);

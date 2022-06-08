@@ -196,6 +196,12 @@ function unmountVNode(vNode: VNode): void {
       if (instance && typeof instance.componentWillUnmount === 'function' && !vNode.isSuspended) {
         callComponentWillUnmount(vNode, instance);
       }
+
+      // HorizonX会在classComponentWillUnmount中清除对VNode的引入用
+      if (vNode.classComponentWillUnmount) {
+        vNode.classComponentWillUnmount(vNode);
+        vNode.classComponentWillUnmount = null;
+      }
       break;
     }
     case DomComponent: {

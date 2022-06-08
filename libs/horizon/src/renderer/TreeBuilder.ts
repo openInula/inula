@@ -242,25 +242,24 @@ function buildVNodeTree(treeRoot: VNode) {
     startVNode.props = startVNode.devProps;
     startVNode.devProps = undefined;
   }
+
   while (processing !== null) {
     try {
-      while (processing !== null) {
-        // 捕获创建 vNodes
-        const next = captureVNode(processing);
+      // 捕获创建 vNodes
+      const next = captureVNode(processing);
 
-        if (next === null) {
-          // 如果没有子节点，那么就完成当前节点，开始冒泡
-          bubbleVNode(processing);
-        } else {
-          processing = next;
-        }
+      if (next === null) {
+        // 如果没有子节点，那么就完成当前节点，开始冒泡
+        bubbleVNode(processing);
+      } else {
+        processing = next;
       }
-
-      setProcessingClassVNode(null);
     } catch (thrownValue) {
       handleError(treeRoot, thrownValue);
     }
   }
+
+  setProcessingClassVNode(null);
 
   setExecuteMode(preMode);
 }
