@@ -8,7 +8,7 @@ import {useImperativeHandleImpl} from './UseImperativeHook';
 import {useReducerImpl} from './UseReducerHook';
 import {useStateImpl} from './UseStateHook';
 import {getNewContext} from '../components/context/Context';
-import {getProcessingVNode} from './BaseHook';
+import {getProcessingVNode} from '../GlobalVar';
 import {Ref, Trigger} from './HookType';
 
 type BasicStateAction<S> = ((S) => S) | S;

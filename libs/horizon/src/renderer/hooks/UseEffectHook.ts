@@ -2,13 +2,14 @@ import {
   createHook,
   getCurrentHook,
   getLastTimeHook,
-  getProcessingVNode, throwNotInFuncError
+  throwNotInFuncError
 } from './BaseHook';
 import {FlagUtils} from '../vnode/VNodeFlags';
 import {EffectConstant} from './EffectConstant';
 import type {Effect, EffectList} from './HookType';
 import {getHookStage, HookStage} from './HookStage';
 import {isArrayEqual} from '../utils/compare';
+import {getProcessingVNode} from '../GlobalVar';
 
 export function useEffectImpl(effectFunc: () => (() => void) | void, deps?: Array<any> | null,): void {
   // 异步触发的effect

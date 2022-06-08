@@ -55,7 +55,7 @@ export function captureFunctionComponent(
     processing,
   );
 
-  // 这里需要判断是否可以复用，因为函数组件比起其他组价，多了context和stateChange两个因素
+  // 这里需要判断是否可以复用，因为函数组件比起其他组件，多了context、stateChange、或者store改变了 三个因素
   if (isCanReuse && !isStateChange() && !processing.isStoreChange) {
     FlagUtils.removeFlag(processing, Update);
 

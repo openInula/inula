@@ -2,7 +2,6 @@ import type { Hook, Reducer, Trigger, Update } from './HookType';
 import {
   createHook,
   getCurrentHook,
-  getProcessingVNode,
   throwNotInFuncError
 } from './BaseHook';
 import {
@@ -12,6 +11,7 @@ import { isSame } from '../utils/compare';
 import { setStateChange } from '../render/FunctionComponent';
 import { getHookStage, HookStage } from './HookStage';
 import type { VNode } from '../Types';
+import {getProcessingVNode} from '../GlobalVar';
 
 export function useReducerImpl<S, P, A>(reducer: (S, A) =>
   S, initArg: P, init?: (P) => S, isUseState?: boolean): [S, Trigger<A>] | void {
