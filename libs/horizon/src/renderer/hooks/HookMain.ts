@@ -3,7 +3,6 @@ import type {VNode} from '../Types';
 import {
   getLastTimeHook,
   setLastTimeHook,
-  setProcessingVNode,
   setCurrentHook, getNextHook
 } from './BaseHook';
 import {HookStage, setHookStage} from './HookStage';
@@ -17,8 +16,6 @@ export function runFunctionWithHooks<Props extends Record<string, any>, Arg>(
 ) {
   // 重置全局变量
   resetGlobalVariable();
-
-  setProcessingVNode(processing);
 
   processing.oldHooks = processing.hooks;
   processing.hooks = [];
@@ -52,7 +49,6 @@ export function runFunctionWithHooks<Props extends Record<string, any>, Arg>(
 
 function resetGlobalVariable() {
   setHookStage(null);
-  setProcessingVNode(null);
   setLastTimeHook(null);
   setCurrentHook(null);
 }

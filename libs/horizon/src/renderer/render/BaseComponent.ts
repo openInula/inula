@@ -11,6 +11,7 @@ import { setContext, setNamespaceCtx } from '../ContextSaver';
 import { FlagUtils } from '../vnode/VNodeFlags';
 import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
 import componentRenders from './index';
+import {setProcessingVNode} from '../GlobalVar';
 
 // 复用vNode时，也需对stack进行处理
 function handlerContext(processing: VNode) {
@@ -52,7 +53,12 @@ export function captureVNode(processing: VNode): VNode | null {
 
   const shouldUpdate = processing.shouldUpdate;
   processing.shouldUpdate = false;
-  return component.captureRender(processing, shouldUpdate);
+
+  setProcessingVNode(processing);
+  const child = component.captureRender(processing, shouldUpdate);
+  setProcessingVNode(null);
+
+  return child;
 }
 
 export function markRef(processing: VNode) {

@@ -9,6 +9,15 @@ export function setProcessingClassVNode(vNode: VNode | null) {
   processingClassVNode = vNode;
 }
 
+// capture阶段正在处理的VNode
+let processingVNode: VNode | null = null;
+export function getProcessingVNode() {
+  return processingVNode;
+}
+export function setProcessingVNode(vNode: VNode | null) {
+  processingVNode = vNode;
+}
+
 // 计算出来的刷新节点，不一定是根节点
 let startVNode: VNode | null = null;
 export function getStartVNode(): VNode | null {
