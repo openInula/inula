@@ -1,7 +1,6 @@
 import {decorateNativeEvent} from '../customEvents/EventFactory';
 import {getDom} from '../../dom/DOMInternalKeys';
-import {isInputValueChanged} from '../../dom/valueHandler/ValueChangeHandler';
-import {addValueUpdateList} from '../ControlledValueUpdater';
+import {updateInputValueIfChanged} from '../../dom/valueHandler/ValueChangeHandler';
 import {isInputElement} from '../utils';
 import {EVENT_TYPE_ALL} from '../const';
 import {AnyNativeEvent, ListenerUnitList} from '../Types';
@@ -25,11 +24,11 @@ function shouldTriggerChangeEvent(targetDom, evtName) {
     return evtName === 'change';
   } else if (domTag === 'input' && (type === 'checkbox' || type === 'radio')) {
     if (evtName === 'click') {
-      return isInputValueChanged(targetDom);
+      return updateInputValueIfChanged(targetDom);
     }
   } else if (isInputElement(targetDom)) {
     if (evtName === 'input' || evtName === 'change') {
-      return isInputValueChanged(targetDom);
+      return updateInputValueIfChanged(targetDom);
     }
   }
   return false;
@@ -42,8 +41,7 @@ function shouldTriggerChangeEvent(targetDom, evtName) {
 export function getListeners(
   nativeEvtName: string,
   nativeEvt: AnyNativeEvent,
-  vNode: null | VNode,
-  target: null | EventTarget,
+  vNode: null | VNode
 ): ListenerUnitList {
   if (!vNode) {
     return [];
@@ -52,7 +50,6 @@ export function getListeners(
 
   // 判断是否需要触发change事件
   if (shouldTriggerChangeEvent(targetDom, nativeEvtName)) {
-    addValueUpdateList(target);
     const event = decorateNativeEvent(
       'onChange',
       'change',

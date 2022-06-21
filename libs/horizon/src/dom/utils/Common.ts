@@ -56,6 +56,10 @@ export function getDomTag(dom) {
   return dom.nodeName.toLowerCase();
 }
 
+export function isInputElement(dom: Element): dom is HTMLInputElement {
+  return getDomTag(dom) === 'input';
+}
+
 const types = ['button', 'input', 'select', 'textarea'];
 
 // button、input、select、textarea、如果有 autoFocus 属性需要focus

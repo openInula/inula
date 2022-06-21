@@ -1,20 +1,21 @@
-import {updateCommonProp} from '../DOMPropertiesHandler/UpdateCommonProp';
-import {getVNodeProps} from '../DOMInternalKeys';
-import {IProperty} from '../utils/Interface';
-import {isInputValueChanged} from './ValueChangeHandler';
+import { updateCommonProp } from '../DOMPropertiesHandler/UpdateCommonProp';
+import { IProperty } from '../utils/Interface';
+import { isInputElement } from '../utils/Common';
+import { getVNodeProps } from '../DOMInternalKeys';
+import { updateInputValueIfChanged } from './ValueChangeHandler';
 
 function getInitValue(dom: HTMLInputElement, properties: IProperty) {
-  const {value, defaultValue, checked, defaultChecked} = properties;
+  const { value, defaultValue, checked, defaultChecked } = properties;
 
   const defaultValueStr = defaultValue != null ? defaultValue : '';
   const initValue = value != null ? value : defaultValueStr;
   const initChecked = checked != null ? checked : defaultChecked;
 
-  return {initValue, initChecked};
+  return { initValue, initChecked };
 }
 
 export function getInputPropsWithoutValue(dom: HTMLInputElement, properties: IProperty) {
-  // checked属于必填属性，无法置空
+  // checked属于必填属性，无法置
   let {checked} = properties;
   if (checked == null) {
     checked = getInitValue(dom, properties).initChecked;
@@ -59,30 +60,26 @@ export function setInitInputValue(dom: HTMLInputElement, properties: IProperty) 
   dom.defaultChecked = Boolean(initChecked);
 }
 
-export function resetInputValue(dom: HTMLInputElement, properties: IProperty) {
-  const {name, type} = properties;
-  // 如果是 radio，先更新相同 name 的 radio
-  if (type === 'radio' && name != null) {
-    const radioList = document.querySelectorAll(`input[type="radio"][name="${name}"]`);
+// 找出同一form内，name相同的Radio，更新它们Handler的Value
+export function syncRadiosHandler(targetRadio: Element) {
+  if (isInputElement(targetRadio)) {
+    const props = getVNodeProps(targetRadio);
+    if (props) {
+      const { name, type } = props;
+      if (type === 'radio' && name != null) {
+        const radioList = document.querySelectorAll<HTMLInputElement>(`input[type="radio"][name="${name}"]`);
+        for (let i = 0; i < radioList.length; i++) {
+          const radio = radioList[i];
+          if (radio === targetRadio) {
+            continue;
+          }
+          if (radio.form != null && targetRadio.form != null && radio.form !== targetRadio.form) {
+            continue;
+          }
 
-    for (let i = 0; i < radioList.length; i++) {
-      const radio = radioList[i];
-      if (radio === dom) {
-        continue;
+          updateInputValueIfChanged(radio);
+        }
       }
-      // @ts-ignore
-      if (radio.form !== dom.form) {
-        continue;
-      }
-
-      // @ts-ignore
-      const nonHorizonRadioProps = getVNodeProps(radio);
-
-      isInputValueChanged(radio);
-      // @ts-ignore
-      updateInputValue(radio, nonHorizonRadioProps);
     }
-  } else {
-    updateInputValue(dom, properties);
   }
 }

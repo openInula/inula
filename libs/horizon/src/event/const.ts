@@ -44,6 +44,7 @@ export const CommonEventToHorizonMap = {
   focusin: 'focus',
   focusout: 'blur',
   input: 'input',
+  select: 'select',
   keydown: 'keyDown',
   keypress: 'keyPress',
   keyup: 'keyUp',

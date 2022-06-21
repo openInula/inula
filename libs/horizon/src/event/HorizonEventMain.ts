@@ -1,22 +1,15 @@
 import type { AnyNativeEvent } from './Types';
+import { ListenerUnitList } from './Types';
 import type { VNode } from '../renderer/Types';
 
-import {
-  CommonEventToHorizonMap,
-  horizonEventToNativeMap,
-  EVENT_TYPE_BUBBLE,
-  EVENT_TYPE_CAPTURE,
-} from './const';
+import { CommonEventToHorizonMap, EVENT_TYPE_BUBBLE, EVENT_TYPE_CAPTURE, horizonEventToNativeMap } from './const';
 import { getListeners as getChangeListeners } from './simulatedEvtHandler/ChangeEventHandler';
-import {
-  setPropertyWritable,
-} from './utils';
+import { setPropertyWritable } from './utils';
 import { decorateNativeEvent } from './customEvents/EventFactory';
 import { getListenersFromTree } from './ListenerGetter';
-import { shouldUpdateValue, updateControlledValue } from './ControlledValueUpdater';
 import { asyncUpdates, runDiscreteUpdates } from '../renderer/Renderer';
 import { findRoot } from '../renderer/vnode/VNodeUtils';
-import { ListenerUnitList } from './Types';
+import { syncRadiosHandler } from '../dom/valueHandler/InputValueHandler';
 
 // web规范，鼠标右键key值
 const RIGHT_MOUSE_BUTTON = 2;
@@ -80,7 +73,6 @@ function getProcessListeners(
   target,
   isCapture: boolean,
 ): ListenerUnitList {
-  // TODO 重复从树中获取监听器
   // 触发普通委托事件
   let listenerList: ListenerUnitList = getCommonListeners(
     nativeEvtName,
@@ -92,12 +84,11 @@ function getProcessListeners(
 
   // 触发特殊handler委托事件
   if (!isCapture) {
-    if (horizonEventToNativeMap.get('onChange').includes(nativeEvtName)) {
+    if (horizonEventToNativeMap.get('onChange')!.includes(nativeEvtName)) {
       listenerList = listenerList.concat(getChangeListeners(
         nativeEvtName,
         nativeEvent,
         vNode,
-        target,
       ));
     }
   }
@@ -110,7 +101,7 @@ function triggerHorizonEvents(
   isCapture: boolean,
   nativeEvent: AnyNativeEvent,
   vNode: VNode | null,
-): void {
+) {
   const nativeEventTarget = nativeEvent.target || nativeEvent.srcElement;
 
   // 获取委托事件队列
@@ -118,6 +109,8 @@ function triggerHorizonEvents(
 
   // 处理触发的事件队列
   processListeners(listenerList);
+
+  return listenerList;
 }
 
 
@@ -148,13 +141,18 @@ export function handleEventMain(
 
   // 没有事件在执行，经过调度再执行事件
   isInEventsExecution = true;
+  let shouldDispatchUpdate = false;
   try {
-    asyncUpdates(() => triggerHorizonEvents(nativeEvtName, isCapture, nativeEvent, startVNode));
+    const listeners = asyncUpdates(() => triggerHorizonEvents(nativeEvtName, isCapture, nativeEvent, startVNode));
+    if (listeners.length) {
+      shouldDispatchUpdate = true;
+    }
   } finally {
     isInEventsExecution = false;
-    if (shouldUpdateValue()) {
+    if (shouldDispatchUpdate) {
       runDiscreteUpdates();
-      updateControlledValue();
+      // 若是Radio，同步同组其他Radio的Handler Value
+      syncRadiosHandler(nativeEvent.target as Element);
     }
   }
 }
