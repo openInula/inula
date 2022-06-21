@@ -26,7 +26,7 @@ import { watchValueChange } from './valueHandler/ValueChangeHandler';
 import { DomComponent, DomText } from '../renderer/vnode/VNodeTags';
 import { updateCommonProp } from './DOMPropertiesHandler/UpdateCommonProp';
 
-export type Props = {
+export type Props = Record<string, any> & {
   autoFocus?: boolean;
   children?: any;
   dangerouslySetInnerHTML?: any;

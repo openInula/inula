@@ -1,7 +1,6 @@
 import {decorateNativeEvent} from '../customEvents/EventFactory';
 import {getDom} from '../../dom/DOMInternalKeys';
-import {isInputValueChanged} from '../../dom/valueHandler/ValueChangeHandler';
-import {addValueUpdateList} from '../ControlledValueUpdater';
+import {updateInputValueIfChanged} from '../../dom/valueHandler/ValueChangeHandler';
 import {isInputElement} from '../utils';
 import {EVENT_TYPE_ALL} from '../const';
 import {AnyNativeEvent, ListenerUnitList} from '../Types';
@@ -12,6 +11,11 @@ import {VNode} from '../../renderer/Types';
 import {getDomTag} from '../../dom/utils/Common';
 
 // 返回是否需要触发change事件标记
+// | 元素 | 事件 |  需要值变更 |
+// | --- | ---  | ---------------  |
+// | <select/> / <input type="file/> | change | NO |
+// | <input type="checkbox" /> <input type="radio" /> | click | YES |
+// | <input type="input /> / <input type="text" /> | input / change | YES |
 function shouldTriggerChangeEvent(targetDom, evtName) {
   const { type } = targetDom;
   const domTag = getDomTag(targetDom);
@@ -20,11 +24,11 @@ function shouldTriggerChangeEvent(targetDom, evtName) {
     return evtName === 'change';
   } else if (domTag === 'input' && (type === 'checkbox' || type === 'radio')) {
     if (evtName === 'click') {
-      return isInputValueChanged(targetDom);
+      return updateInputValueIfChanged(targetDom);
     }
   } else if (isInputElement(targetDom)) {
     if (evtName === 'input' || evtName === 'change') {
-      return isInputValueChanged(targetDom);
+      return updateInputValueIfChanged(targetDom);
     }
   }
   return false;
@@ -37,8 +41,7 @@ function shouldTriggerChangeEvent(targetDom, evtName) {
 export function getListeners(
   nativeEvtName: string,
   nativeEvt: AnyNativeEvent,
-  vNode: null | VNode,
-  target: null | EventTarget,
+  vNode: null | VNode
 ): ListenerUnitList {
   if (!vNode) {
     return [];
@@ -47,7 +50,6 @@ export function getListeners(
 
   // 判断是否需要触发change事件
   if (shouldTriggerChangeEvent(targetDom, nativeEvtName)) {
-    addValueUpdateList(target);
     const event = decorateNativeEvent(
       'onChange',
       'change',

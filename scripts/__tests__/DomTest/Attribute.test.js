@@ -61,4 +61,10 @@ describe('Dom Attribute', () => {
         container.querySelector('div').setAttribute('data-first-name', 'Tom');
         expect(container.querySelector('div').dataset.firstName).toBe('Tom');
     });
+
+    it('style 自动加px', () => {
+      const div = Horizon.render(<div style={{width: 10, height: 20}}/>, container);
+      expect(window.getComputedStyle(div).getPropertyValue('width')).toBe('10px');
+      expect(window.getComputedStyle(div).getPropertyValue('height')).toBe('20px');
+    });
 });

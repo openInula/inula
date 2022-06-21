@@ -1,20 +1,12 @@
-import {
-  allDelegatedHorizonEvents,
-} from '../../event/EventCollection';
+import { allDelegatedHorizonEvents } from '../../event/EventCollection';
 import { updateCommonProp } from './UpdateCommonProp';
 import { setStyles } from './StyleHandler';
-import {
-  listenNonDelegatedEvent
-} from '../../event/EventBinding';
+import { lazyDelegateOnRoot, listenNonDelegatedEvent } from '../../event/EventBinding';
 import { isEventProp } from '../validators/ValidateProps';
+import { getCurrentRoot } from '../../renderer/TreeBuilder';
 
 // 初始化DOM属性和更新 DOM 属性
-export function setDomProps(
-  dom: Element,
-  props: Object,
-  isNativeTag: boolean,
-  isInit: boolean,
-): void {
+export function setDomProps(dom: Element, props: Object, isNativeTag: boolean, isInit: boolean): void {
   const keysOfProps = Object.keys(props);
   let propName;
   let propVal;
@@ -27,10 +19,15 @@ export function setDomProps(
       setStyles(dom, propVal);
     } else if (isEventProp(propName)) {
       // 事件监听属性处理
+      // TODO
+      const currentRoot = getCurrentRoot();
       if (!allDelegatedHorizonEvents.has(propName)) {
         listenNonDelegatedEvent(propName, dom, propVal);
+      } else if (currentRoot && !currentRoot.delegatedEvents.has(propName)) {
+        lazyDelegateOnRoot(currentRoot, propName);
       }
-    } else if (propName === 'children') { // 只处理纯文本子节点，其他children在VNode树中处理
+    } else if (propName === 'children') {
+      // 只处理纯文本子节点，其他children在VNode树中处理
       const type = typeof propVal;
       if (type === 'string' || type === 'number') {
         dom.textContent = propVal;
@@ -44,10 +41,7 @@ export function setDomProps(
 }
 
 // 找出两个 DOM 属性的差别，生成需要更新的属性集合
-export function compareProps(
-  oldProps: Object,
-  newProps: Object,
-): Object {
+export function compareProps(oldProps: Object, newProps: Object): Object {
   let updatesForStyle = {};
   const toUpdateProps = {};
   const keysOfOldProps = Object.keys(oldProps);
@@ -107,7 +101,8 @@ export function compareProps(
     }
 
     if (propName === 'style') {
-      if (oldPropValue) { // 之前 style 属性有设置非空值
+      if (oldPropValue) {
+        // 之前 style 属性有设置非空值
         // 原来有这个 style，但现在没这个 style 了
         oldStyleProps = Object.keys(oldPropValue);
         for (let j = 0; j < oldStyleProps.length; j++) {
@@ -125,7 +120,8 @@ export function compareProps(
             updatesForStyle[styleProp] = newPropValue[styleProp];
           }
         }
-      } else { // 之前未设置 style 属性或者设置了空值
+      } else {
+        // 之前未设置 style 属性或者设置了空值
         if (Object.keys(updatesForStyle).length === 0) {
           toUpdateProps[propName] = null;
         }
@@ -144,8 +140,11 @@ export function compareProps(
         toUpdateProps[propName] = String(newPropValue);
       }
     } else if (isEventProp(propName)) {
+      const currentRoot = getCurrentRoot();
       if (!allDelegatedHorizonEvents.has(propName)) {
         toUpdateProps[propName] = newPropValue;
+      } else if (currentRoot && !currentRoot.delegatedEvents.has(propName)) {
+        lazyDelegateOnRoot(currentRoot, propName);
       }
     } else {
       toUpdateProps[propName] = newPropValue;

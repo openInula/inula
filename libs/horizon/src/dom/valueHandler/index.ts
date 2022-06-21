@@ -8,7 +8,6 @@ import {
   getInputPropsWithoutValue,
   setInitInputValue,
   updateInputValue,
-  resetInputValue,
 } from './InputValueHandler';
 import {
   getOptionPropsWithoutValue,
@@ -21,7 +20,6 @@ import {
   getTextareaPropsWithoutValue,
   updateTextareaValue,
 } from './TextareaValueHandler';
-import {getDomTag} from "../utils/Common";
 
 // 获取元素除了被代理的值以外的属性
 function getPropsWithoutValue(type: string, dom: HorizonDom, properties: IProperty) {
@@ -73,26 +71,8 @@ function updateValue(type: string, dom: HorizonDom, properties: IProperty) {
   }
 }
 
-function resetValue(dom: HorizonDom, properties: IProperty) {
-  const type = getDomTag(dom);
-  switch (type) {
-    case 'input':
-      resetInputValue(<HTMLInputElement>dom, properties);
-      break;
-    case 'select':
-      updateSelectValue(<HorizonSelect>dom, properties);
-      break;
-    case 'textarea':
-      updateTextareaValue(<HTMLTextAreaElement>dom, properties);
-      break;
-    default:
-      break;
-  }
-}
-
 export {
   getPropsWithoutValue,
   setInitValue,
   updateValue,
-  resetValue,
 };

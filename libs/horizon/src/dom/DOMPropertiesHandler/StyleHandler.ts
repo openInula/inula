@@ -1,12 +1,12 @@
-function isNeedUnitCSS(propName: string) {
-  return !(noUnitCSS.includes(propName)
-    || propName.startsWith('borderImage')
-    || propName.startsWith('flex')
-    || propName.startsWith('gridRow')
-    || propName.startsWith('gridColumn')
-    || propName.startsWith('stroke')
-    || propName.startsWith('box')
-    || propName.endsWith('Opacity'));
+function isNeedUnitCSS(styleName: string) {
+  return !(noUnitCSS.includes(styleName)
+    || styleName.startsWith('borderImage')
+    || styleName.startsWith('flex')
+    || styleName.startsWith('gridRow')
+    || styleName.startsWith('gridColumn')
+    || styleName.startsWith('stroke')
+    || styleName.startsWith('box')
+    || styleName.endsWith('Opacity'));
 }
 
 /**
@@ -38,9 +38,7 @@ export function setStyles(dom, styles) {
   Object.keys(styles).forEach((name) => {
     const styleVal = styles[name];
 
-    const validStyleValue = adjustStyleValue(name, styleVal);
-
-    style[name] = validStyleValue;
+    style[name] = adjustStyleValue(name, styleVal);
   });
 }
 

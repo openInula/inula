@@ -1,7 +1,7 @@
 /**
  * 事件绑定实现，分为绑定委托事件和非委托事件
  */
-import {allDelegatedNativeEvents} from './EventCollection';
+import { allDelegatedHorizonEvents, allDelegatedNativeEvents } from './EventCollection';
 import {isDocument} from '../dom/utils/Common';
 import {
   getNearestVNode,
@@ -12,6 +12,7 @@ import {isMounted} from '../renderer/vnode/VNodeUtils';
 import {SuspenseComponent} from '../renderer/vnode/VNodeTags';
 import {handleEventMain} from './HorizonEventMain';
 import {decorateNativeEvent} from './customEvents/EventFactory';
+import { VNode } from '../renderer/vnode/VNode';
 
 const listeningMarker = '_horizonListening' + Math.random().toString(36).slice(4);
 
@@ -26,18 +27,8 @@ function triggerDelegatedEvent(
   runDiscreteUpdates();
 
   const nativeEventTarget = nativeEvent.target || nativeEvent.srcElement;
-  let targetVNode = getNearestVNode(nativeEventTarget);
+  const targetVNode = getNearestVNode(nativeEventTarget);
 
-  if (targetVNode !== null) {
-    if (isMounted(targetVNode)) {
-      if (targetVNode.tag === SuspenseComponent) {
-        targetVNode = null;
-      }
-    } else {
-      // vNode已销毁
-      targetVNode = null;
-    }
-  }
   handleEventMain(nativeEvtName, isCapture, nativeEvent, targetVNode, targetDom);
 }
 
@@ -73,6 +64,16 @@ export function listenDelegatedEvents(dom: Element) {
   });
 }
 
+// 事件懒委托，当用户定义事件后，再进行委托到根节点
+export function lazyDelegateOnRoot(currentRoot: VNode, eventName: string) {
+  currentRoot.delegatedEvents.add(eventName);
+
+  const isCapture = isCaptureEvent(eventName);
+  const nativeEvents = allDelegatedHorizonEvents.get(eventName);
+  nativeEvents.forEach(nativeEvents => {
+    listenToNativeEvent(nativeEvents, currentRoot.realNode, isCapture);
+  });
+}
 // 通过horizon事件名获取到native事件名
 function getNativeEvtName(horizonEventName, capture) {
   let nativeName;
