@@ -29,18 +29,6 @@ function triggerDelegatedEvent(
   const nativeEventTarget = nativeEvent.target || nativeEvent.srcElement;
   const targetVNode = getNearestVNode(nativeEventTarget);
 
-  // if (targetVNode !== null) {
-  //   if (isMounted(targetVNode)) {
-  //     if (targetVNode.tag === SuspenseComponent) {
-  //       debugger
-  //       targetVNode = null;
-  //     }
-  //   } else {
-  //     debugger
-  //     // vNode已销毁
-  //     targetVNode = null;
-  //   }
-  // }
   handleEventMain(nativeEvtName, isCapture, nativeEvent, targetVNode, targetDom);
 }
 
