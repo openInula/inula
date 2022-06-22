@@ -1,4 +1,4 @@
-import { allDelegatedNativeEvents } from '../../../libs/horizon/src/event/EventCollection';
+import { allDelegatedNativeEvents } from '@cloudsop/horizon/src/event/EventHub';
 //import * as LogUtils from './logUtils';
 
 export const stopBubbleOrCapture = (e, value) => {

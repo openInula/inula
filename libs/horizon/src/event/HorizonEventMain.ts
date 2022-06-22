@@ -1,18 +1,75 @@
-import type { AnyNativeEvent } from './Types';
-import { ListenerUnitList } from './Types';
+import { AnyNativeEvent, ListenerUnitList } from './Types';
 import type { VNode } from '../renderer/Types';
-
-import { CommonEventToHorizonMap, EVENT_TYPE_BUBBLE, EVENT_TYPE_CAPTURE, horizonEventToNativeMap } from './const';
-import { getListeners as getChangeListeners } from './simulatedEvtHandler/ChangeEventHandler';
-import { setPropertyWritable } from './utils';
-import { decorateNativeEvent } from './customEvents/EventFactory';
+import { isInputElement, setPropertyWritable } from './utils';
+import { decorateNativeEvent } from './EventWrapper';
 import { getListenersFromTree } from './ListenerGetter';
 import { asyncUpdates, runDiscreteUpdates } from '../renderer/Renderer';
 import { findRoot } from '../renderer/vnode/VNodeUtils';
 import { syncRadiosHandler } from '../dom/valueHandler/InputValueHandler';
+import {
+  EVENT_TYPE_ALL,
+  EVENT_TYPE_BUBBLE,
+  EVENT_TYPE_CAPTURE,
+  horizonEventToNativeMap,
+  transformToHorizonEvent,
+} from './EventHub';
+import { getDomTag } from '../dom/utils/Common';
+import { updateInputValueIfChanged } from '../dom/valueHandler/ValueChangeHandler';
+import { getDom } from '../dom/DOMInternalKeys';
 
 // web规范，鼠标右键key值
 const RIGHT_MOUSE_BUTTON = 2;
+
+// 返回是否需要触发change事件标记
+// | 元素 | 事件 |  需要值变更 |
+// | --- | ---  | ---------------  |
+// | <select/> / <input type="file/> | change | NO |
+// | <input type="checkbox" /> <input type="radio" /> | click | YES |
+// | <input type="input /> / <input type="text" /> | input / change | YES |
+function shouldTriggerChangeEvent(targetDom, evtName) {
+  const { type } = targetDom;
+  const domTag = getDomTag(targetDom);
+
+  if (domTag === 'select' || (domTag === 'input' && type === 'file')) {
+    return evtName === 'change';
+  } else if (domTag === 'input' && (type === 'checkbox' || type === 'radio')) {
+    if (evtName === 'click') {
+      return updateInputValueIfChanged(targetDom);
+    }
+  } else if (isInputElement(targetDom)) {
+    if (evtName === 'input' || evtName === 'change') {
+      return updateInputValueIfChanged(targetDom);
+    }
+  }
+  return false;
+}
+
+/**
+ *
+ * 支持input/textarea/select的onChange事件
+ */
+function getChangeListeners(
+  nativeEvtName: string,
+  nativeEvt: AnyNativeEvent,
+  vNode: null | VNode,
+): ListenerUnitList {
+  if (!vNode) {
+    return [];
+  }
+  const targetDom = getDom(vNode);
+
+  // 判断是否需要触发change事件
+  if (shouldTriggerChangeEvent(targetDom, nativeEvtName)) {
+    const event = decorateNativeEvent(
+      'onChange',
+      'change',
+      nativeEvt,
+    );
+    return getListenersFromTree(vNode, 'onChange', event, EVENT_TYPE_ALL);
+  }
+
+  return [];
+}
 
 // 获取事件触发的普通事件监听方法队列
 function getCommonListeners(
@@ -22,8 +79,7 @@ function getCommonListeners(
   target: null | EventTarget,
   isCapture: boolean,
 ): ListenerUnitList {
-  const name = CommonEventToHorizonMap[nativeEvtName];
-  const horizonEvtName = !name ? '' : `on${name[0].toUpperCase()}${name.slice(1)}`; // 例：dragEnd -> onDragEnd
+  const horizonEvtName = transformToHorizonEvent(nativeEvtName);
 
   if (!horizonEvtName) {
     return [];

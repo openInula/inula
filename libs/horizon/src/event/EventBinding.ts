@@ -1,27 +1,29 @@
 /**
  * 事件绑定实现，分为绑定委托事件和非委托事件
  */
-import { allDelegatedHorizonEvents, allDelegatedNativeEvents } from './EventCollection';
-import {isDocument} from '../dom/utils/Common';
 import {
-  getNearestVNode,
-  getNonDelegatedListenerMap,
-} from '../dom/DOMInternalKeys';
-import {runDiscreteUpdates} from '../renderer/TreeBuilder';
-import {isMounted} from '../renderer/vnode/VNodeUtils';
-import {SuspenseComponent} from '../renderer/vnode/VNodeTags';
-import {handleEventMain} from './HorizonEventMain';
-import {decorateNativeEvent} from './customEvents/EventFactory';
+  allDelegatedHorizonEvents,
+  allDelegatedNativeEvents,
+} from './EventHub';
+import { isDocument } from '../dom/utils/Common';
+import { getNearestVNode, getNonDelegatedListenerMap } from '../dom/DOMInternalKeys';
+import { runDiscreteUpdates } from '../renderer/TreeBuilder';
+import { handleEventMain } from './HorizonEventMain';
+import { decorateNativeEvent } from './EventWrapper';
 import { VNode } from '../renderer/vnode/VNode';
 
-const listeningMarker = '_horizonListening' + Math.random().toString(36).slice(4);
+const listeningMarker =
+  '_horizonListening' +
+  Math.random()
+    .toString(36)
+    .slice(4);
 
 // 触发委托事件
 function triggerDelegatedEvent(
   nativeEvtName: string,
   isCapture: boolean,
   targetDom: EventTarget,
-  nativeEvent, // 事件对象event
+  nativeEvent // 事件对象event
 ) {
   // 执行之前的调度事件
   runDiscreteUpdates();
@@ -33,11 +35,7 @@ function triggerDelegatedEvent(
 }
 
 // 监听委托事件
-function listenToNativeEvent(
-  nativeEvtName: string,
-  delegatedElement: Element,
-  isCapture: boolean,
-): void {
+function listenToNativeEvent(nativeEvtName: string, delegatedElement: Element, isCapture: boolean): void {
   let dom: Element | Document = delegatedElement;
   // document层次可能触发selectionchange事件，为了捕获这类事件，selectionchange事件绑定在document节点上
   if (nativeEvtName === 'selectionchange' && !isDocument(delegatedElement)) {
@@ -70,10 +68,15 @@ export function lazyDelegateOnRoot(currentRoot: VNode, eventName: string) {
 
   const isCapture = isCaptureEvent(eventName);
   const nativeEvents = allDelegatedHorizonEvents.get(eventName);
-  nativeEvents.forEach(nativeEvents => {
-    listenToNativeEvent(nativeEvents, currentRoot.realNode, isCapture);
+
+  nativeEvents.forEach(nativeEvent => {
+    if (!currentRoot.delegatedNativeEvents.has(nativeEvent)) {
+      listenToNativeEvent(nativeEvent, currentRoot.realNode, isCapture);
+      currentRoot.delegatedNativeEvents.add(nativeEvent);
+    }
   });
 }
+
 // 通过horizon事件名获取到native事件名
 function getNativeEvtName(horizonEventName, capture) {
   let nativeName;
@@ -105,11 +108,7 @@ function getWrapperListener(horizonEventName, nativeEvtName, targetElement, list
 }
 
 // 非委托事件单独监听到各自dom节点
-export function listenNonDelegatedEvent(
-  horizonEventName: string,
-  domElement: Element,
-  listener,
-): void {
+export function listenNonDelegatedEvent(horizonEventName: string, domElement: Element, listener): void {
   const isCapture = isCaptureEvent(horizonEventName);
   const nativeEvtName = getNativeEvtName(horizonEventName, isCapture);
 

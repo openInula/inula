@@ -1,6 +1,13 @@
 import * as Horizon from '@cloudsop/horizon/index.ts';
 import * as TestUtils from '../jest/testUtils';
 
+function dispatchChangeEvent(input) {
+  const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+  nativeInputValueSetter.call(input, 'test');
+
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
 describe('事件', () => {
   const LogUtils = TestUtils.getLogUtils();
   it('根节点挂载全量事件', () => {
@@ -162,11 +169,7 @@ describe('事件', () => {
         LogUtils.log('change');
       },
     });
-
-    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-    nativeInputValueSetter.call(inputRef.current, 'test');
-
-    inputRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+    dispatchChangeEvent(inputRef.current);
 
     expect(LogUtils.getAndClear()).toEqual(['change']);
   });
@@ -208,5 +211,64 @@ describe('事件', () => {
 
     // 先选择选项1，radio1应该重新触发onchange
     clickRadioAndExpect(radio1Ref.current, [2, 1]);
+  });
+
+  it('多根节点下，事件挂载正确', () => {
+    const root1 = document.createElement('div');
+    const root2 = document.createElement('div');
+    root1.key = 'root1';
+    root2.key = 'root2';
+    let input1, input2, update1, update2;
+
+    function App1() {
+      const [props, setProps] = Horizon.useState({});
+      update1 = setProps;
+      return (
+        <input
+          {...props}
+          ref={n => (input1 = n)}
+          onChange={() => {
+            LogUtils.log('input1 changed');
+          }}
+        />
+      );
+    }
+
+    function App2() {
+      const [props, setProps] = Horizon.useState({});
+      update2 = setProps;
+
+      return (
+        <input
+          {...props}
+          ref={n => (input2 = n)}
+          onChange={() => {
+            LogUtils.log('input2 changed');
+          }}
+        />
+      );
+    }
+
+    // 多根mount阶段挂载onChange事件
+    Horizon.render(<App1 key={1} />, root1);
+    Horizon.render(<App2 key={2} />, root2);
+
+    dispatchChangeEvent(input1);
+    expect(LogUtils.getAndClear()).toEqual(['input1 changed']);
+    dispatchChangeEvent(input2);
+    expect(LogUtils.getAndClear()).toEqual(['input2 changed']);
+
+    // 多根update阶段挂载onClick事件
+    update1({
+      onClick: () => LogUtils.log('input1 clicked'),
+    });
+    update2({
+      onClick: () => LogUtils.log('input2 clicked'),
+    });
+
+    input1.click();
+    expect(LogUtils.getAndClear()).toEqual(['input1 clicked']);
+    input2.click();
+    expect(LogUtils.getAndClear()).toEqual(['input2 clicked']);
   });
 });
