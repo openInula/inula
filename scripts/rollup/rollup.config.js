@@ -1,6 +1,7 @@
 import nodeResolve from '@rollup/plugin-node-resolve';
 import babel from '@rollup/plugin-babel';
 import path from 'path';
+import fs from 'fs';
 import replace from '@rollup/plugin-replace';
 import copy from './copy-plugin';
 import { terser } from 'rollup-plugin-terser';
@@ -11,6 +12,14 @@ const extensions = ['.js', '.ts'];
 const libDir = path.join(__dirname, '../../libs/horizon');
 const rootDir = path.join(__dirname, '../..');
 const outDir = path.join(rootDir, 'build', 'horizon');
+
+if (!fs.existsSync(path.join(rootDir, 'build'))) {
+  fs.mkdirSync(path.join(rootDir, 'build'));
+}
+if (!fs.existsSync(outDir)) {
+  fs.mkdirSync(outDir);
+}
+
 const outputResolve = (...p) => path.resolve(outDir, ...p);
 
 function genConfig(mode) {
