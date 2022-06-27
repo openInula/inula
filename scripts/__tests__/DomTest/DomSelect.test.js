@@ -53,37 +53,6 @@ describe('Dom Select', () => {
     expect(realNode.value).toBe('React');
   });
 
-  it('受控select', () => {
-    const selectNode = (
-      <select value='Vue'>
-        <option value='React'>React.js</option>
-        <option value='Vue'>Vue.js</option>
-        <option value='Angular'>Angular.js</option>
-      </select>
-    );
-    const realNode = Horizon.render(selectNode, container);
-    expect(realNode.value).toBe('Vue');
-    expect(realNode.options[1].selected).toBe(true);
-    // 先修改
-    Object.getOwnPropertyDescriptor(
-      HTMLSelectElement.prototype,
-      'value',
-    ).set.call(realNode, 'React');
-    // 再触发事件
-    container.querySelector('select').dispatchEvent(
-      new Event('change', {
-        bubbles: true,
-        cancelable: true,
-      }),
-    );
-    // 鼠标改变受控select不生效
-    Horizon.render(selectNode, container);
-    // 'React'项没有被选中
-    expect(realNode.options[0].selected).toBe(false);
-    expect(realNode.options[1].selected).toBe(true);
-    expect(realNode.value).toBe('Vue');
-  });
-
   it('受控select转为不受控会保存原来select', () => {
     const selectNode = (
       <select value='Vue'>

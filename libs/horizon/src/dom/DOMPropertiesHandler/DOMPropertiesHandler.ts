@@ -1,4 +1,4 @@
-import { allDelegatedHorizonEvents } from '../../event/EventCollection';
+import { allDelegatedHorizonEvents } from '../../event/EventHub';
 import { updateCommonProp } from './UpdateCommonProp';
 import { setStyles } from './StyleHandler';
 import { lazyDelegateOnRoot, listenNonDelegatedEvent } from '../../event/EventBinding';
@@ -19,7 +19,6 @@ export function setDomProps(dom: Element, props: Object, isNativeTag: boolean, i
       setStyles(dom, propVal);
     } else if (isEventProp(propName)) {
       // 事件监听属性处理
-      // TODO
       const currentRoot = getCurrentRoot();
       if (!allDelegatedHorizonEvents.has(propName)) {
         listenNonDelegatedEvent(propName, dom, propVal);
