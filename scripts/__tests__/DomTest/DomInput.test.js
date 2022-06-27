@@ -22,16 +22,6 @@ describe('Dom Input', () => {
       ).not.toThrow();
     });
 
-    it('checked属性受控时无法更改', () => {
-      Horizon.render(<input type='checkbox' checked={true} onChange={() => {
-        LogUtils.log('checkbox click');
-      }} />, container);
-      container.querySelector('input').click();
-      // 点击复选框不会改变checked的值
-      expect(LogUtils.getAndClear()).toEqual(['checkbox click']);
-      expect(container.querySelector('input').checked).toBe(true);
-    });
-
     it('复选框的value属性值可以改变', () => {
       Horizon.render(
         <input type='checkbox' value='' onChange={() => {
@@ -94,30 +84,6 @@ describe('Dom Input', () => {
       expect(() =>
         Horizon.render(<input type='text' />, container),
       ).not.toThrow();
-    });
-
-    it('value属性受控时无法更改', () => {
-      const realNode = Horizon.render(<input type='text' value={'text'} onChange={() => {
-        LogUtils.log('text change');
-      }} />, container);
-
-      // 模拟改变text输入框的值
-      // 先修改
-      Object.getOwnPropertyDescriptor(
-        HTMLInputElement.prototype,
-        'value',
-      ).set.call(realNode, 'abcd');
-      // 再触发事件
-      realNode.dispatchEvent(
-        new Event('input', {
-          bubbles: true,
-          cancelable: true,
-        }),
-      );
-      // 确实发生了input事件
-      expect(LogUtils.getAndClear()).toEqual(['text change']);
-      // value受控，不会改变
-      expect(container.querySelector('input').value).toBe('text');
     });
 
     it('value值会转为字符串', () => {
@@ -247,30 +213,6 @@ describe('Dom Input', () => {
       expect(document.getElementById('b').checked).toBe(true);
       expect(document.getElementById('c').checked).toBe(false);
       expect(document.getElementById('d').checked).toBe(true);
-    });
-
-    it('受控radio的状态', () => {
-      Horizon.render(
-        <>
-          <input type='radio' name='a' checked={true} />
-          <input id='b' type='radio' name='a' checked={false} />
-        </>, container);
-      expect(container.querySelector('input').checked).toBe(true);
-      expect(document.getElementById('b').checked).toBe(false);
-      Object.getOwnPropertyDescriptor(
-        HTMLInputElement.prototype,
-        'checked',
-      ).set.call(document.getElementById('b'), true);
-      // 再触发事件
-      document.getElementById('b').dispatchEvent(
-        new Event('click', {
-          bubbles: true,
-          cancelable: true,
-        }),
-      );
-      // 模拟点击单选框B，两个受控radio的状态不会改变
-      expect(container.querySelector('input').checked).toBe(true);
-      expect(document.getElementById('b').checked).toBe(false);
     });
 
     it('name改变不影响相同name的radio', () => {

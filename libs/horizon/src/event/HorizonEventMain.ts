@@ -206,7 +206,6 @@ export function handleEventMain(
   } finally {
     isInEventsExecution = false;
     if (shouldDispatchUpdate) {
-      runDiscreteUpdates();
       // 若是Radio，同步同组其他Radio的Handler Value
       syncRadiosHandler(nativeEvent.target as Element);
     }

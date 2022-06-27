@@ -70,9 +70,10 @@ export function lazyDelegateOnRoot(currentRoot: VNode, eventName: string) {
   const nativeEvents = allDelegatedHorizonEvents.get(eventName);
 
   nativeEvents.forEach(nativeEvent => {
-    if (!currentRoot.delegatedNativeEvents.has(nativeEvent)) {
+    const nativeFullName =  isCapture ? nativeEvent + 'capture' : nativeEvent;
+    if (!currentRoot.delegatedNativeEvents.has(nativeFullName)) {
       listenToNativeEvent(nativeEvent, currentRoot.realNode, isCapture);
-      currentRoot.delegatedNativeEvents.add(nativeEvent);
+      currentRoot.delegatedNativeEvents.add(nativeFullName);
     }
   });
 }
