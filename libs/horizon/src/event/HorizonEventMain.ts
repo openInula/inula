@@ -122,13 +122,16 @@ function processListeners(listenerList: ListenerUnitList): void {
   });
 }
 
-function getProcessListeners(
+// 触发可以被执行的horizon事件监听
+function triggerHorizonEvents(
   nativeEvtName: string,
-  vNode: VNode | null,
-  nativeEvent: AnyNativeEvent,
-  target,
   isCapture: boolean,
-): ListenerUnitList {
+  nativeEvent: AnyNativeEvent,
+  vNode: VNode | null,
+) {
+  const target = nativeEvent.target || nativeEvent.srcElement;
+  let hasTriggeredChangeEvent = false;
+
   // 触发普通委托事件
   let listenerList: ListenerUnitList = getCommonListeners(
     nativeEvtName,
@@ -139,34 +142,22 @@ function getProcessListeners(
   );
 
   // 触发特殊handler委托事件
-  if (!isCapture) {
-    if (horizonEventToNativeMap.get('onChange')!.includes(nativeEvtName)) {
-      listenerList = listenerList.concat(getChangeListeners(
-        nativeEvtName,
-        nativeEvent,
-        vNode,
-      ));
+  if (!isCapture && horizonEventToNativeMap.get('onChange')!.includes(nativeEvtName)) {
+    const changeListeners = getChangeListeners(
+      nativeEvtName,
+      nativeEvent,
+      vNode,
+    );
+    if (changeListeners.length) {
+      hasTriggeredChangeEvent = true;
+      listenerList = listenerList.concat(changeListeners);
     }
   }
-  return listenerList;
-}
-
-// 触发可以被执行的horizon事件监听
-function triggerHorizonEvents(
-  nativeEvtName: string,
-  isCapture: boolean,
-  nativeEvent: AnyNativeEvent,
-  vNode: VNode | null,
-) {
-  const nativeEventTarget = nativeEvent.target || nativeEvent.srcElement;
-
-  // 获取委托事件队列
-  const listenerList = getProcessListeners(nativeEvtName, vNode, nativeEvent, nativeEventTarget, isCapture);
 
   // 处理触发的事件队列
   processListeners(listenerList);
 
-  return listenerList;
+  return hasTriggeredChangeEvent;
 }
 
 
@@ -197,15 +188,13 @@ export function handleEventMain(
 
   // 没有事件在执行，经过调度再执行事件
   isInEventsExecution = true;
-  let shouldDispatchUpdate = false;
+  let hasTriggeredChangeEvent = false;
   try {
-    const listeners = asyncUpdates(() => triggerHorizonEvents(nativeEvtName, isCapture, nativeEvent, startVNode));
-    if (listeners.length) {
-      shouldDispatchUpdate = true;
-    }
+    hasTriggeredChangeEvent = asyncUpdates(() => triggerHorizonEvents(nativeEvtName, isCapture, nativeEvent, startVNode));
   } finally {
     isInEventsExecution = false;
-    if (shouldDispatchUpdate) {
+    if (hasTriggeredChangeEvent) {
+      runDiscreteUpdates();
       // 若是Radio，同步同组其他Radio的Handler Value
       syncRadiosHandler(nativeEvent.target as Element);
     }

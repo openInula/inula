@@ -16,9 +16,7 @@ describe('useEffect Hook Test', () => {
   it('简单使用useEffect', () => {
     const App = () => {
       const [num, setNum] = useState(0);
-      console.log('Render App');
       useEffect(() => {
-        console.log('Effect');
         document.getElementById('p').style.display = num === 0 ? 'none' : 'inline';
       });
       return (
@@ -29,10 +27,9 @@ describe('useEffect Hook Test', () => {
       );
     };
     Horizon.render(<App />, container);
-    expect(document.getElementById('p').style.display).toBe('block'); // <- none 异步
+    expect(document.getElementById('p').style.display).toBe('block');
     // 点击按钮触发num加1
-    console.log('Click');
-    container.querySelector('button').click(); // <- none 异步
+    container.querySelector('button').click();
 
     expect(document.getElementById('p').style.display).toBe('none');
     container.querySelector('button').click();
