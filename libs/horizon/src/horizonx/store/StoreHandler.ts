@@ -3,77 +3,71 @@ import { useEffect, useRef } from '../../renderer/hooks/HookExternal';
 import { getProcessingVNode } from '../../renderer/GlobalVar';
 import { createProxy } from '../proxy/ProxyHandler';
 import readonlyProxy from '../proxy/readonlyProxy';
-import { StoreHandler, StoreConfig, UserActions, UserComputedValues } from '../types';
+import { StoreHandler, StoreConfig, UserActions, UserComputedValues, StoreActions, ComputedValues, ActionFunction, Action, QueuedStoreActions } from '../types';
 import { Observer } from '../proxy/Observer';
 import { FunctionComponent, ClassComponent } from '../Constants';
 
-const storeMap = new Map();
+const storeMap = new Map<string,StoreHandler<any,any,any>>();
 
 function isPromise(obj: any): boolean {
   return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
 }
 
-export function createStore<S extends object, A extends UserActions<S>, C extends UserComputedValues<S>>(
-  config: StoreConfig<S, A, C>
-): () => StoreHandler<S, A, C> {
-  let handler: any = {
-    $subscribe: null,
-    $unsubscribe: null,
-    $state: null,
-    $config: config,
-    $queue: null,
-    $actions: {},
-    $computed: {},
-  };
+type PlannedAction<S extends object,F extends ActionFunction<S>>={
+  action:string,
+  payload: any[],
+  resolve: ReturnType<F>
+}
 
-  const obj = {
-    ...config,
-    config,
-    plannedActions: [],
-    rawState: config.state,
-    rawActions: { ...config.actions },
-  };
+export function createStore<S extends object,A extends UserActions<S>,C extends UserComputedValues<S>>(config: StoreConfig<S,A,C>): () => StoreHandler<S,A,C> {
+  //create a local shalow copy to ensure consistency (if user would change the config object after store creation)
+  config = {
+    id:config.id,
+    options: config.options,
+    state: config.state,
+    actions: config.actions ? {...config.actions}:undefined,
+    computed: config.computed ? {...config.computed}:undefined
+  }
 
   // 校验
-  if (Object.prototype.toString.call(obj) !== '[object Object]') {
+  if (Object.prototype.toString.call(config) !== '[object Object]') {
     throw new Error('store obj must be pure object');
   }
 
-  const proxyObj = createProxy(obj.state, !obj.options?.suppressHooks);
+  const proxyObj = createProxy(config.state, !config.options?.suppressHooks);
+  
   proxyObj.$pending = false;
-  handler.$subscribe = listener => {
+  
+  const $subscribe = (listener) => {
     proxyObj.addListener(listener);
   };
-  handler.$unsubscribe = listener => {
+  
+  const $unsubscribe = (listener) => {
     proxyObj.removeListener(listener);
   };
-  obj.rawState = obj.state;
-  obj.state = proxyObj;
 
-  handler.$state = obj.state;
-
-  handler.$config = obj.config;
-
-  // handles.$reset = ()=>{
-  //   const keys = Object.keys(obj.state);
-  //   Object.entries(obj.defaultState).forEach(([key,value])=>{
-  //     obj.state[key]=value;
-  //   });
-  //   keys.forEach(key => {
-  //     if(!obj.defaultState[key]){
-  //       delete obj.state[key];
-  //     }
-  //   });
-  // };
+  const plannedActions:PlannedAction<S,ActionFunction<S>>[] = [];
+  const $actions:Partial<StoreActions<S,A>>={}
+  const $queue:Partial<StoreActions<S,A>> = {};
+  const $computed:Partial<ComputedValues<S,C>>={}
+  const handler = {
+    $subscribe,
+    $unsubscribe,
+    $actions:$actions as StoreActions<S,A>,
+    $state:proxyObj,
+    $computed: $computed as ComputedValues<S,C>,
+    $config:config,
+    $queue: $queue as QueuedStoreActions<S,A>,
+  } as StoreHandler<S,A,C>;
 
   function tryNextAction() {
-    if (!obj.plannedActions.length) {
+    if (!plannedActions.length) {
       proxyObj.$pending = false;
       return;
     }
 
-    const nextAction = obj.plannedActions.shift();
-    const result = obj.rawActions[nextAction.action].bind(self, obj.state)(...nextAction.payload);
+    const nextAction = plannedActions.shift()!;
+    const result = config.actions ? config.actions[nextAction.action].bind(self, proxyObj)(...nextAction.payload) : undefined;
 
     if (isPromise(result)) {
       result.then(value => {
@@ -87,62 +81,64 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
   }
 
   // 包装actions
-  Object.keys(obj.actions).forEach(key => {
-    (obj.actions as any)[key] = handler[key] = function Wrapped(...payload) {
-      return obj.rawActions[key].bind(self, obj.state)(...payload);
-    };
-  });
-
-  handler.$queue = {};
-  Object.keys(obj.rawActions).forEach(action => {
-    handler.$queue[action] = (...payload) => {
-      return new Promise(resolve => {
-        if (!proxyObj.$pending) {
-          proxyObj.$pending = true;
-          const result = obj.rawActions[action].bind(self, obj.state)(...payload);
-
-          if (isPromise(result)) {
-            result.then(value => {
-              resolve(value);
+  if(config.actions){
+    Object.keys(config.actions).forEach(action => {
+      ($queue as any)[action] = (...payload) => {
+        return new Promise((resolve) => {
+          if (!proxyObj.$pending) {
+            proxyObj.$pending = true;
+            const result = config.actions![action].bind(self, proxyObj)(...payload);
+  
+            if (isPromise(result)) {
+              result.then((value) => {
+                resolve(value);
+                tryNextAction();
+              });
+            } else {
+              resolve(result);
               tryNextAction();
-            });
+            }
           } else {
-            resolve(result);
-            tryNextAction();
+            plannedActions.push({
+              action,
+              payload,
+              resolve
+            });
           }
-        } else {
-          obj.plannedActions.push({
-            action,
-            payload,
-            resolve,
-          });
-        }
+        });
+      };
+      
+      ($actions as any)[action] = function Wrapped(...payload) {
+        return config.actions![action].bind(self, proxyObj)(...payload);
+      };
+
+      // direct store access 
+      Object.defineProperty(handler, action, {
+        writable: false,
+        value: $actions[action]
       });
-    };
-  });
-
-  handler.$actions = obj.actions;
-
-  // native getters
-  Object.keys(obj.state).forEach(key => {
-    Object.defineProperty(handler, key, {
-      get: () => obj.state[key],
-    });
-  });
-
-  // computed
-  if (obj.computed) {
-    Object.keys(obj.computed).forEach(key => {
-      // supports access through attributes
-      Object.defineProperty(handler, key, {
-        get: obj.computed[key].bind(handler, readonlyProxy(obj.state)),
-      });
-
-      // supports access through function
-      (obj.computed as any)[key] = obj.computed[key].bind(handler, readonlyProxy(obj.state));
     });
   }
-  handler.$computed = obj.computed || {};
+
+    if (config.computed) {
+    Object.keys(config.computed).forEach((key) => {
+      ($computed as any)[key] = config.computed![key].bind(handler, readonlyProxy(proxyObj));
+
+      // direct store access 
+      Object.defineProperty(handler, key, {
+        get: $computed[key] as ()=>any
+      });
+    });
+  }
+
+  // direct state access
+  if(config.state){
+    Object.keys(config.state).forEach(key => {
+      Object.defineProperty(handler, key, {
+        get: () => proxyObj[key]
+      });
+    });
+  }
 
   if (config.id) {
     storeMap.set(config.id, handler);
@@ -213,13 +209,11 @@ export function useStore<S extends object, A extends UserActions<S>, C extends U
 ): StoreHandler<S, A, C> {
   const storeObj = storeMap.get(id);
 
-  if (!storeObj.$config.options?.suppressHooks) {
-    hookStore();
-  }
+  if (storeObj && !storeObj.$config.options?.suppressHooks) hookStore();
 
-  return storeObj;
+  return storeObj as StoreHandler<S,A,C>;
 }
 
-export function clearStore(id: string): void {
+export function clearStore(id:string):void {
   storeMap.delete(id);
 }

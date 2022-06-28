@@ -1,9 +1,10 @@
-import { createObjectProxy } from './handlers/ObjectProxyHandler';
-import { Observer } from './Observer';
-import { HooklessObserver } from './HooklessObserver';
-import { isArray, isCollection, isObject } from '../CommonUtils';
-import { createArrayProxy } from './handlers/ArrayProxyHandler';
-import { createCollectionProxy } from './handlers/CollectionProxyHandler';
+import {createObjectProxy} from './handlers/ObjectProxyHandler';
+import {Observer} from './Observer';
+import {HooklessObserver} from './HooklessObserver';
+import {isArray, isCollection, isObject} from '../CommonUtils';
+import {createArrayProxy} from './handlers/ArrayProxyHandler';
+import {createCollectionProxy} from './handlers/CollectionProxyHandler';
+import { IObserver } from '../types';
 
 const OBSERVER_KEY = Symbol('_horizonObserver');
 
@@ -28,7 +29,7 @@ export function createProxy(rawObj: any, hookObserver = true): any {
   }
 
   // 创建Observer
-  let observer = getObserver(rawObj);
+  let observer:IObserver = getObserver(rawObj);
   if (!observer) {
     observer = hookObserver ? new Observer() : new HooklessObserver();
     rawObj[OBSERVER_KEY] = observer;
