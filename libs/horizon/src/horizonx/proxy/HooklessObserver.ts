@@ -8,9 +8,7 @@ import {IObserver} from '../types';
  */
 export class HooklessObserver implements IObserver {
 
-  listeners = [];
-  vNodeKeys: null;
-  keyVNodes: null;
+  listeners:(() => void)[] = [];
 
   useProp(key: string): void {
   }

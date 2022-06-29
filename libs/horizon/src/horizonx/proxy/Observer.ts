@@ -9,11 +9,12 @@ import { VNode } from '../../renderer/vnode/VNode';
 import { IObserver } from '../types';
 
 export class Observer implements IObserver {
+
   vNodeKeys = new WeakMap();
 
   keyVNodes = new Map();
 
-  listeners = [];
+  listeners:(()=>void)[] = [];
 
   useProp(key: string): void {
     const processingVNode = getProcessingVNode();
@@ -84,7 +85,7 @@ export class Observer implements IObserver {
     }
   }
 
-  clearByVNode(vNode: VNode): void {
+  clearByVNode(vNode: Vnode): void {
     const keys = this.vNodeKeys.get(vNode);
     if (keys) {
       keys.forEach((key: any) => {
