@@ -358,4 +358,79 @@ describe('Context Test', () => {
     Horizon.render(<App num={8} type={'typeR'} />, container);
     expect(container.querySelector('p').innerHTML).toBe('Num: 8, Type: typeR');
   });
+
+  // antd menu 级连context场景，menu路径使用级联context实现
+  it('nested context', () => {
+    const NestedContext = Horizon.createContext([]);
+    let updateContext;
+
+    function App() {
+      const [state, useState] = Horizon.useState([]);
+      updateContext = useState;
+      return (
+        <NestedContext.Provider value={state}>
+          <Sub1 />
+          <Sub2 />
+        </NestedContext.Provider>
+      );
+    }
+
+    const div1Ref = Horizon.createRef();
+    const div2Ref = Horizon.createRef();
+
+    let updateSub1;
+    function Sub1() {
+      const path = Horizon.useContext(NestedContext);
+      const [_, setState] = Horizon.useState({});
+      updateSub1 = () => setState({});
+      return (
+        <NestedContext.Provider value={[...path, 1]}>
+          <Son divRef={div1Ref} />
+        </NestedContext.Provider>
+      );
+    }
+
+    function Sub2() {
+      const path = Horizon.useContext(NestedContext);
+
+      return (
+        <NestedContext.Provider value={[...path, 2]}>
+          <Sub3 />
+        </NestedContext.Provider>
+      );
+    }
+
+    function Sub3() {
+      const path = Horizon.useContext(NestedContext);
+
+      return (
+        <NestedContext.Provider value={[...path, 3]}>
+          <Son divRef={div2Ref} />
+        </NestedContext.Provider>
+      );
+    }
+
+    function Son({ divRef }) {
+      const path = Horizon.useContext(NestedContext);
+      return (
+        <NestedContext.Provider value={path}>
+          <div ref={divRef}>{path.join(',')}</div>
+        </NestedContext.Provider>
+      );
+    }
+
+    Horizon.render(<App />, container);
+    updateSub1();
+    expect(div1Ref.current.innerHTML).toEqual('1');
+    expect(div2Ref.current.innerHTML).toEqual('2,3');
+
+    updateContext([0]);
+    expect(div1Ref.current.innerHTML).toEqual('0,1');
+    expect(div2Ref.current.innerHTML).toEqual('0,2,3');
+
+    // 局部更新Sub1
+    updateSub1();
+    expect(div1Ref.current.innerHTML).toEqual('0,1');
+    expect(div2Ref.current.innerHTML).toEqual('0,2,3');
+  });
 });

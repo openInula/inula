@@ -29,7 +29,7 @@ import {
   isExecuting,
   setExecuteMode
 } from './ExecuteMode';
-import { recoverParentContext, resetNamespaceCtx, setNamespaceCtx } from './ContextSaver';
+import { recoverParentContext, resetParentContext, resetNamespaceCtx, setNamespaceCtx } from './ContextSaver';
 import {
   updateChildShouldUpdate,
   updateParentsChildShouldUpdate,
@@ -262,6 +262,10 @@ function buildVNodeTree(treeRoot: VNode) {
     } catch (thrownValue) {
       handleError(treeRoot, thrownValue);
     }
+  }
+  if (startVNode.tag !== TreeRoot) { // 不是根节点
+    // 恢复父节点的context
+    resetParentContext(startVNode);
   }
 
   setProcessingClassVNode(null);
