@@ -45,13 +45,28 @@ export function resetContext(providerVNode: VNode) {
   context.value = providerVNode.context;
 }
 
-// 在局部更新时，恢复父节点的context
+// 在局部更新时，从上到下恢复父节点的context
 export function recoverParentContext(vNode: VNode) {
+  const contextProviders: VNode[] = [];
+  let parent = vNode.parent;
+  while (parent !== null) {
+    if (parent.tag === ContextProvider) {
+      contextProviders.unshift(parent);
+    }
+    parent = parent.parent;
+  }
+  contextProviders.forEach(node => {
+    setContext(node, node.props.value);
+  });
+}
+
+// 在局部更新时，从下到上重置父节点的context
+export function resetParentContext(vNode: VNode) {
   let parent = vNode.parent;
 
   while (parent !== null) {
     if (parent.tag === ContextProvider) {
-      setContext(parent, parent.props.value);
+      resetContext(parent);
     }
     parent = parent.parent;
   }
