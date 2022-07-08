@@ -61,7 +61,7 @@ function genConfig(mode) {
       mode === 'production' && terser(),
       copy([
         {
-          from: path.join(libDir, 'index.js'),
+          from: path.join(libDir, '/npm/index.js'),
           to: path.join(outDir, 'index.js'),
         },
         {
