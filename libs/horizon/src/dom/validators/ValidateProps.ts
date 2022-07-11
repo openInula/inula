@@ -6,7 +6,7 @@ const INVALID_EVENT_NAME_REGEX = /^on[^A-Z]/;
 
 
 // 是内置元素
-export function isNativeElement(tagName: string, props: Object) {
+export function isNativeElement(tagName: string, props: Record<string, any>) {
   return !tagName.includes('-') && props.is === undefined;
 }
 

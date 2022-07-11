@@ -49,23 +49,17 @@ export function getVNode(dom: Node|Container): VNode | null {
 
 // 用 DOM 对象，来寻找其对应或者说是最近父级的 vNode
 export function getNearestVNode(dom: Node): null | VNode {
-  let vNode = dom[INTERNAL_VNODE];
-  if (vNode) { // 如果是已经被框架标记过的 DOM 节点，那么直接返回其 VNode 实例
-    return vNode;
+  let domNode: Node | null = dom;
+  // 寻找当前节点及其所有祖先节点是否有标记VNODE
+  while (domNode) {
+    const vNode = domNode[INTERNAL_VNODE];
+    if (vNode) {
+      return vNode;
+    }
+    domNode = domNode.parentNode;
   }
 
-  // 下面处理的是为被框架标记过的 DOM 节点，向上找其父节点是否被框架标记过
-  let parentDom = dom.parentNode;
-  let nearVNode = null;
-  while (parentDom) {
-    vNode = parentDom[INTERNAL_VNODE];
-    if (vNode) {
-      nearVNode = vNode;
-      break;
-    }
-    parentDom = parentDom.parentNode;
-  }
-  return nearVNode;
+  return null;
 }
 
 // 获取 vNode 上的属性相关信息

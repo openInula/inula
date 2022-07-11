@@ -74,7 +74,11 @@ export class VNode {
   suspenseState: SuspenseState;
 
   path = ''; // 保存从根到本节点的路径
+
+  // 根节点数据
   toUpdateNodes: Set<VNode> | null; // 保存要更新的节点
+  delegatedEvents: Set<string>
+  delegatedNativeEvents: Set<string>
 
   belongClassVNode: VNode | null = null; // 记录JSXElement所属class vNode，处理ref的时候使用
 
@@ -94,6 +98,8 @@ export class VNode {
         this.realNode = realNode;
         this.task = null;
         this.toUpdateNodes = new Set<VNode>();
+        this.delegatedEvents = new Set<string>();
+        this.delegatedNativeEvents = new Set<string>();
         this.updates = null;
         this.stateCallbacks = null;
         this.state = null;

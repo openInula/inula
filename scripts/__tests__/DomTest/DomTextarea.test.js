@@ -38,26 +38,6 @@ describe('Dom Textarea', () => {
     expect(realNode.value).toBe('React');
   });
 
-  it('受控组件value不变', () => {
-    let realNode = Horizon.render(<textarea value='text' />, container);
-    expect(realNode.getAttribute('value')).toBe(null);
-    expect(realNode.value).toBe('text');
-    // 先修改
-    Object.getOwnPropertyDescriptor(
-      HTMLTextAreaElement.prototype,
-      'value',
-    ).set.call(realNode, 'textabc');
-    // 再触发事件
-    container.querySelector('textarea').dispatchEvent(
-      new Event('change', {
-        bubbles: true,
-        cancelable: true,
-      }),
-    );
-    // 组件受控，想要改变value，需要通过onChange改变state
-    expect(realNode.value).toBe('text');
-  });
-
   it('设置defaultValue', () => {
     let defaultVal = 'Vue';
     const textareaNode = <textarea defaultValue={defaultVal} />;

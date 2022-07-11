@@ -43,7 +43,7 @@ export function getSelectPropsWithoutValue(dom: HorizonSelect, properties: Objec
   return {
     ...properties,
     value: undefined,
-  }
+  };
 }
 
 export function updateSelectValue(dom: HorizonSelect, properties: IProperty, isInit: boolean = false) {
