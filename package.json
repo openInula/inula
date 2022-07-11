@@ -6,6 +6,7 @@
   "scripts": {
     "lint": "eslint . --ext .ts",
     "build": " rollup --config ./scripts/rollup/rollup.config.js",
+    "build:watch": " rollup --watch --config ./scripts/rollup/rollup.config.js",
     "build-3rdLib": "node ./scripts/gen3rdLib.js",
     "build-3rdLib-dev": "npm run build & node ./scripts/gen3rdLib.js --dev",
     "build-horizon3rdLib-dev": "npm run build & node ./scripts/gen3rdLib.js --dev --type horizon",

@@ -30,6 +30,7 @@ describe('useEffect Hook Test', () => {
     expect(document.getElementById('p').style.display).toBe('block');
     // 点击按钮触发num加1
     container.querySelector('button').click();
+
     expect(document.getElementById('p').style.display).toBe('none');
     container.querySelector('button').click();
     expect(container.querySelector('p').style.display).toBe('inline');

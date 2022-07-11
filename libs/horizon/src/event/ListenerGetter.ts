@@ -1,7 +1,7 @@
 import { VNode } from '../renderer/Types';
 import { DomComponent } from '../renderer/vnode/VNodeTags';
-import { EVENT_TYPE_ALL, EVENT_TYPE_CAPTURE, EVENT_TYPE_BUBBLE } from './const';
 import { AnyNativeEvent, ListenerUnitList } from './Types';
+import { EVENT_TYPE_ALL, EVENT_TYPE_BUBBLE, EVENT_TYPE_CAPTURE } from './EventHub';
 
 // 从vnode属性中获取事件listener
 function getListenerFromVNode(vNode: VNode, eventName: string): Function | null {

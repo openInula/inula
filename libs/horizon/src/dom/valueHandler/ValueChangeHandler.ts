@@ -54,7 +54,7 @@ export function watchValueChange(dom) {
   }
 }
 
-export function isInputValueChanged(dom) {
+export function updateInputValueIfChanged(dom) {
   const handler = dom[HANDLER_KEY];
   if (!handler) {
     return true;

@@ -1,0 +1,69 @@
+import * as Horizon from '@cloudsop/horizon/index.ts';
+import { clearStore, createStore, useStore } from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
+import { Text } from '../../jest/commonComponents';
+
+describe('测试 Class VNode 清除时，对引用清除', () => {
+  const { unmountComponentAtNode } = Horizon;
+  let container = null;
+  let globalState = {
+    name: 'bing dun dun',
+    isWin: true,
+    isShow: true,
+  };
+
+  beforeEach(() => {
+    // 创建一个 DOM 元素作为渲染目标
+    container = document.createElement('div');
+    document.body.appendChild(container);
+
+    createStore({
+      id: 'user',
+      state: globalState,
+      actions: {
+        setWin: (state, val) => {
+          state.isWin = val;
+        },
+        hide: state => {
+          state.isShow = false;
+        },
+        updateName: (state, val) => {
+          state.name = val;
+        },
+      },
+    });
+  });
+
+  afterEach(() => {
+    // 退出时进行清理
+    unmountComponentAtNode(container);
+    container.remove();
+    container = null;
+
+    clearStore('user');
+  });
+
+  it('test observer.clearByNode', () => {
+    class Child extends Horizon.Component {
+      userStore = useStore('user');
+
+      render() {
+        // Do not modify the store data in the render method. Otherwise, an infinite loop may occur.
+        this.userStore.updateName(this.userStore.name === 'bing dun dun' ? 'huo dun dun' : 'bing dun dun');
+
+        return (
+          <div>
+            <Text id={'name'} text={`name: ${this.userStore.name}`} />
+            <Text id={'isWin'} text={`isWin: ${this.userStore.isWin}`} />
+          </div>
+        );
+      }
+    }
+
+    expect(() => {
+      Horizon.render(<Child />, container);
+    }).toThrow(
+      'The number of updates exceeds the upper limit 50.\n' +
+        '      A component maybe repeatedly invokes setState on componentWillUpdate or componentDidUpdate.'
+    );
+  });
+});

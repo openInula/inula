@@ -1,52 +1,41 @@
 /**
  * 事件绑定实现，分为绑定委托事件和非委托事件
  */
-import {allDelegatedNativeEvents} from './EventCollection';
-import {isDocument} from '../dom/utils/Common';
 import {
-  getNearestVNode,
-  getNonDelegatedListenerMap,
-} from '../dom/DOMInternalKeys';
-import {runDiscreteUpdates} from '../renderer/TreeBuilder';
-import {isMounted} from '../renderer/vnode/VNodeUtils';
-import {SuspenseComponent} from '../renderer/vnode/VNodeTags';
-import {handleEventMain} from './HorizonEventMain';
-import {decorateNativeEvent} from './customEvents/EventFactory';
+  allDelegatedHorizonEvents,
+  allDelegatedNativeEvents,
+} from './EventHub';
+import { isDocument } from '../dom/utils/Common';
+import { getNearestVNode, getNonDelegatedListenerMap } from '../dom/DOMInternalKeys';
+import { runDiscreteUpdates } from '../renderer/TreeBuilder';
+import { handleEventMain } from './HorizonEventMain';
+import { decorateNativeEvent } from './EventWrapper';
+import { VNode } from '../renderer/vnode/VNode';
 
-const listeningMarker = '_horizonListening' + Math.random().toString(36).slice(4);
+const listeningMarker =
+  '_horizonListening' +
+  Math.random()
+    .toString(36)
+    .slice(4);
 
 // 触发委托事件
 function triggerDelegatedEvent(
   nativeEvtName: string,
   isCapture: boolean,
   targetDom: EventTarget,
-  nativeEvent, // 事件对象event
+  nativeEvent // 事件对象event
 ) {
   // 执行之前的调度事件
   runDiscreteUpdates();
 
   const nativeEventTarget = nativeEvent.target || nativeEvent.srcElement;
-  let targetVNode = getNearestVNode(nativeEventTarget);
+  const targetVNode = getNearestVNode(nativeEventTarget);
 
-  if (targetVNode !== null) {
-    if (isMounted(targetVNode)) {
-      if (targetVNode.tag === SuspenseComponent) {
-        targetVNode = null;
-      }
-    } else {
-      // vNode已销毁
-      targetVNode = null;
-    }
-  }
   handleEventMain(nativeEvtName, isCapture, nativeEvent, targetVNode, targetDom);
 }
 
 // 监听委托事件
-function listenToNativeEvent(
-  nativeEvtName: string,
-  delegatedElement: Element,
-  isCapture: boolean,
-): void {
+function listenToNativeEvent(nativeEvtName: string, delegatedElement: Element, isCapture: boolean): void {
   let dom: Element | Document = delegatedElement;
   // document层次可能触发selectionchange事件，为了捕获这类事件，selectionchange事件绑定在document节点上
   if (nativeEvtName === 'selectionchange' && !isDocument(delegatedElement)) {
@@ -70,6 +59,22 @@ export function listenDelegatedEvents(dom: Element) {
     listenToNativeEvent(nativeEvtName, dom, false);
     // 委托捕获事件
     listenToNativeEvent(nativeEvtName, dom, true);
+  });
+}
+
+// 事件懒委托，当用户定义事件后，再进行委托到根节点
+export function lazyDelegateOnRoot(currentRoot: VNode, eventName: string) {
+  currentRoot.delegatedEvents.add(eventName);
+
+  const isCapture = isCaptureEvent(eventName);
+  const nativeEvents = allDelegatedHorizonEvents.get(eventName);
+
+  nativeEvents.forEach(nativeEvent => {
+    const nativeFullName =  isCapture ? nativeEvent + 'capture' : nativeEvent;
+    if (!currentRoot.delegatedNativeEvents.has(nativeFullName)) {
+      listenToNativeEvent(nativeEvent, currentRoot.realNode, isCapture);
+      currentRoot.delegatedNativeEvents.add(nativeFullName);
+    }
   });
 }
 
@@ -104,11 +109,7 @@ function getWrapperListener(horizonEventName, nativeEvtName, targetElement, list
 }
 
 // 非委托事件单独监听到各自dom节点
-export function listenNonDelegatedEvent(
-  horizonEventName: string,
-  domElement: Element,
-  listener,
-): void {
+export function listenNonDelegatedEvent(horizonEventName: string, domElement: Element, listener): void {
   const isCapture = isCaptureEvent(horizonEventName);
   const nativeEvtName = getNativeEvtName(horizonEventName, isCapture);
 

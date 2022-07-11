@@ -29,7 +29,7 @@ import {
   isExecuting,
   setExecuteMode
 } from './ExecuteMode';
-import { recoverParentContext, resetNamespaceCtx, setNamespaceCtx } from './ContextSaver';
+import { recoverParentContext, resetParentContext, resetNamespaceCtx, setNamespaceCtx } from './ContextSaver';
 import {
   updateChildShouldUpdate,
   updateParentsChildShouldUpdate,
@@ -43,6 +43,11 @@ let unrecoverableErrorDuringBuild: any = null;
 
 // 当前运行的vNode节点
 let processing: VNode | null = null;
+let currentRoot:  VNode | null = null;
+export function getCurrentRoot() {
+  return currentRoot;
+}
+
 export function setProcessing(vNode: VNode | null) {
   processing = vNode;
 }
@@ -258,6 +263,10 @@ function buildVNodeTree(treeRoot: VNode) {
       handleError(treeRoot, thrownValue);
     }
   }
+  if (startVNode.tag !== TreeRoot) { // 不是根节点
+    // 恢复父节点的context
+    resetParentContext(startVNode);
+  }
 
   setProcessingClassVNode(null);
 
@@ -267,7 +276,7 @@ function buildVNodeTree(treeRoot: VNode) {
 // 总体任务入口
 function renderFromRoot(treeRoot) {
   runAsyncEffects();
-
+  currentRoot = treeRoot;
   // 1. 构建vNode树
   buildVNodeTree(treeRoot);
 
@@ -278,6 +287,7 @@ function renderFromRoot(treeRoot) {
 
   // 2. 提交变更
   submitToRender(treeRoot);
+  currentRoot = null;
 
   if (window.__HORIZON_DEV_HOOK__) {
     const hook = window.__HORIZON_DEV_HOOK__;
