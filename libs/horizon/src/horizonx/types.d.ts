@@ -1,23 +1,23 @@
 export interface IObserver {
 
-  useProp: (key: string) => void;
+  useProp: (key: string | symbol) => void;
 
   addListener: (listener: () => void) => void;
 
   removeListener: (listener: () => void) => void;
 
-  setProp: (key: string) => void;
+  setProp: (key: string | symbol) => void;
 
   triggerChangeListeners: () => void;
 
   triggerUpdate: (vNode: any) => void;
 
   allChange: () => void;
-  
+
   clearByVNode: (vNode: any) => void;
 }
 
-type RemoveFirstFromTuple<T extends any[]> = 
+type RemoveFirstFromTuple<T extends any[]> =
   T['length'] extends 0 ? [] :
   (((...b: T) => void) extends (a, ...b: infer I) => void ? I : [])
 
@@ -36,7 +36,7 @@ type ComputedValues<S extends object,C extends UserComputedValues<S>> = { [K in 
 type PostponedAction = (state: object, ...args: any[]) => Promise<any>;
 type PostponedActions = { [key:string]: PostponedAction }
 
-export type StoreHandler<S extends object,A extends UserActions<S>,C extends UserComputedValues<S>> = 
+export type StoreHandler<S extends object,A extends UserActions<S>,C extends UserComputedValues<S>> =
   {$subscribe: ((listener: () => void) => void),
   $unsubscribe: ((listener: () => void) => void),
   $state: S,
