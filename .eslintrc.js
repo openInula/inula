@@ -45,6 +45,7 @@ module.exports = {
   },
   globals: {
     isDev: true,
+    isTest: true,
   },
   overrides: [
     {

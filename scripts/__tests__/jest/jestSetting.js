@@ -5,6 +5,7 @@ import { getLogUtils } from './testUtils';
 //failOnConsole();
 const LogUtils = getLogUtils();
 global.isDev = process.env.NODE_ENV === 'development';
+global.isTest = true;
 global.container = null;
 global.beforeEach(() => {
   LogUtils.clear();
