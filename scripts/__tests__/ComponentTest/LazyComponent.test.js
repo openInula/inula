@@ -184,4 +184,30 @@ describe('LazyComponent Test', () => {
     container.querySelector('button').click();
     expect(container.textContent).toBe('Error: num is 2');
   });
+
+  it('#24 配合memo', async () => {
+    const fnComp = () => {
+      return <h1>horizon</h1>;
+    };
+    const LazyApp = Horizon.lazy(() => ({
+      then(cb) {
+        cb({ default: Horizon.memo(() => fnComp, false) });
+      },
+    }));
+    expect(() => {
+      Horizon.render(
+        <Horizon.Suspense fallback={<div>Loading...</div>}>
+          <LazyApp text="Lazy" />
+        </Horizon.Suspense>,
+        container
+      );
+
+      Horizon.render(
+        <Horizon.Suspense fallback={<div>Loading...</div>}>
+          <LazyApp text="Lazy" />
+        </Horizon.Suspense>,
+        container
+      );
+    }).not.toThrow();
+  });
 });
