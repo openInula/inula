@@ -24,7 +24,8 @@ if (!fs.existsSync(outDir)) {
 const outputResolve = (...p) => path.resolve(outDir, ...p);
 
 function genConfig(mode) {
-  const sourcemap = mode === 'development' ? 'inline' : false;
+  const isDev = mode === 'development';
+  const sourcemap = isDev ? 'inline' : false;
   return {
     input: path.resolve(libDir, 'index.ts'),
     output: [
@@ -54,7 +55,8 @@ function genConfig(mode) {
       replace({
         values: {
           'process.env.NODE_ENV': `"${mode}"`,
-          isDev: 'true',
+          isDev: isDev.toString(),
+          isTest: false,
           __VERSION__: `"${horizonVersion}"`,
         },
         preventAssignment: true,

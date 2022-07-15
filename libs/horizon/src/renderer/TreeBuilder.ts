@@ -199,6 +199,10 @@ export function calcStartUpdateVNode(treeRoot: VNode) {
   for (let i = 1; i < startNodePath.length; i++) {
     const pathIndex = Number(startNodePath[i]);
     node = getChildByIndex(node, pathIndex)!;
+    // 路径错误时，回退到从根更新
+    if (node == null) {
+      return treeRoot;
+    }
   }
 
   return node;

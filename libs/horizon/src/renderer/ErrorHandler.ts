@@ -15,7 +15,7 @@ import {updateShouldUpdateOfTree} from './vnode/VNodeShouldUpdate';
 import {BuildErrored, setBuildResult} from './GlobalVar';
 
 function consoleError(error: any): void {
-  if (isDev) {
+  if (isTest) {
     // 只打印message为了让测试用例能pass
     console['error']('The codes throw the error: ' + error.message);
   } else {

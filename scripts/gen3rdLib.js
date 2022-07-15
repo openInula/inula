@@ -10,6 +10,11 @@ const argv = require('minimist')(process.argv.slice(2));
 const libPathPrefix = '../build';
 const suffix = argv.dev ? 'development.js' : 'production.js';
 const template = argv.type === 'horizon' ? 'horizon3rdTemplate.ejs' : 'template.ejs';
+const templatePath = path.resolve(__dirname, `./${template}`);
+if (!fs.existsSync(templatePath)) {
+  console.log(chalk.yellow('Failed: Template file not exist'));
+  return;
+}
 const readLib = lib => {
   const libName = lib.split('.')[0];
   const libPath = path.resolve(__dirname, `${libPathPrefix}/${libName}/umd/${lib}`);

@@ -40,8 +40,8 @@ function get(rawObj: { size: number }, key: any, receiver: any): any {
 }
 
 function getFun(rawObj: { get: (key: any) => any }, key: any) {
-  const tracker = getObserver(rawObj);
-  tracker.useProp(key);
+  const observer = getObserver(rawObj);
+  observer.useProp(key);
 
   const value = rawObj.get(key);
   // 对于value也需要进一步代理
@@ -60,14 +60,14 @@ function set(
   const newValue = value;
   rawObj.set(key, newValue);
   const valChange = !isSame(newValue, oldValue);
-  const tracker = getObserver(rawObj);
+  const observer = getObserver(rawObj);
 
   if (valChange || !rawObj.has(key)) {
-    tracker.setProp(COLLECTION_CHANGE);
+    observer.setProp(COLLECTION_CHANGE);
   }
 
   if (valChange) {
-    tracker.setProp(key);
+    observer.setProp(key);
   }
 
   return rawObj;
@@ -78,17 +78,17 @@ function add(rawObj: { add: (any) => void; set: (string, any) => any; has: (any)
   if (!rawObj.has(value)) {
     rawObj.add(value);
 
-    const tracker = getObserver(rawObj);
-    tracker.setProp(value);
-    tracker.setProp(COLLECTION_CHANGE);
+    const observer = getObserver(rawObj);
+    observer.setProp(value);
+    observer.setProp(COLLECTION_CHANGE);
   }
 
   return rawObj;
 }
 
 function has(rawObj: { has: (string) => boolean }, key: any): boolean {
-  const tracker = getObserver(rawObj);
-  tracker.useProp(key);
+  const observer = getObserver(rawObj);
+  observer.useProp(key);
 
   return rawObj.has(key);
 }
@@ -98,8 +98,8 @@ function clear(rawObj: { size: number; clear: () => void }) {
   rawObj.clear();
 
   if (oldSize > 0) {
-    const tracker = getObserver(rawObj);
-    tracker.allChange();
+    const observer = getObserver(rawObj);
+    observer.allChange();
   }
 }
 
@@ -107,9 +107,9 @@ function deleteFun(rawObj: { has: (key: any) => boolean; delete: (key: any) => v
   if (rawObj.has(key)) {
     rawObj.delete(key);
 
-    const tracker = getObserver(rawObj);
-    tracker.setProp(key);
-    tracker.setProp(COLLECTION_CHANGE);
+    const observer = getObserver(rawObj);
+    observer.setProp(key);
+    observer.setProp(COLLECTION_CHANGE);
 
     return true;
   }
@@ -118,8 +118,8 @@ function deleteFun(rawObj: { has: (key: any) => boolean; delete: (key: any) => v
 }
 
 function size(rawObj: { size: number }) {
-  const tracker = getObserver(rawObj);
-  tracker.useProp(COLLECTION_CHANGE);
+  const observer = getObserver(rawObj);
+  observer.useProp(COLLECTION_CHANGE);
   return rawObj.size;
 }
 
@@ -148,8 +148,8 @@ function forEach(
   rawObj: { forEach: (callback: (value: any, key: any) => void) => void },
   callback: (valProxy: any, keyProxy: any, rawObj: any) => void
 ) {
-  const tracker = getObserver(rawObj);
-  tracker.useProp(COLLECTION_CHANGE);
+  const observer = getObserver(rawObj);
+  observer.useProp(COLLECTION_CHANGE);
   rawObj.forEach((value, key) => {
     const valProxy = createProxy(value, hookObserverMap.get(rawObj));
     const keyProxy = createProxy(key, hookObserverMap.get(rawObj));
@@ -159,9 +159,9 @@ function forEach(
 }
 
 function wrapIterator(rawObj: Object, rawIt: { next: () => { value: any; done: boolean } }, isPair = false) {
-  const tracker = getObserver(rawObj);
+  const observer = getObserver(rawObj);
   const hookObserver = hookObserverMap.get(rawObj);
-  tracker.useProp(COLLECTION_CHANGE);
+  observer.useProp(COLLECTION_CHANGE);
 
   return {
     next() {
@@ -170,7 +170,7 @@ function wrapIterator(rawObj: Object, rawIt: { next: () => { value: any; done: b
         return { value: createProxy(value, hookObserver), done };
       }
 
-      tracker.useProp(COLLECTION_CHANGE);
+      observer.useProp(COLLECTION_CHANGE);
 
       let newVal;
       if (isPair) {

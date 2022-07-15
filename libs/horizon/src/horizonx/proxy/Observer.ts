@@ -33,7 +33,7 @@ export class Observer implements IObserver {
 
   listeners:(()=>void)[] = [];
 
-  useProp(key: string): void {
+  useProp(key: string | symbol): void {
     const processingVNode = getProcessingVNode();
     if (processingVNode === null || !processingVNode.observers) {
       return;
@@ -67,7 +67,7 @@ export class Observer implements IObserver {
     this.listeners = this.listeners.filter(item => item != listener);
   }
 
-  setProp(key: string): void {
+  setProp(key: string | symbol): void {
     const vNodes = this.keyVNodes.get(key);
     vNodes?.forEach((vNode: VNode) => {
       if (vNode.isStoreChange) {

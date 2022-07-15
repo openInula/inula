@@ -10,7 +10,7 @@ export class HooklessObserver implements IObserver {
 
   listeners:(() => void)[] = [];
 
-  useProp(key: string): void {
+  useProp(key: string | symbol): void {
   }
 
   addListener(listener: () => void) {
@@ -21,7 +21,7 @@ export class HooklessObserver implements IObserver {
     this.listeners = this.listeners.filter(item => item != listener);
   }
 
-  setProp(key: string): void {
+  setProp(key: string | symbol): void {
     this.triggerChangeListeners();
   }
 
