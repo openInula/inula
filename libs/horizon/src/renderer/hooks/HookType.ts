@@ -1,5 +1,5 @@
 import {EffectConstant} from './EffectConstant';
-
+type ValueOf<T> = T[keyof T];
 export interface Hook<S, A> {
   state: Reducer<S, A> | Effect | Memo<S> | CallBack<S> | Ref<S>;
   hIndex: number;
@@ -25,7 +25,7 @@ export type Effect = {
   effect: () => (() => void) | void;
   removeEffect: (() => void) | void;
   dependencies: Array<any> | null;
-  effectConstant: typeof EffectConstant;
+  effectConstant: ValueOf<typeof EffectConstant>;
 };
 
 export type Memo<V> = {

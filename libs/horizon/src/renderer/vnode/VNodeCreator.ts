@@ -132,6 +132,31 @@ export function createUndeterminedVNode(type, key, props) {
   return vNode;
 }
 
+export function getElementTag(element: JSXElement): string {
+  const type = element.type;
+
+  if (type === TYPE_STRICT_MODE || type === TYPE_FRAGMENT || type === TYPE_PROFILER) {
+    return Fragment;
+  } else {
+    let vNodeTag = FunctionComponent;
+    const componentType = typeof type;
+
+    if (componentType === 'function') {
+      if (isClassComponent(type)) {
+        vNodeTag = ClassComponent;
+      }
+    } else if (componentType === 'string') {
+      vNodeTag = DomComponent;
+    } else if (type === TYPE_SUSPENSE) {
+      vNodeTag = SuspenseComponent;
+    } else if (componentType === 'object' && type !== null && typeMap[type.vtype]) {
+      vNodeTag = typeMap[type.vtype];
+    }
+
+    return vNodeTag;
+  }
+}
+
 export function createTreeRootVNode(container) {
   const vNode = newVirtualNode(TreeRoot, null, null, container);
   vNode.path = '0';
