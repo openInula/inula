@@ -1,6 +1,6 @@
 // TODO: implement vNode type
 
-import {IObserver} from '../types';
+import {IObserver} from './Observer';
 
 /**
  * 一个对象（对象、数组、集合）对应一个Observer

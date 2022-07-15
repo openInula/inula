@@ -1,6 +1,8 @@
+//@ts-ignore
 import * as Horizon from '@cloudsop/horizon/index.ts';
 import { createStore } from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
 import { triggerClickEvent } from '../../jest/commonComponents';
+import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
 
 const { unmountComponentAtNode } = Horizon;
 
@@ -13,7 +15,7 @@ function postpone(timer, func) {
 }
 
 describe('Asynchronous functions', () => {
-  let container = null;
+  let container: HTMLElement | null = null;
 
   const COUNTER_ID = 'counter';
   const TOGGLE_ID = 'toggle';
@@ -33,7 +35,7 @@ describe('Asynchronous functions', () => {
           return new Promise(resolve => {
             setTimeout(() => {
               state.counter++;
-              resolve();
+              resolve(true);
             }, 100);
           });
         },
@@ -53,11 +55,12 @@ describe('Asynchronous functions', () => {
 
   afterEach(() => {
     unmountComponentAtNode(container);
-    container.remove();
+    container?.remove();
     container = null;
   });
 
   it('Should wait for async actions', async () => {
+    // @ts-ignore
     jest.useRealTimers();
     let globalStore;
 
@@ -84,14 +87,14 @@ describe('Asynchronous functions', () => {
     Horizon.render(<App />, container);
 
     // initial state
-    expect(document.getElementById(RESULT_ID).innerHTML).toBe('false0');
+    expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('false0');
 
     // slow toggle has nothing to wait for, it is resolved immediately
     Horizon.act(() => {
       triggerClickEvent(container, TOGGLE_ID);
     });
 
-    expect(document.getElementById(RESULT_ID).innerHTML).toBe('true0');
+    expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('true0');
 
     // counter increment is slow. slow toggle waits for result
     Horizon.act(() => {
@@ -101,18 +104,18 @@ describe('Asynchronous functions', () => {
       triggerClickEvent(container, TOGGLE_ID);
     });
 
-    expect(document.getElementById(RESULT_ID).innerHTML).toBe('true0');
+    expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('true0');
 
     // fast toggle does not wait for counter and it is resolved immediately
     Horizon.act(() => {
       triggerClickEvent(container, TOGGLE_FAST_ID);
     });
 
-    expect(document.getElementById(RESULT_ID).innerHTML).toBe('false0');
+    expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('false0');
 
     // at 150ms counter increment will be resolved and slow toggle immediately after
     const t150 = postpone(150, () => {
-      expect(document.getElementById(RESULT_ID).innerHTML).toBe('true1');
+      expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('true1');
     });
 
     // before that, two more actions are added to queue - another counter and slow toggle
@@ -125,13 +128,14 @@ describe('Asynchronous functions', () => {
 
     // at 250ms they should be already resolved
     const t250 = postpone(250, () => {
-      expect(document.getElementById(RESULT_ID).innerHTML).toBe('false2');
+      expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('false2');
     });
 
     await Promise.all([t150, t250]);
   });
 
   it('call async action by then', async () => {
+    // @ts-ignore
     jest.useFakeTimers();
     let globalStore;
 
@@ -150,12 +154,13 @@ describe('Asynchronous functions', () => {
 
     // call async action by then
     globalStore.$queue.increment().then(() => {
-      expect(document.getElementById(RESULT_ID).innerHTML).toBe('false1');
+      expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('false1');
     });
 
-    expect(document.getElementById(RESULT_ID).innerHTML).toBe('false0');
+    expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('false0');
 
     // past 150 ms
+    // @ts-ignore
     jest.advanceTimersByTime(150);
   });
 });

@@ -1,45 +1,55 @@
+//@ts-ignore
 import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as LogUtils from '../../jest/logUtils';
 import { clearStore, createStore, useStore } from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
 import { App, Text, triggerClickEvent } from '../../jest/commonComponents';
+import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
+
+const useUserStore = createStore({
+  id: 'user',
+  state: {
+    type: 'bing dun dun',
+    persons: new WeakMap([
+      [{ name: 'p1' }, 1],
+      [{ name: 'p2' }, 2],
+    ]),
+  },
+  actions: {
+    addOnePerson: (state, person) => {
+      state.persons.set(person, 3);
+    },
+    delOnePerson: (state, person) => {
+      state.persons.delete(person);
+    },
+    clearPersons: state => {
+      state.persons = new WeakMap([]);
+    },
+    reset: state => {
+      state.persons = new WeakMap([
+        [{ name: 'p1' }, 1],
+        [{ name: 'p2' }, 2],
+      ]);
+    },
+  },
+});
 
 describe('测试store中的WeakMap', () => {
   const { unmountComponentAtNode } = Horizon;
-  let container = null;
+  let container: HTMLElement | null = null;
   beforeEach(() => {
     // 创建一个 DOM 元素作为渲染目标
     container = document.createElement('div');
     document.body.appendChild(container);
 
-    const persons = new WeakMap([
-      [{ name: 'p1' }, 1],
-      [{ name: 'p2' }, 2],
-    ]);
-
-    createStore({
-      id: 'user',
-      state: {
-        type: 'bing dun dun',
-        persons: persons,
-      },
-      actions: {
-        addOnePerson: (state, person) => {
-          state.persons.set(person, 3);
-        },
-        delOnePerson: (state, person) => {
-          state.persons.delete(person);
-        },
-        clearPersons: state => {
-          state.persons.clear();
-        },
-      },
-    });
+    useUserStore().reset();
   });
 
   afterEach(() => {
     // 退出时进行清理
     unmountComponentAtNode(container);
-    container.remove();
+    container?.remove();
     container = null;
+    LogUtils.clear();
 
     clearStore('user');
   });
@@ -47,7 +57,7 @@ describe('测试store中的WeakMap', () => {
   const newPerson = { name: 'p3' };
 
   function Parent(props) {
-    const userStore = useStore('user');
+    const userStore = useUserStore();
     const addOnePerson = function() {
       userStore.addOnePerson(newPerson);
     };
@@ -76,49 +86,49 @@ describe('测试store中的WeakMap', () => {
 
   it('测试WeakMap方法: set()、delete()、has()', () => {
     function Child(props) {
-      const userStore = useStore('user');
+      const userStore = useUserStore();
 
       return (
         <div>
-          <Text id={'hasPerson'} text={`has new person: ${userStore.$state.persons.has(newPerson)}`} />
+          <Text id={'hasPerson'} text={`has new person: ${userStore.$s.persons.has(newPerson)}`} />
         </div>
       );
     }
 
     Horizon.render(<App parent={Parent} child={Child} />, container);
 
-    expect(container.querySelector('#hasPerson').innerHTML).toBe('has new person: false');
+    expect(container?.querySelector('#hasPerson')?.innerHTML).toBe('has new person: false');
     // 在WeakMap中增加一个对象
     Horizon.act(() => {
       triggerClickEvent(container, 'addBtn');
     });
-    expect(container.querySelector('#hasPerson').innerHTML).toBe('has new person: true');
+    expect(container?.querySelector('#hasPerson')?.innerHTML).toBe('has new person: true');
 
     // 在WeakMap中删除一个对象
     Horizon.act(() => {
       triggerClickEvent(container, 'delBtn');
     });
-    expect(container.querySelector('#hasPerson').innerHTML).toBe('has new person: false');
+    expect(container?.querySelector('#hasPerson')?.innerHTML).toBe('has new person: false');
   });
 
   it('测试WeakMap方法: get()', () => {
     function Child(props) {
-      const userStore = useStore('user');
+      const userStore = useUserStore();
 
       return (
         <div>
-          <Text id={'hasPerson'} text={`has new person: ${userStore.$state.persons.get(newPerson)}`} />
+          <Text id={'hasPerson'} text={`has new person: ${userStore.$s.persons.get(newPerson)}`} />
         </div>
       );
     }
 
     Horizon.render(<App parent={Parent} child={Child} />, container);
 
-    expect(container.querySelector('#hasPerson').innerHTML).toBe('has new person: undefined');
+    expect(container?.querySelector('#hasPerson')?.innerHTML).toBe('has new person: undefined');
     // 在WeakMap中增加一个对象
     Horizon.act(() => {
       triggerClickEvent(container, 'addBtn');
     });
-    expect(container.querySelector('#hasPerson').innerHTML).toBe('has new person: 3');
+    expect(container?.querySelector('#hasPerson')?.innerHTML).toBe('has new person: 3');
   });
 });

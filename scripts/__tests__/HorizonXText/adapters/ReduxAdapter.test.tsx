@@ -1,9 +1,12 @@
+//@ts-ignore
+import * as Horizon from '@cloudsop/horizon/index.ts';
 import {
   createStore,
   applyMiddleware,
   combineReducers,
   bindActionCreators,
 } from '../../../../libs/horizon/src/horizonx/adapters/redux';
+import { describe, it, expect } from '@jest/globals';
 
 describe('Redux adapter', () => {
   it('should use getState()', async () => {
@@ -142,7 +145,7 @@ describe('Redux adapter', () => {
 
   it('Should apply enhancers', async () => {
     let counter = 0;
-    let middlewareCallList = [];
+    let middlewareCallList: string[] = [];
 
     const callCounter = store => next => action => {
       middlewareCallList.push('callCounter');
@@ -175,7 +178,7 @@ describe('Redux adapter', () => {
   it('Should apply multiple enhancers', async () => {
     let counter = 0;
     let lastAction = '';
-    let middlewareCallList = [];
+    let middlewareCallList: string[] = [];
 
     const callCounter = store => next => action => {
       middlewareCallList.push('callCounter');

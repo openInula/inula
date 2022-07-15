@@ -1,45 +1,48 @@
 import * as Horizon from '@cloudsop/horizon/index.ts';
-import { clearStore, createStore, useStore } from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
-import { App, Text, triggerClickEvent } from '../../jest/commonComponents';
+import * as LogUtils from '../../jest/logUtils';
+import {clearStore, createStore, useStore} from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
+import {App, Text, triggerClickEvent} from '../../jest/commonComponents';
+import {describe, beforeEach, afterEach, it, expect} from '@jest/globals';
+
+const useUserStore = createStore({
+  id: 'user',
+  state: {
+    type: 'bing dun dun',
+    persons: new Map([['p1', 1], ['p2', 2]]),
+  },
+  actions: {
+    addOnePerson: (state, person) => {
+      state.persons.set(person.name, person.age);
+    },
+    delOnePerson: (state, person) => {
+      state.persons.delete(person.name);
+    },
+    clearPersons: (state) => {
+      state.persons.clear();
+    },
+    reset: (state)=>{
+      state.persons=new Map([['p1', 1], ['p2', 2]]);
+    }
+  },
+});
 
 describe('在Class组件中，测试store中的Map', () => {
   const { unmountComponentAtNode } = Horizon;
-  let container = null;
+  let container:HTMLElement|null = null;
   beforeEach(() => {
     // 创建一个 DOM 元素作为渲染目标
     container = document.createElement('div');
     document.body.appendChild(container);
 
-    const persons = new Map([
-      ['p1', 1],
-      ['p2', 2],
-    ]);
-
-    createStore({
-      id: 'user',
-      state: {
-        type: 'bing dun dun',
-        persons: persons,
-      },
-      actions: {
-        addOnePerson: (state, person) => {
-          state.persons.set(person.name, person.age);
-        },
-        delOnePerson: (state, person) => {
-          state.persons.delete(person.name);
-        },
-        clearPersons: state => {
-          state.persons.clear();
-        },
-      },
-    });
+    useUserStore().reset();
   });
 
   afterEach(() => {
     // 退出时进行清理
     unmountComponentAtNode(container);
-    container.remove();
+    container?.remove();
     container = null;
+    LogUtils.clear();
 
     clearStore('user');
   });
@@ -47,17 +50,23 @@ describe('在Class组件中，测试store中的Map', () => {
   const newPerson = { name: 'p3', age: 3 };
 
   class Parent extends Horizon.Component {
-    userStore = useStore('user');
+    userStore = useUserStore();
+    props = {children:[]}
+
+    constructor(props){
+      super(props);
+      this.props = props;
+    }
 
     addOnePerson = () => {
       this.userStore.addOnePerson(newPerson);
-    };
+    }
     delOnePerson = () => {
       this.userStore.delOnePerson(newPerson);
-    };
+    }
     clearPersons = () => {
       this.userStore.clearPersons();
-    };
+    }
 
     render() {
       return (
@@ -71,7 +80,9 @@ describe('在Class组件中，测试store中的Map', () => {
           <button id={'clearBtn'} onClick={this.clearPersons}>
             clear persons
           </button>
-          <div>{this.props.children}</div>
+          <div>
+            {this.props.children}
+          </div>
         </div>
       );
     }
@@ -79,12 +90,12 @@ describe('在Class组件中，测试store中的Map', () => {
 
   it('测试Map方法: set()、delete()、clear()', () => {
     class Child extends Horizon.Component {
-      userStore = useStore('user');
+      userStore = useUserStore();
 
       render() {
         return (
           <div>
-            <Text id={'size'} text={`persons number: ${this.userStore.$state.persons.size}`} />
+            <Text id={'size'} text={`persons number: ${this.userStore.$s.persons.size}`} />
           </div>
         );
       }
@@ -92,33 +103,33 @@ describe('在Class组件中，测试store中的Map', () => {
 
     Horizon.render(<App parent={Parent} child={Child} />, container);
 
-    expect(container.querySelector('#size').innerHTML).toBe('persons number: 2');
+    expect(container?.querySelector('#size')?.innerHTML).toBe('persons number: 2');
     // 在Map中增加一个对象
     Horizon.act(() => {
       triggerClickEvent(container, 'addBtn');
     });
-    expect(container.querySelector('#size').innerHTML).toBe('persons number: 3');
+    expect(container?.querySelector('#size')?.innerHTML).toBe('persons number: 3');
 
     // 在Map中删除一个对象
     Horizon.act(() => {
       triggerClickEvent(container, 'delBtn');
     });
-    expect(container.querySelector('#size').innerHTML).toBe('persons number: 2');
+    expect(container?.querySelector('#size')?.innerHTML).toBe('persons number: 2');
 
     // clear Map
     Horizon.act(() => {
       triggerClickEvent(container, 'clearBtn');
     });
-    expect(container.querySelector('#size').innerHTML).toBe('persons number: 0');
+    expect(container?.querySelector('#size')?.innerHTML).toBe('persons number: 0');
   });
 
   it('测试Map方法: keys()', () => {
     class Child extends Horizon.Component {
-      userStore = useStore('user');
+      userStore = useUserStore();
 
       render() {
-        const nameList = [];
-        const keys = this.userStore.$state.persons.keys();
+        const nameList:string[] = [];
+        const keys = this.userStore.$s.persons.keys();
         for (const key of keys) {
           nameList.push(key);
         }
@@ -133,33 +144,33 @@ describe('在Class组件中，测试store中的Map', () => {
 
     Horizon.render(<App parent={Parent} child={Child} />, container);
 
-    expect(container.querySelector('#nameList').innerHTML).toBe('name list: p1 p2');
+    expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2');
     // 在Map中增加一个对象
     Horizon.act(() => {
       triggerClickEvent(container, 'addBtn');
     });
-    expect(container.querySelector('#nameList').innerHTML).toBe('name list: p1 p2 p3');
+    expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2 p3');
 
     // 在Map中删除一个对象
     Horizon.act(() => {
       triggerClickEvent(container, 'delBtn');
     });
-    expect(container.querySelector('#nameList').innerHTML).toBe('name list: p1 p2');
+    expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2');
 
     // clear Map
     Horizon.act(() => {
       triggerClickEvent(container, 'clearBtn');
     });
-    expect(container.querySelector('#nameList').innerHTML).toBe('name list: ');
+    expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: ');
   });
 
   it('测试Map方法: values()', () => {
     class Child extends Horizon.Component {
-      userStore = useStore('user');
+      userStore = useUserStore();
 
       render() {
-        const ageList = [];
-        const values = this.userStore.$state.persons.values();
+        const ageList:number[] = [];
+        const values = this.userStore.$s.persons.values();
         for (const val of values) {
           ageList.push(val);
         }
@@ -174,33 +185,33 @@ describe('在Class组件中，测试store中的Map', () => {
 
     Horizon.render(<App parent={Parent} child={Child} />, container);
 
-    expect(container.querySelector('#ageList').innerHTML).toBe('age list: 1 2');
+    expect(container?.querySelector('#ageList')?.innerHTML).toBe('age list: 1 2');
     // 在Map中增加一个对象
     Horizon.act(() => {
       triggerClickEvent(container, 'addBtn');
     });
-    expect(container.querySelector('#ageList').innerHTML).toBe('age list: 1 2 3');
+    expect(container?.querySelector('#ageList')?.innerHTML).toBe('age list: 1 2 3');
 
     // 在Map中删除一个对象
     Horizon.act(() => {
       triggerClickEvent(container, 'delBtn');
     });
-    expect(container.querySelector('#ageList').innerHTML).toBe('age list: 1 2');
+    expect(container?.querySelector('#ageList')?.innerHTML).toBe('age list: 1 2');
 
     // clear Map
     Horizon.act(() => {
       triggerClickEvent(container, 'clearBtn');
     });
-    expect(container.querySelector('#ageList').innerHTML).toBe('age list: ');
+    expect(container?.querySelector('#ageList')?.innerHTML).toBe('age list: ');
   });
 
   it('测试Map方法: entries()', () => {
     class Child extends Horizon.Component {
-      userStore = useStore('user');
+      userStore = useUserStore();
 
       render() {
-        const nameList = [];
-        const entries = this.userStore.$state.persons.entries();
+        const nameList:string[] = [];
+        const entries = this.userStore.$s.persons.entries();
         for (const entry of entries) {
           nameList.push(entry[0]);
         }
@@ -215,33 +226,33 @@ describe('在Class组件中，测试store中的Map', () => {
 
     Horizon.render(<App parent={Parent} child={Child} />, container);
 
-    expect(container.querySelector('#nameList').innerHTML).toBe('name list: p1 p2');
+    expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2');
     // 在Map中增加一个对象
     Horizon.act(() => {
       triggerClickEvent(container, 'addBtn');
     });
-    expect(container.querySelector('#nameList').innerHTML).toBe('name list: p1 p2 p3');
+    expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2 p3');
 
     // 在Map中删除一个对象
     Horizon.act(() => {
       triggerClickEvent(container, 'delBtn');
     });
-    expect(container.querySelector('#nameList').innerHTML).toBe('name list: p1 p2');
+    expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2');
 
     // clear Map
     Horizon.act(() => {
       triggerClickEvent(container, 'clearBtn');
     });
-    expect(container.querySelector('#nameList').innerHTML).toBe('name list: ');
+    expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: ');
   });
 
   it('测试Map方法: forEach()', () => {
     class Child extends Horizon.Component {
-      userStore = useStore('user');
+      userStore = useUserStore();
 
       render() {
-        const nameList = [];
-        this.userStore.$state.persons.forEach((val, key) => {
+        const nameList:string[] = [];
+        this.userStore.$s.persons.forEach((val, key) => {
           nameList.push(key);
         });
 
@@ -255,34 +266,34 @@ describe('在Class组件中，测试store中的Map', () => {
 
     Horizon.render(<App parent={Parent} child={Child} />, container);
 
-    expect(container.querySelector('#nameList').innerHTML).toBe('name list: p1 p2');
+    expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2');
     // 在Map中增加一个对象
     Horizon.act(() => {
       triggerClickEvent(container, 'addBtn');
     });
-    expect(container.querySelector('#nameList').innerHTML).toBe('name list: p1 p2 p3');
+    expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2 p3');
 
     // 在Map中删除一个对象
     Horizon.act(() => {
       triggerClickEvent(container, 'delBtn');
     });
-    expect(container.querySelector('#nameList').innerHTML).toBe('name list: p1 p2');
+    expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2');
 
     // clear Map
     Horizon.act(() => {
       triggerClickEvent(container, 'clearBtn');
     });
-    expect(container.querySelector('#nameList').innerHTML).toBe('name list: ');
+    expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: ');
   });
 
   it('测试Map方法: has()', () => {
     class Child extends Horizon.Component {
-      userStore = useStore('user');
+      userStore = useUserStore();
 
       render() {
         return (
           <div>
-            <Text id={'hasPerson'} text={`has new person: ${this.userStore.$state.persons.has(newPerson.name)}`} />
+            <Text id={'hasPerson'} text={`has new person: ${this.userStore.$s.persons.has(newPerson.name)}`} />
           </div>
         );
       }
@@ -290,21 +301,21 @@ describe('在Class组件中，测试store中的Map', () => {
 
     Horizon.render(<App parent={Parent} child={Child} />, container);
 
-    expect(container.querySelector('#hasPerson').innerHTML).toBe('has new person: false');
+    expect(container?.querySelector('#hasPerson')?.innerHTML).toBe('has new person: false');
     // 在Map中增加一个对象
     Horizon.act(() => {
       triggerClickEvent(container, 'addBtn');
     });
-    expect(container.querySelector('#hasPerson').innerHTML).toBe('has new person: true');
+    expect(container?.querySelector('#hasPerson')?.innerHTML).toBe('has new person: true');
   });
 
   it('测试Map方法: for of()', () => {
     class Child extends Horizon.Component {
-      userStore = useStore('user');
+      userStore = useUserStore();
 
       render() {
-        const nameList = [];
-        for (const per of this.userStore.$state.persons) {
+        const nameList:string[] = [];
+        for (const per of this.userStore.$s.persons) {
           nameList.push(per[0]);
         }
 
@@ -318,23 +329,23 @@ describe('在Class组件中，测试store中的Map', () => {
 
     Horizon.render(<App parent={Parent} child={Child} />, container);
 
-    expect(container.querySelector('#nameList').innerHTML).toBe('name list: p1 p2');
+    expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2');
     // 在Map中增加一个对象
     Horizon.act(() => {
       triggerClickEvent(container, 'addBtn');
     });
-    expect(container.querySelector('#nameList').innerHTML).toBe('name list: p1 p2 p3');
+    expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2 p3');
 
     // 在Map中删除一个对象
     Horizon.act(() => {
       triggerClickEvent(container, 'delBtn');
     });
-    expect(container.querySelector('#nameList').innerHTML).toBe('name list: p1 p2');
+    expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2');
 
     // clear Map
     Horizon.act(() => {
       triggerClickEvent(container, 'clearBtn');
     });
-    expect(container.querySelector('#nameList').innerHTML).toBe('name list: ');
+    expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: ');
   });
 });

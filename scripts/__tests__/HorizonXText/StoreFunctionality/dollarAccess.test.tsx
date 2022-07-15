@@ -1,11 +1,13 @@
+//@ts-ignore
 import * as Horizon from '@cloudsop/horizon/index.ts';
 import { triggerClickEvent } from '../../jest/commonComponents';
 import { useLogStore } from './store';
+import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
 
 const { unmountComponentAtNode } = Horizon;
 
 describe('Dollar store access', () => {
-  let container = null;
+  let container: HTMLElement | null = null;
 
   const BUTTON_ID = 'btn';
   const RESULT_ID = 'result';
@@ -17,23 +19,23 @@ describe('Dollar store access', () => {
 
   afterEach(() => {
     unmountComponentAtNode(container);
-    container.remove();
+    container?.remove();
     container = null;
   });
 
-  it('Should use $state and $computed', () => {
+  it('Should use $s and $c', () => {
     function App() {
       const logStore = useLogStore();
 
-      return <div id={RESULT_ID}>{logStore.$computed.length()}</div>;
+      return <div id={RESULT_ID}>{logStore.$c.length()}</div>;
     }
 
     Horizon.render(<App />, container);
 
-    expect(document.getElementById(RESULT_ID).innerHTML).toBe('1');
+    expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('1');
   });
 
-  it('Should use $actions and update components', () => {
+  it('Should use $a and update components', () => {
     function App() {
       const logStore = useLogStore();
 
@@ -42,12 +44,12 @@ describe('Dollar store access', () => {
           <button
             id={BUTTON_ID}
             onClick={() => {
-              logStore.$actions.addLog();
+              logStore.$a.addLog('data');
             }}
           >
             add
           </button>
-          <p id={RESULT_ID}>{logStore.$computed.length()}</p>
+          <p id={RESULT_ID}>{logStore.$c.length()}</p>
         </div>
       );
     }
@@ -58,6 +60,6 @@ describe('Dollar store access', () => {
       triggerClickEvent(container, BUTTON_ID);
     });
 
-    expect(document.getElementById(RESULT_ID).innerHTML).toBe('2');
+    expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('2');
   });
 });
