@@ -1,11 +1,13 @@
+//@ts-ignore
 import * as Horizon from '@cloudsop/horizon/index.ts';
 import { createStore } from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
 import { triggerClickEvent } from '../../jest/commonComponents';
+import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
 
 const { unmountComponentAtNode } = Horizon;
 
 describe('Self referencing', () => {
-  let container = null;
+  let container: HTMLElement | null = null;
 
   const BUTTON_ID = 'btn';
   const RESULT_ID = 'result';
@@ -15,7 +17,7 @@ describe('Self referencing', () => {
       val: 2,
     },
     actions: {
-      magic: function(state) {
+      increaseVal: function(state) {
         state.val = state.val * 2 - 1;
       },
     },
@@ -34,7 +36,7 @@ describe('Self referencing', () => {
 
   afterEach(() => {
     unmountComponentAtNode(container);
-    container.remove();
+    container?.remove();
     container = null;
   });
 
@@ -45,8 +47,8 @@ describe('Self referencing', () => {
       return (
         <div>
           <p id={RESULT_ID}>{store.double}</p>
-          <button onClick={store.magic} id={BUTTON_ID}>
-            do magic
+          <button onClick={store.increaseVal} id={BUTTON_ID}>
+            increase value
           </button>
         </div>
       );
@@ -54,29 +56,29 @@ describe('Self referencing', () => {
 
     Horizon.render(<App />, container);
 
-    expect(document.getElementById(RESULT_ID).innerHTML).toBe('4');
+    expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('4');
 
     Horizon.act(() => {
       triggerClickEvent(container, BUTTON_ID);
     });
 
-    expect(document.getElementById(RESULT_ID).innerHTML).toBe('6');
+    expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('6');
 
     Horizon.act(() => {
       triggerClickEvent(container, BUTTON_ID);
     });
 
-    expect(document.getElementById(RESULT_ID).innerHTML).toBe('10');
+    expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('10');
   });
 
   it('should access other stores', () => {
     const useOtherStore = createStore({
       state: {},
       actions: {
-        doMagic: () => useSelfRefStore().magic(),
+        doIncreaseVal: () => useSelfRefStore().increaseVal(),
       },
       computed: {
-        magicConstant: () => useSelfRefStore().value,
+        selfRefStoreValue: () => useSelfRefStore().value,
       },
     });
 
@@ -85,9 +87,9 @@ describe('Self referencing', () => {
 
       return (
         <div>
-          <p id={RESULT_ID}>{store.magicConstant}</p>
-          <button onClick={store.doMagic} id={BUTTON_ID}>
-            do magic
+          <p id={RESULT_ID}>{store.selfRefStoreValue}</p>
+          <button onClick={store.doIncreaseVal} id={BUTTON_ID}>
+            increase value in other store
           </button>
         </div>
       );
@@ -95,13 +97,13 @@ describe('Self referencing', () => {
 
     Horizon.render(<App />, container);
 
-    expect(document.getElementById(RESULT_ID).innerHTML).toBe('5');
+    expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('5');
 
     Horizon.act(() => {
       triggerClickEvent(container, BUTTON_ID);
     });
 
-    expect(document.getElementById(RESULT_ID).innerHTML).toBe('9');
+    expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('9');
   });
 
   it('should use parametric getters', () => {
@@ -138,11 +140,11 @@ describe('Self referencing', () => {
     }
 
     Horizon.render(<App />, container);
-    expect(document.getElementById(RESULT_ID).innerHTML).toBe('abc');
+    expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('abc');
 
     Horizon.act(() => {
       triggerClickEvent(container, BUTTON_ID);
     });
-    expect(document.getElementById(RESULT_ID).innerHTML).toBe('def');
+    expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('def');
   });
 });

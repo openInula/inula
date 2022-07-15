@@ -1,14 +1,14 @@
 import * as Horizon from '@cloudsop/horizon/index.ts';
-import { createStore } from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
-import { triggerClickEvent } from '../../jest/commonComponents';
+import {createStore} from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
+import {triggerClickEvent} from '../../jest/commonComponents';
 
-const { unmountComponentAtNode } = Horizon;
+const {unmountComponentAtNode} = Horizon;
 
 describe('Reset', () => {
   it('RESET NOT IMPLEMENTED', async () => {
     // console.log('reset functionality is not yet implemented')
     expect(true).toBe(true);
-  });
+  })
   return;
 
   let container = null;
@@ -19,14 +19,14 @@ describe('Reset', () => {
 
   const useCounter = createStore({
     state: {
-      counter: 0,
+      counter: 0
     },
     actions: {
-      increment: function(state) {
+      increment: function (state) {
         state.counter++;
-      },
+      }
     },
-    computed: {},
+    computed: {}
   });
 
   beforeEach(() => {
@@ -44,25 +44,17 @@ describe('Reset', () => {
     function App() {
       const store = useCounter();
 
-      return (
-        <div>
-          <p id={RESULT_ID}>{store.$state.counter}</p>
-          <button onClick={store.increment} id={BUTTON_ID}>
-            add
-          </button>
-          <button
-            onClick={() => {
-              store.$reset();
-            }}
-            id={RESET_ID}
-          >
-            reset
-          </button>
-        </div>
-      );
+      return <div>
+        <p id={RESULT_ID}>{store.$s.counter}</p>
+        <button onClick={store.increment} id={BUTTON_ID}>add</button>
+        <button onClick={() => {
+          store.$reset();
+        }} id={RESET_ID}>reset
+        </button>
+      </div>
     }
 
-    Horizon.render(<App />, container);
+    Horizon.render(<App/>, container);
 
     Horizon.act(() => {
       triggerClickEvent(container, BUTTON_ID);

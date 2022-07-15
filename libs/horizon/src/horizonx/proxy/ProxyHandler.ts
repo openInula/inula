@@ -4,7 +4,7 @@ import {HooklessObserver} from './HooklessObserver';
 import {isArray, isCollection, isObject} from '../CommonUtils';
 import {createArrayProxy} from './handlers/ArrayProxyHandler';
 import {createCollectionProxy} from './handlers/CollectionProxyHandler';
-import { IObserver } from '../types';
+import { IObserver } from './Observer';
 
 const OBSERVER_KEY = Symbol('_horizonObserver');
 

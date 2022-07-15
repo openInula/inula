@@ -3,31 +3,88 @@ import { useEffect, useRef } from '../../renderer/hooks/HookExternal';
 import { getProcessingVNode } from '../../renderer/GlobalVar';
 import { createProxy } from '../proxy/ProxyHandler';
 import readonlyProxy from '../proxy/readonlyProxy';
-import { StoreHandler, StoreConfig, UserActions, UserComputedValues, StoreActions, ComputedValues, ActionFunction, Action, QueuedStoreActions } from '../types';
 import { Observer } from '../proxy/Observer';
 import { FunctionComponent, ClassComponent } from '../Constants';
+import { VNode } from '../../renderer/Types';
 
-const storeMap = new Map<string,StoreHandler<any,any,any>>();
+const storeMap = new Map<string, StoreHandler<any, any, any>>();
 
 function isPromise(obj: any): boolean {
   return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
 }
 
-type PlannedAction<S extends object,F extends ActionFunction<S>>={
-  action:string,
-  payload: any[],
-  resolve: ReturnType<F>
-}
+type StoreConfig<S extends object, A extends UserActions<S>, C extends UserComputedValues<S>> = {
+  state?: S;
+  options?: { suppressHooks?: boolean };
+  actions?: A;
+  id?: string;
+  computed?: C;
+};
 
-export function createStore<S extends object,A extends UserActions<S>,C extends UserComputedValues<S>>(config: StoreConfig<S,A,C>): () => StoreHandler<S,A,C> {
+export type ReduxStoreHandler = {
+  reducer: (state: any, action: { type: string }) => any;
+  dispatch: (action: { type: string }) => void;
+  getState: () => any;
+  subscribe: (listener: () => void) => () => void;
+  replaceReducer: (reducer: (state: any, action: { type: string }) => any) => void;
+  _horizonXstore: StoreHandler<any, any, any>;
+};
+
+type StoreHandler<S extends object, A extends UserActions<S>, C extends UserComputedValues<S>> = {
+  $subscribe: (listener: () => void) => void;
+  $unsubscribe: (listener: () => void) => void;
+  $s: S;
+  $config: StoreConfig<S, A, C>;
+  $queue: QueuedStoreActions<S, A>;
+  $a: StoreActions<S, A>;
+  $c: UserComputedValues<S>;
+  reduxHandler?: ReduxStoreHandler;
+} & { [K in keyof S]: S[K] } &
+  { [K in keyof A]: Action<A[K], S> } &
+  { [K in keyof C]: ReturnType<C[K]> };
+
+type PlannedAction<S extends object, F extends ActionFunction<S>> = {
+  action: string;
+  payload: any[];
+  resolve: ReturnType<F>;
+};
+type RemoveFirstFromTuple<T extends any[]> = T['length'] extends 0
+  ? []
+  : ((...b: T) => void) extends (a, ...b: infer I) => void
+  ? I
+  : [];
+
+type UserActions<S extends object> = { [K: string]: ActionFunction<S> };
+type UserComputedValues<S extends object> = { [K: string]: ComputedFunction<S> };
+
+type ActionFunction<S extends object> = (this: StoreHandler<S, any, any>, state: S, ...args: any[]) => any;
+type ComputedFunction<S extends object> = (state: S) => any;
+type Action<T extends ActionFunction<any>, S extends object> = (
+  this: StoreHandler<S, any, any>,
+  ...args: RemoveFirstFromTuple<Parameters<T>>
+) => ReturnType<T>;
+type AsyncAction<T extends ActionFunction<any>, S extends object> = (
+  this: StoreHandler<S, any, any>,
+  ...args: RemoveFirstFromTuple<Parameters<T>>
+) => Promise<ReturnType<T>>;
+
+type StoreActions<S extends object, A extends UserActions<S>> = { [K in keyof A]: Action<A[K], S> };
+type QueuedStoreActions<S extends object, A extends UserActions<S>> = { [K in keyof A]: AsyncAction<A[K], S> };
+type ComputedValues<S extends object, C extends UserComputedValues<S>> = { [K in keyof C]: ReturnType<C[K]> };
+type PostponedAction = (state: object, ...args: any[]) => Promise<any>;
+type PostponedActions = { [key: string]: PostponedAction };
+
+export function createStore<S extends object, A extends UserActions<S>, C extends UserComputedValues<S>>(
+  config: StoreConfig<S, A, C>
+): () => StoreHandler<S, A, C> {
   //create a local shalow copy to ensure consistency (if user would change the config object after store creation)
   config = {
-    id:config.id,
+    id: config.id,
     options: config.options,
     state: config.state,
-    actions: config.actions ? {...config.actions}:undefined,
-    computed: config.computed ? {...config.computed}:undefined
-  }
+    actions: config.actions ? { ...config.actions } : undefined,
+    computed: config.computed ? { ...config.computed } : undefined,
+  };
 
   // 校验
   if (Object.prototype.toString.call(config) !== '[object Object]') {
@@ -35,30 +92,30 @@ export function createStore<S extends object,A extends UserActions<S>,C extends 
   }
 
   const proxyObj = createProxy(config.state, !config.options?.suppressHooks);
-  
+
   proxyObj.$pending = false;
-  
-  const $subscribe = (listener) => {
+
+  const $subscribe = listener => {
     proxyObj.addListener(listener);
   };
-  
-  const $unsubscribe = (listener) => {
+
+  const $unsubscribe = listener => {
     proxyObj.removeListener(listener);
   };
 
-  const plannedActions:PlannedAction<S,ActionFunction<S>>[] = [];
-  const $actions:Partial<StoreActions<S,A>>={}
-  const $queue:Partial<StoreActions<S,A>> = {};
-  const $computed:Partial<ComputedValues<S,C>>={}
-  const handler = {
+  const plannedActions: PlannedAction<S, ActionFunction<S>>[] = [];
+  const $a: Partial<StoreActions<S, A>> = {};
+  const $queue: Partial<StoreActions<S, A>> = {};
+  const $c: Partial<ComputedValues<S, C>> = {};
+  const handler = ({
     $subscribe,
     $unsubscribe,
-    $actions:$actions as StoreActions<S,A>,
-    $state:proxyObj,
-    $computed: $computed as ComputedValues<S,C>,
-    $config:config,
-    $queue: $queue as QueuedStoreActions<S,A>,
-  } as StoreHandler<S,A,C>;
+    $a: $a as StoreActions<S, A>,
+    $s: proxyObj,
+    $c: $c as ComputedValues<S, C>,
+    $config: config,
+    $queue: $queue as QueuedStoreActions<S, A>,
+  } as unknown) as StoreHandler<S, A, C>;
 
   function tryNextAction() {
     if (!plannedActions.length) {
@@ -67,7 +124,9 @@ export function createStore<S extends object,A extends UserActions<S>,C extends 
     }
 
     const nextAction = plannedActions.shift()!;
-    const result = config.actions ? config.actions[nextAction.action].bind(self, proxyObj)(...nextAction.payload) : undefined;
+    const result = config.actions
+      ? config.actions[nextAction.action].bind(handler, proxyObj)(...nextAction.payload)
+      : undefined;
 
     if (isPromise(result)) {
       result.then(value => {
@@ -81,16 +140,16 @@ export function createStore<S extends object,A extends UserActions<S>,C extends 
   }
 
   // 包装actions
-  if(config.actions){
+  if (config.actions) {
     Object.keys(config.actions).forEach(action => {
       ($queue as any)[action] = (...payload) => {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
           if (!proxyObj.$pending) {
             proxyObj.$pending = true;
-            const result = config.actions![action].bind(self, proxyObj)(...payload);
-  
+            const result = config.actions![action].bind(handler, proxyObj)(...payload);
+
             if (isPromise(result)) {
-              result.then((value) => {
+              result.then(value => {
                 resolve(value);
                 tryNextAction();
               });
@@ -102,40 +161,42 @@ export function createStore<S extends object,A extends UserActions<S>,C extends 
             plannedActions.push({
               action,
               payload,
-              resolve
+              resolve,
             });
           }
         });
       };
-      
-      ($actions as any)[action] = function Wrapped(...payload) {
-        return config.actions![action].bind(self, proxyObj)(...payload);
+
+      ($a as any)[action] = function Wrapped(...payload) {
+        return config.actions![action].bind(handler, proxyObj)(...payload);
       };
 
-      // direct store access 
+      // direct store access
       Object.defineProperty(handler, action, {
         writable: false,
-        value: $actions[action]
+        value: (...payload) => {
+          return config.actions![action].bind(handler, proxyObj)(...payload);
+        },
       });
     });
   }
 
-    if (config.computed) {
-    Object.keys(config.computed).forEach((key) => {
-      ($computed as any)[key] = config.computed![key].bind(handler, readonlyProxy(proxyObj));
+  if (config.computed) {
+    Object.keys(config.computed).forEach(key => {
+      ($c as any)[key] = config.computed![key].bind(handler, readonlyProxy(proxyObj));
 
-      // direct store access 
+      // direct store access
       Object.defineProperty(handler, key, {
-        get: $computed[key] as ()=>any
+        get: $c[key] as () => any,
       });
     });
   }
 
   // direct state access
-  if(config.state){
+  if (config.state) {
     Object.keys(config.state).forEach(key => {
       Object.defineProperty(handler, key, {
-        get: () => proxyObj[key]
+        get: () => proxyObj[key],
       });
     });
   }
@@ -172,7 +233,7 @@ function hookStore() {
 
   if (processingVNode.tag === FunctionComponent) {
     // from FunctionComponent
-    const vNodeRef = useRef(null);
+    const vNodeRef = (useRef(null) as unknown) as { current: VNode };
     vNodeRef.current = processingVNode;
 
     useEffect(() => {
@@ -211,9 +272,9 @@ export function useStore<S extends object, A extends UserActions<S>, C extends U
 
   if (storeObj && !storeObj.$config.options?.suppressHooks) hookStore();
 
-  return storeObj as StoreHandler<S,A,C>;
+  return storeObj as StoreHandler<S, A, C>;
 }
 
-export function clearStore(id:string):void {
+export function clearStore(id: string): void {
   storeMap.delete(id);
 }
