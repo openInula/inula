@@ -26,14 +26,14 @@ function set(rawObj: any[], key: string, value: any, receiver: any) {
   const ret = Reflect.set(rawObj, key, newValue, receiver);
 
   const newLength = rawObj.length;
-  const tracker = getObserver(rawObj);
+  const observer = getObserver(rawObj);
 
   if (!isSame(newValue, oldValue)) {
-    tracker.setProp(key);
+    observer.setProp(key);
   }
 
   if (oldLength !== newLength) {
-    tracker.setProp('length');
+    observer.setProp('length');
   }
 
   return ret;

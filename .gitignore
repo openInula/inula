@@ -4,3 +4,4 @@ build/
 .vscode
 package-lock.json
 libs/**/dist
+scripts/*.ejs

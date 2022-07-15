@@ -61,6 +61,7 @@ function captureLazyComponent(
   if (lazyRender) {
     if (lazyVNodeTag === MemoComponent) {
       // Memo要特殊处理
+      processing.effectList = null;
       const memoVNodeProps = mergeDefaultProps(Component.type, lazyVNodeProps); // 需要整合defaultProps
       return lazyRender(processing, Component, memoVNodeProps, shouldUpdate);
     } else {
