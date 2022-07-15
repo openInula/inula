@@ -2,7 +2,7 @@ import {
   createStore,
   applyMiddleware,
   combineReducers,
-  bindActionCreators
+  bindActionCreators,
 } from '../../../../libs/horizon/src/horizonx/adapters/redux';
 
 describe('Redux adapter', () => {
@@ -12,21 +12,21 @@ describe('Redux adapter', () => {
     }, 0);
 
     expect(reduxStore.getState()).toBe(0);
-  })
+  });
 
   it('Should use default state, dispatch action and update state', async () => {
     const reduxStore = createStore((state, action) => {
       switch (action.type) {
-        case('ADD'):
-          return {counter: state.counter + 1}
+        case 'ADD':
+          return { counter: state.counter + 1 };
         default:
-          return {counter: 0};
+          return { counter: 0 };
       }
     });
 
     expect(reduxStore.getState().counter).toBe(0);
 
-    reduxStore.dispatch({type: 'ADD'});
+    reduxStore.dispatch({ type: 'ADD' });
 
     expect(reduxStore.getState().counter).toBe(1);
   });
@@ -35,37 +35,37 @@ describe('Redux adapter', () => {
     let counter = 0;
     const reduxStore = createStore((state = 0, action) => {
       switch (action.type) {
-        case('ADD'):
-          return state + 1
+        case 'ADD':
+          return state + 1;
         default:
           return state;
       }
     });
 
-    reduxStore.dispatch({type: 'ADD'});
+    reduxStore.dispatch({ type: 'ADD' });
     expect(counter).toBe(0);
     expect(reduxStore.getState()).toBe(1);
     const unsubscribe = reduxStore.subscribe(() => {
       counter++;
     });
-    reduxStore.dispatch({type: 'ADD'});
-    reduxStore.dispatch({type: 'ADD'});
+    reduxStore.dispatch({ type: 'ADD' });
+    reduxStore.dispatch({ type: 'ADD' });
     expect(counter).toBe(2);
     expect(reduxStore.getState()).toBe(3);
     unsubscribe();
-    reduxStore.dispatch({type: 'ADD'});
-    reduxStore.dispatch({type: 'ADD'});
+    reduxStore.dispatch({ type: 'ADD' });
+    reduxStore.dispatch({ type: 'ADD' });
     expect(counter).toBe(2);
     expect(reduxStore.getState()).toBe(5);
   });
 
   it('Should bind action creators', async () => {
-    const addTodo = (text) => {
+    const addTodo = text => {
       return {
         type: 'ADD_TODO',
-        text
-      }
-    }
+        text,
+      };
+    };
 
     const reduxStore = createStore((state = [], action) => {
       if (action.type === 'ADD_TODO') {
@@ -74,7 +74,7 @@ describe('Redux adapter', () => {
       return state;
     });
 
-    const actions = bindActionCreators({addTodo}, reduxStore.dispatch);
+    const actions = bindActionCreators({ addTodo }, reduxStore.dispatch);
 
     actions.addTodo('todo');
 
@@ -84,57 +84,57 @@ describe('Redux adapter', () => {
   it('Should replace reducer', async () => {
     const reduxStore = createStore((state, action) => {
       switch (action.type) {
-        case('ADD'):
-          return {counter: state.counter + 1}
+        case 'ADD':
+          return { counter: state.counter + 1 };
         default:
-          return {counter: 0};
+          return { counter: 0 };
       }
     });
 
-    reduxStore.dispatch({type: 'ADD'});
+    reduxStore.dispatch({ type: 'ADD' });
 
     expect(reduxStore.getState().counter).toBe(1);
 
     reduxStore.replaceReducer((state, action) => {
       switch (action.type) {
-        case('SUB'):
-          return {counter: state.counter - 1}
+        case 'SUB':
+          return { counter: state.counter - 1 };
         default:
-          return {counter: 0};
+          return { counter: 0 };
       }
     });
 
-    reduxStore.dispatch({type: 'SUB'});
+    reduxStore.dispatch({ type: 'SUB' });
 
     expect(reduxStore.getState().counter).toBe(0);
-  })
+  });
 
   it('Should combine reducers', async () => {
     const booleanReducer = (state = false, action) => {
       switch (action.type) {
-        case('TOGGLE'):
-          return !state
-        default:
-          return state;
-      }
-    }
-
-    const addReducer = (state = 0, action) => {
-      switch (action.type) {
-        case('ADD'):
-          return state + 1
+        case 'TOGGLE':
+          return !state;
         default:
           return state;
       }
     };
 
-    const reduxStore = createStore(combineReducers({check: booleanReducer, counter: addReducer}));
+    const addReducer = (state = 0, action) => {
+      switch (action.type) {
+        case 'ADD':
+          return state + 1;
+        default:
+          return state;
+      }
+    };
+
+    const reduxStore = createStore(combineReducers({ check: booleanReducer, counter: addReducer }));
 
     expect(reduxStore.getState().counter).toBe(0);
     expect(reduxStore.getState().check).toBe(false);
 
-    reduxStore.dispatch({type: 'ADD'});
-    reduxStore.dispatch({type: 'TOGGLE'});
+    reduxStore.dispatch({ type: 'ADD' });
+    reduxStore.dispatch({ type: 'TOGGLE' });
 
     expect(reduxStore.getState().counter).toBe(1);
     expect(reduxStore.getState().check).toBe(true);
@@ -149,21 +149,25 @@ describe('Redux adapter', () => {
       counter++;
       let result = next(action);
       return result;
-    }
+    };
 
-    const reduxStore = createStore((state, action) => {
-      switch (action.type) {
-        case('toggle'):
-          return {
-            check: !state.check
-          }
-        default:
-          return state;
-      }
-    }, {check: false}, applyMiddleware(callCounter));
+    const reduxStore = createStore(
+      (state, action) => {
+        switch (action.type) {
+          case 'toggle':
+            return {
+              check: !state.check,
+            };
+          default:
+            return state;
+        }
+      },
+      { check: false },
+      applyMiddleware(callCounter)
+    );
 
-    reduxStore.dispatch({type: 'toggle'});
-    reduxStore.dispatch({type: 'toggle'});
+    reduxStore.dispatch({ type: 'toggle' });
+    reduxStore.dispatch({ type: 'toggle' });
 
     expect(counter).toBe(3); // NOTE: first action is always store initialization
   });
@@ -178,31 +182,35 @@ describe('Redux adapter', () => {
       counter++;
       let result = next(action);
       return result;
-    }
+    };
 
     const lastFunctionStorage = store => next => action => {
       middlewareCallList.push('lastFunctionStorage');
       lastAction = action.type;
       let result = next(action);
       return result;
-    }
+    };
 
-    const reduxStore = createStore((state, action) => {
-      switch (action.type) {
-        case('toggle'):
-          return {
-            check: !state.check
-          }
-        default:
-          return state;
-      }
-    }, {check: false}, applyMiddleware(callCounter, lastFunctionStorage));
+    const reduxStore = createStore(
+      (state, action) => {
+        switch (action.type) {
+          case 'toggle':
+            return {
+              check: !state.check,
+            };
+          default:
+            return state;
+        }
+      },
+      { check: false },
+      applyMiddleware(callCounter, lastFunctionStorage)
+    );
 
-    reduxStore.dispatch({type: 'toggle'});
+    reduxStore.dispatch({ type: 'toggle' });
 
     expect(counter).toBe(2); // NOTE: first action is always store initialization
     expect(lastAction).toBe('toggle');
-    expect(middlewareCallList[0]).toBe("callCounter");
-    expect(middlewareCallList[1]).toBe("lastFunctionStorage");
+    expect(middlewareCallList[0]).toBe('callCounter');
+    expect(middlewareCallList[1]).toBe('lastFunctionStorage');
   });
 });

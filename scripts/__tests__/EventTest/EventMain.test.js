@@ -10,14 +10,6 @@ function dispatchChangeEvent(input) {
 
 describe('事件', () => {
   const LogUtils = TestUtils.getLogUtils();
-  it('根节点挂载全量事件', () => {
-    const App = () => {
-      return <div />;
-    };
-    Horizon.render(<App />, container);
-    console.log(TestUtils.getEventListeners(container));
-    //expect(TestUtils.getEventListeners(container)).toBe(true);
-  });
 
   it('事件捕获与冒泡', () => {
     const App = () => {
