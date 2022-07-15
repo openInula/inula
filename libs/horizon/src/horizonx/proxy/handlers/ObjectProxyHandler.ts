@@ -1,5 +1,6 @@
 import { isSame } from '../../CommonUtils';
 import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
+import { OBSERVER_KEY } from '../../Constants';
 
 export function createObjectProxy<T extends object>(rawObj: T): ProxyHandler<T> {
   const proxy = new Proxy(rawObj, {
@@ -10,7 +11,12 @@ export function createObjectProxy<T extends object>(rawObj: T): ProxyHandler<T> 
   return proxy;
 }
 
-export function get(rawObj: object, key: string, receiver: any): any {
+export function get(rawObj: object, key: string | symbol, receiver: any): any {
+  // The observer object of symbol ('_horizonObserver') cannot be accessed from Proxy to prevent errors caused by clonedeep.
+  if (key === OBSERVER_KEY) {
+    return undefined;
+  }
+
   const observer = getObserver(rawObj);
 
   if (key === 'addListener') {
@@ -25,10 +31,15 @@ export function get(rawObj: object, key: string, receiver: any): any {
 
   const value = Reflect.get(rawObj, key, receiver);
 
-  // 对于value也需要进一步代理
-  const valProxy = createProxy(value, hookObserverMap.get(rawObj));
+  // 对于prototype不做代理
+  if (key !== 'prototype') {
+    // 对于value也需要进一步代理
+    const valProxy = createProxy(value, hookObserverMap.get(rawObj));
 
-  return valProxy;
+    return valProxy;
+  }
+
+  return value;
 }
 
 export function set(rawObj: object, key: string, value: any, receiver: any): boolean {
