@@ -11,7 +11,8 @@ module.exports = {
   testEnvironment: 'jest-environment-jsdom-sixteen',
 
   testMatch: [
-    '<rootDir>/scripts/__tests__/**/*.test.js'
+    '<rootDir>/scripts/__tests__/**/*.test.js',
+    '<rootDir>/scripts/__tests__/**/*.test.tsx'
   ],
 
   timers: 'fake',

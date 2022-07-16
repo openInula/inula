@@ -1,0 +1,110 @@
+//@ts-ignore
+import Horizon from '@cloudsop/horizon/index.ts';
+import { triggerClickEvent } from '../../jest/commonComponents';
+import { useLogStore } from './store';
+import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
+import { createStore } from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
+
+const { unmountComponentAtNode } = Horizon;
+
+describe('Basic store manipulation', () => {
+  let container: HTMLElement | null = null;
+
+  const BUTTON_ID = 'btn';
+  const RESULT_ID = 'result';
+
+  beforeEach(() => {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+  });
+
+  afterEach(() => {
+    unmountComponentAtNode(container);
+    container?.remove();
+    container = null;
+  });
+
+  it('Should use getters', () => {
+    function App() {
+      const logStore = useLogStore();
+
+      return <div id={RESULT_ID}>{logStore.length}</div>;
+    }
+
+    Horizon.render(<App />, container);
+
+    expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('1');
+  });
+
+  it('Should use actions and update components', () => {
+    function App() {
+      const logStore = useLogStore();
+
+      return (
+        <div>
+          <button
+            id={BUTTON_ID}
+            onClick={() => {
+              logStore.addLog('a');
+            }}
+          >
+            add
+          </button>
+          <p id={RESULT_ID}>{logStore.length}</p>
+        </div>
+      );
+    }
+
+    Horizon.render(<App />, container);
+
+    Horizon.act(() => {
+      triggerClickEvent(container, BUTTON_ID);
+    });
+
+    expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('2');
+  });
+
+  it('should call actions from own actions', () => {
+    const useIncrementStore = createStore({
+      id: 'incrementStore',
+      state: {
+        count: 2,
+      },
+      actions: {
+        increment: state => {
+          state.count++;
+        },
+        doublePlusOne: function(state) {
+          state.count = state.count * 2;
+          this.increment();
+        },
+      },
+    });
+
+    function App() {
+      const incrementStore = useIncrementStore();
+
+      return (
+        <div>
+          <button
+            id={BUTTON_ID}
+            onClick={() => {
+              incrementStore.doublePlusOne();
+            }}
+          >
+            +
+          </button>
+          <p id={RESULT_ID}>{incrementStore.count}</p>
+        </div>
+      );
+    }
+
+    Horizon.render(<App />, container);
+
+    Horizon.act(() => {
+      triggerClickEvent(container, BUTTON_ID);
+    });
+
+    expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('5');
+  });
+});

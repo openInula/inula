@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import replace from '@rollup/plugin-replace';
 import copy from './copy-plugin';
+import execute from 'rollup-plugin-execute';
 import { terser } from 'rollup-plugin-terser';
 import { version as horizonVersion } from '@cloudsop/horizon/package.json';
 
@@ -60,6 +61,7 @@ function genConfig(mode) {
         },
         preventAssignment: true,
       }),
+      execute('npm run build-types'),
       mode === 'production' && terser(),
       copy([
         {

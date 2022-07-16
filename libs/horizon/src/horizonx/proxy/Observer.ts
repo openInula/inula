@@ -6,7 +6,24 @@
 import { launchUpdateFromVNode } from '../../renderer/TreeBuilder';
 import { getProcessingVNode } from '../../renderer/GlobalVar';
 import { VNode } from '../../renderer/vnode/VNode';
-import { IObserver } from '../types';
+export interface IObserver {
+
+  useProp: (key: string) => void;
+
+  addListener: (listener: () => void) => void;
+
+  removeListener: (listener: () => void) => void;
+
+  setProp: (key: string) => void;
+
+  triggerChangeListeners: () => void;
+
+  triggerUpdate: (vNode: any) => void;
+
+  allChange: () => void;
+  
+  clearByVNode: (vNode: any) => void;
+}
 
 export class Observer implements IObserver {
 

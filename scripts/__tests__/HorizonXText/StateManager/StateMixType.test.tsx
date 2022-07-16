@@ -1,10 +1,12 @@
+//@ts-ignore
 import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as LogUtils from '../../jest/logUtils';
 import { clearStore, createStore, useStore } from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
 import { App, Text, triggerClickEvent } from '../../jest/commonComponents';
 
 describe('测试store中的混合类型变化', () => {
   const { unmountComponentAtNode } = Horizon;
-  let container = null;
+  let container: HTMLElement | null = null;
   beforeEach(() => {
     // 创建一个 DOM 元素作为渲染目标
     container = document.createElement('div');
@@ -42,8 +44,9 @@ describe('测试store中的混合类型变化', () => {
   afterEach(() => {
     // 退出时进行清理
     unmountComponentAtNode(container);
-    container.remove();
+    (container as HTMLElement).remove();
     container = null;
+    LogUtils.clear();
 
     clearStore('user');
   });
@@ -68,7 +71,7 @@ describe('测试store中的混合类型变化', () => {
     function Child(props) {
       const userStore = useStore('user');
 
-      const days = userStore.$state.persons
+      const days = userStore.persons
         .values()
         .next()
         .value.love.get('lanqiu').days;
@@ -82,11 +85,11 @@ describe('测试store中的混合类型变化', () => {
 
     Horizon.render(<App parent={Parent} child={Child} />, container);
 
-    expect(container.querySelector('#dayList').innerHTML).toBe('love: 1 3 5');
+    expect(container?.querySelector('#dayList')?.innerHTML).toBe('love: 1 3 5');
     Horizon.act(() => {
       triggerClickEvent(container, 'addBtn');
     });
-    expect(container.querySelector('#dayList').innerHTML).toBe('love: 1 3 5 7');
+    expect(container?.querySelector('#dayList')?.innerHTML).toBe('love: 1 3 5 7');
   });
 
   it('属性是个class实例', () => {
@@ -103,7 +106,6 @@ describe('测试store中的混合类型变化', () => {
       setName(name) {
         this.name = name;
       }
-
       getName() {
         return this.name;
       }
@@ -111,7 +113,6 @@ describe('测试store中的混合类型变化', () => {
       setAge(age) {
         this.age = age;
       }
-
       getAge() {
         return this.age;
       }
@@ -119,7 +120,6 @@ describe('测试store中的混合类型变化', () => {
       addLove(lv) {
         this.loves.add(lv);
       }
-
       getLoves() {
         return this.loves;
       }
@@ -127,14 +127,19 @@ describe('测试store中的混合类型变化', () => {
 
     let globalPerson;
     let globalStore;
-
     function Child(props) {
       const userStore = useStore('user');
       globalStore = userStore;
 
-      const nameList = [];
-      const valIterator = userStore.$state.persons.values();
-      let per = valIterator.next();
+      const nameList: string[] = [];
+      const valIterator = userStore.persons.values();
+      let per = valIterator.next() as {
+        value: {
+          name: string;
+          getName: () => string;
+        };
+        done: boolean;
+      };
       while (!per.done) {
         nameList.push(per.value.name ?? per.value.getName());
         globalPerson = per.value;
@@ -150,15 +155,15 @@ describe('测试store中的混合类型变化', () => {
 
     Horizon.render(<App parent={Parent} child={Child} />, container);
 
-    expect(container.querySelector('#nameList').innerHTML).toBe('p1 p2');
+    expect(container?.querySelector('#nameList')?.innerHTML).toBe('p1 p2');
 
     // 动态增加一个Person实例
-    globalStore.$state.persons.add(new Person('ClassPerson', 5));
+    globalStore.$s.persons.add(new Person('ClassPerson', 5));
 
-    expect(container.querySelector('#nameList').innerHTML).toBe('p1 p2 ClassPerson');
+    expect(container?.querySelector('#nameList')?.innerHTML).toBe('p1 p2 ClassPerson');
 
     globalPerson.setName('ClassPerson1');
 
-    expect(container.querySelector('#nameList').innerHTML).toBe('p1 p2 ClassPerson1');
+    expect(container?.querySelector('#nameList')?.innerHTML).toBe('p1 p2 ClassPerson1');
   });
 });
