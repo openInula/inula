@@ -1,5 +1,5 @@
 import { travelVNodeTree } from '../renderer/vnode/VNodeUtils';
-import { Hook, Reducer, Ref, Effect, CallBack } from '../renderer/hooks/HookType';
+import { Hook, Reducer, Ref, Effect, CallBack, Memo } from '../renderer/hooks/HookType';
 import { VNode } from '../renderer/vnode/VNode';
 import { launchUpdateFromVNode } from '../renderer/TreeBuilder';
 import { DomComponent } from '../renderer/vnode/VNodeTags';
@@ -7,8 +7,9 @@ import { getElementTag } from '../renderer/vnode/VNodeCreator';
 import { JSXElement } from '../renderer/Types';
 
 const isEffectHook = (state: any): state is Effect => !!state.effect;
-const isRefHook = (state: any): state is Ref<any> => state.hasOwnProperty('current');
+const isRefHook = (state: any): state is Ref<any> => Object.prototype.hasOwnProperty.call(state, 'current');
 const isCallbackHook = (state: any): state is CallBack<any> => state.func !== undefined;
+const isMemokHook = (state: any): state is Memo<any> => Object.prototype.hasOwnProperty.call(state, 'result');
 
 export const helper = {
   travelVNodeTree: (rootVNode, fun, childFilter: ((node: VNode) => boolean) | null = null) => {
@@ -20,6 +21,8 @@ export const helper = {
     if ((state as Reducer<any, any>).trigger) {
       if ((state as Reducer<any, any>).isUseState) {
         return { name: 'State', hIndex, value: (state as Reducer<any, any>).stateValue };
+      } else if ((state as Reducer<any, any>).reducer) {
+        return { name: 'Reducer', hIndex, value: (state as Reducer<any, any>).stateValue };
       }
     } else if (isRefHook(state)) {
       return { name: 'Ref', hIndex, value: (state as Ref<any>).current };
@@ -28,6 +31,8 @@ export const helper = {
       return { name, hIndex, value: (state as Effect).effect };
     } else if (isCallbackHook(state)) {
       return { name:'Callback', hIndex, value: (state as CallBack<any>).func };
+    } else if (isMemokHook(state)) {
+      return { name:'Memo', hIndex, value: (state as Memo<any>).result };
     }
     return null;
   },
