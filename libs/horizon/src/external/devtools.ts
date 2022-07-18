@@ -1,27 +1,60 @@
 import { travelVNodeTree } from '../renderer/vnode/VNodeUtils';
-import { Hook, Reducer, Ref } from '../renderer/hooks/HookType';
+import {
+  Hook,
+  Reducer,
+  Ref,
+  Effect,
+  CallBack,
+  Memo
+} from '../renderer/hooks/HookType';
 import { VNode } from '../renderer/vnode/VNode';
 import { launchUpdateFromVNode } from '../renderer/TreeBuilder';
 import { DomComponent } from '../renderer/vnode/VNodeTags';
+import { getElementTag } from '../renderer/vnode/VNodeCreator';
+import { JSXElement } from '../renderer/Types';
+import { EffectConstant } from '../renderer/hooks/EffectConstant';
+
+const isEffectHook = (state: any): state is Effect => !!state.effect;
+const isRefHook = (state: any): state is Ref<any> => Object.prototype.hasOwnProperty.call(state, 'current');
+const isCallbackHook = (state: any): state is CallBack<any> => Object.prototype.hasOwnProperty.call(state, 'func');
+const isMemoHook = (state: any): state is Memo<any> => Object.prototype.hasOwnProperty.call(state, 'result');
+
+const HookName = {
+  StateHook: 'State',
+  EffectHook: 'Effect',
+  LayoutEffectHook: 'LayoutEffect',
+  MemoHook: 'Memo',
+  RefHook: 'Ref',
+  ReducerHook: 'Reducer',
+  CallbackHook: 'Callback'
+};
 
 export const helper = {
-  travelVNodeTree: (rootVNode, fun) => {
-    travelVNodeTree(rootVNode, fun, null, rootVNode, null);
+  travelVNodeTree: (rootVNode, fun, childFilter: ((node: VNode) => boolean) | null = null) => {
+    travelVNodeTree(rootVNode, fun, childFilter, rootVNode, null);
   },
   // 获取 hook 名，hIndex值和存储的值
-  // 目前只处理 useState和useRef
-  getHookInfo:(hook: Hook<any, any>) => {
+  getHookInfo: (hook: Hook<any, any>) => {
     const { hIndex, state } = hook;
     if ((state as Reducer<any, any>).trigger) {
       if ((state as Reducer<any, any>).isUseState) {
-        return {name: 'state', hIndex, value: (state as Reducer<any, any>).stateValue};
+        return { name: HookName.StateHook, hIndex, value: (state as Reducer<any, any>).stateValue };
+      } else if ((state as Reducer<any, any>).reducer) {
+        return { name: HookName.ReducerHook, hIndex, value: (state as Reducer<any, any>).stateValue };
       }
-    } else if ((state as  Ref<any>).current) {
-      return {name: 'ref', hIndex, value: (state as Ref<any>).current};
+    } else if (isRefHook(state)) {
+      return { name: HookName.RefHook, hIndex, value: (state as Ref<any>).current };
+    } else if (isEffectHook(state)) {
+      const name = state.effectConstant == EffectConstant.LayoutEffect ? HookName.LayoutEffectHook : HookName.EffectHook;
+      return { name, hIndex, value: (state as Effect).effect };
+    } else if (isCallbackHook(state)) {
+      return { name: HookName.CallbackHook, hIndex, value: (state as CallBack<any>).func };
+    } else if (isMemoHook(state)) {
+      return { name: HookName.MemoHook, hIndex, value: (state as Memo<any>).result };
     }
     return null;
   },
-  updateProps: (vNode: VNode, props: any) =>{
+  updateProps: (vNode: VNode, props: any) => {
     vNode.devProps = props;
     launchUpdateFromVNode(vNode);
   },
@@ -44,7 +77,7 @@ export const helper = {
   },
   getComponentInfo: (vNode: VNode) => {
     const { props, state, hooks } = vNode;
-    const info:any = {};
+    const info: any = {};
     if (props && Object.keys(props).length !== 0) {
       info['Props'] = props;
     }
@@ -53,7 +86,7 @@ export const helper = {
     }
     if (hooks && hooks.length !== 0) {
       const logHookInfo: any[] = [];
-      hooks.forEach((hook) =>{
+      hooks.forEach((hook) => {
         const state = hook.state as Reducer<any, any>;
         if (state.trigger && state.isUseState) {
           logHookInfo.push(state.stateValue);
@@ -72,6 +105,9 @@ export const helper = {
     }, null, vNode, null);
     return info;
   },
+  getElementTag: (element: JSXElement) => {
+    return getElementTag(element);
+  }
 };
 
 export function injectUpdater() {
