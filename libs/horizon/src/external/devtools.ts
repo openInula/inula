@@ -16,7 +16,7 @@ import { JSXElement } from '../renderer/Types';
 const isEffectHook = (state: any): state is Effect => !!state.effect;
 const isRefHook = (state: any): state is Ref<any> => Object.prototype.hasOwnProperty.call(state, 'current');
 const isCallbackHook = (state: any): state is CallBack<any> => state.func !== undefined;
-const isMemokHook = (state: any): state is Memo<any> => Object.prototype.hasOwnProperty.call(state, 'result');
+const isMemoHook = (state: any): state is Memo<any> => Object.prototype.hasOwnProperty.call(state, 'result');
 
 export const helper = {
   travelVNodeTree: (rootVNode, fun, childFilter: ((node: VNode) => boolean) | null = null) => {
@@ -38,7 +38,7 @@ export const helper = {
       return { name, hIndex, value: (state as Effect).effect };
     } else if (isCallbackHook(state)) {
       return { name:'Callback', hIndex, value: (state as CallBack<any>).func };
-    } else if (isMemokHook(state)) {
+    } else if (isMemoHook(state)) {
       return { name:'Memo', hIndex, value: (state as Memo<any>).result };
     }
     return null;
