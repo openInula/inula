@@ -1,5 +1,12 @@
 import { travelVNodeTree } from '../renderer/vnode/VNodeUtils';
-import { Hook, Reducer, Ref, Effect, CallBack, Memo } from '../renderer/hooks/HookType';
+import { 
+  Hook, 
+  Reducer,
+  Ref,
+  Effect,
+  CallBack,
+  Memo
+} from '../renderer/hooks/HookType';
 import { VNode } from '../renderer/vnode/VNode';
 import { launchUpdateFromVNode } from '../renderer/TreeBuilder';
 import { DomComponent } from '../renderer/vnode/VNodeTags';
