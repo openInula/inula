@@ -1,6 +1,6 @@
 import { travelVNodeTree } from '../renderer/vnode/VNodeUtils';
-import { 
-  Hook, 
+import {
+  Hook,
   Reducer,
   Ref,
   Effect,
@@ -12,11 +12,22 @@ import { launchUpdateFromVNode } from '../renderer/TreeBuilder';
 import { DomComponent } from '../renderer/vnode/VNodeTags';
 import { getElementTag } from '../renderer/vnode/VNodeCreator';
 import { JSXElement } from '../renderer/Types';
+import { EffectConstant } from '../renderer/hooks/EffectConstant';
 
 const isEffectHook = (state: any): state is Effect => !!state.effect;
 const isRefHook = (state: any): state is Ref<any> => Object.prototype.hasOwnProperty.call(state, 'current');
-const isCallbackHook = (state: any): state is CallBack<any> => state.func !== undefined;
+const isCallbackHook = (state: any): state is CallBack<any> => Object.prototype.hasOwnProperty.call(state, 'func');
 const isMemoHook = (state: any): state is Memo<any> => Object.prototype.hasOwnProperty.call(state, 'result');
+
+const HookName = {
+  StateHook: 'State',
+  EffectHook: 'Effect',
+  LayoutEffectHook: 'LayoutEffect',
+  MemoHook: 'Memo',
+  RefHook: 'Ref',
+  ReducerHook: 'Reducer',
+  CallbackHook: 'Callback'
+};
 
 export const helper = {
   travelVNodeTree: (rootVNode, fun, childFilter: ((node: VNode) => boolean) | null = null) => {
@@ -27,19 +38,19 @@ export const helper = {
     const { hIndex, state } = hook;
     if ((state as Reducer<any, any>).trigger) {
       if ((state as Reducer<any, any>).isUseState) {
-        return { name: 'State', hIndex, value: (state as Reducer<any, any>).stateValue };
+        return { name: HookName.StateHook, hIndex, value: (state as Reducer<any, any>).stateValue };
       } else if ((state as Reducer<any, any>).reducer) {
-        return { name: 'Reducer', hIndex, value: (state as Reducer<any, any>).stateValue };
+        return { name: HookName.ReducerHook, hIndex, value: (state as Reducer<any, any>).stateValue };
       }
     } else if (isRefHook(state)) {
-      return { name: 'Ref', hIndex, value: (state as Ref<any>).current };
+      return { name: HookName.RefHook, hIndex, value: (state as Ref<any>).current };
     } else if (isEffectHook(state)) {
-      const name = state.effectConstant == 2 ? 'LayoutEffect' : 'Effect';
+      const name = state.effectConstant == EffectConstant.LayoutEffect ? HookName.LayoutEffectHook : HookName.EffectHook;
       return { name, hIndex, value: (state as Effect).effect };
     } else if (isCallbackHook(state)) {
-      return { name:'Callback', hIndex, value: (state as CallBack<any>).func };
+      return { name: HookName.CallbackHook, hIndex, value: (state as CallBack<any>).func };
     } else if (isMemoHook(state)) {
-      return { name:'Memo', hIndex, value: (state as Memo<any>).result };
+      return { name: HookName.MemoHook, hIndex, value: (state as Memo<any>).result };
     }
     return null;
   },
