@@ -1,3 +1,9 @@
+## 0.0.11 (2022-07-21)
+### Bug Fixes
+- **horizonX**: 修复IE兼容性问题，空catch导致崩溃
+- 增加`Object.assign`的babel polyfill
+
+-
 ## 0.0.10 (2022-07-14)
 - **core**: #24 修复lazy包裹memo时，卸载错误
 - **core**: #21 修复异步更新时路径错误
