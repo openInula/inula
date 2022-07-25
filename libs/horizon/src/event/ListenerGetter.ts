@@ -1,6 +1,7 @@
 import { VNode } from '../renderer/Types';
 import { DomComponent } from '../renderer/vnode/VNodeTags';
-import { AnyNativeEvent, ListenerUnitList } from './Types';
+import { WrappedEvent } from './EventWrapper';
+import { ListenerUnitList } from './Types';
 import { EVENT_TYPE_ALL, EVENT_TYPE_BUBBLE, EVENT_TYPE_CAPTURE } from './EventHub';
 
 // 从vnode属性中获取事件listener
@@ -25,7 +26,7 @@ function getListenerFromVNode(vNode: VNode, eventName: string): Function | null 
 export function getListenersFromTree(
   targetVNode: VNode | null,
   horizonEvtName: string | null,
-  nativeEvent: AnyNativeEvent,
+  nativeEvent: WrappedEvent,
   eventType: string
 ): ListenerUnitList {
   if (!horizonEvtName) {

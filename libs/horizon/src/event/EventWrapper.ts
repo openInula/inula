@@ -1,5 +1,6 @@
-
 // 兼容IE的event key
+import { AnyNativeEvent } from './Types';
+
 const uniqueKeyMap = new Map([
   ['Esc', 'Escape'],
   ['Spacebar', ' '],
@@ -10,27 +11,58 @@ const uniqueKeyMap = new Map([
   ['Del', 'Delete'],
 ]);
 
-const noop = () => {};
-// 创建普通自定义事件对象实例，和原生事件对应
-export function decorateNativeEvent(customEventName, nativeEvtName, nativeEvent) {
+const noop = (): void => {};
 
-  nativeEvent.isDefaultPrevented = () => nativeEvent.defaultPrevented;
-  nativeEvent.isPropagationStopped = () => nativeEvent.cancelBubble;
+// 兼容IE浏览器，无法修改Event属性
+export class WrappedEvent {
+  customEventName: string;
+  nativeEvent: Event;
+  nativeEventType: string;
+  type: string;
+  key: string;
+  currentTarget: EventTarget | null = null;
+
+  stopPropagation: () => void;
+  preventDefault: () => void;
+
   // 适配老版本事件api
-  nativeEvent.persist = noop;
+  persist = noop;
 
-  // custom事件自定义属性
-  nativeEvent.customEventName = customEventName;
-  nativeEvent.nativeEvent = nativeEvent;
-  // 保存原生的事件类型，因为下面会修改
-  nativeEvent.nativeEventType = nativeEvent.type;
+  constructor(customEventName: string, nativeEvtName: string, nativeEvent: AnyNativeEvent) {
+    for (const name in nativeEvent) {
+      this[name] = nativeEvent[name];
+    }
+    // stopPropagation和preventDefault 必须通过Event实例调用
+    this.stopPropagation = () => nativeEvent.stopPropagation();
+    this.preventDefault = () => nativeEvent.preventDefault();
 
-  Object.defineProperty(nativeEvent, 'type', { writable: true });
-  nativeEvent.type = nativeEvtName;
+    // custom事件自定义属性
+    this.customEventName = customEventName;
+    this.nativeEvent = nativeEvent;
+    // 保存原生的事件类型，因为下面会修改
+    this.nativeEventType = nativeEvent.type;
 
-  const orgKey = nativeEvent.key;
-  Object.defineProperty(nativeEvent, 'key', { writable: true });
-  nativeEvent.key = uniqueKeyMap.get(orgKey) || orgKey;
+    this.type = nativeEvtName;
 
-  return nativeEvent;
+    // 兼容IE的event key
+    const orgKey = (nativeEvent as any).key;
+    this.key = uniqueKeyMap.get(orgKey) || orgKey;
+  }
+
+  isDefaultPrevented(): boolean {
+    return this.nativeEvent.defaultPrevented;
+  }
+
+  isPropagationStopped(): boolean {
+    return this.nativeEvent.cancelBubble;
+  }
+}
+
+// 创建普通自定义事件对象实例，和原生事件对应
+export function decorateNativeEvent(
+  customEventName: string,
+  nativeEvtName: string,
+  nativeEvent: AnyNativeEvent
+): WrappedEvent {
+  return new WrappedEvent(customEventName, nativeEvtName, nativeEvent);
 }
