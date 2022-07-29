@@ -33,12 +33,11 @@ export function createSelectorHook(context: Context): (selector?: (any) => any) 
   return function(selector = state => state) {
     const [b, fr] = useState(false);
 
-    const listener = () => {
-      fr(!b);
-    };
-
     useEffect(() => {
-      return store.subscribe(listener);
+      const unsubscribe = store.subscribe(() => fr(!b));
+      return () => {
+        unsubscribe();
+      };
     });
 
     return selector(store.getState());
@@ -110,7 +109,7 @@ export function connect(
 
       useEffect(() => {
         const unsubscribe = store.subscribe(() => forceReload(!f));
-        () => {
+        return () => {
           unsubscribe();
         };
       });
