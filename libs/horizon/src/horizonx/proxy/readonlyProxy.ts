@@ -8,7 +8,9 @@ export function readonlyProxy<T extends object>(target: T): ProxyHandler<T> {
         if (isObject(result)) {
           return readonlyProxy(result);
         }
-      } catch {}
+      } catch(err) {
+        // 不处理
+      }
       return result;
     },
 

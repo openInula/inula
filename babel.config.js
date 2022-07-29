@@ -11,6 +11,7 @@ module.exports = {
       { loose: true, useBuiltIns: true },
     ],
     ['@babel/plugin-transform-template-literals', { loose: true }],
+    '@babel/plugin-transform-object-assign',
     '@babel/plugin-transform-literals',
     '@babel/plugin-transform-arrow-functions',
     '@babel/plugin-transform-block-scoped-functions',
