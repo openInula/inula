@@ -107,4 +107,49 @@ describe('Basic store manipulation', () => {
 
     expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('5');
   });
+
+  it('should call computed from own actions', () => {
+    const useIncrementStore = createStore({
+      id: 'incrementStore',
+      state: {
+        count: 2,
+      },
+      actions: {
+        doublePlusOne: function(state) {
+          state.count = this.double + 1;
+        },
+      },
+      computed:{
+        double: (state) => {
+          return state.count*2
+        }
+      }
+    });
+  
+    function App() {
+      const incrementStore = useIncrementStore();
+  
+      return (
+        <div>
+          <button
+            id={BUTTON_ID}
+            onClick={() => {
+              incrementStore.doublePlusOne();
+            }}
+          >
+            +
+          </button>
+          <p id={RESULT_ID}>{incrementStore.count}</p>
+        </div>
+      );
+    }
+  
+    Horizon.render(<App />, container);
+  
+    Horizon.act(() => {
+      triggerClickEvent(container, BUTTON_ID);
+    });
+  
+    expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('5');
+  })
 });
