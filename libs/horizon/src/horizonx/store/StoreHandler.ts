@@ -15,7 +15,6 @@ function isPromise(obj: any): boolean {
 
 type StoreConfig<S extends object, A extends UserActions<S>, C extends UserComputedValues<S>> = {
   state?: S;
-  // options?: { suppressHooks?: boolean };
   actions?: A;
   id?: string;
   computed?: C;
@@ -27,18 +26,15 @@ export type ReduxStoreHandler = {
   getState: () => any;
   subscribe: (listener: () => void) => () => void;
   replaceReducer: (reducer: (state: any, action: { type: string }) => any) => void;
-  // _horizonXstore: StoreHandler<any, any, any>;
 };
 
 type StoreHandler<S extends object, A extends UserActions<S>, C extends UserComputedValues<S>> = {
   $subscribe: (listener: () => void) => void;
   $unsubscribe: (listener: () => void) => void;
   $s: S;
-  // $config: StoreConfig<S, A, C>;
   $queue: QueuedStoreActions<S, A>;
   $a: StoreActions<S, A>;
   $c: UserComputedValues<S>;
-  // reduxHandler?: ReduxStoreHandler;
 } & { [K in keyof S]: S[K] } &
   { [K in keyof A]: Action<A[K], S> } &
   { [K in keyof C]: ReturnType<C[K]> };
