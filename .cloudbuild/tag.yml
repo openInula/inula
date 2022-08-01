@@ -1,0 +1,30 @@
+version: '2.0'
+notifications:
+  notifier:
+    espace:
+      'on': false
+    email:
+      'on': false
+buildspace:
+  log_collect:
+    - config/CI/build/logs
+  fixed: true
+env:
+  resource:
+    type: docker
+    image: kweecr04.his.huawei.com:80/ecr-build-arm-gzkunpeng/euleros_v2r7spc522_x64_opmt_cs5.0_sz:v5.0
+    class: 4U8G
+    mode: toolbox
+  cache:
+    - type: workspace
+steps:
+  PRE_BUILD:
+    - checkout
+    - gitlab:
+        url: https://szv-y.codehub.huawei.com/CloudSOP/CloudSOP-CI.git
+        branch: $branch
+        path: CI
+  BUILD:
+    - build_execute:
+        command: |
+          git tag $releaseVersion

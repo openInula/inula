@@ -1,5 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`Dom Textarea should not incur unnecessary DOM mutations 1`] = `<textarea />`;
-
-exports[`Dom Textarea should not incur unnecessary DOM mutations 2`] = `<textarea />`;
