@@ -19,7 +19,8 @@ env:
     - type: workspace
 steps:
   PRE_BUILD:
-    - checkout
+    - checkout:
+        path: horizon-core
     - gitlab:
         url: https://szv-y.codehub.huawei.com/CloudSOP/CloudSOP-CI.git
         branch: $branch
@@ -29,5 +30,8 @@ steps:
         command: |
           npm install yarn -g
           yarn config set strict-ssl false
+          cd horizon-core
           yarn
           yarn run test
+          yarn run build
+          node .cloudbuild/release.js
