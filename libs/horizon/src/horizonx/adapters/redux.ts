@@ -1,14 +1,38 @@
 import { createStore as createStoreX } from '../store/StoreHandler';
 
-import { ReduxStoreHandler, ReduxAction, ReduxMiddleware } from '../types';
+import { ReduxStoreHandler } from '../store/StoreHandler';
 
 export { thunk } from './reduxThunk';
 
-export { Provider, useSelector, useStore, useDispatch, connect, createSelectorHook, createDispatchHook } from './reduxReact';
+export {
+  Provider,
+  useSelector,
+  useStore,
+  useDispatch,
+  connect,
+  createSelectorHook,
+  createDispatchHook,
+} from './reduxReact';
+
+export type ReduxAction = {
+  type: string;
+  [key: string]: any;
+};
+
+export type ReduxMiddleware = (
+  store: ReduxStoreHandler,
+  extraArgument?: any
+) => (
+  next: (action: ReduxAction) => any
+) => (
+  action:
+    | ReduxAction
+    | ((dispatch: (action: ReduxAction) => void, store: ReduxStoreHandler, extraArgument?: any) => any)
+) => ReduxStoreHandler;
 
 type Reducer = (state: any, action: ReduxAction) => any;
 
-export function createStore(reducer: Reducer, preloadedState: any, enhancers): ReduxStoreHandler {
+export function createStore(reducer: Reducer, preloadedState?: any, enhancers?): ReduxStoreHandler {
   const store = createStoreX({
     id: 'defaultStore',
     state: { stateWrapper: preloadedState },
@@ -35,7 +59,7 @@ export function createStore(reducer: Reducer, preloadedState: any, enhancers): R
   const result = {
     reducer,
     getState: function() {
-      return store.$state.stateWrapper;
+      return store.$s.stateWrapper;
     },
     subscribe: listener => {
       store.$subscribe(listener);
@@ -48,7 +72,7 @@ export function createStore(reducer: Reducer, preloadedState: any, enhancers): R
       reducer = newReducer;
     },
     _horizonXstore: store,
-    dispatch: store.$actions.dispatch,
+    dispatch: store.$a.dispatch,
   };
 
   enhancers && enhancers(result);
@@ -116,7 +140,6 @@ export function compose(middlewares: ReduxMiddleware[]) {
     return val;
   };
 }
-
 
 // HorizonX batches updates by default, this function is only for backwards compatibility
 export function batch(fn: () => void) {

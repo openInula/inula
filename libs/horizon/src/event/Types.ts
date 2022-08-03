@@ -1,13 +1,17 @@
-
-import type {VNode} from '../renderer/Types';
+import type { VNode } from '../renderer/Types';
+import { WrappedEvent } from './EventWrapper';
 
 export type AnyNativeEvent = KeyboardEvent | MouseEvent | TouchEvent | UIEvent | Event;
 
+export interface HorizonEventListener {
+  (event: WrappedEvent): void;
+}
+
 export type ListenerUnit = {
   vNode: null | VNode;
-  listener: Function;
+  listener: HorizonEventListener;
   currentTarget: EventTarget;
-  event: AnyNativeEvent;
+  event: WrappedEvent;
 };
 
 export type ListenerUnitList = Array<ListenerUnit>;

@@ -1,4 +1,5 @@
-import { ReduxStoreHandler, ReduxAction, ReduxMiddleware } from '../types';
+import { ReduxAction, ReduxMiddleware } from './redux';
+import { ReduxStoreHandler } from '../store/StoreHandler';
 
 function createThunkMiddleware(extraArgument?: any): ReduxMiddleware {
   return (store: ReduxStoreHandler) => (next: (action: ReduxAction) => any) => (

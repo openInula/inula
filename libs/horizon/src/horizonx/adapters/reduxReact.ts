@@ -3,9 +3,10 @@ import { useState, useContext, useEffect, useRef } from '../../renderer/hooks/Ho
 import { createContext } from '../../renderer/components/context/CreateContext';
 import { createElement } from '../../external/JSXElement';
 import { BoundActionCreator } from './redux';
-import { ReduxAction, ReduxStoreHandler } from '../types';
+import { ReduxAction } from './redux';
+import { ReduxStoreHandler } from '../store/StoreHandler'
 
-const DefaultContext = createContext();
+const DefaultContext = createContext(null);
 type Context = typeof DefaultContext;
 
 export function Provider({
@@ -27,20 +28,15 @@ export function createStoreHook(context: Context) {
   };
 }
 
-export function createSelectorHook(context: Context): (selector: (any) => any) => any {
-  const store = createStoreHook(context)();
+export function createSelectorHook(context: Context): (selector?: (any) => any) => any {
+  const store = (createStoreHook(context)() as unknown) as ReduxStoreHandler;
   return function(selector = state => state) {
     const [b, fr] = useState(false);
 
-    const listener = () => {
-      fr(!b);
-    };
-
     useEffect(() => {
-      const unsubscribe = store.subscribe(listener);
-
+      const unsubscribe = store.subscribe(() => fr(!b));
       return () => {
-        unsubscribe(listener);
+        unsubscribe();
       };
     });
 
@@ -48,11 +44,11 @@ export function createSelectorHook(context: Context): (selector: (any) => any) =
   };
 }
 
-export function createDispatchHook(context: Context): BoundActionCreator {
-  const store = createStoreHook(context)();
+export function createDispatchHook(context: Context): ()=>BoundActionCreator {
+  const store = (createStoreHook(context)() as unknown) as ReduxStoreHandler;
   return function() {
     return action => {
-      this.dispatch(action);
+      store.dispatch(action);
     };
   }.bind(store);
 }
@@ -104,26 +100,32 @@ export function connect(
   }
 
   return Component => {
-    const useStore = createStoreHook(options.context || DefaultContext);
+    const useStore = createStoreHook(options?.context || DefaultContext);
 
     function Wrapper(props) {
       const [f, forceReload] = useState(true);
 
-      const store = useStore();
+      const store = (useStore() as unknown) as ReduxStoreHandler;
 
       useEffect(() => {
         const unsubscribe = store.subscribe(() => forceReload(!f));
-        () => {
-          unsubscribe(() => forceReload(!f));
+        return () => {
+          unsubscribe();
         };
       });
 
       const previous = useRef({
         state: {},
-      });
+        mappedState: {},
+      }) as {
+        current: {
+          state: {};
+          mappedState: {};
+        };
+      };
 
       let mappedState;
-      if (options.areStatesEqual) {
+      if (options?.areStatesEqual) {
         if (options.areStatesEqual(previous.current.state, store.getState())) {
           mappedState = previous.current.mappedState;
         } else {
