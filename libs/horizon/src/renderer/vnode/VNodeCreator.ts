@@ -17,10 +17,13 @@ import {
 } from './VNodeTags';
 import {
   TYPE_CONTEXT,
-  TYPE_FORWARD_REF, TYPE_FRAGMENT,
+  TYPE_FORWARD_REF,
+  TYPE_FRAGMENT,
   TYPE_LAZY,
-  TYPE_MEMO, TYPE_PROFILER,
-  TYPE_PROVIDER, TYPE_STRICT_MODE,
+  TYPE_MEMO,
+  TYPE_PROFILER,
+  TYPE_PROVIDER,
+  TYPE_STRICT_MODE,
   TYPE_SUSPENSE,
 } from '../../external/JSXElementType';
 import { VNode } from './VNode';
@@ -56,7 +59,7 @@ export function getLazyVNodeTag(lazyComp: any): string {
   } else if (lazyComp !== undefined && lazyComp !== null && typeLazyMap[lazyComp.vtype]) {
     return typeLazyMap[lazyComp.vtype];
   }
-  throw Error('Horizon can\'t resolve the content of lazy');
+  throw Error("Horizon can't resolve the content of lazy");
 }
 
 // 创建processing
@@ -102,7 +105,7 @@ export function createPortalVNode(portal) {
   return vNode;
 }
 
-export function createUndeterminedVNode(type, key, props) {
+export function createUndeterminedVNode(type, key, props, source) {
   let vNodeTag = FunctionComponent;
   let isLazy = false;
   const componentType = typeof type;
@@ -129,6 +132,7 @@ export function createUndeterminedVNode(type, key, props) {
   if (isLazy) {
     vNode.lazyType = type;
   }
+  vNode.source = source;
   return vNode;
 }
 
@@ -181,14 +185,12 @@ export function createVNode(tag: VNodeTag | string, ...secondArg) {
 }
 
 export function createVNodeFromElement(element: JSXElement): VNode {
-  const type = element.type;
-  const key = element.key;
-  const props = element.props;
+  const { type, key, props, source } = element;
 
   if (type === TYPE_STRICT_MODE || type === TYPE_FRAGMENT || type === TYPE_PROFILER) {
     return createFragmentVNode(key, props.children);
   } else {
-    return createUndeterminedVNode(type, key, props);
+    return createUndeterminedVNode(type, key, props, source);
   }
 }
 
@@ -241,4 +243,3 @@ export function onlyUpdateChildVNodes(processing: VNode): VNode | null {
   // 子树无需工作
   return null;
 }
-

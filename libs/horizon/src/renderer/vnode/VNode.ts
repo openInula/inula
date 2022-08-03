@@ -18,7 +18,7 @@ import {
   MemoComponent,
 } from './VNodeTags';
 import type { VNodeTag } from './VNodeTags';
-import type { RefType, ContextType, SuspenseState } from '../Types';
+import type { RefType, ContextType, SuspenseState, Source } from '../Types';
 import type { Hook } from '../hooks/HookType';
 import { InitFlag } from './VNodeFlags';
 
@@ -86,6 +86,7 @@ export class VNode {
   isStoreChange: boolean;
   observers: Set<any> | null = null; // 记录这个函数组件/类组件依赖哪些Observer
   classComponentWillUnmount: Function | null; // HorizonX会在classComponentWillUnmount中清除对VNode的引入用
+  source: Source | null; // 节点所在代码位置
 
   constructor(tag: VNodeTag, props: any, key: null | string, realNode) {
     this.tag = tag; // 对应组件的类型，比如ClassComponent等
@@ -116,6 +117,7 @@ export class VNode {
         this.isStoreChange = false;
         this.observers = null;
         this.classComponentWillUnmount = null;
+        this.source = null;
         break;
       case ClassComponent:
         this.realNode = null;
@@ -130,15 +132,18 @@ export class VNode {
         this.isStoreChange = false;
         this.observers = null;
         this.classComponentWillUnmount = null;
+        this.source = null;
         break;
       case DomPortal:
         this.realNode = null;
         this.context = null;
+        this.source = null;
         break;
       case DomComponent:
         this.realNode = null;
         this.changeList = null;
         this.context = null;
+        this.source = null;
         break;
       case DomText:
         this.realNode = null;
@@ -152,12 +157,15 @@ export class VNode {
           oldChildStatus: '',
           childStatus: ''
         };
+        this.source = null;
         break;
       case ContextProvider:
+        this.source = null;
         this.context = null;
         break;
       case MemoComponent:
         this.effectList = null;
+        this.source = null;
         break;
       case LazyComponent:
         this.realNode = null;
@@ -165,6 +173,7 @@ export class VNode {
         this.isLazyComponent = true;
         this.lazyType = null;
         this.updates = null;
+        this.source = null;
         break;
       case Fragment:
         break;

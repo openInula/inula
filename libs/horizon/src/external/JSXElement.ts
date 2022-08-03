@@ -9,10 +9,11 @@ import { getProcessingClassVNode } from '../renderer/GlobalVar';
  * ref ref属性
  * props 其他常规属性
  */
-export function JSXElement(type, key, ref, vNode, props) {
+export function JSXElement(type, key, ref, vNode, props, source) {
   return {
     // 元素标识符
     vtype: TYPE_COMMON_ELEMENT,
+    source: source,
 
     // 属于元素的内置属性
     type: type,
@@ -26,7 +27,13 @@ export function JSXElement(type, key, ref, vNode, props) {
 }
 
 function isValidKey(key) {
-  return key !== 'key' && key !== 'ref' && key !== '__source';
+  const keyArray = [
+    'key',
+    'ref',
+    '__source',
+    '__self'
+  ];
+  return !keyArray.includes(key);
 }
 
 function mergeDefault(sourceObj, defaultObj) {
@@ -67,7 +74,9 @@ function buildElement(isClone, type, setting, children) {
     mergeDefault(props, element.defaultProps);
   }
 
-  return JSXElement(element, key, ref, vNode, props);
+  const source = setting?.__source === undefined ? null : setting.__source;
+
+  return JSXElement(element, key, ref, vNode, props, source);
 }
 
 // 创建Element结构体，供JSX编译时调用

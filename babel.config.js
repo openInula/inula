@@ -2,7 +2,7 @@ module.exports = {
   presets: [
     '@babel/react',
     '@babel/preset-typescript',
-    ['@babel/preset-env', { targets: { node: 'current' } }]
+    ['@babel/preset-env', { targets: { node: 'current' } }],
   ],
   plugins: [
     ['@babel/plugin-proposal-class-properties', { loose: true }],
@@ -34,5 +34,6 @@ module.exports = {
       pragma: 'Horizon.createElement',
       pragmaFrag: 'Horizon.Fragment'
     }],
+    ['@babel/plugin-transform-react-jsx-source'],
   ],
 };
