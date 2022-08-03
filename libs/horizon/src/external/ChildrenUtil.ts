@@ -1,7 +1,7 @@
-import { throwIfTrue } from '../renderer/utils/throwIfTrue';
-import { TYPE_COMMON_ELEMENT, TYPE_PORTAL } from './JSXElementType';
+import {throwIfTrue} from '../renderer/utils/throwIfTrue';
+import {TYPE_COMMON_ELEMENT, TYPE_PORTAL} from './JSXElementType';
 
-import { isValidElement, JSXElement } from './JSXElement';
+import {isValidElement, JSXElement} from './JSXElement';
 
 // 生成key
 function getItemKey(item: any, index: number): string {
@@ -70,7 +70,7 @@ function callMapFun(children: any, arr: Array<any>, prefix: string, callback: Fu
         mappedChild.ref,
         mappedChild.belongClassVNode,
         mappedChild.props,
-        mappedChild.source
+        mappedChild.source,
       );
     }
     arr.push(mappedChild);
@@ -113,4 +113,4 @@ const Children = {
   },
 };
 
-export { Children };
+export {Children};
