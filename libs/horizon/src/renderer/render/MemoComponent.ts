@@ -26,7 +26,7 @@ export function captureMemoComponent(
     if (type === TYPE_STRICT_MODE || type === TYPE_FRAGMENT || type === TYPE_PROFILER) {
       newChild = createFragmentVNode(null, newProps.children);
     } else {
-      newChild = createUndeterminedVNode(type, null, newProps);
+      newChild = createUndeterminedVNode(type, null, newProps,processing.src);
     }
     newChild.parent = processing;
     newChild.ref = processing.ref;

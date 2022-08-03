@@ -27,8 +27,8 @@ export type ProviderType<T> = {
 
 export type ContextType<T> = {
   vtype: number;
-  Consumer: ContextType<T>;
-  Provider: ProviderType<T>;
+  Consumer: ContextType<T> | null;
+  Provider: ProviderType<T> | null;
   value: T;
 };
 

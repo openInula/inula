@@ -1,5 +1,5 @@
-import { TYPE_COMMON_ELEMENT } from './JSXElementType';
-import { getProcessingClassVNode } from '../renderer/GlobalVar';
+import {TYPE_COMMON_ELEMENT} from './JSXElementType';
+import {getProcessingClassVNode} from '../renderer/GlobalVar';
 
 
 /**
@@ -31,7 +31,7 @@ function isValidKey(key) {
     'key',
     'ref',
     '__source',
-    '__self'
+    '__self',
   ];
   return !keyArray.includes(key);
 }
@@ -48,7 +48,7 @@ function buildElement(isClone, type, setting, children) {
   // setting中的值优先级最高，clone情况下从 type 中取值，创建情况下直接赋值为 null
   const key = (setting && setting.key !== undefined) ? String(setting.key) : (isClone ? type.key : null);
   const ref = (setting && setting.ref !== undefined) ? setting.ref : (isClone ? type.ref : null);
-  const props = isClone ? { ...type.props } : {};
+  const props = isClone ? {...type.props} : {};
   let vNode = isClone ? type.belongClassVNode : getProcessingClassVNode();
 
   if (setting !== null && setting !== undefined) {
@@ -74,9 +74,7 @@ function buildElement(isClone, type, setting, children) {
     mergeDefault(props, element.defaultProps);
   }
 
-  const source = setting?.__source === undefined ? null : setting.__source;
-
-  return JSXElement(element, key, ref, vNode, props, source);
+  return JSXElement(element, key, ref, vNode, props, setting?.__source ?? null);
 }
 
 // 创建Element结构体，供JSX编译时调用

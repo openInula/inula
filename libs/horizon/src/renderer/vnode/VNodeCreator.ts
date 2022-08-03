@@ -132,7 +132,7 @@ export function createUndeterminedVNode(type, key, props, source) {
   if (isLazy) {
     vNode.lazyType = type;
   }
-  vNode.source = source;
+  vNode.src = source;
   return vNode;
 }
 
