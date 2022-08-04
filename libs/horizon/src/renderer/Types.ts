@@ -59,7 +59,6 @@ export interface SuspenseState {
 }
 
 export type Source = {
-  columnNumber: number;
   fileName: string;
   lineNumber: number;
 };

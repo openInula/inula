@@ -27,7 +27,7 @@ import {
   TYPE_SUSPENSE,
 } from '../../external/JSXElementType';
 import { VNode } from './VNode';
-import { JSXElement } from '../Types';
+import { JSXElement, Source } from '../Types';
 import { markVNodePath } from '../utils/vNodePath';
 
 const typeLazyMap = {
@@ -105,7 +105,7 @@ export function createPortalVNode(portal) {
   return vNode;
 }
 
-export function createUndeterminedVNode(type, key, props, source) {
+export function createUndeterminedVNode(type, key, props, source: Source | null): VNode {
   let vNodeTag = FunctionComponent;
   let isLazy = false;
   const componentType = typeof type;

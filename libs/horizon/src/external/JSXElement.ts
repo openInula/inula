@@ -1,6 +1,6 @@
-import {TYPE_COMMON_ELEMENT} from './JSXElementType';
-import {getProcessingClassVNode} from '../renderer/GlobalVar';
-
+import { TYPE_COMMON_ELEMENT } from './JSXElementType';
+import { getProcessingClassVNode } from '../renderer/GlobalVar';
+import { Source } from '../renderer/Types';
 
 /**
  * vtype 节点的类型，这里固定是element
@@ -9,7 +9,7 @@ import {getProcessingClassVNode} from '../renderer/GlobalVar';
  * ref ref属性
  * props 其他常规属性
  */
-export function JSXElement(type, key, ref, vNode, props, source) {
+export function JSXElement(type, key, ref, vNode, props, source: Source | null) {
   return {
     // 元素标识符
     vtype: TYPE_COMMON_ELEMENT,
@@ -27,12 +27,7 @@ export function JSXElement(type, key, ref, vNode, props, source) {
 }
 
 function isValidKey(key) {
-  const keyArray = [
-    'key',
-    'ref',
-    '__source',
-    '__self',
-  ];
+  const keyArray = ['key', 'ref', '__source', '__self'];
   return !keyArray.includes(key);
 }
 
@@ -46,9 +41,9 @@ function mergeDefault(sourceObj, defaultObj) {
 
 function buildElement(isClone, type, setting, children) {
   // setting中的值优先级最高，clone情况下从 type 中取值，创建情况下直接赋值为 null
-  const key = (setting && setting.key !== undefined) ? String(setting.key) : (isClone ? type.key : null);
-  const ref = (setting && setting.ref !== undefined) ? setting.ref : (isClone ? type.ref : null);
-  const props = isClone ? {...type.props} : {};
+  const key = setting && setting.key !== undefined ? String(setting.key) : isClone ? type.key : null;
+  const ref = setting && setting.ref !== undefined ? setting.ref : isClone ? type.ref : null;
+  const props = isClone ? { ...type.props } : {};
   let vNode = isClone ? type.belongClassVNode : getProcessingClassVNode();
 
   if (setting !== null && setting !== undefined) {
@@ -73,8 +68,15 @@ function buildElement(isClone, type, setting, children) {
   if (element && element.defaultProps) {
     mergeDefault(props, element.defaultProps);
   }
+  let src: Source | null = null;
+  if (setting?.__source) {
+    src = {
+      fileName: setting.__source.fileName,
+      lineNumber: setting.__source.lineNumber,
+    };
+  }
 
-  return JSXElement(element, key, ref, vNode, props, setting?.__source ?? null);
+  return JSXElement(element, key, ref, vNode, props, src);
 }
 
 // 创建Element结构体，供JSX编译时调用
