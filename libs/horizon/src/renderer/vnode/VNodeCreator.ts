@@ -109,7 +109,6 @@ export function createUndeterminedVNode(type, key, props, source) {
   let vNodeTag = FunctionComponent;
   let isLazy = false;
   const componentType = typeof type;
-
   if (componentType === 'function') {
     if (isClassComponent(type)) {
       vNodeTag = ClassComponent;
@@ -132,7 +131,8 @@ export function createUndeterminedVNode(type, key, props, source) {
   if (isLazy) {
     vNode.lazyType = type;
   }
-  vNode.src = source;
+
+  vNode.src = isDev ? source : null;
   return vNode;
 }
 
