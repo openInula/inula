@@ -12,7 +12,7 @@ export type UseContextHookType = { useContext<T>(context: ContextType<T>): T };
 
 export type JSXElement = {
   vtype: any;
-  source: any;
+  _source: any;
   type: any;
   key: any;
   ref: any;

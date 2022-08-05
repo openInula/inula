@@ -13,7 +13,7 @@ export function JSXElement(type, key, ref, vNode, props, source: Source | null) 
   return {
     // 元素标识符
     vtype: TYPE_COMMON_ELEMENT,
-    source: isDev ? source : null,
+    _source: isDev ? source : null,
 
     // 属于元素的内置属性
     type: type,

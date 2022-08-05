@@ -185,12 +185,12 @@ export function createVNode(tag: VNodeTag | string, ...secondArg) {
 }
 
 export function createVNodeFromElement(element: JSXElement): VNode {
-  const { type, key, props, source } = element;
+  const { type, key, props, _source } = element;
 
   if (type === TYPE_STRICT_MODE || type === TYPE_FRAGMENT || type === TYPE_PROFILER) {
     return createFragmentVNode(key, props.children);
   } else {
-    return createUndeterminedVNode(type, key, props, source);
+    return createUndeterminedVNode(type, key, props, _source);
   }
 }
 
