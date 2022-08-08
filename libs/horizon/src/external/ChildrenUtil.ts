@@ -70,7 +70,7 @@ function callMapFun(children: any, arr: Array<any>, prefix: string, callback: Fu
         mappedChild.ref,
         mappedChild.belongClassVNode,
         mappedChild.props,
-        mappedChild._source
+        mappedChild.src
       );
     }
     arr.push(mappedChild);

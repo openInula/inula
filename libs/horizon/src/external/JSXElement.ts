@@ -27,7 +27,7 @@ export function JSXElement(type, key, ref, vNode, props, source: Source | null) 
 }
 
 function isValidKey(key) {
-  const keyArray = ['key', 'ref', '__source', '__self'];
+  const keyArray = ['key', 'ref', '__source'];
   return !keyArray.includes(key);
 }
 
@@ -41,8 +41,8 @@ function mergeDefault(sourceObj, defaultObj) {
 
 function buildElement(isClone, type, setting, children) {
   // setting中的值优先级最高，clone情况下从 type 中取值，创建情况下直接赋值为 null
-  const key = setting && setting.key !== undefined ? String(setting.key) : isClone ? type.key : null;
-  const ref = setting && setting.ref !== undefined ? setting.ref : isClone ? type.ref : null;
+  const key = (setting && setting.key !== undefined) ? String(setting.key) : (isClone ? type.key : null);
+  const ref = (setting && setting.ref !== undefined) ? setting.ref : (isClone ? type.ref : null);
   const props = isClone ? { ...type.props } : {};
   let vNode = isClone ? type.belongClassVNode : getProcessingClassVNode();
 
