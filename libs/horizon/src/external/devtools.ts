@@ -1,11 +1,11 @@
-import {travelVNodeTree} from '../renderer/vnode/VNodeUtils';
-import {Hook, Reducer, Ref, Effect, CallBack, Memo} from '../renderer/hooks/HookType';
-import {VNode} from '../renderer/vnode/VNode';
-import {launchUpdateFromVNode} from '../renderer/TreeBuilder';
-import {DomComponent} from '../renderer/vnode/VNodeTags';
-import {getElementTag} from '../renderer/vnode/VNodeCreator';
-import {JSXElement} from '../renderer/Types';
-import {EffectConstant} from '../renderer/hooks/EffectConstant';
+import { travelVNodeTree } from '../renderer/vnode/VNodeUtils';
+import { Hook, Reducer, Ref, Effect, CallBack, Memo } from '../renderer/hooks/HookType';
+import { VNode } from '../renderer/vnode/VNode';
+import { launchUpdateFromVNode } from '../renderer/TreeBuilder';
+import { DomComponent } from '../renderer/vnode/VNodeTags';
+import { getElementTag } from '../renderer/vnode/VNodeCreator';
+import { JSXElement } from '../renderer/Types';
+import { EffectConstant } from '../renderer/hooks/EffectConstant';
 
 const isEffectHook = (state: any): state is Effect => !!state.effect;
 const isRefHook = (state: any): state is Ref<any> => Object.prototype.hasOwnProperty.call(state, 'current');
@@ -28,23 +28,23 @@ export const helper = {
   },
   // 获取 hook 名，hIndex值和存储的值
   getHookInfo: (hook: Hook<any, any>) => {
-    const {hIndex, state} = hook;
+    const { hIndex, state } = hook;
     if ((state as Reducer<any, any>).trigger) {
       if ((state as Reducer<any, any>).isUseState) {
-        return {name: HookName.StateHook, hIndex, value: (state as Reducer<any, any>).stateValue};
+        return { name: HookName.StateHook, hIndex, value: (state as Reducer<any, any>).stateValue };
       } else if ((state as Reducer<any, any>).reducer) {
-        return {name: HookName.ReducerHook, hIndex, value: (state as Reducer<any, any>).stateValue};
+        return { name: HookName.ReducerHook, hIndex, value: (state as Reducer<any, any>).stateValue };
       }
     } else if (isRefHook(state)) {
-      return {name: HookName.RefHook, hIndex, value: (state as Ref<any>).current};
+      return { name: HookName.RefHook, hIndex, value: (state as Ref<any>).current };
     } else if (isEffectHook(state)) {
       const name =
         state.effectConstant == EffectConstant.LayoutEffect ? HookName.LayoutEffectHook : HookName.EffectHook;
-      return {name, hIndex, value: (state as Effect).effect};
+      return { name, hIndex, value: (state as Effect).effect };
     } else if (isCallbackHook(state)) {
-      return {name: HookName.CallbackHook, hIndex, value: (state as CallBack<any>).func};
+      return { name: HookName.CallbackHook, hIndex, value: (state as CallBack<any>).func };
     } else if (isMemoHook(state)) {
-      return {name: HookName.MemoHook, hIndex, value: (state as Memo<any>).result};
+      return { name: HookName.MemoHook, hIndex, value: (state as Memo<any>).result };
     }
     return null;
   },
@@ -70,7 +70,7 @@ export const helper = {
     }
   },
   getComponentInfo: (vNode: VNode) => {
-    const {props, state, hooks} = vNode;
+    const { props, state, hooks } = vNode;
     const info: any = {};
     if (props && Object.keys(props).length !== 0) {
       info['Props'] = props;
@@ -98,7 +98,11 @@ export const helper = {
           return true;
         }
         return false;
-      }, null, vNode, null);
+      },
+      null,
+      vNode,
+      null
+    );
     return info;
   },
   getElementTag: (element: JSXElement) => {
