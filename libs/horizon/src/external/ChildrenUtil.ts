@@ -1,7 +1,7 @@
-import {throwIfTrue} from '../renderer/utils/throwIfTrue';
-import {TYPE_COMMON_ELEMENT, TYPE_PORTAL} from './JSXElementType';
+import { throwIfTrue } from '../renderer/utils/throwIfTrue';
+import { TYPE_COMMON_ELEMENT, TYPE_PORTAL } from './JSXElementType';
 
-import {isValidElement, JSXElement} from './JSXElement';
+import { isValidElement, JSXElement } from './JSXElement';
 
 // 生成key
 function getItemKey(item: any, index: number): string {
@@ -12,12 +12,7 @@ function getItemKey(item: any, index: number): string {
   return '.' + index.toString(36);
 }
 
-function mapChildrenToArray(
-  children: any,
-  arr: Array<any>,
-  prefix: string,
-  callback?: Function,
-): number | void {
+function mapChildrenToArray(children: any, arr: Array<any>, prefix: string, callback?: Function): number | void {
   const type = typeof children;
   switch (type) {
     // 继承原有规格，undefined和boolean类型按照null处理
@@ -36,44 +31,27 @@ function mapChildrenToArray(
       }
       const vtype = children.vtype;
       if (vtype === TYPE_COMMON_ELEMENT || vtype === TYPE_PORTAL) {
-        callMapFun(children, arr, prefix, callback) ;
+        callMapFun(children, arr, prefix, callback);
         return;
       }
       if (Array.isArray(children)) {
         processArrayChildren(children, arr, prefix, callback);
         return;
       }
-      throw new Error(
-        'Object is invalid as a Horizon child. '
-      );
+      throw new Error('Object is invalid as a Horizon child. ');
     // No Default
   }
 }
 
-function processArrayChildren(
-  children: any,
-  arr: Array<any>,
-  prefix: string,
-  callback: Function,
-) {
+function processArrayChildren(children: any, arr: Array<any>, prefix: string, callback: Function) {
   for (let i = 0; i < children.length; i++) {
     const childItem = children[i];
     const nextPrefix = prefix + getItemKey(childItem, i);
-    mapChildrenToArray(
-      childItem,
-      arr,
-      nextPrefix,
-      callback,
-    );
+    mapChildrenToArray(childItem, arr, nextPrefix, callback);
   }
 }
 
-function callMapFun(
-  children: any,
-  arr: Array<any>,
-  prefix: string,
-  callback: Function,
-) {
+function callMapFun(children: any, arr: Array<any>, prefix: string, callback: Function) {
   let mappedChild = callback(children);
   if (Array.isArray(mappedChild)) {
     // 维持原有规格，如果callback返回结果是数组，处理函数修改为返回数组item
@@ -83,9 +61,8 @@ function callMapFun(
     if (isValidElement(mappedChild)) {
       const childKey = prefix === '' ? getItemKey(children, 0) : '';
       const mappedKey = getItemKey(mappedChild, 0);
-      const newKey = prefix + childKey + (mappedChild.key && mappedKey !== getItemKey(children, 0)
-        ? '.$' + mappedChild.key
-        : '');
+      const newKey =
+        prefix + childKey + (mappedChild.key && mappedKey !== getItemKey(children, 0) ? '.$' + mappedChild.key : '');
       // 返回一个修改key的children
       mappedChild = JSXElement(
         mappedChild.type,
@@ -93,6 +70,7 @@ function callMapFun(
         mappedChild.ref,
         mappedChild.belongClassVNode,
         mappedChild.props,
+        mappedChild.src
       );
     }
     arr.push(mappedChild);
@@ -100,11 +78,7 @@ function callMapFun(
 }
 
 // 在 children 里的每个直接子节点上调用一个函数，并将 this 设置为 thisArg
-function mapChildren(
-  children: any,
-  func: Function,
-  context?: any,
-): Array<any> {
+function mapChildren(children: any, func: Function, context?: any): Array<any> {
   if (children === null || children === undefined) {
     return children;
   }
@@ -121,27 +95,22 @@ const Children = {
   },
   map: mapChildren,
   // 并非所有元素都会计数,只计数调用callMapFun函数次数
-  count: (children) => {
+  count: children => {
     let n = 0;
     mapChildren(children, () => {
       n++;
     });
     return n;
   },
-  only: (children) => {
-    throwIfTrue(
-      !isValidElement(children),
-      'Horizon.Children.only function received invalid element.'
-    );
+  only: children => {
+    throwIfTrue(!isValidElement(children), 'Horizon.Children.only function received invalid element.');
     return children;
   },
-  toArray: (children) => {
+  toArray: children => {
     const result = [];
     mapChildrenToArray(children, result, '', child => child);
     return result;
   },
-}
-
-export {
-  Children
 };
+
+export { Children };

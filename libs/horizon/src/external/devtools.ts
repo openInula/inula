@@ -1,12 +1,5 @@
 import { travelVNodeTree } from '../renderer/vnode/VNodeUtils';
-import {
-  Hook,
-  Reducer,
-  Ref,
-  Effect,
-  CallBack,
-  Memo
-} from '../renderer/hooks/HookType';
+import { Hook, Reducer, Ref, Effect, CallBack, Memo } from '../renderer/hooks/HookType';
 import { VNode } from '../renderer/vnode/VNode';
 import { launchUpdateFromVNode } from '../renderer/TreeBuilder';
 import { DomComponent } from '../renderer/vnode/VNodeTags';
@@ -26,7 +19,7 @@ const HookName = {
   MemoHook: 'Memo',
   RefHook: 'Ref',
   ReducerHook: 'Reducer',
-  CallbackHook: 'Callback'
+  CallbackHook: 'Callback',
 };
 
 export const helper = {
@@ -45,7 +38,8 @@ export const helper = {
     } else if (isRefHook(state)) {
       return { name: HookName.RefHook, hIndex, value: (state as Ref<any>).current };
     } else if (isEffectHook(state)) {
-      const name = state.effectConstant == EffectConstant.LayoutEffect ? HookName.LayoutEffectHook : HookName.EffectHook;
+      const name =
+        state.effectConstant == EffectConstant.LayoutEffect ? HookName.LayoutEffectHook : HookName.EffectHook;
       return { name, hIndex, value: (state as Effect).effect };
     } else if (isCallbackHook(state)) {
       return { name: HookName.CallbackHook, hIndex, value: (state as CallBack<any>).func };
@@ -86,7 +80,7 @@ export const helper = {
     }
     if (hooks && hooks.length !== 0) {
       const logHookInfo: any[] = [];
-      hooks.forEach((hook) => {
+      hooks.forEach(hook => {
         const state = hook.state as Reducer<any, any>;
         if (state.trigger && state.isUseState) {
           logHookInfo.push(state.stateValue);
@@ -94,20 +88,26 @@ export const helper = {
       });
       info['Hooks'] = logHookInfo;
     }
-    travelVNodeTree(vNode, (node: VNode) => {
-      if (node.tag === DomComponent) {
-        // 找到组件的第一个dom元素，返回它所在父节点的全部子节点
-        const dom = node.realNode;
-        info['Nodes'] = dom?.parentNode?.childNodes;
-        return true;
-      }
-      return false;
-    }, null, vNode, null);
+    travelVNodeTree(
+      vNode,
+      (node: VNode) => {
+        if (node.tag === DomComponent) {
+          // 找到组件的第一个dom元素，返回它所在父节点的全部子节点
+          const dom = node.realNode;
+          info['Nodes'] = dom?.parentNode?.childNodes;
+          return true;
+        }
+        return false;
+      },
+      null,
+      vNode,
+      null
+    );
     return info;
   },
   getElementTag: (element: JSXElement) => {
     return getElementTag(element);
-  }
+  },
 };
 
 export function injectUpdater() {
