@@ -38,7 +38,9 @@ export function createProxy(rawObj: any, hookObserver = true): any {
 
   // 创建Proxy
   let proxyObj;
-  if (isArray(rawObj)) {
+  if (!hookObserver) {
+    proxyObj = createObjectProxy(rawObj,true);
+  } else if (isArray(rawObj)) {
     // 数组
     proxyObj = createArrayProxy(rawObj as []);
   } else if (isCollection(rawObj)) {
