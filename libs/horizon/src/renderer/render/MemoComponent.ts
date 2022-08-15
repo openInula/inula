@@ -1,21 +1,19 @@
-import type {VNode} from '../Types';
+import type { Source, VNode } from '../Types';
 
-import {mergeDefaultProps} from './LazyComponent';
-import {updateVNode, onlyUpdateChildVNodes, createFragmentVNode, createUndeterminedVNode} from '../vnode/VNodeCreator';
-import {shallowCompare} from '../utils/compare';
+import { mergeDefaultProps } from './LazyComponent';
 import {
-  TYPE_FRAGMENT,
-  TYPE_PROFILER,
-  TYPE_STRICT_MODE,
-} from '../../external/JSXElementType';
+  updateVNode,
+  onlyUpdateChildVNodes,
+  createFragmentVNode,
+  createUndeterminedVNode,
+} from '../vnode/VNodeCreator';
+import { shallowCompare } from '../utils/compare';
+import { TYPE_FRAGMENT, TYPE_PROFILER, TYPE_STRICT_MODE } from '../../external/JSXElementType';
 import { markVNodePath } from '../utils/vNodePath';
 
 export function bubbleRender() {}
 
-export function captureMemoComponent(
-  processing: VNode,
-  shouldUpdate: boolean,
-): VNode | null {
+export function captureMemoComponent(processing: VNode, shouldUpdate: boolean): VNode | null {
   const Component = processing.type;
   // 合并 函数组件或类组件 的defaultProps
   const newProps = mergeDefaultProps(Component, processing.props);
@@ -26,7 +24,7 @@ export function captureMemoComponent(
     if (type === TYPE_STRICT_MODE || type === TYPE_FRAGMENT || type === TYPE_PROFILER) {
       newChild = createFragmentVNode(null, newProps.children);
     } else {
-      newChild = createUndeterminedVNode(type, null, newProps);
+      newChild = createUndeterminedVNode(type, null, newProps, processing.src);
     }
     newChild.parent = processing;
     newChild.ref = processing.ref;

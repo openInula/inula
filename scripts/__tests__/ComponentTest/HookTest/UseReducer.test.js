@@ -13,25 +13,25 @@ describe('useReducer Hook Test', () => {
             return {
               ...intlCar,
               logo: 'ford',
-              price: 76
+              price: 76,
             };
           case 'bmw':
             return {
               ...intlCar,
               logo: 'bmw',
-              price: 100
+              price: 100,
             };
           case 'benz':
             return {
               ...intlCar,
               logo: 'benz',
-              price: 80
+              price: 80,
             };
           default:
             return {
               ...intlCar,
               logo: 'audi',
-              price: 88
+              price: 88,
             };
         }
       };
@@ -55,5 +55,35 @@ describe('useReducer Hook Test', () => {
     dispatch({ logo: 'wrong logo' });
     expect(container.querySelector('p').innerHTML).toBe('audi');
     expect(container.querySelector('#senP').innerHTML).toBe('88');
+  });
+
+  it('dispatch只触发一次', () => {
+    let nextId = 1;
+    const reducer = () => {
+      return { data: nextId++ };
+    };
+    const btnRef = Horizon.createRef();
+    const Main = () => {
+      const [{ data }, dispatch] = useReducer(reducer, { data: 0 });
+      const dispatchLogging = () => {
+        console.log('dispatch is called once');
+        dispatch();
+      };
+
+      return (
+        <div>
+          <button ref={btnRef} onClick={() => dispatchLogging()}>
+            increment
+          </button>
+          <div>{data}</div>
+        </div>
+      );
+    };
+
+    Horizon.render(<Main />, container);
+    Horizon.act(() => {
+      btnRef.current.click();
+    });
+    expect(nextId).toBe(2);
   });
 });

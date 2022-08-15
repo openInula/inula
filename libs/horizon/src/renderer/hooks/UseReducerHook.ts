@@ -1,20 +1,18 @@
 import type { Hook, Reducer, Trigger, Update } from './HookType';
-import {
-  createHook,
-  getCurrentHook,
-  throwNotInFuncError
-} from './BaseHook';
-import {
-  launchUpdateFromVNode
-} from '../TreeBuilder';
+import { createHook, getCurrentHook, throwNotInFuncError } from './BaseHook';
+import { launchUpdateFromVNode } from '../TreeBuilder';
 import { isSame } from '../utils/compare';
 import { setStateChange } from '../render/FunctionComponent';
 import { getHookStage, HookStage } from './HookStage';
 import type { VNode } from '../Types';
-import {getProcessingVNode} from '../GlobalVar';
+import { getProcessingVNode } from '../GlobalVar';
 
-export function useReducerImpl<S, P, A>(reducer: (S, A) =>
-  S, initArg: P, init?: (P) => S, isUseState?: boolean): [S, Trigger<A>] | void {
+export function useReducerImpl<S, P, A>(
+  reducer: (S, A) => S,
+  initArg: P,
+  init?: (P) => S,
+  isUseState?: boolean
+): [S, Trigger<A>] | void {
   const stage = getHookStage();
   if (stage === null) {
     throwNotInFuncError();
@@ -53,16 +51,19 @@ function insertUpdate<S, A>(action: A, hook: Hook<S, A>): Update<S, A> {
 }
 
 // setState, setReducer触发函数
-export function TriggerAction<S, A, T>(vNode: VNode, hook: Hook<S, A>, action: A) {
+export function TriggerAction<S, A>(vNode: VNode, hook: Hook<S, A>, isUseState: boolean, action: A): void {
   const newUpdate = insertUpdate(action, hook);
 
   // 判断是否需要刷新
-  if (!vNode.shouldUpdate) {
-    const reducerObj = hook.state as Reducer<S, A>;
-    const { stateValue, reducer } = reducerObj;
+  if (!vNode.shouldUpdate && isUseState) {
+    const { stateValue, reducer } = hook.state as Reducer<S, A>;
 
+    if (reducer === null) {
+      return;
+    }
     // 在进入render阶段前reducer没有变化，可以复用state值，提升性能
     newUpdate.state = reducer(stateValue, action);
+
     // 标记为已经计算过，不需要重新计算了
     newUpdate.didCalculated = true;
 
@@ -87,16 +88,17 @@ export function useReducerForInit<S, A>(reducer, initArg, init, isUseState?: boo
   }
 
   const hook = createHook();
+  const trigger = TriggerAction.bind(null, getProcessingVNode(), hook, isUseState);
   // 为hook.state赋值{状态值, 触发函数, reducer, updates更新数组, 是否是useState}
   hook.state = {
     stateValue: stateValue,
-    trigger: TriggerAction.bind(null, getProcessingVNode(), hook),
+    trigger,
     reducer,
     updates: null,
-    isUseState
+    isUseState,
   } as Reducer<S, A>;
 
-  return [hook.state.stateValue, hook.state.trigger];
+  return [hook.state.stateValue, trigger];
 }
 
 // 更新hook.state
@@ -136,5 +138,3 @@ function calculateNewState<S, A>(currentHookUpdates: Array<Update<S, A>>, curren
 
   return state;
 }
-
-
