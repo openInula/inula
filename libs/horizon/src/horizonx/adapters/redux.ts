@@ -32,6 +32,43 @@ export type ReduxMiddleware = (
 
 type Reducer = (state: any, action: ReduxAction) => any;
 
+function mergeData(state,data){
+  console.log('merging data',{state,data});
+  if(!data){
+    console.log('!data');
+    state.stateWrapper=data;
+    return;
+  }
+
+  if(Array.isArray(data) && Array.isArray(state?.stateWrapper)){
+    console.log('data is array');
+    state.stateWrapper.length = data.length;
+    data.forEach((item,idx) => {
+      if(item!=state.stateWrapper[idx]){
+        state.stateWrapper[idx]=item;
+      }
+    });
+    return;
+  }
+
+  if(typeof data === 'object' && typeof state?.stateWrapper === 'object'){
+    console.log('data is object');
+    Object.keys(state.stateWrapper).forEach(key => {
+      if(!data.hasOwnProperty(key)) delete state.stateWrapper[key];
+    })
+
+    Object.entries(data).forEach(([key,value])=>{
+      if(state.stateWrapper[key]!==value){
+        state.stateWrapper[key]=value;
+      }
+    });
+    return;
+  }
+
+  console.log('data is primitive or type mismatch');
+  state.stateWrapper = data;
+}
+
 export function createStore(reducer: Reducer, preloadedState?: any, enhancers?): ReduxStoreHandler {
   const store = createStoreX({
     id: 'defaultStore',
@@ -48,13 +85,18 @@ export function createStore(reducer: Reducer, preloadedState?: any, enhancers?):
         if (result === undefined) {
           return;
         } // NOTE: reducer should never return undefined, in this case, do not change state
+        // mergeData(state,result);
         state.stateWrapper = result;
       },
     },
     options: {
-      suppressHooks: true,
+      reduxAdapter: true,
     },
   })();
+
+  // store.$subscribe(()=>{
+  //   console.log('changed');
+  // });
 
   const result = {
     reducer,
