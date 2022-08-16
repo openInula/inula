@@ -87,7 +87,7 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
     throw new Error('store obj must be pure object');
   }
 
-  const proxyObj = createProxy(config.state, !config.options?.suppressHooks);
+  const proxyObj = createProxy(config.state, !config.options?.reduxAdapter);
 
   proxyObj.$pending = false;
 

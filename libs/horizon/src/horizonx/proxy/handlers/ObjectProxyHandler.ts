@@ -2,16 +2,16 @@ import { isSame } from '../../CommonUtils';
 import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
 import { OBSERVER_KEY } from '../../Constants';
 
-export function createObjectProxy<T extends object>(rawObj: T): ProxyHandler<T> {
+export function createObjectProxy<T extends object>(rawObj: T, singleLevel = false): ProxyHandler<T> {
   const proxy = new Proxy(rawObj, {
-    get,
+    get: (...args) => get(...args, singleLevel),
     set,
   });
 
   return proxy;
 }
 
-export function get(rawObj: object, key: string | symbol, receiver: any): any {
+export function get(rawObj: object, key: string | symbol, receiver: any, singleLevel = false): any {
   // The observer object of symbol ('_horizonObserver') cannot be accessed from Proxy to prevent errors caused by clonedeep.
   if (key === OBSERVER_KEY) {
     return undefined;
@@ -34,7 +34,7 @@ export function get(rawObj: object, key: string | symbol, receiver: any): any {
   // 对于prototype不做代理
   if (key !== 'prototype') {
     // 对于value也需要进一步代理
-    const valProxy = createProxy(value, hookObserverMap.get(rawObj));
+    const valProxy = singleLevel ? value : createProxy(value, hookObserverMap.get(rawObj));
 
     return valProxy;
   }

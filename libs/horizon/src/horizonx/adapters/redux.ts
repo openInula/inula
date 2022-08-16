@@ -52,7 +52,7 @@ export function createStore(reducer: Reducer, preloadedState?: any, enhancers?):
       },
     },
     options: {
-      suppressHooks: true,
+      reduxAdapter: true,
     },
   })();
 
