@@ -27,7 +27,7 @@ export function JSXElement(type, key, ref, vNode, props, source: Source | null) 
 }
 
 function isValidKey(key) {
-  const keyArray = ['key', 'ref', '__source'];
+  const keyArray = ['key', 'ref', '__source', '__self'];
   return !keyArray.includes(key);
 }
 

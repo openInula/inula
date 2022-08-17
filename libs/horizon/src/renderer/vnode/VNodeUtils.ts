@@ -98,7 +98,7 @@ export function clearVNode(vNode: VNode) {
   vNode.belongClassVNode = null;
   if (window.__HORIZON_DEV_HOOK__) {
     const hook = window.__HORIZON_DEV_HOOK__;
-    hook.delete(vNode);
+    hook.deleteVNode(vNode);
   }
 }
 
