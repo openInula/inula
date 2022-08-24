@@ -12,6 +12,7 @@ import { FlagUtils } from '../vnode/VNodeFlags';
 import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
 import componentRenders from './index';
 import {setProcessingVNode} from '../GlobalVar';
+import { clearVNodeObservers } from '../../horizonx/store/StoreHandler';
 
 // 复用vNode时，也需对stack进行处理
 function handlerContext(processing: VNode) {
@@ -55,6 +56,8 @@ export function captureVNode(processing: VNode): VNode | null {
   processing.shouldUpdate = false;
 
   setProcessingVNode(processing);
+  
+  clearVNodeObservers(processing);
   const child = component.captureRender(processing, shouldUpdate);
   setProcessingVNode(null);
 
