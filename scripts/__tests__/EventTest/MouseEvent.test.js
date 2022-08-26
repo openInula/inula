@@ -146,5 +146,22 @@ describe('MouseEvent Test', () => {
       };
       test('mouseover', <div onMouseOver={onMouseOver} onMouseOverCapture={onMouseOverCapture} />);
     });
+
+    it('KeyboardEvent.getModifierState should not fail', () => {
+      const input = Horizon.render(<input
+        onMouseDown={(e) => {
+          e.getModifierState('CapsLock');
+        }}
+      />, container);
+      const event = new MouseEvent('mousedown', {
+        relatedTarget: null,
+        bubbles: true,
+        screenX: 1,
+      });
+
+      expect(() => {
+        input.dispatchEvent(event);
+      }).not.toThrow();
+    });
   });
 });
