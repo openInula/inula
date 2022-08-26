@@ -16,7 +16,7 @@ const noop = (): void => {};
 // 兼容IE浏览器，无法修改Event属性
 export class WrappedEvent {
   customEventName: string;
-  nativeEvent: Event;
+  nativeEvent: AnyNativeEvent;
   nativeEventType: string;
   type: string;
   key: string;
@@ -25,12 +25,18 @@ export class WrappedEvent {
   stopPropagation: () => void;
   preventDefault: () => void;
 
+  // 适配Keyboard键盘事件该函数不能由合成事件调用
+  getModifierState?: (keyArgs: string) => boolean;
   // 适配老版本事件api
   persist = noop;
 
   constructor(customEventName: string, nativeEvtName: string, nativeEvent: AnyNativeEvent) {
     for (const name in nativeEvent) {
       this[name] = nativeEvent[name];
+      if(name === 'getModifierState') {
+        const keyBoardEvent = nativeEvent as KeyboardEvent;
+        this.getModifierState = (keyArg) => keyBoardEvent.getModifierState(keyArg);
+      }
     }
     // stopPropagation和preventDefault 必须通过Event实例调用
     this.stopPropagation = () => nativeEvent.stopPropagation();
