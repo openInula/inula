@@ -33,6 +33,8 @@ export class Observer implements IObserver {
 
   listeners:(()=>void)[] = [];
 
+  watchers={} as {[key:string]:((key:string, oldValue:any, newValue:any)=>void)[]}
+
   useProp(key: string | symbol): void {
     const processingVNode = getProcessingVNode();
     if (processingVNode === null || !processingVNode.observers) {

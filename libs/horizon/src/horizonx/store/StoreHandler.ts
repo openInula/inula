@@ -204,7 +204,8 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
   return createStoreHook(handler);
 }
 
-function clearVNodeObservers(vNode) {
+export function clearVNodeObservers(vNode) {
+  if(!vNode.observers) return;
   vNode.observers.forEach(observer => {
     observer.clearByVNode(vNode);
   });
@@ -219,11 +220,8 @@ function hookStore() {
   if (!processingVNode) {
     return;
   }
-
-  if (processingVNode.observers) {
-    // 清除上一次缓存的Observer依赖
-    clearVNodeObservers(processingVNode);
-  } else {
+  
+  if (!processingVNode.observers) {
     processingVNode.observers = new Set<Observer>();
   }
 
