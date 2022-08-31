@@ -220,7 +220,7 @@ function hookStore() {
   if (!processingVNode) {
     return;
   }
-
+  
   if (!processingVNode.observers) {
     processingVNode.observers = new Set<Observer>();
   }

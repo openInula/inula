@@ -12,6 +12,20 @@ export function createArrayProxy(rawObj: any[]): any[] {
 }
 
 function get(rawObj: any[], key: string, receiver: any) {
+  if (key === 'watch'){
+    const observer = getObserver(rawObj);
+
+    return (prop:any, handler:(key:string, oldValue:any, newValue:any)=>void)=>{
+      if(!observer.watchers[prop]){
+        observer.watchers[prop]=[] as ((key:string, oldValue:any, newValue:any)=>void)[];
+      }
+      observer.watchers[prop].push(handler);
+      return ()=>{
+        observer.watchers[prop]=observer.watchers[prop].filter(cb=>cb!==handler);
+      }
+    }
+  }
+
   if (isValidIntegerKey(key) || key === 'length') {
     return objectGet(rawObj, key, receiver);
   }
@@ -29,6 +43,12 @@ function set(rawObj: any[], key: string, value: any, receiver: any) {
   const observer = getObserver(rawObj);
 
   if (!isSame(newValue, oldValue)) {
+    if(observer.watchers?.[key]){
+      observer.watchers[key].forEach(cb => {
+        cb(key, oldValue, newValue);
+      });
+    }
+
     observer.setProp(key);
   }
 

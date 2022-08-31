@@ -57,7 +57,7 @@ export function captureVNode(processing: VNode): VNode | null {
 
   setProcessingVNode(processing);
   
-  clearVNodeObservers(processing);
+  if(processing.observers) clearVNodeObservers(processing);
   const child = component.captureRender(processing, shouldUpdate);
   setProcessingVNode(null);
 
