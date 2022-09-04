@@ -78,7 +78,7 @@ export class VNode {
   // 根节点数据
   toUpdateNodes: Set<VNode> | null; // 保存要更新的节点
   delegatedEvents: Set<string>;
-  delegatedNativeEvents: Set<string>;
+  delegatedNativeEvents: Record<string, () => void>;
 
   belongClassVNode: VNode | null = null; // 记录JSXElement所属class vNode，处理ref的时候使用
 
@@ -100,7 +100,7 @@ export class VNode {
         this.task = null;
         this.toUpdateNodes = new Set<VNode>();
         this.delegatedEvents = new Set<string>();
-        this.delegatedNativeEvents = new Set<string>();
+        this.delegatedNativeEvents = {};
         this.updates = null;
         this.stateCallbacks = null;
         this.state = null;
