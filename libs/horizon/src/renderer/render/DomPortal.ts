@@ -1,18 +1,16 @@
 import type { VNode } from '../Types';
 import { resetNamespaceCtx, setNamespaceCtx } from '../ContextSaver';
 import { createChildrenByDiff } from '../diff/nodeDiffComparator';
-import { prePortal } from '../../dom/DOMOperator';
+import { popCurrentRoot, pushCurrentRoot } from '../RootStack';
 
 export function bubbleRender(processing: VNode) {
   resetNamespaceCtx(processing);
-
-  if (processing.isCreated) {
-    prePortal(processing.realNode);
-  }
+  popCurrentRoot();
 }
 
 function capturePortalComponent(processing: VNode) {
   setNamespaceCtx(processing, processing.realNode);
+  pushCurrentRoot(processing);
 
   const newElements = processing.props;
   if (processing.isCreated) {

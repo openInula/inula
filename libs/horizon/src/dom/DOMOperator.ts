@@ -225,7 +225,3 @@ export function unHideDom(tag: string, dom: Element | Text, props: Props) {
     dom.textContent = props;
   }
 }
-
-export function prePortal(portal: Element): void {
-  listenDelegatedEvents(portal);
-}

@@ -3,7 +3,7 @@ import { getLogUtils } from '../jest/testUtils';
 
 describe('PortalComponent Test', () => {
   const LogUtils = getLogUtils();
-  
+
   it('将子节点渲染到存在于父组件以外的 DOM 节点', () => {
     const portalRoot = document.createElement('div');
 
@@ -201,5 +201,38 @@ describe('PortalComponent Test', () => {
       'capture click event',
       'bubble click event'
     ]);
+  });
+
+  it('Create portal at app root should not add event listener multiple times', () => {
+  const btnRef = Horizon.createRef();
+    class PortalApp extends Horizon.Component {
+      constructor(props) {
+        super(props);
+      }
+
+      render() {
+        return Horizon.createPortal(
+          this.props.child,
+          container,
+        );
+      }
+    }
+    const onClick = jest.fn();
+
+    class App extends Horizon.Component {
+      constructor(props) {
+        super(props);
+      }
+
+      render() {
+        return <div>
+          <button onClick={onClick} ref={btnRef}></button>
+          <PortalApp />
+        </div>;
+      }
+    }
+    Horizon.render(<App />, container);
+    btnRef.current.click();
+    expect(onClick).toHaveBeenCalledTimes(1);
   });
 });

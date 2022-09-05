@@ -3,7 +3,7 @@ import { updateCommonProp } from './UpdateCommonProp';
 import { setStyles } from './StyleHandler';
 import { lazyDelegateOnRoot, listenNonDelegatedEvent } from '../../event/EventBinding';
 import { isEventProp } from '../validators/ValidateProps';
-import { getCurrentRoot } from '../../renderer/TreeBuilder';
+import { getCurrentRoot } from '../../renderer/RootStack';
 
 // 初始化DOM属性和更新 DOM 属性
 export function setDomProps(dom: Element, props: Object, isNativeTag: boolean, isInit: boolean): void {

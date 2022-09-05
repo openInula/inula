@@ -48,22 +48,6 @@ function listenToNativeEvent(nativeEvtName: string, delegatedElement: Element, i
   return listener;
 }
 
-// 监听所有委托事件
-export function listenDelegatedEvents(dom: Element) {
-  if (dom[listeningMarker]) {
-    // 不需要重复注册事件
-    return;
-  }
-  dom[listeningMarker] = true;
-
-  allDelegatedNativeEvents.forEach((nativeEvtName: string) => {
-    // 委托冒泡事件
-    listenToNativeEvent(nativeEvtName, dom, false);
-    // 委托捕获事件
-    listenToNativeEvent(nativeEvtName, dom, true);
-  });
-}
-
 // 事件懒委托，当用户定义事件后，再进行委托到根节点
 export function lazyDelegateOnRoot(currentRoot: VNode, eventName: string) {
   currentRoot.delegatedEvents.add(eventName);
@@ -73,9 +57,17 @@ export function lazyDelegateOnRoot(currentRoot: VNode, eventName: string) {
 
   nativeEvents.forEach(nativeEvent => {
     const nativeFullName =  isCapture ? nativeEvent + 'capture' : nativeEvent;
-    if (!currentRoot.delegatedNativeEvents[nativeFullName]) {
+
+    // 事件存储在DOM节点属性，避免多个VNode(root和portal)对应同一个DOM, 造成事件重复监听
+    let events = currentRoot.realNode.$EV;
+
+    if (!events) {
+      events = (currentRoot.realNode as any).$EV = {};
+    }
+
+    if (!events[nativeFullName]) {
       const listener = listenToNativeEvent(nativeEvent, currentRoot.realNode, isCapture);
-      currentRoot.delegatedNativeEvents[nativeFullName] = listener;
+      events[nativeFullName] = listener;
     }
   });
 }

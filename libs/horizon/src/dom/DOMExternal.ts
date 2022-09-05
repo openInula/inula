@@ -71,13 +71,14 @@ function findDOMNode(domOrEle?: Element): null | Element | Text {
 
 // 情况根节点监听器
 function removeRootEventLister(container: Container) {
-  const root = container._treeRoot;
-  if (root) {
-    Object.keys(root.delegatedNativeEvents).forEach(event => {
-      const listener = root.delegatedNativeEvents[event];
+  const events = (container._treeRoot as any).$EV;
+  if (events) {
+    Object.keys(events).forEach(event => {
+      const listener = events[event];
 
       if (listener) {
         container.removeEventListener(event, listener);
+        events[event] = null;
       }
     });
   }
