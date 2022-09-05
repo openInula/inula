@@ -35,7 +35,7 @@ function triggerDelegatedEvent(
 }
 
 // 监听委托事件
-function listenToNativeEvent(nativeEvtName: string, delegatedElement: Element, isCapture: boolean): void {
+function listenToNativeEvent(nativeEvtName: string, delegatedElement: Element, isCapture: boolean) {
   let dom: Element | Document = delegatedElement;
   // document层次可能触发selectionchange事件，为了捕获这类事件，selectionchange事件绑定在document节点上
   if (nativeEvtName === 'selectionchange' && !isDocument(delegatedElement)) {
@@ -44,6 +44,8 @@ function listenToNativeEvent(nativeEvtName: string, delegatedElement: Element, i
 
   const listener = triggerDelegatedEvent.bind(null, nativeEvtName, isCapture, dom);
   dom.addEventListener(nativeEvtName, listener, isCapture);
+
+  return listener;
 }
 
 // 监听所有委托事件
@@ -71,9 +73,9 @@ export function lazyDelegateOnRoot(currentRoot: VNode, eventName: string) {
 
   nativeEvents.forEach(nativeEvent => {
     const nativeFullName =  isCapture ? nativeEvent + 'capture' : nativeEvent;
-    if (!currentRoot.delegatedNativeEvents.has(nativeFullName)) {
-      listenToNativeEvent(nativeEvent, currentRoot.realNode, isCapture);
-      currentRoot.delegatedNativeEvents.add(nativeFullName);
+    if (!currentRoot.delegatedNativeEvents[nativeFullName]) {
+      const listener = listenToNativeEvent(nativeEvent, currentRoot.realNode, isCapture);
+      currentRoot.delegatedNativeEvents[nativeFullName] = listener;
     }
   });
 }

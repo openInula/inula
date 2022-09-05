@@ -39,7 +39,9 @@ export const helper = {
       return { name: HookName.RefHook, hIndex, value: (state as Ref<any>).current };
     } else if (isEffectHook(state)) {
       const name =
-        state.effectConstant == EffectConstant.LayoutEffect ? HookName.LayoutEffectHook : HookName.EffectHook;
+        state.effectConstant == EffectConstant.LayoutEffect || (EffectConstant.LayoutEffect | EffectConstant.DepsChange)
+          ? HookName.LayoutEffectHook
+          : HookName.EffectHook;
       return { name, hIndex, value: (state as Effect).effect };
     } else if (isCallbackHook(state)) {
       return { name: HookName.CallbackHook, hIndex, value: (state as CallBack<any>).func };
