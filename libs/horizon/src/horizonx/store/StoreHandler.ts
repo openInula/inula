@@ -35,9 +35,7 @@ type StoreHandler<S extends object, A extends UserActions<S>, C extends UserComp
   $queue: QueuedStoreActions<S, A>;
   $a: StoreActions<S, A>;
   $c: UserComputedValues<S>;
-} & { [K in keyof S]: S[K] } &
-  { [K in keyof A]: Action<A[K], S> } &
-  { [K in keyof C]: ReturnType<C[K]> };
+} & { [K in keyof S]: S[K] } & { [K in keyof A]: Action<A[K], S> } & { [K in keyof C]: ReturnType<C[K]> };
 
 type PlannedAction<S extends object, F extends ActionFunction<S>> = {
   action: string;
@@ -103,7 +101,7 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
   const $a: Partial<StoreActions<S, A>> = {};
   const $queue: Partial<StoreActions<S, A>> = {};
   const $c: Partial<ComputedValues<S, C>> = {};
-  const handler = ({
+  const handler = {
     $subscribe,
     $unsubscribe,
     $a: $a as StoreActions<S, A>,
@@ -111,7 +109,7 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
     $c: $c as ComputedValues<S, C>,
     $config: config,
     $queue: $queue as QueuedStoreActions<S, A>,
-  } as unknown) as StoreHandler<S, A, C>;
+  } as unknown as StoreHandler<S, A, C>;
 
   function tryNextAction() {
     if (!plannedActions.length) {
@@ -204,7 +202,8 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
   return createStoreHook(handler);
 }
 
-function clearVNodeObservers(vNode) {
+export function clearVNodeObservers(vNode) {
+  if (!vNode.observers) return;
   vNode.observers.forEach(observer => {
     observer.clearByVNode(vNode);
   });
@@ -220,16 +219,13 @@ function hookStore() {
     return;
   }
 
-  if (processingVNode.observers) {
-    // 清除上一次缓存的Observer依赖
-    clearVNodeObservers(processingVNode);
-  } else {
+  if (!processingVNode.observers) {
     processingVNode.observers = new Set<Observer>();
   }
 
   if (processingVNode.tag === FunctionComponent) {
     // from FunctionComponent
-    const vNodeRef = (useRef(null) as unknown) as { current: VNode };
+    const vNodeRef = useRef(null) as unknown as { current: VNode };
     vNodeRef.current = processingVNode;
 
     useEffect(() => {
@@ -241,7 +237,7 @@ function hookStore() {
   } else if (processingVNode.tag === ClassComponent) {
     // from ClassComponent
     if (!processingVNode.classComponentWillUnmount) {
-      processingVNode.classComponentWillUnmount = function(vNode) {
+      processingVNode.classComponentWillUnmount = function (vNode) {
         clearVNodeObservers(vNode);
         vNode.observers = null;
       };
