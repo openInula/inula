@@ -39,7 +39,7 @@ export const helper = {
       return { name: HookName.RefHook, hIndex, value: (state as Ref<any>).current };
     } else if (isEffectHook(state)) {
       const name =
-        state.effectConstant == EffectConstant.LayoutEffect || EffectConstant.LayoutEffect | EffectConstant.DepsChange
+        state.effectConstant == EffectConstant.LayoutEffect || (EffectConstant.LayoutEffect | EffectConstant.DepsChange)
           ? HookName.LayoutEffectHook
           : HookName.EffectHook;
       return { name, hIndex, value: (state as Effect).effect };
