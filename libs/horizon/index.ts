@@ -25,7 +25,7 @@ import {
   useReducer,
   useRef,
   useState,
-  useDebugValue
+  useDebugValue,
 } from './src/renderer/hooks/HookExternal';
 import { asyncUpdates } from './src/renderer/TreeBuilder';
 import { callRenderQueueImmediate } from './src/renderer/taskExecutor/RenderQueue';
@@ -86,7 +86,7 @@ const Horizon = {
   useStore,
   clearStore,
   reduxAdapter,
-  watch
+  watch,
 };
 
 export const version = __VERSION__;
@@ -127,7 +127,7 @@ export {
   useStore,
   clearStore,
   reduxAdapter,
-  watch
+  watch,
 };
 
 export default Horizon;

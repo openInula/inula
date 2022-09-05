@@ -7,7 +7,6 @@ import { launchUpdateFromVNode } from '../../renderer/TreeBuilder';
 import { getProcessingVNode } from '../../renderer/GlobalVar';
 import { VNode } from '../../renderer/vnode/VNode';
 export interface IObserver {
-
   useProp: (key: string) => void;
 
   addListener: (listener: () => void) => void;
@@ -21,19 +20,18 @@ export interface IObserver {
   triggerUpdate: (vNode: any) => void;
 
   allChange: () => void;
-  
+
   clearByVNode: (vNode: any) => void;
 }
 
 export class Observer implements IObserver {
-
   vNodeKeys = new WeakMap();
 
   keyVNodes = new Map();
 
-  listeners:(()=>void)[] = [];
+  listeners: (() => void)[] = [];
 
-  watchers={} as {[key:string]:((key:string, oldValue:any, newValue:any)=>void)[]}
+  watchers = {} as { [key: string]: ((key: string, oldValue: any, newValue: any) => void)[] };
 
   useProp(key: string | symbol): void {
     const processingVNode = getProcessingVNode();

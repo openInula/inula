@@ -34,18 +34,18 @@ function get(rawObj: { size: number }, key: any, receiver: any): any {
   } else if (Object.prototype.hasOwnProperty.call(handler, key)) {
     const value = Reflect.get(handler, key, receiver);
     return value.bind(null, rawObj);
-  } else if (key === 'watch'){
+  } else if (key === 'watch') {
     const observer = getObserver(rawObj);
 
-    return (prop:any, handler:(key:string, oldValue:any, newValue:any)=>void)=>{
-      if(!observer.watchers[prop]){
-        observer.watchers[prop]=[] as ((key:string, oldValue:any, newValue:any)=>void)[];
+    return (prop: any, handler: (key: string, oldValue: any, newValue: any) => void) => {
+      if (!observer.watchers[prop]) {
+        observer.watchers[prop] = [] as ((key: string, oldValue: any, newValue: any) => void)[];
       }
       observer.watchers[prop].push(handler);
-      return ()=>{
-        observer.watchers[prop]=observer.watchers[prop].filter(cb=>cb!==handler);
-      }
-    }
+      return () => {
+        observer.watchers[prop] = observer.watchers[prop].filter(cb => cb !== handler);
+      };
+    };
   }
 
   return Reflect.get(rawObj, key, receiver);
@@ -79,7 +79,7 @@ function set(
   }
 
   if (valChange) {
-    if(observer.watchers?.[key]){
+    if (observer.watchers?.[key]) {
       observer.watchers[key].forEach(cb => {
         cb(key, oldValue, newValue);
       });
