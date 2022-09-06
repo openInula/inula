@@ -1,3 +1,7 @@
+## 0.0.15 (2022-09-06)
+- **core**: #43 fix portal root 跟 app root重合时重复监听
+- **core**: #38 修复合成事件受普通事件stopPropagation影响无法触发
+
 ## 0.0.14 (2022-09-04)
 - **core**: #44 修复unmount根节点事件未清除
 
