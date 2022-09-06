@@ -294,8 +294,9 @@ function diffArrayNodesHandler(
       if (rightOldIndex < 0 || rightOldNode === null) {
         break;
       }
-
-      canBeReuse = checkCanReuseNode(rightOldNode, newChildren[rightIdx - 1]);
+      // 新旧节点的index应该相同才能复用，null会影响位置
+      const samePosition = rightOldNode.eIndex === rightIdx - 1;
+      canBeReuse = checkCanReuseNode(rightOldNode, newChildren[rightIdx - 1]) && samePosition;
       // 不能复用，break
       if (!canBeReuse) {
         break;
