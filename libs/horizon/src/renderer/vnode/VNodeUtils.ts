@@ -73,6 +73,7 @@ export function travelVNodeTree(
 
 // 置空vNode
 export function clearVNode(vNode: VNode) {
+  vNode.isCleared = true;
   vNode.child = null;
   vNode.next = null;
   vNode.depContexts = null;

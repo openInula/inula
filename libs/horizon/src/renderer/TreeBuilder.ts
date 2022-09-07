@@ -176,7 +176,12 @@ export function calcStartUpdateVNode(treeRoot: VNode) {
   }
 
   if (toUpdateNodes.length === 1) {
-    return toUpdateNodes[0];
+    const toUpdateNode = toUpdateNodes[0];
+    if (toUpdateNode.isCleared) {
+      return treeRoot;
+    } else {
+      return toUpdateNodes[0];
+    }
   }
 
   // 要计算的节点过多，直接返回根节点
