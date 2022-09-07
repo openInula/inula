@@ -71,7 +71,7 @@ function checkCanReuseNode(oldNode: VNode | null, newChild: any, newNodeIdx: num
     }
     if (newChild.vtype === TYPE_COMMON_ELEMENT || newChild.vtype === TYPE_PORTAL) {
       // key存在时用key判断复用
-      if (oldKey != null || newChild.key != null) {
+      if (oldKey !== null || newChild.key !== null) {
         return oldKey === newChild.key;
       } else {
         // 新旧节点的index应该相同才能复用，null会影响位置
