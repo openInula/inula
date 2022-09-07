@@ -81,7 +81,7 @@ describe('useEffect Hook Test', () => {
     expect(LogUtils.getAndClear()).toEqual([]);
     // 在执行新的render前，会执行完上一次render的useEffect，所以LogUtils会加入'NewApp effect'。
     Horizon.render([na], container);
-    expect(LogUtils.getAndClear()).toEqual(['NewApp effect']);
+    expect(LogUtils.getAndClear()).toEqual(['NewApp effect', 'NewApp']);
     expect(container.textContent).toBe('NewApp');
     expect(LogUtils.getAndClear()).toEqual([]);
   });
