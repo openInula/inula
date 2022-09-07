@@ -1,3 +1,6 @@
+## 0.0.16 (2022-09-07)
+- **core**: #56,#65 diff null 不能正确卸载组件
+
 ## 0.0.15 (2022-09-06)
 - **core**: #43 fix portal root 跟 app root重合时重复监听
 - **core**: #38 修复合成事件受普通事件stopPropagation影响无法触发
