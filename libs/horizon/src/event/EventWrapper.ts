@@ -58,7 +58,7 @@ export class WrappedEvent {
     this.type = nativeEvtName;
 
     // 兼容IE的event key
-    const orgKey = (nativeEvent as any).key;
+    const orgKey = (nativeEvent as any).key ?? '';
     this.key = uniqueKeyMap.get(orgKey) || orgKey;
   }
 
