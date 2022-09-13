@@ -1,5 +1,6 @@
 import * as Horizon from '@cloudsop/horizon/index.ts';
 import { getLogUtils } from '../jest/testUtils';
+import dispatchChangeEvent from '../utils/dispatchChangeEvent';
 
 describe('PortalComponent Test', () => {
   const LogUtils = getLogUtils();
@@ -234,5 +235,46 @@ describe('PortalComponent Test', () => {
     Horizon.render(<App />, container);
     btnRef.current.click();
     expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('Portal onChange should activate', () => {
+    class Dialog extends Horizon.Component {
+      node;
+
+      constructor(props) {
+        super(props);
+        this.node = window.document.createElement('div');
+        window.document.body.appendChild(this.node);
+      }
+``      render() {
+        return Horizon.createPortal(this.props.children, this.node);
+      }
+    }
+
+    let showPortalInput;
+    const fn = jest.fn();
+    const inputRef = Horizon.createRef();
+    function Input() {
+      const [show, setShow] = Horizon.useState(false);
+      showPortalInput = setShow;
+
+      Horizon.useEffect(() => {
+        setTimeout(() => {
+          setShow(true);
+        }, 0);
+      }, []);
+
+      if (!show) {
+        return null;
+      }
+
+      return <input onChange={fn} ref={inputRef}/>;
+    }
+
+    Horizon.render(<div><Dialog><App /></Dialog>, container);
+    showPortalInput(true);
+    jest.advanceTimersToNextTimer();
+    dispatchChangeEvent(inputRef.current, 'test');
+    expect(fn).toHaveBeenCalledTimes(1);
   });
 });
