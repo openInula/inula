@@ -86,7 +86,7 @@ function removeRootEventLister(container: Container) {
 
 // 卸载入口
 function destroy(container: Container): boolean {
-  if (container._treeRoot) {
+  if (container && container._treeRoot) {
     syncUpdates(() => {
       executeRender(null, container, () => {
         removeRootEventLister(container);

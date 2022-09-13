@@ -2,7 +2,7 @@ import type { VNode } from './Types';
 
 import { callRenderQueueImmediate, pushRenderCallback } from './taskExecutor/RenderQueue';
 import { updateVNode } from './vnode/VNodeCreator';
-import { DomComponent, DomPortal, TreeRoot } from './vnode/VNodeTags';
+import { ContextProvider, DomComponent, DomPortal, TreeRoot } from './vnode/VNodeTags';
 import { FlagUtils, InitFlag, Interrupted } from './vnode/VNodeFlags';
 import { captureVNode } from './render/BaseComponent';
 import { checkLoopingUpdateLimit, submitToRender } from './submit/Submit';
@@ -30,7 +30,12 @@ import {
   isExecuting,
   setExecuteMode,
 } from './ExecuteMode';
-import { recoverParentContext, resetNamespaceCtx, resetParentContext, setNamespaceCtx } from './ContextSaver';
+import {
+  resetContext,
+  resetNamespaceCtx,
+  setContext,
+  setNamespaceCtx,
+} from './ContextSaver';
 import {
   updateChildShouldUpdate,
   updateParentsChildShouldUpdate,
@@ -244,7 +249,7 @@ function buildVNodeTree(treeRoot: VNode) {
     }
 
     // 恢复父节点的context
-    recoverParentContext(startVNode);
+    recoverTreeContext(startVNode);
   }
 
   // 重置环境变量，为重新进行深度遍历做准备
@@ -272,12 +277,45 @@ function buildVNodeTree(treeRoot: VNode) {
   }
   if (startVNode.tag !== TreeRoot) { // 不是根节点
     // 恢复父节点的context
-    resetParentContext(startVNode);
+    resetTreeContext(startVNode);
   }
 
   setProcessingClassVNode(null);
 
   setExecuteMode(preMode);
+}
+
+// 在局部更新时，从上到下恢复父节点的context和PortalStack
+function recoverTreeContext(vNode: VNode) {
+  const contextProviders: VNode[] = [];
+  let parent = vNode.parent;
+  while (parent !== null) {
+    if (parent.tag === ContextProvider) {
+      contextProviders.unshift(parent);
+    }
+    if(parent.tag === DomPortal){
+      pushCurrentRoot(parent);
+    }
+    parent = parent.parent;
+  }
+  contextProviders.forEach(node => {
+    setContext(node, node.props.value);
+  });
+}
+
+// 在局部更新时，从下到上重置父节点的context
+function resetTreeContext(vNode: VNode) {
+  let parent = vNode.parent;
+
+  while (parent !== null) {
+    if (parent.tag === ContextProvider) {
+      resetContext(parent);
+    }
+    if(parent.tag === DomPortal){
+      popCurrentRoot();
+    }
+    parent = parent.parent;
+  }
 }
 
 // 总体任务入口
