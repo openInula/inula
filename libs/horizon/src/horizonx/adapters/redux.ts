@@ -127,7 +127,7 @@ export function bindActionCreators(actionCreators: ActionCreators, dispatch: Dis
   return boundActionCreators;
 }
 
-export function compose(middlewares: ReduxMiddleware[]) {
+export function compose(...middlewares: ReduxMiddleware[]) {
   return (store: ReduxStoreHandler, extraArgument: any) => {
     let val;
     middlewares.reverse().forEach((middleware: ReduxMiddleware, index) => {
