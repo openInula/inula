@@ -34,11 +34,11 @@
     "@babel/plugin-transform-object-super": "7.16.7",
     "@babel/plugin-transform-parameters": "7.16.7",
     "@babel/plugin-transform-react-jsx": "7.16.7",
+    "@babel/plugin-transform-react-jsx-source": "^7.16.7",
     "@babel/plugin-transform-runtime": "7.16.7",
     "@babel/plugin-transform-shorthand-properties": "7.16.7",
     "@babel/plugin-transform-spread": "7.16.7",
     "@babel/plugin-transform-template-literals": "7.16.7",
-    "@babel/plugin-transform-react-jsx-source": "^7.16.7",
     "@babel/preset-env": "7.16.7",
     "@babel/preset-typescript": "7.16.7",
     "@rollup/plugin-babel": "^5.3.1",
@@ -66,5 +66,8 @@
   "engines": {
     "node": ">=10.x",
     "npm": ">=7.x"
+  },
+  "dependencies": {
+    "ejs": "^3.1.8"
   }
 }

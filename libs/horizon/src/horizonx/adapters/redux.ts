@@ -32,34 +32,34 @@ export type ReduxMiddleware = (
 
 type Reducer = (state: any, action: ReduxAction) => any;
 
-function mergeData(state,data){
-  console.log('merging data',{state,data});
-  if(!data){
+function mergeData(state, data) {
+  console.log('merging data', { state, data });
+  if (!data) {
     console.log('!data');
-    state.stateWrapper=data;
+    state.stateWrapper = data;
     return;
   }
 
-  if(Array.isArray(data) && Array.isArray(state?.stateWrapper)){
+  if (Array.isArray(data) && Array.isArray(state?.stateWrapper)) {
     console.log('data is array');
     state.stateWrapper.length = data.length;
-    data.forEach((item,idx) => {
-      if(item!=state.stateWrapper[idx]){
-        state.stateWrapper[idx]=item;
+    data.forEach((item, idx) => {
+      if (item != state.stateWrapper[idx]) {
+        state.stateWrapper[idx] = item;
       }
     });
     return;
   }
 
-  if(typeof data === 'object' && typeof state?.stateWrapper === 'object'){
+  if (typeof data === 'object' && typeof state?.stateWrapper === 'object') {
     console.log('data is object');
     Object.keys(state.stateWrapper).forEach(key => {
-      if(!data.hasOwnProperty(key)) delete state.stateWrapper[key];
-    })
+      if (!data.hasOwnProperty(key)) delete state.stateWrapper[key];
+    });
 
-    Object.entries(data).forEach(([key,value])=>{
-      if(state.stateWrapper[key]!==value){
-        state.stateWrapper[key]=value;
+    Object.entries(data).forEach(([key, value]) => {
+      if (state.stateWrapper[key] !== value) {
+        state.stateWrapper[key] = value;
       }
     });
     return;
@@ -100,7 +100,7 @@ export function createStore(reducer: Reducer, preloadedState?: any, enhancers?):
 
   const result = {
     reducer,
-    getState: function() {
+    getState: function () {
       return store.$s.stateWrapper;
     },
     subscribe: listener => {
@@ -169,7 +169,7 @@ export function bindActionCreators(actionCreators: ActionCreators, dispatch: Dis
   return boundActionCreators;
 }
 
-export function compose(middlewares: ReduxMiddleware[]) {
+export function compose(...middlewares: ReduxMiddleware[]) {
   return (store: ReduxStoreHandler, extraArgument: any) => {
     let val;
     middlewares.reverse().forEach((middleware: ReduxMiddleware, index) => {
