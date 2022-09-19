@@ -55,7 +55,7 @@ function deleteVNodes(parentVNode: VNode, startDelVNode: VNode | null, endVNode?
   }
 }
 
-function checkCanReuseNode(oldNode: VNode | null, newChild: any): boolean {
+function checkCanReuseNode(oldNode: VNode | null, newChild: any, newNodeIdx: number): boolean {
   if (newChild === null) {
     return false;
   }
@@ -70,7 +70,13 @@ function checkCanReuseNode(oldNode: VNode | null, newChild: any): boolean {
       return oldKey === null;
     }
     if (newChild.vtype === TYPE_COMMON_ELEMENT || newChild.vtype === TYPE_PORTAL) {
-      return oldKey === newChild.key;
+      // key存在时用key判断复用
+      if (oldKey !== null || newChild.key !== null) {
+        return oldKey === newChild.key;
+      } else {
+        // 新旧节点的index应该相同才能复用，null会影响位置
+        return oldNode?.eIndex === newNodeIdx;
+      }
     }
   }
 
@@ -254,7 +260,7 @@ function diffArrayNodesHandler(
       nextOldNode = oldNode.next;
     }
 
-    canBeReuse = checkCanReuseNode(oldNode, newChildren[leftIdx]);
+    canBeReuse = checkCanReuseNode(oldNode, newChildren[leftIdx], leftIdx);
     // 不能复用，break
     if (!canBeReuse) {
       oldNode = oldNode ?? nextOldNode;
@@ -295,7 +301,7 @@ function diffArrayNodesHandler(
         break;
       }
 
-      canBeReuse = checkCanReuseNode(rightOldNode, newChildren[rightIdx - 1]);
+      canBeReuse = checkCanReuseNode(rightOldNode, newChildren[rightIdx - 1], rightIdx - 1);
       // 不能复用，break
       if (!canBeReuse) {
         break;

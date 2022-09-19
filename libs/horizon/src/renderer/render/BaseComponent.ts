@@ -1,21 +1,16 @@
 import type { VNode } from '../Types';
 
-import {
-  ContextProvider,
-  DomComponent,
-  DomPortal,
-  TreeRoot,
-  SuspenseComponent,
-} from '../vnode/VNodeTags';
+import { ContextProvider, DomComponent, DomPortal, TreeRoot, SuspenseComponent } from '../vnode/VNodeTags';
 import { setContext, setNamespaceCtx } from '../ContextSaver';
 import { FlagUtils } from '../vnode/VNodeFlags';
-import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
+import { onlyUpdateChildVNodes } from '../vnode/VNodeCreator';
 import componentRenders from './index';
-import {setProcessingVNode} from '../GlobalVar';
+import { setProcessingVNode } from '../GlobalVar';
 import { clearVNodeObservers } from '../../horizonx/store/StoreHandler';
+import { pushCurrentRoot } from '../RootStack';
 
-// 复用vNode时，也需对stack进行处理
-function handlerContext(processing: VNode) {
+// 复用vNode时，也需对树的上下文值处理，如context，portal, namespaceContext
+function setTreeContextValue(processing: VNode) {
   switch (processing.tag) {
     case TreeRoot:
       setNamespaceCtx(processing, processing.realNode);
@@ -25,6 +20,7 @@ function handlerContext(processing: VNode) {
       break;
     case DomPortal:
       setNamespaceCtx(processing, processing.realNode);
+      pushCurrentRoot(processing);
       break;
     case ContextProvider: {
       const newValue = processing.props.value;
@@ -40,13 +36,9 @@ export function captureVNode(processing: VNode): VNode | null {
 
   if (processing.tag !== SuspenseComponent) {
     // 该vNode没有变化，不用进入capture，直接复用。
-    if (
-      !processing.isCreated &&
-      processing.oldProps === processing.props &&
-      !processing.shouldUpdate
-    ) {
+    if (!processing.isCreated && processing.oldProps === processing.props && !processing.shouldUpdate) {
       // 复用还需对stack进行处理
-      handlerContext(processing);
+      setTreeContextValue(processing);
 
       return onlyUpdateChildVNodes(processing);
     }
@@ -56,8 +48,8 @@ export function captureVNode(processing: VNode): VNode | null {
   processing.shouldUpdate = false;
 
   setProcessingVNode(processing);
-  
-  if(processing.observers) clearVNodeObservers(processing);
+
+  if (processing.observers) clearVNodeObservers(processing);
   const child = component.captureRender(processing, shouldUpdate);
   setProcessingVNode(null);
 

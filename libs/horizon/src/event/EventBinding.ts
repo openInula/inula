@@ -35,7 +35,7 @@ function triggerDelegatedEvent(
 }
 
 // 监听委托事件
-function listenToNativeEvent(nativeEvtName: string, delegatedElement: Element, isCapture: boolean): void {
+function listenToNativeEvent(nativeEvtName: string, delegatedElement: Element, isCapture: boolean) {
   let dom: Element | Document = delegatedElement;
   // document层次可能触发selectionchange事件，为了捕获这类事件，selectionchange事件绑定在document节点上
   if (nativeEvtName === 'selectionchange' && !isDocument(delegatedElement)) {
@@ -44,22 +44,8 @@ function listenToNativeEvent(nativeEvtName: string, delegatedElement: Element, i
 
   const listener = triggerDelegatedEvent.bind(null, nativeEvtName, isCapture, dom);
   dom.addEventListener(nativeEvtName, listener, isCapture);
-}
 
-// 监听所有委托事件
-export function listenDelegatedEvents(dom: Element) {
-  if (dom[listeningMarker]) {
-    // 不需要重复注册事件
-    return;
-  }
-  dom[listeningMarker] = true;
-
-  allDelegatedNativeEvents.forEach((nativeEvtName: string) => {
-    // 委托冒泡事件
-    listenToNativeEvent(nativeEvtName, dom, false);
-    // 委托捕获事件
-    listenToNativeEvent(nativeEvtName, dom, true);
-  });
+  return listener;
 }
 
 // 事件懒委托，当用户定义事件后，再进行委托到根节点
@@ -71,9 +57,17 @@ export function lazyDelegateOnRoot(currentRoot: VNode, eventName: string) {
 
   nativeEvents.forEach(nativeEvent => {
     const nativeFullName =  isCapture ? nativeEvent + 'capture' : nativeEvent;
-    if (!currentRoot.delegatedNativeEvents.has(nativeFullName)) {
-      listenToNativeEvent(nativeEvent, currentRoot.realNode, isCapture);
-      currentRoot.delegatedNativeEvents.add(nativeFullName);
+
+    // 事件存储在DOM节点属性，避免多个VNode(root和portal)对应同一个DOM, 造成事件重复监听
+    let events = currentRoot.realNode.$EV;
+
+    if (!events) {
+      events = (currentRoot.realNode as any).$EV = {};
+    }
+
+    if (!events[nativeFullName]) {
+      const listener = listenToNativeEvent(nativeEvent, currentRoot.realNode, isCapture);
+      events[nativeFullName] = listener;
     }
   });
 }

@@ -25,6 +25,9 @@ export class WrappedEvent {
   stopPropagation: () => void;
   preventDefault: () => void;
 
+  propagationStopped = false
+  isPropagationStopped = (): boolean => this.propagationStopped;
+
   // 适配Keyboard键盘事件该函数不能由合成事件调用
   getModifierState?: (keyArgs: string) => boolean;
   // 适配老版本事件api
@@ -39,7 +42,11 @@ export class WrappedEvent {
       }
     }
     // stopPropagation和preventDefault 必须通过Event实例调用
-    this.stopPropagation = () => nativeEvent.stopPropagation();
+    this.stopPropagation = () => {
+      nativeEvent.stopPropagation();
+      this.propagationStopped = true;
+    };
+
     this.preventDefault = () => nativeEvent.preventDefault();
 
     // custom事件自定义属性
@@ -51,16 +58,12 @@ export class WrappedEvent {
     this.type = nativeEvtName;
 
     // 兼容IE的event key
-    const orgKey = (nativeEvent as any).key;
+    const orgKey = (nativeEvent as any).key ?? '';
     this.key = uniqueKeyMap.get(orgKey) || orgKey;
   }
 
   isDefaultPrevented(): boolean {
     return this.nativeEvent.defaultPrevented;
-  }
-
-  isPropagationStopped(): boolean {
-    return this.nativeEvent.cancelBubble;
   }
 }
 

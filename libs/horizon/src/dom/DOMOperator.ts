@@ -35,7 +35,7 @@ export type Props = Record<string, any> & {
   style?: { display?: string };
 };
 
-export type Container = (Element & { _treeRoot?: VNode }) | (Document & { _treeRoot?: VNode });
+export type Container = (Element & { _treeRoot?: VNode | null }) | (Document & { _treeRoot?: VNode | null });
 
 let selectionInfo: null | SelectionData = null;
 
@@ -224,8 +224,4 @@ export function unHideDom(tag: string, dom: Element | Text, props: Props) {
   } else if (tag === DomText) {
     dom.textContent = props;
   }
-}
-
-export function prePortal(portal: Element): void {
-  listenDelegatedEvents(portal);
 }

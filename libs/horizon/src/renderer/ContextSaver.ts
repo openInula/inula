@@ -7,7 +7,6 @@ import type { VNode, ContextType } from './Types';
 import type { Container } from '../dom/DOMOperator';
 
 import { getNSCtx } from '../dom/DOMOperator';
-import { ContextProvider } from './vnode/VNodeTags';
 
 // 保存的是“http://www.w3.org/1999/xhtml”或“http://www.w3.org/2000/svg”，
 // 用于识别是使用document.createElement()还是使用document.createElementNS()创建DOM
@@ -44,32 +43,3 @@ export function resetContext(providerVNode: VNode) {
 
   context.value = providerVNode.context;
 }
-
-// 在局部更新时，从上到下恢复父节点的context
-export function recoverParentContext(vNode: VNode) {
-  const contextProviders: VNode[] = [];
-  let parent = vNode.parent;
-  while (parent !== null) {
-    if (parent.tag === ContextProvider) {
-      contextProviders.unshift(parent);
-    }
-    parent = parent.parent;
-  }
-  contextProviders.forEach(node => {
-    setContext(node, node.props.value);
-  });
-}
-
-// 在局部更新时，从下到上重置父节点的context
-export function resetParentContext(vNode: VNode) {
-  let parent = vNode.parent;
-
-  while (parent !== null) {
-    if (parent.tag === ContextProvider) {
-      resetContext(parent);
-    }
-    parent = parent.parent;
-  }
-}
-
-

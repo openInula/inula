@@ -230,7 +230,7 @@ export function onlyUpdateChildVNodes(processing: VNode): VNode | null {
       }
     };
 
-    putChildrenIntoQueue(processing.child);
+    putChildrenIntoQueue(processing);
 
     while (queue.length) {
       const vNode = queue.shift()!;

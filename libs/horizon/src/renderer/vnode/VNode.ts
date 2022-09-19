@@ -39,6 +39,8 @@ export class VNode {
   ref: RefType | ((handle: any) => void) | null = null; // 包裹一个函数，submit阶段使用，比如将外部useRef生成的对象赋值到ref上
   oldProps: any = null;
 
+  // 是否已经被从树上移除
+  isCleared = false;
   changeList: any; // DOM的变更列表
   effectList: any[] | null; // useEffect 的更新数组
   updates: any[] | null; // TreeRoot和ClassComponent使用的更新数组
@@ -78,7 +80,6 @@ export class VNode {
   // 根节点数据
   toUpdateNodes: Set<VNode> | null; // 保存要更新的节点
   delegatedEvents: Set<string>;
-  delegatedNativeEvents: Set<string>;
 
   belongClassVNode: VNode | null = null; // 记录JSXElement所属class vNode，处理ref的时候使用
 
@@ -100,7 +101,6 @@ export class VNode {
         this.task = null;
         this.toUpdateNodes = new Set<VNode>();
         this.delegatedEvents = new Set<string>();
-        this.delegatedNativeEvents = new Set<string>();
         this.updates = null;
         this.stateCallbacks = null;
         this.state = null;
@@ -137,6 +137,7 @@ export class VNode {
       case DomPortal:
         this.realNode = null;
         this.context = null;
+        this.delegatedEvents = new Set<string>();
         this.src = null;
         break;
       case DomComponent:
