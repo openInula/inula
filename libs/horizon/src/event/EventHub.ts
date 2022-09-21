@@ -12,6 +12,7 @@ export const horizonEventToNativeMap = new Map([
   ['onFocus', ['focusin']],
   ['onBlur', ['focusout']],
   ['onInput', ['input']],
+  ['onWheel', ['wheel']],
   ['onMouseOut', ['mouseout']],
   ['onMouseOver', ['mouseover']],
   ['onPointerOut', ['pointerout']],
@@ -41,6 +42,7 @@ export const horizonEventToNativeMap = new Map([
 ]);
 export const NativeEventToHorizonMap = {
   click: 'click',
+  wheel: 'wheel',
   dblclick: 'doubleClick',
   contextmenu: 'contextMenu',
   dragend: 'dragEnd',
