@@ -58,7 +58,7 @@ function controlValue(target: Element) {
 function controlInputValue(inputDom: HTMLInputElement, props: Props) {
   const { name, type } = props;
 
-  // 如果是 radio，先更新相同 name 的 radio
+  // 如果是 radio，找出同一form内，name相同的Radio，更新它们Handler的Value
   if (type === 'radio' && name != null) {
     const radioList = document.querySelectorAll<HTMLInputElement>(`input[type="radio"][name="${name}"]`);
     for (let i = 0; i < radioList.length; i++) {
