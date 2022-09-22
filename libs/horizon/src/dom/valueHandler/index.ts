@@ -3,7 +3,7 @@
  * 处理组件被代理和不被代理情况下的不同逻辑
  */
 
-import {HorizonDom, HorizonSelect, IProperty} from '../utils/Interface';
+import {HorizonDom, HorizonSelect, Props} from '../utils/Interface';
 import {
   getInputPropsWithoutValue,
   setInitInputValue,
@@ -22,32 +22,32 @@ import {
 } from './TextareaValueHandler';
 
 // 获取元素除了被代理的值以外的属性
-function getPropsWithoutValue(type: string, dom: HorizonDom, properties: IProperty) {
+function getPropsWithoutValue(type: string, dom: HorizonDom, props: Props) {
   switch (type) {
     case 'input':
-      return getInputPropsWithoutValue(<HTMLInputElement>dom, properties);
+      return getInputPropsWithoutValue(<HTMLInputElement>dom, props);
     case 'option':
-      return getOptionPropsWithoutValue(dom, properties);
+      return getOptionPropsWithoutValue(dom, props);
     case 'select':
-      return getSelectPropsWithoutValue(<HorizonSelect>dom, properties);
+      return getSelectPropsWithoutValue(<HorizonSelect>dom, props);
     case 'textarea':
-      return getTextareaPropsWithoutValue(<HTMLTextAreaElement>dom, properties);
+      return getTextareaPropsWithoutValue(<HTMLTextAreaElement>dom, props);
     default:
-      return properties;
+      return props;
   }
 }
 
 // 其它属性挂载完成后处理被代理值相关的属性
-function setInitValue(type: string, dom: HorizonDom, properties: IProperty) {
+function setInitValue(type: string, dom: HorizonDom, props: Props) {
   switch (type) {
     case 'input':
-      setInitInputValue(<HTMLInputElement>dom, properties);
+      setInitInputValue(<HTMLInputElement>dom, props);
       break;
     case 'select':
-      updateSelectValue(<HorizonSelect>dom, properties, true);
+      updateSelectValue(<HorizonSelect>dom, props, true);
       break;
     case 'textarea':
-      updateTextareaValue(<HTMLTextAreaElement>dom, properties, true);
+      updateTextareaValue(<HTMLTextAreaElement>dom, props, true);
       break;
     default:
       break;
@@ -55,16 +55,16 @@ function setInitValue(type: string, dom: HorizonDom, properties: IProperty) {
 }
 
 // 更新需要适配的属性
-function updateValue(type: string, dom: HorizonDom, properties: IProperty) {
+function updateValue(type: string, dom: HorizonDom, props: Props) {
   switch (type) {
     case 'input':
-      updateInputValue(<HTMLInputElement>dom, properties);
+      updateInputValue(<HTMLInputElement>dom, props);
       break;
     case 'select':
-      updateSelectValue(<HorizonSelect>dom, properties);
+      updateSelectValue(<HorizonSelect>dom, props);
       break;
     case 'textarea':
-      updateTextareaValue(<HTMLTextAreaElement>dom, properties);
+      updateTextareaValue(<HTMLTextAreaElement>dom, props);
       break;
     default:
       break;
