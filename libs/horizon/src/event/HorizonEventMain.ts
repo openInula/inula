@@ -5,7 +5,6 @@ import { decorateNativeEvent } from './EventWrapper';
 import { getListenersFromTree } from './ListenerGetter';
 import { asyncUpdates, runDiscreteUpdates } from '../renderer/Renderer';
 import { findRoot } from '../renderer/vnode/VNodeUtils';
-import { syncRadiosHandler } from '../dom/valueHandler/InputValueHandler';
 import {
   EVENT_TYPE_ALL,
   EVENT_TYPE_BUBBLE,
@@ -14,8 +13,9 @@ import {
   transformToHorizonEvent,
 } from './EventHub';
 import { getDomTag } from '../dom/utils/Common';
-import { updateInputValueIfChanged } from '../dom/valueHandler/ValueChangeHandler';
+import { updateInputHandlerIfChanged } from '../dom/valueHandler/ValueChangeHandler';
 import { getDom } from '../dom/DOMInternalKeys';
+import { recordChangeEventTargets, shouldControlValue, tryControlValue } from './FormValueController';
 
 // web规范，鼠标右键key值
 const RIGHT_MOUSE_BUTTON = 2;
@@ -34,11 +34,11 @@ function shouldTriggerChangeEvent(targetDom, evtName) {
     return evtName === 'change';
   } else if (domTag === 'input' && (type === 'checkbox' || type === 'radio')) {
     if (evtName === 'click') {
-      return updateInputValueIfChanged(targetDom);
+      return updateInputHandlerIfChanged(targetDom);
     }
   } else if (isInputElement(targetDom)) {
     if (evtName === 'input' || evtName === 'change') {
-      return updateInputValueIfChanged(targetDom);
+      return updateInputHandlerIfChanged(targetDom);
     }
   }
   return false;
@@ -52,6 +52,7 @@ function getChangeListeners(
   nativeEvtName: string,
   nativeEvt: AnyNativeEvent,
   vNode: null | VNode,
+  target: EventTarget
 ): ListenerUnitList {
   if (!vNode) {
     return [];
@@ -60,6 +61,8 @@ function getChangeListeners(
 
   // 判断是否需要触发change事件
   if (shouldTriggerChangeEvent(targetDom, nativeEvtName)) {
+    recordChangeEventTargets(target);
+
     const event = decorateNativeEvent(
       'onChange',
       'change',
@@ -129,8 +132,7 @@ function triggerHorizonEvents(
   nativeEvent: AnyNativeEvent,
   vNode: VNode | null,
 ) {
-  const target = nativeEvent.target || nativeEvent.srcElement;
-  let hasTriggeredChangeEvent = false;
+  const target = nativeEvent.target || nativeEvent.srcElement!;
 
   // 触发普通委托事件
   let listenerList: ListenerUnitList = getCommonListeners(
@@ -147,17 +149,15 @@ function triggerHorizonEvents(
       nativeEvtName,
       nativeEvent,
       vNode,
+      target
     );
     if (changeListeners.length) {
-      hasTriggeredChangeEvent = true;
       listenerList = listenerList.concat(changeListeners);
     }
   }
 
   // 处理触发的事件队列
   processListeners(listenerList);
-
-  return hasTriggeredChangeEvent;
 }
 
 
@@ -188,15 +188,13 @@ export function handleEventMain(
 
   // 没有事件在执行，经过调度再执行事件
   isInEventsExecution = true;
-  let hasTriggeredChangeEvent = false;
   try {
-    hasTriggeredChangeEvent = asyncUpdates(() => triggerHorizonEvents(nativeEvtName, isCapture, nativeEvent, startVNode));
+    asyncUpdates(() => triggerHorizonEvents(nativeEvtName, isCapture, nativeEvent, startVNode));
   } finally {
     isInEventsExecution = false;
-    if (hasTriggeredChangeEvent) {
+    if (shouldControlValue()) {
       runDiscreteUpdates();
-      // 若是Radio，同步同组其他Radio的Handler Value
-      syncRadiosHandler(nativeEvent.target as Element);
+      tryControlValue();
     }
   }
 }

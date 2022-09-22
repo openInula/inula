@@ -3,7 +3,7 @@
  * 处理组件被代理和不被代理情况下的不同逻辑
  */
 
-import {HorizonDom, HorizonSelect, IProperty} from '../utils/Interface';
+import {HorizonDom, HorizonSelect, Props} from '../utils/Interface';
 import {
   getInputPropsWithoutValue,
   setInitInputValue,
@@ -22,7 +22,7 @@ import {
 } from './TextareaValueHandler';
 
 // 获取元素除了被代理的值以外的属性
-function getPropsWithoutValue(type: string, dom: HorizonDom, properties: IProperty) {
+function getPropsWithoutValue(type: string, dom: HorizonDom, properties: Props) {
   switch (type) {
     case 'input':
       return getInputPropsWithoutValue(<HTMLInputElement>dom, properties);
@@ -38,7 +38,7 @@ function getPropsWithoutValue(type: string, dom: HorizonDom, properties: IProper
 }
 
 // 其它属性挂载完成后处理被代理值相关的属性
-function setInitValue(type: string, dom: HorizonDom, properties: IProperty) {
+function setInitValue(type: string, dom: HorizonDom, properties: Props) {
   switch (type) {
     case 'input':
       setInitInputValue(<HTMLInputElement>dom, properties);
@@ -55,7 +55,7 @@ function setInitValue(type: string, dom: HorizonDom, properties: IProperty) {
 }
 
 // 更新需要适配的属性
-function updateValue(type: string, dom: HorizonDom, properties: IProperty) {
+function updateValue(type: string, dom: HorizonDom, properties: Props) {
   switch (type) {
     case 'input':
       updateInputValue(<HTMLInputElement>dom, properties);

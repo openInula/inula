@@ -1,5 +1,5 @@
 import { Children } from '../../external/ChildrenUtil';
-import { IProperty } from '../utils/Interface';
+import { Props } from '../utils/Interface';
 
 // 把 const a = 'a'; <option>gir{a}ffe</option> 转成 giraffe
 function concatChildren(children) {
@@ -11,11 +11,11 @@ function concatChildren(children) {
   return content;
 }
 
-export function getOptionPropsWithoutValue(dom: Element, properties: IProperty) {
-  const content = concatChildren(properties.children);
+export function getOptionPropsWithoutValue(dom: Element, props: Props) {
+  const content = concatChildren(props.children);
 
   return {
-    ...properties,
+    ...props,
     children: content || undefined, // 覆盖children
   };
 }

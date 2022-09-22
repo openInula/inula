@@ -1,4 +1,4 @@
-import {HorizonSelect, IProperty} from '../utils/Interface';
+import {HorizonSelect, Props} from '../utils/Interface';
 
 function updateMultipleValue(options, newValues) {
   const newValueSet = new Set();
@@ -46,8 +46,8 @@ export function getSelectPropsWithoutValue(dom: HorizonSelect, properties: Objec
   };
 }
 
-export function updateSelectValue(dom: HorizonSelect, properties: IProperty, isInit: boolean = false) {
-  const {value, defaultValue, multiple} = properties;
+export function updateSelectValue(dom: HorizonSelect, props: Props, isInit: boolean = false) {
+  const {value, defaultValue, multiple} = props;
 
   const oldMultiple = dom._multiple !== undefined ? dom._multiple : dom.multiple;
   const newMultiple = Boolean(multiple);

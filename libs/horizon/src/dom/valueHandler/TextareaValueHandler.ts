@@ -1,12 +1,12 @@
-import {IProperty} from '../utils/Interface';
+import {Props} from '../utils/Interface';
 
 
 // 值的优先级 value > children > defaultValue
-function getInitValue(properties: IProperty) {
-  const {value} = properties;
+function getInitValue(props: Props) {
+  const {value} = props;
 
   if (value == null) {
-    const {defaultValue, children} = properties;
+    const {defaultValue, children} = props;
     let initValue = defaultValue;
 
     // children content存在时，会覆盖defaultValue
@@ -30,15 +30,15 @@ export function getTextareaPropsWithoutValue(dom: HTMLTextAreaElement, propertie
   };
 }
 
-export function updateTextareaValue(dom: HTMLTextAreaElement, properties: IProperty, isInit: boolean = false) {
+export function updateTextareaValue(dom: HTMLTextAreaElement, props: Props, isInit: boolean = false) {
   if (isInit) {
-    const initValue = getInitValue(properties);
+    const initValue = getInitValue(props);
     if (initValue !== '') {
       dom.value = initValue;
     }
   } else {
     // 获取当前节点的 value 值
-    let value = properties.value;
+    let value = props.value;
     if (value != null) {
       value = String(value);
       // 当且仅当值实际发生变化时才去设置节点的value值

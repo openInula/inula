@@ -1,4 +1,4 @@
-export interface IProperty {
+export interface Props {
   [propName: string]: any;
 }
 
