@@ -30,7 +30,15 @@ import {
 import { asyncUpdates } from './src/renderer/TreeBuilder';
 import { callRenderQueueImmediate } from './src/renderer/taskExecutor/RenderQueue';
 import { runAsyncEffects } from './src/renderer/submit/HookEffectHandler';
-
+import {
+  isContextProvider,
+  isElement,
+  isForwardRef,
+  isFragment,
+  isLazy,
+  isMemo,
+  isPortal,
+} from './src/external/HorizonIs';
 import { createStore, useStore, clearStore } from './src/horizonx/store/StoreHandler';
 import * as reduxAdapter from './src/horizonx/adapters/redux';
 import { watch } from './src/horizonx/proxy/watch';
@@ -87,6 +95,13 @@ const Horizon = {
   clearStore,
   reduxAdapter,
   watch,
+  isFragment,
+  isElement,
+  isForwardRef,
+  isLazy,
+  isMemo,
+  isPortal,
+  isContextProvider
 };
 
 export const version = __VERSION__;
@@ -128,6 +143,13 @@ export {
   clearStore,
   reduxAdapter,
   watch,
+  isFragment,
+  isElement,
+  isForwardRef,
+  isLazy,
+  isMemo,
+  isPortal,
+  isContextProvider
 };
 
 export default Horizon;
