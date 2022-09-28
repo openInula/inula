@@ -31,8 +31,8 @@ describe('HorizonIs', () => {
   });
 
   it('should identify memo component', () => {
-    const memo = Horizon.memo(App);
-    expect(Horizon.isMemo(memo)).toBe(true);
+    const MemoComp = Horizon.memo(App);
+    expect(Horizon.isMemo(<MemoComp />)).toBe(true);
   });
 
   it('should identify forwardRef', () => {
@@ -54,5 +54,7 @@ describe('HorizonIs', () => {
     const TestContext = Horizon.createContext(false);
     expect(Horizon.isContextProvider(<TestContext.Provider />)).toBe(true);
     expect(Horizon.isContextProvider(<TestContext.Consumer />)).toBe(false);
+    expect(Horizon.isContextConsumer(<TestContext.Provider />)).toBe(false);
+    expect(Horizon.isContextConsumer(<TestContext.Consumer />)).toBe(true);
   });
 });

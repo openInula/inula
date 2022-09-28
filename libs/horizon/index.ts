@@ -32,6 +32,7 @@ import { callRenderQueueImmediate } from './src/renderer/taskExecutor/RenderQueu
 import { runAsyncEffects } from './src/renderer/submit/HookEffectHandler';
 import {
   isContextProvider,
+  isContextConsumer,
   isElement,
   isForwardRef,
   isFragment,
@@ -101,7 +102,8 @@ const Horizon = {
   isLazy,
   isMemo,
   isPortal,
-  isContextProvider
+  isContextProvider,
+  isContextConsumer
 };
 
 export const version = __VERSION__;
@@ -149,7 +151,8 @@ export {
   isLazy,
   isMemo,
   isPortal,
-  isContextProvider
+  isContextProvider,
+  isContextConsumer
 };
 
 export default Horizon;

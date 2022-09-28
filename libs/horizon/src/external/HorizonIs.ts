@@ -13,10 +13,18 @@ import {
   TYPE_SUSPENSE,
 } from './JSXElementType';
 
-function isObject(i) {
-  return Object.prototype.toString.call(i) === '[object Object]';
+function isObject(anyThing) {
+  return Object.prototype.toString.call(anyThing) === '[object Object]';
 }
 
+/**
+ * 获取传入的element的类型
+ * 1. fragment, suspense 属于内置标签，类型位于type
+ * 2. memo, lazy, forwardRef 属于包装函数，产生新的对象，类型位于type.vtype
+ * 3. Context.Provider/Consumer 的类型是框架定义的对象，类型位于type.vtype
+ * 4. portal比较特殊，函数结果直接可以作为element，类型位于vtype
+ * @param ele
+ */
 function getType(ele: any) {
   if (isObject(ele)) {
     const type = ele.type;
@@ -25,12 +33,12 @@ function getType(ele: any) {
     }
 
     const vtypeOfType = type?.vtype;
-    if ([TYPE_PROVIDER, TYPE_LAZY, TYPE_FORWARD_REF, TYPE_CONTEXT].includes(vtypeOfType)) {
+    if ([TYPE_MEMO, TYPE_PROVIDER, TYPE_LAZY, TYPE_FORWARD_REF, TYPE_CONTEXT].includes(vtypeOfType)) {
       return vtypeOfType;
     }
 
     const vtype = ele.vtype;
-    if([TYPE_MEMO, TYPE_FORWARD_REF, TYPE_PORTAL].includes(vtype)) {
+    if(TYPE_PORTAL === vtype) {
       return vtype;
     }
   }
@@ -64,4 +72,9 @@ export function isPortal(ele: any) {
 
 export function isContextProvider(ele: any) {
   return getType(ele) === TYPE_PROVIDER;
+}
+
+// Context.consumer的类型就是context的类型
+export function isContextConsumer(ele: any) {
+  return getType(ele) === TYPE_CONTEXT;
 }
