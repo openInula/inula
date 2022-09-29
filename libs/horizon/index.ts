@@ -145,6 +145,7 @@ export {
   clearStore,
   reduxAdapter,
   watch,
+  // 兼容ReactIs
   isFragment,
   isElement,
   isForwardRef,
