@@ -9,8 +9,6 @@ import { getSelectionInfo, resetSelectionRange, SelectionData } from './Selectio
 import { shouldAutoFocus } from './utils/Common';
 import { NSS } from './utils/DomCreator';
 import { adjustStyleValue } from './DOMPropertiesHandler/StyleHandler';
-
-import { listenDelegatedEvents } from '../event/EventBinding';
 import type { VNode } from '../renderer/Types';
 import {
   setInitValue,

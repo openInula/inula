@@ -7,7 +7,7 @@ import {
 } from './EventHub';
 import { isDocument } from '../dom/utils/Common';
 import { getNearestVNode, getNonDelegatedListenerMap } from '../dom/DOMInternalKeys';
-import { runDiscreteUpdates } from '../renderer/TreeBuilder';
+import { asyncUpdates, runDiscreteUpdates } from '../renderer/TreeBuilder';
 import { handleEventMain } from './HorizonEventMain';
 import { decorateNativeEvent } from './EventWrapper';
 import { VNode } from '../renderer/vnode/VNode';
@@ -98,7 +98,9 @@ function isCaptureEvent(horizonEventName) {
 function getWrapperListener(horizonEventName, nativeEvtName, targetElement, listener) {
   return event => {
     const customEvent = decorateNativeEvent(horizonEventName, nativeEvtName, event);
-    listener(customEvent);
+    asyncUpdates(() => {
+      listener(customEvent);
+    });
   };
 }
 

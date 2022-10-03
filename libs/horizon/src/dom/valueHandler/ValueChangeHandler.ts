@@ -54,7 +54,8 @@ export function watchValueChange(dom) {
   }
 }
 
-export function updateInputValueIfChanged(dom) {
+// 更新input dom的handler 状态，返回是否更新
+export function updateInputHandlerIfChanged(dom) {
   const handler = dom[HANDLER_KEY];
   if (!handler) {
     return true;
