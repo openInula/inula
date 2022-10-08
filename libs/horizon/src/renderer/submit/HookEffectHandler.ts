@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 /**
  * useEffect 和 useLayoutEffect的执行逻辑
  */
@@ -36,7 +51,7 @@ export function callUseEffects(vNode: VNode) {
       ) {
         hookEffects.push(effect);
         hookRemoveEffects.push(effect);
-  
+
         // 异步调用
         if (!isScheduling) {
           isScheduling = true;
@@ -89,11 +104,11 @@ export function callEffectRemove(vNode: VNode) {
   if (effectList !== null) {
     effectList.forEach(effect => {
       const {removeEffect, effectConstant} = effect;
-  
+
       if (removeEffect !== undefined) {
         if ((effectConstant & EffectConstant.Effect) !== EffectConstant.NoEffect) { // 如果是useEffect，就异步调用
           hookRemoveEffects.push(effect);
-  
+
           if (!isScheduling) {
             isScheduling = true;
             runAsync(runAsyncEffects);
