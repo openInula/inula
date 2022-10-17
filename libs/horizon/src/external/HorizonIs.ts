@@ -28,6 +28,13 @@ function isObject(anyThing) {
   return Object.prototype.toString.call(anyThing) === '[object Object]';
 }
 
+function isBuiltinTag(type: any) {
+  return [TYPE_FRAGMENT, TYPE_SUSPENSE].includes(type);
+}
+
+function isBuiltinComponent(type: any) {
+  return [TYPE_MEMO, TYPE_PROVIDER, TYPE_LAZY, TYPE_FORWARD_REF, TYPE_CONTEXT].includes(type);
+}
 /**
  * 获取传入的element的类型
  * 1. fragment, suspense 属于内置标签，类型位于type
@@ -39,17 +46,17 @@ function isObject(anyThing) {
 function getType(ele: any) {
   if (isObject(ele)) {
     const type = ele.type;
-    if ([TYPE_FRAGMENT, TYPE_SUSPENSE].includes(type)) {
+    if (isBuiltinTag(type)) {
       return type;
     }
 
     const vtypeOfType = type?.vtype;
-    if ([TYPE_MEMO, TYPE_PROVIDER, TYPE_LAZY, TYPE_FORWARD_REF, TYPE_CONTEXT].includes(vtypeOfType)) {
+    if (isBuiltinComponent(vtypeOfType)) {
       return vtypeOfType;
     }
 
     const vtype = ele.vtype;
-    if(TYPE_PORTAL === vtype) {
+    if (TYPE_PORTAL === vtype) {
       return vtype;
     }
   }
@@ -88,4 +95,18 @@ export function isContextProvider(ele: any) {
 // Context.consumer的类型就是context的类型
 export function isContextConsumer(ele: any) {
   return getType(ele) === TYPE_CONTEXT;
+}
+
+export function isValidElementType(type: any) {
+  if (typeof type === 'string' || typeof type === 'function' || isBuiltinTag(type)) {
+    return true;
+  }
+
+  if (isObject(type)) {
+    if (isBuiltinComponent(type.vtype)) {
+      return true;
+    }
+  }
+
+  return false;
 }
