@@ -49,6 +49,7 @@ import {
   isContextProvider,
   isContextConsumer,
   isElement,
+  isValidElementType,
   isForwardRef,
   isFragment,
   isLazy,
@@ -113,6 +114,7 @@ const Horizon = {
   watch,
   isFragment,
   isElement,
+  isValidElementType,
   isForwardRef,
   isLazy,
   isMemo,
@@ -163,6 +165,7 @@ export {
   // 兼容ReactIs
   isFragment,
   isElement,
+  isValidElementType,
   isForwardRef,
   isLazy,
   isMemo,
