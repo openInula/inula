@@ -17,4 +17,4 @@
 export const FunctionComponent = 'FunctionComponent';
 export const ClassComponent = 'ClassComponent';
 
-export const OBSERVER_KEY = Symbol('_horizonObserver');
+export const OBSERVER_KEY = '_horizonObserver';
