@@ -45,7 +45,7 @@ export function getTextareaPropsWithoutValue(dom: HTMLTextAreaElement, propertie
   };
 }
 
-export function updateTextareaValue(dom: HTMLTextAreaElement, props: Props, isInit: boolean = false) {
+export function updateTextareaValue(dom: HTMLTextAreaElement, props: Props, isInit = false) {
   if (isInit) {
     const initValue = getInitValue(props);
     if (initValue !== '') {

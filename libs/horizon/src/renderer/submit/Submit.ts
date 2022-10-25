@@ -41,7 +41,7 @@ let rootThrowError = null;
 
 // 防止死循环调用update
 const LOOPING_UPDATE_LIMIT = 50;
-let loopingUpdateCount: number = 0;
+let loopingUpdateCount = 0;
 let lastRoot: VNode | null = null;
 
 export function submitToRender(treeRoot) {

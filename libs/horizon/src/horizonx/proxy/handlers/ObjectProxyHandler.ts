@@ -42,8 +42,8 @@ export function get(rawObj: object, key: string | symbol, receiver: any, singleL
       observer.watchers[prop].push(handler);
       return ()=>{
         observer.watchers[prop]=observer.watchers[prop].filter(cb=>cb!==handler);
-      }
-    }
+      };
+    };
   }
 
   if (key === 'addListener') {

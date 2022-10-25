@@ -78,7 +78,7 @@ function createClassErrorUpdate(
   return update;
 }
 function isPromise(error: any): error is PromiseType<any> {
-  return error !== null && typeof error === 'object' && typeof error.then === 'function'
+  return error !== null && typeof error === 'object' && typeof error.then === 'function';
 }
 // 处理capture和bubble阶段抛出的错误
 export function handleRenderThrowError(

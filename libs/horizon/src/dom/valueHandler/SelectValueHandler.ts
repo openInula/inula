@@ -61,7 +61,7 @@ export function getSelectPropsWithoutValue(dom: HorizonSelect, properties: Objec
   };
 }
 
-export function updateSelectValue(dom: HorizonSelect, props: Props, isInit: boolean = false) {
+export function updateSelectValue(dom: HorizonSelect, props: Props, isInit = false) {
   const {value, defaultValue, multiple} = props;
 
   const oldMultiple = dom._multiple !== undefined ? dom._multiple : dom.multiple;

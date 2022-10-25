@@ -37,7 +37,7 @@ export function useContext<T>(
   return getNewContext(processingVNode!, Context, true);
 }
 
-export function useState<S>(initialState: (() => S) | S,): [S, Dispatch<BasicStateAction<S>>] {
+export function useState<S>(initialState: (() => S) | S): [S, Dispatch<BasicStateAction<S>>] {
   return useStateImpl(initialState);
 }
 

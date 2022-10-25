@@ -172,7 +172,7 @@ function attachRef(vNode: VNode) {
 }
 
 function detachRef(vNode: VNode, isOldRef?: boolean) {
-  let ref = (isOldRef ? vNode.oldRef : vNode.ref);
+  const ref = (isOldRef ? vNode.oldRef : vNode.ref);
 
   handleRef(vNode, ref, null);
 }

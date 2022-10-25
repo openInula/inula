@@ -19,7 +19,7 @@ import { createContext } from '../../renderer/components/context/CreateContext';
 import { createElement } from '../../external/JSXElement';
 import { BoundActionCreator } from './redux';
 import { ReduxAction } from './redux';
-import { ReduxStoreHandler } from '../store/StoreHandler'
+import { ReduxStoreHandler } from '../store/StoreHandler';
 
 const DefaultContext = createContext(null);
 type Context = typeof DefaultContext;

@@ -31,7 +31,7 @@ import {EffectConstant} from '../hooks/EffectConstant';
 let hookEffects: Array<HookEffect | VNode> = [];
 let hookRemoveEffects: Array<HookEffect | VNode> = [];
 // 是否正在异步调度effects
-let isScheduling: boolean = false;
+let isScheduling = false;
 
 export function setSchedulingEffects(value) {
   isScheduling = value;

@@ -21,7 +21,7 @@ import {
 import {getHookStage, HookStage} from './HookStage';
 import {isArrayEqual} from '../utils/compare';
 
-export function useMemoImpl<V>(fun: () => V, deps?: Array<any> | null,): V {
+export function useMemoImpl<V>(fun: () => V, deps?: Array<any> | null): V {
   const stage = getHookStage();
   if (stage === null) {
     throwNotInFuncError();

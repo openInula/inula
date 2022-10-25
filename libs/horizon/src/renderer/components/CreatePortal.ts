@@ -19,7 +19,7 @@ import type {PortalType} from '../Types';
 export function createPortal(
   children: any,
   realNode: any,
-  key: string = '',
+  key = '',
 ): PortalType {
   return {
     vtype: TYPE_PORTAL,

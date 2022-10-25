@@ -26,7 +26,7 @@ import {getHookStage, HookStage} from './HookStage';
 import {isArrayEqual} from '../utils/compare';
 import {getProcessingVNode} from '../GlobalVar';
 
-export function useEffectImpl(effectFunc: () => (() => void) | void, deps?: Array<any> | null,): void {
+export function useEffectImpl(effectFunc: () => (() => void) | void, deps?: Array<any> | null): void {
   // 异步触发的effect
   useEffect(effectFunc, deps, EffectConstant.Effect);
 }

@@ -35,7 +35,7 @@ function collectDeps<T>(vNode: VNode, context: ContextType<T>) {
   }
 }
 
-export function getNewContext<T>(vNode: VNode, ctx: ContextType<T>, isUseContext: boolean = false): T {
+export function getNewContext<T>(vNode: VNode, ctx: ContextType<T>, isUseContext = false): T {
   // 如果来自于useContext，则需要在函数组件中调用
   if (isUseContext && getHookStage() === null) {
     throwNotInFuncError();
