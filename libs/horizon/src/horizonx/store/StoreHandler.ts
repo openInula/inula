@@ -13,13 +13,13 @@
  * See the Mulan PSL v2 for more details.
  */
 
-//@ts-ignore
+// @ts-ignore
 import { useEffect, useRef } from '../../renderer/hooks/HookExternal';
 import { getProcessingVNode } from '../../renderer/GlobalVar';
 import { createProxy } from '../proxy/ProxyHandler';
 import readonlyProxy from '../proxy/readonlyProxy';
 import { Observer } from '../proxy/Observer';
-import { FunctionComponent, ClassComponent } from '../Constants';
+import { FunctionComponent, ClassComponent } from '../../renderer/vnode/VNodeTags';
 import { VNode } from '../../renderer/Types';
 
 const storeMap = new Map<string, StoreHandler<any, any, any>>();
@@ -80,13 +80,11 @@ type AsyncAction<T extends ActionFunction<any>, S extends object> = (
 type StoreActions<S extends object, A extends UserActions<S>> = { [K in keyof A]: Action<A[K], S> };
 type QueuedStoreActions<S extends object, A extends UserActions<S>> = { [K in keyof A]: AsyncAction<A[K], S> };
 type ComputedValues<S extends object, C extends UserComputedValues<S>> = { [K in keyof C]: ReturnType<C[K]> };
-type PostponedAction = (state: object, ...args: any[]) => Promise<any>;
-type PostponedActions = { [key: string]: PostponedAction };
 
 export function createStore<S extends object, A extends UserActions<S>, C extends UserComputedValues<S>>(
   config: StoreConfig<S, A, C>
 ): () => StoreHandler<S, A, C> {
-  //create a local shalow copy to ensure consistency (if user would change the config object after store creation)
+  // create a local shalow copy to ensure consistency (if user would change the config object after store creation)
   config = {
     id: config.id,
     options: config.options,

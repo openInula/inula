@@ -28,7 +28,8 @@ const handler = {
   forEach,
   keys,
   values,
-  [Symbol.iterator]: forOf,
+  // 判断Symbol类型，兼容IE
+  [typeof Symbol === 'function' ? Symbol.iterator : '@@iterator']: forOf,
 };
 
 export function createCollectionProxy(rawObj: Object, hookObserver = true): Object {
@@ -214,7 +215,8 @@ function wrapIterator(rawObj: Object, rawIt: { next: () => { value: any; done: b
 
       return { value: newVal, done };
     },
-    [Symbol.iterator]() {
+    // 判断Symbol类型，兼容IE
+    [typeof Symbol === 'function' ? Symbol.iterator : '@@iterator']() {
       return this;
     },
   };
