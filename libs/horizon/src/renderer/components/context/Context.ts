@@ -13,9 +13,9 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import type {VNode, ContextType} from '../../Types';
-import {getHookStage} from '../../hooks/HookStage';
-import {throwNotInFuncError} from '../../hooks/BaseHook';
+import type { VNode, ContextType } from '../../Types';
+import { getHookStage } from '../../hooks/HookStage';
+import { throwNotInFuncError } from '../../hooks/BaseHook';
 
 // 重置依赖
 export function resetDepContexts(vNode: VNode): void {

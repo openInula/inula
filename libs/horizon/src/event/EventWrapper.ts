@@ -40,7 +40,7 @@ export class WrappedEvent {
   stopPropagation: () => void;
   preventDefault: () => void;
 
-  propagationStopped = false
+  propagationStopped = false;
   isPropagationStopped = (): boolean => this.propagationStopped;
 
   // 适配Keyboard键盘事件该函数不能由合成事件调用
@@ -51,9 +51,9 @@ export class WrappedEvent {
   constructor(customEventName: string, nativeEvtName: string, nativeEvent: AnyNativeEvent) {
     for (const name in nativeEvent) {
       this[name] = nativeEvent[name];
-      if(name === 'getModifierState') {
+      if (name === 'getModifierState') {
         const keyBoardEvent = nativeEvent as KeyboardEvent;
-        this.getModifierState = (keyArg) => keyBoardEvent.getModifierState(keyArg);
+        this.getModifierState = keyArg => keyBoardEvent.getModifierState(keyArg);
       }
     }
     // stopPropagation和preventDefault 必须通过Event实例调用

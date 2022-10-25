@@ -44,8 +44,8 @@ export function createStoreHook(context: Context) {
 }
 
 export function createSelectorHook(context: Context): (selector?: (any) => any) => any {
-  const store = (createStoreHook(context)() as unknown) as ReduxStoreHandler;
-  return function(selector = state => state) {
+  const store = createStoreHook(context)() as unknown as ReduxStoreHandler;
+  return function (selector = state => state) {
     const [b, fr] = useState(false);
 
     useEffect(() => {
@@ -59,9 +59,9 @@ export function createSelectorHook(context: Context): (selector?: (any) => any) 
   };
 }
 
-export function createDispatchHook(context: Context): ()=>BoundActionCreator {
-  const store = (createStoreHook(context)() as unknown) as ReduxStoreHandler;
-  return function() {
+export function createDispatchHook(context: Context): () => BoundActionCreator {
+  const store = createStoreHook(context)() as unknown as ReduxStoreHandler;
+  return function () {
     return action => {
       store.dispatch(action);
     };
@@ -120,7 +120,7 @@ export function connect(
     function Wrapper(props) {
       const [f, forceReload] = useState(true);
 
-      const store = (useStore() as unknown) as ReduxStoreHandler;
+      const store = useStore() as unknown as ReduxStoreHandler;
 
       useEffect(() => {
         const unsubscribe = store.subscribe(() => forceReload(!f));

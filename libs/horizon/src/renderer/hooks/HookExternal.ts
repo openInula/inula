@@ -13,26 +13,23 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import type {ContextType} from '../Types';
+import type { ContextType } from '../Types';
 
-import {useRefImpl} from './UseRefHook';
-import {useEffectImpl, useLayoutEffectImpl} from './UseEffectHook';
-import {useCallbackImpl} from './UseCallbackHook';
-import {useMemoImpl} from './UseMemoHook';
-import {useImperativeHandleImpl} from './UseImperativeHook';
-import {useReducerImpl} from './UseReducerHook';
-import {useStateImpl} from './UseStateHook';
-import {getNewContext} from '../components/context/Context';
-import {getProcessingVNode} from '../GlobalVar';
-import {Ref, Trigger} from './HookType';
+import { useRefImpl } from './UseRefHook';
+import { useEffectImpl, useLayoutEffectImpl } from './UseEffectHook';
+import { useCallbackImpl } from './UseCallbackHook';
+import { useMemoImpl } from './UseMemoHook';
+import { useImperativeHandleImpl } from './UseImperativeHook';
+import { useReducerImpl } from './UseReducerHook';
+import { useStateImpl } from './UseStateHook';
+import { getNewContext } from '../components/context/Context';
+import { getProcessingVNode } from '../GlobalVar';
+import { Ref, Trigger } from './HookType';
 
 type BasicStateAction<S> = ((S) => S) | S;
 type Dispatch<A> = (A) => void;
 
-
-export function useContext<T>(
-  Context: ContextType<T>,
-): T {
+export function useContext<T>(Context: ContextType<T>): T {
   const processingVNode = getProcessingVNode();
   return getNewContext(processingVNode!, Context, true);
 }
@@ -41,11 +38,7 @@ export function useState<S>(initialState: (() => S) | S): [S, Dispatch<BasicStat
   return useStateImpl(initialState);
 }
 
-export function useReducer<S, I, A>(
-  reducer: (S, A) => S,
-  initialArg: I,
-  init?: (I) => S,
-): [S, Trigger<A>] | void {
+export function useReducer<S, I, A>(reducer: (S, A) => S, initialArg: I, init?: (I) => S): [S, Trigger<A>] | void {
   return useReducerImpl(reducer, initialArg, init);
 }
 
@@ -53,38 +46,26 @@ export function useRef<T>(initialValue: T): Ref<T> {
   return useRefImpl(initialValue);
 }
 
-export function useEffect(
-  create: () => (() => void) | void,
-  deps?: Array<any> | null,
-): void {
+export function useEffect(create: () => (() => void) | void, deps?: Array<any> | null): void {
   return useEffectImpl(create, deps);
 }
 
-export function useLayoutEffect(
-  create: () => (() => void) | void,
-  deps?: Array<any> | null,
-): void {
+export function useLayoutEffect(create: () => (() => void) | void, deps?: Array<any> | null): void {
   return useLayoutEffectImpl(create, deps);
 }
 
-export function useCallback<T>(
-  callback: T,
-  deps?: Array<any> | null,
-): T {
+export function useCallback<T>(callback: T, deps?: Array<any> | null): T {
   return useCallbackImpl(callback, deps);
 }
 
-export function useMemo<T>(
-  create: () => T,
-  deps?: Array<any> | null,
-): T {
+export function useMemo<T>(create: () => T, deps?: Array<any> | null): T {
   return useMemoImpl(create, deps);
 }
 
 export function useImperativeHandle<T>(
-  ref: {current: T | null} | ((inst: T | null) => any) | null | void,
+  ref: { current: T | null } | ((inst: T | null) => any) | null | void,
   create: () => T,
-  deps?: Array<any> | null,
+  deps?: Array<any> | null
 ): void {
   return useImperativeHandleImpl(ref, create, deps);
 }

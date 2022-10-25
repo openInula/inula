@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import type {VNode} from './Types';
+import type { VNode } from './Types';
 
 // 当前处理的classVNode，用于设置inst.refs
 let processingClassVNode: VNode | null = null;

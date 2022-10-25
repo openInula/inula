@@ -16,30 +16,15 @@
 import type { VNode } from './Types';
 import type { Update } from './UpdateHandler';
 
-import {
-  asyncUpdates,
-  syncUpdates,
-  runDiscreteUpdates,
-  launchUpdateFromVNode,
-} from './TreeBuilder';
+import { asyncUpdates, syncUpdates, runDiscreteUpdates, launchUpdateFromVNode } from './TreeBuilder';
 import { runAsyncEffects } from './submit/HookEffectHandler';
 import { Callback, newUpdate, pushUpdate } from './UpdateHandler';
 
-
 export { createVNode, createTreeRootVNode } from './vnode/VNodeCreator';
 export { createPortal } from './components/CreatePortal';
-export {
-  asyncUpdates,
-  syncUpdates,
-  runDiscreteUpdates,
-  runAsyncEffects,
-};
+export { asyncUpdates, syncUpdates, runDiscreteUpdates, runAsyncEffects };
 
-export function startUpdate(
-  element: any,
-  treeRoot: VNode,
-  callback?: Callback,
-) {
+export function startUpdate(element: any, treeRoot: VNode, callback?: Callback) {
   const update: Update = newUpdate();
   update.content = { element };
 
@@ -58,4 +43,3 @@ export function getFirstCustomDom(treeRoot?: VNode | null): Element | Text | nul
   }
   return null;
 }
-

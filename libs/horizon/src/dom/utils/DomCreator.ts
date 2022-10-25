@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
  *
@@ -21,10 +20,7 @@ export const NSS = {
 };
 
 // 创建DOM元素
-export function createDom(
-  tagName: string,
-  parentNamespace: string,
-): Element {
+export function createDom(tagName: string, parentNamespace: string): Element {
   let dom: Element;
   const selfNamespace = NSS[tagName] || NSS.html;
   const ns = parentNamespace !== NSS.html ? parentNamespace : selfNamespace;

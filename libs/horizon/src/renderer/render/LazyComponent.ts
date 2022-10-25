@@ -17,18 +17,13 @@ import type { VNode } from '../Types';
 
 import { FlagUtils } from '../vnode/VNodeFlags';
 import { getLazyVNodeTag } from '../vnode/VNodeCreator';
-import {
-  ClassComponent,
-  ForwardRef,
-  FunctionComponent,
-  MemoComponent,
-} from '../vnode/VNodeTags';
+import { ClassComponent, ForwardRef, FunctionComponent, MemoComponent } from '../vnode/VNodeTags';
 import { throwIfTrue } from '../utils/throwIfTrue';
 import { captureFunctionComponent } from './FunctionComponent';
 import { captureRender as captureClassComponent } from './ClassComponent';
 import { captureMemoComponent } from './MemoComponent';
 
-export function bubbleRender() { }
+export function bubbleRender() {}
 
 const LazyRendererMap = {
   [FunctionComponent]: captureFunctionComponent,
@@ -51,11 +46,7 @@ export function mergeDefaultProps(Component: any, props: object): object {
   return props;
 }
 
-function captureLazyComponent(
-  processing,
-  lazyComponent,
-  shouldUpdate,
-) {
+function captureLazyComponent(processing, lazyComponent, shouldUpdate) {
   if (!processing.isCreated) {
     // 每次加载lazy都当作mount来处理
     processing.isCreated = true;
@@ -87,9 +78,9 @@ function captureLazyComponent(
     throwIfTrue(
       true,
       'Element type is invalid. Received a promise that resolves to: %s. ' +
-      'Lazy element type must resolve to a class or function.%s',
+        'Lazy element type must resolve to a class or function.%s',
       Component,
-      '',
+      ''
     );
     return null;
   }

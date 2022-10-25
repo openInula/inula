@@ -20,7 +20,7 @@ export function throwIfTrue(condition: boolean, errTemplate: string, ...errExpre
     // 将%s 替换成对应的变量
     const msg = errTemplate.split('%s').reduce((prevSentence: string, part: string, idx: number) => {
       // %s对应的变量
-      const expression = idx < errExpressions.length ? errExpressions[idx] : '' ;
+      const expression = idx < errExpressions.length ? errExpressions[idx] : '';
       return prevSentence + part + expression;
     }, '');
     throw Error(msg);

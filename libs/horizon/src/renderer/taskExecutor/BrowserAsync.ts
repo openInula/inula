@@ -21,7 +21,6 @@ let isMessageLoopRunning = false;
 let browserCallback = null;
 const { port1, port2 } = new MessageChannel();
 
-
 export function isOverTime() {
   return false;
 }
@@ -36,7 +35,8 @@ const callRenderTasks = () => {
     // 执行callback
     const hasMoreTask = browserCallback();
 
-    if (!hasMoreTask) { // 没有更多task
+    if (!hasMoreTask) {
+      // 没有更多task
       isMessageLoopRunning = false;
       browserCallback = null;
     } else {
@@ -48,7 +48,6 @@ const callRenderTasks = () => {
     throw error;
   }
 };
-
 
 port1.onmessage = callRenderTasks;
 

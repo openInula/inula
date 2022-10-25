@@ -30,9 +30,7 @@ import {
 } from './class/ClassLifeCycleProcessor';
 import { FlagUtils, DidCapture } from '../vnode/VNodeFlags';
 import { markRef } from './BaseComponent';
-import {
-  processUpdates,
-} from '../UpdateHandler';
+import { processUpdates } from '../UpdateHandler';
 import { setProcessingClassVNode } from '../GlobalVar';
 import { onlyUpdateChildVNodes } from '../vnode/VNodeCreator';
 import { createChildrenByDiff } from '../diff/nodeDiffComparator';
@@ -41,9 +39,7 @@ const emptyContextObj = {};
 // 获取当前节点的context
 export function getCurrentContext(clazz, processing: VNode) {
   const context = clazz.contextType;
-  return typeof context === 'object' && context !== null
-    ? getNewContext(processing, context)
-    : emptyContextObj;
+  return typeof context === 'object' && context !== null ? getNewContext(processing, context) : emptyContextObj;
 }
 
 // 挂载实例
@@ -84,9 +80,7 @@ function createChildren(clazz: any, processing: VNode) {
   const isCatchError = (processing.flags & DidCapture) === DidCapture;
 
   // 按照已有规格，如果捕获了错误却没有定义getDerivedStateFromError函数，返回的child为null
-  const newElements = isCatchError && typeof clazz.getDerivedStateFromError !== 'function'
-    ? null
-    : inst.render();
+  const newElements = isCatchError && typeof clazz.getDerivedStateFromError !== 'function' ? null : inst.render();
 
   processing.child = createChildrenByDiff(processing, processing.child, newElements, !processing.isCreated);
   return processing.child;
@@ -136,7 +130,8 @@ export function captureRender(processing: VNode): VNode | null {
     // 挂载新组件，一定会更新
     mountInstance(ctor, processing, nextProps);
     shouldUpdate = true;
-  } else { // 更新
+  } else {
+    // 更新
     const newContext = getCurrentContext(ctor, processing);
 
     // 子节点抛出异常时，如果本class是个捕获异常的处理节点，这时候oldProps是null，所以需要使用props
@@ -150,9 +145,7 @@ export function captureRender(processing: VNode): VNode | null {
     processUpdates(processing, inst, nextProps);
 
     // 如果 props, state, context 都没有变化且 isForceUpdate 为 false则不需要更新
-    shouldUpdate = oldProps !== processing.props ||
-      inst.state !== processing.state ||
-      processing.isForceUpdate;
+    shouldUpdate = oldProps !== processing.props || inst.state !== processing.state || processing.isForceUpdate;
 
     if (shouldUpdate) {
       // derivedStateFromProps会修改nextState，因此需要调用

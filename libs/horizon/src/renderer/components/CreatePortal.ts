@@ -13,14 +13,10 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import {TYPE_PORTAL} from '../../external/JSXElementType';
-import type {PortalType} from '../Types';
+import { TYPE_PORTAL } from '../../external/JSXElementType';
+import type { PortalType } from '../Types';
 
-export function createPortal(
-  children: any,
-  realNode: any,
-  key = '',
-): PortalType {
+export function createPortal(children: any, realNode: any, key = ''): PortalType {
   return {
     vtype: TYPE_PORTAL,
     key: key == '' ? '' : '' + key,

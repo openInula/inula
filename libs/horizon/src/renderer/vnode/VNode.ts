@@ -32,10 +32,10 @@ import {
   Profiler,
   MemoComponent,
 } from './VNodeTags';
-import type {VNodeTag} from './VNodeTags';
-import type {RefType, ContextType, SuspenseState, Source} from '../Types';
-import type {Hook} from '../hooks/HookType';
-import {InitFlag} from './VNodeFlags';
+import type { VNodeTag } from './VNodeTags';
+import type { RefType, ContextType, SuspenseState, Source } from '../Types';
+import type { Hook } from '../hooks/HookType';
+import { InitFlag } from './VNodeFlags';
 
 export class VNode {
   tag: VNodeTag;

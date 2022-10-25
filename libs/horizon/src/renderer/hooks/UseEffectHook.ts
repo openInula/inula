@@ -13,18 +13,13 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import {
-  createHook,
-  getCurrentHook,
-  getLastTimeHook,
-  throwNotInFuncError
-} from './BaseHook';
-import {FlagUtils} from '../vnode/VNodeFlags';
-import {EffectConstant} from './EffectConstant';
-import type {Effect, EffectList} from './HookType';
-import {getHookStage, HookStage} from './HookStage';
-import {isArrayEqual} from '../utils/compare';
-import {getProcessingVNode} from '../GlobalVar';
+import { createHook, getCurrentHook, getLastTimeHook, throwNotInFuncError } from './BaseHook';
+import { FlagUtils } from '../vnode/VNodeFlags';
+import { EffectConstant } from './EffectConstant';
+import type { Effect, EffectList } from './HookType';
+import { getHookStage, HookStage } from './HookStage';
+import { isArrayEqual } from '../utils/compare';
+import { getProcessingVNode } from '../GlobalVar';
 
 export function useEffectImpl(effectFunc: () => (() => void) | void, deps?: Array<any> | null): void {
   // 异步触发的effect
@@ -36,11 +31,7 @@ export function useLayoutEffectImpl(effectFunc: () => (() => void) | void, deps?
   useEffect(effectFunc, deps, EffectConstant.LayoutEffect);
 }
 
-function useEffect(
-  effectFunc: () => (() => void) | void,
-  deps: Array<any> | void | null,
-  effectType: number
-): void {
+function useEffect(effectFunc: () => (() => void) | void, deps: Array<any> | void | null, effectType: number): void {
   const stage = getHookStage();
   if (stage === null) {
     throwNotInFuncError();

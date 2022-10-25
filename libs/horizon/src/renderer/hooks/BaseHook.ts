@@ -14,7 +14,7 @@
  */
 
 import type { Hook } from './HookType';
-import {getProcessingVNode} from '../GlobalVar';
+import { getProcessingVNode } from '../GlobalVar';
 
 // lastTimeHook是上一次执行func时产生的hooks中，与currentHook对应的hook
 let lastTimeHook: Hook<any, any> | null = null;
@@ -35,9 +35,7 @@ export function setCurrentHook(hook: Hook<any, any> | null) {
 }
 
 export function throwNotInFuncError() {
-  throw Error(
-    'Hooks should be used inside function component.',
-  );
+  throw Error('Hooks should be used inside function component.');
 }
 
 // 新建一个hook，并放到vNode.hooks中
@@ -63,9 +61,8 @@ export function getNextHook(hook: Hook<any, any>, hooks: Array<Hook<any, any>>) 
 // 原因：1.比对hook的数量有没有变化（非必要）；2.从上一次执行中的hook获取removeEffect
 export function getCurrentHook(): Hook<any, any> {
   const processingVNode = getProcessingVNode();
-  currentHook = currentHook !== null ?
-    getNextHook(currentHook, processingVNode.hooks) :
-    (processingVNode.hooks[0] || null);
+  currentHook =
+    currentHook !== null ? getNextHook(currentHook, processingVNode.hooks) : processingVNode.hooks[0] || null;
 
   if (lastTimeHook !== null) {
     lastTimeHook = getNextHook(lastTimeHook, processingVNode.oldHooks);

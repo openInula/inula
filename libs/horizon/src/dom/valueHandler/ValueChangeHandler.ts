@@ -52,7 +52,7 @@ export function watchValueChange(dom) {
     const setFunc = descriptor?.set;
     Object.defineProperty(dom, keyForValue, {
       ...descriptor,
-      set: function(value) {
+      set: function (value) {
         currentVal = String(value);
         setFunc?.apply(this, [value]);
       },

@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
  *
@@ -42,7 +41,7 @@ export function isExecuting() {
 }
 
 export function copyExecuteMode() {
-  return {...executeMode};
+  return { ...executeMode };
 }
 
 export function setExecuteMode(mode: typeof executeMode) {

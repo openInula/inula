@@ -74,7 +74,7 @@ export function getLazyVNodeTag(lazyComp: any): string {
   } else if (lazyComp !== undefined && lazyComp !== null && typeLazyMap[lazyComp.vtype]) {
     return typeLazyMap[lazyComp.vtype];
   }
-  throw Error('Horizon can\'t resolve the content of lazy');
+  throw Error("Horizon can't resolve the content of lazy");
 }
 
 // 创建processing

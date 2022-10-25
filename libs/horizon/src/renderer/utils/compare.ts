@@ -57,10 +57,10 @@ export function shallowCompare(paramX: any, paramY: any): boolean {
       return false;
     }
 
-    return keysX.every((key, i) =>
-      Object.prototype.hasOwnProperty.call(paramY, key) && isSame(paramX[key], paramY[keysX[i]])
+    return keysX.every(
+      (key, i) => Object.prototype.hasOwnProperty.call(paramY, key) && isSame(paramX[key], paramY[keysX[i]])
     );
   }
 
-   return false;
+  return false;
 }

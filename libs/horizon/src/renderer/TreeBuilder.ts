@@ -45,12 +45,7 @@ import {
   isExecuting,
   setExecuteMode,
 } from './ExecuteMode';
-import {
-  resetContext,
-  resetNamespaceCtx,
-  setContext,
-  setNamespaceCtx,
-} from './ContextSaver';
+import { resetContext, resetNamespaceCtx, setContext, setNamespaceCtx } from './ContextSaver';
 import {
   updateChildShouldUpdate,
   updateParentsChildShouldUpdate,
@@ -110,7 +105,8 @@ function bubbleVNode(vNode: VNode): void {
   do {
     const parent = node.parent;
 
-    if ((node.flags & Interrupted) === InitFlag) { // vNode没有抛出异常
+    if ((node.flags & Interrupted) === InitFlag) {
+      // vNode没有抛出异常
       componentRenders[node.tag].bubbleRender(node);
 
       // 设置node的childShouldUpdate属性
@@ -133,7 +129,8 @@ function bubbleVNode(vNode: VNode): void {
     }
 
     const siblingVNode = node.next;
-    if (siblingVNode !== null) { // 有兄弟vNode
+    if (siblingVNode !== null) {
+      // 有兄弟vNode
       processing = siblingVNode;
       return;
     }
@@ -244,7 +241,8 @@ function buildVNodeTree(treeRoot: VNode) {
   // 清空toUpdateNodes
   treeRoot.toUpdateNodes.clear();
 
-  if (startVNode.tag !== TreeRoot) { // 不是根节点
+  if (startVNode.tag !== TreeRoot) {
+    // 不是根节点
     // 设置namespace，用于createElement
     let parent = startVNode.parent;
     while (parent !== null) {
@@ -290,7 +288,8 @@ function buildVNodeTree(treeRoot: VNode) {
       handleError(treeRoot, thrownValue);
     }
   }
-  if (startVNode.tag !== TreeRoot) { // 不是根节点
+  if (startVNode.tag !== TreeRoot) {
+    // 不是根节点
     // 恢复父节点的context
     resetTreeContext(startVNode);
   }
@@ -308,7 +307,7 @@ function recoverTreeContext(vNode: VNode) {
     if (parent.tag === ContextProvider) {
       contextProviders.unshift(parent);
     }
-    if(parent.tag === DomPortal){
+    if (parent.tag === DomPortal) {
       pushCurrentRoot(parent);
     }
     parent = parent.parent;
@@ -326,7 +325,7 @@ function resetTreeContext(vNode: VNode) {
     if (parent.tag === ContextProvider) {
       resetContext(parent);
     }
-    if(parent.tag === DomPortal){
+    if (parent.tag === DomPortal) {
       popCurrentRoot();
     }
     parent = parent.parent;
@@ -365,9 +364,7 @@ function renderFromRoot(treeRoot) {
 export function tryRenderFromRoot(treeRoot: VNode) {
   if (treeRoot.shouldUpdate && treeRoot.task === null) {
     // 任务放进queue，但是调度开始还是异步的
-    treeRoot.task = pushRenderCallback(
-      renderFromRoot.bind(null, treeRoot),
-    );
+    treeRoot.task = pushRenderCallback(renderFromRoot.bind(null, treeRoot));
   }
 }
 
@@ -387,8 +384,11 @@ export function launchUpdateFromVNode(vNode: VNode) {
   // 保存待刷新的节点
   treeRoot.toUpdateNodes?.add(vNode);
 
-  if (checkMode(BySync) && // 非批量
-    !checkMode(InRender)) { // 不是渲染阶段触发
+  if (
+    checkMode(BySync) && // 非批量
+    !checkMode(InRender)
+  ) {
+    // 不是渲染阶段触发
 
     // 业务直接调用Horizon.render的时候会进入这个分支，同步渲染。
     // 不能改成下面的异步，否则会有时序问题，因为业务可能会依赖这个渲染的完成。
