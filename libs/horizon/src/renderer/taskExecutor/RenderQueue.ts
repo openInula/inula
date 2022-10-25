@@ -17,7 +17,7 @@
  * 利用TaskExecutor的异步任务，封装一个renderQueue来执行同步的渲染callback
  */
 
-import {runAsync, cancelTask, ImmediatePriority} from './TaskExecutor';
+import { runAsync, cancelTask, ImmediatePriority } from './TaskExecutor';
 
 type RenderCallback = () => RenderCallback | null;
 
@@ -45,7 +45,7 @@ function callRenderQueue() {
 
     try {
       let callback;
-      while (callback = renderQueue.shift()) {
+      while ((callback = renderQueue.shift())) {
         callback();
       }
 

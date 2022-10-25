@@ -120,7 +120,7 @@ const Horizon = {
   isMemo,
   isPortal,
   isContextProvider,
-  isContextConsumer
+  isContextConsumer,
 };
 
 export const version = __VERSION__;
@@ -171,7 +171,7 @@ export {
   isMemo,
   isPortal,
   isContextProvider,
-  isContextConsumer
+  isContextConsumer,
 };
 
 export default Horizon;

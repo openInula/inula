@@ -14,8 +14,8 @@
  */
 
 // 从当前节点向上遍历，更新shouldUpdate和childShouldUpdate
-import {VNode} from './VNode';
-import {TreeRoot} from './VNodeTags';
+import { VNode } from './VNode';
+import { TreeRoot } from './VNodeTags';
 
 export function updateShouldUpdateOfTree(vNode: VNode): VNode | null {
   vNode.shouldUpdate = true;
@@ -70,7 +70,8 @@ export function updateParentsChildShouldUpdate(vNode: VNode) {
   let node = vNode.parent;
   const isShouldUpdate = vNode.shouldUpdate || vNode.childShouldUpdate;
 
-  if (isShouldUpdate) { // 开始节点是shouldUpdate或childShouldUpdate
+  if (isShouldUpdate) {
+    // 开始节点是shouldUpdate或childShouldUpdate
     // 更新从当前节点到根节点的childShouldUpdate为true
     setParentsChildShouldUpdate(node);
   } else {

@@ -13,8 +13,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import {HorizonDom} from './Interface';
-import {Props} from '../DOMOperator';
+import { HorizonDom } from './Interface';
+import { Props } from '../DOMOperator';
 
 /**
  * 获取当前聚焦的 input 或者 textarea 元素
@@ -35,12 +35,15 @@ export function getIFrameFocusedDom() {
   while (focusedDom instanceof currentWindow.HTMLIFrameElement) {
     try {
       // 访问 HTMLIframeElement 的 contentDocument 可能会导致浏览器抛出错误
-      if (typeof focusedDom.contentWindow.location.href === 'string') { // iframe 的内容为同源
+      if (typeof focusedDom.contentWindow.location.href === 'string') {
+        // iframe 的内容为同源
         focusedDom = getFocusedDom(focusedDom.contentWindow.document);
-      } else { // 非同源 iframe 因为安全性原因无法获取其中的具体元素
+      } else {
+        // 非同源 iframe 因为安全性原因无法获取其中的具体元素
         break;
       }
-    } catch (e) { // 非同源 iframe 因为安全性原因无法获取其中的具体元素
+    } catch (e) {
+      // 非同源 iframe 因为安全性原因无法获取其中的具体元素
       break;
     }
   }

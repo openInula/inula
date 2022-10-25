@@ -13,23 +13,16 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import {
-  getPropDetails, PROPERTY_TYPE, PropDetails,
-} from './PropertiesData';
+import { getPropDetails, PROPERTY_TYPE, PropDetails } from './PropertiesData';
 
 const INVALID_EVENT_NAME_REGEX = /^on[^A-Z]/;
-
 
 // 是内置元素
 export function isNativeElement(tagName: string, props: Record<string, any>) {
   return !tagName.includes('-') && props.is === undefined;
 }
 
-function isInvalidBoolean(
-  attributeName: string,
-  value: any,
-  propDetails: PropDetails,
-): boolean {
+function isInvalidBoolean(attributeName: string, value: any, propDetails: PropDetails): boolean {
   if (propDetails.type === PROPERTY_TYPE.SPECIAL) {
     return false;
   }
@@ -78,7 +71,7 @@ export function isInvalidValue(
   name: string,
   value: any,
   propDetails: PropDetails | null,
-  isNativeTag: boolean,
+  isNativeTag: boolean
 ): boolean {
   if (value == null) {
     return true;
@@ -122,11 +115,7 @@ export function validateProps(type, props) {
     const propString = invalidProps.map(prop => '`' + prop + '`').join(', ');
 
     if (invalidProps.length >= 1) {
-      console.error(
-        'Invalid value for prop %s on <%s> tag.',
-        propString,
-        type,
-      );
+      console.error('Invalid value for prop %s on <%s> tag.', propString, type);
     }
   }
 }

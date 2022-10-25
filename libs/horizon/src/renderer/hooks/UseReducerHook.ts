@@ -137,7 +137,7 @@ function updateReducerHookState<S, A>(currentHookUpdates, currentHook, reducer):
 
 // 计算stateValue值
 function calculateNewState<S, A>(currentHookUpdates: Array<Update<S, A>>, currentHook, reducer: (S, A) => S) {
-  let reducerObj = currentHook.state;
+  const reducerObj = currentHook.state;
   let state = reducerObj.stateValue;
 
   // 循环遍历更新数组，计算新的状态值

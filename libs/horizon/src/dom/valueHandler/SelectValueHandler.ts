@@ -13,12 +13,12 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import {HorizonSelect, Props} from '../utils/Interface';
+import { HorizonSelect, Props } from '../utils/Interface';
 
 function updateMultipleValue(options, newValues) {
   const newValueSet = new Set();
 
-  newValues.forEach((val) => {
+  newValues.forEach(val => {
     newValueSet.add(String(val));
   });
 
@@ -61,8 +61,8 @@ export function getSelectPropsWithoutValue(dom: HorizonSelect, properties: Objec
   };
 }
 
-export function updateSelectValue(dom: HorizonSelect, props: Props, isInit: boolean = false) {
-  const {value, defaultValue, multiple} = props;
+export function updateSelectValue(dom: HorizonSelect, props: Props, isInit = false) {
+  const { value, defaultValue, multiple } = props;
 
   const oldMultiple = dom._multiple !== undefined ? dom._multiple : dom.multiple;
   const newMultiple = Boolean(multiple);
@@ -71,7 +71,8 @@ export function updateSelectValue(dom: HorizonSelect, props: Props, isInit: bool
   // 设置了 value 属性
   if (value != null) {
     updateValue(dom.options, value, newMultiple);
-  } else if (oldMultiple !== newMultiple) { // 修改了 multiple 属性
+  } else if (oldMultiple !== newMultiple) {
+    // 修改了 multiple 属性
     // 切换 multiple 之后，如果设置了 defaultValue 需要重新应用
     if (defaultValue != null) {
       updateValue(dom.options, defaultValue, newMultiple);
@@ -79,7 +80,8 @@ export function updateSelectValue(dom: HorizonSelect, props: Props, isInit: bool
       // 恢复到未选定状态
       updateValue(dom.options, newMultiple ? [] : '', newMultiple);
     }
-  } else if (isInit && defaultValue != null) { // 设置了 defaultValue 属性
+  } else if (isInit && defaultValue != null) {
+    // 设置了 defaultValue 属性
     updateValue(dom.options, defaultValue, newMultiple);
   }
 }

@@ -13,27 +13,15 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import {
-  saveVNode,
-  updateVNodeProps,
-} from './DOMInternalKeys';
-import {
-  createDom,
-} from './utils/DomCreator';
+import { saveVNode, updateVNodeProps } from './DOMInternalKeys';
+import { createDom } from './utils/DomCreator';
 import { getSelectionInfo, resetSelectionRange, SelectionData } from './SelectionRangeHandler';
 import { shouldAutoFocus } from './utils/Common';
 import { NSS } from './utils/DomCreator';
 import { adjustStyleValue } from './DOMPropertiesHandler/StyleHandler';
 import type { VNode } from '../renderer/Types';
-import {
-  setInitValue,
-  getPropsWithoutValue,
-  updateValue,
-} from './valueHandler';
-import {
-  compareProps,
-  setDomProps,
-} from './DOMPropertiesHandler/DOMPropertiesHandler';
+import { setInitValue, getPropsWithoutValue, updateValue } from './valueHandler';
+import { compareProps, setDomProps } from './DOMPropertiesHandler/DOMPropertiesHandler';
 import { isNativeElement, validateProps } from './validators/ValidateProps';
 import { watchValueChange } from './valueHandler/ValueChangeHandler';
 import { DomComponent, DomText } from '../renderer/vnode/VNodeTags';
@@ -81,12 +69,7 @@ export function resetAfterSubmit(): void {
 }
 
 // 创建 DOM 对象
-export function newDom(
-  tagName: string,
-  props: Props,
-  parentNamespace: string,
-  vNode: VNode,
-): Element {
+export function newDom(tagName: string, props: Props, parentNamespace: string, vNode: VNode): Element {
   const dom: Element = createDom(tagName, parentNamespace);
   // 将 vNode 节点挂到 DOM 对象上
   saveVNode(vNode, dom);
@@ -119,12 +102,7 @@ export function initDomProps(dom: Element, tagName: string, rawProps: Props): bo
 }
 
 // 准备更新之前进行一系列校验 DOM，寻找属性差异等准备工作
-export function getPropChangeList(
-  dom: Element,
-  type: string,
-  lastRawProps: Props,
-  nextRawProps: Props,
-): Object {
+export function getPropChangeList(dom: Element, type: string, lastRawProps: Props, nextRawProps: Props): Object {
   // 校验两个对象的不同
   validateProps(type, nextRawProps);
 
@@ -151,10 +129,7 @@ export function isTextChild(type: string, props: Props): boolean {
   }
 }
 
-export function newTextDom(
-  text: string,
-  processing: VNode,
-): Text {
+export function newTextDom(text: string, processing: VNode): Text {
   const textNode: Text = document.createTextNode(text);
   saveVNode(processing, textNode);
   return textNode;
@@ -198,26 +173,16 @@ export function clearText(dom: Element): void {
 }
 
 // 添加child元素
-export function appendChildElement(
-  parent: Element | Container,
-  child: Element | Text
-): void {
+export function appendChildElement(parent: Element | Container, child: Element | Text): void {
   parent.appendChild(child);
 }
 
 // 插入dom元素
-export function insertDomBefore(
-  parent: Element | Container,
-  child: Element | Text,
-  beforeChild: Element | Text,
-) {
+export function insertDomBefore(parent: Element | Container, child: Element | Text, beforeChild: Element | Text) {
   parent.insertBefore(child, beforeChild);
 }
 
-export function removeChildDom(
-  parent: Element | Container,
-  child: Element | Text
-) {
+export function removeChildDom(parent: Element | Container, child: Element | Text) {
   parent.removeChild(child);
 }
 

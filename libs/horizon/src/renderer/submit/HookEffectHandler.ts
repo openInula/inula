@@ -17,21 +17,16 @@
  * useEffect 和 useLayoutEffect的执行逻辑
  */
 
-import type {VNode} from '../Types';
-import type {
-  Effect as HookEffect,
-  EffectList,
-} from '../hooks/HookType';
-import {runAsync} from '../taskExecutor/TaskExecutor';
-import {
-  copyExecuteMode, InRender, setExecuteMode,changeMode
-} from '../ExecuteMode';
-import {EffectConstant} from '../hooks/EffectConstant';
+import type { VNode } from '../Types';
+import type { Effect as HookEffect, EffectList } from '../hooks/HookType';
+import { runAsync } from '../taskExecutor/TaskExecutor';
+import { copyExecuteMode, InRender, setExecuteMode, changeMode } from '../ExecuteMode';
+import { EffectConstant } from '../hooks/EffectConstant';
 
 let hookEffects: Array<HookEffect | VNode> = [];
 let hookRemoveEffects: Array<HookEffect | VNode> = [];
 // 是否正在异步调度effects
-let isScheduling: boolean = false;
+let isScheduling = false;
 
 export function setSchedulingEffects(value) {
   isScheduling = value;
@@ -44,7 +39,7 @@ export function callUseEffects(vNode: VNode) {
   const effectList: EffectList = vNode.effectList;
   if (effectList !== null) {
     effectList.forEach(effect => {
-      const {effectConstant} = effect;
+      const { effectConstant } = effect;
       if (
         (effectConstant & EffectConstant.Effect) !== EffectConstant.NoEffect &&
         (effectConstant & EffectConstant.DepsChange) !== EffectConstant.NoEffect
@@ -69,7 +64,7 @@ export function runAsyncEffects() {
   // 调用effect destroy
   const removeEffects = hookRemoveEffects;
   hookRemoveEffects = [];
-  removeEffects.forEach((effect) => {
+  removeEffects.forEach(effect => {
     const destroy = effect.removeEffect;
     effect.removeEffect = undefined;
 
@@ -85,7 +80,7 @@ export function runAsyncEffects() {
   // 调用effect create
   const createEffects = hookEffects;
   hookEffects = [];
-  createEffects.forEach((effect) => {
+  createEffects.forEach(effect => {
     try {
       const create = effect.effect;
 
@@ -103,17 +98,19 @@ export function callEffectRemove(vNode: VNode) {
   const effectList: EffectList = vNode.effectList;
   if (effectList !== null) {
     effectList.forEach(effect => {
-      const {removeEffect, effectConstant} = effect;
+      const { removeEffect, effectConstant } = effect;
 
       if (removeEffect !== undefined) {
-        if ((effectConstant & EffectConstant.Effect) !== EffectConstant.NoEffect) { // 如果是useEffect，就异步调用
+        if ((effectConstant & EffectConstant.Effect) !== EffectConstant.NoEffect) {
+          // 如果是useEffect，就异步调用
           hookRemoveEffects.push(effect);
 
           if (!isScheduling) {
             isScheduling = true;
             runAsync(runAsyncEffects);
           }
-        } else { // 是useLayoutEffect，直接执行
+        } else {
+          // 是useLayoutEffect，直接执行
           removeEffect();
         }
       }

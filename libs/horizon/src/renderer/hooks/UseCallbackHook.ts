@@ -13,13 +13,9 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import {
-  createHook,
-  getCurrentHook,
-  throwNotInFuncError
-} from './BaseHook';
-import {getHookStage, HookStage} from './HookStage';
-import {isArrayEqual} from '../utils/compare';
+import { createHook, getCurrentHook, throwNotInFuncError } from './BaseHook';
+import { getHookStage, HookStage } from './HookStage';
+import { isArrayEqual } from '../utils/compare';
 
 export function useCallbackImpl<F>(func: F, dependencies?: Array<any> | null): F {
   const stage = getHookStage();
@@ -31,7 +27,7 @@ export function useCallbackImpl<F>(func: F, dependencies?: Array<any> | null): F
   const deps = dependencies !== undefined ? dependencies : null;
   if (stage === HookStage.Init) {
     hook = createHook();
-    hook.state = {func, dependencies: deps};
+    hook.state = { func, dependencies: deps };
   } else if (stage === HookStage.Update) {
     hook = getCurrentHook();
 
@@ -40,7 +36,7 @@ export function useCallbackImpl<F>(func: F, dependencies?: Array<any> | null): F
     if (lastState !== null && deps !== null && isArrayEqual(deps, lastState.dependencies)) {
       return lastState.func;
     }
-    hook.state = {func, dependencies: deps};
+    hook.state = { func, dependencies: deps };
   }
 
   return func;
