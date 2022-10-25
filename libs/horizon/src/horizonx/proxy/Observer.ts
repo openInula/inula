@@ -109,7 +109,7 @@ export class Observer implements IObserver {
   }
 
   allChange(): void {
-    let keyIt = this.keyVNodes.keys();
+    const keyIt = this.keyVNodes.keys();
     let keyItem = keyIt.next();
     while (!keyItem.done) {
       this.setProp(keyItem.value);

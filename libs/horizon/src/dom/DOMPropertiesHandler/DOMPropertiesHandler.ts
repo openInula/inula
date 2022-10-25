@@ -81,11 +81,7 @@ export function compareProps(oldProps: Object, newProps: Object): Object {
         styleProp = styleProps[j];
         updatesForStyle[styleProp] = '';
       }
-    } else if (
-      propName === 'autoFocus' ||
-      propName === 'children' ||
-      propName === 'dangerouslySetInnerHTML'
-    ) {
+    } else if (propName === 'autoFocus' || propName === 'children' || propName === 'dangerouslySetInnerHTML') {
       continue;
     } else if (isEventProp(propName)) {
       if (!allDelegatedHorizonEvents.has(propName)) {

@@ -14,14 +14,16 @@
  */
 
 function isNeedUnitCSS(styleName: string) {
-  return !(noUnitCSS.includes(styleName)
-    || styleName.startsWith('borderImage')
-    || styleName.startsWith('flex')
-    || styleName.startsWith('gridRow')
-    || styleName.startsWith('gridColumn')
-    || styleName.startsWith('stroke')
-    || styleName.startsWith('box')
-    || styleName.endsWith('Opacity'));
+  return !(
+    noUnitCSS.includes(styleName) ||
+    styleName.startsWith('borderImage') ||
+    styleName.startsWith('flex') ||
+    styleName.startsWith('gridRow') ||
+    styleName.startsWith('gridColumn') ||
+    styleName.startsWith('stroke') ||
+    styleName.startsWith('box') ||
+    styleName.endsWith('Opacity')
+  );
 }
 
 /**
@@ -29,7 +31,7 @@ function isNeedUnitCSS(styleName: string) {
  * 对空值或布尔值进行适配，转为空字符串
  * 去掉多余空字符
  */
- export function adjustStyleValue(name, value) {
+export function adjustStyleValue(name, value) {
   let validValue = value;
 
   if (typeof value === 'number' && value !== 0 && isNeedUnitCSS(name)) {
@@ -50,7 +52,7 @@ export function setStyles(dom, styles) {
   }
 
   const style = dom.style;
-  Object.keys(styles).forEach((name) => {
+  Object.keys(styles).forEach(name => {
     const styleVal = styles[name];
 
     style[name] = adjustStyleValue(name, styleVal);
@@ -60,5 +62,19 @@ export function setStyles(dom, styles) {
 /**
  * 不需要加长度单位的 css 属性
  */
-const noUnitCSS = ['animationIterationCount', 'columnCount', 'columns', 'gridArea', 'fontWeight', 'lineClamp',
-  'lineHeight', 'opacity', 'order', 'orphans', 'tabSize', 'widows', 'zIndex', 'zoom'];
+const noUnitCSS = [
+  'animationIterationCount',
+  'columnCount',
+  'columns',
+  'gridArea',
+  'fontWeight',
+  'lineClamp',
+  'lineHeight',
+  'opacity',
+  'order',
+  'orphans',
+  'tabSize',
+  'widows',
+  'zIndex',
+  'zoom',
+];

@@ -17,12 +17,7 @@ import type { VNode, PromiseType } from '../Types';
 
 import { FlagUtils, Interrupted } from '../vnode/VNodeFlags';
 import { onlyUpdateChildVNodes, updateVNode, createFragmentVNode } from '../vnode/VNodeCreator';
-import {
-  ClassComponent,
-  ForwardRef,
-  FunctionComponent,
-  SuspenseComponent,
-} from '../vnode/VNodeTags';
+import { ClassComponent, ForwardRef, FunctionComponent, SuspenseComponent } from '../vnode/VNodeTags';
 import { pushForceUpdate } from '../UpdateHandler';
 import { launchUpdateFromVNode, tryRenderFromRoot } from '../TreeBuilder';
 import { updateShouldUpdateOfTree } from '../vnode/VNodeShouldUpdate';
@@ -141,11 +136,7 @@ function updateFallback(processing: VNode): Array<VNode> | VNode | null {
 }
 
 export function captureRender(processing: VNode, shouldUpdate: boolean): Array<VNode> | VNode | null {
-  if (
-    !processing.isCreated &&
-    processing.oldProps === processing.props &&
-    !shouldUpdate
-  ) {
+  if (!processing.isCreated && processing.oldProps === processing.props && !shouldUpdate) {
     if (processing.suspenseState.childStatus === SuspenseChildStatus.ShowFallback) {
       // 当显示fallback时，suspense的子组件要更新
       return updateFallback(processing);
@@ -158,8 +149,9 @@ export function captureRender(processing: VNode, shouldUpdate: boolean): Array<V
 
 export function bubbleRender(processing: VNode) {
   const { childStatus, oldChildStatus } = processing.suspenseState;
-  if (childStatus === SuspenseChildStatus.ShowFallback
-    || (!processing.isCreated && oldChildStatus === SuspenseChildStatus.ShowFallback)
+  if (
+    childStatus === SuspenseChildStatus.ShowFallback ||
+    (!processing.isCreated && oldChildStatus === SuspenseChildStatus.ShowFallback)
   ) {
     FlagUtils.markUpdate(processing);
   }
@@ -182,7 +174,6 @@ export function handleSuspenseChildThrowError(parent: VNode, processing: VNode, 
         vNode.suspenseState.promiseSet = new Set();
       }
       vNode.suspenseState.promiseSet.add(promise);
-
 
       // 移除生命周期flag 和 中断flag
       FlagUtils.removeLifecycleEffectFlags(processing);

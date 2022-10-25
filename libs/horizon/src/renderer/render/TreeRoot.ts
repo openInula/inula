@@ -13,11 +13,11 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import type {VNode} from '../Types';
-import {throwIfTrue} from '../utils/throwIfTrue';
-import {processUpdates} from '../UpdateHandler';
-import {resetNamespaceCtx, setNamespaceCtx} from '../ContextSaver';
-import {onlyUpdateChildVNodes} from '../vnode/VNodeCreator';
+import type { VNode } from '../Types';
+import { throwIfTrue } from '../utils/throwIfTrue';
+import { processUpdates } from '../UpdateHandler';
+import { resetNamespaceCtx, setNamespaceCtx } from '../ContextSaver';
+import { onlyUpdateChildVNodes } from '../vnode/VNodeCreator';
 import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 
 export function bubbleRender(processing: VNode) {
@@ -31,8 +31,8 @@ function updateTreeRoot(processing) {
   throwIfTrue(
     processing.isCreated || updates === null,
     'If the root does not have an updates, we should have already ' +
-    'bailed out. This error is likely caused by a bug. Please ' +
-    'file an issue.',
+      'bailed out. This error is likely caused by a bug. Please ' +
+      'file an issue.'
   );
 
   const newProps = processing.props;

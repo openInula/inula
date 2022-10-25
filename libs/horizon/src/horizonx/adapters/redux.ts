@@ -73,7 +73,7 @@ export function createStore(reducer: Reducer, preloadedState?: any, enhancers?):
 
   const result = {
     reducer,
-    getState: function() {
+    getState: function () {
       return store.$s.stateWrapper;
     },
     subscribe: listener => {

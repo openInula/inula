@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import {TYPE_FORWARD_REF} from '../../external/JSXElementType';
+import { TYPE_FORWARD_REF } from '../../external/JSXElementType';
 
 export function forwardRef(render: Function) {
   return {

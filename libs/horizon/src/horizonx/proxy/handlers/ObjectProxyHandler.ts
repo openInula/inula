@@ -34,16 +34,16 @@ export function get(rawObj: object, key: string | symbol, receiver: any, singleL
 
   const observer = getObserver(rawObj);
 
-  if (key === 'watch'){
-    return (prop, handler:(key:string, oldValue:any, newValue:any)=>void)=>{
-      if(!observer.watchers[prop]){
-        observer.watchers[prop]=[] as ((key:string, oldValue:any, newValue:any)=>void)[];
+  if (key === 'watch') {
+    return (prop, handler: (key: string, oldValue: any, newValue: any) => void) => {
+      if (!observer.watchers[prop]) {
+        observer.watchers[prop] = [] as ((key: string, oldValue: any, newValue: any) => void)[];
       }
       observer.watchers[prop].push(handler);
-      return ()=>{
-        observer.watchers[prop]=observer.watchers[prop].filter(cb=>cb!==handler);
-      }
-    }
+      return () => {
+        observer.watchers[prop] = observer.watchers[prop].filter(cb => cb !== handler);
+      };
+    };
   }
 
   if (key === 'addListener') {
@@ -81,7 +81,7 @@ export function set(rawObj: object, key: string, value: any, receiver: any): boo
   const ret = Reflect.set(rawObj, key, newValue, receiver);
 
   if (!isSame(newValue, oldValue)) {
-    if(observer.watchers?.[key]){
+    if (observer.watchers?.[key]) {
       observer.watchers[key].forEach(cb => {
         cb(key, oldValue, newValue);
       });

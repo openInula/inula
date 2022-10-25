@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import {TYPE_MEMO} from '../../external/JSXElementType';
+import { TYPE_MEMO } from '../../external/JSXElementType';
 
 export function memo<Props>(type, compare?: (oldProps: Props, newProps: Props) => boolean) {
   return {

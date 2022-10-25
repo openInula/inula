@@ -18,23 +18,11 @@
  * 处理组件被代理和不被代理情况下的不同逻辑
  */
 
-import {HorizonDom, HorizonSelect, Props} from '../utils/Interface';
-import {
-  getInputPropsWithoutValue,
-  setInitInputValue,
-  updateInputValue,
-} from './InputValueHandler';
-import {
-  getOptionPropsWithoutValue,
-} from './OptionValueHandler';
-import {
-  getSelectPropsWithoutValue,
-  updateSelectValue,
-} from './SelectValueHandler';
-import {
-  getTextareaPropsWithoutValue,
-  updateTextareaValue,
-} from './TextareaValueHandler';
+import { HorizonDom, HorizonSelect, Props } from '../utils/Interface';
+import { getInputPropsWithoutValue, setInitInputValue, updateInputValue } from './InputValueHandler';
+import { getOptionPropsWithoutValue } from './OptionValueHandler';
+import { getSelectPropsWithoutValue, updateSelectValue } from './SelectValueHandler';
+import { getTextareaPropsWithoutValue, updateTextareaValue } from './TextareaValueHandler';
 
 // 获取元素除了被代理的值以外的属性
 function getPropsWithoutValue(type: string, dom: HorizonDom, props: Props) {
@@ -86,8 +74,4 @@ function updateValue(type: string, dom: HorizonDom, props: Props) {
   }
 }
 
-export {
-  getPropsWithoutValue,
-  setInitValue,
-  updateValue,
-};
+export { getPropsWithoutValue, setInitValue, updateValue };

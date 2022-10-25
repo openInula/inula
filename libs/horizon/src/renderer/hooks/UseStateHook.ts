@@ -13,8 +13,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import type {Trigger} from './HookType';
-import {useReducerImpl} from './UseReducerHook';
+import type { Trigger } from './HookType';
+import { useReducerImpl } from './UseReducerHook';
 
 function defaultReducer<S>(state: S, action: ((S) => S) | S): S {
   // @ts-ignore

@@ -13,9 +13,9 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import type {PromiseType} from '../Types';
+import type { PromiseType } from '../Types';
 
-import {TYPE_LAZY} from '../../external/JSXElementType';
+import { TYPE_LAZY } from '../../external/JSXElementType';
 
 enum LayStatus {
   UnProcessed = 'UnProcessed',
@@ -26,7 +26,7 @@ enum LayStatus {
 
 type LazyContent<T> = {
   _status: string;
-  _value: () => PromiseType<{default: T}> | PromiseType<T> | T | any;
+  _value: () => PromiseType<{ default: T }> | PromiseType<T> | T | any;
 };
 
 export type LazyComponent<T, P> = {
@@ -59,7 +59,7 @@ function lazyLoader<T>(lazyContent: LazyContent<T>): any {
           lazyContent._status = LayStatus.Rejected;
           lazyContent._value = error;
         }
-      },
+      }
     );
   }
   if (lazyContent._status === LayStatus.Fulfilled) {
@@ -69,7 +69,7 @@ function lazyLoader<T>(lazyContent: LazyContent<T>): any {
   }
 }
 
-export function lazy<T>(promiseCtor: () => PromiseType<{default: T}>): LazyComponent<T, LazyContent<T>> {
+export function lazy<T>(promiseCtor: () => PromiseType<{ default: T }>): LazyComponent<T, LazyContent<T>> {
   return {
     vtype: TYPE_LAZY,
     _content: {

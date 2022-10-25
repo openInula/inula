@@ -17,11 +17,11 @@
  * 提供：vNode的“遍历”，“查找”，“判断”的相关工具方法
  */
 
-import type {VNode} from '../Types';
+import type { VNode } from '../Types';
 
-import {DomComponent, DomPortal, DomText, TreeRoot} from './VNodeTags';
-import {isComment} from '../../dom/utils/Common';
-import {getNearestVNode} from '../../dom/DOMInternalKeys';
+import { DomComponent, DomPortal, DomText, TreeRoot } from './VNodeTags';
+import { isComment } from '../../dom/utils/Common';
+import { getNearestVNode } from '../../dom/DOMInternalKeys';
 import { Addition, InitFlag } from './VNodeFlags';
 
 export function travelChildren(beginVNode: VNode, handleVNode: Function, isFinish?: Function) {
@@ -125,20 +125,22 @@ export function isDomVNode(node: VNode) {
 
 // 是容器类型的vNode
 function isDomContainer(vNode: VNode): boolean {
-  return (
-    vNode.tag === DomComponent ||
-    vNode.tag === TreeRoot ||
-    vNode.tag === DomPortal
-  );
+  return vNode.tag === DomComponent || vNode.tag === TreeRoot || vNode.tag === DomPortal;
 }
 
 export function findDomVNode(vNode: VNode): VNode | null {
-  return travelVNodeTree(vNode, (node) => {
-    if (node.tag === DomComponent || node.tag === DomText) {
-      return node;
-    }
-    return null;
-  }, null, vNode, null);
+  return travelVNodeTree(
+    vNode,
+    node => {
+      if (node.tag === DomComponent || node.tag === DomText) {
+        return node;
+      }
+      return null;
+    },
+    null,
+    vNode,
+    null
+  );
 }
 
 export function findDOMByClassInst(inst) {

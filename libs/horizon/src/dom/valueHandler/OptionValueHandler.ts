@@ -19,7 +19,7 @@ import { Props } from '../utils/Interface';
 // 把 const a = 'a'; <option>gir{a}ffe</option> 转成 giraffe
 function concatChildren(children) {
   let content = '';
-  Children.forEach(children, function(child) {
+  Children.forEach(children, function (child) {
     content += child;
   });
 

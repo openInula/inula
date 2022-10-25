@@ -19,22 +19,21 @@
 
 import type { VNode } from './VNode';
 
-
-export const InitFlag =   /**     */    0;
+export const InitFlag = /**     */ 0;
 // vNode节点的flags
-export const DirectAddition = /**  */  1 << 0; // 在本次更新前入股父dom没有子节点，说明本次可以直接添加至父节点，不需要通过 getSiblingDom 找到 before 节点
-export const Addition =  /**     */    1 << 1;
-export const Update =     /**     */   1 << 2;
-export const Deletion = /**     */     1 << 3;
-export const ResetText =/**     */     1 << 4;
-export const Callback =   /**     */   1 << 5;
-export const DidCapture =/**     */    1 << 6;
-export const Ref =       /**     */    1 << 7;
-export const Snapshot =  /**     */    1 << 8;
-export const Interrupted =  /**     */ 1 << 9; // 被中断了，抛出错误的vNode以及它的父vNode
-export const ShouldCapture =/**     */ 1 << 11;
-export const ForceUpdate = /**     */  1 << 12; // For suspense
-export const Clear =     /**     */    1 << 13;
+export const DirectAddition = /**  */ 1 << 0; // 在本次更新前入股父dom没有子节点，说明本次可以直接添加至父节点，不需要通过 getSiblingDom 找到 before 节点
+export const Addition = /**     */ 1 << 1;
+export const Update = /**     */ 1 << 2;
+export const Deletion = /**     */ 1 << 3;
+export const ResetText = /**     */ 1 << 4;
+export const Callback = /**     */ 1 << 5;
+export const DidCapture = /**     */ 1 << 6;
+export const Ref = /**     */ 1 << 7;
+export const Snapshot = /**     */ 1 << 8;
+export const Interrupted = /**     */ 1 << 9; // 被中断了，抛出错误的vNode以及它的父vNode
+export const ShouldCapture = /**     */ 1 << 11;
+export const ForceUpdate = /**     */ 1 << 12; // For suspense
+export const Clear = /**     */ 1 << 13;
 const LifecycleEffectArr = Update | Callback | Ref | Snapshot;
 
 export class FlagUtils {
@@ -44,7 +43,8 @@ export class FlagUtils {
   static removeLifecycleEffectFlags(node) {
     node.flags &= ~LifecycleEffectArr;
   }
-  static hasAnyFlag(node: VNode) { // 有标志位
+  static hasAnyFlag(node: VNode) {
+    // 有标志位
     return node.flags !== InitFlag;
   }
 
@@ -97,4 +97,3 @@ export class FlagUtils {
     node.flags |= Clear;
   }
 }
-

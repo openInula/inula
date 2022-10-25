@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import type {VNode} from '../Types';
+import type { VNode } from '../Types';
 import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 
 export function bubbleRender() {}

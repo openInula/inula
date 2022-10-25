@@ -14,7 +14,6 @@
  */
 
 export interface IObserver {
-
   useProp: (key: string | symbol) => void;
 
   addListener: (listener: () => void) => void;
