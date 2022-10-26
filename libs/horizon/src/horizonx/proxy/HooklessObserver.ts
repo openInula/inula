@@ -13,8 +13,6 @@
  * See the Mulan PSL v2 for more details.
  */
 
-// TODO: implement vNode type
-
 import { IObserver } from './Observer';
 
 /**
