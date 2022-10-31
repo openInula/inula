@@ -19,7 +19,9 @@ import { getNamespaceCtx } from '../../renderer/ContextSaver';
 import { NSS } from '../utils/DomCreator';
 import { getDomTag } from '../utils/Common';
 
-const svgHumpAttr = new Set([
+// 不需要装换的svg属性集合
+const svgHumpAttr = new Set();
+[
   'allowReorder',
   'autoReverse',
   'baseFrequency',
@@ -83,7 +85,7 @@ const svgHumpAttr = new Set([
   'xChannelSelector',
   'yChannelSelector',
   'zoomAndPan',
-]);
+].forEach((name) => svgHumpAttr.add(name));
 
 // 驼峰 变 “-”
 function convertToLowerCase(str) {
