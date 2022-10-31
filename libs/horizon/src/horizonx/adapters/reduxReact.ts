@@ -17,9 +17,7 @@
 import { useState, useContext, useEffect, useRef } from '../../renderer/hooks/HookExternal';
 import { createContext } from '../../renderer/components/context/CreateContext';
 import { createElement } from '../../external/JSXElement';
-import { BoundActionCreator } from './redux';
-import { ReduxAction } from './redux';
-import { ReduxStoreHandler } from '../store/StoreHandler';
+import type { ReduxStoreHandler, ReduxAction, BoundActionCreator } from './redux';
 
 const DefaultContext = createContext(null);
 type Context = typeof DefaultContext;

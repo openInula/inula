@@ -15,10 +15,11 @@
 
 import { isObject } from '../CommonUtils';
 
-export function readonlyProxy<T extends object>(target: T): ProxyHandler<T> {
-  return new Proxy(target, {
-    get(target, property, receiver) {
-      const result = Reflect.get(target, property, receiver);
+export function readonlyProxy<T extends object>(rawObj: T): ProxyHandler<T> {
+  return new Proxy(rawObj, {
+    get(rawObj, property, receiver) {
+      const result = Reflect.get(rawObj, property, receiver);
+
       try {
         if (isObject(result)) {
           return readonlyProxy(result);

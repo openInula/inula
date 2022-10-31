@@ -15,8 +15,6 @@
 
 import { createStore as createStoreX } from '../store/StoreHandler';
 
-import { ReduxStoreHandler } from '../store/StoreHandler';
-
 export { thunk } from './reduxThunk';
 
 export {
@@ -28,6 +26,14 @@ export {
   createSelectorHook,
   createDispatchHook,
 } from './reduxReact';
+
+export type ReduxStoreHandler = {
+  reducer: (state: any, action: { type: string }) => any;
+  dispatch: (action: { type: string }) => void;
+  getState: () => any;
+  subscribe: (listener: () => void) => () => void;
+  replaceReducer: (reducer: (state: any, action: { type: string }) => any) => void;
+};
 
 export type ReduxAction = {
   type: string;

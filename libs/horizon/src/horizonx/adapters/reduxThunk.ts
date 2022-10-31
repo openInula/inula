@@ -13,8 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { ReduxAction, ReduxMiddleware } from './redux';
-import { ReduxStoreHandler } from '../store/StoreHandler';
+import { ReduxStoreHandler, ReduxAction, ReduxMiddleware } from './redux';
 
 function createThunkMiddleware(extraArgument?: any): ReduxMiddleware {
   return (store: ReduxStoreHandler) =>

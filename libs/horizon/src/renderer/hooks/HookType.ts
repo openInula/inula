@@ -54,7 +54,7 @@ export type CallBack<F> = {
 };
 
 export type Ref<V> = {
-  current: V | null;
+  current: V;
 };
 
 export type Trigger<A> = (A) => void;
