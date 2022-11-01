@@ -31,7 +31,7 @@ function postpone(timer, func) {
 }
 
 describe('Asynchronous store', () => {
-  const useAsyncCounter = createStore({
+  const getStore = createStore({
     state: {
       counter: 0,
       check: false,
@@ -61,13 +61,13 @@ describe('Asynchronous store', () => {
   });
 
   beforeEach(() => {
-    useAsyncCounter().reset();
+    getStore().reset();
   });
 
   it('should return promise when queued function is called', () => {
     jest.useFakeTimers();
 
-    const store = useAsyncCounter();
+    const store = getStore();
 
     return new Promise(resolve => {
       store.$queue.increment().then(() => {
@@ -82,9 +82,9 @@ describe('Asynchronous store', () => {
   it('should queue async functions', () => {
     jest.useFakeTimers();
     return new Promise(resolve => {
-      const store = useAsyncCounter();
+      const store = getStore();
 
-      //initial value
+      // initial value
       expect(store.value).toBe('false0');
 
       // no blocking action action

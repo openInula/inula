@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { IObserver } from './Observer';
+import type { IObserver } from './Observer';
 
 /**
  * 一个对象（对象、数组、集合）对应一个Observer

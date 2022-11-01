@@ -123,7 +123,7 @@ export class Observer implements IObserver {
     }
   }
 
-  // 删除keyVNodes中保存的这个VNode的关系数据
+  // 删除Observer中保存的这个VNode的关系数据
   clearByVNode(vNode: VNode): void {
     const keys = this.vNodeKeys.get(vNode);
     if (keys) {

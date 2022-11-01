@@ -13,7 +13,6 @@
  * See the Mulan PSL v2 for more details.
  */
 
-// @ts-ignore
 import { useState, useContext, useEffect, useRef } from '../../renderer/hooks/HookExternal';
 import { createContext } from '../../renderer/components/context/CreateContext';
 import { createElement } from '../../external/JSXElement';
@@ -78,31 +77,12 @@ export const useStore = () => {
   return createStoreHook(DefaultContext)();
 };
 
-// function shallowCompare(a,b){
-//     return Object.keys(a).length === Object.keys(b).length &&
-//     Object.keys(a).every(key => a[key] === b[key]);
-// }
-
-//TODO: implement options
-// context?: Object,
-// areStatesEqual?: Function, :)
-// areOwnPropsEqual?: Function,
-// areStatePropsEqual?: Function,
-// areMergedPropsEqual?: Function,
-// forwardRef?: boolean,
-// const defaultOptions = {
-//     areStatesEqual: shallowCompare,
-//     areOwnPropsEqual: shallowCompare,
-//     areStatePropsEqual: shallowCompare,
-//     areMergedPropsEqual: shallowCompare
-// };
-
 export function connect(
-  mapStateToProps?: (state: any, ownProps: { [key: string]: any }) => Object,
+  mapStateToProps?: (state: any, ownProps: { [key: string]: any }) => object,
   mapDispatchToProps?:
     | { [key: string]: (...args: any[]) => ReduxAction }
-    | ((dispatch: (action: ReduxAction) => any, ownProps?: Object) => Object),
-  mergeProps?: (stateProps: Object, dispatchProps: Object, ownProps: Object) => Object,
+    | ((dispatch: (action: ReduxAction) => any, ownProps?: object) => object),
+  mergeProps?: (stateProps: object, dispatchProps: object, ownProps: object) => object,
   options?: {
     areStatesEqual?: (oldState: any, newState: any) => boolean;
     context?: any; // TODO: type this

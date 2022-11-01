@@ -73,7 +73,7 @@ export function createStore(reducer: Reducer, preloadedState?: any, enhancers?):
       },
     },
     options: {
-      reduxAdapter: true,
+      isReduxAdapter: true,
     },
   })();
 
