@@ -13,15 +13,14 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import {Props} from '../utils/Interface';
-
+import { Props } from '../utils/Interface';
 
 // 值的优先级 value > children > defaultValue
 function getInitValue(props: Props) {
-  const {value} = props;
+  const { value } = props;
 
   if (value == null) {
-    const {defaultValue, children} = props;
+    const { defaultValue, children } = props;
     let initValue = defaultValue;
 
     // children content存在时，会覆盖defaultValue
@@ -45,7 +44,7 @@ export function getTextareaPropsWithoutValue(dom: HTMLTextAreaElement, propertie
   };
 }
 
-export function updateTextareaValue(dom: HTMLTextAreaElement, props: Props, isInit: boolean = false) {
+export function updateTextareaValue(dom: HTMLTextAreaElement, props: Props, isInit = false) {
   if (isInit) {
     const initValue = getInitValue(props);
     if (initValue !== '') {
@@ -63,4 +62,3 @@ export function updateTextareaValue(dom: HTMLTextAreaElement, props: Props, isIn
     }
   }
 }
-

@@ -13,21 +13,17 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import type {VNode} from '../Types';
+import type { VNode } from '../Types';
 
-import {
-  getLastTimeHook,
-  setLastTimeHook,
-  setCurrentHook, getNextHook
-} from './BaseHook';
-import {HookStage, setHookStage} from './HookStage';
+import { getLastTimeHook, setLastTimeHook, setCurrentHook, getNextHook } from './BaseHook';
+import { HookStage, setHookStage } from './HookStage';
 
 // hook对外入口
 export function runFunctionWithHooks<Props extends Record<string, any>, Arg>(
   funcComp: (props: Props, arg: Arg) => any,
   props: Props,
   arg: Arg,
-  processing: VNode,
+  processing: VNode
 ) {
   // 重置全局变量
   resetGlobalVariable();
@@ -67,4 +63,3 @@ function resetGlobalVariable() {
   setLastTimeHook(null);
   setCurrentHook(null);
 }
-

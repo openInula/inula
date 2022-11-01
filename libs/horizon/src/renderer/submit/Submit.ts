@@ -13,35 +13,32 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import type {VNode} from '../Types';
+import type { VNode } from '../Types';
 
-import {FlagUtils, Addition, Snapshot, ResetText, Ref, Update, Deletion, Clear, Callback} from '../vnode/VNodeFlags';
-import {prepareForSubmit, resetAfterSubmit} from '../../dom/DOMOperator';
-import {handleSubmitError} from '../ErrorHandler';
+import { FlagUtils, Addition, Snapshot, ResetText, Ref, Update, Deletion, Clear, Callback } from '../vnode/VNodeFlags';
+import { prepareForSubmit, resetAfterSubmit } from '../../dom/DOMOperator';
+import { handleSubmitError } from '../ErrorHandler';
 import {
   attachRef,
   callAfterSubmitLifeCycles,
-  callBeforeSubmitLifeCycles, submitDeletion, submitAddition,
-  submitResetTextContent, submitUpdate, detachRef, submitClear,
+  callBeforeSubmitLifeCycles,
+  submitDeletion,
+  submitAddition,
+  submitResetTextContent,
+  submitUpdate,
+  detachRef,
+  submitClear,
 } from './LifeCycleHandler';
-import {tryRenderFromRoot} from '../TreeBuilder';
-import {
-  InRender,
-  copyExecuteMode,
-  setExecuteMode,
-  changeMode,
-} from '../ExecuteMode';
-import {
-  isSchedulingEffects,
-  setSchedulingEffects,
-} from './HookEffectHandler';
-import {getStartVNode} from '../GlobalVar';
+import { tryRenderFromRoot } from '../TreeBuilder';
+import { InRender, copyExecuteMode, setExecuteMode, changeMode } from '../ExecuteMode';
+import { isSchedulingEffects, setSchedulingEffects } from './HookEffectHandler';
+import { getStartVNode } from '../GlobalVar';
 
 let rootThrowError = null;
 
 // 防止死循环调用update
 const LOOPING_UPDATE_LIMIT = 50;
-let loopingUpdateCount: number = 0;
+let loopingUpdateCount = 0;
 let lastRoot: VNode | null = null;
 
 export function submitToRender(treeRoot) {
@@ -104,7 +101,7 @@ export function submitToRender(treeRoot) {
 function beforeSubmit(dirtyNodes: Array<VNode>) {
   let node;
   const nodesLength = dirtyNodes.length;
-  for(let i = 0; i < nodesLength; i++) {
+  for (let i = 0; i < nodesLength; i++) {
     node = dirtyNodes[i];
     try {
       if ((node.flags & Snapshot) === Snapshot) {
@@ -123,7 +120,7 @@ function submit(dirtyNodes: Array<VNode>) {
   let isUpdate;
   let isDeletion;
   let isClear;
-  for(let i = 0; i < nodesLength; i++) {
+  for (let i = 0; i < nodesLength; i++) {
     node = dirtyNodes[i];
     try {
       if ((node.flags & ResetText) === ResetText) {
@@ -170,7 +167,7 @@ function submit(dirtyNodes: Array<VNode>) {
 function afterSubmit(dirtyNodes: Array<VNode>) {
   let node;
   const nodesLength = dirtyNodes.length;
-  for(let i = 0; i < nodesLength; i++) {
+  for (let i = 0; i < nodesLength; i++) {
     node = dirtyNodes[i];
     try {
       if ((node.flags & Update) === Update || (node.flags & Callback) === Callback) {

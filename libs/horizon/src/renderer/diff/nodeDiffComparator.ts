@@ -351,7 +351,7 @@ function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newC
 
     if (rightNewNode) {
       appendNode(rightNewNode);
-      setVNodesCIndex(rightNewNode, rightNewNode.cIndex + 1);
+      setVNodesCIndex(rightNewNode, prevNewNode.cIndex + 1);
     }
 
     return resultingFirstChild;
@@ -498,10 +498,10 @@ function diffIteratorNodesHandler(
   newChildrenIterable: Iterable<any>
 ): VNode | null {
   const iteratorFn = getIteratorFn(newChildrenIterable);
-  const iteratorObj: Iterator<any> = iteratorFn.call(newChildrenIterable);
+  const iteratorObj = iteratorFn.call(newChildrenIterable);
 
   // 把iterator转测数组
-  const childrenArray: any[] = [];
+  const childrenArray = [];
   let result = iteratorObj.next();
   while (!result.done) {
     childrenArray.push(result.value);
@@ -512,7 +512,7 @@ function diffIteratorNodesHandler(
 }
 
 // 新节点是字符串类型
-function diffStringNodeHandler(parentNode: VNode, newChild: any, firstChildVNode: VNode | null, isComparing: boolean) {
+function diffStringNodeHandler(parentNode: VNode, newChild: any, firstChildVNode: VNode, isComparing: boolean) {
   let newTextNode: VNode | null = null;
 
   // 第一个vNode是Text，则复用
@@ -540,6 +540,7 @@ function diffObjectNodeHandler(
   parentNode: VNode,
   firstChild: VNode | null,
   newChild: any,
+  firstChildVNode: VNode,
   isComparing: boolean
 ) {
   let canReuseNode: VNode | null = null;
@@ -558,7 +559,7 @@ function diffObjectNodeHandler(
   }
 
   let resultNode: VNode | null = null;
-  let startDelVNode: VNode | null = firstChild;
+  let startDelVNode = firstChildVNode;
   if (newChild.vtype === TYPE_COMMON_ELEMENT) {
     if (canReuseNode) {
       // 可以复用
@@ -653,7 +654,7 @@ export function createChildrenByDiff(
 
   // 5. newChild是对象类型
   if (isObjectType(newChild)) {
-    const newVNodes = diffObjectNodeHandler(parentNode, firstChild, newChild, isComparing);
+    const newVNodes = diffObjectNodeHandler(parentNode, firstChild, newChild, firstChild, isComparing);
     if (newVNodes) {
       return newVNodes;
     }

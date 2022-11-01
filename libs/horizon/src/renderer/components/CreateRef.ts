@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import type {RefType} from '../Types';
+import type { RefType } from '../Types';
 
 export function createRef(): RefType {
   return {

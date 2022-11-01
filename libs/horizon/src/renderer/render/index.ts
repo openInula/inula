@@ -44,9 +44,7 @@ import {
   SuspenseComponent,
 } from '../vnode/VNodeTags';
 
-export {
-  BaseComponentRender,
-};
+export { BaseComponentRender };
 
 export default {
   [ClassComponent]: ClassComponentRender,

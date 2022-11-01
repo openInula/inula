@@ -18,7 +18,7 @@ import type { VNode, JSXElement } from '../Types';
 // 当前vNode和element是同样的类型
 // LazyComponent 会修改type的类型，所以特殊处理这种类型
 export const isSameType = (vNode: VNode, ele: JSXElement) =>
-   vNode.type === ele.type || (vNode.isLazyComponent && vNode.lazyType === ele.type);
+  vNode.type === ele.type || (vNode.isLazyComponent && vNode.lazyType === ele.type);
 
 export function isTextType(newChild: any) {
   return typeof newChild === 'string' || typeof newChild === 'number';

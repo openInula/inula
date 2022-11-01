@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import {EffectConstant} from './EffectConstant';
+import { EffectConstant } from './EffectConstant';
 type ValueOf<T> = T[keyof T];
 export interface Hook<S, A> {
   state: Reducer<S, A> | Effect | Memo<S> | CallBack<S> | Ref<S>;
@@ -54,7 +54,7 @@ export type CallBack<F> = {
 };
 
 export type Ref<V> = {
-  current: V | null;
+  current: V;
 };
 
 export type Trigger<A> = (A) => void;

@@ -15,7 +15,7 @@
 
 import { getVNodeProps } from '../dom/DOMInternalKeys';
 import { getDomTag } from '../dom/utils/Common';
-import {  Props } from '../dom/utils/Interface';
+import { Props } from '../dom/utils/Interface';
 import { updateTextareaValue } from '../dom/valueHandler/TextareaValueHandler';
 import { updateInputHandlerIfChanged } from '../dom/valueHandler/ValueChangeHandler';
 import { updateInputValue } from '../dom/valueHandler/InputValueHandler';
@@ -87,4 +87,3 @@ function controlInputValue(inputDom: HTMLInputElement, props: Props) {
     updateInputValue(inputDom, props);
   }
 }
-

@@ -44,6 +44,7 @@ function get(rawObj: any[], key: string, receiver: any) {
   if (isValidIntegerKey(key) || key === 'length') {
     return objectGet(rawObj, key, receiver);
   }
+
   return Reflect.get(rawObj, key, receiver);
 }
 
@@ -58,16 +59,19 @@ function set(rawObj: any[], key: string, value: any, receiver: any) {
   const observer = getObserver(rawObj);
 
   if (!isSame(newValue, oldValue)) {
+    // 值不一样，触发监听器
     if (observer.watchers?.[key]) {
       observer.watchers[key].forEach(cb => {
         cb(key, oldValue, newValue);
       });
     }
 
+    // 触发属性变化
     observer.setProp(key);
   }
 
   if (oldLength !== newLength) {
+    // 触发数组的大小变化
     observer.setProp('length');
   }
 

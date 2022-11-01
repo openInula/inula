@@ -13,20 +13,15 @@
  * See the Mulan PSL v2 for more details.
  */
 
-// TODO: implement vNode type
-
-import {IObserver} from './Observer';
+import { IObserver } from './Observer';
 
 /**
  * 一个对象（对象、数组、集合）对应一个Observer
- *
  */
 export class HooklessObserver implements IObserver {
+  listeners: (() => void)[] = [];
 
-  listeners:(() => void)[] = [];
-
-  useProp(key: string | symbol): void {
-  }
+  useProp(key: string | symbol): void {}
 
   addListener(listener: () => void) {
     this.listeners.push(listener);
@@ -49,12 +44,9 @@ export class HooklessObserver implements IObserver {
     });
   }
 
-  triggerUpdate(vNode): void {
-  }
+  triggerUpdate(vNode): void {}
 
-  allChange(): void {
-  }
+  allChange(): void {}
 
-  clearByVNode(vNode): void {
-  }
+  clearByVNode(vNode): void {}
 }

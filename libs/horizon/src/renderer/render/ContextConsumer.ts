@@ -13,9 +13,9 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import type {VNode, ContextType} from '../Types';
+import type { VNode, ContextType } from '../Types';
 
-import {resetDepContexts, getNewContext} from '../components/context/Context';
+import { resetDepContexts, getNewContext } from '../components/context/Context';
 import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 
 function captureContextConsumer(processing: VNode) {
@@ -36,4 +36,3 @@ export function captureRender(processing: VNode): VNode | null {
 }
 
 export function bubbleRender() {}
-

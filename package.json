@@ -4,7 +4,8 @@
     "libs/*"
   ],
   "scripts": {
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint . --ext .ts --fix",
+    "prettier": "prettier -w libs/**/*.ts",
     "build": "rollup --config ./scripts/rollup/rollup.config.js",
     "build:watch": "rollup --watch --config ./scripts/rollup/rollup.config.js",
     "build:3rdLib": "node ./scripts/gen3rdLib.js build:3rdLib",

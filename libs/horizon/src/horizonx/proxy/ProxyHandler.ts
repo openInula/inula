@@ -22,16 +22,18 @@ import { createCollectionProxy } from './handlers/CollectionProxyHandler';
 import { IObserver } from '../types';
 import { OBSERVER_KEY } from '../Constants';
 
+// 保存rawObj -> Proxy
 const proxyMap = new WeakMap();
 
 export const hookObserverMap = new WeakMap();
 
-export function createProxy(rawObj: any, hookObserver = true): any {
+export function createProxy(rawObj: any, isHookObserver = true): any {
   // 不是对象（是原始数据类型）不用代理
   if (!isObject(rawObj)) {
     return rawObj;
   }
 
+  // 已代理过
   const existProxy = proxyMap.get(rawObj);
   if (existProxy) {
     return existProxy;
@@ -45,16 +47,16 @@ export function createProxy(rawObj: any, hookObserver = true): any {
   // 创建Observer
   let observer: IObserver = getObserver(rawObj);
   if (!observer) {
-    observer = hookObserver ? new Observer() : new HooklessObserver();
+    observer = isHookObserver ? new Observer() : new HooklessObserver();
     rawObj[OBSERVER_KEY] = observer;
   }
 
-  hookObserverMap.set(rawObj, hookObserver);
+  hookObserverMap.set(rawObj, isHookObserver);
 
   // 创建Proxy
   let proxyObj;
-  if (!hookObserver) {
-    proxyObj = createObjectProxy(rawObj,true);
+  if (!isHookObserver) {
+    proxyObj = createObjectProxy(rawObj, true);
   } else if (isArray(rawObj)) {
     // 数组
     proxyObj = createArrayProxy(rawObj as []);
