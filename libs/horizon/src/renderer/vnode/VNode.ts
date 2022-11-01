@@ -36,6 +36,7 @@ import type { VNodeTag } from './VNodeTags';
 import type { RefType, ContextType, SuspenseState, Source } from '../Types';
 import type { Hook } from '../hooks/HookType';
 import { InitFlag } from './VNodeFlags';
+import { Observer } from '../../horizonx/proxy/Observer';
 
 export class VNode {
   tag: VNodeTag;
@@ -100,8 +101,8 @@ export class VNode {
 
   // 状态管理器HorizonX使用
   isStoreChange: boolean;
-  observers: Set<any> | null = null; // 记录这个函数组件/类组件依赖哪些Observer
-  classComponentWillUnmount: Function | null; // HorizonX会在classComponentWillUnmount中清除对VNode的引入用
+  observers: Set<Observer> | null = null; // 记录这个函数组件/类组件依赖哪些Observer
+  classComponentWillUnmount: ((vNode: VNode) => any) | null; // HorizonX会在classComponentWillUnmount中清除对VNode的引入用
   src: Source | null; // 节点所在代码位置
 
   constructor(tag: VNodeTag, props: any, key: null | string, realNode) {
