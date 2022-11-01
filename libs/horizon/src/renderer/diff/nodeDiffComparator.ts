@@ -24,13 +24,7 @@ import {
   createPortalVNode,
   createDomTextVNode,
 } from '../vnode/VNodeCreator';
-import {
-  isSameType,
-  getIteratorFn,
-  isTextType,
-  isIteratorType,
-  isObjectType,
-} from './DiffTools';
+import { isSameType, getIteratorFn, isTextType, isIteratorType, isObjectType } from './DiffTools';
 import { travelChildren } from '../vnode/VNodeUtils';
 import { markVNodePath } from '../utils/vNodePath';
 
@@ -120,10 +114,12 @@ function getNodeType(newChild: any): string | null {
 function setVNodeAdditionFlag(newNode: VNode, lastPosition: number): number {
   let position = lastPosition;
 
-  if (newNode.isCreated || newNode.eIndex < lastPosition) { // 位置 小于 上一个复用的位置
+  if (newNode.isCreated || newNode.eIndex < lastPosition) {
+    // 位置 小于 上一个复用的位置
     // 标记为新增
     FlagUtils.setAddition(newNode);
-  } else { // 复用
+  } else {
+    // 复用
     position = newNode.eIndex;
   }
 
@@ -206,15 +202,16 @@ function transRightChildrenToArray(child) {
   return rightChildrenArray;
 }
 
-function transLeftChildrenToMap(
-  startChild: VNode,
-  rightEndVNode: VNode | null,
-): Map<string | number, VNode> {
+function transLeftChildrenToMap(startChild: VNode, rightEndVNode: VNode | null): Map<string | number, VNode> {
   const leftChildrenMap: Map<string | number, VNode> = new Map();
 
-  travelChildren(startChild, node => {
-    leftChildrenMap.set(node.key !== null ? node.key : node.eIndex, node);
-  }, node => node === rightEndVNode);
+  travelChildren(
+    startChild,
+    node => {
+      leftChildrenMap.set(node.key !== null ? node.key : node.eIndex, node);
+    },
+    node => node === rightEndVNode
+  );
 
   return leftChildrenMap;
 }
@@ -235,11 +232,7 @@ function getOldNodeFromMap(nodeMap: Map<string | number, VNode>, newIdx: number,
 }
 
 // diff数组类型的节点，核心算法
-function diffArrayNodesHandler(
-  parentNode: VNode,
-  firstChild: VNode | null,
-  newChildren: Array<any>,
-): VNode | null {
+function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newChildren: Array<any>): VNode | null {
   let resultingFirstChild: VNode | null = null;
 
   let prevNewNode: VNode | null = null;
@@ -358,7 +351,7 @@ function diffArrayNodesHandler(
 
     if (rightNewNode) {
       appendNode(rightNewNode);
-      setVNodesCIndex(rightNewNode, prevNewNode.cIndex + 1);
+      setVNodesCIndex(rightNewNode, rightNewNode.cIndex + 1);
     }
 
     return resultingFirstChild;
@@ -366,13 +359,14 @@ function diffArrayNodesHandler(
 
   // 4. 新节点还有一部分，但是老节点已经没有了
   if (oldNode === null) {
-
     let isDirectAdd = false;
     // TODO: 是否可以扩大至非dom类型节点
     // 如果dom节点在上次添加前没有节点，说明本次添加时，可以直接添加到最后，不需要通过 getSiblingDom 函数找到 before 节点
-    if (parentNode.tag === DomComponent &&
+    if (
+      parentNode.tag === DomComponent &&
       parentNode.oldProps?.children?.length === 0 &&
-      rightIdx - leftIdx === newChildren.length) {
+      rightIdx - leftIdx === newChildren.length
+    ) {
       isDirectAdd = true;
     }
     const isAddition = parentNode.tag === DomPortal || !parentNode.isCreated;
@@ -424,7 +418,8 @@ function diffArrayNodesHandler(
           const eIndex = newNode.eIndex;
           eIndexes.push(eIndex);
           last = eIndexes[result[result.length - 1]];
-          if (eIndex > last || last === undefined) { // 大的 eIndex直接放在最后
+          if (eIndex > last || last === undefined) {
+            // 大的 eIndex直接放在最后
             preIndex[i] = result[result.length - 1];
             result.push(i);
           } else {
@@ -500,13 +495,13 @@ function setVNodesCIndex(startChild: VNode | null, startIdx: number) {
 function diffIteratorNodesHandler(
   parentNode: VNode,
   firstChild: VNode | null,
-  newChildrenIterable: Iterable<any>,
+  newChildrenIterable: Iterable<any>
 ): VNode | null {
   const iteratorFn = getIteratorFn(newChildrenIterable);
-  const iteratorObj = iteratorFn.call(newChildrenIterable);
+  const iteratorObj: Iterator<any> = iteratorFn.call(newChildrenIterable);
 
   // 把iterator转测数组
-  const childrenArray = [];
+  const childrenArray: any[] = [];
   let result = iteratorObj.next();
   while (!result.done) {
     childrenArray.push(result.value);
@@ -517,12 +512,7 @@ function diffIteratorNodesHandler(
 }
 
 // 新节点是字符串类型
-function diffStringNodeHandler(
-  parentNode: VNode,
-  newChild: any,
-  firstChildVNode: VNode,
-  isComparing: boolean
-) {
+function diffStringNodeHandler(parentNode: VNode, newChild: any, firstChildVNode: VNode | null, isComparing: boolean) {
   let newTextNode: VNode | null = null;
 
   // 第一个vNode是Text，则复用
@@ -550,7 +540,6 @@ function diffObjectNodeHandler(
   parentNode: VNode,
   firstChild: VNode | null,
   newChild: any,
-  firstChildVNode: VNode,
   isComparing: boolean
 ) {
   let canReuseNode: VNode | null = null;
@@ -569,7 +558,7 @@ function diffObjectNodeHandler(
   }
 
   let resultNode: VNode | null = null;
-  let startDelVNode = firstChildVNode;
+  let startDelVNode: VNode | null = firstChild;
   if (newChild.vtype === TYPE_COMMON_ELEMENT) {
     if (canReuseNode) {
       // 可以复用
@@ -664,7 +653,7 @@ export function createChildrenByDiff(
 
   // 5. newChild是对象类型
   if (isObjectType(newChild)) {
-    const newVNodes = diffObjectNodeHandler(parentNode, firstChild, newChild, firstChild, isComparing);
+    const newVNodes = diffObjectNodeHandler(parentNode, firstChild, newChild, isComparing);
     if (newVNodes) {
       return newVNodes;
     }

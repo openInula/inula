@@ -86,7 +86,7 @@ function collectDirtyNodes(vNode: VNode, parent: VNode): void {
     if (parent.dirtyNodes === null) {
       parent.dirtyNodes = dirtyNodes;
     } else {
-      parent.dirtyNodes.push(...vNode.dirtyNodes);
+      parent.dirtyNodes.push(...dirtyNodes);
       dirtyNodes.length = 0;
     }
     vNode.dirtyNodes = null;
@@ -105,7 +105,7 @@ function collectDirtyNodes(vNode: VNode, parent: VNode): void {
 
 // 尝试完成当前工作单元，然后移动到下一个兄弟工作单元。如果没有更多的同级，请返回父vNode。
 function bubbleVNode(vNode: VNode): void {
-  let node = vNode;
+  let node : VNode | null = vNode;
 
   do {
     const parent = node.parent;
@@ -182,14 +182,18 @@ function isEqualByIndex(idx: number, pathArrays: string[][]) {
 function getChildByIndex(vNode: VNode, idx: number) {
   let node = vNode.child;
   for (let i = 0; i < idx; i++) {
-    node = node.next;
+    if (node) {
+      node = node.next;
+    } else {
+      return null;
+    }
   }
   return node;
 }
 
 // 从多个更新节点中，计算出开始节点。即：找到最近的共同的父辈节点
 export function calcStartUpdateVNode(treeRoot: VNode) {
-  const toUpdateNodes = Array.from(treeRoot.toUpdateNodes);
+  const toUpdateNodes = Array.from(treeRoot.toUpdateNodes!);
 
   if (toUpdateNodes.length === 0) {
     return treeRoot;
@@ -218,12 +222,12 @@ export function calcStartUpdateVNode(treeRoot: VNode) {
   // 得到相等的路径
   const startNodePath = pathArrays[0].slice(0, commonPathEndIndex);
 
-  let node = treeRoot;
+  let node: VNode | null = treeRoot;
   for (let i = 1; i < startNodePath.length; i++) {
     const pathIndex = Number(startNodePath[i]);
-    node = getChildByIndex(node, pathIndex)!;
+    node = getChildByIndex(node, pathIndex);
     // 路径错误时，回退到从根更新
-    if (node == null) {
+    if (node === null) {
       return treeRoot;
     }
   }
@@ -242,7 +246,7 @@ function buildVNodeTree(treeRoot: VNode) {
   setStartVNode(startVNode);
 
   // 清空toUpdateNodes
-  treeRoot.toUpdateNodes.clear();
+  treeRoot.toUpdateNodes!.clear();
 
   if (startVNode.tag !== TreeRoot) { // 不是根节点
     // 设置namespace，用于createElement
