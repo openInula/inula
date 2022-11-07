@@ -100,7 +100,7 @@ function collectDirtyNodes(vNode: VNode, parent: VNode): void {
 
 // 尝试完成当前工作单元，然后移动到下一个兄弟工作单元。如果没有更多的同级，请返回父vNode。
 function bubbleVNode(vNode: VNode): void {
-  let node : VNode | null = vNode;
+  let node: VNode | null = vNode;
 
   do {
     const parent = node.parent;
@@ -351,16 +351,10 @@ function renderFromRoot(treeRoot) {
   // 2. 提交变更
   submitToRender(treeRoot);
   popCurrentRoot();
-  if (window.__HORIZON_DEV_HOOK__) {
-    const hook = window.__HORIZON_DEV_HOOK__;
-    // injector.js 可能在 Horizon 代码之后加载，此时无 __HORIZON_DEV_HOOK__ 全局变量
-    // Horizon 代码初次加载时不会初始化 helper
-    if (!hook.isInit) {
-      injectUpdater();
-    }
-    hook.addIfNotInclude(treeRoot);
-    hook.send(treeRoot);
-  }
+
+  // 与Devtool通信
+  sendRootToDevTool(treeRoot);
+
   return null;
 }
 
@@ -404,6 +398,25 @@ export function launchUpdateFromVNode(vNode: VNode) {
       // 同步执行
       callRenderQueueImmediate();
     }
+  }
+}
+
+declare global {
+  interface Window {
+    __HORIZON_DEV_HOOK__: any;
+  }
+}
+
+function sendRootToDevTool(treeRoot) {
+  if (window.__HORIZON_DEV_HOOK__) {
+    const hook = window.__HORIZON_DEV_HOOK__;
+    // injector.js 可能在 Horizon 代码之后加载，此时无 __HORIZON_DEV_HOOK__ 全局变量
+    // Horizon 代码初次加载时不会初始化 helper
+    if (!hook.isInit) {
+      injectUpdater();
+    }
+    hook.addIfNotInclude(treeRoot);
+    hook.send(treeRoot);
   }
 }
 

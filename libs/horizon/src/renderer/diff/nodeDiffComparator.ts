@@ -34,6 +34,13 @@ enum DiffCategory {
   ARR_NODE = 'ARR_NODE',
 }
 
+type AppendVNode = (vnode: VNode) => void;
+interface DiffRightSideResult {
+  rightIdx: number;
+  rightEndOldNode: VNode;
+  rightNewNode: VNode | null;
+}
+
 // 检查是不是被 FRAGMENT 包裹
 function isNoKeyFragment(child: any) {
   return child != null && child.type === TYPE_FRAGMENT && child.key === null;
@@ -111,19 +118,12 @@ function getNodeType(newChild: any): string | null {
 }
 
 // 设置vNode的flag
-function setVNodeAdditionFlag(newNode: VNode, lastPosition: number): number {
-  let position = lastPosition;
-
-  if (newNode.isCreated || newNode.eIndex < lastPosition) {
+function setVNodeAdditionFlag(newNode: VNode) {
+  if (newNode.isCreated) {
     // 位置 小于 上一个复用的位置
     // 标记为新增
     FlagUtils.setAddition(newNode);
-  } else {
-    // 复用
-    position = newNode.eIndex;
   }
-
-  return position;
 }
 
 // 获取新节点
@@ -231,33 +231,10 @@ function getOldNodeFromMap(nodeMap: Map<string | number, VNode>, newIdx: number,
   return null;
 }
 
-// diff数组类型的节点，核心算法
-function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newChildren: Array<any>): VNode | null {
-  let resultingFirstChild: VNode | null = null;
-
-  let prevNewNode: VNode | null = null;
-
-  let oldNode = firstChild;
+function diffLeftSide(oldNode: VNode | null, newChildren: Array<any>, parentNode: VNode, appendNode: AppendVNode) {
   let nextOldNode: VNode | null = null;
-
-  let theLastPosition = 0;
   // 从左边开始的位置
   let leftIdx = 0;
-
-  function appendNode(newNode: VNode) {
-    if (prevNewNode === null) {
-      resultingFirstChild = newNode;
-      newNode.cIndex = 0;
-    } else {
-      prevNewNode.next = newNode;
-      newNode.cIndex = prevNewNode.cIndex + 1;
-    }
-    markVNodePath(newNode);
-    prevNewNode = newNode;
-  }
-
-  let canBeReuse;
-  let newNode;
   // 1. 从左侧开始比对currentVNode和newChildren，若不能复用则跳出循环
   for (; oldNode !== null && leftIdx < newChildren.length; leftIdx++) {
     if (oldNode.eIndex > leftIdx) {
@@ -268,14 +245,13 @@ function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newC
       nextOldNode = oldNode.next;
     }
 
-    canBeReuse = checkCanReuseNode(oldNode, newChildren[leftIdx], leftIdx);
     // 不能复用，break
-    if (!canBeReuse) {
+    if (!checkCanReuseNode(oldNode, newChildren[leftIdx], leftIdx)) {
       oldNode = oldNode ?? nextOldNode;
       break;
     }
 
-    newNode = getNewNode(parentNode, newChildren[leftIdx], oldNode);
+    const newNode = getNewNode(parentNode, newChildren[leftIdx], oldNode);
     // 没有生成新节点，break
     if (!newNode) {
       oldNode = oldNode ?? nextOldNode;
@@ -287,12 +263,23 @@ function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newC
       deleteVNode(parentNode, oldNode);
     }
 
-    theLastPosition = setVNodeAdditionFlag(newNode, theLastPosition);
+    setVNodeAdditionFlag(newNode);
     newNode.eIndex = leftIdx;
     appendNode(newNode);
     oldNode = nextOldNode;
   }
 
+  return { oldNode, leftIdx };
+}
+
+function diffRightSide(
+  oldNode: VNode | null,
+  leftIdx: number,
+  newChildren: Array<any>,
+  parentNode: VNode
+): DiffRightSideResult {
+  let newNode;
+  let canBeReuse = false;
   let rightIdx = newChildren.length;
   let rightEndOldNode; // 老节点中最右边匹配的节点引用 abcde --> abfde 则rightEndOldNode = c;
   let rightNewNode: VNode | null = null; // 最右边匹配的节点引用 abcde --> abfde 则rightNewNode = d;
@@ -333,72 +320,101 @@ function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newC
         deleteVNode(parentNode, rightOldNode);
       }
 
-      setVNodeAdditionFlag(newNode, theLastPosition);
+      setVNodeAdditionFlag(newNode);
       newNode.eIndex = rightIdx - 1;
       rightOldIndex--;
       rightEndOldNode = rightOldNode;
     }
   }
 
-  // 3. 新节点已经处理完成
-  if (leftIdx === rightIdx) {
-    if (firstChild && parentNode.tag === DomComponent && newChildren.length === 0) {
-      FlagUtils.markClear(parentNode);
-      parentNode.clearChild = firstChild;
-    } else {
-      deleteVNodes(parentNode, oldNode, rightEndOldNode);
-    }
+  return { rightIdx, rightEndOldNode, rightNewNode };
+}
 
-    if (rightNewNode) {
-      appendNode(rightNewNode);
-      setVNodesCIndex(rightNewNode, rightNewNode.cIndex + 1);
-    }
+function appendRightSideNode(
+  oldNode: VNode | null,
+  parentNode: VNode,
+  firstChild: VNode | null,
+  newChildren: Array<any>,
+  diffRightSideResult: DiffRightSideResult,
+  appendNode: AppendVNode
+) {
+  const { rightEndOldNode, rightNewNode } = diffRightSideResult;
 
-    return resultingFirstChild;
+  if (firstChild && parentNode.tag === DomComponent && newChildren.length === 0) {
+    FlagUtils.markClear(parentNode);
+    parentNode.clearChild = firstChild;
+  } else {
+    deleteVNodes(parentNode, oldNode, rightEndOldNode);
   }
 
-  // 4. 新节点还有一部分，但是老节点已经没有了
-  if (oldNode === null) {
-    let isDirectAdd = false;
-    // TODO: 是否可以扩大至非dom类型节点
-    // 如果dom节点在上次添加前没有节点，说明本次添加时，可以直接添加到最后，不需要通过 getSiblingDom 函数找到 before 节点
-    if (
-      parentNode.tag === DomComponent &&
-      parentNode.oldProps?.children?.length === 0 &&
-      rightIdx - leftIdx === newChildren.length
-    ) {
-      isDirectAdd = true;
-    }
-    const isAddition = parentNode.tag === DomPortal || !parentNode.isCreated;
-    for (; leftIdx < rightIdx; leftIdx++) {
-      newNode = getNewNode(parentNode, newChildren[leftIdx], null);
+  if (rightNewNode) {
+    appendNode(rightNewNode);
+    setVNodesCIndex(rightNewNode, rightNewNode.cIndex + 1);
+  }
+}
 
-      if (newNode !== null) {
-        if (isAddition) {
-          FlagUtils.setAddition(newNode);
-        }
-        if (isDirectAdd) {
-          FlagUtils.markDirectAddition(newNode);
-        }
-        newNode.eIndex = leftIdx;
-        appendNode(newNode);
+function appendAllRestNode(
+  oldNode: VNode | null,
+  parentNode: VNode,
+  firstChild: VNode | null,
+  newChildren: Array<any>,
+  leftIdx: number,
+  diffRightSideResult: DiffRightSideResult,
+  appendNode: AppendVNode
+) {
+  let isDirectAdd = false;
+  const { rightIdx, rightNewNode } = diffRightSideResult;
+
+  // 如果dom节点在上次添加前没有节点，说明本次添加时，可以直接添加到最后，不需要通过 getSiblingDom 函数找到 before 节点
+  if (
+    parentNode.tag === DomComponent &&
+    parentNode.oldProps?.children?.length === 0 &&
+    rightIdx - leftIdx === newChildren.length
+  ) {
+    isDirectAdd = true;
+  }
+  const isAddition = parentNode.tag === DomPortal || !parentNode.isCreated;
+  for (; leftIdx < rightIdx; leftIdx++) {
+    const newNode = getNewNode(parentNode, newChildren[leftIdx], null);
+
+    if (newNode !== null) {
+      if (isAddition) {
+        FlagUtils.setAddition(newNode);
       }
+      if (isDirectAdd) {
+        FlagUtils.markDirectAddition(newNode);
+      }
+      newNode.eIndex = leftIdx;
+      appendNode(newNode);
     }
-
-    if (rightNewNode) {
-      appendNode(rightNewNode);
-      setVNodesCIndex(rightNewNode.next, rightNewNode.cIndex + 1);
-    }
-
-    return resultingFirstChild;
   }
 
-  // 5. 新节点还有一部分，但是老节点也还有一部分
+  if (rightNewNode) {
+    appendNode(rightNewNode);
+    setVNodesCIndex(rightNewNode.next, rightNewNode.cIndex + 1);
+  }
+}
+
+/**
+ * 双端对比完成，新老节点都有剩余时，构造LIS（最长递增子序列）
+ * 属于LIS的新节点直接复用，否则新增
+ */
+function appendNodeWithLIS(
+  oldNode: VNode,
+  parentNode: VNode,
+  firstChild: VNode | null,
+  newChildren: Array<any>,
+  leftIdx: number,
+  diffRightSideResult: DiffRightSideResult,
+  appendNode: AppendVNode
+) {
+  const { rightIdx, rightNewNode, rightEndOldNode } = diffRightSideResult;
+
   // 把剩下的currentVNode转成Map
   const leftChildrenMap = transLeftChildrenToMap(oldNode, rightEndOldNode);
   // 通过贪心算法+二分法获取最长递增子序列
   const eIndexes: Array<number> = []; // 记录 eIndex 值
-  const result: Array<number> = []; // 记录最长子序列在eIndexes中的 index 值
+  const subsequence: Array<number> = []; // 记录最长子序列在eIndexes中的 index 值
   const preIndex: Array<number> = []; // 贪心算法在替换的过程中会使得数组不正确，通过记录preIndex找到正确值
   const reuseNodes: (VNode | null)[] = []; // 记录复用的 VNode
   let i = 0;
@@ -406,7 +422,7 @@ function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newC
   let last;
   for (; leftIdx < rightIdx; leftIdx++) {
     oldNodeFromMap = getOldNodeFromMap(leftChildrenMap, leftIdx, newChildren[leftIdx]);
-    newNode = getNewNode(parentNode, newChildren[leftIdx], oldNodeFromMap);
+    const newNode = getNewNode(parentNode, newChildren[leftIdx], oldNodeFromMap);
     if (newNode !== null) {
       if (newNode.isCreated) {
         // 新VNode，直接打上标签新增，不参与到复用，旧的VNode会在后面打上delete标签
@@ -417,27 +433,27 @@ function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newC
         if (oldNodeFromMap !== null) {
           const eIndex = newNode.eIndex;
           eIndexes.push(eIndex);
-          last = eIndexes[result[result.length - 1]];
+          last = eIndexes[subsequence[subsequence.length - 1]];
           if (eIndex > last || last === undefined) {
             // 大的 eIndex直接放在最后
-            preIndex[i] = result[result.length - 1];
-            result.push(i);
+            preIndex[i] = subsequence[subsequence.length - 1];
+            subsequence.push(i);
           } else {
             let start = 0;
-            let end = result.length - 1;
+            let end = subsequence.length - 1;
             let middle;
             // 二分法找到需要替换的值
             while (start < end) {
               middle = Math.floor((start + end) / 2);
-              if (eIndexes[result[middle]] > eIndex) {
+              if (eIndexes[subsequence[middle]] > eIndex) {
                 end = middle;
               } else {
                 start = middle + 1;
               }
             }
-            if (eIndex < eIndexes[result[start]]) {
-              preIndex[i] = result[start - 1];
-              result[start] = i;
+            if (eIndex < eIndexes[subsequence[start]]) {
+              preIndex[i] = subsequence[start - 1];
+              subsequence[start] = i;
             }
           }
           i++;
@@ -450,13 +466,13 @@ function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newC
   }
 
   // 向前回溯找到正确的结果
-  let length = result.length;
-  let prev = result[length - 1];
+  let length = subsequence.length;
+  let prev = subsequence[length - 1];
   while (length-- > 0) {
-    result[length] = prev;
-    prev = preIndex[result[length]];
+    subsequence[length] = prev;
+    prev = preIndex[subsequence[length]];
   }
-  result.forEach(idx => {
+  subsequence.forEach(idx => {
     // 把需要复用的节点从 restNodes 中清理掉，因为不需要打 add 标记，直接复用 dom 节点
     reuseNodes[idx] = null;
   });
@@ -474,7 +490,43 @@ function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newC
     appendNode(rightNewNode);
     setVNodesCIndex(rightNewNode.next, rightNewNode.cIndex + 1);
   }
+}
 
+// diff数组类型的节点，核心算法
+function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newChildren: Array<any>): VNode | null {
+  let resultingFirstChild: VNode | null = null;
+  let prevNewNode: VNode | null = null;
+
+  function appendNode(newNode: VNode) {
+    if (prevNewNode === null) {
+      resultingFirstChild = newNode;
+      newNode.cIndex = 0;
+    } else {
+      prevNewNode.next = newNode;
+      newNode.cIndex = prevNewNode.cIndex + 1;
+    }
+    markVNodePath(newNode);
+    prevNewNode = newNode;
+  }
+
+  const { oldNode, leftIdx } = diffLeftSide(firstChild, newChildren, parentNode, appendNode);
+
+  const diffRightSideResult = diffRightSide(oldNode, leftIdx, newChildren, parentNode);
+
+  // 3. 新节点已经处理完成
+  if (leftIdx === diffRightSideResult.rightIdx) {
+    appendRightSideNode(oldNode, parentNode, firstChild, newChildren, diffRightSideResult, appendNode);
+    return resultingFirstChild;
+  }
+
+  // 4. 新节点还有一部分，但是老节点已经没有了
+  if (oldNode === null) {
+    appendAllRestNode(oldNode, parentNode, firstChild, newChildren, leftIdx, diffRightSideResult, appendNode);
+    return resultingFirstChild;
+  }
+
+  // 5. 新节点还有一部分，但是老节点也还有一部分
+  appendNodeWithLIS(oldNode, parentNode, firstChild, newChildren, leftIdx, diffRightSideResult, appendNode);
   return resultingFirstChild;
 }
 
@@ -536,12 +588,7 @@ function diffStringNodeHandler(parentNode: VNode, newChild: any, firstChildVNode
 }
 
 // 新节点是对象类型
-function diffObjectNodeHandler(
-  parentNode: VNode,
-  firstChild: VNode | null,
-  newChild: any,
-  isComparing: boolean
-) {
+function diffObjectNodeHandler(parentNode: VNode, firstChild: VNode | null, newChild: any, isComparing: boolean) {
   let canReuseNode: VNode | null = null;
 
   // 通过key比对是否有可以reuse
