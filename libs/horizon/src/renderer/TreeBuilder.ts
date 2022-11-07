@@ -179,7 +179,7 @@ function isEqualByIndex(idx: number, pathArrays: string[][]) {
 function getChildByIndex(vNode: VNode, idx: number) {
   let node = vNode.child;
   for (let i = 0; i < idx; i++) {
-    if (node) {
+    if (node !== null) {
       node = node.next;
     } else {
       return null;

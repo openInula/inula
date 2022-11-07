@@ -231,49 +231,63 @@ function getOldNodeFromMap(nodeMap: Map<string | number, VNode>, newIdx: number,
   return null;
 }
 
-function diffLeftSide(oldNode: VNode | null, newChildren: Array<any>, parentNode: VNode, appendNode: AppendVNode) {
+/**
+ * 左端新老节点对比
+ * @param firstNode 第一个VNode
+ * @param newChildren 新的JSX children
+ * @param parentNode 父节点
+ * @param appendNode 添加节点
+ */
+function diffLeftSide(firstNode: VNode | null, newChildren: Array<any>, parentNode: VNode, appendNode: AppendVNode) {
   let nextOldNode: VNode | null = null;
   // 从左边开始的位置
   let leftIdx = 0;
   // 1. 从左侧开始比对currentVNode和newChildren，若不能复用则跳出循环
-  for (; oldNode !== null && leftIdx < newChildren.length; leftIdx++) {
-    if (oldNode.eIndex > leftIdx) {
+  for (; firstNode !== null && leftIdx < newChildren.length; leftIdx++) {
+    if (firstNode.eIndex > leftIdx) {
       // 当新旧节点位置不一，则将缓存当前的旧节点，放到下一次对比
-      nextOldNode = oldNode;
-      oldNode = null;
+      nextOldNode = firstNode;
+      firstNode = null;
     } else {
-      nextOldNode = oldNode.next;
+      nextOldNode = firstNode.next;
     }
 
     // 不能复用，break
-    if (!checkCanReuseNode(oldNode, newChildren[leftIdx], leftIdx)) {
-      oldNode = oldNode ?? nextOldNode;
+    if (!checkCanReuseNode(firstNode, newChildren[leftIdx], leftIdx)) {
+      firstNode = firstNode ?? nextOldNode;
       break;
     }
 
-    const newNode = getNewNode(parentNode, newChildren[leftIdx], oldNode);
+    const newNode = getNewNode(parentNode, newChildren[leftIdx], firstNode);
     // 没有生成新节点，break
     if (!newNode) {
-      oldNode = oldNode ?? nextOldNode;
+      firstNode = firstNode ?? nextOldNode;
       break;
     }
 
     // diff过程中，需要将现有的节点清除掉，如果是创建，则不需要处理（因为没有现存节点）
-    if (oldNode && newNode.isCreated) {
-      deleteVNode(parentNode, oldNode);
+    if (firstNode && newNode.isCreated) {
+      deleteVNode(parentNode, firstNode);
     }
 
     setVNodeAdditionFlag(newNode);
     newNode.eIndex = leftIdx;
     appendNode(newNode);
-    oldNode = nextOldNode;
+    firstNode = nextOldNode;
   }
 
-  return { oldNode, leftIdx };
+  return { leftEndOldNode: firstNode, leftIdx };
 }
 
+/**
+ * 右端新老节点对比
+ * @param leftEndOldNode 左端对比完成后第一个不同的老节点
+ * @param leftIdx 左端diff完成后Index
+ * @param newChildren 新的JSX children
+ * @param parentNode 父节点
+ */
 function diffRightSide(
-  oldNode: VNode | null,
+  leftEndOldNode: VNode | null,
   leftIdx: number,
   newChildren: Array<any>,
   parentNode: VNode
@@ -284,8 +298,8 @@ function diffRightSide(
   let rightEndOldNode; // 老节点中最右边匹配的节点引用 abcde --> abfde 则rightEndOldNode = c;
   let rightNewNode: VNode | null = null; // 最右边匹配的节点引用 abcde --> abfde 则rightNewNode = d;
   // 从后往前，新资源的位置还没有到最末端，旧的vNode也还没遍历完，则可以考虑从后往前开始
-  if (rightIdx > leftIdx && oldNode !== null) {
-    const rightRemainingOldChildren = transRightChildrenToArray(oldNode);
+  if (rightIdx > leftIdx && leftEndOldNode !== null) {
+    const rightRemainingOldChildren = transRightChildrenToArray(leftEndOldNode);
     let rightOldIndex: number | null = rightRemainingOldChildren.length - 1;
 
     // 2. 从右侧开始比对currentVNode和newChildren，若不能复用则跳出循环
@@ -330,8 +344,17 @@ function diffRightSide(
   return { rightIdx, rightEndOldNode, rightNewNode };
 }
 
+/**
+ * 添加所有右端Diff完成的节点
+ * @param leftEndOldNode 左端对比完成后第一个不同的老节点
+ * @param parentNode 父节点
+ * @param firstChild 第一个VNode
+ * @param newChildren 新的JSX children
+ * @param diffRightSideResult 右端diff结果
+ * @param appendNode 添加节点
+ */
 function appendRightSideNode(
-  oldNode: VNode | null,
+  leftEndOldNode: VNode | null,
   parentNode: VNode,
   firstChild: VNode | null,
   newChildren: Array<any>,
@@ -340,11 +363,12 @@ function appendRightSideNode(
 ) {
   const { rightEndOldNode, rightNewNode } = diffRightSideResult;
 
+  // 清除中间残留的节点
   if (firstChild && parentNode.tag === DomComponent && newChildren.length === 0) {
     FlagUtils.markClear(parentNode);
     parentNode.clearChild = firstChild;
   } else {
-    deleteVNodes(parentNode, oldNode, rightEndOldNode);
+    deleteVNodes(parentNode, leftEndOldNode, rightEndOldNode);
   }
 
   if (rightNewNode) {
@@ -353,10 +377,18 @@ function appendRightSideNode(
   }
 }
 
+/**
+ * 添加左右端比较完成后剩余新节点和右侧节点
+ * @param leftEndOldNode 左端对比完成后第一个不同的老节点
+ * @param parentNode 父节点
+ * @param newChildren 新的JSX children
+ * @param leftIdx 左端diff完成后Index
+ * @param diffRightSideResult 右端diff结果
+ * @param appendNode 添加节点
+ */
 function appendAllRestNode(
-  oldNode: VNode | null,
+  leftEndOldNode: VNode | null,
   parentNode: VNode,
-  firstChild: VNode | null,
   newChildren: Array<any>,
   leftIdx: number,
   diffRightSideResult: DiffRightSideResult,
@@ -395,14 +427,20 @@ function appendAllRestNode(
   }
 }
 
+
 /**
  * 双端对比完成，新老节点都有剩余时，构造LIS（最长递增子序列）
  * 属于LIS的新节点直接复用，否则新增
+ * @param leftEndOldNode 左端对比完成后第一个不同的老节点
+ * @param parentNode 父节点
+ * @param newChildren 新的JSX children
+ * @param leftIdx 左端diff完成后Index
+ * @param diffRightSideResult 右端diff结果
+ * @param appendNode 添加节点
  */
 function appendNodeWithLIS(
-  oldNode: VNode,
+  leftEndOldNode: VNode,
   parentNode: VNode,
-  firstChild: VNode | null,
   newChildren: Array<any>,
   leftIdx: number,
   diffRightSideResult: DiffRightSideResult,
@@ -411,7 +449,7 @@ function appendNodeWithLIS(
   const { rightIdx, rightNewNode, rightEndOldNode } = diffRightSideResult;
 
   // 把剩下的currentVNode转成Map
-  const leftChildrenMap = transLeftChildrenToMap(oldNode, rightEndOldNode);
+  const leftChildrenMap = transLeftChildrenToMap(leftEndOldNode, rightEndOldNode);
   // 通过贪心算法+二分法获取最长递增子序列
   const eIndexes: Array<number> = []; // 记录 eIndex 值
   const subsequence: Array<number> = []; // 记录最长子序列在eIndexes中的 index 值
@@ -509,24 +547,26 @@ function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newC
     prevNewNode = newNode;
   }
 
-  const { oldNode, leftIdx } = diffLeftSide(firstChild, newChildren, parentNode, appendNode);
+  // 1. 左端新老节点对比
+  const { leftEndOldNode, leftIdx } = diffLeftSide(firstChild, newChildren, parentNode, appendNode);
 
-  const diffRightSideResult = diffRightSide(oldNode, leftIdx, newChildren, parentNode);
+  // 2. 右端新老节点对比
+  const diffRightSideResult = diffRightSide(leftEndOldNode, leftIdx, newChildren, parentNode);
 
   // 3. 新节点已经处理完成
   if (leftIdx === diffRightSideResult.rightIdx) {
-    appendRightSideNode(oldNode, parentNode, firstChild, newChildren, diffRightSideResult, appendNode);
+    appendRightSideNode(leftEndOldNode, parentNode, firstChild, newChildren, diffRightSideResult, appendNode);
     return resultingFirstChild;
   }
 
   // 4. 新节点还有一部分，但是老节点已经没有了
-  if (oldNode === null) {
-    appendAllRestNode(oldNode, parentNode, firstChild, newChildren, leftIdx, diffRightSideResult, appendNode);
+  if (leftEndOldNode === null) {
+    appendAllRestNode(leftEndOldNode, parentNode, newChildren, leftIdx, diffRightSideResult, appendNode);
     return resultingFirstChild;
   }
 
   // 5. 新节点还有一部分，但是老节点也还有一部分
-  appendNodeWithLIS(oldNode, parentNode, firstChild, newChildren, leftIdx, diffRightSideResult, appendNode);
+  appendNodeWithLIS(leftEndOldNode, parentNode, newChildren, leftIdx, diffRightSideResult, appendNode);
   return resultingFirstChild;
 }
 
