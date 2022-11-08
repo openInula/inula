@@ -40,3 +40,5 @@ steps:
             build_tools: [npm]
         check:
           auto: true
+          buildcheck: true
+          mode: sync
