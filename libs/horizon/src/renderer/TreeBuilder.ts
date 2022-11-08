@@ -81,7 +81,7 @@ function collectDirtyNodes(vNode: VNode, parent: VNode): void {
     if (parent.dirtyNodes === null) {
       parent.dirtyNodes = dirtyNodes;
     } else {
-      parent.dirtyNodes.push(...dirtyNodes);
+      parent.dirtyNodes.push(...vNode.dirtyNodes);
       dirtyNodes.length = 0;
     }
     vNode.dirtyNodes = null;
@@ -100,7 +100,7 @@ function collectDirtyNodes(vNode: VNode, parent: VNode): void {
 
 // 尝试完成当前工作单元，然后移动到下一个兄弟工作单元。如果没有更多的同级，请返回父vNode。
 function bubbleVNode(vNode: VNode): void {
-  let node: VNode | null = vNode;
+  let node = vNode;
 
   do {
     const parent = node.parent;
@@ -179,18 +179,14 @@ function isEqualByIndex(idx: number, pathArrays: string[][]) {
 function getChildByIndex(vNode: VNode, idx: number) {
   let node = vNode.child;
   for (let i = 0; i < idx; i++) {
-    if (node !== null) {
-      node = node.next;
-    } else {
-      return null;
-    }
+    node = node.next;
   }
   return node;
 }
 
 // 从多个更新节点中，计算出开始节点。即：找到最近的共同的父辈节点
 export function calcStartUpdateVNode(treeRoot: VNode) {
-  const toUpdateNodes = Array.from(treeRoot.toUpdateNodes!);
+  const toUpdateNodes = Array.from(treeRoot.toUpdateNodes);
 
   if (toUpdateNodes.length === 0) {
     return treeRoot;
@@ -219,12 +215,12 @@ export function calcStartUpdateVNode(treeRoot: VNode) {
   // 得到相等的路径
   const startNodePath = pathArrays[0].slice(0, commonPathEndIndex);
 
-  let node: VNode | null = treeRoot;
+  let node = treeRoot;
   for (let i = 1; i < startNodePath.length; i++) {
     const pathIndex = Number(startNodePath[i]);
-    node = getChildByIndex(node, pathIndex);
+    node = getChildByIndex(node, pathIndex)!;
     // 路径错误时，回退到从根更新
-    if (node === null) {
+    if (node == null) {
       return treeRoot;
     }
   }
@@ -243,7 +239,7 @@ function buildVNodeTree(treeRoot: VNode) {
   setStartVNode(startVNode);
 
   // 清空toUpdateNodes
-  treeRoot.toUpdateNodes!.clear();
+  treeRoot.toUpdateNodes.clear();
 
   if (startVNode.tag !== TreeRoot) {
     // 不是根节点
@@ -351,10 +347,16 @@ function renderFromRoot(treeRoot) {
   // 2. 提交变更
   submitToRender(treeRoot);
   popCurrentRoot();
-
-  // 与Devtool通信
-  sendRootToDevTool(treeRoot);
-
+  if (window.__HORIZON_DEV_HOOK__) {
+    const hook = window.__HORIZON_DEV_HOOK__;
+    // injector.js 可能在 Horizon 代码之后加载，此时无 __HORIZON_DEV_HOOK__ 全局变量
+    // Horizon 代码初次加载时不会初始化 helper
+    if (!hook.isInit) {
+      injectUpdater();
+    }
+    hook.addIfNotInclude(treeRoot);
+    hook.send(treeRoot);
+  }
   return null;
 }
 
@@ -398,25 +400,6 @@ export function launchUpdateFromVNode(vNode: VNode) {
       // 同步执行
       callRenderQueueImmediate();
     }
-  }
-}
-
-declare global {
-  interface Window {
-    __HORIZON_DEV_HOOK__: any;
-  }
-}
-
-function sendRootToDevTool(treeRoot) {
-  if (window.__HORIZON_DEV_HOOK__) {
-    const hook = window.__HORIZON_DEV_HOOK__;
-    // injector.js 可能在 Horizon 代码之后加载，此时无 __HORIZON_DEV_HOOK__ 全局变量
-    // Horizon 代码初次加载时不会初始化 helper
-    if (!hook.isInit) {
-      injectUpdater();
-    }
-    hook.addIfNotInclude(treeRoot);
-    hook.send(treeRoot);
   }
 }
 
