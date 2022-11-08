@@ -27,6 +27,9 @@ steps:
         path: CI
   BUILD:
     - build_execute:
+        enhance:
+          - feature: md5_source_tracement
+            build_tools: [npm]
         command: |
           npm install yarn -g
           yarn config set strict-ssl false
