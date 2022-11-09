@@ -13,7 +13,6 @@
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 #
-
 if [ -n "${releaseVersion}" ] ; then
   echo "==== Horizon Upgrade ${releaseVersion} ===="
   cd ./build/horizon ||  { echo 'ERROR: Build directory not found' ; exit 1; }
@@ -21,7 +20,7 @@ if [ -n "${releaseVersion}" ] ; then
   npm version "${releaseVersion}"
   cat >.npmrc <<- EndOfMessage
 registry=https://cmc.centralrepo.rnd.huawei.com/npm
-@cloudsop:registry=https://cmc.centralrepo.rnd.huawei.com/artifactory/product_npm
+@cloudsop:registry=https://cmc.centralrepo.rnd.huawei.com/artifactory/api/npm/product_npm
 _auth = Y2xvdWRzb3BhcnRpZmFjdG9yeTpDbG91ZHNvcDY2NiEhIQ
 always-auth = true
 email = cloudsop@huawei.com
