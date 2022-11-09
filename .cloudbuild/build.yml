@@ -8,7 +8,7 @@ notifications:
 buildspace:
   log_collect:
     - config/CI/build/logs
-  fixed: true
+  fixed: false
 env:
   resource:
     type: docker
