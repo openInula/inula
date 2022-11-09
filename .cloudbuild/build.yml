@@ -34,7 +34,7 @@ steps:
           yarn
           yarn run test
           yarn run build
-          node .cloudbuild/release.js
+          sh .cloudbuild/release.sh
         enhance:
           - feature: md5_source_tracement
             build_tools: [npm]
