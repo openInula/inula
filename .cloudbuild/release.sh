@@ -28,7 +28,8 @@ email = cloudsop@huawei.com
 EndOfMessage
 
   echo "==== Publish new version===="
-  npm publish
+  # npm仓库发布接口返回HTML，屏蔽错误码
+  npm publish || echo 'WARNING: Parsing publish response failed'
   npm view @cloudsop/horizon@"${releaseVersion}"
 else
   echo "No release version, quit."
