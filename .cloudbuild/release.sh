@@ -16,7 +16,8 @@
 
 if [ -n "${releaseVersion}" ] ; then
   echo "==== Horizon Upgrade ${releaseVersion} ===="
-  cd ../build/horizon || exit 1
+  cd ./build/horizon ||  { echo 'ERROR: Build directory not found' ; exit 1; }
+  # 写入新版本号
   npm version "${releaseVersion}"
   cat >.npmrc <<- EndOfMessage
 registry=https://cmc.centralrepo.rnd.huawei.com/npm
