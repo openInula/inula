@@ -6,6 +6,23 @@ import readonlyProxy from '../proxy/readonlyProxy';
 import { Observer } from '../proxy/Observer';
 import { FunctionComponent, ClassComponent } from '../Constants';
 import { VNode } from '../../renderer/Types';
+import { devtools } from '../devtools';
+import {
+  ACTION,
+  ACTION_QUEUED,
+  INITIALIZED,
+  QUEUE_FINISHED,
+  STATE_CHANGE,
+  SUBSCRIBED,
+  UNSUBSCRIBED,
+} from '../devtools/constants';
+
+const idGenerator = {
+  id: 0,
+  get: function (prefix) {
+    return prefix.toString() + this.id++;
+  },
+};
 
 const storeMap = new Map<string, StoreHandler<any, any, any>>();
 
@@ -73,7 +90,7 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
 ): () => StoreHandler<S, A, C> {
   //create a local shalow copy to ensure consistency (if user would change the config object after store creation)
   config = {
-    id: config.id,
+    id: config.id || idGenerator.get('UNKNOWN_STORE_'),
     /* @ts-ignore*/
     options: config.options,
     state: config.state,
@@ -92,10 +109,12 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
   proxyObj.$pending = false;
 
   const $subscribe = listener => {
+    devtools.emit(SUBSCRIBED, { store: handler, listener });
     proxyObj.addListener(listener);
   };
 
   const $unsubscribe = listener => {
+    devtools.emit(UNSUBSCRIBED, handler);
     proxyObj.removeListener(listener);
   };
 
@@ -115,11 +134,13 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
 
   function tryNextAction() {
     if (!plannedActions.length) {
+      devtools.emit(QUEUE_FINISHED, { store: handler });
       proxyObj.$pending = false;
       return;
     }
 
     const nextAction = plannedActions.shift()!;
+    devtools.emit(ACTION, { store: handler, action: nextAction, fromQueue: true });
     const result = config.actions
       ? config.actions[nextAction.action].bind(handler, proxyObj)(...nextAction.payload)
       : undefined;
@@ -139,6 +160,14 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
   if (config.actions) {
     Object.keys(config.actions).forEach(action => {
       ($queue as any)[action] = (...payload) => {
+        devtools.emit(ACTION_QUEUED, {
+          store: handler,
+          action: {
+            action,
+            payload,
+          },
+          fromQueue: true,
+        });
         return new Promise(resolve => {
           if (!proxyObj.$pending) {
             proxyObj.$pending = true;
@@ -164,6 +193,14 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
       };
 
       ($a as any)[action] = function Wrapped(...payload) {
+        devtools.emit(ACTION, {
+          store: handler,
+          action: {
+            action,
+            payload,
+          },
+          fromQueue: false,
+        });
         return config.actions![action].bind(handler, proxyObj)(...payload);
       };
 
@@ -171,6 +208,14 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
       Object.defineProperty(handler, action, {
         writable: false,
         value: (...payload) => {
+          devtools.emit(ACTION, {
+            store: handler,
+            action: {
+              action,
+              payload,
+            },
+            fromQueue: false,
+          });
           return config.actions![action].bind(handler, proxyObj)(...payload);
         },
       });
@@ -203,6 +248,16 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
   if (config.id) {
     storeMap.set(config.id, handler);
   }
+
+  devtools.emit(INITIALIZED, {
+    store: handler,
+  });
+
+  handler.$subscribe(() => {
+    devtools.emit(STATE_CHANGE, {
+      store: handler,
+    });
+  });
 
   return createStoreHook(handler);
 }
