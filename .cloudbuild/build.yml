@@ -8,15 +8,13 @@ notifications:
 buildspace:
   log_collect:
     - config/CI/build/logs
-  fixed: true
+  fixed: false
 env:
   resource:
     type: docker
     image: kweecr04.his.huawei.com:80/ecr-build-arm-gzkunpeng/euleros_v2r7spc522_x64_opmt_cs5.0_sz:v5.0
     class: 4U8G
     mode: toolbox
-  cache:
-    - type: workspace
 steps:
   PRE_BUILD:
     - checkout:
@@ -34,4 +32,11 @@ steps:
           yarn
           yarn run test
           yarn run build
-          node .cloudbuild/release.js
+          sh .cloudbuild/release.sh
+        enhance:
+          - feature: md5_source_tracement
+            build_tools: [npm]
+        check:
+          auto: true
+          buildcheck: true
+          mode: sync

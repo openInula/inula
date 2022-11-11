@@ -1,11 +1,22 @@
-// @ts-ignore
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 import { useState, useContext, useEffect, useRef } from '../../renderer/hooks/HookExternal';
 import { createContext } from '../../renderer/components/context/CreateContext';
 import { createElement } from '../../external/JSXElement';
-import { BoundActionCreator } from './redux';
-import { ReduxAction } from './redux';
-import { ReduxStoreHandler } from '../store/StoreHandler';
-import { VNode } from '../../renderer/Types';
+import type { ReduxStoreHandler, ReduxAction, BoundActionCreator } from './redux';
 
 const DefaultContext = createContext(null);
 type Context = typeof DefaultContext;
@@ -66,47 +77,12 @@ export const useStore = () => {
   return createStoreHook(DefaultContext)();
 };
 
-// function shallowCompare(a,b){
-//     return Object.keys(a).length === Object.keys(b).length &&
-//     Object.keys(a).every(key => a[key] === b[key]);
-// }
-
-//TODO: implement options
-// context?: Object,
-// areStatesEqual?: Function, :)
-// areOwnPropsEqual?: Function,
-// areStatePropsEqual?: Function,
-// areMergedPropsEqual?: Function,
-// forwardRef?: boolean,
-// const defaultOptions = {
-//     areStatesEqual: shallowCompare,
-//     areOwnPropsEqual: shallowCompare,
-//     areStatePropsEqual: shallowCompare,
-//     areMergedPropsEqual: shallowCompare
-// };
-
-type MapStateToPropsP<StateProps, OwnProps> = (state: any, ownProps: OwnProps) => StateProps;
-type MapDispatchToPropsP<DispatchProps, OwnProps> =
-  | { [key: string]: (...args: any[]) => ReduxAction }
-  | ((dispatch: (action: ReduxAction) => any, ownProps: OwnProps) => DispatchProps);
-type MergePropsP<StateProps, DispatchProps, OwnProps, MergedProps> = (
-  stateProps: StateProps,
-  dispatchProps: DispatchProps,
-  ownProps: OwnProps
-) => MergedProps;
-
-type WrappedComponent<OwnProps> = (props: OwnProps) => ReturnType<typeof createElement>;
-type OriginalComponent<MergedProps> = (props: MergedProps) => ReturnType<typeof createElement>;
-type Connector<OwnProps, MergedProps> = (Component: OriginalComponent<MergedProps>) => WrappedComponent<OwnProps>;
-
-export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
-  mapStateToProps: MapStateToPropsP<StateProps, OwnProps> = () => ({} as StateProps),
-  mapDispatchToProps: MapDispatchToPropsP<DispatchProps, OwnProps> = () => ({} as DispatchProps),
-  mergeProps: MergePropsP<StateProps, DispatchProps, OwnProps, MergedProps> = (
-    stateProps,
-    dispatchProps,
-    ownProps
-  ): MergedProps => ({ ...stateProps, ...dispatchProps, ...ownProps } as MergedProps),
+export function connect(
+  mapStateToProps?: (state: any, ownProps: { [key: string]: any }) => object,
+  mapDispatchToProps?:
+    | { [key: string]: (...args: any[]) => ReduxAction }
+    | ((dispatch: (action: ReduxAction) => any, ownProps?: object) => object),
+  mergeProps?: (stateProps: object, dispatchProps: object, ownProps: object) => object,
   options?: {
     areStatesEqual?: (oldState: any, newState: any) => boolean;
     context?: Context;
@@ -124,7 +100,7 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
     const Wrapper: WrappedComponent<OwnProps> = (props: OwnProps) => {
       const [f, forceReload] = useState(true);
 
-      const store = useStore();
+      const store = useStore() as unknown as ReduxStoreHandler;
 
       useEffect(() => {
         const unsubscribe = store.subscribe(() => forceReload(!f));

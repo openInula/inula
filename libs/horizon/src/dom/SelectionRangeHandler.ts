@@ -1,10 +1,25 @@
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 /**
  * 处理文本框、输入框中框选范围内的数据
  */
 
-import {getIFrameFocusedDom, isText} from './utils/Common';
+import { getIFrameFocusedDom, isText } from './utils/Common';
 
-import {isElement} from './utils/Common';
+import { isElement } from './utils/Common';
 
 /**
  * 设置聚焦的 textarea 或 input 节点的选择范围
@@ -61,7 +76,8 @@ function isNodeContainsByTargetNode(targetNode, node) {
   if (typeof targetNode.contains === 'function') {
     return targetNode.contains(node); // 该的节点是否为目标节点的后代节点
   }
-  if (typeof targetNode.compareDocumentPosition === 'function') { // compareDocumentPosition 数值，表示两个节点彼此做比较的位置
+  if (typeof targetNode.compareDocumentPosition === 'function') {
+    // compareDocumentPosition 数值，表示两个节点彼此做比较的位置
     const CONTAINS_CODE = 16;
     // 返回 16 代表 第二节点在第一节点内部
     return targetNode.compareDocumentPosition(node) === CONTAINS_CODE;
@@ -138,9 +154,10 @@ export function resetSelectionRange(preSelectionRangeData: SelectionData) {
     let ancestor = preFocusedDom.parentNode;
     // 查找先前的 focus 节点的先祖
     while (ancestor) {
-      if (isElement(ancestor)) { // 是元素节点，就把先祖信息放到先祖数组中
+      if (isElement(ancestor)) {
+        // 是元素节点，就把先祖信息放到先祖数组中
         // @ts-ignore
-        const {scrollLeft, scrollTop} = ancestor;
+        const { scrollLeft, scrollTop } = ancestor;
         ancestors.push({
           dom: ancestor,
           scrollLeft,

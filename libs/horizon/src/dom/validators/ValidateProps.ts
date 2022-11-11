@@ -1,20 +1,28 @@
-import {
-  getPropDetails, PROPERTY_TYPE, PropDetails,
-} from './PropertiesData';
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
+import { getPropDetails, PROPERTY_TYPE, PropDetails } from './PropertiesData';
 
 const INVALID_EVENT_NAME_REGEX = /^on[^A-Z]/;
-
 
 // 是内置元素
 export function isNativeElement(tagName: string, props: Record<string, any>) {
   return !tagName.includes('-') && props.is === undefined;
 }
 
-function isInvalidBoolean(
-  attributeName: string,
-  value: any,
-  propDetails: PropDetails,
-): boolean {
+function isInvalidBoolean(attributeName: string, value: any, propDetails: PropDetails): boolean {
   if (propDetails.type === PROPERTY_TYPE.SPECIAL) {
     return false;
   }
@@ -63,7 +71,7 @@ export function isInvalidValue(
   name: string,
   value: any,
   propDetails: PropDetails | null,
-  isNativeTag: boolean,
+  isNativeTag: boolean
 ): boolean {
   if (value == null) {
     return true;
@@ -107,11 +115,7 @@ export function validateProps(type, props) {
     const propString = invalidProps.map(prop => '`' + prop + '`').join(', ');
 
     if (invalidProps.length >= 1) {
-      console.error(
-        'Invalid value for prop %s on <%s> tag.',
-        propString,
-        type,
-      );
+      console.error('Invalid value for prop %s on <%s> tag.', propString, type);
     }
   }
 }

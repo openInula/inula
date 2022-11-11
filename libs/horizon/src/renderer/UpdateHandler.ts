@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 import type { VNode } from './Types';
 import { FlagUtils, ShouldCapture } from './vnode/VNodeFlags';
 
@@ -38,13 +53,7 @@ export function pushUpdate(vNode: VNode, update: Update) {
 }
 
 // 根据update获取新的state
-function calcState(
-  vNode: VNode,
-  update: Update,
-  inst: any,
-  oldState: any,
-  props: any,
-): any {
+function calcState(vNode: VNode, update: Update, inst: any, oldState: any, props: any): any {
   switch (update.type) {
     case UpdateState.Override:
       const content = update.content;
@@ -58,9 +67,7 @@ function calcState(
     case UpdateState.Update:
       const updateContent = update.content;
       const newState = typeof updateContent === 'function' ? updateContent.call(inst, oldState, props) : updateContent;
-      return (newState === null || newState === undefined)
-        ? oldState
-        : { ...oldState, ...newState };
+      return newState === null || newState === undefined ? oldState : { ...oldState, ...newState };
     default:
       return oldState;
   }
@@ -103,7 +110,6 @@ export function processUpdates(vNode: VNode, inst: any, props: any): void {
       calcUpdates(vNode, props, inst, toProcessUpdates);
     }
   }
-
 }
 
 export function pushForceUpdate(vNode: VNode) {

@@ -1,10 +1,22 @@
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 /**
  * 事件绑定实现，分为绑定委托事件和非委托事件
  */
-import {
-  allDelegatedHorizonEvents,
-  allDelegatedNativeEvents,
-} from './EventHub';
+import { allDelegatedHorizonEvents, allDelegatedNativeEvents } from './EventHub';
 import { isDocument } from '../dom/utils/Common';
 import { getNearestVNode, getNonDelegatedListenerMap } from '../dom/DOMInternalKeys';
 import { asyncUpdates, runDiscreteUpdates } from '../renderer/TreeBuilder';
@@ -12,11 +24,7 @@ import { handleEventMain } from './HorizonEventMain';
 import { decorateNativeEvent } from './EventWrapper';
 import { VNode } from '../renderer/vnode/VNode';
 
-const listeningMarker =
-  '_horizonListening' +
-  Math.random()
-    .toString(36)
-    .slice(4);
+const listeningMarker = '_horizonListening' + Math.random().toString(36).slice(4);
 
 // 触发委托事件
 function triggerDelegatedEvent(
@@ -56,7 +64,7 @@ export function lazyDelegateOnRoot(currentRoot: VNode, eventName: string) {
   const nativeEvents = allDelegatedHorizonEvents.get(eventName);
 
   nativeEvents.forEach(nativeEvent => {
-    const nativeFullName =  isCapture ? nativeEvent + 'capture' : nativeEvent;
+    const nativeFullName = isCapture ? nativeEvent + 'capture' : nativeEvent;
 
     // 事件存储在DOM节点属性，避免多个VNode(root和portal)对应同一个DOM, 造成事件重复监听
     let events = currentRoot.realNode.$EV;

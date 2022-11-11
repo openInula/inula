@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 import { isSame } from '../../CommonUtils';
 import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
 import { OBSERVER_KEY } from '../../Constants';
@@ -19,16 +34,16 @@ export function get(rawObj: object, key: string | symbol, receiver: any, singleL
 
   const observer = getObserver(rawObj);
 
-  if (key === 'watch'){
-    return (prop, handler:(key:string, oldValue:any, newValue:any)=>void)=>{
-      if(!observer.watchers[prop]){
-        observer.watchers[prop]=[] as ((key:string, oldValue:any, newValue:any)=>void)[];
+  if (key === 'watch') {
+    return (prop, handler: (key: string, oldValue: any, newValue: any) => void) => {
+      if (!observer.watchers[prop]) {
+        observer.watchers[prop] = [] as ((key: string, oldValue: any, newValue: any) => void)[];
       }
       observer.watchers[prop].push(handler);
-      return ()=>{
-        observer.watchers[prop]=observer.watchers[prop].filter(cb=>cb!==handler);
-      }
-    }
+      return () => {
+        observer.watchers[prop] = observer.watchers[prop].filter(cb => cb !== handler);
+      };
+    };
   }
 
   if (key === 'addListener') {
@@ -66,7 +81,7 @@ export function set(rawObj: object, key: string, value: any, receiver: any): boo
   const ret = Reflect.set(rawObj, key, newValue, receiver);
 
   if (!isSame(newValue, oldValue)) {
-    if(observer.watchers?.[key]){
+    if (observer.watchers?.[key]) {
       observer.watchers[key].forEach(cb => {
         cb(key, oldValue, newValue);
       });

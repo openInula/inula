@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 /**
  * 虚拟DOM结构体
  */
@@ -17,10 +32,11 @@ import {
   Profiler,
   MemoComponent,
 } from './VNodeTags';
-import type {VNodeTag} from './VNodeTags';
-import type {RefType, ContextType, SuspenseState, Source} from '../Types';
-import type {Hook} from '../hooks/HookType';
-import {InitFlag} from './VNodeFlags';
+import type { VNodeTag } from './VNodeTags';
+import type { RefType, ContextType, SuspenseState, Source } from '../Types';
+import type { Hook } from '../hooks/HookType';
+import { InitFlag } from './VNodeFlags';
+import { Observer } from '../../horizonx/proxy/Observer';
 
 export class VNode {
   tag: VNodeTag;
@@ -85,8 +101,8 @@ export class VNode {
 
   // 状态管理器HorizonX使用
   isStoreChange: boolean;
-  observers: Set<any> | null = null; // 记录这个函数组件/类组件依赖哪些Observer
-  classComponentWillUnmount: Function | null; // HorizonX会在classComponentWillUnmount中清除对VNode的引入用
+  observers: Set<Observer> | null = null; // 记录这个函数组件/类组件依赖哪些Observer
+  classComponentWillUnmount: ((vNode: VNode) => any) | null; // HorizonX会在classComponentWillUnmount中清除对VNode的引入用
   src: Source | null; // 节点所在代码位置
 
   constructor(tag: VNodeTag, props: any, key: null | string, realNode) {

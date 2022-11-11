@@ -1,25 +1,28 @@
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 /**
  * <input> <textarea> <select> <option> 对 value 做了特殊处理
  * 处理组件被代理和不被代理情况下的不同逻辑
  */
 
-import {HorizonDom, HorizonSelect, Props} from '../utils/Interface';
-import {
-  getInputPropsWithoutValue,
-  setInitInputValue,
-  updateInputValue,
-} from './InputValueHandler';
-import {
-  getOptionPropsWithoutValue,
-} from './OptionValueHandler';
-import {
-  getSelectPropsWithoutValue,
-  updateSelectValue,
-} from './SelectValueHandler';
-import {
-  getTextareaPropsWithoutValue,
-  updateTextareaValue,
-} from './TextareaValueHandler';
+import { HorizonDom, HorizonSelect, Props } from '../utils/Interface';
+import { getInputPropsWithoutValue, setInitInputValue, updateInputValue } from './InputValueHandler';
+import { getOptionPropsWithoutValue } from './OptionValueHandler';
+import { getSelectPropsWithoutValue, updateSelectValue } from './SelectValueHandler';
+import { getTextareaPropsWithoutValue, updateTextareaValue } from './TextareaValueHandler';
 
 // 获取元素除了被代理的值以外的属性
 function getPropsWithoutValue(type: string, dom: HorizonDom, props: Props) {
@@ -71,8 +74,4 @@ function updateValue(type: string, dom: HorizonDom, props: Props) {
   }
 }
 
-export {
-  getPropsWithoutValue,
-  setInitValue,
-  updateValue,
-};
+export { getPropsWithoutValue, setInitValue, updateValue };

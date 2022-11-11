@@ -1,5 +1,20 @@
-import {HorizonDom} from './Interface';
-import {Props} from '../DOMOperator';
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
+import { HorizonDom } from './Interface';
+import { Props } from '../DOMOperator';
 
 /**
  * 获取当前聚焦的 input 或者 textarea 元素
@@ -20,12 +35,15 @@ export function getIFrameFocusedDom() {
   while (focusedDom instanceof currentWindow.HTMLIFrameElement) {
     try {
       // 访问 HTMLIframeElement 的 contentDocument 可能会导致浏览器抛出错误
-      if (typeof focusedDom.contentWindow.location.href === 'string') { // iframe 的内容为同源
+      if (typeof focusedDom.contentWindow.location.href === 'string') {
+        // iframe 的内容为同源
         focusedDom = getFocusedDom(focusedDom.contentWindow.document);
-      } else { // 非同源 iframe 因为安全性原因无法获取其中的具体元素
+      } else {
+        // 非同源 iframe 因为安全性原因无法获取其中的具体元素
         break;
       }
-    } catch (e) { // 非同源 iframe 因为安全性原因无法获取其中的具体元素
+    } catch (e) {
+      // 非同源 iframe 因为安全性原因无法获取其中的具体元素
       break;
     }
   }

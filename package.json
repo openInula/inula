@@ -4,13 +4,14 @@
     "libs/*"
   ],
   "scripts": {
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint . --ext .ts --fix",
+    "prettier": "prettier -w libs/**/*.ts",
     "build": "rollup --config ./scripts/rollup/rollup.config.js",
     "build:watch": "rollup --watch --config ./scripts/rollup/rollup.config.js",
     "build:3rdLib": "node ./scripts/gen3rdLib.js build:3rdLib",
     "build:3rdLib-dev": "npm run build & node ./scripts/gen3rdLib.js build:3rdLib-dev",
     "build:horizon3rdLib-dev": "npm run build & node ./scripts/gen3rdLib.js build:horizon3rdLib-dev",
-    "build-types": "tsc -p ./libs/horizon/index.ts --emitDeclarationOnly --declaration --declarationDir ./build/horizon/@types --skipLibCheck",
+    "build-types": "tsc -p ./libs/horizon/index.ts --emitDeclarationOnly --declaration --declarationDir ./build/horizon/@types --skipLibCheck || echo \"WARNING: TSC exited with status $?\"",
     "debug-test": "yarn test --debug",
     "test": "jest --config=jest.config.js",
     "watch-test": "yarn test --watch --dev"

@@ -1,12 +1,26 @@
-import {Props} from '../utils/Interface';
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
 
+import { Props } from '../utils/Interface';
 
 // 值的优先级 value > children > defaultValue
 function getInitValue(props: Props) {
-  const {value} = props;
+  const { value } = props;
 
   if (value == null) {
-    const {defaultValue, children} = props;
+    const { defaultValue, children } = props;
     let initValue = defaultValue;
 
     // children content存在时，会覆盖defaultValue
@@ -30,7 +44,7 @@ export function getTextareaPropsWithoutValue(dom: HTMLTextAreaElement, propertie
   };
 }
 
-export function updateTextareaValue(dom: HTMLTextAreaElement, props: Props, isInit: boolean = false) {
+export function updateTextareaValue(dom: HTMLTextAreaElement, props: Props, isInit = false) {
   if (isInit) {
     const initValue = getInitValue(props);
     if (initValue !== '') {
@@ -48,4 +62,3 @@ export function updateTextareaValue(dom: HTMLTextAreaElement, props: Props, isIn
     }
   }
 }
-

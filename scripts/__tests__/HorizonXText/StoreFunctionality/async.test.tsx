@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 //@ts-ignore
 import * as Horizon from '../../../../libs/horizon';
 import { createStore } from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
@@ -16,7 +31,7 @@ function postpone(timer, func) {
 }
 
 describe('Asynchronous store', () => {
-  const useAsyncCounter = createStore({
+  const getStore = createStore({
     state: {
       counter: 0,
       check: false,
@@ -46,13 +61,13 @@ describe('Asynchronous store', () => {
   });
 
   beforeEach(() => {
-    useAsyncCounter().reset();
+    getStore().reset();
   });
 
   it('should return promise when queued function is called', () => {
     jest.useFakeTimers();
 
-    const store = useAsyncCounter();
+    const store = getStore();
 
     return new Promise(resolve => {
       store.$queue.increment().then(() => {
@@ -67,9 +82,9 @@ describe('Asynchronous store', () => {
   it('should queue async functions', () => {
     jest.useFakeTimers();
     return new Promise(resolve => {
-      const store = useAsyncCounter();
+      const store = getStore();
 
-      //initial value
+      // initial value
       expect(store.value).toBe('false0');
 
       // no blocking action action

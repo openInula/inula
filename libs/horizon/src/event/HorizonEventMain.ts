@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 import { AnyNativeEvent, ListenerUnitList } from './Types';
 import type { VNode } from '../renderer/Types';
 import { isInputElement, setPropertyWritable } from './utils';
@@ -63,11 +78,7 @@ function getChangeListeners(
   if (shouldTriggerChangeEvent(targetDom, nativeEvtName)) {
     recordChangeEventTargets(target);
 
-    const event = decorateNativeEvent(
-      'onChange',
-      'change',
-      nativeEvt,
-    );
+    const event = decorateNativeEvent('onChange', 'change', nativeEvt);
     return getListenersFromTree(vNode, 'onChange', event, EVENT_TYPE_ALL);
   }
 
@@ -80,7 +91,7 @@ function getCommonListeners(
   vNode: null | VNode,
   nativeEvent: AnyNativeEvent,
   target: null | EventTarget,
-  isCapture: boolean,
+  isCapture: boolean
 ): ListenerUnitList {
   const horizonEvtName = transformToHorizonEvent(nativeEvtName);
 
@@ -102,12 +113,7 @@ function getCommonListeners(
   }
 
   const horizonEvent = decorateNativeEvent(horizonEvtName, nativeEvtName, nativeEvent);
-  return getListenersFromTree(
-    vNode,
-    horizonEvtName,
-    horizonEvent,
-    isCapture ? EVENT_TYPE_CAPTURE : EVENT_TYPE_BUBBLE,
-  );
+  return getListenersFromTree(vNode, horizonEvtName, horizonEvent, isCapture ? EVENT_TYPE_CAPTURE : EVENT_TYPE_BUBBLE);
 }
 
 // 按顺序执行事件队列
@@ -130,27 +136,16 @@ function triggerHorizonEvents(
   nativeEvtName: string,
   isCapture: boolean,
   nativeEvent: AnyNativeEvent,
-  vNode: VNode | null,
+  vNode: VNode | null
 ) {
   const target = nativeEvent.target || nativeEvent.srcElement!;
 
   // 触发普通委托事件
-  let listenerList: ListenerUnitList = getCommonListeners(
-    nativeEvtName,
-    vNode,
-    nativeEvent,
-    target,
-    isCapture,
-  );
+  let listenerList: ListenerUnitList = getCommonListeners(nativeEvtName, vNode, nativeEvent, target, isCapture);
 
   // 触发特殊handler委托事件
   if (!isCapture && horizonEventToNativeMap.get('onChange')!.includes(nativeEvtName)) {
-    const changeListeners = getChangeListeners(
-      nativeEvtName,
-      nativeEvent,
-      vNode,
-      target
-    );
+    const changeListeners = getChangeListeners(nativeEvtName, nativeEvent, vNode, target);
     if (changeListeners.length) {
       listenerList = listenerList.concat(changeListeners);
     }
@@ -159,7 +154,6 @@ function triggerHorizonEvents(
   // 处理触发的事件队列
   processListeners(listenerList);
 }
-
 
 // 其他事件正在执行中标记
 let isInEventsExecution = false;
@@ -170,7 +164,7 @@ export function handleEventMain(
   isCapture: boolean,
   nativeEvent: AnyNativeEvent,
   vNode: null | VNode,
-  targetDom: EventTarget,
+  targetDom: EventTarget
 ): void {
   let startVNode = vNode;
   if (startVNode !== null) {

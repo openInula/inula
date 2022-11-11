@@ -1,19 +1,29 @@
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 import type { VNode } from '../Types';
 
 import { FlagUtils } from '../vnode/VNodeFlags';
 import { getLazyVNodeTag } from '../vnode/VNodeCreator';
-import {
-  ClassComponent,
-  ForwardRef,
-  FunctionComponent,
-  MemoComponent,
-} from '../vnode/VNodeTags';
+import { ClassComponent, ForwardRef, FunctionComponent, MemoComponent } from '../vnode/VNodeTags';
 import { throwIfTrue } from '../utils/throwIfTrue';
 import { captureFunctionComponent } from './FunctionComponent';
 import { captureRender as captureClassComponent } from './ClassComponent';
 import { captureMemoComponent } from './MemoComponent';
 
-export function bubbleRender() { }
+export function bubbleRender() {}
 
 const LazyRendererMap = {
   [FunctionComponent]: captureFunctionComponent,
@@ -36,11 +46,7 @@ export function mergeDefaultProps(Component: any, props: object): object {
   return props;
 }
 
-function captureLazyComponent(
-  processing,
-  lazyComponent,
-  shouldUpdate,
-) {
+function captureLazyComponent(processing, lazyComponent, shouldUpdate) {
   if (!processing.isCreated) {
     // 每次加载lazy都当作mount来处理
     processing.isCreated = true;
@@ -72,9 +78,9 @@ function captureLazyComponent(
     throwIfTrue(
       true,
       'Element type is invalid. Received a promise that resolves to: %s. ' +
-      'Lazy element type must resolve to a class or function.%s',
+        'Lazy element type must resolve to a class or function.%s',
       Component,
-      '',
+      ''
     );
     return null;
   }

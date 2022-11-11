@@ -1,12 +1,27 @@
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 /**
  * 提供：vNode的“遍历”，“查找”，“判断”的相关工具方法
  */
 
-import type {VNode} from '../Types';
+import type { VNode } from '../Types';
 
-import {DomComponent, DomPortal, DomText, TreeRoot} from './VNodeTags';
-import {isComment} from '../../dom/utils/Common';
-import {getNearestVNode} from '../../dom/DOMInternalKeys';
+import { DomComponent, DomPortal, DomText, TreeRoot } from './VNodeTags';
+import { isComment } from '../../dom/utils/Common';
+import { getNearestVNode } from '../../dom/DOMInternalKeys';
 import { Addition, InitFlag } from './VNodeFlags';
 
 export function travelChildren(beginVNode: VNode, handleVNode: Function, isFinish?: Function) {
@@ -110,20 +125,22 @@ export function isDomVNode(node: VNode) {
 
 // 是容器类型的vNode
 function isDomContainer(vNode: VNode): boolean {
-  return (
-    vNode.tag === DomComponent ||
-    vNode.tag === TreeRoot ||
-    vNode.tag === DomPortal
-  );
+  return vNode.tag === DomComponent || vNode.tag === TreeRoot || vNode.tag === DomPortal;
 }
 
 export function findDomVNode(vNode: VNode): VNode | null {
-  return travelVNodeTree(vNode, (node) => {
-    if (node.tag === DomComponent || node.tag === DomText) {
-      return node;
-    }
-    return null;
-  }, null, vNode, null);
+  return travelVNodeTree(
+    vNode,
+    node => {
+      if (node.tag === DomComponent || node.tag === DomText) {
+        return node;
+      }
+      return null;
+    },
+    null,
+    vNode,
+    null
+  );
 }
 
 export function findDOMByClassInst(inst) {

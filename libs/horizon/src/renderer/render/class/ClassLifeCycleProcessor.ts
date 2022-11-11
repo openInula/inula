@@ -1,13 +1,23 @@
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 import type { VNode } from '../../Types';
 import type { Callback } from '../../UpdateHandler';
 
 import { shallowCompare } from '../../utils/compare';
-import {
-  pushUpdate,
-  newUpdate,
-  UpdateState,
-  processUpdates,
-} from '../../UpdateHandler';
+import { pushUpdate, newUpdate, UpdateState, processUpdates } from '../../UpdateHandler';
 import { launchUpdateFromVNode } from '../../TreeBuilder';
 import { FlagUtils } from '../../vnode/VNodeFlags';
 import { getCurrentContext } from '../ClassComponent';
@@ -16,7 +26,7 @@ import { PureComponent } from '../../components/BaseClassComponent';
 export function callDerivedStateFromProps(
   processing: VNode,
   getDerivedStateFromProps: (props: object, state: object) => object,
-  nextProps: object,
+  nextProps: object
 ) {
   if (getDerivedStateFromProps) {
     const oldState = processing.state;
@@ -25,9 +35,7 @@ export function callDerivedStateFromProps(
     const newState = getDerivedStateFromProps(nextProps, oldState);
 
     // 组件未返回state,需要返回旧的preState
-    processing.state = newState === null || newState === undefined
-      ? oldState
-      : { ...oldState, ...newState };
+    processing.state = newState === null || newState === undefined ? oldState : { ...oldState, ...newState };
   }
 }
 
@@ -53,7 +61,7 @@ export function callShouldComponentUpdate(
   oldProps: object,
   newProps: object,
   newState: object,
-  newContext: object,
+  newContext: object
 ) {
   const inst = processing.realNode;
 
@@ -154,4 +162,3 @@ export function markComponentDidUpdate(processing: VNode) {
     FlagUtils.markUpdate(processing);
   }
 }
-

@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
 import { isMap, isWeakMap, isSame } from '../../CommonUtils';
 
@@ -13,7 +28,8 @@ const handler = {
   forEach,
   keys,
   values,
-  [Symbol.iterator]: forOf,
+  // 判断Symbol类型，兼容IE
+  [typeof Symbol === 'function' ? Symbol.iterator : '@@iterator']: forOf,
 };
 
 export function createCollectionProxy(rawObj: Object, hookObserver = true): Object {
@@ -199,7 +215,8 @@ function wrapIterator(rawObj: Object, rawIt: { next: () => { value: any; done: b
 
       return { value: newVal, done };
     },
-    [Symbol.iterator]() {
+    // 判断Symbol类型，兼容IE
+    [typeof Symbol === 'function' ? Symbol.iterator : '@@iterator']() {
       return this;
     },
   };

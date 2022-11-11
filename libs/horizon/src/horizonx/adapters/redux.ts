@@ -1,6 +1,19 @@
-import { createStore as createStoreX } from '../store/StoreHandler';
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
 
-import { ReduxStoreHandler } from '../store/StoreHandler';
+import { createStore as createStoreX } from '../store/StoreHandler';
 
 export { thunk } from './reduxThunk';
 
@@ -13,6 +26,14 @@ export {
   createSelectorHook,
   createDispatchHook,
 } from './reduxReact';
+
+export type ReduxStoreHandler = {
+  reducer: (state: any, action: { type: string }) => any;
+  dispatch: (action: { type: string }) => void;
+  getState: () => any;
+  subscribe: (listener: () => void) => () => void;
+  replaceReducer: (reducer: (state: any, action: { type: string }) => any) => void;
+};
 
 export type ReduxAction = {
   type: string;
@@ -90,7 +111,7 @@ export function createStore(reducer: Reducer, preloadedState?: any, enhancers?):
       },
     },
     options: {
-      reduxAdapter: true,
+      isReduxAdapter: true,
     },
   })();
 

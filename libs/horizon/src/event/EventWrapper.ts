@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 // 兼容IE的event key
 import { AnyNativeEvent } from './Types';
 
@@ -25,7 +40,7 @@ export class WrappedEvent {
   stopPropagation: () => void;
   preventDefault: () => void;
 
-  propagationStopped = false
+  propagationStopped = false;
   isPropagationStopped = (): boolean => this.propagationStopped;
 
   // 适配Keyboard键盘事件该函数不能由合成事件调用
@@ -36,9 +51,9 @@ export class WrappedEvent {
   constructor(customEventName: string, nativeEvtName: string, nativeEvent: AnyNativeEvent) {
     for (const name in nativeEvent) {
       this[name] = nativeEvent[name];
-      if(name === 'getModifierState') {
+      if (name === 'getModifierState') {
         const keyBoardEvent = nativeEvent as KeyboardEvent;
-        this.getModifierState = (keyArg) => keyBoardEvent.getModifierState(keyArg);
+        this.getModifierState = keyArg => keyBoardEvent.getModifierState(keyArg);
       }
     }
     // stopPropagation和preventDefault 必须通过Event实例调用

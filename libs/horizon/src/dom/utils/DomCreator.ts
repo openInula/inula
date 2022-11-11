@@ -1,3 +1,17 @@
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
 
 export const NSS = {
   html: 'http://www.w3.org/1999/xhtml',
@@ -6,10 +20,7 @@ export const NSS = {
 };
 
 // 创建DOM元素
-export function createDom(
-  tagName: string,
-  parentNamespace: string,
-): Element {
+export function createDom(tagName: string, parentNamespace: string): Element {
   let dom: Element;
   const selfNamespace = NSS[tagName] || NSS.html;
   const ns = parentNamespace !== NSS.html ? parentNamespace : selfNamespace;

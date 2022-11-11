@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 /**
  * 该文件负责把更新应用到界面上 以及 和生命周期的相关调用
  */
@@ -35,12 +50,7 @@ import {
   callUseLayoutEffectRemove,
 } from './HookEffectHandler';
 import { handleSubmitError } from '../ErrorHandler';
-import {
-  travelVNodeTree,
-  clearVNode,
-  isDomVNode,
-  getSiblingDom,
-} from '../vnode/VNodeUtils';
+import { travelVNodeTree, clearVNode, isDomVNode, getSiblingDom } from '../vnode/VNodeUtils';
 import { shouldAutoFocus } from '../../dom/utils/Common';
 
 function callComponentWillUnmount(vNode: VNode, instance: any) {
@@ -52,13 +62,10 @@ function callComponentWillUnmount(vNode: VNode, instance: any) {
 }
 
 // 调用界面变化前的生命周期
-function callBeforeSubmitLifeCycles(
-  vNode: VNode,
-): void {
-  if (vNode.tag === ClassComponent && !vNode.isCreated) { // 调用instance.getSnapshotBeforeUpdate
-    const prevProps = vNode.isLazyComponent
-      ? mergeDefaultProps(vNode.type, vNode.oldProps)
-      : vNode.oldProps;
+function callBeforeSubmitLifeCycles(vNode: VNode): void {
+  if (vNode.tag === ClassComponent && !vNode.isCreated) {
+    // 调用instance.getSnapshotBeforeUpdate
+    const prevProps = vNode.isLazyComponent ? mergeDefaultProps(vNode.type, vNode.oldProps) : vNode.oldProps;
     const prevState = vNode.oldState;
     const instance = vNode.realNode;
 
@@ -83,9 +90,7 @@ function callStateCallback(vNode: VNode, obj: any): void {
 }
 
 // 调用界面变化后的生命周期
-function callAfterSubmitLifeCycles(
-  vNode: VNode,
-): void {
+function callAfterSubmitLifeCycles(vNode: VNode): void {
   switch (vNode.tag) {
     case FunctionComponent:
     case ForwardRef: {
@@ -101,17 +106,10 @@ function callAfterSubmitLifeCycles(
         if (vNode.isCreated) {
           instance.componentDidMount();
         } else {
-          const prevProps =
-            vNode.isLazyComponent
-              ? mergeDefaultProps(vNode.type, vNode.oldProps)
-              : vNode.oldProps;
+          const prevProps = vNode.isLazyComponent ? mergeDefaultProps(vNode.type, vNode.oldProps) : vNode.oldProps;
           const prevState = vNode.oldState;
 
-          instance.componentDidUpdate(
-            prevProps,
-            prevState,
-            instance.__snapshotResult,
-          );
+          instance.componentDidUpdate(prevProps, prevState, instance.__snapshotResult);
         }
       }
 
@@ -137,17 +135,23 @@ function callAfterSubmitLifeCycles(
 }
 
 function hideOrUnhideAllChildren(vNode, isHidden) {
-  travelVNodeTree(vNode, (node: VNode) => {
-    const instance = node.realNode;
+  travelVNodeTree(
+    vNode,
+    (node: VNode) => {
+      const instance = node.realNode;
 
-    if (node.tag === DomComponent || node.tag === DomText) {
-      if (isHidden) {
-        hideDom(node.tag, instance);
-      } else {
-        unHideDom(node.tag, instance, node.props);
+      if (node.tag === DomComponent || node.tag === DomText) {
+        if (isHidden) {
+          hideDom(node.tag, instance);
+        } else {
+          unHideDom(node.tag, instance, node.props);
+        }
       }
-    }
-  }, null, vNode, null);
+    },
+    null,
+    vNode,
+    null
+  );
 }
 
 function attachRef(vNode: VNode) {
@@ -157,7 +161,7 @@ function attachRef(vNode: VNode) {
 }
 
 function detachRef(vNode: VNode, isOldRef?: boolean) {
-  let ref = (isOldRef ? vNode.oldRef : vNode.ref);
+  const ref = isOldRef ? vNode.oldRef : vNode.ref;
 
   handleRef(vNode, ref, null);
 }
@@ -218,12 +222,17 @@ function unmountVNode(vNode: VNode): void {
 
 // 卸载vNode，递归遍历子vNode
 function unmountNestedVNodes(vNode: VNode): void {
-  travelVNodeTree(vNode, (node) => {
+  travelVNodeTree(
+    vNode,
+    node => {
       unmountVNode(node);
-    }, node =>
+    },
+    node =>
       // 如果是DomPortal，不需要遍历child
-      node.tag === DomPortal
-    , vNode, null);
+      node.tag === DomPortal,
+    vNode,
+    null
+  );
 }
 
 function submitAddition(vNode: VNode): void {
@@ -254,11 +263,7 @@ function submitAddition(vNode: VNode): void {
   insertOrAppendPlacementNode(vNode, before, parentDom);
 }
 
-function insertOrAppendPlacementNode(
-  node: VNode,
-  beforeDom: Element | null,
-  parent: Element | Container,
-): void {
+function insertOrAppendPlacementNode(node: VNode, beforeDom: Element | null, parent: Element | Container): void {
   const { tag, realNode } = node;
 
   if (isDomVNode(node)) {
@@ -290,42 +295,48 @@ function unmountDomComponents(vNode: VNode): void {
   // 这两个变量要一起更新
   let currentParent;
 
-  travelVNodeTree(vNode, (node) => {
-    if (!currentParentIsValid) {
-      let parent = node.parent;
-      let tag;
-      while (parent !== null) {
-        tag = parent.tag;
-        if (tag === DomComponent || tag === TreeRoot || tag === DomPortal) {
-          currentParent = parent.realNode;
-          break;
+  travelVNodeTree(
+    vNode,
+    node => {
+      if (!currentParentIsValid) {
+        let parent = node.parent;
+        let tag;
+        while (parent !== null) {
+          tag = parent.tag;
+          if (tag === DomComponent || tag === TreeRoot || tag === DomPortal) {
+            currentParent = parent.realNode;
+            break;
+          }
+          parent = parent.parent;
         }
-        parent = parent.parent;
+        currentParentIsValid = true;
       }
-      currentParentIsValid = true;
-    }
 
-    if (node.tag === DomComponent || node.tag === DomText) {
-      // 卸载vNode，递归遍历子vNode
-      unmountNestedVNodes(node);
+      if (node.tag === DomComponent || node.tag === DomText) {
+        // 卸载vNode，递归遍历子vNode
+        unmountNestedVNodes(node);
 
-      // 在所有子项都卸载后，删除dom树中的节点
-      removeChildDom(currentParent, node.realNode);
-    } else if (node.tag === DomPortal) {
-      if (node.child !== null) {
-        currentParent = node.realNode;
+        // 在所有子项都卸载后，删除dom树中的节点
+        removeChildDom(currentParent, node.realNode);
+      } else if (node.tag === DomPortal) {
+        if (node.child !== null) {
+          currentParent = node.realNode;
+        }
+      } else {
+        unmountVNode(node);
       }
-    } else {
-      unmountVNode(node);
+    },
+    node =>
+      // 如果是dom不用再遍历child
+      node.tag === DomComponent || node.tag === DomText,
+    vNode,
+    node => {
+      if (node.tag === DomPortal) {
+        // 当离开portal，需要重新设置parent
+        currentParentIsValid = false;
+      }
     }
-  }, node =>
-    // 如果是dom不用再遍历child
-    node.tag === DomComponent || node.tag === DomText, vNode, (node) => {
-    if (node.tag === DomPortal) {
-      // 当离开portal，需要重新设置parent
-      currentParentIsValid = false;
-    }
-  });
+  );
 }
 
 function submitClear(vNode: VNode): void {

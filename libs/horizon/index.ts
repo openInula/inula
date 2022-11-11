@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 import {
   TYPE_FRAGMENT as Fragment,
   TYPE_PROFILER as Profiler,
@@ -30,7 +45,17 @@ import {
 import { asyncUpdates } from './src/renderer/TreeBuilder';
 import { callRenderQueueImmediate } from './src/renderer/taskExecutor/RenderQueue';
 import { runAsyncEffects } from './src/renderer/submit/HookEffectHandler';
-
+import {
+  isContextProvider,
+  isContextConsumer,
+  isElement,
+  isValidElementType,
+  isForwardRef,
+  isFragment,
+  isLazy,
+  isMemo,
+  isPortal,
+} from './src/external/HorizonIs';
 import { createStore, useStore, clearStore } from './src/horizonx/store/StoreHandler';
 import * as reduxAdapter from './src/horizonx/adapters/redux';
 import { watch } from './src/horizonx/proxy/watch';
@@ -87,6 +112,15 @@ const Horizon = {
   clearStore,
   reduxAdapter,
   watch,
+  isFragment,
+  isElement,
+  isValidElementType,
+  isForwardRef,
+  isLazy,
+  isMemo,
+  isPortal,
+  isContextProvider,
+  isContextConsumer,
 };
 
 export const version = __VERSION__;
@@ -128,6 +162,16 @@ export {
   clearStore,
   reduxAdapter,
   watch,
+  // 兼容ReactIs
+  isFragment,
+  isElement,
+  isValidElementType,
+  isForwardRef,
+  isLazy,
+  isMemo,
+  isPortal,
+  isContextProvider,
+  isContextConsumer,
 };
 
 export default Horizon;

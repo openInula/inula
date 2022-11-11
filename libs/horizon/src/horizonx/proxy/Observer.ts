@@ -1,11 +1,22 @@
-/**
- * 一个对象（对象、数组、集合）对应一个Observer
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
  */
 
-//@ts-ignore
 import { launchUpdateFromVNode } from '../../renderer/TreeBuilder';
 import { getProcessingVNode } from '../../renderer/GlobalVar';
 import { VNode } from '../../renderer/vnode/VNode';
+
 export interface IObserver {
   useProp: (key: string) => void;
 
@@ -24,6 +35,9 @@ export interface IObserver {
   clearByVNode: (vNode: any) => void;
 }
 
+/**
+ * 一个对象（对象、数组、集合）对应一个Observer
+ */
 export class Observer implements IObserver {
   vNodeKeys = new WeakMap();
 
@@ -33,18 +47,18 @@ export class Observer implements IObserver {
 
   watchers = {} as { [key: string]: ((key: string, oldValue: any, newValue: any) => void)[] };
 
-  watchers={} as {[key:string]:((key:string, oldValue:any, newValue:any)=>void)[]}
-
+  // 对象的属性被使用时调用
   useProp(key: string | symbol): void {
     const processingVNode = getProcessingVNode();
     if (processingVNode === null || !processingVNode.observers) {
+      // 异常场景
       return;
     }
 
     // vNode -> Observers
     processingVNode.observers.add(this);
 
-    // key -> vNodes
+    // key -> vNodes，记录这个prop被哪些VNode使用了
     let vNodes = this.keyVNodes.get(key);
     if (!vNodes) {
       vNodes = new Set();
@@ -52,13 +66,39 @@ export class Observer implements IObserver {
     }
     vNodes.add(processingVNode);
 
-    // vNode -> keys
+    // vNode -> keys，记录这个VNode使用了哪些props
     let keys = this.vNodeKeys.get(processingVNode);
     if (!keys) {
       keys = new Set();
       this.vNodeKeys.set(processingVNode, keys);
     }
     keys.add(key);
+  }
+
+  // 对象的属性被赋值时调用
+  setProp(key: string | symbol): void {
+    const vNodes = this.keyVNodes.get(key);
+    vNodes?.forEach((vNode: VNode) => {
+      if (vNode.isStoreChange) {
+        // VNode已经被触发过，不再重复触发
+        return;
+      }
+      vNode.isStoreChange = true;
+
+      // 触发vNode更新
+      this.triggerUpdate(vNode);
+    });
+
+    this.triggerChangeListeners();
+  }
+
+  triggerUpdate(vNode: VNode): void {
+    if (!vNode) {
+      return;
+    }
+
+    // 触发VNode更新
+    launchUpdateFromVNode(vNode);
   }
 
   addListener(listener: () => void): void {
@@ -69,34 +109,13 @@ export class Observer implements IObserver {
     this.listeners = this.listeners.filter(item => item != listener);
   }
 
-  setProp(key: string | symbol): void {
-    const vNodes = this.keyVNodes.get(key);
-    vNodes?.forEach((vNode: VNode) => {
-      if (vNode.isStoreChange) {
-        // update already triggered
-        return;
-      }
-      vNode.isStoreChange = true;
-
-      // 触发vNode更新
-      this.triggerUpdate(vNode);
-    });
-    this.triggerChangeListeners();
-  }
-
   triggerChangeListeners(): void {
     this.listeners.forEach(listener => listener());
   }
 
-  triggerUpdate(vNode: VNode): void {
-    if (!vNode) {
-      return;
-    }
-    launchUpdateFromVNode(vNode);
-  }
-
+  // 触发所有使用的props的VNode更新
   allChange(): void {
-    let keyIt = this.keyVNodes.keys();
+    const keyIt = this.keyVNodes.keys();
     let keyItem = keyIt.next();
     while (!keyItem.done) {
       this.setProp(keyItem.value);
@@ -104,6 +123,7 @@ export class Observer implements IObserver {
     }
   }
 
+  // 删除Observer中保存的这个VNode的关系数据
   clearByVNode(vNode: VNode): void {
     const keys = this.vNodeKeys.get(vNode);
     if (keys) {

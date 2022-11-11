@@ -1,12 +1,24 @@
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 import type { VNode, ContextType, ProviderType } from '../Types';
 
 import { isSame } from '../utils/compare';
 import { ClassComponent, ContextProvider } from '../vnode/VNodeTags';
 import { pushForceUpdate } from '../UpdateHandler';
-import {
-  resetContext,
-  setContext,
-} from '../ContextSaver';
+import { resetContext, setContext } from '../ContextSaver';
 import { travelVNodeTree } from '../vnode/VNodeUtils';
 import { launchUpdateFromVNode } from '../TreeBuilder';
 import { onlyUpdateChildVNodes } from '../vnode/VNodeCreator';
@@ -47,15 +59,20 @@ function handleContextChange(processing: VNode, context: ContextType<any>): void
   let isMatch = false;
 
   // 从vNode开始遍历
-  travelVNodeTree(vNode, node => {
-    const depContexts = node.depContexts;
-    if (depContexts && depContexts.length) {
-      isMatch = matchDependencies(depContexts, context, node) ?? isMatch;
-    }
-  }, node =>
-    // 如果这是匹配的provider，则不要更深入地扫描
-    node.tag === ContextProvider && node.type === processing.type
-    , processing, null);
+  travelVNodeTree(
+    vNode,
+    node => {
+      const depContexts = node.depContexts;
+      if (depContexts && depContexts.length) {
+        isMatch = matchDependencies(depContexts, context, node) ?? isMatch;
+      }
+    },
+    node =>
+      // 如果这是匹配的provider，则不要更深入地扫描
+      node.tag === ContextProvider && node.type === processing.type,
+    processing,
+    null
+  );
 
   // 找到了依赖context的子节点，触发一次更新
   if (isMatch) {
@@ -102,4 +119,3 @@ export function captureRender(processing: VNode): VNode | null {
 export function bubbleRender(processing: VNode) {
   resetContext(processing);
 }
-

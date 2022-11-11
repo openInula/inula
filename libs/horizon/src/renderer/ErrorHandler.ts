@@ -1,18 +1,33 @@
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 /**
  * 异常错误处理
  */
 
 import type { PromiseType, VNode } from './Types';
-import type {Update} from './UpdateHandler';
+import type { Update } from './UpdateHandler';
 
-import {ClassComponent, TreeRoot} from './vnode/VNodeTags';
-import {FlagUtils, Interrupted, DidCapture, InitFlag} from './vnode/VNodeFlags';
-import {newUpdate, UpdateState, pushUpdate} from './UpdateHandler';
-import {launchUpdateFromVNode, tryRenderFromRoot} from './TreeBuilder';
-import {setRootThrowError} from './submit/Submit';
-import {handleSuspenseChildThrowError} from './render/SuspenseComponent';
-import {updateShouldUpdateOfTree} from './vnode/VNodeShouldUpdate';
-import {BuildErrored, setBuildResult} from './GlobalVar';
+import { ClassComponent, TreeRoot } from './vnode/VNodeTags';
+import { FlagUtils, Interrupted, DidCapture, InitFlag } from './vnode/VNodeFlags';
+import { newUpdate, UpdateState, pushUpdate } from './UpdateHandler';
+import { launchUpdateFromVNode, tryRenderFromRoot } from './TreeBuilder';
+import { setRootThrowError } from './submit/Submit';
+import { handleSuspenseChildThrowError } from './render/SuspenseComponent';
+import { updateShouldUpdateOfTree } from './vnode/VNodeShouldUpdate';
+import { BuildErrored, setBuildResult } from './GlobalVar';
 
 function consoleError(error: any): void {
   if (isTest) {
@@ -23,18 +38,13 @@ function consoleError(error: any): void {
   }
 }
 
-function handleRootError(
-  error: any,
-) {
+function handleRootError(error: any) {
   // 注意：如果根节点抛出错误，不会销毁整棵树，只打印日志，抛出异常。
   setRootThrowError(error);
   consoleError(error);
 }
 
-function createClassErrorUpdate(
-  vNode: VNode,
-  error: any,
-): Update {
+function createClassErrorUpdate(vNode: VNode, error: any): Update {
   const update = newUpdate();
   update.type = UpdateState.Error;
 
@@ -63,13 +73,10 @@ function createClassErrorUpdate(
   return update;
 }
 function isPromise(error: any): error is PromiseType<any> {
-  return error !== null && typeof error === 'object' && typeof error.then === 'function'
+  return error !== null && typeof error === 'object' && typeof error.then === 'function';
 }
 // 处理capture和bubble阶段抛出的错误
-export function handleRenderThrowError(
-  sourceVNode: VNode,
-  error: any,
-) {
+export function handleRenderThrowError(sourceVNode: VNode, error: any) {
   // vNode抛出了异常，标记Interrupted中断
   FlagUtils.markInterrupted(sourceVNode);
   // dirtyNodes 不再有效
@@ -102,10 +109,8 @@ export function handleRenderThrowError(
         const instance = vNode.realNode;
         if (
           (vNode.flags & DidCapture) === InitFlag &&
-          (
-            typeof ctor.getDerivedStateFromError === 'function' ||
-            (instance !== null && typeof instance.componentDidCatch === 'function')
-          )
+          (typeof ctor.getDerivedStateFromError === 'function' ||
+            (instance !== null && typeof instance.componentDidCatch === 'function'))
         ) {
           FlagUtils.markShouldCapture(vNode);
 
@@ -140,7 +145,6 @@ function triggerUpdate(vNode, state) {
   }
 }
 
-
 // 处理submit阶段的异常
 export function handleSubmitError(vNode: VNode, error: any) {
   if (vNode.tag === TreeRoot) {
@@ -154,20 +158,19 @@ export function handleSubmitError(vNode: VNode, error: any) {
     if (node.tag === TreeRoot) {
       handleRootError(error);
       return;
-    } else if (node.tag === ClassComponent) { // 只有 class 组件才可以成为错误边界组件
+    } else if (node.tag === ClassComponent) {
+      // 只有 class 组件才可以成为错误边界组件
       const ctor = node.type;
       const instance = node.realNode;
-      if (
-        typeof ctor.getDerivedStateFromError === 'function' ||
-        typeof instance.componentDidCatch === 'function'
-      ) {
+      if (typeof ctor.getDerivedStateFromError === 'function' || typeof instance.componentDidCatch === 'function') {
         const getDerivedStateFromError = node.type.getDerivedStateFromError;
         if (typeof getDerivedStateFromError === 'function') {
           // 打印错误
           consoleError(error);
 
           const retState = getDerivedStateFromError(error);
-          if (retState) { // 有返回值
+          if (retState) {
+            // 有返回值
             // 触发更新
             triggerUpdate(node, retState);
           }
@@ -175,7 +178,8 @@ export function handleSubmitError(vNode: VNode, error: any) {
 
         // 处理componentDidCatch
         if (instance !== null && typeof instance.componentDidCatch === 'function') {
-          if (typeof getDerivedStateFromError !== 'function') { // 没有getDerivedStateFromError
+          if (typeof getDerivedStateFromError !== 'function') {
+            // 没有getDerivedStateFromError
             // 打印错误
             consoleError(error);
           }

@@ -1,12 +1,24 @@
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 /**
  * 调度器的核心实现
  */
 
 import { Node } from '../taskExecutor/TaskQueue';
-import {
-  requestBrowserCallback,
-  isOverTime,
-} from './BrowserAsync';
+import { requestBrowserCallback, isOverTime } from './BrowserAsync';
 
 import { add, shift, first, remove } from './TaskQueue';
 
@@ -26,7 +38,7 @@ function callTasks() {
   isWaiting = false;
   isProcessing = true;
 
-  let task: Node | null= null;
+  let task: Node | null = null;
   try {
     task = first();
 
@@ -45,7 +57,8 @@ function callTasks() {
 
         if (task === first()) {
           shift();
-        } else { // 执行任务中可能插入了新任务
+        } else {
+          // 执行任务中可能插入了新任务
           remove(task);
         }
       } else {
@@ -62,7 +75,7 @@ function callTasks() {
   }
 }
 
-function runAsync(callback, priorityLevel= NormalPriority) {
+function runAsync(callback, priorityLevel = NormalPriority) {
   let increment;
   switch (priorityLevel) {
     case ImmediatePriority:
@@ -94,9 +107,4 @@ function cancelTask(task) {
   task.callback = null;
 }
 
-export {
-  ImmediatePriority,
-  NormalPriority,
-  runAsync,
-  cancelTask,
-};
+export { ImmediatePriority, NormalPriority, runAsync, cancelTask };

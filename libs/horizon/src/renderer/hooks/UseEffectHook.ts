@@ -1,17 +1,27 @@
-import {
-  createHook,
-  getCurrentHook,
-  getLastTimeHook,
-  throwNotInFuncError
-} from './BaseHook';
-import {FlagUtils} from '../vnode/VNodeFlags';
-import {EffectConstant} from './EffectConstant';
-import type {Effect, EffectList} from './HookType';
-import {getHookStage, HookStage} from './HookStage';
-import {isArrayEqual} from '../utils/compare';
-import {getProcessingVNode} from '../GlobalVar';
+/*
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ *
+ * openGauss is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
 
-export function useEffectImpl(effectFunc: () => (() => void) | void, deps?: Array<any> | null,): void {
+import { createHook, getCurrentHook, getLastTimeHook, throwNotInFuncError } from './BaseHook';
+import { FlagUtils } from '../vnode/VNodeFlags';
+import { EffectConstant } from './EffectConstant';
+import type { Effect, EffectList } from './HookType';
+import { getHookStage, HookStage } from './HookStage';
+import { isArrayEqual } from '../utils/compare';
+import { getProcessingVNode } from '../GlobalVar';
+
+export function useEffectImpl(effectFunc: () => (() => void) | void, deps?: Array<any> | null): void {
   // 异步触发的effect
   useEffect(effectFunc, deps, EffectConstant.Effect);
 }
@@ -21,11 +31,7 @@ export function useLayoutEffectImpl(effectFunc: () => (() => void) | void, deps?
   useEffect(effectFunc, deps, EffectConstant.LayoutEffect);
 }
 
-function useEffect(
-  effectFunc: () => (() => void) | void,
-  deps: Array<any> | void | null,
-  effectType: number
-): void {
+function useEffect(effectFunc: () => (() => void) | void, deps: Array<any> | void | null, effectType: number): void {
   const stage = getHookStage();
   if (stage === null) {
     throwNotInFuncError();
