@@ -29,7 +29,7 @@ export const hookObserverMap = new WeakMap();
 
 export function createProxy(rawObj: any, isHookObserver = true): any {
   // 不是对象（是原始数据类型）不用代理
-  if (!isObject(rawObj)) {
+  if (!(rawObj && isObject(rawObj))) {
     return rawObj;
   }
 
