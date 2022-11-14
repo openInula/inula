@@ -70,6 +70,7 @@ export function get(rawObj: object, key: string | symbol, receiver: any, singleL
 }
 
 export function set(rawObj: object, key: string, value: any, receiver: any): boolean {
+  console.log('ObjectProxyHandler.set()');
   const oldObject = JSON.stringify(rawObj);
   const observer = getObserver(rawObj);
 
