@@ -70,6 +70,7 @@ export function get(rawObj: object, key: string | symbol, receiver: any, singleL
 }
 
 export function set(rawObj: object, key: string, value: any, receiver: any): boolean {
+  const oldObject = JSON.stringify(rawObj);
   const observer = getObserver(rawObj);
 
   if (value && key == 'removeListener') {
@@ -89,5 +90,6 @@ export function set(rawObj: object, key: string, value: any, receiver: any): boo
     observer.setProp(key);
   }
 
+  console.log('mutation from: ', JSON.parse(oldObject), ' to: ', ret);
   return ret;
 }
