@@ -105,6 +105,10 @@ export function updateCommonProp(dom: Element, attrName: string, value: any, isN
     value = null;
   }
 
+  if (attrName === '') {
+    return;
+  }
+
   if (!isNativeTag || propDetails === null) {
     // 特殊处理svg的属性，把驼峰式的属性名称转成'-'
     if (getDomTag(dom) === 'svg' || getNamespaceCtx() === NSS.svg) {
