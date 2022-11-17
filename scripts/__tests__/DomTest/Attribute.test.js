@@ -82,4 +82,11 @@ describe('Dom Attribute', () => {
       expect(window.getComputedStyle(div).getPropertyValue('width')).toBe('10px');
       expect(window.getComputedStyle(div).getPropertyValue('height')).toBe('20px');
     });
+
+    it('空字符串做属性名', () => {
+      const emptyStringProps = { '': '' };
+      expect(() => {
+        Horizon.render(<div {...emptyStringProps}/>, container);
+      }).not.toThrow();
+    });
 });
