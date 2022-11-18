@@ -16,6 +16,13 @@
 if [ -n "${releaseVersion}" ] ; then
   echo "==== Horizon Upgrade ${releaseVersion} ===="
   cd ./build/horizon ||  { echo 'ERROR: Build directory not found' ; exit 1; }
+
+  cd umd
+  # umd生产包多暴露全局名HorizonDOM
+  # 以解决webpack的externals react-dom和react都指向Horizon时,webpack随机使用key名造成源码交付问题
+  sed -i '$a window.HorizonDOM = window.Horizon;' horizon.production.js
+  cd -
+
   # 写入新版本号
   npm version "${releaseVersion}"
   cat >.npmrc <<- EndOfMessage
@@ -27,8 +34,8 @@ email = cloudsop@huawei.com
 EndOfMessage
 
   echo "==== Publish new version===="
-  # npm仓库发布接口返回HTML，屏蔽错误码
-  npm publish || echo 'WARNING: Parsing publish response failed'
+
+  npm publish
   npm view @cloudsop/horizon@"${releaseVersion}"
 else
   echo "No release version, quit."
