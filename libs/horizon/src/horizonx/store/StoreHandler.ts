@@ -191,9 +191,10 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
     store: storeObj,
   });
 
-  storeObj.$subscribe(() => {
+  proxyObj.addListener(mutation => {
     devtools.emit(STATE_CHANGE, {
       store: storeObj,
+      mutation,
     });
   });
 

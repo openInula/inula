@@ -41,6 +41,7 @@ function makeProxySnapshot(obj) {
 
 export const devtools = {
   emit: (type, data) => {
+    if (!window['__HORIZON_DEV_HOOK__']) return;
     console.log('store snapshot:', makeStoreSnapshot({ type, data }));
     window.postMessage({
       type: 'HORIZON_DEV_TOOLS',

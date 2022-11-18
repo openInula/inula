@@ -16,6 +16,7 @@
 import { getObserver } from '../ProxyHandler';
 import { isSame, isValidIntegerKey } from '../../CommonUtils';
 import { get as objectGet } from './ObjectProxyHandler';
+import { resolveMutation } from '../../CommonUtils';
 
 export function createArrayProxy(rawObj: any[]): any[] {
   const handle = {
@@ -53,6 +54,8 @@ function set(rawObj: any[], key: string, value: any, receiver: any) {
   const oldLength = rawObj.length;
   const newValue = value;
 
+  const oldArray = JSON.parse(JSON.stringify(rawObj));
+
   const ret = Reflect.set(rawObj, key, newValue, receiver);
 
   const newLength = rawObj.length;
@@ -62,17 +65,17 @@ function set(rawObj: any[], key: string, value: any, receiver: any) {
     // 值不一样，触发监听器
     if (observer.watchers?.[key]) {
       observer.watchers[key].forEach(cb => {
-        cb(key, oldValue, newValue);
+        cb(key, oldValue, newValue, resolveMutation(oldArray, rawObj));
       });
     }
 
     // 触发属性变化
-    observer.setProp(key);
+    observer.setProp(key, resolveMutation(oldValue, rawObj));
   }
 
   if (oldLength !== newLength) {
     // 触发数组的大小变化
-    observer.setProp('length');
+    observer.setProp('length', resolveMutation(oldValue, rawObj));
   }
 
   return ret;

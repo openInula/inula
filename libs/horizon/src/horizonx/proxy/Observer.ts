@@ -24,9 +24,9 @@ export interface IObserver {
 
   removeListener: (listener: () => void) => void;
 
-  setProp: (key: string) => void;
+  setProp: (key: string, mutation: any) => void;
 
-  triggerChangeListeners: () => void;
+  triggerChangeListeners: (mutation: any) => void;
 
   triggerUpdate: (vNode: any) => void;
 
@@ -43,9 +43,9 @@ export class Observer implements IObserver {
 
   keyVNodes = new Map();
 
-  listeners: (() => void)[] = [];
+  listeners: ((mutation) => void)[] = [];
 
-  watchers = {} as { [key: string]: ((key: string, oldValue: any, newValue: any) => void)[] };
+  watchers = {} as { [key: string]: ((key: string, oldValue: any, newValue: any, mutation: any) => void)[] };
 
   // 对象的属性被使用时调用
   useProp(key: string | symbol): void {
@@ -76,7 +76,7 @@ export class Observer implements IObserver {
   }
 
   // 对象的属性被赋值时调用
-  setProp(key: string | symbol): void {
+  setProp(key: string | symbol, mutation: any): void {
     const vNodes = this.keyVNodes.get(key);
     vNodes?.forEach((vNode: VNode) => {
       if (vNode.isStoreChange) {
@@ -89,7 +89,7 @@ export class Observer implements IObserver {
       this.triggerUpdate(vNode);
     });
 
-    this.triggerChangeListeners();
+    this.triggerChangeListeners(mutation);
   }
 
   triggerUpdate(vNode: VNode): void {
@@ -101,16 +101,16 @@ export class Observer implements IObserver {
     launchUpdateFromVNode(vNode);
   }
 
-  addListener(listener: () => void): void {
+  addListener(listener: (mutation) => void): void {
     this.listeners.push(listener);
   }
 
-  removeListener(listener: () => void): void {
+  removeListener(listener: (mutation) => void): void {
     this.listeners = this.listeners.filter(item => item != listener);
   }
 
-  triggerChangeListeners(): void {
-    this.listeners.forEach(listener => listener());
+  triggerChangeListeners(mutation: any): void {
+    this.listeners.forEach(listener => listener(mutation));
   }
 
   // 触发所有使用的props的VNode更新
@@ -118,7 +118,7 @@ export class Observer implements IObserver {
     const keyIt = this.keyVNodes.keys();
     let keyItem = keyIt.next();
     while (!keyItem.done) {
-      this.setProp(keyItem.value);
+      this.setProp(keyItem.value, {});
       keyItem = keyIt.next();
     }
   }

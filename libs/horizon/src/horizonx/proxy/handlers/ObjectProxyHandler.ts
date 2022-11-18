@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { isSame } from '../../CommonUtils';
+import { isSame, resolveMutation } from '../../CommonUtils';
 import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
 import { OBSERVER_KEY } from '../../Constants';
 
@@ -70,8 +70,7 @@ export function get(rawObj: object, key: string | symbol, receiver: any, singleL
 }
 
 export function set(rawObj: object, key: string, value: any, receiver: any): boolean {
-  console.log('ObjectProxyHandler.set()');
-  const oldObject = JSON.stringify(rawObj);
+  const oldObject = JSON.parse(JSON.stringify(rawObj));
   const observer = getObserver(rawObj);
 
   if (value && key == 'removeListener') {
@@ -85,12 +84,10 @@ export function set(rawObj: object, key: string, value: any, receiver: any): boo
   if (!isSame(newValue, oldValue)) {
     if (observer.watchers?.[key]) {
       observer.watchers[key].forEach(cb => {
-        cb(key, oldValue, newValue);
+        cb(key, oldValue, newValue, resolveMutation(oldObject, rawObj));
       });
     }
-    observer.setProp(key);
+    observer.setProp(key, resolveMutation(oldObject, rawObj));
   }
-
-  console.log('mutation from: ', JSON.parse(oldObject), ' to: ', ret);
   return ret;
 }

@@ -19,19 +19,31 @@ export function isObject(obj: any): boolean {
 }
 
 export function isSet(obj: any): boolean {
-  return (obj !== null || obj !== undefined) && (Object.prototype.toString.call(obj) === '[object Set]' || obj.constructor === Set);
+  return (
+    (obj !== null || obj !== undefined) &&
+    (Object.prototype.toString.call(obj) === '[object Set]' || obj.constructor === Set)
+  );
 }
 
 export function isWeakSet(obj: any): boolean {
-  return (obj !== null || obj !== undefined) && (Object.prototype.toString.call(obj) === '[object WeakSet]' || obj.constructor === WeakSet);
+  return (
+    (obj !== null || obj !== undefined) &&
+    (Object.prototype.toString.call(obj) === '[object WeakSet]' || obj.constructor === WeakSet)
+  );
 }
 
 export function isMap(obj: any): boolean {
-  return (obj !== null || obj !== undefined) && (Object.prototype.toString.call(obj) === '[object Map]' || obj.constructor === Map);
+  return (
+    (obj !== null || obj !== undefined) &&
+    (Object.prototype.toString.call(obj) === '[object Map]' || obj.constructor === Map)
+  );
 }
 
 export function isWeakMap(obj: any): boolean {
-  return (obj !== null || obj !== undefined) && (Object.prototype.toString.call(obj) === '[object WeakMap]' || obj.constructor === WeakMap);
+  return (
+    (obj !== null || obj !== undefined) &&
+    (Object.prototype.toString.call(obj) === '[object WeakMap]' || obj.constructor === WeakMap)
+  );
 }
 
 export function isArray(obj: any): boolean {
@@ -66,5 +78,76 @@ export function isSame(x, y) {
     }
   } else {
     return Object.is(x, y);
+  }
+}
+
+export function getDetailedType(val: any) {
+  if (val === undefined) return 'undefined';
+  if (val === null) return 'null';
+  if (isCollection(val)) return 'collection';
+  if (isPromise(val)) return 'promise';
+  if (isArray(val)) return 'array';
+  if (isWeakMap(val)) return 'weakMap';
+  if (isMap(val)) return 'map';
+  if (isWeakSet(val)) return 'weakSet';
+  if (isSet(val)) return 'set';
+  return typeof val;
+}
+
+export function resolveMutation(from, to) {
+  if (getDetailedType(from) !== getDetailedType(to)) {
+    return { mutation: true, from, to };
+  }
+
+  switch (getDetailedType(from)) {
+    case 'array': {
+      let len = Math.max(from.length, to.length);
+      const res: any[] = [];
+      let found = false;
+      for (let i = 0; i < len; i++) {
+        if (from.length <= i) {
+          res[i] = { mutation: true, to: to[i] };
+          found = true;
+        } else if (to.length <= i) {
+          res[i] = { mutation: true, from: from[i] };
+          found = true;
+        } else {
+          res[i] = resolveMutation(from[i], to[i]);
+          if (res[i].mutation) found = true;
+        }
+      }
+      // TODO: resolve shifts
+      return { mutation: found, items: res, from, to };
+    }
+
+    case 'object': {
+      let keys = Object.keys({ ...from, ...to });
+      const res = {};
+      let found = false;
+      keys.forEach(key => {
+        if (!(key in from)) {
+          res[key] = { mutation: true, to: to[key] };
+          found = true;
+          return;
+        }
+
+        if (!(key in to)) {
+          res[key] = { mutation: true, from: from[key] };
+          found = true;
+          return;
+        }
+        res[key] = resolveMutation(from[key], to[key]);
+        if (res[key].mutation) found = true;
+      });
+      return { mutation: found, attributes: res, from, to };
+    }
+
+    // TODO: implement collections
+
+    default: {
+      if (from === to) return { mutation: false };
+
+      return { mutation: true, from, to };
+    }
   }
 }

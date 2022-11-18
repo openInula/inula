@@ -15,6 +15,7 @@
 
 import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
 import { isMap, isWeakMap, isSame } from '../../CommonUtils';
+import { resolveMutation } from '../../CommonUtils';
 
 const COLLECTION_CHANGE = '_collectionChange';
 const handler = {
@@ -91,17 +92,17 @@ function set(
   const observer = getObserver(rawObj);
 
   if (valChange || !rawObj.has(key)) {
-    observer.setProp(COLLECTION_CHANGE);
+    observer.setProp(COLLECTION_CHANGE, resolveMutation(oldValue, rawObj));
   }
 
   if (valChange) {
     if (observer.watchers?.[key]) {
       observer.watchers[key].forEach(cb => {
-        cb(key, oldValue, newValue);
+        cb(key, oldValue, newValue, resolveMutation(oldValue, rawObj));
       });
     }
 
-    observer.setProp(key);
+    observer.setProp(key, resolveMutation(oldValue, rawObj));
   }
 
   return rawObj;
@@ -109,12 +110,13 @@ function set(
 
 // Set的add方法
 function add(rawObj: { add: (any) => void; set: (string, any) => any; has: (any) => boolean }, value: any): Object {
+  const oldCollection = JSON.parse(JSON.stringify(rawObj));
   if (!rawObj.has(value)) {
     rawObj.add(value);
 
     const observer = getObserver(rawObj);
-    observer.setProp(value);
-    observer.setProp(COLLECTION_CHANGE);
+    observer.setProp(value, resolveMutation(oldCollection, rawObj));
+    observer.setProp(COLLECTION_CHANGE, resolveMutation(oldCollection, rawObj));
   }
 
   return rawObj;
@@ -138,12 +140,13 @@ function clear(rawObj: { size: number; clear: () => void }) {
 }
 
 function deleteFun(rawObj: { has: (key: any) => boolean; delete: (key: any) => void }, key: any) {
+  const oldCollection = JSON.parse(JSON.stringify(rawObj));
   if (rawObj.has(key)) {
     rawObj.delete(key);
 
     const observer = getObserver(rawObj);
-    observer.setProp(key);
-    observer.setProp(COLLECTION_CHANGE);
+    observer.setProp(key, resolveMutation(oldCollection, rawObj));
+    observer.setProp(COLLECTION_CHANGE, resolveMutation(oldCollection, rawObj));
 
     return true;
   }
