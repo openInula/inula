@@ -6,3 +6,5 @@ export const ACTION = 'horizonx action';
 export const ACTION_QUEUED = 'horizonx action queued';
 export const QUEUE_PENDING = 'horizonx queue pending';
 export const QUEUE_FINISHED = 'horizonx queue finished';
+export const RENDER_TRIGGERED = 'horizonx render triggered';
+export const OBSERVED_COMPONENTS = 'horizonx observed components';

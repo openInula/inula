@@ -14,7 +14,7 @@
  */
 
 import { useEffect, useRef } from '../../renderer/hooks/HookExternal';
-import { getProcessingVNode } from '../../renderer/GlobalVar';
+import { getProcessingVNode, getStartVNode } from '../../renderer/GlobalVar';
 import { createProxy } from '../proxy/ProxyHandler';
 import readonlyProxy from '../proxy/readonlyProxy';
 import { Observer } from '../proxy/Observer';
@@ -60,7 +60,9 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
     throw new Error('store obj must be pure object');
   }
 
-  const proxyObj = createProxy(config.state, !config.options?.isReduxAdapter);
+  const id = config.id || idGenerator.get('UNNAMED_STORE');
+
+  const proxyObj = createProxy(config.state, id, !config.options?.isReduxAdapter);
 
   proxyObj.$pending = false;
 
@@ -68,6 +70,7 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
   const $queue: Partial<StoreActions<S, A>> = {};
   const $c: Partial<ComputedValues<S, C>> = {};
   const storeObj = {
+    id,
     $s: proxyObj,
     $a: $a as StoreActions<S, A>,
     $c: $c as ComputedValues<S, C>,
@@ -183,18 +186,16 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
     });
   }
 
-  if (config.id) {
-    storeMap.set(config.id, storeObj);
-  }
+  storeMap.set(id, storeObj);
 
   devtools.emit(INITIALIZED, {
     store: storeObj,
   });
 
-  proxyObj.addListener(mutation => {
+  proxyObj.addListener(change => {
     devtools.emit(STATE_CHANGE, {
       store: storeObj,
-      mutation,
+      change,
     });
   });
 
@@ -297,6 +298,14 @@ export function useStore<S extends object, A extends UserActions<S>, C extends U
   }
 
   return storeObj as StoreObj<S, A, C>;
+}
+
+export function getStore(id: string) {
+  return storeMap.get(id);
+}
+
+export function getAllStores() {
+  return Object.fromEntries(storeMap);
 }
 
 export function clearStore(id: string): void {

@@ -17,6 +17,7 @@ import { getObserver } from '../ProxyHandler';
 import { isSame, isValidIntegerKey } from '../../CommonUtils';
 import { get as objectGet } from './ObjectProxyHandler';
 import { resolveMutation } from '../../CommonUtils';
+import { isPanelActive } from '../../devtools';
 
 export function createArrayProxy(rawObj: any[]): any[] {
   const handle = {
@@ -54,28 +55,30 @@ function set(rawObj: any[], key: string, value: any, receiver: any) {
   const oldLength = rawObj.length;
   const newValue = value;
 
-  const oldArray = JSON.parse(JSON.stringify(rawObj));
+  const oldArray = isPanelActive() ? JSON.parse(JSON.stringify(rawObj)) : null;
 
   const ret = Reflect.set(rawObj, key, newValue, receiver);
 
   const newLength = rawObj.length;
   const observer = getObserver(rawObj);
 
+  const mutation = isPanelActive() ? resolveMutation(oldArray, rawObj) : { mutation: true, from: [], to: rawObj };
+
   if (!isSame(newValue, oldValue)) {
     // 值不一样，触发监听器
     if (observer.watchers?.[key]) {
       observer.watchers[key].forEach(cb => {
-        cb(key, oldValue, newValue, resolveMutation(oldArray, rawObj));
+        cb(key, oldValue, newValue, mutation);
       });
     }
 
     // 触发属性变化
-    observer.setProp(key, resolveMutation(oldValue, rawObj));
+    observer.setProp(key, mutation);
   }
 
   if (oldLength !== newLength) {
     // 触发数组的大小变化
-    observer.setProp('length', resolveMutation(oldValue, rawObj));
+    observer.setProp('length', mutation);
   }
 
   return ret;

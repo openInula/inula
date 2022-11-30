@@ -16,6 +16,7 @@
 import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
 import { isMap, isWeakMap, isSame } from '../../CommonUtils';
 import { resolveMutation } from '../../CommonUtils';
+import { isPanelActive } from '../../devtools';
 
 const COLLECTION_CHANGE = '_collectionChange';
 const handler = {
@@ -91,18 +92,20 @@ function set(
   const valChange = !isSame(newValue, oldValue);
   const observer = getObserver(rawObj);
 
+  const mutation = isPanelActive() ? resolveMutation(oldValue, rawObj) : { mutation: true, from: null, to: rawObj };
+
   if (valChange || !rawObj.has(key)) {
-    observer.setProp(COLLECTION_CHANGE, resolveMutation(oldValue, rawObj));
+    observer.setProp(COLLECTION_CHANGE, mutation);
   }
 
   if (valChange) {
     if (observer.watchers?.[key]) {
       observer.watchers[key].forEach(cb => {
-        cb(key, oldValue, newValue, resolveMutation(oldValue, rawObj));
+        cb(key, oldValue, newValue, mutation);
       });
     }
 
-    observer.setProp(key, resolveMutation(oldValue, rawObj));
+    observer.setProp(key, mutation);
   }
 
   return rawObj;
@@ -110,13 +113,16 @@ function set(
 
 // Set的add方法
 function add(rawObj: { add: (any) => void; set: (string, any) => any; has: (any) => boolean }, value: any): Object {
-  const oldCollection = JSON.parse(JSON.stringify(rawObj));
+  const oldCollection = isPanelActive() ? JSON.parse(JSON.stringify(rawObj)) : null;
   if (!rawObj.has(value)) {
     rawObj.add(value);
 
     const observer = getObserver(rawObj);
-    observer.setProp(value, resolveMutation(oldCollection, rawObj));
-    observer.setProp(COLLECTION_CHANGE, resolveMutation(oldCollection, rawObj));
+    const mutation = isPanelActive()
+      ? resolveMutation(oldCollection, rawObj)
+      : { mutation: true, from: null, to: rawObj };
+    observer.setProp(value, mutation);
+    observer.setProp(COLLECTION_CHANGE, mutation);
   }
 
   return rawObj;
@@ -140,13 +146,16 @@ function clear(rawObj: { size: number; clear: () => void }) {
 }
 
 function deleteFun(rawObj: { has: (key: any) => boolean; delete: (key: any) => void }, key: any) {
-  const oldCollection = JSON.parse(JSON.stringify(rawObj));
+  const oldCollection = isPanelActive() ? JSON.parse(JSON.stringify(rawObj)) : null;
   if (rawObj.has(key)) {
     rawObj.delete(key);
 
     const observer = getObserver(rawObj);
-    observer.setProp(key, resolveMutation(oldCollection, rawObj));
-    observer.setProp(COLLECTION_CHANGE, resolveMutation(oldCollection, rawObj));
+    const mutation = isPanelActive()
+      ? resolveMutation(oldCollection, rawObj)
+      : { mutation: true, from: null, to: rawObj };
+    observer.setProp(key, mutation);
+    observer.setProp(COLLECTION_CHANGE, mutation);
 
     return true;
   }

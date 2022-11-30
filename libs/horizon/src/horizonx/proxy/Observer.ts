@@ -16,6 +16,7 @@
 import { launchUpdateFromVNode } from '../../renderer/TreeBuilder';
 import { getProcessingVNode } from '../../renderer/GlobalVar';
 import { VNode } from '../../renderer/vnode/VNode';
+import { devtools } from '../devtools';
 
 export interface IObserver {
   useProp: (key: string) => void;
@@ -89,7 +90,8 @@ export class Observer implements IObserver {
       this.triggerUpdate(vNode);
     });
 
-    this.triggerChangeListeners(mutation);
+    // NOTE: mutations are different in dev and production.
+    this.triggerChangeListeners({ mutation, vNodes });
   }
 
   triggerUpdate(vNode: VNode): void {
@@ -109,8 +111,27 @@ export class Observer implements IObserver {
     this.listeners = this.listeners.filter(item => item != listener);
   }
 
-  triggerChangeListeners(mutation: any): void {
-    this.listeners.forEach(listener => listener(mutation));
+  triggerChangeListeners({ mutation, vNodes }): void {
+    const nodesList = vNodes ? Array.from(vNodes) : [];
+    this.listeners.forEach(listener =>
+      listener({
+        mutation,
+        vNodes: nodesList.map(vNode => {
+          let realNode = vNode.realNode;
+          let searchedNode = vNode;
+          while (!realNode) {
+            searchedNode = searchedNode.child;
+            realNode = searchedNode.realNode;
+          }
+          return {
+            type: vNode?.type?.name,
+            id: devtools.getVNodeId(vNode),
+            path: vNode.path,
+            element: realNode?.outerHTML?.substr(0, 100),
+          };
+        }),
+      })
+    );
   }
 
   // 触发所有使用的props的VNode更新
