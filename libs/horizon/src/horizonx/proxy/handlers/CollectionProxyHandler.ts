@@ -15,6 +15,8 @@
 
 import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
 import { isMap, isWeakMap, isSame } from '../../CommonUtils';
+import { resolveMutation } from '../../CommonUtils';
+import { isPanelActive } from '../../devtools';
 
 const COLLECTION_CHANGE = '_collectionChange';
 const handler = {
@@ -90,18 +92,20 @@ function set(
   const valChange = !isSame(newValue, oldValue);
   const observer = getObserver(rawObj);
 
+  const mutation = isPanelActive() ? resolveMutation(oldValue, rawObj) : { mutation: true, from: null, to: rawObj };
+
   if (valChange || !rawObj.has(key)) {
-    observer.setProp(COLLECTION_CHANGE);
+    observer.setProp(COLLECTION_CHANGE, mutation);
   }
 
   if (valChange) {
     if (observer.watchers?.[key]) {
       observer.watchers[key].forEach(cb => {
-        cb(key, oldValue, newValue);
+        cb(key, oldValue, newValue, mutation);
       });
     }
 
-    observer.setProp(key);
+    observer.setProp(key, mutation);
   }
 
   return rawObj;
@@ -109,12 +113,16 @@ function set(
 
 // Set的add方法
 function add(rawObj: { add: (any) => void; set: (string, any) => any; has: (any) => boolean }, value: any): Object {
+  const oldCollection = isPanelActive() ? JSON.parse(JSON.stringify(rawObj)) : null;
   if (!rawObj.has(value)) {
     rawObj.add(value);
 
     const observer = getObserver(rawObj);
-    observer.setProp(value);
-    observer.setProp(COLLECTION_CHANGE);
+    const mutation = isPanelActive()
+      ? resolveMutation(oldCollection, rawObj)
+      : { mutation: true, from: null, to: rawObj };
+    observer.setProp(value, mutation);
+    observer.setProp(COLLECTION_CHANGE, mutation);
   }
 
   return rawObj;
@@ -138,12 +146,16 @@ function clear(rawObj: { size: number; clear: () => void }) {
 }
 
 function deleteFun(rawObj: { has: (key: any) => boolean; delete: (key: any) => void }, key: any) {
+  const oldCollection = isPanelActive() ? JSON.parse(JSON.stringify(rawObj)) : null;
   if (rawObj.has(key)) {
     rawObj.delete(key);
 
     const observer = getObserver(rawObj);
-    observer.setProp(key);
-    observer.setProp(COLLECTION_CHANGE);
+    const mutation = isPanelActive()
+      ? resolveMutation(oldCollection, rawObj)
+      : { mutation: true, from: null, to: rawObj };
+    observer.setProp(key, mutation);
+    observer.setProp(COLLECTION_CHANGE, mutation);
 
     return true;
   }

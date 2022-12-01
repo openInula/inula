@@ -51,6 +51,34 @@ describe('Basic store manipulation', () => {
     expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('1');
   });
 
+  it('Should use direct setters', () => {
+    function App() {
+      const logStore = useLogStore();
+
+      return (
+        <div>
+          <button
+            id={BUTTON_ID}
+            onClick={() => {
+              logStore.logs = ['q'];
+            }}
+          >
+            add
+          </button>
+          <p id={RESULT_ID}>{logStore.logs[0]}</p>
+        </div>
+      );
+    }
+
+    Horizon.render(<App />, container);
+
+    Horizon.act(() => {
+      triggerClickEvent(container, BUTTON_ID);
+    });
+
+    expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('q');
+  });
+
   it('Should use actions and update components', () => {
     function App() {
       const logStore = useLogStore();
@@ -89,7 +117,7 @@ describe('Basic store manipulation', () => {
         increment: state => {
           state.count++;
         },
-        doublePlusOne: function(state) {
+        doublePlusOne: function (state) {
           state.count = state.count * 2;
           this.increment();
         },
@@ -130,15 +158,15 @@ describe('Basic store manipulation', () => {
         count: 2,
       },
       actions: {
-        doublePlusOne: function(state) {
+        doublePlusOne: function (state) {
           state.count = this.double + 1;
         },
       },
-      computed:{
-        double: (state) => {
-          return state.count*2
-        }
-      }
+      computed: {
+        double: state => {
+          return state.count * 2;
+        },
+      },
     });
 
     function App() {
@@ -166,5 +194,5 @@ describe('Basic store manipulation', () => {
     });
 
     expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('5');
-  })
+  });
 });
