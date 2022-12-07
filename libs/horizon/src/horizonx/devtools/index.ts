@@ -3,10 +3,12 @@ import { OBSERVED_COMPONENTS } from './constants';
 
 const sessionId = Date.now();
 
+// this function is used to detect devtool connection
 export function isPanelActive() {
   return window['__HORIZON_DEV_HOOK__'];
 }
 
+// serializes store and creates expanded object with baked-in containing current computed values
 function makeStoreSnapshot({ type, data }) {
   const expanded = {};
   Object.keys(data.store.$c).forEach(key => {
@@ -21,6 +23,7 @@ function makeStoreSnapshot({ type, data }) {
   return snapshot;
 }
 
+// safely serializes variables containing values wrapped in Proxy object
 function makeProxySnapshot(obj) {
   let clone;
   try {
@@ -47,10 +50,13 @@ function makeProxySnapshot(obj) {
 }
 
 export const devtools = {
+  // returns vNode id from horizon devtools
   getVNodeId: vNode => {
     if (!isPanelActive()) return;
-    getVNodeId(vNode);
+    window['__HORIZON_DEV_HOOK__'].send(); // update list first
+    return window['__HORIZON_DEV_HOOK__'].getVnodeId(vNode);
   },
+  // sends horizonx devtool message to extension
   emit: (type, data) => {
     if (!isPanelActive()) return;
     window.postMessage({
@@ -61,6 +67,7 @@ export const devtools = {
   },
 };
 
+// collects components that are dependant on horizonx store and their ids
 function getAffectedComponents() {
   const allStores = getAllStores();
   const keys = Object.keys(allStores);
@@ -87,8 +94,9 @@ function getAffectedComponents() {
   return res;
 }
 
+// listens to messages from background
 window.addEventListener('message', messageEvent => {
-  if (messageEvent.data.payload.type === 'horizonx request observed components') {
+  if (messageEvent?.data?.payload?.type === 'horizonx request observed components') {
     // get observed components
     setTimeout(() => {
       window.postMessage({
@@ -99,19 +107,14 @@ window.addEventListener('message', messageEvent => {
     }, 100);
   }
 
+  // executes store action
   if (messageEvent.data.payload.type === 'horizonx executue action') {
     const data = messageEvent.data.payload.data;
     const store = getStore(data.storeId);
-    if (!store?.[data.action]) {
-    }
+    if (!store?.[data.action]) return;
 
     const action = store[data.action];
     const params = data.params;
-    action(...params).bind(store);
+    action(...params);
   }
 });
-
-export function getVNodeId(vNode) {
-  window['__HORIZON_DEV_HOOK__'].send();
-  return window['__HORIZON_DEV_HOOK__'].getVnodeId(vNode);
-}
