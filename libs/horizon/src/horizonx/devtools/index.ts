@@ -96,7 +96,7 @@ function getAffectedComponents() {
 
 // listens to messages from background
 window.addEventListener('message', messageEvent => {
-  if (messageEvent.data.payload.type === 'horizonx request observed components') {
+  if (messageEvent?.data?.payload?.type === 'horizonx request observed components') {
     // get observed components
     setTimeout(() => {
       window.postMessage({
@@ -107,5 +107,14 @@ window.addEventListener('message', messageEvent => {
     }, 100);
   }
 
- 
+  // executes store action
+  if (messageEvent.data.payload.type === 'horizonx executue action') {
+    const data = messageEvent.data.payload.data;
+    const store = getStore(data.storeId);
+    if (!store?.[data.action]) return;
+
+    const action = store[data.action];
+    const params = data.params;
+    action(...params);
+  }
 });
