@@ -78,7 +78,9 @@ export class Observer implements IObserver {
   // 对象的属性被赋值时调用
   setProp(key: string | symbol): void {
     const vNodes = this.keyVNodes.get(key);
-    vNodes?.forEach((vNode: VNode) => {
+    //NOTE: using Set directly can lead to deadlock
+    const vNodeArray = Array.from(vNodes || []);
+    vNodeArray?.forEach((vNode: VNode) => {
       if (vNode.isStoreChange) {
         // VNode已经被触发过，不再重复触发
         return;
