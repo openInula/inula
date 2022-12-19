@@ -14,25 +14,43 @@
  */
 
 import { useEffect, useRef } from '../../renderer/hooks/HookExternal';
-import { getProcessingVNode } from '../../renderer/GlobalVar';
+import { getProcessingVNode, getStartVNode } from '../../renderer/GlobalVar';
 import { createProxy } from '../proxy/ProxyHandler';
 import readonlyProxy from '../proxy/readonlyProxy';
 import { Observer } from '../proxy/Observer';
 import { FunctionComponent, ClassComponent } from '../../renderer/vnode/VNodeTags';
 import { isPromise } from '../CommonUtils';
 import type {
-  ActionFunction, ComputedValues,
-  PlannedAction, QueuedStoreActions,
+  ActionFunction,
+  ComputedValues,
+  PlannedAction,
+  QueuedStoreActions,
   StoreActions,
   StoreConfig,
   StoreObj,
   UserActions,
-  UserComputedValues
+  UserComputedValues,
 } from '../types';
-import {VNode} from '../../renderer/vnode/VNode';
+import { VNode } from '../../renderer/vnode/VNode';
+import { devtools } from '../devtools';
+import {
+  ACTION,
+  ACTION_QUEUED,
+  INITIALIZED,
+  QUEUE_FINISHED,
+  STATE_CHANGE,
+  SUBSCRIBED,
+  UNSUBSCRIBED,
+} from '../devtools/constants';
+
+const idGenerator = {
+  id: 0,
+  get: function (prefix) {
+    return prefix.toString() + this.id++;
+  },
+};
 
 const storeMap = new Map<string, StoreObj<any, any, any>>();
-
 
 export function createStore<S extends object, A extends UserActions<S>, C extends UserComputedValues<S>>(
   config: StoreConfig<S, A, C>
@@ -42,7 +60,9 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
     throw new Error('store obj must be pure object');
   }
 
-  const proxyObj = createProxy(config.state, !config.options?.isReduxAdapter);
+  const id = config.id || idGenerator.get('UNNAMED_STORE');
+
+  const proxyObj = createProxy(config.state, id, !config.options?.isReduxAdapter);
 
   proxyObj.$pending = false;
 
@@ -50,15 +70,18 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
   const $queue: Partial<StoreActions<S, A>> = {};
   const $c: Partial<ComputedValues<S, C>> = {};
   const storeObj = {
+    id,
     $s: proxyObj,
     $a: $a as StoreActions<S, A>,
     $c: $c as ComputedValues<S, C>,
     $queue: $queue as QueuedStoreActions<S, A>,
     $config: config,
     $subscribe: listener => {
+      devtools.emit(SUBSCRIBED, { store: storeObj, listener });
       proxyObj.addListener(listener);
     },
     $unsubscribe: listener => {
+      devtools.emit(UNSUBSCRIBED, storeObj);
       proxyObj.removeListener(listener);
     },
   } as unknown as StoreObj<S, A, C>;
@@ -71,6 +94,14 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
       // 让store.$queue[action]可以访问到action方法
       // 要达到的效果：如果通过store.$queue[action1]调用的action1返回promise,会阻塞下一个store.$queue[action2]
       ($queue as any)[action] = (...payload) => {
+        devtools.emit(ACTION_QUEUED, {
+          store: storeObj,
+          action: {
+            action,
+            payload,
+          },
+          fromQueue: true,
+        });
         return new Promise(resolve => {
           if (!proxyObj.$pending) {
             proxyObj.$pending = true;
@@ -99,6 +130,14 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
 
       // 让store.$a[action]可以访问到action方法
       ($a as any)[action] = function Wrapped(...payload) {
+        devtools.emit(ACTION, {
+          store: storeObj,
+          action: {
+            action,
+            payload,
+          },
+          fromQueue: false,
+        });
         return config.actions![action].bind(storeObj, proxyObj)(...payload);
       };
 
@@ -106,6 +145,14 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
       Object.defineProperty(storeObj, action, {
         writable: false,
         value: (...payload) => {
+          devtools.emit(ACTION, {
+            store: storeObj,
+            action: {
+              action,
+              payload,
+            },
+            fromQueue: false,
+          });
           return config.actions![action].bind(storeObj, proxyObj)(...payload);
         },
       });
@@ -132,13 +179,25 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
           // 从Proxy对象获取值，会触发代理
           return proxyObj[key];
         },
+        set: value => {
+          proxyObj[key] = value;
+        },
       });
     });
   }
 
-  if (config.id) {
-    storeMap.set(config.id, storeObj);
-  }
+  storeMap.set(id, storeObj);
+
+  devtools.emit(INITIALIZED, {
+    store: storeObj,
+  });
+
+  proxyObj.addListener(change => {
+    devtools.emit(STATE_CHANGE, {
+      store: storeObj,
+      change,
+    });
+  });
 
   return createGetStore(storeObj);
 }
@@ -217,9 +276,10 @@ function registerDestroyFunction() {
         vNodeRef.current.observers = null;
       };
     }, []);
-  } else if (processingVNode.tag === ClassComponent) { // 类组件
+  } else if (processingVNode.tag === ClassComponent) {
+    // 类组件
     if (!processingVNode.classComponentWillUnmount) {
-      processingVNode.classComponentWillUnmount = (vNode) => {
+      processingVNode.classComponentWillUnmount = vNode => {
         clearVNodeObservers(vNode);
         vNode.observers = null;
       };
@@ -238,6 +298,14 @@ export function useStore<S extends object, A extends UserActions<S>, C extends U
   }
 
   return storeObj as StoreObj<S, A, C>;
+}
+
+export function getStore(id: string) {
+  return storeMap.get(id);
+}
+
+export function getAllStores() {
+  return Object.fromEntries(storeMap);
 }
 
 export function clearStore(id: string): void {

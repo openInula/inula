@@ -13,9 +13,10 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { isSame } from '../../CommonUtils';
+import { isSame, resolveMutation } from '../../CommonUtils';
 import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
 import { OBSERVER_KEY } from '../../Constants';
+import { isPanelActive } from '../../devtools';
 
 export function createObjectProxy<T extends object>(rawObj: T, singleLevel = false): ProxyHandler<T> {
   const proxy = new Proxy(rawObj, {
@@ -70,6 +71,7 @@ export function get(rawObj: object, key: string | symbol, receiver: any, singleL
 }
 
 export function set(rawObj: object, key: string, value: any, receiver: any): boolean {
+  const oldObject = isPanelActive() ? JSON.parse(JSON.stringify(rawObj)) : null;
   const observer = getObserver(rawObj);
 
   if (value && key == 'removeListener') {
@@ -79,15 +81,15 @@ export function set(rawObj: object, key: string, value: any, receiver: any): boo
   const newValue = value;
 
   const ret = Reflect.set(rawObj, key, newValue, receiver);
+  const mutation = isPanelActive() ? resolveMutation(oldObject, rawObj) : { mutation: true, from: null, to: rawObj };
 
   if (!isSame(newValue, oldValue)) {
     if (observer.watchers?.[key]) {
       observer.watchers[key].forEach(cb => {
-        cb(key, oldValue, newValue);
+        cb(key, oldValue, newValue, mutation);
       });
     }
-    observer.setProp(key);
+    observer.setProp(key, mutation);
   }
-
   return ret;
 }

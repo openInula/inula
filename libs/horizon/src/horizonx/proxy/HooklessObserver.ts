@@ -19,28 +19,28 @@ import type { IObserver } from './Observer';
  * 一个对象（对象、数组、集合）对应一个Observer
  */
 export class HooklessObserver implements IObserver {
-  listeners: (() => void)[] = [];
+  listeners: ((mutation) => void)[] = [];
 
   useProp(key: string | symbol): void {}
 
-  addListener(listener: () => void) {
+  addListener(listener: (mutation) => void) {
     this.listeners.push(listener);
   }
 
-  removeListener(listener: () => void) {
+  removeListener(listener: (mutation) => void) {
     this.listeners = this.listeners.filter(item => item != listener);
   }
 
-  setProp(key: string | symbol): void {
-    this.triggerChangeListeners();
+  setProp(key: string | symbol, mutation: any): void {
+    this.triggerChangeListeners(mutation);
   }
 
-  triggerChangeListeners(): void {
+  triggerChangeListeners(mutation: any): void {
     this.listeners.forEach(listener => {
       if (!listener) {
         return;
       }
-      listener();
+      listener(mutation);
     });
   }
 

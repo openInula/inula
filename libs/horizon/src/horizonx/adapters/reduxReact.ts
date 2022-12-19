@@ -34,9 +34,9 @@ export function Provider({
   return createElement(Context.Provider, { value: store }, children);
 }
 
-export function createStoreHook(context: Context) {
+export function createStoreHook(context: Context): () => ReduxStoreHandler {
   return () => {
-    return useContext(context);
+    return useContext(context) as unknown as ReduxStoreHandler;
   };
 }
 
@@ -85,17 +85,19 @@ export function connect(
   mergeProps?: (stateProps: object, dispatchProps: object, ownProps: object) => object,
   options?: {
     areStatesEqual?: (oldState: any, newState: any) => boolean;
-    context?: any; // TODO: type this
+    context?: Context;
   }
-) {
+): Connector<OwnProps, MergedProps> {
   if (!options) {
     options = {};
   }
 
-  return Component => {
+  //this component should bear the type returned from mapping functions
+  return (Component: OriginalComponent<MergedProps>): WrappedComponent<OwnProps> => {
     const useStore = createStoreHook(options?.context || DefaultContext);
 
-    function Wrapper(props) {
+    //this component should mimic original type of component used
+    const Wrapper: WrappedComponent<OwnProps> = (props: OwnProps) => {
       const [f, forceReload] = useState(true);
 
       const store = useStore() as unknown as ReduxStoreHandler;
@@ -112,36 +114,34 @@ export function connect(
         mappedState: {},
       }) as {
         current: {
-          state: {};
-          mappedState: {};
+          state: { [key: string]: any };
+          mappedState: StateProps;
         };
       };
 
-      let mappedState;
+      let mappedState: StateProps;
       if (options?.areStatesEqual) {
         if (options.areStatesEqual(previous.current.state, store.getState())) {
-          mappedState = previous.current.mappedState;
+          mappedState = previous.current.mappedState as StateProps;
         } else {
-          mappedState = mapStateToProps ? mapStateToProps(store.getState(), props) : {};
+          mappedState = mapStateToProps ? mapStateToProps(store.getState(), props) : ({} as StateProps);
           previous.current.mappedState = mappedState;
         }
       } else {
-        mappedState = mapStateToProps ? mapStateToProps(store.getState(), props) : {};
+        mappedState = mapStateToProps ? mapStateToProps(store.getState(), props) : ({} as StateProps);
         previous.current.mappedState = mappedState;
       }
-      let mappedDispatch: { dispatch?: (action) => void } = {};
+      let mappedDispatch: DispatchProps = {} as DispatchProps;
       if (mapDispatchToProps) {
         if (typeof mapDispatchToProps === 'object') {
           Object.entries(mapDispatchToProps).forEach(([key, value]) => {
-            mappedDispatch[key] = (...args) => {
+            mappedDispatch[key] = (...args: ReduxAction[]) => {
               store.dispatch(value(...args));
             };
           });
         } else {
           mappedDispatch = mapDispatchToProps(store.dispatch, props);
         }
-      } else {
-        mappedDispatch.dispatch = store.dispatch;
       }
       const mergedProps = (
         mergeProps ||
@@ -154,7 +154,7 @@ export function connect(
 
       const node = createElement(Component, mergedProps);
       return node;
-    }
+    };
 
     return Wrapper;
   };

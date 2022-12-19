@@ -16,13 +16,13 @@
 export interface IObserver {
   useProp: (key: string | symbol) => void;
 
-  addListener: (listener: () => void) => void;
+  addListener: (listener: (mutation: any) => void) => void;
 
-  removeListener: (listener: () => void) => void;
+  removeListener: (listener: (mutation: any) => void) => void;
 
-  setProp: (key: string | symbol) => void;
+  setProp: (key: string | symbol, mutation: any) => void;
 
-  triggerChangeListeners: () => void;
+  triggerChangeListeners: (mutation: any) => void;
 
   triggerUpdate: (vNode: any) => void;
 
@@ -42,13 +42,13 @@ export type StoreConfig<S extends object, A extends UserActions<S>, C extends Us
 };
 
 export type UserActions<S extends object> = {
-  [K: string]: ActionFunction<S>
+  [K: string]: ActionFunction<S>;
 };
 
 type ActionFunction<S extends object> = (this: StoreObj<S, any, any>, state: S, ...args: any[]) => any;
 
 export type StoreActions<S extends object, A extends UserActions<S>> = {
-  [K in keyof A]: Action<A[K], S>
+  [K in keyof A]: Action<A[K], S>;
 };
 
 type Action<T extends ActionFunction<any>, S extends object> = (
@@ -61,8 +61,8 @@ export type StoreObj<S extends object, A extends UserActions<S>, C extends UserC
   $a: StoreActions<S, A>;
   $c: UserComputedValues<S>;
   $queue: QueuedStoreActions<S, A>;
-  $subscribe: (listener: () => void) => void;
-  $unsubscribe: (listener: () => void) => void;
+  $subscribe: (listener: (mutation) => void) => void;
+  $unsubscribe: (listener: (mutation) => void) => void;
 } & { [K in keyof S]: S[K] } & { [K in keyof A]: Action<A[K], S> } & { [K in keyof C]: ReturnType<C[K]> };
 
 export type PlannedAction<S extends object, F extends ActionFunction<S>> = {
@@ -74,11 +74,11 @@ export type PlannedAction<S extends object, F extends ActionFunction<S>> = {
 type RemoveFirstFromTuple<T extends any[]> = T['length'] extends 0
   ? []
   : ((...b: T) => void) extends (a, ...b: infer I) => void
-    ? I
-    : [];
+  ? I
+  : [];
 
 export type UserComputedValues<S extends object> = {
-  [K: string]: ComputedFunction<S>
+  [K: string]: ComputedFunction<S>;
 };
 
 type ComputedFunction<S extends object> = (state: S) => any;
@@ -89,9 +89,9 @@ export type AsyncAction<T extends ActionFunction<any>, S extends object> = (
 ) => Promise<ReturnType<T>>;
 
 export type QueuedStoreActions<S extends object, A extends UserActions<S>> = {
-  [K in keyof A]: AsyncAction<A[K], S>
+  [K in keyof A]: AsyncAction<A[K], S>;
 };
 
 export type ComputedValues<S extends object, C extends UserComputedValues<S>> = {
-  [K in keyof C]: ReturnType<C[K]>
+  [K in keyof C]: ReturnType<C[K]>;
 };
