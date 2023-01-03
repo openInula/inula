@@ -38,6 +38,10 @@ if (!fs.existsSync(outDir)) {
 
 const outputResolve = (...p) => path.resolve(outDir, ...p);
 
+function getOutputName(mode) {
+  return mode === 'production' ? `horizon.${mode}.min.js` : `horizon.${mode}.js`;
+}
+
 function genConfig(mode) {
   const isDev = mode === 'development';
   const sourcemap = isDev ? 'inline' : false;
@@ -45,12 +49,12 @@ function genConfig(mode) {
     input: path.resolve(libDir, 'index.ts'),
     output: [
       {
-        file: outputResolve('cjs', `horizon.${mode}.js`),
+        file: outputResolve('cjs', getOutputName(mode)),
         sourcemap,
         format: 'cjs',
       },
       {
-        file: outputResolve('umd', `horizon.${mode}.js`),
+        file: outputResolve('umd', getOutputName(mode)),
         sourcemap,
         name: 'Horizon',
         format: 'umd',
