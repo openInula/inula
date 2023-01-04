@@ -20,7 +20,7 @@ if [ -n "${releaseVersion}" ] ; then
   cd umd
   # umd生产包多暴露全局名HorizonDOM
   # 以解决webpack的externals react-dom和react都指向Horizon时,webpack随机使用key名造成源码交付问题
-  sed -i '$a window.HorizonDOM = window.Horizon;' horizon.production.js
+  sed -i '$a window.HorizonDOM = window.Horizon;' horizon.production.min.js
   cd -
 
   # 写入新版本号
