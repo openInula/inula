@@ -29,7 +29,7 @@ class Component<P, S, C> {
     this.context = context;
   }
 
-  setState(state: S) {
+  setState(state: S, callback?: any) {
     if (isDev) {
       console.error('Cant not call `this.setState` in the constructor of class component, it will do nothing');
     }
