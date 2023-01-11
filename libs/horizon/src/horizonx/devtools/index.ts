@@ -84,7 +84,7 @@ function getAffectedComponents() {
       return {
         name: vnode?.type
           .toString()
-          .replace(/\{.*\}/gms, '{...}')
+          .replace(/\{.*\}/, '{...}')
           .replace('function ', ''),
         nodeId: window.__HORIZON_DEV_HOOK__.getVnodeId(vnode),
       };
