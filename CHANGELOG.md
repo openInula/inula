@@ -1,3 +1,6 @@
+## 0.0.33 (2023-01-11)
+- **horizonX-devtool**: 修复IE中报错
+
 ## 0.0.32 (2023-01-04)
 - **CI**: 生成态输出文件改为horiozn.producion.min.js
 
