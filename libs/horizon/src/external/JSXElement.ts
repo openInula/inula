@@ -107,3 +107,12 @@ export function cloneElement(element, setting, ...children) {
 export function isValidElement(element) {
   return !!(element && element.vtype === TYPE_COMMON_ELEMENT);
 }
+
+// 兼容高版本的babel编译方式
+export function jsx(type, setting, key) {
+  if (setting.key === undefined && key !== undefined) {
+    setting.key = key;
+  }
+
+  return buildElement(false, type, setting, []);
+}
