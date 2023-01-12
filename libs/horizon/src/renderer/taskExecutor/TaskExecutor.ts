@@ -18,7 +18,7 @@
  */
 
 import { Node } from '../taskExecutor/TaskQueue';
-import { requestBrowserCallback, isOverTime } from './BrowserAsync';
+import { requestBrowserCallback } from './BrowserAsync';
 
 import { add, shift, first, remove } from './TaskQueue';
 
@@ -44,11 +44,6 @@ function callTasks() {
 
     // 循环执行task
     while (task !== null) {
-      if (isOverTime()) {
-        // 超过了deadline
-        break;
-      }
-
       const callback = task.callback;
       if (callback !== null) {
         task.callback = null;
