@@ -23,6 +23,10 @@ let port1 = null;
 let port2 = null;
 let isTestRuntime = false;
 
+export function isOverTime() {
+  return false;
+}
+
 // 1、设置deadline；2、回调TaskExecutor传过来的browserCallback
 const callRenderTasks = () => {
   if (browserCallback === null) {
