@@ -65,6 +65,11 @@ const act = fun => {
   asyncUpdates(fun);
   callRenderQueueImmediate();
   runAsyncEffects();
+
+  // 兼容返回Promise
+  return new Promise((resolve, reject) => {
+    resolve(null);
+  });
 };
 
 import {
