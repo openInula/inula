@@ -67,9 +67,7 @@ const act = fun => {
   runAsyncEffects();
 
   // 兼容返回Promise
-  return new Promise((resolve, reject) => {
-    resolve(null);
-  });
+  return Promise.resolve();
 };
 
 import {
