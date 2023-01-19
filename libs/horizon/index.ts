@@ -42,9 +42,6 @@ import {
   useState,
   useDebugValue,
 } from './src/renderer/hooks/HookExternal';
-import { asyncUpdates } from './src/renderer/TreeBuilder';
-import { callRenderQueueImmediate } from './src/renderer/taskExecutor/RenderQueue';
-import { runAsyncEffects } from './src/renderer/submit/HookEffectHandler';
 import {
   isContextProvider,
   isContextConsumer,
@@ -59,16 +56,7 @@ import {
 import { createStore, useStore, clearStore } from './src/horizonx/store/StoreHandler';
 import * as reduxAdapter from './src/horizonx/adapters/redux';
 import { watch } from './src/horizonx/proxy/watch';
-
-// act用于测试，作用是：如果fun触发了刷新（包含了异步刷新），可以保证在act后面的代码是在刷新完成后才执行。
-const act = fun => {
-  asyncUpdates(fun);
-  callRenderQueueImmediate();
-  runAsyncEffects();
-
-  // 兼容返回Promise
-  return Promise.resolve();
-};
+import { act } from './src/external/TestUtil';
 
 import {
   render,

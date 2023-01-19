@@ -25,10 +25,10 @@ import { Source } from '../renderer/Types';
  * props 其他常规属性
  */
 export function JSXElement(type, key, ref, vNode, props, source: Source | null) {
-  return {
+  const ele = {
     // 元素标识符
     vtype: TYPE_COMMON_ELEMENT,
-    src: isDev ? source : null,
+    src: null,
 
     // 属于元素的内置属性
     type: type,
@@ -39,6 +39,18 @@ export function JSXElement(type, key, ref, vNode, props, source: Source | null) 
     // 所属的class组件
     belongClassVNode: vNode,
   };
+
+  if (isDev) {
+    // 为了test判断两个JSXElement对象是否相等时忽略src属性，需要设置src的enumerable为false
+    Object.defineProperty(ele, 'src', {
+      configurable: false,
+      enumerable: false,
+      writable: false,
+      value: source,
+    });
+  }
+
+  return ele;
 }
 
 function isValidKey(key) {

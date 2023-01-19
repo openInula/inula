@@ -1,3 +1,7 @@
+## 0.0.34 (2023-01-11)
+- **core**: #95 新增jsx接口
+- **core**: #96 #97 fix testing-library 的UT错误
+
 ## 0.0.33 (2023-01-11)
 - **horizonX-devtool**: 修复IE中报错
 
