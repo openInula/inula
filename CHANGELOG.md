@@ -1,4 +1,7 @@
-## 0.0.34 (2023-01-11)
+## 0.0.35 (2023-01-28)
+- **core**: 在 cloneDeep JSXElement 的时候会出现死循环
+
+## 0.0.34 (2023-01-19)
 - **core**: #95 新增jsx接口
 - **core**: #96 #97 fix testing-library 的UT错误
 
