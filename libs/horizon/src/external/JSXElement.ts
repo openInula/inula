@@ -37,11 +37,18 @@ export function JSXElement(type, key, ref, vNode, props, source: Source | null) 
     props: props,
 
     // 所属的class组件
-    belongClassVNode: vNode,
+    belongClassVNode: null,
   };
 
+  // 在 cloneDeep JSXElement 的时候会出现死循环，需要设置belongClassVNode的enumerable为false
+  Object.defineProperty(ele, 'belongClassVNode', {
+    configurable: false,
+    enumerable: false,
+    value: vNode,
+  });
+
   if (isDev) {
-    // 为了test判断两个JSXElement对象是否相等时忽略src属性，需要设置src的enumerable为false
+    // 为了test判断两个 JSXElement 对象是否相等时忽略src属性，需要设置src的enumerable为false
     Object.defineProperty(ele, 'src', {
       configurable: false,
       enumerable: false,
