@@ -14,6 +14,7 @@
  */
 
 import { VNode } from './vnode/VNode';
+
 const currentRootStack: VNode[] = [];
 export function getCurrentRoot() {
   return currentRootStack[currentRootStack.length - 1];
