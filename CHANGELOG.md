@@ -1,3 +1,6 @@
+## 0.0.36 (2023-01-30)
+- **core**: #100 horizon从上层页面透传到iframe页面里使用，创建的dom元素instanceof HTMLElement为false
+
 ## 0.0.35 (2023-01-28)
 - **core**: 在 cloneDeep JSXElement 的时候会出现死循环
 

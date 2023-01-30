@@ -16,7 +16,7 @@
 import { saveVNode, updateVNodeProps } from './DOMInternalKeys';
 import { createDom } from './utils/DomCreator';
 import { getSelectionInfo, resetSelectionRange, SelectionData } from './SelectionRangeHandler';
-import { shouldAutoFocus } from './utils/Common';
+import { isDocument, shouldAutoFocus } from './utils/Common';
 import { NSS } from './utils/DomCreator';
 import { adjustStyleValue } from './DOMPropertiesHandler/StyleHandler';
 import type { VNode } from '../renderer/Types';
@@ -26,6 +26,7 @@ import { isNativeElement, validateProps } from './validators/ValidateProps';
 import { watchValueChange } from './valueHandler/ValueChangeHandler';
 import { DomComponent, DomText } from '../renderer/vnode/VNodeTags';
 import { updateCommonProp } from './DOMPropertiesHandler/UpdateCommonProp';
+import {getCurrentRoot} from '../renderer/RootStack';
 
 export type Props = Record<string, any> & {
   autoFocus?: boolean;
@@ -70,7 +71,12 @@ export function resetAfterSubmit(): void {
 
 // 创建 DOM 对象
 export function newDom(tagName: string, props: Props, parentNamespace: string, vNode: VNode): Element {
-  const dom: Element = createDom(tagName, parentNamespace);
+  // document取值于treeRoot对应的DOM的ownerDocument。
+  // 解决：在iframe中使用top的horizon时，horizon在创建DOM时用到的document并不是iframe的document，而是top中的document的问题。
+  const rootDom = getCurrentRoot().realNode;
+  const doc = isDocument(rootDom) ? rootDom : rootDom.ownerDocument;
+
+  const dom: Element = createDom(tagName, parentNamespace, doc);
   // 将 vNode 节点挂到 DOM 对象上
   saveVNode(vNode, dom);
   // 将属性挂到 DOM 对象上
