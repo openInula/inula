@@ -37,26 +37,42 @@ if (!fs.existsSync(outDir)) {
 }
 
 const outputResolve = (...p) => path.resolve(outDir, ...p);
-const BasicPlugins = [
-  nodeResolve({
-    extensions,
-    modulesOnly: true,
-  }),
-  babel({
-    exclude: 'node_modules/**',
-    configFile: path.join(__dirname, '../../babel.config.js'),
-    babelHelpers: 'runtime',
-    extensions,
-  })
-];
+
+const isDev = (mode) => {
+  return mode === 'development';
+}
+
+const getBasicPlugins = (mode) => {
+  return [
+    nodeResolve({
+      extensions,
+      modulesOnly: true,
+    }),
+    babel({
+      exclude: 'node_modules/**',
+      configFile: path.join(__dirname, '../../babel.config.js'),
+      babelHelpers: 'runtime',
+      extensions,
+    }),
+    replace({
+      values: {
+        'process.env.NODE_ENV': `"${mode}"`,
+        isDev: isDev(mode).toString(),
+        isTest: false,
+        __VERSION__: `"${horizonVersion}"`,
+      },
+      preventAssignment: true,
+    }),
+  ];
+}
+
 
 function getOutputName(mode) {
   return mode === 'production' ? `horizon.${mode}.min.js` : `horizon.${mode}.js`;
 }
 
 function genConfig(mode) {
-  const isDev = mode === 'development';
-  const sourcemap = isDev ? 'inline' : false;
+  const sourcemap = isDev(mode) ? 'inline' : false;
   return {
     input: path.resolve(libDir, 'index.ts'),
     output: [
@@ -73,16 +89,7 @@ function genConfig(mode) {
       },
     ],
     plugins: [
-      ...BasicPlugins,
-      replace({
-        values: {
-          'process.env.NODE_ENV': `"${mode}"`,
-          isDev: isDev.toString(),
-          isTest: false,
-          __VERSION__: `"${horizonVersion}"`,
-        },
-        preventAssignment: true,
-      }),
+      ...getBasicPlugins(mode),
       execute('npm run build-types'),
       mode === 'production' && terser(),
       copy([
@@ -99,7 +106,7 @@ function genConfig(mode) {
   };
 }
 
-function genJSXRuntimeConfig() {
+function genJSXRuntimeConfig(mode) {
    return {
      input: path.resolve(libDir, 'jsx-runtime.ts'),
      output: [
@@ -108,7 +115,9 @@ function genJSXRuntimeConfig() {
          format: 'cjs',
        }
      ],
-     plugins: BasicPlugins
+     plugins: [
+       ...getBasicPlugins(mode)
+     ]
    };
 }
-export default [genConfig('development'), genConfig('production'), genJSXRuntimeConfig()];
+export default [genConfig('development'), genConfig('production'), genJSXRuntimeConfig('')];
