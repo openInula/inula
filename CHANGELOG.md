@@ -1,3 +1,6 @@
+## 0.0.37 (2023-01-31)
+- **core**: 增加jsxs方法
+
 ## 0.0.36 (2023-01-30)
 - **core**: #100 horizon从上层页面透传到iframe页面里使用，创建的dom元素instanceof HTMLElement为false
 
