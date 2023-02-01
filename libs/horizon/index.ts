@@ -66,6 +66,8 @@ import {
   unmountComponentAtNode,
 } from './src/dom/DOMExternal';
 
+import { syncUpdates as flushSync } from './src/renderer/TreeBuilder';
+
 const Horizon = {
   Children,
   createRef,
@@ -98,6 +100,7 @@ const Horizon = {
   findDOMNode,
   unmountComponentAtNode,
   act,
+  flushSync,
   createStore,
   useStore,
   clearStore,
@@ -147,6 +150,7 @@ export {
   findDOMNode,
   unmountComponentAtNode,
   act,
+  flushSync,
   // 状态管理器HorizonX接口
   createStore,
   useStore,
