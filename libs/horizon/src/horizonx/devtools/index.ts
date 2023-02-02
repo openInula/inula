@@ -52,7 +52,7 @@ function makeProxySnapshot(obj) {
 export const devtools = {
   // returns vNode id from horizon devtools
   getVNodeId: vNode => {
-    if (!isPanelActive()) return;
+    if (!isPanelActive() || !window['__HORIZON_DEV_HOOK__'].getVnodeId) return;
     window['__HORIZON_DEV_HOOK__'].send(); // update list first
     return window['__HORIZON_DEV_HOOK__'].getVnodeId(vNode);
   },
