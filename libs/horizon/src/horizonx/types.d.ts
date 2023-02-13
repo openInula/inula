@@ -61,6 +61,7 @@ export type StoreObj<S extends object, A extends UserActions<S>, C extends UserC
   $a: StoreActions<S, A>;
   $c: UserComputedValues<S>;
   $queue: QueuedStoreActions<S, A>;
+  $listeners;
   $subscribe: (listener: (mutation) => void) => void;
   $unsubscribe: (listener: (mutation) => void) => void;
 } & { [K in keyof S]: S[K] } & { [K in keyof A]: Action<A[K], S> } & { [K in keyof C]: ReturnType<C[K]> };

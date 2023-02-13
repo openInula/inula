@@ -84,7 +84,6 @@ export function isSame(x, y) {
 export function getDetailedType(val: any) {
   if (val === undefined) return 'undefined';
   if (val === null) return 'null';
-  if (isCollection(val)) return 'collection';
   if (isPromise(val)) return 'promise';
   if (isArray(val)) return 'array';
   if (isWeakMap(val)) return 'weakMap';
@@ -121,7 +120,24 @@ export function resolveMutation(from, to) {
     }
 
     case 'object': {
-      let keys = Object.keys({ ...from, ...to });
+      if (from._type && from._type === to._type) {
+        if (from._type === 'Map') {
+          const entries = resolveMutation(from.entries, to.entries);
+          return {
+            mutation: entries.items.some(item => item.mutation),
+            from,
+            to,
+            entries: entries.items,
+          };
+        }
+
+        if (from._type === 'Set') {
+          const values = resolveMutation(from.values, to.values);
+          return { mutation: values.items.some(item => item.mutation), from, to, values: values.items };
+        }
+      }
+
+      let keys = Object.keys({ ...from, ...to }).filter(key => key !== '_horizonObserver');
       const res = {};
       let found = false;
       keys.forEach(key => {
@@ -142,12 +158,16 @@ export function resolveMutation(from, to) {
       return { mutation: found, attributes: res, from, to };
     }
 
-    // TODO: implement collections
-
     default: {
       if (from === to) return { mutation: false };
 
       return { mutation: true, from, to };
     }
   }
+}
+
+export function omit(obj, ...attrs) {
+  let res = { ...obj };
+  attrs.forEach(attr => delete res[attr]);
+  return res;
 }

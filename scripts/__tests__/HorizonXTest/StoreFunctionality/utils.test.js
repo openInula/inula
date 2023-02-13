@@ -64,7 +64,6 @@ describe('Mutation resolve', () => {
   it('should resolve mutation same type types, same object', () => {
     const mutation = resolveMutation({ a: 1, b: 2 }, { a: 1, b: 2 });
 
-    console.log(mutation);
     expect(mutation.mutation).toBe(false);
   });
 
@@ -76,5 +75,19 @@ describe('Mutation resolve', () => {
     expect(mutation.attributes.b.mutation).toBe(true);
     expect(mutation.attributes.b.from).toBe(2);
     expect(mutation.attributes.c.to).toBe(2);
+  });
+});
+
+describe('Mutation collections', () => {
+  it('should resolve mutation of two sets', () => {
+    const values = [{ a: 1 }, { b: 2 }, { c: 3 }];
+
+    const source = new Set([values[0], values[1], values[2]]);
+
+    const target = new Set([values[0], values[1]]);
+
+    const mutation = resolveMutation(source, target);
+
+    expect(mutation.mutation).toBe(true);
   });
 });
