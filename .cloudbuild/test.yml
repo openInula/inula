@@ -23,8 +23,7 @@ steps:
         path: horizon-core
     - gitlab:
         url: https://szv-open.codehub.huawei.com/innersource/fenghuang/horizon/horizon-test.git
-
-        branch: one_tree_dev
+        branch: master
         path: horizon-test
   BUILD:
     - build_execute:
