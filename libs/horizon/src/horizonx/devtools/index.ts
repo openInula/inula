@@ -175,11 +175,7 @@ window.addEventListener('message', messageEvent => {
   }
 
   // executes store action
-<<<<<<< HEAD
-  if (messageEvent.data.payload.type === 'horizonx executue action') {
-=======
   if (messageEvent.data?.payload?.type === 'horizonx executue action') {
->>>>>>> master
     const data = messageEvent.data.payload.data;
     const store = getStore(data.storeId);
     if (!store?.[data.action]) return;
