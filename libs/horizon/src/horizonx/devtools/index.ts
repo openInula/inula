@@ -186,7 +186,7 @@ window.addEventListener('message', messageEvent => {
   }
 
   // queues store action
-  if (messageEvent.data.payload.type === 'horizonx queue action') {
+  if (messageEvent?.data?.payload?.type === 'horizonx queue action') {
     const data = messageEvent.data.payload.data;
     const store = getStore(data.storeId);
     if (!store?.[data.action]) return;
@@ -197,7 +197,7 @@ window.addEventListener('message', messageEvent => {
   }
 
   // queues change store state
-  if (messageEvent.data.payload.type === 'horizonx change state') {
+  if (messageEvent?.data?.payload?.type === 'horizonx change state') {
     const data = messageEvent.data.payload;
     const store = getStore(data.storeId);
     if (!store) return;
