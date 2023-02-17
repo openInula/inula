@@ -25,6 +25,7 @@ function makeStoreSnapshot({ type, data }) {
   return snapshot;
 }
 
+<<<<<<< Updated upstream
 // safely serializes variables containing values wrapped in Proxy object
 function getType(value) {
   if (!value) return 'nullish';
@@ -41,6 +42,9 @@ function getType(value) {
 }
 function makeProxySnapshot(obj) {
   const type = getType(obj);
+=======
+function makeProxySnapshot(obj, visited: any[] = []) {
+>>>>>>> Stashed changes
   let clone;
 
   try {
@@ -54,6 +58,7 @@ function makeProxySnapshot(obj) {
     if (type === 'function') {
       return obj.toString();
     }
+<<<<<<< Updated upstream
     // VNODE
     if (type === 'vnode') {
       return {
@@ -93,14 +98,23 @@ function makeProxySnapshot(obj) {
     }
     // ARRAY
     if (type === 'array') {
+=======
+    if (Array.isArray(obj)) {
+      if (visited.some(item => item === obj)) return `<Cyclic ${obj.toString()}>`;
+>>>>>>> Stashed changes
       clone = [];
-      obj.forEach(item => clone.push(makeProxySnapshot(item)));
+      obj.forEach(item => clone.push(makeProxySnapshot(item, visited.concat([obj]))));
       return clone;
+<<<<<<< Updated upstream
     }
     // OBJECT
     if (type === 'object') {
+=======
+    } else if (typeof obj === 'object') {
+      if (visited.some(item => item === obj)) return `<Cyclic ${obj.toString()}>`;
+>>>>>>> Stashed changes
       clone = {};
-      Object.entries(obj).forEach(([id, value]) => (clone[id] = makeProxySnapshot(value)));
+      Object.entries(obj).forEach(([id, value]) => (clone[id] = makeProxySnapshot(value, visited.concat([obj]))));
       return clone;
     }
     // PRIMITIVE
@@ -134,6 +148,10 @@ function getAffectedComponents() {
   const keys = Object.keys(allStores);
   let res = {};
   keys.forEach(key => {
+    if (!allStores[key].$config.state._horizonObserver.keyVNodes) {
+      res[key] = [];
+      return;
+    }
     const subRes = new Set();
     const process = Array.from(allStores[key].$config.state._horizonObserver.keyVNodes.values());
     while (process.length) {
