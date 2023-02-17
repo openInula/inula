@@ -25,7 +25,6 @@ function makeStoreSnapshot({ type, data }) {
   return snapshot;
 }
 
-<<<<<<< Updated upstream
 // safely serializes variables containing values wrapped in Proxy object
 function getType(value) {
   if (!value) return 'nullish';
@@ -40,11 +39,8 @@ function getType(value) {
   if (typeof value === 'object') return 'object';
   return 'primitive';
 }
-function makeProxySnapshot(obj) {
-  const type = getType(obj);
-=======
 function makeProxySnapshot(obj, visited: any[] = []) {
->>>>>>> Stashed changes
+  const type = getType(obj);
   let clone;
 
   try {
@@ -58,7 +54,6 @@ function makeProxySnapshot(obj, visited: any[] = []) {
     if (type === 'function') {
       return obj.toString();
     }
-<<<<<<< Updated upstream
     // VNODE
     if (type === 'vnode') {
       return {
@@ -98,21 +93,14 @@ function makeProxySnapshot(obj, visited: any[] = []) {
     }
     // ARRAY
     if (type === 'array') {
-=======
-    if (Array.isArray(obj)) {
       if (visited.some(item => item === obj)) return `<Cyclic ${obj.toString()}>`;
->>>>>>> Stashed changes
       clone = [];
       obj.forEach(item => clone.push(makeProxySnapshot(item, visited.concat([obj]))));
       return clone;
-<<<<<<< Updated upstream
     }
     // OBJECT
     if (type === 'object') {
-=======
-    } else if (typeof obj === 'object') {
       if (visited.some(item => item === obj)) return `<Cyclic ${obj.toString()}>`;
->>>>>>> Stashed changes
       clone = {};
       Object.entries(obj).forEach(([id, value]) => (clone[id] = makeProxySnapshot(value, visited.concat([obj]))));
       return clone;
