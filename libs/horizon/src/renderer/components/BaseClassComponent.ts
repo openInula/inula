@@ -13,6 +13,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
+import {Callback} from '../Types';
+
 /**
  * Component的api setState和forceUpdate在实例生成阶段实现
  */
@@ -29,7 +31,7 @@ class Component<P, S, C> {
     this.context = context;
   }
 
-  setState(state: S) {
+  setState(state: S, callback?: Callback) {
     if (isDev) {
       console.error('Cant not call `this.setState` in the constructor of class component, it will do nothing');
     }
