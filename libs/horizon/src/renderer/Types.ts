@@ -77,3 +77,5 @@ export type Source = {
   fileName: string;
   lineNumber: number;
 };
+
+export type Callback = () => void;

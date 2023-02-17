@@ -1,3 +1,25 @@
+## 0.0.38 (2023-02-01)
+- **core**: 增加flushSync接口
+
+## 0.0.37 (2023-01-31)
+- **core**: 增加jsxs方法
+
+## 0.0.36 (2023-01-30)
+- **core**: #100 horizon从上层页面透传到iframe页面里使用，创建的dom元素instanceof HTMLElement为false
+
+## 0.0.35 (2023-01-28)
+- **core**: 在 cloneDeep JSXElement 的时候会出现死循环
+
+## 0.0.34 (2023-01-19)
+- **core**: #95 新增jsx接口
+- **core**: #96 #97 fix testing-library 的UT错误
+
+## 0.0.33 (2023-01-11)
+- **horizonX-devtool**: 修复IE中报错
+
+## 0.0.32 (2023-01-04)
+- **CI**: 生成态输出文件改为horiozn.producion.min.js
+
 ## 0.0.26 (2022-11-09)
 - **CI**: 包信息同步CMC
 

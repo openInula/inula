@@ -25,10 +25,10 @@ import { Source } from '../renderer/Types';
  * props 其他常规属性
  */
 export function JSXElement(type, key, ref, vNode, props, source: Source | null) {
-  return {
+  const ele = {
     // 元素标识符
     vtype: TYPE_COMMON_ELEMENT,
-    src: isDev ? source : null,
+    src: null,
 
     // 属于元素的内置属性
     type: type,
@@ -37,8 +37,27 @@ export function JSXElement(type, key, ref, vNode, props, source: Source | null) 
     props: props,
 
     // 所属的class组件
-    belongClassVNode: vNode,
+    belongClassVNode: null,
   };
+
+  // 在 cloneDeep JSXElement 的时候会出现死循环，需要设置belongClassVNode的enumerable为false
+  Object.defineProperty(ele, 'belongClassVNode', {
+    configurable: false,
+    enumerable: false,
+    value: vNode,
+  });
+
+  if (isDev) {
+    // 为了test判断两个 JSXElement 对象是否相等时忽略src属性，需要设置src的enumerable为false
+    Object.defineProperty(ele, 'src', {
+      configurable: false,
+      enumerable: false,
+      writable: false,
+      value: source,
+    });
+  }
+
+  return ele;
 }
 
 function isValidKey(key) {
@@ -106,4 +125,13 @@ export function cloneElement(element, setting, ...children) {
 // 检测结构体是否为合法的Element
 export function isValidElement(element) {
   return !!(element && element.vtype === TYPE_COMMON_ELEMENT);
+}
+
+// 兼容高版本的babel编译方式
+export function jsx(type, setting, key) {
+  if (setting.key === undefined && key !== undefined) {
+    setting.key = key;
+  }
+
+  return buildElement(false, type, setting, []);
 }

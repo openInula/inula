@@ -22,8 +22,8 @@ steps:
     - checkout:
         path: horizon-core
     - gitlab:
-        url: https://szv-open.codehub.huawei.com/innersource/shanhai/wutong/react/horizon-test.git
-        branch: one_tree_dev
+        url: https://szv-open.codehub.huawei.com/innersource/fenghuang/horizon/horizon-test.git
+        branch: master
         path: horizon-test
   BUILD:
     - build_execute:
