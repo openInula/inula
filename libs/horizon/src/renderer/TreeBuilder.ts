@@ -312,6 +312,7 @@ function recoverTreeContext(vNode: VNode) {
     }
     parent = parent.parent;
   }
+
   contextProviders.forEach(node => {
     setContext(node, node.props.value);
   });
@@ -336,6 +337,7 @@ function resetTreeContext(vNode: VNode) {
 function renderFromRoot(treeRoot) {
   runAsyncEffects();
   pushCurrentRoot(treeRoot);
+
   // 1. 构建vNode树
   buildVNodeTree(treeRoot);
 
@@ -346,6 +348,7 @@ function renderFromRoot(treeRoot) {
 
   // 2. 提交变更
   submitToRender(treeRoot);
+
   popCurrentRoot();
   if (window.__HORIZON_DEV_HOOK__) {
     const hook = window.__HORIZON_DEV_HOOK__;
