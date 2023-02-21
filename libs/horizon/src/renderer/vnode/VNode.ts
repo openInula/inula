@@ -89,7 +89,7 @@ export class VNode {
   oldChild: VNode | null = null;
   promiseResolve: boolean; // suspense的promise是否resolve
   devProps: any; // 用于dev插件临时保存更新props值
-  suspenseState: SuspenseState;
+  suspenseState: SuspenseState | null;
 
   path = ''; // 保存从根到本节点的路径
 

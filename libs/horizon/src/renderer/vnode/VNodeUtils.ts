@@ -17,15 +17,19 @@
  * 提供：vNode的“遍历”，“查找”，“判断”的相关工具方法
  */
 
-import type { VNode } from '../Types';
+import type {VNode} from '../Types';
 
-import { DomComponent, DomPortal, DomText, TreeRoot } from './VNodeTags';
-import { isComment } from '../../dom/utils/Common';
-import { getNearestVNode } from '../../dom/DOMInternalKeys';
-import { Addition, InitFlag } from './VNodeFlags';
+import {DomComponent, DomPortal, DomText, TreeRoot} from './VNodeTags';
+import {isComment} from '../../dom/utils/Common';
+import {getNearestVNode} from '../../dom/DOMInternalKeys';
+import {Addition, InitFlag} from './VNodeFlags';
 
-export function travelChildren(beginVNode: VNode, handleVNode: Function, isFinish?: Function) {
-  let node: VNode | null = beginVNode;
+export function travelChildren(
+  beginVNode: VNode | null,
+  handleVNode: (node: VNode) => void,
+  isFinish?: (node: VNode) => boolean
+) {
+  let node = beginVNode;
 
   while (node !== null) {
     if (isFinish && isFinish(node)) {
@@ -41,15 +45,16 @@ export function travelChildren(beginVNode: VNode, handleVNode: Function, isFinis
 // 从beginVNode开始深度遍历vNode树，对每个vNode调用handleVNode方法
 export function travelVNodeTree(
   beginVNode: VNode,
-  handleVNode: Function,
+  handleVNode: (node: VNode) => VNode | boolean | null | void,
   childFilter: ((node: VNode) => boolean) | null, // 返回true不处理child
   finishVNode: VNode, // 结束遍历节点，有时候和beginVNode不相同
-  handleWhenToParent: Function | null
-): VNode | null {
+  handleWhenToParent: ((node: VNode) => void) | null
+): VNode | boolean | null | void {
   let node = beginVNode;
 
   while (true) {
     const ret = handleVNode(node);
+
     // 如果处理一个vNode时有返回值，则中断遍历
     if (ret) {
       return ret;
@@ -68,6 +73,8 @@ export function travelVNodeTree(
       return null;
     }
 
+    const isFun = typeof handleWhenToParent === 'function';
+
     // 找兄弟，没有就往上再找兄弟
     while (node.next === null) {
       if (node.parent === null || node.parent === finishVNode) {
@@ -75,8 +82,8 @@ export function travelVNodeTree(
       }
       node = node.parent;
 
-      if (typeof handleWhenToParent === 'function') {
-        handleWhenToParent(node);
+      if (isFun) {
+        handleWhenToParent!(node);
       }
     }
     // 找到兄弟
@@ -89,14 +96,20 @@ export function travelVNodeTree(
 // 置空vNode
 export function clearVNode(vNode: VNode) {
   vNode.isCleared = true;
+
+  // 孩子节点的parent也置空
+  travelChildren(vNode.child, (node) => {
+    node.parent = null;
+  });
   vNode.child = null;
+
+  vNode.parent = null;
   vNode.next = null;
   vNode.depContexts = null;
   vNode.dirtyNodes = null;
   vNode.state = null;
   vNode.hooks = null;
   vNode.props = null;
-  vNode.parent = null;
   vNode.suspenseState = null;
   vNode.changeList = null;
   vNode.effectList = null;
@@ -129,7 +142,7 @@ function isDomContainer(vNode: VNode): boolean {
 }
 
 export function findDomVNode(vNode: VNode): VNode | null {
-  return travelVNodeTree(
+  const ret = travelVNodeTree(
     vNode,
     node => {
       if (node.tag === DomComponent || node.tag === DomText) {
@@ -141,6 +154,8 @@ export function findDomVNode(vNode: VNode): VNode | null {
     vNode,
     null
   );
+
+  return ret as VNode | null;
 }
 
 export function findDOMByClassInst(inst) {
