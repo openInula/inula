@@ -38,6 +38,7 @@ import {
   ACTION_QUEUED,
   INITIALIZED,
   QUEUE_FINISHED,
+  QUEUE_PENDING,
   STATE_CHANGE,
   SUBSCRIBED,
   UNSUBSCRIBED,
@@ -62,7 +63,11 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
 
   const id = config.id || idGenerator.get('UNNAMED_STORE');
 
-  const proxyObj = createProxy(config.state, id, !config.options?.isReduxAdapter);
+  const listener = {
+    current: listener => {},
+  };
+
+  const proxyObj = createProxy(config.state, !config.options?.isReduxAdapter, listener);
 
   proxyObj.$pending = false;
 
@@ -76,15 +81,27 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
     $c: $c as ComputedValues<S, C>,
     $queue: $queue as QueuedStoreActions<S, A>,
     $config: config,
+    $listeners: [
+      change => {
+        devtools.emit(STATE_CHANGE, {
+          store: storeObj,
+          change,
+        });
+      },
+    ],
     $subscribe: listener => {
       devtools.emit(SUBSCRIBED, { store: storeObj, listener });
-      proxyObj.addListener(listener);
+      storeObj.$listeners.push(listener);
     },
     $unsubscribe: listener => {
-      devtools.emit(UNSUBSCRIBED, storeObj);
-      proxyObj.removeListener(listener);
+      devtools.emit(UNSUBSCRIBED, { store: storeObj });
+      storeObj.$listeners = storeObj.$listeners.filter(item => item != listener);
     },
   } as unknown as StoreObj<S, A, C>;
+
+  listener.current = (...args) => {
+    storeObj.$listeners.forEach(listener => listener(...args));
+  };
 
   const plannedActions: PlannedAction<S, ActionFunction<S>>[] = [];
 
@@ -104,7 +121,11 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
         });
         return new Promise(resolve => {
           if (!proxyObj.$pending) {
-            proxyObj.$pending = true;
+            proxyObj.$pending = Date.now();
+            devtools.emit(QUEUE_PENDING, {
+              store: storeObj,
+              startedAt: proxyObj.$pending,
+            });
 
             const result = config.actions![action].bind(storeObj, proxyObj)(...payload);
 
@@ -192,20 +213,22 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
     store: storeObj,
   });
 
-  proxyObj.addListener(change => {
-    devtools.emit(STATE_CHANGE, {
-      store: storeObj,
-      change,
-    });
-  });
-
   return createGetStore(storeObj);
 }
 
 // 通过该方法执行store.$queue中的action
 function tryNextAction(storeObj, proxyObj, config, plannedActions) {
   if (!plannedActions.length) {
-    proxyObj.$pending = false;
+    if (proxyObj.$pending) {
+      const timestamp = Date.now();
+      const duration = timestamp - proxyObj.$pending;
+      proxyObj.$pending = false;
+      devtools.emit(QUEUE_FINISHED, {
+        store: storeObj,
+        endedAt: timestamp,
+        duration,
+      });
+    }
     return;
   }
 

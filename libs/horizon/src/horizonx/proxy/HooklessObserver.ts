@@ -31,6 +31,10 @@ export class HooklessObserver implements IObserver {
     this.listeners = this.listeners.filter(item => item != listener);
   }
 
+  getListeners() {
+    return this.listeners;
+  }
+
   setProp(key: string | symbol, mutation: any): void {
     this.triggerChangeListeners(mutation);
   }

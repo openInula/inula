@@ -1,3 +1,5 @@
+import { isDomVNode } from '../../renderer/vnode/VNodeUtils';
+import { isMap, isSet, isWeakMap, isWeakSet } from '../CommonUtils';
 import { getStore, getAllStores } from '../store/StoreHandler';
 import { OBSERVED_COMPONENTS } from './constants';
 
@@ -24,35 +26,96 @@ function makeStoreSnapshot({ type, data }) {
 }
 
 // safely serializes variables containing values wrapped in Proxy object
-function makeProxySnapshot(obj) {
+function getType(value) {
+  if (!value) return 'nullish';
+  if (value.nativeEvent) return 'event';
+  if (typeof value === 'function') return 'function';
+  if (value.constructor?.name === 'VNode') return 'vnode';
+  if (isWeakMap(value)) return 'weakMap';
+  if (isWeakSet(value)) return 'weakSet';
+  if (isMap(value)) return 'map';
+  if (isSet(value)) return 'set';
+  if (Array.isArray(value)) return 'array';
+  if (typeof value === 'object') return 'object';
+  return 'primitive';
+}
+function makeProxySnapshot(obj, visited: any[] = []) {
+  const type = getType(obj);
   let clone;
+
   try {
-    if (!obj) {
+    //NULLISH VALUE
+    if (type === 'nullish') {
       return obj;
     }
-    if (obj.nativeEvent) return obj.type + 'Event';
-    if (typeof obj === 'function') {
+    //EVENT
+    if (type === 'event') return obj.type + 'Event';
+    // FUNCTION
+    if (type === 'function') {
       return obj.toString();
     }
-    if (Array.isArray(obj)) {
+    // VNODE
+    if (type === 'vnode') {
+      return {
+        _type: 'VNode',
+        id: window['__HORIZON_DEV_HOOK__'].getVnodeId(obj),
+        tag: obj.tag,
+      };
+    }
+    // WEAK MAP
+    if (type === 'weakMap') {
+      return {
+        _type: 'WeakMap',
+      };
+    }
+    // WEAK SET
+    if (type === 'weakSet') {
+      return {
+        _type: 'WeakSet',
+      };
+    }
+    // MAP
+    if (type === 'map') {
+      return {
+        _type: 'Map',
+        entries: Array.from(obj.entries()).map(([key, value]) => ({
+          key: makeProxySnapshot(key),
+          value: makeProxySnapshot(value),
+        })),
+      };
+    }
+    // SET
+    if (type === 'set') {
+      return {
+        _type: 'Set',
+        values: Array.from(obj).map(value => makeProxySnapshot(value)),
+      };
+    }
+    // ARRAY
+    if (type === 'array') {
+      if (visited.some(item => item === obj)) return `<Cyclic ${obj.toString()}>`;
       clone = [];
-      obj.forEach(item => clone.push(makeProxySnapshot(item)));
-      return clone;
-    } else if (typeof obj === 'object') {
-      clone = {};
-      Object.entries(obj).forEach(([id, value]) => (clone[id] = makeProxySnapshot(value)));
+      obj.forEach(item => clone.push(makeProxySnapshot(item, visited.concat([obj]))));
       return clone;
     }
+    // OBJECT
+    if (type === 'object') {
+      if (visited.some(item => item === obj)) return `<Cyclic ${obj.toString()}>`;
+      clone = {};
+      Object.entries(obj).forEach(([id, value]) => (clone[id] = makeProxySnapshot(value, visited.concat([obj]))));
+      return clone;
+    }
+    // PRIMITIVE
     return obj;
   } catch (err) {
-    throw console.log('cannot serialize object. ' + err);
+    console.error('cannot serialize object. ', { err, obj, type });
   }
 }
 
 export const devtools = {
   // returns vNode id from horizon devtools
   getVNodeId: vNode => {
-    if (!isPanelActive() || !window['__HORIZON_DEV_HOOK__'].getVnodeId) return;
+    if (!isPanelActive()) return;
     window['__HORIZON_DEV_HOOK__'].send(); // update list first
     return window['__HORIZON_DEV_HOOK__'].getVnodeId(vNode);
   },
@@ -73,10 +136,14 @@ function getAffectedComponents() {
   const keys = Object.keys(allStores);
   let res = {};
   keys.forEach(key => {
+    if (!allStores[key].$config.state._horizonObserver.keyVNodes) {
+      res[key] = [];
+      return;
+    }
     const subRes = new Set();
     const process = Array.from(allStores[key].$config.state._horizonObserver.keyVNodes.values());
     while (process.length) {
-      let pivot = process.shift();
+      let pivot = process.shift() as { tag: 'string' };
       if (pivot?.tag) subRes.add(pivot);
       if (pivot?.toString() === '[object Set]') Array.from(pivot).forEach(item => process.push(item));
     }
@@ -84,7 +151,7 @@ function getAffectedComponents() {
       return {
         name: vnode?.type
           .toString()
-          .replace(/\{.*\}/, '{...}')
+          .replace(/\{.*\}/gms, '{...}')
           .replace('function ', ''),
         nodeId: window.__HORIZON_DEV_HOOK__.getVnodeId(vnode),
       };
@@ -116,5 +183,38 @@ window.addEventListener('message', messageEvent => {
     const action = store[data.action];
     const params = data.params;
     action(...params);
+  }
+
+  // queues store action
+  if (messageEvent?.data?.payload?.type === 'horizonx queue action') {
+    const data = messageEvent.data.payload.data;
+    const store = getStore(data.storeId);
+    if (!store?.[data.action]) return;
+
+    const action = store.$queue?.[data.action];
+    const params = data.params;
+    action(...params);
+  }
+
+  // queues change store state
+  if (messageEvent?.data?.payload?.type === 'horizonx change state') {
+    const data = messageEvent.data.payload;
+    const store = getStore(data.storeId);
+    if (!store) return;
+    let parent = store.$s;
+    if (data.operation === 'edit') {
+      try {
+        const path = messageEvent.data.payload.path;
+
+        while (path.length > 1) {
+          parent = parent[path.pop()];
+        }
+
+        parent[path[0]] = messageEvent.data.payload.value;
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    // TODO:implement add and delete element
   }
 });

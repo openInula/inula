@@ -27,7 +27,7 @@ const proxyMap = new WeakMap();
 
 export const hookObserverMap = new WeakMap();
 
-export function createProxy(rawObj: any, id, isHookObserver = true): any {
+export function createProxy(rawObj: any, isHookObserver = true, listener: { current: (...args) => any }): any {
   // 不是对象（是原始数据类型）不用代理
   if (!(rawObj && isObject(rawObj))) {
     return rawObj;
@@ -56,16 +56,32 @@ export function createProxy(rawObj: any, id, isHookObserver = true): any {
   // 创建Proxy
   let proxyObj;
   if (!isHookObserver) {
-    proxyObj = createObjectProxy(rawObj, true);
+    proxyObj = createObjectProxy(rawObj, true, {
+      current: change => {
+        listener.current(change);
+      },
+    });
   } else if (isArray(rawObj)) {
     // 数组
-    proxyObj = createArrayProxy(rawObj as []);
+    proxyObj = createArrayProxy(rawObj as [], {
+      current: change => {
+        listener.current(change);
+      },
+    });
   } else if (isCollection(rawObj)) {
     // 集合
-    proxyObj = createCollectionProxy(rawObj);
+    proxyObj = createCollectionProxy(rawObj, true, {
+      current: change => {
+        listener.current(change);
+      },
+    });
   } else {
     // 原生对象 或 函数
-    proxyObj = createObjectProxy(rawObj);
+    proxyObj = createObjectProxy(rawObj, false, {
+      current: change => {
+        listener?.current(change);
+      },
+    });
   }
 
   proxyMap.set(rawObj, proxyObj);
