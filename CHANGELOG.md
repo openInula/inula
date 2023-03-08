@@ -1,3 +1,8 @@
+## 0.0.40 (2023-03-08)
+- **core**: #103 使用Memo、React.forwardRef包装组件后，defaultProps失效
+- **core**: #104 --max-segment-num的style无法使用
+- **core**: 状态管理器的优化
+
 ## 0.0.39 (2023-02-21)
 - **core**: #102 使用eview-react组件Dialog时，关闭组件horizon报错，且无法再打开弹框
 
