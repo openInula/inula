@@ -31,7 +31,9 @@ export function bubbleRender() {}
 export function captureMemoComponent(processing: VNode, shouldUpdate: boolean): VNode | null {
   const Component = processing.type;
   // 合并 函数组件或类组件 的defaultProps
-  const newProps = mergeDefaultProps(Component, processing.props);
+  let newProps = mergeDefaultProps(Component, processing.props);
+  // 解决Horizon.memo(Horizon.forwardRef(()=>{}))两层包装的场景
+  newProps = mergeDefaultProps(Component.type, newProps);
 
   if (processing.isCreated) {
     let newChild: VNode | null = null;

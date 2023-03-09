@@ -60,4 +60,34 @@ describe('FunctionComponent Test', () => {
     expect(realNode).toBe(null);
   });
 
+  it('测试函数组件的defaultProps：Horizon.memo(Horizon.forwardRef(()=>{}))两层包装的场景后，defaultProps依然正常', () => {
+    const App = () => {
+      return <DefaultPropsCompMemo />;
+    };
+
+    const DefaultPropsComp = Horizon.forwardRef(props => {
+      return <div>{props.name}</div>;
+    });
+    DefaultPropsComp.defaultProps = {
+      name: 'Hello!',
+    };
+    const DefaultPropsCompMemo = Horizon.memo(DefaultPropsComp);
+
+    Horizon.render(<App />, container);
+    expect(container.querySelector('div').innerHTML).toBe('Hello!');
+  });
+
+  it('测试', () => {
+    const App = () => {
+      return <StyleComp />;
+    };
+
+    const StyleComp = props => {
+      return <div style={{ '--max-segment-num': 10 }}>{props.name}</div>;
+    };
+
+    Horizon.render(<App />, container);
+    expect(container.querySelector('div').style['_values']['--max-segment-num']).toBe(10);
+  });
+
 });

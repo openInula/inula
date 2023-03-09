@@ -54,8 +54,12 @@ export function setStyles(dom, styles) {
   const style = dom.style;
   Object.keys(styles).forEach(name => {
     const styleVal = styles[name];
-
-    style[name] = adjustStyleValue(name, styleVal);
+    // 以--开始的样式直接设置即可
+    if (name.indexOf('--') === 0) {
+      style.setProperty(name, styleVal);
+    } else {
+      style[name] = adjustStyleValue(name, styleVal);
+    }
   });
 }
 
