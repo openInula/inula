@@ -18,6 +18,8 @@ import {
   TYPE_PROFILER as Profiler,
   TYPE_STRICT_MODE as StrictMode,
   TYPE_SUSPENSE as Suspense,
+  TYPE_FORWARD_REF as ForwardRef,
+  TYPE_MEMO as Memo,
 } from './src/external/JSXElementType';
 
 import { Component, PureComponent } from './src/renderer/components/BaseClassComponent';
@@ -87,10 +89,6 @@ const Horizon = {
   useReducer,
   useRef,
   useState,
-  Fragment,
-  Profiler,
-  StrictMode,
-  Suspense,
   createElement,
   cloneElement,
   isValidElement,
@@ -115,9 +113,16 @@ const Horizon = {
   isPortal,
   isContextProvider,
   isContextConsumer,
+  ForwardRef,
+  Memo,
+  Fragment,
+  Profiler,
+  StrictMode,
+  Suspense,
 };
 
-export const version = __VERSION__;
+// export const version = __VERSION__;
+export const version = '0.0.40';
 export {
   Children,
   createRef,
@@ -137,10 +142,6 @@ export {
   useReducer,
   useRef,
   useState,
-  Fragment,
-  Profiler,
-  StrictMode,
-  Suspense,
   createElement,
   cloneElement,
   isValidElement,
@@ -167,6 +168,12 @@ export {
   isPortal,
   isContextProvider,
   isContextConsumer,
+  ForwardRef,
+  Memo,
+  Fragment,
+  Profiler,
+  StrictMode,
+  Suspense,
 };
 
 export default Horizon;

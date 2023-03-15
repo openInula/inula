@@ -1,3 +1,7 @@
+## 0.0.41 (2023-03-15)
+- **core**: #105 redux + forwardRef组合使用场景会报错，redux获取组件类型不对
+- **core**: 增加jsx-dev-runtime文件，给vite使用
+
 ## 0.0.40 (2023-03-08)
 - **core**: #103 使用Memo、React.forwardRef包装组件后，defaultProps失效
 - **core**: #104 --max-segment-num的style无法使用

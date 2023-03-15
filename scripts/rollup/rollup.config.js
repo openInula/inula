@@ -20,8 +20,8 @@ import fs from 'fs';
 import replace from '@rollup/plugin-replace';
 import copy from './copy-plugin';
 import execute from 'rollup-plugin-execute';
-import { terser } from 'rollup-plugin-terser';
-import { version as horizonVersion } from '@cloudsop/horizon/package.json';
+import {terser} from 'rollup-plugin-terser';
+import {version as horizonVersion} from '@cloudsop/horizon/package.json';
 
 const extensions = ['.js', '.ts'];
 
@@ -107,17 +107,29 @@ function genConfig(mode) {
 }
 
 function genJSXRuntimeConfig(mode) {
-   return {
-     input: path.resolve(libDir, 'jsx-runtime.ts'),
-     output: [
-       {
-         file: outputResolve('jsx-runtime.js'),
-         format: 'cjs',
-       }
-     ],
-     plugins: [
-       ...getBasicPlugins(mode)
-     ]
-   };
+  return {
+    input: path.resolve(libDir, 'jsx-runtime.ts'),
+    output: {
+      file: outputResolve('jsx-runtime.js'),
+      format: 'cjs',
+    },
+    plugins: [
+      ...getBasicPlugins(mode)
+    ]
+  };
 }
-export default [genConfig('development'), genConfig('production'), genJSXRuntimeConfig('')];
+
+function genJSXDEVRuntimeConfig(mode) {
+  return {
+    input: path.resolve(libDir, 'jsx-dev-runtime.ts'),
+    output: {
+      file: outputResolve('jsx-dev-runtime.js'),
+      format: 'cjs',
+    },
+    plugins: [
+      ...getBasicPlugins(mode)
+    ]
+  };
+}
+
+export default [genConfig('development'), genConfig('production'), genJSXRuntimeConfig(''), genJSXDEVRuntimeConfig('')];

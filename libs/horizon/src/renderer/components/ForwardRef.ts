@@ -18,6 +18,7 @@ import { TYPE_FORWARD_REF } from '../../external/JSXElementType';
 export function forwardRef(render: Function) {
   return {
     vtype: TYPE_FORWARD_REF,
+    $$typeof: TYPE_FORWARD_REF, // 规避三方件hoist-non-react-statics中，通过$$typeof获取类型，但获取不到导致的错误
     render,
   };
 }
