@@ -121,8 +121,7 @@ const Horizon = {
   Suspense,
 };
 
-// export const version = __VERSION__;
-export const version = '0.0.40';
+export const version = __VERSION__;
 export {
   Children,
   createRef,
