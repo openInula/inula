@@ -13,12 +13,12 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { TYPE_FORWARD_REF } from '../../external/JSXElementType';
+import {
+  TYPE_FRAGMENT as Fragment,
+} from './src/external/JSXElementType';
+import { jsx as jsxDEV } from './src/external/JSXElement';
 
-export function forwardRef(render: Function) {
-  return {
-    vtype: TYPE_FORWARD_REF,
-    $$typeof: TYPE_FORWARD_REF, // 规避三方件hoist-non-react-statics中，通过$$typeof获取类型，但获取不到导致的错误
-    render,
-  };
-}
+export {
+  jsxDEV,
+  Fragment
+};
