@@ -17,6 +17,7 @@ import { TYPE_MEMO } from '../../external/JSXElementType';
 
 export function memo<Props>(type, compare?: (oldProps: Props, newProps: Props) => boolean) {
   const memoJSXElement = {
+    vtype: TYPE_MEMO,
     $$typeof: TYPE_MEMO, // 规避三方件hoist-non-react-statics中，通过$$typeof获取类型，但获取不到，导致type被覆盖
     type: type,
     compare: compare === undefined ? null : compare,
@@ -26,7 +27,6 @@ export function memo<Props>(type, compare?: (oldProps: Props, newProps: Props) =
   Object.defineProperty(memoJSXElement, 'vtype', {
     configurable: false,
     writable: false,
-    value: TYPE_MEMO,
   });
 
   return memoJSXElement;
