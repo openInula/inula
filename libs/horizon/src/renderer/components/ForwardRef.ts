@@ -17,6 +17,7 @@ import {TYPE_FORWARD_REF, TYPE_MEMO} from '../../external/JSXElementType';
 
 export function forwardRef(render: Function) {
   const forwardRefJSXElement = {
+    vtype: TYPE_FORWARD_REF,
     $$typeof: TYPE_FORWARD_REF, // 规避三方件hoist-non-react-statics中，通过$$typeof获取类型，但获取不到，导致render被覆盖
     render,
   };
@@ -25,7 +26,6 @@ export function forwardRef(render: Function) {
   Object.defineProperty(forwardRefJSXElement, 'vtype', {
     configurable: false,
     writable: false,
-    value: TYPE_FORWARD_REF,
   });
 
   return forwardRefJSXElement;

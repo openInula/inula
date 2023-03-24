@@ -1,3 +1,6 @@
+## 0.0.42 (2023-03-24)
+- **core**: 解决直接通过defineProperty赋值vtype，enumerable为false，导致vtype为空问题
+
 ## 0.0.41 (2023-03-15)
 - **core**: #105 redux + forwardRef组合使用场景会报错，redux获取组件类型不对
 - **core**: 增加jsx-dev-runtime文件，给vite使用
