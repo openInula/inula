@@ -25,6 +25,11 @@ import { EffectConstant } from '../hooks/EffectConstant';
 
 let hookEffects: Array<HookEffect | VNode> = [];
 let hookRemoveEffects: Array<HookEffect | VNode> = [];
+
+export function hasAsyncEffects() {
+  return hookEffects.length > 0 || hookRemoveEffects.length > 0;
+}
+
 // 是否正在异步调度effects
 let isScheduling = false;
 
