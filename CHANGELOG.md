@@ -1,3 +1,6 @@
+## 0.0.43 (2023-03-30)
+- **core**: 解决act方法无法等待useEffect触发的更新完成问题
+
 ## 0.0.42 (2023-03-24)
 - **core**: 解决直接通过defineProperty赋值vtype，enumerable为false，导致vtype为空问题
 
