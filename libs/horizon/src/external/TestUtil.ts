@@ -16,7 +16,7 @@
 
 import {asyncUpdates} from '../renderer/TreeBuilder';
 import {callRenderQueueImmediate} from '../renderer/taskExecutor/RenderQueue';
-import {runAsyncEffects} from '../renderer/submit/HookEffectHandler';
+import {hasAsyncEffects, runAsyncEffects} from '../renderer/submit/HookEffectHandler';
 import {isPromise} from '../renderer/ErrorHandler';
 
 interface Thenable {
@@ -62,11 +62,18 @@ function act(fun: () => void | Thenable): Thenable {
   }
 }
 
+// 防止死循环
+const LOOPING_LIMIT = 50;
+let loopingCount = 0;
 function callRenderQueue() {
   callRenderQueueImmediate();
-  runAsyncEffects();
-  // effects可能产生刷新任务，这里再执行一次
-  callRenderQueueImmediate();
+
+  while (hasAsyncEffects() && loopingCount < LOOPING_LIMIT) {
+    loopingCount++;
+    runAsyncEffects();
+    // effects可能产生刷新任务，这里再执行一次
+    callRenderQueueImmediate();
+  }
 }
 
 export {
