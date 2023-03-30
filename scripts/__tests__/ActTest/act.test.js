@@ -16,7 +16,7 @@
 import Horizon, { render, useState, act, useEffect } from '@cloudsop/horizon/index.ts';
 
 describe('Horizon.act function Test', () => {
-  it('Parent can get Child instance by refs', function () {
+  it('The act can wait for the useEffect update to complete.', function () {
     const Parent = props => {
       const [buttonOptions, setBtn] = useState([]);
       const [checkedRows, setCheckedRows] = useState([]);
