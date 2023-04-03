@@ -1,3 +1,6 @@
+## 0.0.44 (2023-04-03)
+- **core**: 修复horizonX-devtool Firefox75报错
+
 ## 0.0.43 (2023-03-30)
 - **core**: 解决act方法无法等待useEffect触发的更新完成问题
 
