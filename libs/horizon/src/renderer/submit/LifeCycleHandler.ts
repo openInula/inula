@@ -154,18 +154,6 @@ function hideOrUnhideAllChildren(vNode, isHidden) {
   );
 }
 
-function attachRef(vNode: VNode) {
-  const ref = vNode.ref;
-
-  handleRef(vNode, ref, vNode.realNode);
-}
-
-function detachRef(vNode: VNode, isOldRef?: boolean) {
-  const ref = isOldRef ? vNode.oldRef : vNode.ref;
-
-  handleRef(vNode, ref, null);
-}
-
 function handleRef(vNode: VNode, ref, val) {
   if (ref !== null && ref !== undefined) {
     const refType = typeof ref;
@@ -180,6 +168,18 @@ function handleRef(vNode: VNode, ref, val) {
       }
     }
   }
+}
+
+function attachRef(vNode: VNode) {
+  const ref = vNode.ref;
+
+  handleRef(vNode, ref, vNode.realNode);
+}
+
+function detachRef(vNode: VNode, isOldRef?: boolean) {
+  const ref = isOldRef ? vNode.oldRef : vNode.ref;
+
+  handleRef(vNode, ref, null);
 }
 
 // 卸载一个vNode，不会递归
@@ -215,6 +215,9 @@ function unmountVNode(vNode: VNode): void {
     case DomPortal: {
       // 这里会递归
       unmountDomComponents(vNode);
+      break;
+    }
+    default: {
       break;
     }
   }
@@ -411,6 +414,9 @@ function submitUpdate(vNode: VNode): void {
     case SuspenseComponent: {
       submitSuspenseComponent(vNode);
       listenToPromise(vNode);
+      break;
+    }
+    default: {
       break;
     }
   }

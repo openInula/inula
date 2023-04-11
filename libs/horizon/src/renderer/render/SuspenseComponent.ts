@@ -151,7 +151,7 @@ export function bubbleRender(processing: VNode) {
   const { childStatus, oldChildStatus } = processing.suspenseState;
   if (
     childStatus === SuspenseChildStatus.ShowFallback ||
-    (!processing.isCreated && oldChildStatus === SuspenseChildStatus.ShowFallback)
+    !processing.isCreated && oldChildStatus === SuspenseChildStatus.ShowFallback
   ) {
     FlagUtils.markUpdate(processing);
   }

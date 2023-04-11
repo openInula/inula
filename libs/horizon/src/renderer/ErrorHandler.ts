@@ -110,7 +110,7 @@ export function handleRenderThrowError(sourceVNode: VNode, error: any) {
         if (
           (vNode.flags & DidCapture) === InitFlag &&
           (typeof ctor.getDerivedStateFromError === 'function' ||
-            (instance !== null && typeof instance.componentDidCatch === 'function'))
+            instance !== null && typeof instance.componentDidCatch === 'function')
         ) {
           FlagUtils.markShouldCapture(vNode);
 

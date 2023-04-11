@@ -22,29 +22,6 @@ import { getHookStage, HookStage } from './HookStage';
 import type { VNode } from '../Types';
 import { getProcessingVNode } from '../GlobalVar';
 
-export function useReducerImpl<S, P, A>(
-  reducer: (S, A) => S,
-  initArg: P,
-  init?: (P) => S,
-  isUseState?: boolean
-): [S, Trigger<A>] | void {
-  const stage = getHookStage();
-  if (stage === null) {
-    throwNotInFuncError();
-  }
-
-  if (stage === HookStage.Init) {
-    return useReducerForInit(reducer, initArg, init, isUseState);
-  } else if (stage === HookStage.Update) {
-    // 获取当前的hook
-    const currentHook = getCurrentHook();
-    // 获取currentHook的更新数组
-    const currentHookUpdates = (currentHook.state as Reducer<S, A>).updates;
-
-    return updateReducerHookState(currentHookUpdates, currentHook, reducer);
-  }
-}
-
 // 构造新的Update数组
 function insertUpdate<S, A>(action: A, hook: Hook<S, A>): Update<S, A> {
   const newUpdate: Update<S, A> = {
@@ -116,6 +93,25 @@ export function useReducerForInit<S, A>(reducer, initArg, init, isUseState?: boo
   return [hook.state.stateValue, trigger];
 }
 
+// 计算stateValue值
+function calculateNewState<S, A>(currentHookUpdates: Array<Update<S, A>>, currentHook, reducer: (S, A) => S) {
+  const reducerObj = currentHook.state;
+  let state = reducerObj.stateValue;
+
+  // 循环遍历更新数组，计算新的状态值
+  currentHookUpdates.forEach(update => {
+    // 1. didCalculated = true 说明state已经计算过; 2. 如果来自 isUseState
+    if (update.didCalculated && reducerObj.isUseState) {
+      state = update.state;
+    } else {
+      const action = update.action;
+      state = reducer(state, action);
+    }
+  });
+
+  return state;
+}
+
 // 更新hook.state
 function updateReducerHookState<S, A>(currentHookUpdates, currentHook, reducer): [S, Trigger<A>] {
   if (currentHookUpdates !== null) {
@@ -135,21 +131,25 @@ function updateReducerHookState<S, A>(currentHookUpdates, currentHook, reducer):
   return [currentHook.state.stateValue, currentHook.state.trigger];
 }
 
-// 计算stateValue值
-function calculateNewState<S, A>(currentHookUpdates: Array<Update<S, A>>, currentHook, reducer: (S, A) => S) {
-  const reducerObj = currentHook.state;
-  let state = reducerObj.stateValue;
+export function useReducerImpl<S, P, A>(
+  reducer: (S, A) => S,
+  initArg: P,
+  init?: (P) => S,
+  isUseState?: boolean
+): [S, Trigger<A>] | void {
+  const stage = getHookStage();
+  if (stage === null) {
+    throwNotInFuncError();
+  }
 
-  // 循环遍历更新数组，计算新的状态值
-  currentHookUpdates.forEach(update => {
-    // 1. didCalculated = true 说明state已经计算过; 2. 如果来自 isUseState
-    if (update.didCalculated && reducerObj.isUseState) {
-      state = update.state;
-    } else {
-      const action = update.action;
-      state = reducer(state, action);
-    }
-  });
+  if (stage === HookStage.Init) {
+    return useReducerForInit(reducer, initArg, init, isUseState);
+  } else if (stage === HookStage.Update) {
+    // 获取当前的hook
+    const currentHook = getCurrentHook();
+    // 获取currentHook的更新数组
+    const currentHookUpdates = (currentHook.state as Reducer<S, A>).updates;
 
-  return state;
+    return updateReducerHookState(currentHookUpdates, currentHook, reducer);
+  }
 }

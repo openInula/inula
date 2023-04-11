@@ -200,6 +200,8 @@ export class VNode {
         break;
       case Profiler:
         break;
+      default:
+        break;
     }
   }
 }

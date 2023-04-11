@@ -45,7 +45,7 @@ function shouldTriggerChangeEvent(targetDom, evtName) {
   const { type } = targetDom;
   const domTag = getDomTag(targetDom);
 
-  if (domTag === 'select' || (domTag === 'input' && type === 'file')) {
+  if (domTag === 'select' || domTag === 'input' && type === 'file') {
     return evtName === 'change';
   } else if (domTag === 'input' && (type === 'checkbox' || type === 'radio')) {
     if (evtName === 'click') {

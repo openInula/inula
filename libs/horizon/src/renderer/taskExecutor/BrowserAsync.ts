@@ -27,6 +27,14 @@ export function isOverTime() {
   return false;
 }
 
+function asyncCall() {
+  if (isTestRuntime) {
+    setTimeout(callRenderTasks, 0);
+  } else {
+    port2.postMessage(null);
+  }
+}
+
 // 1、设置deadline；2、回调TaskExecutor传过来的browserCallback
 const callRenderTasks = () => {
   if (browserCallback === null) {
@@ -59,14 +67,6 @@ if (typeof MessageChannel === 'function') {
 } else {
   // 测试环境没有 MessageChannel
   isTestRuntime = true;
-}
-
-function asyncCall() {
-  if (isTestRuntime) {
-    setTimeout(callRenderTasks, 0);
-  } else {
-    port2.postMessage(null);
-  }
 }
 
 export function requestBrowserCallback(callback) {

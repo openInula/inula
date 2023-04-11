@@ -21,27 +21,17 @@ import { getHookStage, HookStage } from './HookStage';
 import { isArrayEqual } from '../utils/compare';
 import { getProcessingVNode } from '../GlobalVar';
 
-export function useEffectImpl(effectFunc: () => (() => void) | void, deps?: Array<any> | null): void {
-  // 异步触发的effect
-  useEffect(effectFunc, deps, EffectConstant.Effect);
-}
+function createEffect(effectFunc, removeFunc, deps, effectConstant): Effect {
+  const effect: Effect = {
+    effect: effectFunc,
+    removeEffect: removeFunc,
+    dependencies: deps,
+    effectConstant: effectConstant,
+  };
 
-export function useLayoutEffectImpl(effectFunc: () => (() => void) | void, deps?: Array<any> | null): void {
-  // 同步触发的effect
-  useEffect(effectFunc, deps, EffectConstant.LayoutEffect);
-}
+  getProcessingVNode().effectList.push(effect);
 
-function useEffect(effectFunc: () => (() => void) | void, deps: Array<any> | void | null, effectType: number): void {
-  const stage = getHookStage();
-  if (stage === null) {
-    throwNotInFuncError();
-  }
-
-  if (stage === HookStage.Init) {
-    useEffectForInit(effectFunc, deps, effectType);
-  } else if (stage === HookStage.Update) {
-    useEffectForUpdate(effectFunc, deps, effectType);
-  }
+  return effect;
 }
 
 export function useEffectForInit(effectFunc, deps, effectType): void {
@@ -76,15 +66,25 @@ export function useEffectForUpdate(effectFunc, deps, effectType): void {
   hook.state = createEffect(effectFunc, removeFunc, nextDeps, EffectConstant.DepsChange | effectType);
 }
 
-function createEffect(effectFunc, removeFunc, deps, effectConstant): Effect {
-  const effect: Effect = {
-    effect: effectFunc,
-    removeEffect: removeFunc,
-    dependencies: deps,
-    effectConstant: effectConstant,
-  };
+function useEffect(effectFunc: () => (() => void) | void, deps: Array<any> | void | null, effectType: number): void {
+  const stage = getHookStage();
+  if (stage === null) {
+    throwNotInFuncError();
+  }
 
-  getProcessingVNode().effectList.push(effect);
+  if (stage === HookStage.Init) {
+    useEffectForInit(effectFunc, deps, effectType);
+  } else if (stage === HookStage.Update) {
+    useEffectForUpdate(effectFunc, deps, effectType);
+  }
+}
 
-  return effect;
+export function useEffectImpl(effectFunc: () => (() => void) | void, deps?: Array<any> | null): void {
+  // 异步触发的effect
+  useEffect(effectFunc, deps, EffectConstant.Effect);
+}
+
+export function useLayoutEffectImpl(effectFunc: () => (() => void) | void, deps?: Array<any> | null): void {
+  // 同步触发的effect
+  useEffect(effectFunc, deps, EffectConstant.LayoutEffect);
 }

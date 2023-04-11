@@ -73,7 +73,7 @@ export function captureVNode(processing: VNode): VNode | null {
 
 export function markRef(processing: VNode) {
   const ref = processing.ref;
-  if ((processing.isCreated && ref !== null) || (!processing.isCreated && processing.oldRef !== ref)) {
+  if (processing.isCreated && ref !== null || !processing.isCreated && processing.oldRef !== ref) {
     FlagUtils.markRef(processing);
   }
 }

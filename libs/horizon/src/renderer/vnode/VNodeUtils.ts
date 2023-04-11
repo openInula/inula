@@ -169,19 +169,19 @@ export function findDOMByClassInst(inst) {
   return domVNode !== null ? domVNode.realNode : null;
 }
 
-// 判断dom树是否已经挂载
-export function isMounted(vNode: VNode) {
-  const rootNode = getTreeRootVNode(vNode);
-  // 如果根节点是 Dom 类型节点，表示已经挂载
-  return rootNode.tag === TreeRoot;
-}
-
 function getTreeRootVNode(vNode) {
   let node = vNode;
   while (node.parent) {
     node = node.parent;
   }
   return node;
+}
+
+// 判断dom树是否已经挂载
+export function isMounted(vNode: VNode) {
+  const rootNode = getTreeRootVNode(vNode);
+  // 如果根节点是 Dom 类型节点，表示已经挂载
+  return rootNode.tag === TreeRoot;
 }
 
 // 找到相邻的DOM
