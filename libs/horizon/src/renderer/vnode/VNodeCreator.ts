@@ -194,6 +194,8 @@ export function createVNode(tag: VNodeTag | string, ...secondArg) {
 
       vNode.updates = [];
       break;
+    default:
+      break;
   }
 
   return vNode;

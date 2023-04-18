@@ -40,28 +40,6 @@ export function isSchedulingEffects() {
   return isScheduling;
 }
 
-export function callUseEffects(vNode: VNode) {
-  const effectList: EffectList = vNode.effectList;
-  if (effectList !== null) {
-    effectList.forEach(effect => {
-      const { effectConstant } = effect;
-      if (
-        (effectConstant & EffectConstant.Effect) !== EffectConstant.NoEffect &&
-        (effectConstant & EffectConstant.DepsChange) !== EffectConstant.NoEffect
-      ) {
-        hookEffects.push(effect);
-        hookRemoveEffects.push(effect);
-
-        // 异步调用
-        if (!isScheduling) {
-          isScheduling = true;
-          runAsync(runAsyncEffects);
-        }
-      }
-    });
-  }
-}
-
 export function runAsyncEffects() {
   const preMode = copyExecuteMode();
   changeMode(InRender, true);
@@ -96,6 +74,28 @@ export function runAsyncEffects() {
   });
 
   setExecuteMode(preMode);
+}
+
+export function callUseEffects(vNode: VNode) {
+  const effectList: EffectList = vNode.effectList;
+  if (effectList !== null) {
+    effectList.forEach(effect => {
+      const { effectConstant } = effect;
+      if (
+        (effectConstant & EffectConstant.Effect) !== EffectConstant.NoEffect &&
+        (effectConstant & EffectConstant.DepsChange) !== EffectConstant.NoEffect
+      ) {
+        hookEffects.push(effect);
+        hookRemoveEffects.push(effect);
+
+        // 异步调用
+        if (!isScheduling) {
+          isScheduling = true;
+          runAsync(runAsyncEffects);
+        }
+      }
+    });
+  }
 }
 
 // 在销毁vNode的时候调用remove

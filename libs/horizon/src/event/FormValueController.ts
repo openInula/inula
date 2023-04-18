@@ -37,35 +37,6 @@ export function shouldControlValue(): boolean {
   return changeEventTargets !== null && changeEventTargets.length > 0;
 }
 
-// 从缓存队列中对受控组件进行赋值
-export function tryControlValue() {
-  if (!changeEventTargets) {
-    return;
-  }
-  changeEventTargets.forEach(target => {
-    controlValue(target);
-  });
-  changeEventTargets = null;
-}
-
-// 受控组件值重新赋值
-function controlValue(target: Element) {
-  const props = getVNodeProps(target);
-  if (props) {
-    const type = getDomTag(target);
-    switch (type) {
-      case 'input':
-        controlInputValue(<HTMLInputElement>target, props);
-        break;
-      case 'textarea':
-        updateTextareaValue(<HTMLTextAreaElement>target, props);
-        break;
-      default:
-        break;
-    }
-  }
-}
-
 function controlInputValue(inputDom: HTMLInputElement, props: Props) {
   const { name, type } = props;
 
@@ -86,4 +57,33 @@ function controlInputValue(inputDom: HTMLInputElement, props: Props) {
   } else {
     updateInputValue(inputDom, props);
   }
+}
+
+// 受控组件值重新赋值
+function controlValue(target: Element) {
+  const props = getVNodeProps(target);
+  if (props) {
+    const type = getDomTag(target);
+    switch (type) {
+      case 'input':
+        controlInputValue(<HTMLInputElement>target, props);
+        break;
+      case 'textarea':
+        updateTextareaValue(<HTMLTextAreaElement>target, props);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+// 从缓存队列中对受控组件进行赋值
+export function tryControlValue() {
+  if (!changeEventTargets) {
+    return;
+  }
+  changeEventTargets.forEach(target => {
+    controlValue(target);
+  });
+  changeEventTargets = null;
 }
