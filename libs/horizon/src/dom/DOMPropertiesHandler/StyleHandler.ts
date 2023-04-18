@@ -13,6 +13,26 @@
  * See the Mulan PSL v2 for more details.
  */
 
+/**
+ * 不需要加长度单位的 css 属性
+ */
+const noUnitCSS = [
+  'animationIterationCount',
+  'columnCount',
+  'columns',
+  'gridArea',
+  'fontWeight',
+  'lineClamp',
+  'lineHeight',
+  'opacity',
+  'order',
+  'orphans',
+  'tabSize',
+  'widows',
+  'zIndex',
+  'zoom',
+];
+
 function isNeedUnitCSS(styleName: string) {
   return !(
     noUnitCSS.includes(styleName) ||
@@ -62,23 +82,3 @@ export function setStyles(dom, styles) {
     }
   });
 }
-
-/**
- * 不需要加长度单位的 css 属性
- */
-const noUnitCSS = [
-  'animationIterationCount',
-  'columnCount',
-  'columns',
-  'gridArea',
-  'fontWeight',
-  'lineClamp',
-  'lineHeight',
-  'opacity',
-  'order',
-  'orphans',
-  'tabSize',
-  'widows',
-  'zIndex',
-  'zoom',
-];

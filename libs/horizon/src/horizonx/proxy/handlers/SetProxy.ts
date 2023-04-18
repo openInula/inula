@@ -26,43 +26,6 @@ export function createSetProxy<T extends object>(
   let listeners: ((mutation) => {})[] = [];
   let proxies = new WeakMap();
 
-  function get(rawObj: { size: number }, key: any, receiver: any): any {
-    if (Object.prototype.hasOwnProperty.call(handler, key)) {
-      const value = Reflect.get(handler, key, receiver);
-      return value.bind(null, rawObj);
-    }
-
-    if (key === 'size') {
-      return size(rawObj);
-    }
-
-    if (key === 'addListener') {
-      return listener => {
-        listeners.push(listener);
-      };
-    }
-
-    if (key === 'removeListener') {
-      return listener => {
-        listeners = listeners.filter(item => item != listener);
-      };
-    }
-    if (key === 'watch') {
-      const observer = getObserver(rawObj);
-
-      return (prop: any, handler: (key: string, oldValue: any, newValue: any) => void) => {
-        if (!observer.watchers[prop]) {
-          observer.watchers[prop] = [] as ((key: string, oldValue: any, newValue: any) => void)[];
-        }
-        observer.watchers[prop].push(handler);
-        return () => {
-          observer.watchers[prop] = observer.watchers[prop].filter(cb => cb !== handler);
-        };
-      };
-    }
-    return Reflect.get(rawObj, key, receiver);
-  }
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Set的add方法
   function add(rawObj: { add: (any) => void; has: (any) => boolean; values: () => any[] }, value: any): Object {
     if (!rawObj.has(proxies.get(value))) {
@@ -166,17 +129,43 @@ export function createSetProxy<T extends object>(
     return rawObj.size;
   }
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  function keys(rawObj: { keys: () => { next: () => { value: any; done: boolean } } }) {
-    return wrapIterator(rawObj, rawObj.keys());
-  }
+  function get(rawObj: { size: number }, key: any, receiver: any): any {
+    if (Object.prototype.hasOwnProperty.call(handler, key)) {
+      const value = Reflect.get(handler, key, receiver);
+      return value.bind(null, rawObj);
+    }
 
-  function values(rawObj: { values: () => { next: () => { value: any; done: boolean } } }) {
-    return wrapIterator(rawObj, rawObj.values());
-  }
+    if (key === 'size') {
+      return size(rawObj);
+    }
 
-  function entries(rawObj: { entries: () => { next: () => { value: any; done: boolean } } }) {
-    return wrapIterator(rawObj, rawObj.entries());
+    if (key === 'addListener') {
+      return listener => {
+        listeners.push(listener);
+      };
+    }
+
+    if (key === 'removeListener') {
+      return listener => {
+        listeners = listeners.filter(item => item != listener);
+      };
+    }
+    if (key === 'watch') {
+      const observer = getObserver(rawObj);
+
+      return (prop: any, handler: (key: string, oldValue: any, newValue: any) => void) => {
+        if (!observer.watchers[prop]) {
+          observer.watchers[prop] = [] as ((key: string, oldValue: any, newValue: any) => void)[];
+        }
+        observer.watchers[prop].push(handler);
+        return () => {
+          observer.watchers[prop] = observer.watchers[prop].filter(cb => cb !== handler);
+        };
+      };
+    }
+    return Reflect.get(rawObj, key, receiver);
   }
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   function wrapIterator(rawObj: Object, rawIt: { next: () => { value: any; done: boolean } }) {
     const observer = getObserver(rawObj);
@@ -222,6 +211,18 @@ export function createSetProxy<T extends object>(
         return this;
       },
     };
+  }
+
+  function keys(rawObj: { keys: () => { next: () => { value: any; done: boolean } } }) {
+    return wrapIterator(rawObj, rawObj.keys());
+  }
+
+  function values(rawObj: { values: () => { next: () => { value: any; done: boolean } } }) {
+    return wrapIterator(rawObj, rawObj.values());
+  }
+
+  function entries(rawObj: { entries: () => { next: () => { value: any; done: boolean } } }) {
+    return wrapIterator(rawObj, rawObj.entries());
   }
 
   function forOf(rawObj: {

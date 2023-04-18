@@ -231,6 +231,19 @@ function getOldNodeFromMap(nodeMap: Map<string | number, VNode>, newIdx: number,
   return null;
 }
 
+// 设置vNode中的cIndex属性，cIndex是节点在children中的位置
+function setVNodesCIndex(startChild: VNode | null, startIdx: number) {
+  let node: VNode | null = startChild;
+  let idx = startIdx;
+
+  while (node !== null) {
+    node.cIndex = idx;
+    markVNodePath(node);
+    node = node.next;
+    idx++;
+  }
+}
+
 // diff数组类型的节点，核心算法
 function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newChildren: Array<any>): VNode | null {
   let resultingFirstChild: VNode | null = null;
@@ -476,19 +489,6 @@ function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newC
   }
 
   return resultingFirstChild;
-}
-
-// 设置vNode中的cIndex属性，cIndex是节点在children中的位置
-function setVNodesCIndex(startChild: VNode | null, startIdx: number) {
-  let node: VNode | null = startChild;
-  let idx = startIdx;
-
-  while (node !== null) {
-    node.cIndex = idx;
-    markVNodePath(node);
-    node = node.next;
-    idx++;
-  }
 }
 
 // 新节点是迭代器类型

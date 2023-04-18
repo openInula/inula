@@ -19,6 +19,40 @@ import { resolveMutation } from '../../CommonUtils';
 import { isPanelActive } from '../../devtools';
 import { OBSERVER_KEY } from '../../Constants';
 
+function set(rawObj: any[], key: string, value: any, receiver: any) {
+  const oldValue = rawObj[key];
+  const oldLength = rawObj.length;
+  const newValue = value;
+
+  const oldArray = isPanelActive() ? JSON.parse(JSON.stringify(rawObj)) : null;
+
+  const ret = Reflect.set(rawObj, key, newValue, receiver);
+
+  const newLength = rawObj.length;
+  const observer = getObserver(rawObj);
+
+  const mutation = isPanelActive() ? resolveMutation(oldArray, rawObj) : resolveMutation(null, rawObj);
+
+  if (!isSame(newValue, oldValue)) {
+    // 值不一样，触发监听器
+    if (observer.watchers?.[key]) {
+      observer.watchers[key].forEach(cb => {
+        cb(key, oldValue, newValue, mutation);
+      });
+    }
+
+    // 触发属性变化
+    observer.setProp(key, mutation);
+  }
+
+  if (oldLength !== newLength) {
+    // 触发数组的大小变化
+    observer.setProp('length', mutation);
+  }
+
+  return ret;
+}
+
 export function createArrayProxy(rawObj: any[], listener: { current: (...args) => any }): any[] {
   let listeners = [] as ((...args) => void)[];
 
@@ -117,38 +151,4 @@ export function createArrayProxy(rawObj: any[], listener: { current: (...args) =
   });
 
   return new Proxy(rawObj, handle);
-}
-
-function set(rawObj: any[], key: string, value: any, receiver: any) {
-  const oldValue = rawObj[key];
-  const oldLength = rawObj.length;
-  const newValue = value;
-
-  const oldArray = isPanelActive() ? JSON.parse(JSON.stringify(rawObj)) : null;
-
-  const ret = Reflect.set(rawObj, key, newValue, receiver);
-
-  const newLength = rawObj.length;
-  const observer = getObserver(rawObj);
-
-  const mutation = isPanelActive() ? resolveMutation(oldArray, rawObj) : resolveMutation(null, rawObj);
-
-  if (!isSame(newValue, oldValue)) {
-    // 值不一样，触发监听器
-    if (observer.watchers?.[key]) {
-      observer.watchers[key].forEach(cb => {
-        cb(key, oldValue, newValue, mutation);
-      });
-    }
-
-    // 触发属性变化
-    observer.setProp(key, mutation);
-  }
-
-  if (oldLength !== newLength) {
-    // 触发数组的大小变化
-    observer.setProp('length', mutation);
-  }
-
-  return ret;
 }
