@@ -23,6 +23,20 @@ interface Thenable {
   then(resolve: (val?: any) => void, reject: (err: any) => void): void;
 }
 
+// 防止死循环
+const LOOPING_LIMIT = 50;
+let loopingCount = 0;
+function callRenderQueue() {
+  callRenderQueueImmediate();
+
+  while (hasAsyncEffects() && loopingCount < LOOPING_LIMIT) {
+    loopingCount++;
+    runAsyncEffects();
+    // effects可能产生刷新任务，这里再执行一次
+    callRenderQueueImmediate();
+  }
+}
+
 // act用于测试，作用是：如果fun触发了刷新（包含了异步刷新），可以保证在act后面的代码是在刷新完成后才执行。
 function act(fun: () => void | Thenable): Thenable {
   const funRet = asyncUpdates(fun);
@@ -59,20 +73,6 @@ function act(fun: () => void | Thenable): Thenable {
         resolve();
       },
     };
-  }
-}
-
-// 防止死循环
-const LOOPING_LIMIT = 50;
-let loopingCount = 0;
-function callRenderQueue() {
-  callRenderQueueImmediate();
-
-  while (hasAsyncEffects() && loopingCount < LOOPING_LIMIT) {
-    loopingCount++;
-    runAsyncEffects();
-    // effects可能产生刷新任务，这里再执行一次
-    callRenderQueueImmediate();
   }
 }
 

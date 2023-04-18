@@ -56,6 +56,14 @@ function listenToNativeEvent(nativeEvtName: string, delegatedElement: Element, i
   return listener;
 }
 
+// 是否捕获事件
+function isCaptureEvent(horizonEventName) {
+  if (horizonEventName === 'onLostPointerCapture' || horizonEventName === 'onGotPointerCapture') {
+    return false;
+  }
+  return horizonEventName.slice(-7) === 'Capture';
+}
+
 // 事件懒委托，当用户定义事件后，再进行委托到根节点
 export function lazyDelegateOnRoot(currentRoot: VNode, eventName: string) {
   currentRoot.delegatedEvents.add(eventName);
@@ -92,14 +100,6 @@ function getNativeEvtName(horizonEventName, capture) {
     return '';
   }
   return nativeName.toLowerCase();
-}
-
-// 是否捕获事件
-function isCaptureEvent(horizonEventName) {
-  if (horizonEventName === 'onLostPointerCapture' || horizonEventName === 'onGotPointerCapture') {
-    return false;
-  }
-  return horizonEventName.slice(-7) === 'Capture';
 }
 
 // 封装监听函数
