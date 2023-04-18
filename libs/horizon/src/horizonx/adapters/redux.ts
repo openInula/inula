@@ -71,7 +71,9 @@ function mergeData(state, data) {
 
   if (typeof data === 'object' && typeof state?.stateWrapper === 'object') {
     Object.keys(state.stateWrapper).forEach(key => {
-      if (!Object.prototype.hasOwnProperty.call(data, key)) delete state.stateWrapper[key];
+      if (!Object.prototype.hasOwnProperty.call(data, key)) {
+        delete state.stateWrapper[key];
+      }
     });
 
     Object.entries(data).forEach(([key, value]) => {
