@@ -40,3 +40,8 @@ steps:
           auto: true
           buildcheck: true
           mode: sync
+  POST_BUILD:
+    - compile_report:
+        rules:
+          - warning /.**/
+          - error /.**/
