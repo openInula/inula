@@ -82,8 +82,7 @@ export function lazyDelegateOnRoot(currentRoot: VNode, eventName: string) {
     }
 
     if (!events[nativeFullName]) {
-      const listener = listenToNativeEvent(nativeEvent, currentRoot.realNode, isCapture);
-      events[nativeFullName] = listener;
+      events[nativeFullName] = listenToNativeEvent(nativeEvent, currentRoot.realNode, isCapture);
     }
   });
 }

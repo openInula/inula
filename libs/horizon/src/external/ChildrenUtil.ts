@@ -17,6 +17,7 @@ import { throwIfTrue } from '../renderer/utils/throwIfTrue';
 import { TYPE_COMMON_ELEMENT, TYPE_PORTAL } from './JSXElementType';
 
 import { isValidElement, JSXElement } from './JSXElement';
+import { BELONG_CLASS_VNODE_KEY } from '../renderer/vnode/VNode';
 
 // 生成key
 function getItemKey(item: any, index: number): string {
@@ -83,7 +84,7 @@ function callMapFun(children: any, arr: Array<any>, prefix: string, callback: Fu
         mappedChild.type,
         newKey,
         mappedChild.ref,
-        mappedChild.belongClassVNode,
+        mappedChild[BELONG_CLASS_VNODE_KEY],
         mappedChild.props,
         mappedChild.src
       );

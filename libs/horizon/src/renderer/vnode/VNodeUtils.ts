@@ -20,9 +20,9 @@
 import type {VNode} from '../Types';
 
 import {DomComponent, DomPortal, DomText, TreeRoot} from './VNodeTags';
-import {isComment} from '../../dom/utils/Common';
 import {getNearestVNode} from '../../dom/DOMInternalKeys';
 import {Addition, InitFlag} from './VNodeFlags';
+import { BELONG_CLASS_VNODE_KEY } from './VNode';
 
 export function travelChildren(
   beginVNode: VNode | null,
@@ -124,7 +124,7 @@ export function clearVNode(vNode: VNode) {
 
   vNode.toUpdateNodes = null;
 
-  vNode.belongClassVNode = null;
+  vNode[BELONG_CLASS_VNODE_KEY] = null;
   if (window.__HORIZON_DEV_HOOK__) {
     const hook = window.__HORIZON_DEV_HOOK__;
     hook.deleteVNode(vNode);

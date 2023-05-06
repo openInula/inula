@@ -52,6 +52,7 @@ import {
 import { handleSubmitError } from '../ErrorHandler';
 import { travelVNodeTree, clearVNode, isDomVNode, getSiblingDom } from '../vnode/VNodeUtils';
 import { shouldAutoFocus } from '../../dom/utils/Common';
+import { BELONG_CLASS_VNODE_KEY } from '../vnode/VNode';
 
 function callComponentWillUnmount(vNode: VNode, instance: any) {
   try {
@@ -163,8 +164,8 @@ function handleRef(vNode: VNode, ref, val) {
     } else if (refType === 'object') {
       (<RefType>ref).current = val;
     } else {
-      if (vNode.belongClassVNode && vNode.belongClassVNode.realNode) {
-        vNode.belongClassVNode.realNode.refs[String(ref)] = val;
+      if (vNode[BELONG_CLASS_VNODE_KEY] && vNode[BELONG_CLASS_VNODE_KEY].realNode) {
+        vNode[BELONG_CLASS_VNODE_KEY].realNode.refs[String(ref)] = val;
       }
     }
   }
