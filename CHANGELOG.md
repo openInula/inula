@@ -1,3 +1,7 @@
+## 0.0.45 (2023-05-10)
+- **core**: 修改belongClassVNode属性为Symbol提升性能
+- **core**: 优化内部循环实现，提升性能
+
 ## 0.0.44 (2023-04-03)
 - **core**: 修复horizonX-devtool Firefox75报错
 
