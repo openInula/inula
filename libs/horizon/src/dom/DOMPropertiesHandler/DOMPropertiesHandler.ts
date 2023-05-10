@@ -48,7 +48,7 @@ export function setDomProps(dom: Element, props: Object, isNativeTag: boolean, i
       }
     } else if (propName === 'dangerouslySetInnerHTML') {
       dom.innerHTML = propVal.__html;
-    } else if (!isInit || (isInit && propVal != null)) {
+    } else if (!isInit || propVal != null) {
       updateCommonProp(dom, propName, propVal, isNativeTag);
     }
   }
@@ -70,7 +70,7 @@ export function compareProps(oldProps: Object, newProps: Object): Object {
   for (let i = 0; i < oldPropsLength; i++) {
     propName = keysOfOldProps[i];
     // 新属性中包含该属性或者该属性为空值的属性不需要处理
-    if (keysOfNewProps.includes(propName) || oldProps[propName] == null) {
+    if ( oldProps[propName] == null || keysOfNewProps.includes(propName)) {
       continue;
     }
 

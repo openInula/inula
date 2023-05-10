@@ -13,6 +13,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
+import { BELONG_CLASS_VNODE_KEY } from './vnode/VNode';
+
 export { VNode } from './vnode/VNode';
 
 type Trigger<A> = (A) => void;
@@ -32,7 +34,7 @@ export type JSXElement = {
   key: any;
   ref: any;
   props: any;
-  belongClassVNode: any;
+  [BELONG_CLASS_VNODE_KEY]: any;
 };
 
 export type ProviderType<T> = {

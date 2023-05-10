@@ -27,6 +27,7 @@ import {
 import { isSameType, getIteratorFn, isTextType, isIteratorType, isObjectType } from './DiffTools';
 import { travelChildren } from '../vnode/VNodeUtils';
 import { markVNodePath } from '../utils/vNodePath';
+import { BELONG_CLASS_VNODE_KEY } from '../vnode/VNode';
 
 enum DiffCategory {
   TEXT_NODE = 'TEXT_NODE',
@@ -166,11 +167,11 @@ function getNewNode(parentNode: VNode, newChild: any, oldNode: VNode | null) {
         if (oldNode === null || !isSameType(oldNode, newChild)) {
           resultNode = createVNodeFromElement(newChild);
           resultNode.ref = newChild.ref;
-          resultNode.belongClassVNode = newChild.belongClassVNode;
+          resultNode[BELONG_CLASS_VNODE_KEY] = newChild[BELONG_CLASS_VNODE_KEY];
         } else {
           resultNode = updateVNode(oldNode, newChild.props);
           resultNode.ref = newChild.ref;
-          resultNode.belongClassVNode = newChild.belongClassVNode;
+          resultNode[BELONG_CLASS_VNODE_KEY] = newChild[BELONG_CLASS_VNODE_KEY];
         }
         break;
       } else if (newChild.vtype === TYPE_PORTAL) {
@@ -570,7 +571,7 @@ function diffObjectNodeHandler(
       } else if (isSameType(canReuseNode, newChild)) {
         resultNode = updateVNode(canReuseNode, newChild.props);
         resultNode.ref = newChild.ref;
-        resultNode.belongClassVNode = newChild.belongClassVNode;
+        resultNode[BELONG_CLASS_VNODE_KEY] = newChild[BELONG_CLASS_VNODE_KEY];
         startDelVNode = resultNode.next;
         resultNode.next = null;
       }
@@ -583,7 +584,7 @@ function diffObjectNodeHandler(
       } else {
         resultNode = createVNodeFromElement(newChild);
         resultNode.ref = newChild.ref;
-        resultNode.belongClassVNode = newChild.belongClassVNode;
+        resultNode[BELONG_CLASS_VNODE_KEY] = newChild[BELONG_CLASS_VNODE_KEY];
       }
     }
   } else if (newChild.vtype === TYPE_PORTAL) {
