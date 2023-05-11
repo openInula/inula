@@ -25,48 +25,6 @@ export function createMapProxy(rawObj: Object, hookObserver = true, listener: { 
   let oldData: [any, any][] = [];
   let proxies = new Map();
 
-  function get(rawObj: { size: number }, key: any, receiver: any): any {
-    if (key === 'size') {
-      return size(rawObj);
-    }
-
-    if (key === 'get') {
-      return getFun.bind(null, rawObj);
-    }
-
-    if (Object.prototype.hasOwnProperty.call(handler, key)) {
-      const value = Reflect.get(handler, key, receiver);
-      return value.bind(null, rawObj);
-    }
-
-    if (key === 'watch') {
-      const observer = getObserver(rawObj);
-
-      return (prop: any, handler: (key: string, oldValue: any, newValue: any) => void) => {
-        if (!observer.watchers[prop]) {
-          observer.watchers[prop] = [] as ((key: string, oldValue: any, newValue: any) => void)[];
-        }
-        observer.watchers[prop].push(handler);
-        return () => {
-          observer.watchers[prop] = observer.watchers[prop].filter(cb => cb !== handler);
-        };
-      };
-    }
-
-    if (key === 'addListener') {
-      return listener => {
-        listeners.push(listener);
-      };
-    }
-
-    if (key === 'removeListener') {
-      return listener => {
-        listeners = listeners.filter(item => item != listener);
-      };
-    }
-
-    return Reflect.get(rawObj, key, receiver);
-  }
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   function getFun(rawObj: { get: (key: any) => any; has: (key: any) => boolean }, key: any) {
     const keyProxy = rawObj.has(key) ? key : proxies.get(key);
@@ -211,31 +169,6 @@ export function createMapProxy(rawObj: Object, hookObserver = true, listener: { 
     return false;
   }
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  function size(rawObj: { size: number }) {
-    const observer = getObserver(rawObj);
-    observer.useProp(COLLECTION_CHANGE);
-    return rawObj.size;
-  }
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  function keys(rawObj: { keys: () => { next: () => { value: any; done: boolean } } }) {
-    return wrapIterator(rawObj, rawObj.keys(), 'keys');
-  }
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  function values(rawObj: { values: () => { next: () => { value: any; done: boolean } } }) {
-    return wrapIterator(rawObj, rawObj.values(), 'values');
-  }
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  function entries(rawObj: { entries: () => { next: () => { value: any; done: boolean } } }) {
-    return wrapIterator(rawObj, rawObj.entries(), 'entries');
-  }
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  function forOf(rawObj: {
-    entries: () => { next: () => { value: any; done: boolean } };
-    values: () => { next: () => { value: any; done: boolean } };
-  }) {
-    return wrapIterator(rawObj, rawObj.entries(), 'entries');
-  }
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   function forEach(
     rawObj: { forEach: (callback: (value: any, key: any) => void) => void },
     callback: (valProxy: any, keyProxy: any, rawObj: any) => void
@@ -353,6 +286,75 @@ export function createMapProxy(rawObj: Object, hookObserver = true, listener: { 
         return this;
       },
     };
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  function size(rawObj: { size: number }) {
+    const observer = getObserver(rawObj);
+    observer.useProp(COLLECTION_CHANGE);
+    return rawObj.size;
+  }
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  function keys(rawObj: { keys: () => { next: () => { value: any; done: boolean } } }) {
+    return wrapIterator(rawObj, rawObj.keys(), 'keys');
+  }
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  function values(rawObj: { values: () => { next: () => { value: any; done: boolean } } }) {
+    return wrapIterator(rawObj, rawObj.values(), 'values');
+  }
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  function entries(rawObj: { entries: () => { next: () => { value: any; done: boolean } } }) {
+    return wrapIterator(rawObj, rawObj.entries(), 'entries');
+  }
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  function forOf(rawObj: {
+    entries: () => { next: () => { value: any; done: boolean } };
+    values: () => { next: () => { value: any; done: boolean } };
+  }) {
+    return wrapIterator(rawObj, rawObj.entries(), 'entries');
+  }
+
+  function get(rawObj: { size: number }, key: any, receiver: any): any {
+    if (key === 'size') {
+      return size(rawObj);
+    }
+
+    if (key === 'get') {
+      return getFun.bind(null, rawObj);
+    }
+
+    if (Object.prototype.hasOwnProperty.call(handler, key)) {
+      const value = Reflect.get(handler, key, receiver);
+      return value.bind(null, rawObj);
+    }
+
+    if (key === 'watch') {
+      const observer = getObserver(rawObj);
+
+      return (prop: any, handler: (key: string, oldValue: any, newValue: any) => void) => {
+        if (!observer.watchers[prop]) {
+          observer.watchers[prop] = [] as ((key: string, oldValue: any, newValue: any) => void)[];
+        }
+        observer.watchers[prop].push(handler);
+        return () => {
+          observer.watchers[prop] = observer.watchers[prop].filter(cb => cb !== handler);
+        };
+      };
+    }
+
+    if (key === 'addListener') {
+      return listener => {
+        listeners.push(listener);
+      };
+    }
+
+    if (key === 'removeListener') {
+      return listener => {
+        listeners = listeners.filter(item => item != listener);
+      };
+    }
+
+    return Reflect.get(rawObj, key, receiver);
   }
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const handler = {

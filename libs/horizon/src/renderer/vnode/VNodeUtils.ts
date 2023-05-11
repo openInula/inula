@@ -20,9 +20,9 @@
 import type {VNode} from '../Types';
 
 import {DomComponent, DomPortal, DomText, TreeRoot} from './VNodeTags';
-import {isComment} from '../../dom/utils/Common';
 import {getNearestVNode} from '../../dom/DOMInternalKeys';
 import {Addition, InitFlag} from './VNodeFlags';
+import { BELONG_CLASS_VNODE_KEY } from './VNode';
 
 export function travelChildren(
   beginVNode: VNode | null,
@@ -124,7 +124,7 @@ export function clearVNode(vNode: VNode) {
 
   vNode.toUpdateNodes = null;
 
-  vNode.belongClassVNode = null;
+  vNode[BELONG_CLASS_VNODE_KEY] = null;
   if (window.__HORIZON_DEV_HOOK__) {
     const hook = window.__HORIZON_DEV_HOOK__;
     hook.deleteVNode(vNode);
@@ -169,19 +169,19 @@ export function findDOMByClassInst(inst) {
   return domVNode !== null ? domVNode.realNode : null;
 }
 
-// 判断dom树是否已经挂载
-export function isMounted(vNode: VNode) {
-  const rootNode = getTreeRootVNode(vNode);
-  // 如果根节点是 Dom 类型节点，表示已经挂载
-  return rootNode.tag === TreeRoot;
-}
-
 function getTreeRootVNode(vNode) {
   let node = vNode;
   while (node.parent) {
     node = node.parent;
   }
   return node;
+}
+
+// 判断dom树是否已经挂载
+export function isMounted(vNode: VNode) {
+  const rootNode = getTreeRootVNode(vNode);
+  // 如果根节点是 Dom 类型节点，表示已经挂载
+  return rootNode.tag === TreeRoot;
 }
 
 // 找到相邻的DOM

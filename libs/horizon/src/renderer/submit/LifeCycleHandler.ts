@@ -52,6 +52,7 @@ import {
 import { handleSubmitError } from '../ErrorHandler';
 import { travelVNodeTree, clearVNode, isDomVNode, getSiblingDom } from '../vnode/VNodeUtils';
 import { shouldAutoFocus } from '../../dom/utils/Common';
+import { BELONG_CLASS_VNODE_KEY } from '../vnode/VNode';
 
 function callComponentWillUnmount(vNode: VNode, instance: any) {
   try {
@@ -154,6 +155,22 @@ function hideOrUnhideAllChildren(vNode, isHidden) {
   );
 }
 
+function handleRef(vNode: VNode, ref, val) {
+  if (ref !== null && ref !== undefined) {
+    const refType = typeof ref;
+
+    if (refType === 'function') {
+      ref(val);
+    } else if (refType === 'object') {
+      (<RefType>ref).current = val;
+    } else {
+      if (vNode[BELONG_CLASS_VNODE_KEY] && vNode[BELONG_CLASS_VNODE_KEY].realNode) {
+        vNode[BELONG_CLASS_VNODE_KEY].realNode.refs[String(ref)] = val;
+      }
+    }
+  }
+}
+
 function attachRef(vNode: VNode) {
   const ref = vNode.ref;
 
@@ -164,60 +181,6 @@ function detachRef(vNode: VNode, isOldRef?: boolean) {
   const ref = isOldRef ? vNode.oldRef : vNode.ref;
 
   handleRef(vNode, ref, null);
-}
-
-function handleRef(vNode: VNode, ref, val) {
-  if (ref !== null && ref !== undefined) {
-    const refType = typeof ref;
-
-    if (refType === 'function') {
-      ref(val);
-    } else if (refType === 'object') {
-      (<RefType>ref).current = val;
-    } else {
-      if (vNode.belongClassVNode && vNode.belongClassVNode.realNode) {
-        vNode.belongClassVNode.realNode.refs[String(ref)] = val;
-      }
-    }
-  }
-}
-
-// 卸载一个vNode，不会递归
-function unmountVNode(vNode: VNode): void {
-  switch (vNode.tag) {
-    case FunctionComponent:
-    case ForwardRef:
-    case MemoComponent: {
-      callEffectRemove(vNode);
-      break;
-    }
-    case ClassComponent: {
-      detachRef(vNode);
-
-      const instance = vNode.realNode;
-      // 当constructor中抛出异常时，instance会是null，这里判断一下instance是否为空
-      // suspense打断时不需要触发WillUnmount
-      if (instance && typeof instance.componentWillUnmount === 'function' && !vNode.isSuspended) {
-        callComponentWillUnmount(vNode, instance);
-      }
-
-      // HorizonX会在classComponentWillUnmount中清除对VNode的引入用
-      if (vNode.classComponentWillUnmount) {
-        vNode.classComponentWillUnmount(vNode);
-        vNode.classComponentWillUnmount = null;
-      }
-      break;
-    }
-    case DomComponent: {
-      detachRef(vNode);
-      break;
-    }
-    case DomPortal: {
-      // 这里会递归
-      unmountDomComponents(vNode);
-      break;
-    }
-  }
 }
 
 // 卸载vNode，递归遍历子vNode
@@ -233,59 +196,6 @@ function unmountNestedVNodes(vNode: VNode): void {
     vNode,
     null
   );
-}
-
-function submitAddition(vNode: VNode): void {
-  let parent = vNode.parent;
-  let parentDom;
-  let tag;
-  while (parent !== null) {
-    tag = parent.tag;
-    if (tag === DomComponent || tag === TreeRoot || tag === DomPortal) {
-      parentDom = parent.realNode;
-      break;
-    }
-    parent = parent.parent;
-  }
-
-  if ((parent.flags & ResetText) === ResetText) {
-    // 在insert之前先reset
-    clearText(parentDom);
-    FlagUtils.removeFlag(parent, ResetText);
-  }
-
-  if ((vNode.flags & DirectAddition) === DirectAddition) {
-    insertOrAppendPlacementNode(vNode, null, parentDom);
-    FlagUtils.removeFlag(vNode, DirectAddition);
-    return;
-  }
-  const before = getSiblingDom(vNode);
-  insertOrAppendPlacementNode(vNode, before, parentDom);
-}
-
-function insertOrAppendPlacementNode(node: VNode, beforeDom: Element | null, parent: Element | Container): void {
-  const { tag, realNode } = node;
-
-  if (isDomVNode(node)) {
-    insertDom(parent, realNode, beforeDom);
-  } else if (tag === DomPortal) {
-    // 这里不做处理，直接在portal中处理
-  } else {
-    // 插入子节点们
-    let child = node.child;
-    while (child !== null) {
-      insertOrAppendPlacementNode(child, beforeDom, parent);
-      child = child.next;
-    }
-  }
-}
-
-function insertDom(parent, realNode, beforeDom) {
-  if (beforeDom) {
-    insertDomBefore(parent, realNode, beforeDom);
-  } else {
-    appendChildElement(parent, realNode);
-  }
 }
 
 // 遍历所有子节点：删除dom节点，detach ref 和 调用componentWillUnmount()
@@ -337,6 +247,100 @@ function unmountDomComponents(vNode: VNode): void {
       }
     }
   );
+}
+
+// 卸载一个vNode，不会递归
+function unmountVNode(vNode: VNode): void {
+  switch (vNode.tag) {
+    case FunctionComponent:
+    case ForwardRef:
+    case MemoComponent: {
+      callEffectRemove(vNode);
+      break;
+    }
+    case ClassComponent: {
+      detachRef(vNode);
+
+      const instance = vNode.realNode;
+      // 当constructor中抛出异常时，instance会是null，这里判断一下instance是否为空
+      // suspense打断时不需要触发WillUnmount
+      if (instance && typeof instance.componentWillUnmount === 'function' && !vNode.isSuspended) {
+        callComponentWillUnmount(vNode, instance);
+      }
+
+      // HorizonX会在classComponentWillUnmount中清除对VNode的引入用
+      if (vNode.classComponentWillUnmount) {
+        vNode.classComponentWillUnmount(vNode);
+        vNode.classComponentWillUnmount = null;
+      }
+      break;
+    }
+    case DomComponent: {
+      detachRef(vNode);
+      break;
+    }
+    case DomPortal: {
+      // 这里会递归
+      unmountDomComponents(vNode);
+      break;
+    }
+    default: {
+      break;
+    }
+  }
+}
+
+function insertDom(parent, realNode, beforeDom) {
+  if (beforeDom) {
+    insertDomBefore(parent, realNode, beforeDom);
+  } else {
+    appendChildElement(parent, realNode);
+  }
+}
+
+function insertOrAppendPlacementNode(node: VNode, beforeDom: Element | null, parent: Element | Container): void {
+  const { tag, realNode } = node;
+
+  if (isDomVNode(node)) {
+    insertDom(parent, realNode, beforeDom);
+  } else if (tag === DomPortal) {
+    // 这里不做处理，直接在portal中处理
+  } else {
+    // 插入子节点们
+    let child = node.child;
+    while (child !== null) {
+      insertOrAppendPlacementNode(child, beforeDom, parent);
+      child = child.next;
+    }
+  }
+}
+
+function submitAddition(vNode: VNode): void {
+  let parent = vNode.parent;
+  let parentDom;
+  let tag;
+  while (parent !== null) {
+    tag = parent.tag;
+    if (tag === DomComponent || tag === TreeRoot || tag === DomPortal) {
+      parentDom = parent.realNode;
+      break;
+    }
+    parent = parent.parent;
+  }
+
+  if ((parent.flags & ResetText) === ResetText) {
+    // 在insert之前先reset
+    clearText(parentDom);
+    FlagUtils.removeFlag(parent, ResetText);
+  }
+
+  if ((vNode.flags & DirectAddition) === DirectAddition) {
+    insertOrAppendPlacementNode(vNode, null, parentDom);
+    FlagUtils.removeFlag(vNode, DirectAddition);
+    return;
+  }
+  const before = getSiblingDom(vNode);
+  insertOrAppendPlacementNode(vNode, before, parentDom);
 }
 
 function submitClear(vNode: VNode): void {
@@ -394,6 +398,13 @@ function submitDeletion(vNode: VNode): void {
   clearVNode(vNode);
 }
 
+function submitSuspenseComponent(vNode: VNode) {
+  const { childStatus } = vNode.suspenseState;
+  if (childStatus !== SuspenseChildStatus.Init) {
+    hideOrUnhideAllChildren(vNode.child, childStatus === SuspenseChildStatus.ShowFallback);
+  }
+}
+
 function submitUpdate(vNode: VNode): void {
   switch (vNode.tag) {
     case FunctionComponent:
@@ -413,13 +424,9 @@ function submitUpdate(vNode: VNode): void {
       listenToPromise(vNode);
       break;
     }
-  }
-}
-
-function submitSuspenseComponent(vNode: VNode) {
-  const { childStatus } = vNode.suspenseState;
-  if (childStatus !== SuspenseChildStatus.Init) {
-    hideOrUnhideAllChildren(vNode.child, childStatus === SuspenseChildStatus.ShowFallback);
+    default: {
+      break;
+    }
   }
 }
 

@@ -10,21 +10,6 @@ export function isPanelActive() {
   return window['__HORIZON_DEV_HOOK__'];
 }
 
-// serializes store and creates expanded object with baked-in containing current computed values
-function makeStoreSnapshot({ type, data }) {
-  const expanded = {};
-  Object.keys(data.store.$c).forEach(key => {
-    expanded[key] = data.store[key];
-  });
-  data.store.expanded = expanded;
-  const snapshot = makeProxySnapshot({
-    data,
-    type,
-    sessionId,
-  });
-  return snapshot;
-}
-
 // safely serializes variables containing values wrapped in Proxy object
 function getType(value) {
   if (!value) return 'nullish';
@@ -39,6 +24,7 @@ function getType(value) {
   if (typeof value === 'object') return 'object';
   return 'primitive';
 }
+
 function makeProxySnapshot(obj, visited: any[] = []) {
   const type = getType(obj);
   let clone;
@@ -110,6 +96,21 @@ function makeProxySnapshot(obj, visited: any[] = []) {
   } catch (err) {
     console.error('cannot serialize object. ', { err, obj, type });
   }
+}
+
+// serializes store and creates expanded object with baked-in containing current computed values
+function makeStoreSnapshot({ type, data }) {
+  const expanded = {};
+  Object.keys(data.store.$c).forEach(key => {
+    expanded[key] = data.store[key];
+  });
+  data.store.expanded = expanded;
+  const snapshot = makeProxySnapshot({
+    data,
+    type,
+    sessionId,
+  });
+  return snapshot;
 }
 
 export const devtools = {

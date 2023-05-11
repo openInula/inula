@@ -27,16 +27,6 @@ let callingQueueTask: any | null = null;
 // 防止重入
 let isCallingRenderQueue = false;
 
-export function callRenderQueueImmediate() {
-  if (callingQueueTask !== null) {
-    // 取消异步调度
-    cancelTask(callingQueueTask);
-    callingQueueTask = null;
-  }
-
-  callRenderQueue();
-}
-
 // 执行render回调
 function callRenderQueue() {
   if (!isCallingRenderQueue && renderQueue !== null) {
@@ -56,6 +46,16 @@ function callRenderQueue() {
       isCallingRenderQueue = false;
     }
   }
+}
+
+export function callRenderQueueImmediate() {
+  if (callingQueueTask !== null) {
+    // 取消异步调度
+    cancelTask(callingQueueTask);
+    callingQueueTask = null;
+  }
+
+  callRenderQueue();
 }
 
 export function pushRenderCallback(callback: RenderCallback) {

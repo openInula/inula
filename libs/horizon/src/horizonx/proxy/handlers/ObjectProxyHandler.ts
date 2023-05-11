@@ -18,6 +18,27 @@ import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
 import { OBSERVER_KEY } from '../../Constants';
 import { isPanelActive } from '../../devtools';
 
+function set(rawObj: object, key: string, value: any, receiver: any): boolean {
+  const oldObject = isPanelActive() ? JSON.parse(JSON.stringify(rawObj)) : null;
+  const observer = getObserver(rawObj);
+
+  const oldValue = rawObj[key];
+  const newValue = value;
+
+  const ret = Reflect.set(rawObj, key, newValue, receiver);
+  const mutation = isPanelActive() ? resolveMutation(oldObject, rawObj) : resolveMutation(null, rawObj);
+
+  if (!isSame(newValue, oldValue)) {
+    if (observer.watchers?.[key]) {
+      observer.watchers[key].forEach(cb => {
+        cb(key, oldValue, newValue, mutation);
+      });
+    }
+    observer.setProp(key, mutation);
+  }
+  return ret;
+}
+
 export function createObjectProxy<T extends object>(
   rawObj: T,
   singleLevel = false,
@@ -98,25 +119,4 @@ export function createObjectProxy<T extends object>(
   });
 
   return proxy;
-}
-
-function set(rawObj: object, key: string, value: any, receiver: any): boolean {
-  const oldObject = isPanelActive() ? JSON.parse(JSON.stringify(rawObj)) : null;
-  const observer = getObserver(rawObj);
-
-  const oldValue = rawObj[key];
-  const newValue = value;
-
-  const ret = Reflect.set(rawObj, key, newValue, receiver);
-  const mutation = isPanelActive() ? resolveMutation(oldObject, rawObj) : resolveMutation(null, rawObj);
-
-  if (!isSame(newValue, oldValue)) {
-    if (observer.watchers?.[key]) {
-      observer.watchers[key].forEach(cb => {
-        cb(key, oldValue, newValue, mutation);
-      });
-    }
-    observer.setProp(key, mutation);
-  }
-  return ret;
 }
