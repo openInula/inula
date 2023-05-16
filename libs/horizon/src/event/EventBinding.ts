@@ -16,15 +16,13 @@
 /**
  * 事件绑定实现，分为绑定委托事件和非委托事件
  */
-import { allDelegatedHorizonEvents, allDelegatedNativeEvents } from './EventHub';
-import { isDocument } from '../dom/utils/Common';
+import {allDelegatedHorizonEvents, simulatedDelegatedEvents} from './EventHub';
+import {isDocument} from '../dom/utils/Common';
 import { getNearestVNode, getNonDelegatedListenerMap } from '../dom/DOMInternalKeys';
 import { asyncUpdates, runDiscreteUpdates } from '../renderer/TreeBuilder';
 import { handleEventMain } from './HorizonEventMain';
 import { decorateNativeEvent } from './EventWrapper';
 import { VNode } from '../renderer/vnode/VNode';
-
-const listeningMarker = '_horizonListening' + Math.random().toString(36).slice(4);
 
 // 触发委托事件
 function triggerDelegatedEvent(
@@ -62,6 +60,13 @@ function isCaptureEvent(horizonEventName) {
     return false;
   }
   return horizonEventName.slice(-7) === 'Capture';
+}
+
+// 利用冒泡事件模拟不冒泡事件，需要直接在根节点绑定
+export function listenSimulatedDelegatedEvents(root: VNode) {
+  for (let i = 0; i < simulatedDelegatedEvents.length; i++) {
+    lazyDelegateOnRoot(root, simulatedDelegatedEvents[i]);
+  }
 }
 
 // 事件懒委托，当用户定义事件后，再进行委托到根节点

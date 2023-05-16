@@ -18,7 +18,8 @@ import { createPortal } from '../renderer/components/CreatePortal';
 import type { Container } from './DOMOperator';
 import { isElement } from './utils/Common';
 import { findDOMByClassInst } from '../renderer/vnode/VNodeUtils';
-import { Callback } from '../renderer/UpdateHandler';
+import {Callback} from '../renderer/UpdateHandler';
+import {listenSimulatedDelegatedEvents} from '../event/EventBinding';
 
 function createRoot(children: any, container: Container, callback?: Callback) {
   // 清空容器
@@ -31,6 +32,7 @@ function createRoot(children: any, container: Container, callback?: Callback) {
   // 调度器创建根节点，并给容器dom赋vNode结构体
   const treeRoot = createTreeRootVNode(container);
   container._treeRoot = treeRoot;
+  listenSimulatedDelegatedEvents(treeRoot);
 
   // 执行回调
   if (typeof callback === 'function') {

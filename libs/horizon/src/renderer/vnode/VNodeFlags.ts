@@ -40,12 +40,18 @@ export class FlagUtils {
   static removeFlag(node: VNode, flag: number) {
     node.flags &= ~flag;
   }
+
   static removeLifecycleEffectFlags(node) {
     node.flags &= ~LifecycleEffectArr;
   }
+
   static hasAnyFlag(node: VNode) {
     // 有标志位
     return node.flags !== InitFlag;
+  }
+
+  static hasFlag(node: VNode, flag) {
+    return (node.flags & flag) !== 0;
   }
 
   static setNoFlags(node: VNode) {
@@ -55,6 +61,7 @@ export class FlagUtils {
   static markAddition(node: VNode) {
     node.flags |= Addition;
   }
+
   static setAddition(node: VNode) {
     node.flags = Addition;
   }

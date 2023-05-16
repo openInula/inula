@@ -86,3 +86,93 @@ export function getListenersFromTree(
 
   return listeners;
 }
+
+// 获取enter和leave事件队列
+export function collectMouseListeners(
+  leaveEvent: null | WrappedEvent,
+  enterEvent: null | WrappedEvent,
+  from: VNode | null,
+  to: VNode | null,
+): ListenerUnitList {
+  // 确定公共父节点，作为在树上遍历的终点
+  const commonParent = from && to ? getCommonAncestor(from, to) : null;
+  let leaveEventList: ListenerUnitList = [];
+  if (from && leaveEvent) {
+    // 遍历树，获取绑定的leave事件
+    leaveEventList = getMouseListenersFromTree(
+      leaveEvent,
+      from,
+      commonParent,
+    );
+  }
+  let enterEventList: ListenerUnitList = [];
+  if (to && enterEvent) {
+    // 先触发父节点enter事件，所以需要逆序
+    enterEventList = getMouseListenersFromTree(
+      enterEvent,
+      to,
+      commonParent,
+    ).reverse();
+  }
+  return [...leaveEventList, ...enterEventList];
+}
+
+function getMouseListenersFromTree(
+  event: WrappedEvent,
+  target: VNode,
+  commonParent: VNode | null,
+): ListenerUnitList {
+  const registrationName = event.customEventName;
+  const listeners: ListenerUnitList = [];
+
+  let vNode = target;
+  while (vNode !== null) {
+    // commonParent作为终点
+    if (vNode === commonParent) {
+      break;
+    }
+    const {realNode, tag} = vNode;
+    if (tag === DomComponent && realNode !== null) {
+      const currentTarget = realNode;
+      const listener = getListenerFromVNode(vNode, registrationName);
+      if (listener) {
+        listeners.push({
+          vNode,
+          listener,
+          currentTarget,
+          event,
+        });
+      }
+    }
+    vNode = vNode.parent;
+  }
+  return listeners;
+}
+
+// 寻找两个节点的共同最近祖先，如果没有则返回null
+function getCommonAncestor(instA: VNode, instB: VNode): VNode | null {
+  const parentsSet = new Set<VNode>();
+  for (let tempA: VNode | null = instA; tempA; tempA = getParent(tempA)) {
+    parentsSet.add(tempA);
+  }
+  for (let tempB: VNode | null = instB; tempB; tempB = getParent(tempB)) {
+    if (parentsSet.has(tempB)) {
+      return tempB;
+    }
+  }
+  return null;
+}
+
+// 获取父节点
+function getParent(inst: VNode | null): VNode | null {
+  if (inst === null) {
+    return null;
+  }
+  do {
+    inst = inst.parent;
+  } while (inst && inst.tag !== DomComponent);
+  if (inst) {
+    return inst;
+  }
+  return null;
+}

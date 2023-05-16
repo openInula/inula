@@ -30,7 +30,8 @@ import {
 import { getDomTag } from '../dom/utils/Common';
 import { updateInputHandlerIfChanged } from '../dom/valueHandler/ValueChangeHandler';
 import { getDom } from '../dom/DOMInternalKeys';
-import { recordChangeEventTargets, shouldControlValue, tryControlValue } from './FormValueController';
+import {recordChangeEventTargets, shouldControlValue, tryControlValue} from './FormValueController';
+import {getMouseEnterListeners} from './MouseEvent';
 
 // web规范，鼠标右键key值
 const RIGHT_MOUSE_BUTTON = 2;
@@ -141,18 +142,26 @@ function triggerHorizonEvents(
   const target = nativeEvent.target || nativeEvent.srcElement!;
 
   // 触发普通委托事件
-  let listenerList: ListenerUnitList = getCommonListeners(nativeEvtName, vNode, nativeEvent, target, isCapture);
+  const listenerList: ListenerUnitList = getCommonListeners(nativeEvtName, vNode, nativeEvent, target, isCapture);
 
+  let mouseEnterListeners: ListenerUnitList = [];
+  if (horizonEventToNativeMap.get('onMouseEnter')!.includes(nativeEvtName)) {
+    mouseEnterListeners = getMouseEnterListeners(
+      nativeEvtName,
+      vNode,
+      nativeEvent,
+      target,
+    );
+  }
+
+  let changeEvents: ListenerUnitList = [];
   // 触发特殊handler委托事件
   if (!isCapture && horizonEventToNativeMap.get('onChange')!.includes(nativeEvtName)) {
-    const changeListeners = getChangeListeners(nativeEvtName, nativeEvent, vNode, target);
-    if (changeListeners.length) {
-      listenerList = listenerList.concat(changeListeners);
-    }
+    changeEvents = getChangeListeners(nativeEvtName, nativeEvent, vNode, target);
   }
 
   // 处理触发的事件队列
-  processListeners(listenerList);
+  processListeners([...listenerList, ...mouseEnterListeners, ...changeEvents]);
 }
 
 // 其他事件正在执行中标记
