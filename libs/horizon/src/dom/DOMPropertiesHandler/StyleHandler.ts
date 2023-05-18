@@ -33,6 +33,17 @@ const noUnitCSS = [
   'zoom',
 ];
 
+const length = noUnitCSS.length;
+for (let i = 0; i < length; i++) {
+  const cssKey = noUnitCSS[i];
+  const attributeKey =  cssKey.charAt(0).toUpperCase() + cssKey.slice(1);
+
+  // css 兼容性前缀 webkit: chrome, mo: IE或者Edge, Moz: 火狐
+  noUnitCSS.push('Webkit' + attributeKey);
+  noUnitCSS.push('mo' + attributeKey);
+  noUnitCSS.push('Moz' + attributeKey);
+}
+
 function isNeedUnitCSS(styleName: string) {
   return !(
     noUnitCSS.includes(styleName) ||
@@ -78,6 +89,7 @@ export function setStyles(dom, styles) {
     if (name.indexOf('--') === 0) {
       style.setProperty(name, styleVal);
     } else {
+      // 使用这种赋值方式，浏览器可以将'WebkitLineClamp'， 'backgroundColor'分别识别为'-webkit-line-clamp'和'backgroud-color'
       style[name] = adjustStyleValue(name, styleVal);
     }
   });
