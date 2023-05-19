@@ -179,6 +179,11 @@ function isEqualByIndex(idx: number, pathArrays: string[][]) {
 function getChildByIndex(vNode: VNode, idx: number) {
   let node = vNode.child;
   for (let i = 0; i < idx; i++) {
+    // 场景：当组件被销毁，业务若异步（定时器）调用setState修改状态，可能出现路径错误，此处进行保护。
+    if (node == null) {
+      return null;
+    }
+
     node = node.next;
   }
   return node;
