@@ -33,7 +33,7 @@ class Component<P, S, C> {
 
   setState(state: S, callback?: Callback) {
     if (isDev) {
-      console.error('Cant not call `this.setState` in the constructor of class component, it will do nothing');
+      console.error('Can not call `this.setState` in the constructor of class component, it will do nothing');
     }
   }
 }

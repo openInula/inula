@@ -1,3 +1,6 @@
+## 0.0.49 (2023-05-19)
+- **core**: 解决当组件被销毁，业务若异步（定时器）调用setState修改状态，可能出现路径错误问题。
+
 ## 0.0.48 (2023-05-18)
 - **core**: 解决style中属性WebkitLineClamp值被转换成字符串问题
 
@@ -19,12 +22,12 @@
 - **core**: 增加jsx-dev-runtime文件，给vite使用
 
 ## 0.0.40 (2023-03-08)
-- **core**: #103 使用Memo、React.forwardRef包装组件后，defaultProps失效
+- **core**: #103 使用Memo、forwardRef包装组件后，defaultProps失效
 - **core**: #104 --max-segment-num的style无法使用
 - **core**: 状态管理器的优化
 
 ## 0.0.39 (2023-02-21)
-- **core**: #102 使用eview-react组件Dialog时，关闭组件horizon报错，且无法再打开弹框
+- **core**: #102 使用eview组件Dialog时，关闭组件horizon报错，且无法再打开弹框
 
 ## 0.0.38 (2023-02-01)
 - **core**: 增加flushSync接口
@@ -58,7 +61,7 @@
 - **core**: fix 修改IE上报Symbol错误的问题
 
 ## 0.0.23 (2022-09-23)
-- **core**: #86 兼容ReactIs API
+- **core**: #86 兼容Is API
 
 ## 0.0.22 (2022-09-22)
 - **core**: #83 #75 #72 input支持受控
