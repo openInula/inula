@@ -1,3 +1,6 @@
+## 0.0.48 (2023-05-18)
+- **core**: 解决style中属性WebkitLineClamp值被转换成字符串问题
+
 ## 0.0.45 (2023-05-10)
 - **core**: 修改belongClassVNode属性为Symbol提升性能
 - **core**: 优化内部循环实现，提升性能
