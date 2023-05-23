@@ -38,7 +38,7 @@ import type { Hook } from '../hooks/HookType';
 import { InitFlag } from './VNodeFlags';
 import { Observer } from '../../horizonx/proxy/Observer';
 
-export const BELONG_CLASS_VNODE_KEY = Symbol('belongClassVNode');
+export const BELONG_CLASS_VNODE_KEY = typeof Symbol === 'function' ? Symbol('belongClassVNode') : 'belongClassVNode';
 
 export class VNode {
   tag: VNodeTag;

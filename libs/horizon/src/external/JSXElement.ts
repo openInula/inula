@@ -40,6 +40,14 @@ export function JSXElement(type, key, ref, vNode, props, source: Source | null) 
     // 所属的class组件,clonedeep jsxElement时需要防止无限循环
     [BELONG_CLASS_VNODE_KEY]: vNode,
   };
+  // 兼容IE11不支持Symbol
+  if (typeof BELONG_CLASS_VNODE_KEY  === 'string') {
+    Object.defineProperty(ele, BELONG_CLASS_VNODE_KEY, {
+      configurable: false,
+      enumerable: false,
+      value: vNode,
+    });
+  }
   if (isDev) {
     // 为了test判断两个 JSXElement 对象是否相等时忽略src属性，需要设置src的enumerable为false
     Object.defineProperty(ele, 'src', {
