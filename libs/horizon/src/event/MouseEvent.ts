@@ -13,13 +13,13 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import {getNearestVNode} from '../dom/DOMInternalKeys';
-import {WrappedEvent} from './EventWrapper';
-import {VNode} from '../renderer/vnode/VNode';
-import {AnyNativeEvent, ListenerUnitList} from './Types';
-import {DomComponent, DomText} from '../renderer/vnode/VNodeTags';
-import {collectMouseListeners} from './ListenerGetter';
-import {getNearestMountedVNode} from './utils';
+import { getNearestVNode } from '../dom/DOMInternalKeys';
+import { WrappedEvent } from './EventWrapper';
+import { VNode } from '../renderer/vnode/VNode';
+import { AnyNativeEvent, ListenerUnitList } from './Types';
+import { DomComponent, DomText } from '../renderer/vnode/VNodeTags';
+import { collectMouseListeners } from './ListenerGetter';
+import { getNearestMountedVNode } from './utils';
 
 /**
  * 背景： mouseEnter和mouseLeave事件不冒泡，所以无法直接委托给根节点进行代理

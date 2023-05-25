@@ -18,8 +18,8 @@ import { createPortal } from '../renderer/components/CreatePortal';
 import type { Container } from './DOMOperator';
 import { isElement } from './utils/Common';
 import { findDOMByClassInst } from '../renderer/vnode/VNodeUtils';
-import {Callback} from '../renderer/UpdateHandler';
-import {listenSimulatedDelegatedEvents} from '../event/EventBinding';
+import { Callback } from '../renderer/UpdateHandler';
+import { listenSimulatedDelegatedEvents } from '../event/EventBinding';
 
 function createRoot(children: any, container: Container, callback?: Callback) {
   // 清空容器

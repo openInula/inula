@@ -13,9 +13,9 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import {VNode} from '../renderer/vnode/VNode';
-import {Addition, FlagUtils} from '../renderer/vnode/VNodeFlags';
-import {TreeRoot} from '../renderer/vnode/VNodeTags';
+import { VNode } from '../renderer/vnode/VNode';
+import { Addition, FlagUtils } from '../renderer/vnode/VNodeFlags';
+import { TreeRoot } from '../renderer/vnode/VNodeTags';
 
 export function isInputElement(dom?: HTMLElement): boolean {
   return dom instanceof HTMLInputElement || dom instanceof HTMLTextAreaElement;

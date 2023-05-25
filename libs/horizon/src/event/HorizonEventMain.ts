@@ -30,8 +30,8 @@ import {
 import { getDomTag } from '../dom/utils/Common';
 import { updateInputHandlerIfChanged } from '../dom/valueHandler/ValueChangeHandler';
 import { getDom } from '../dom/DOMInternalKeys';
-import {recordChangeEventTargets, shouldControlValue, tryControlValue} from './FormValueController';
-import {getMouseEnterListeners} from './MouseEvent';
+import { recordChangeEventTargets, shouldControlValue, tryControlValue } from './FormValueController';
+import { getMouseEnterListeners } from './MouseEvent';
 
 // web规范，鼠标右键key值
 const RIGHT_MOUSE_BUTTON = 2;

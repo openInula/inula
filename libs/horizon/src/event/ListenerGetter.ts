@@ -171,8 +171,5 @@ function getParent(inst: VNode | null): VNode | null {
   do {
     inst = inst.parent;
   } while (inst && inst.tag !== DomComponent);
-  if (inst) {
-    return inst;
-  }
-  return null;
+  return inst || null;
 }

@@ -16,8 +16,8 @@
 /**
  * 事件绑定实现，分为绑定委托事件和非委托事件
  */
-import {allDelegatedHorizonEvents, simulatedDelegatedEvents} from './EventHub';
-import {isDocument} from '../dom/utils/Common';
+import { allDelegatedHorizonEvents, simulatedDelegatedEvents } from './EventHub';
+import { isDocument } from '../dom/utils/Common';
 import { getNearestVNode, getNonDelegatedListenerMap } from '../dom/DOMInternalKeys';
 import { asyncUpdates, runDiscreteUpdates } from '../renderer/TreeBuilder';
 import { handleEventMain } from './HorizonEventMain';
