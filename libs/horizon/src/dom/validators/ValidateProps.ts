@@ -98,7 +98,7 @@ export function validateProps(type, props) {
     return;
   }
 
-  // 非内置的变迁
+  // 非内置的元素
   if (!isNativeElement(type, props)) {
     return;
   }

@@ -141,7 +141,7 @@ export function newTextDom(text: string, processing: VNode): Text {
   return textNode;
 }
 
-// 提交vNode的类型为Component或者Text的更新
+// 提交vNode的类型为DomComponent或者DomText的更新
 export function submitDomUpdate(tag: string, vNode: VNode) {
   const newProps = vNode.props;
   const element: Element | null = vNode.realNode;

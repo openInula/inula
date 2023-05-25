@@ -13,7 +13,7 @@ env:
   resource:
     type: docker
     image: kweecr04.his.huawei.com:80/ecr-build-arm-gzkunpeng/euleros_v2r7spc522_x64_opmt_cs5.0_sz:v5.0
-    class: 4U8G
+    class: 8U16G
     mode: toolbox
   cache:
     - type: workspace
