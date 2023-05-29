@@ -1,4 +1,7 @@
 {
+  "name": "@cloudsop/horizon",
+  "description": "Horizon is a JavaScript framework library.",
+  "version": "0.0.51",
   "private": true,
   "workspaces": [
     "libs/*"

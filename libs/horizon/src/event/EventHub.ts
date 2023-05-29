@@ -15,6 +15,9 @@
 
 // 需要委托的horizon事件和原生事件对应关系
 export const allDelegatedHorizonEvents = new Map();
+
+// 模拟委托事件，不冒泡事件需要利用其他事件来触发冒泡过程
+export const simulatedDelegatedEvents = ['onMouseEnter', 'onMouseLeave'];
 // 所有委托的原生事件集合
 export const allDelegatedNativeEvents = new Set();
 
@@ -49,6 +52,8 @@ export const horizonEventToNativeMap = new Map([
   ['onCompositionUpdate', ['compositionupdate']],
   ['onChange', ['change', 'click', 'focusout', 'input']],
   ['onSelect', ['select']],
+  ['onMouseEnter', ['mouseout', 'mouseover']],
+  ['onMouseLeave', ['mouseout', 'mouseover']],
 
   ['onAnimationEnd', ['animationend']],
   ['onAnimationIteration', ['animationiteration']],
