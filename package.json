@@ -1,7 +1,7 @@
 {
-  "name": "@cloudsop/horizon",
+  "name": "horizon-core",
   "description": "Horizon is a JavaScript framework library.",
-  "version": "0.0.51",
+  "version": "0.0.52",
   "private": true,
   "workspaces": [
     "libs/*"
@@ -51,6 +51,7 @@
     "@typescript-eslint/eslint-plugin": "4.8.0",
     "@typescript-eslint/parser": "4.8.0",
     "babel-jest": "^27.5.1",
+    "ejs": "^3.1.8",
     "eslint": "7.13.0",
     "eslint-config-prettier": "^6.9.0",
     "eslint-plugin-jest": "^22.15.0",
@@ -69,7 +70,5 @@
     "node": ">=10.x",
     "npm": ">=7.x"
   },
-  "dependencies": {
-    "ejs": "^3.1.8"
-  }
+  "dependencies": {}
 }
