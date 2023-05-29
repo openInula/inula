@@ -14,15 +14,12 @@
  */
 
 import * as Horizon from '@cloudsop/horizon/index.ts';
-import * as Renderer from '../../../libs/horizon/src/renderer/Renderer';
-import { doc } from 'prettier';
 
-describe('EnterLeaveEventPlugin', () => {
+describe('mouseenter和mouseleave事件测试', () => {
   let container;
 
   beforeEach(() => {
     jest.resetModules();
-    // The container has to be attached for events to fire.
     container = document.createElement('div');
     document.body.appendChild(container);
   });
@@ -32,7 +29,7 @@ describe('EnterLeaveEventPlugin', () => {
     container = null;
   });
 
-  it('should set onMouseLeave relatedTarget properly in iframe', () => {
+  it('在iframe中mouseleave事件的relateTarget属性', () => {
     const iframe = document.createElement('iframe');
     container.appendChild(iframe);
     const iframeDocument = iframe.contentDocument;
@@ -65,7 +62,7 @@ describe('EnterLeaveEventPlugin', () => {
     expect(leaveEvents[0].relatedTarget).toBe(iframe.contentWindow);
   });
 
-  it('should set onMouseEnter relatedTarget properly in iframe', () => {
+  it('在iframe中mouseenter事件的relateTarget属性', () => {
     const iframe = document.createElement('iframe');
     container.appendChild(iframe);
     const iframeDocument = iframe.contentDocument;
@@ -98,8 +95,7 @@ describe('EnterLeaveEventPlugin', () => {
     expect(enterEvents[0].relatedTarget).toBe(iframe.contentWindow);
   });
 
-  // Regression test for https://github.com/facebook/Horizon/issues/10906.
-  it('should find the common parent after updates', () => {
+  it('从新渲染的子组件触发mouseout事件，子组件响应mouseenter事件，父节点不响应', () => {
     let parentEnterCalls = 0;
     let childEnterCalls = 0;
     let parent = null;
@@ -119,10 +115,8 @@ describe('EnterLeaveEventPlugin', () => {
     }
 
     Horizon.render(<Parent/>, container);
-    // The issue only reproduced on insertion during the first update.
     Horizon.render(<Parent showChild={true}/>, container);
 
-    // Enter from parent into the child.
     parent.dispatchEvent(
       new MouseEvent('mouseout', {
         bubbles: true,
@@ -130,13 +124,11 @@ describe('EnterLeaveEventPlugin', () => {
         relatedTarget: parent.firstChild,
       }),
     );
-
-    // Entering a child should fire on the child, not on the parent.
     expect(childEnterCalls).toBe(1);
     expect(parentEnterCalls).toBe(0);
   });
 
-  it('should call mouseEnter once from sibling rendered inside a rendered component', done => {
+  it('render一个新组件，兄弟节点触发mouseout事件，mouseenter事件响应一次', done => {
     const mockFn1 = jest.fn();
     const mockFn2 = jest.fn();
     const mockFn3 = jest.fn();
@@ -190,7 +182,7 @@ describe('EnterLeaveEventPlugin', () => {
     Horizon.render(<Parent/>, container);
   });
 
-  it('should call mouseEnter when pressing a non tracked Horizon node', done => {
+  it('未被horizon管理的节点触发mouseout事件，mouseenter事件也能正常触发', done => {
     const mockFn = jest.fn();
 
     class Parent extends Horizon.Component {
@@ -241,7 +233,7 @@ describe('EnterLeaveEventPlugin', () => {
     Horizon.render(<Parent/>, container);
   });
 
-  it('should work with portals outside of the root that has onMouseLeave', () => {
+  it('外部portal节点触发的mouseout事件，根节点的mouseleave事件也能响应', () => {
     const divRef = Horizon.createRef();
     const onMouseLeave = jest.fn();
 
@@ -255,7 +247,6 @@ describe('EnterLeaveEventPlugin', () => {
 
     Horizon.render(<Component/>, container);
 
-    // Leave from the portal div
     divRef.current.dispatchEvent(
       new MouseEvent('mouseout', {
         bubbles: true,
@@ -267,7 +258,7 @@ describe('EnterLeaveEventPlugin', () => {
     expect(onMouseLeave).toHaveBeenCalledTimes(1);
   });
 
-  it('should work with portals that have onMouseEnter outside of the root ', () => {
+  it('外部portal节点触发的mouseout事件，根节点的mouseEnter事件也能响应', () => {
     const divRef = Horizon.createRef();
     const otherDivRef = Horizon.createRef();
     const onMouseEnter = jest.fn();
@@ -285,7 +276,6 @@ describe('EnterLeaveEventPlugin', () => {
 
     Horizon.render(<Component/>, container);
 
-    // Leave from the portal div
     divRef.current.dispatchEvent(
       new MouseEvent('mouseout', {
         bubbles: true,
