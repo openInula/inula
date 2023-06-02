@@ -14,6 +14,7 @@
  */
 
 import { getPropDetails, PROPERTY_TYPE, PropDetails } from './PropertiesData';
+import { isNull } from '../utils/Common';
 
 const INVALID_EVENT_NAME_REGEX = /^on[^A-Z]/;
 
@@ -73,7 +74,7 @@ export function isInvalidValue(
   propDetails: PropDetails | null,
   isNativeTag: boolean
 ): boolean {
-  if (value == null) {
+  if (isNull(value)) {
     return true;
   }
 
@@ -104,7 +105,7 @@ export function validateProps(type, props) {
   }
 
   // style属性必须是对象
-  if (props.style != null && typeof props.style !== 'object') {
+  if (!isNull(props.style) && typeof props.style !== 'object') {
     throw new Error('style should be a object.');
   }
 

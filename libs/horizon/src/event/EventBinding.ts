@@ -62,13 +62,6 @@ function isCaptureEvent(horizonEventName) {
   return horizonEventName.slice(-7) === 'Capture';
 }
 
-// 利用冒泡事件模拟不冒泡事件，需要直接在根节点绑定
-export function listenSimulatedDelegatedEvents(root: VNode) {
-  for (let i = 0; i < simulatedDelegatedEvents.length; i++) {
-    lazyDelegateOnRoot(root, simulatedDelegatedEvents[i]);
-  }
-}
-
 // 事件懒委托，当用户定义事件后，再进行委托到根节点
 export function lazyDelegateOnRoot(currentRoot: VNode, eventName: string) {
   currentRoot.delegatedEvents.add(eventName);
@@ -80,16 +73,20 @@ export function lazyDelegateOnRoot(currentRoot: VNode, eventName: string) {
     const nativeFullName = isCapture ? nativeEvent + 'capture' : nativeEvent;
 
     // 事件存储在DOM节点属性，避免多个VNode(root和portal)对应同一个DOM, 造成事件重复监听
-    let events = currentRoot.realNode.$EV;
-
-    if (!events) {
-      events = (currentRoot.realNode as any).$EV = {};
-    }
+    currentRoot.realNode.$EV = currentRoot.realNode.$EV || {};
+    const events = currentRoot.realNode.$EV;
 
     if (!events[nativeFullName]) {
       events[nativeFullName] = listenToNativeEvent(nativeEvent, currentRoot.realNode, isCapture);
     }
   });
+}
+
+// 利用冒泡事件模拟不冒泡事件，需要直接在根节点绑定
+export function listenSimulatedDelegatedEvents(root: VNode) {
+  for (let i = 0; i < simulatedDelegatedEvents.length; i++) {
+    lazyDelegateOnRoot(root, simulatedDelegatedEvents[i]);
+  }
 }
 
 // 通过horizon事件名获取到native事件名

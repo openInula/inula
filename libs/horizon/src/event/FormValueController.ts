@@ -14,7 +14,7 @@
  */
 
 import { getVNodeProps } from '../dom/DOMInternalKeys';
-import { getDomTag } from '../dom/utils/Common';
+import { getDomTag, isNull } from '../dom/utils/Common';
 import { Props } from '../dom/utils/Interface';
 import { updateTextareaValue } from '../dom/valueHandler/TextareaValueHandler';
 import { updateInputHandlerIfChanged } from '../dom/valueHandler/ValueChangeHandler';
@@ -41,14 +41,14 @@ function controlInputValue(inputDom: HTMLInputElement, props: Props) {
   const { name, type } = props;
 
   // 如果是 radio，找出同一form内，name相同的Radio，更新它们Handler的Value
-  if (type === 'radio' && name != null) {
+  if (type === 'radio' && !isNull(name)) {
     const radioList = document.querySelectorAll<HTMLInputElement>(`input[type="radio"][name="${name}"]`);
     for (let i = 0; i < radioList.length; i++) {
       const radio = radioList[i];
       if (radio === inputDom) {
         continue;
       }
-      if (radio.form != null && inputDom.form != null && radio.form !== inputDom.form) {
+      if (!isNull(radio.form) && !isNull(inputDom.form) && radio.form !== inputDom.form) {
         continue;
       }
 

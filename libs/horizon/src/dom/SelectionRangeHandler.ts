@@ -17,7 +17,7 @@
  * 处理文本框、输入框中框选范围内的数据
  */
 
-import { getIFrameFocusedDom, isText } from './utils/Common';
+import { getIFrameFocusedDom, isNull, isText } from './utils/Common';
 
 import { isElement } from './utils/Common';
 
@@ -30,7 +30,7 @@ function setSelectionRange(dom: HTMLInputElement | HTMLTextAreaElement, range) {
   const { start, end } = range;
   let realEnd = end;
 
-  if (realEnd == null) {
+  if (isNull(realEnd)) {
     realEnd = start;
   }
 

@@ -182,6 +182,10 @@ function getNewNode(parentNode: VNode, newChild: any, oldNode: VNode | null) {
         }
         break;
       }
+      break;
+    }
+    default: {
+      break;
     }
   }
 
@@ -374,7 +378,7 @@ function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newC
   // 4. 新节点还有一部分，但是老节点已经没有了
   if (oldNode === null) {
     let isDirectAdd = false;
-    // TODO: 是否可以扩大至非dom类型节点
+    // 是否可以扩大至非dom类型节点待确认
     // 如果dom节点在上次添加前没有节点，说明本次添加时，可以直接添加到最后，不需要通过 getSiblingDom 函数找到 before 节点
     if (
       parentNode.tag === DomComponent &&
@@ -513,7 +517,7 @@ function diffIteratorNodesHandler(
 }
 
 // 新节点是字符串类型
-function diffStringNodeHandler(parentNode: VNode, newChild: any, firstChildVNode: VNode, isComparing: boolean) {
+function diffStringNodeHandler(parentNode: VNode, newChild: any, firstChildVNode: VNode | null, isComparing: boolean) {
   let newTextNode: VNode | null = null;
 
   // 第一个vNode是Text，则复用
@@ -560,7 +564,7 @@ function diffObjectNodeHandler(
   }
 
   let resultNode: VNode | null = null;
-  let startDelVNode = firstChildVNode;
+  let startDelVNode: VNode | null = firstChildVNode;
   if (newChild.vtype === TYPE_COMMON_ELEMENT) {
     if (canReuseNode) {
       // 可以复用

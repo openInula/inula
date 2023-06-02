@@ -84,3 +84,7 @@ const types = ['button', 'input', 'select', 'textarea'];
 export function shouldAutoFocus(tagName: string, props: Props): boolean {
   return types.includes(tagName) ? Boolean(props.autoFocus) : false;
 }
+
+export function isNull(val) {
+  return val === null || val === undefined;
+}
