@@ -145,7 +145,7 @@ function getAffectedComponents() {
     const process = Array.from(allStores[key].$config.state._horizonObserver.keyVNodes.values());
     while (process.length) {
       let pivot = process.shift() as { tag: 'string' };
-      if (pivot?.tag) subRes.add(pivot);
+      if (pivot.tag) subRes.add(pivot);
       if (pivot?.toString() === '[object Set]') Array.from(pivot).forEach(item => process.push(item));
     }
     res[key] = Array.from(subRes).map(vnode => {
@@ -192,7 +192,7 @@ window.addEventListener('message', messageEvent => {
     const store = getStore(data.storeId);
     if (!store?.[data.action]) return;
 
-    const action = store.$queue?.[data.action];
+    const action = store.$queue[data.action];
     const params = data.params;
     action(...params);
   }

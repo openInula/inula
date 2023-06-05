@@ -41,9 +41,10 @@ function set(rawObj: object, key: string, value: any, receiver: any): boolean {
 
 export function createObjectProxy<T extends object>(
   rawObj: T,
-  singleLevel = false,
+  singleLevel: boolean,
   listener: { current: (...args) => any }
 ): ProxyHandler<T> {
+  singleLevel = singleLevel || false;
   let listeners = [] as ((...args) => void)[];
 
   function get(rawObj: object, key: string | symbol, receiver: any): any {

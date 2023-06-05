@@ -31,7 +31,9 @@ export function getObserver(rawObj: any): Observer {
   return rawObj[OBSERVER_KEY];
 }
 
-export function createProxy(rawObj: any, isHookObserver = true, listener: { current: (...args) => any }): any {
+export function createProxy(rawObj: any, isHookObserver: boolean, listener: { current: (...args) => any }): any {
+  isHookObserver = isHookObserver || true;
+
   // 不是对象（是原始数据类型）不用代理
   if (!(rawObj && isObject(rawObj))) {
     return rawObj;
@@ -83,7 +85,7 @@ export function createProxy(rawObj: any, isHookObserver = true, listener: { curr
     // 原生对象 或 函数
     proxyObj = createObjectProxy(rawObj, false, {
       current: change => {
-        listener?.current(change);
+        listener.current(change);
       },
     });
   }

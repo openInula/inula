@@ -20,9 +20,10 @@ const COLLECTION_CHANGE = '_collectionChange';
 
 export function createSetProxy<T extends object>(
   rawObj: T,
-  hookObserver = true,
+  hookObserver: boolean,
   listener: { current: (...args) => any }
 ): ProxyHandler<T> {
+  hookObserver = hookObserver || true;
   let listeners: ((mutation) => {})[] = [];
   let proxies = new WeakMap();
 
@@ -129,6 +130,20 @@ export function createSetProxy<T extends object>(
     return rawObj.size;
   }
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  const handler = {
+    get,
+    add,
+    delete: deleteFun,
+    has,
+    clear,
+    forEach,
+    forOf,
+    entries,
+    keys,
+    values,
+    [typeof Symbol === 'function' ? Symbol.iterator : '@@iterator']: forOf,
+  };
+
   function get(rawObj: { size: number }, key: any, receiver: any): any {
     if (Object.prototype.hasOwnProperty.call(handler, key)) {
       const value = Reflect.get(handler, key, receiver);
@@ -266,20 +281,6 @@ export function createSetProxy<T extends object>(
       return callback(valProxy, keyProxy, rawObj);
     });
   }
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  const handler = {
-    get,
-    add,
-    delete: deleteFun,
-    has,
-    clear,
-    forEach,
-    forOf,
-    entries,
-    keys,
-    values,
-    [typeof Symbol === 'function' ? Symbol.iterator : '@@iterator']: forOf,
-  };
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   getObserver(rawObj).addListener(change => {
     if (!change.parents) change.parents = [];

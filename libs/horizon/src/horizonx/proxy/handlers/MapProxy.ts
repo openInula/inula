@@ -20,7 +20,8 @@ import { isPanelActive } from '../../devtools';
 
 const COLLECTION_CHANGE = '_collectionChange';
 
-export function createMapProxy(rawObj: Object, hookObserver = true, listener: { current: (...args) => any }): Object {
+export function createMapProxy(rawObj: Object, hookObserver: boolean, listener: { current: (...args) => any }): Object {
+  hookObserver = hookObserver || true;
   let listeners: ((mutation) => {})[] = [];
   let oldData: [any, any][] = [];
   let proxies = new Map();
@@ -314,6 +315,20 @@ export function createMapProxy(rawObj: Object, hookObserver = true, listener: { 
     return wrapIterator(rawObj, rawObj.entries(), 'entries');
   }
 
+  const handler = {
+    get,
+    set,
+    delete: deleteFun,
+    clear,
+    has,
+    entries,
+    forEach,
+    keys,
+    values,
+    // 判断Symbol类型，兼容IE
+    [typeof Symbol === 'function' ? Symbol.iterator : '@@iterator']: forOf,
+  };
+
   function get(rawObj: { size: number }, key: any, receiver: any): any {
     if (key === 'size') {
       return size(rawObj);
@@ -356,20 +371,6 @@ export function createMapProxy(rawObj: Object, hookObserver = true, listener: { 
 
     return Reflect.get(rawObj, key, receiver);
   }
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  const handler = {
-    get,
-    set,
-    delete: deleteFun,
-    clear,
-    has,
-    entries,
-    forEach,
-    keys,
-    values,
-    // 判断Symbol类型，兼容IE
-    [typeof Symbol === 'function' ? Symbol.iterator : '@@iterator']: forOf,
-  };
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const boundHandler = {};
   Object.entries(handler).forEach(([id, val]) => {

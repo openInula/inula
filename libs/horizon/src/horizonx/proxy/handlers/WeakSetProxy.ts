@@ -18,11 +18,19 @@ import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
 
 export function createWeakSetProxy<T extends object>(
   rawObj: T,
-  hookObserver = true,
+  hookObserver: boolean,
   listener: { current: (...args) => any }
 ): ProxyHandler<T> {
+  hookObserver = hookObserver || true;
   let listeners: ((mutation) => {})[] = [];
   let proxies = new WeakMap();
+
+  const handler = {
+    get,
+    add,
+    delete: deleteFun,
+    has,
+  };
 
   function get(rawObj: { size: number }, key: any, receiver: any): any {
     if (Object.prototype.hasOwnProperty.call(handler, key)) {
@@ -108,13 +116,6 @@ export function createWeakSetProxy<T extends object>(
 
     return false;
   }
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  const handler = {
-    get,
-    add,
-    delete: deleteFun,
-    has,
-  };
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   getObserver(rawObj).addListener(change => {
     if (!change.parents) change.parents = [];

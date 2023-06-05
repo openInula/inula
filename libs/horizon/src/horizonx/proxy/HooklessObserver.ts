@@ -41,9 +41,6 @@ export class HooklessObserver implements IObserver {
 
   triggerChangeListeners(mutation: any): void {
     this.listeners.forEach(listener => {
-      if (!listener) {
-        return;
-      }
       listener(mutation);
     });
   }

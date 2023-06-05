@@ -46,7 +46,7 @@ function getChildNS(parentNS: string | null, tagName: string): string {
     return NSS.html;
   }
 
-  if (parentNS == null || parentNS === NSS.html) {
+  if (parentNS === null || parentNS === NSS.html) {
     // 没有父命名空间，或父命名空间为xhtml
     return NSS[tagName] ?? NSS.html;
   }
@@ -130,7 +130,8 @@ export function isTextChild(type: string, props: Props): boolean {
     return (
       props.dangerouslySetInnerHTML &&
       typeof props.dangerouslySetInnerHTML === 'object' &&
-      props.dangerouslySetInnerHTML.__html != null
+      props.dangerouslySetInnerHTML.__html !== null &&
+      props.dangerouslySetInnerHTML.__html !== undefined
     );
   }
 }
@@ -148,7 +149,7 @@ export function submitDomUpdate(tag: string, vNode: VNode) {
 
   if (tag === DomComponent) {
     // DomComponent类型
-    if (element != null) {
+    if (element !== null || element !== undefined) {
       const type = vNode.type;
       const changeList = vNode.changeList;
       vNode.changeList = null;
@@ -158,7 +159,14 @@ export function submitDomUpdate(tag: string, vNode: VNode) {
         updateVNodeProps(element, newProps);
         // 应用diff更新Properties.
         // 当一个选中的radio改变名称,浏览器使另一个radio的复选框为false.
-        if (type === 'input' && newProps.type === 'radio' && newProps.name != null && newProps.checked != null) {
+        if (
+          type === 'input'
+          && newProps.type === 'radio'
+          && newProps.name !== null
+          && newProps.name !== undefined
+          && newProps.checked !== null
+          && newProps.checked !== undefined
+        ) {
           updateCommonProp(element, 'checked', newProps.checked, true);
         }
         const isNativeTag = isNativeElement(type, newProps);
@@ -204,7 +212,7 @@ export function hideDom(tag: string, dom: Element | Text) {
 // 不隐藏元素
 export function unHideDom(tag: string, dom: Element | Text, props: Props) {
   if (tag === DomComponent) {
-    dom.style.display = adjustStyleValue('display', props?.style?.display ?? '');
+    dom.style.display = adjustStyleValue('display', props.style?.display ?? '');
   } else if (tag === DomText) {
     dom.textContent = props;
   }

@@ -21,9 +21,11 @@ import { createMapProxy } from './MapProxy';
 
 export function createCollectionProxy(
   rawObj: Object,
-  hookObserver = true,
+  hookObserver: boolean,
   listener: { current: (...args) => any }
 ): Object {
+  hookObserver = hookObserver || true;
+
   if (isWeakSet(rawObj)) {
     return createWeakSetProxy(rawObj, hookObserver, listener);
   }

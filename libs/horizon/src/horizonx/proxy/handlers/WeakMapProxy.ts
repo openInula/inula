@@ -22,10 +22,42 @@ const COLLECTION_CHANGE = '_collectionChange';
 
 export function createWeakMapProxy(
   rawObj: Object,
-  hookObserver = true,
+  hookObserver: boolean,
   listener: { current: (...args) => any }
 ): Object {
+  hookObserver = hookObserver ||true;
   let listeners: ((mutation) => {})[] = [];
+
+  const handler = {
+    get,
+    set,
+    add,
+    delete: deleteFun,
+    clear,
+    has,
+  };
+
+  function getFun(rawObj: { get: (key: any) => any }, key: any) {
+    const observer = getObserver(rawObj);
+    observer.useProp(key);
+
+    const value = rawObj.get(key);
+    // 对于value也需要进一步代理
+    const valProxy = createProxy(value, hookObserverMap.get(rawObj), {
+      current: change => {
+        if (!change.parents) change.parents = [];
+        change.parents.push(rawObj);
+        let mutation = resolveMutation(
+          { ...rawObj, [key]: change.mutation.from },
+          { ...rawObj, [key]: change.mutation.to }
+        );
+        listener.current({ ...change, mutation });
+        listeners.forEach(lst => lst({ ...change, mutation }));
+      },
+    });
+
+    return valProxy;
+  }
 
   function get(rawObj: { size: number }, key: any, receiver: any): any {
     if (key === 'get') {
@@ -64,28 +96,6 @@ export function createWeakMapProxy(
     }
 
     return Reflect.get(rawObj, key, receiver);
-  }
-
-  function getFun(rawObj: { get: (key: any) => any }, key: any) {
-    const observer = getObserver(rawObj);
-    observer.useProp(key);
-
-    const value = rawObj.get(key);
-    // 对于value也需要进一步代理
-    const valProxy = createProxy(value, hookObserverMap.get(rawObj), {
-      current: change => {
-        if (!change.parents) change.parents = [];
-        change.parents.push(rawObj);
-        let mutation = resolveMutation(
-          { ...rawObj, [key]: change.mutation.from },
-          { ...rawObj, [key]: change.mutation.to }
-        );
-        listener.current({ ...change, mutation });
-        listeners.forEach(lst => lst({ ...change, mutation }));
-      },
-    });
-
-    return valProxy;
   }
 
   // Map的set方法
@@ -170,15 +180,6 @@ export function createWeakMapProxy(
 
     return false;
   }
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  const handler = {
-    get,
-    set,
-    add,
-    delete: deleteFun,
-    clear,
-    has,
-  };
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   getObserver(rawObj).addListener(change => {
     if (!change.parents) change.parents = [];

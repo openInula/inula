@@ -73,7 +73,7 @@ function executeRender(children: any, container: Container, callback?: Callback)
 }
 
 function findDOMNode(domOrEle?: Element): null | Element | Text {
-  if (domOrEle == null) {
+  if (domOrEle === null || domOrEle === undefined) {
     return null;
   }
 
@@ -103,7 +103,7 @@ function removeRootEventLister(container: Container) {
 
 // 卸载入口
 function destroy(container: Container): boolean {
-  if (container && container._treeRoot) {
+  if (container._treeRoot) {
     syncUpdates(() => {
       executeRender(null, container, () => {
         removeRootEventLister(container);

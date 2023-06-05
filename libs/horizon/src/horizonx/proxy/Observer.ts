@@ -81,7 +81,7 @@ export class Observer implements IObserver {
     const vNodes = this.keyVNodes.get(key);
     //NOTE: using Set directly can lead to deadlock
     const vNodeArray = Array.from(vNodes || []);
-    vNodeArray?.forEach((vNode: VNode) => {
+    vNodeArray.forEach((vNode: VNode) => {
       if (vNode.isStoreChange) {
         // VNode已经被触发过，不再重复触发
         return;
