@@ -18,10 +18,9 @@ import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
 
 export function createWeakSetProxy<T extends object>(
   rawObj: T,
-  hookObserver: boolean,
-  listener: { current: (...args) => any }
+  listener: { current: (...args) => any },
+  hookObserver = true,
 ): ProxyHandler<T> {
-  hookObserver = hookObserver || true;
   let listeners: ((mutation) => {})[] = [];
   let proxies = new WeakMap();
 

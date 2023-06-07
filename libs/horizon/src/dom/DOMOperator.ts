@@ -149,7 +149,7 @@ export function submitDomUpdate(tag: string, vNode: VNode) {
 
   if (tag === DomComponent) {
     // DomComponent类型
-    if (element !== null || element !== undefined) {
+    if (element !== null && element !== undefined) {
       const type = vNode.type;
       const changeList = vNode.changeList;
       vNode.changeList = null;
@@ -210,9 +210,9 @@ export function hideDom(tag: string, dom: Element | Text) {
 }
 
 // 不隐藏元素
-export function unHideDom(tag: string, dom: Element | Text, props: Props) {
+export function unHideDom(tag: string, dom: Element | Text, props?: Props) {
   if (tag === DomComponent) {
-    dom.style.display = adjustStyleValue('display', props.style?.display ?? '');
+    dom.style.display = adjustStyleValue('display', props?.style?.display ?? '');
   } else if (tag === DomText) {
     dom.textContent = props;
   }

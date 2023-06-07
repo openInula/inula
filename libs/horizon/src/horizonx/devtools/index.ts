@@ -116,18 +116,22 @@ function makeStoreSnapshot({ type, data }) {
 export const devtools = {
   // returns vNode id from horizon devtools
   getVNodeId: vNode => {
-    if (!isPanelActive()) return;
+    if (!isPanelActive()) {
+      return null;
+    }
     window['__HORIZON_DEV_HOOK__'].send(); // update list first
     return window['__HORIZON_DEV_HOOK__'].getVnodeId(vNode);
   },
   // sends horizonx devtool message to extension
   emit: (type, data) => {
-    if (!isPanelActive()) return;
+    if (!isPanelActive()) {
+      return;
+    }
     window.postMessage({
       type: 'HORIZON_DEV_TOOLS',
       payload: makeStoreSnapshot({ type, data }),
       from: 'dev tool hook',
-    });
+    }, '');
   },
 };
 
@@ -135,7 +139,7 @@ export const devtools = {
 function getAffectedComponents() {
   const allStores = getAllStores();
   const keys = Object.keys(allStores);
-  let res = {};
+  const res = {};
   keys.forEach(key => {
     if (!allStores[key].$config.state._horizonObserver.keyVNodes) {
       res[key] = [];
@@ -144,17 +148,17 @@ function getAffectedComponents() {
     const subRes = new Set();
     const process = Array.from(allStores[key].$config.state._horizonObserver.keyVNodes.values());
     while (process.length) {
-      let pivot = process.shift() as { tag: 'string' };
+      const pivot = process.shift() as { tag: 'string' };
       if (pivot.tag) subRes.add(pivot);
-      if (pivot?.toString() === '[object Set]') Array.from(pivot).forEach(item => process.push(item));
+      if (pivot.toString() === '[object Set]') Array.from(pivot).forEach(item => process.push(item));
     }
-    res[key] = Array.from(subRes).map(vnode => {
+    res[key] = Array.from(subRes).map(vNode => {
       return {
-        name: vnode?.type
+        name: vNode?.type
           .toString()
           .replace(/\{.*\}/, '{...}')
           .replace('function ', ''),
-        nodeId: window.__HORIZON_DEV_HOOK__.getVnodeId(vnode),
+        nodeId: window.__HORIZON_DEV_HOOK__.getVnodeId(vNode),
       };
     });
   });
@@ -163,7 +167,7 @@ function getAffectedComponents() {
 }
 
 // listens to messages from background
-window.addEventListener('message', messageEvent => {
+window.addEventListener('message', (messageEvent?) => {
   if (messageEvent?.data?.payload?.type === 'horizonx request observed components') {
     // get observed components
     setTimeout(() => {
@@ -171,7 +175,7 @@ window.addEventListener('message', messageEvent => {
         type: 'HORIZON_DEV_TOOLS',
         payload: { type: OBSERVED_COMPONENTS, data: getAffectedComponents() },
         from: 'dev tool hook',
-      });
+      }, '');
     }, 100);
   }
 
@@ -216,6 +220,7 @@ window.addEventListener('message', messageEvent => {
         console.error(err);
       }
     }
-    // TODO:implement add and delete element
+
+    // need to implement add and delete element
   }
 });

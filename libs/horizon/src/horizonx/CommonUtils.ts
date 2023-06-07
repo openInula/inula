@@ -115,7 +115,8 @@ export function resolveMutation(from, to) {
           if (res[i].mutation) found = true;
         }
       }
-      // TODO: resolve shifts
+
+      // need to resolve shifts
       return { mutation: found, items: res, from, to };
     }
 

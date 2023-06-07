@@ -35,7 +35,7 @@ function set(rawObj: any[], key: string, value: any, receiver: any) {
 
   if (!isSame(newValue, oldValue)) {
     // 值不一样，触发监听器
-    if (observer.watchers?.[key]) {
+    if (observer.watchers[key]) {
       observer.watchers[key].forEach(cb => {
         cb(key, oldValue, newValue, mutation);
       });

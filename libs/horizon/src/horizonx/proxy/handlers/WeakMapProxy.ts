@@ -22,10 +22,9 @@ const COLLECTION_CHANGE = '_collectionChange';
 
 export function createWeakMapProxy(
   rawObj: Object,
-  hookObserver: boolean,
-  listener: { current: (...args) => any }
+  listener: { current: (...args) => any },
+  hookObserver = true
 ): Object {
-  hookObserver = hookObserver ||true;
   let listeners: ((mutation) => {})[] = [];
 
   const handler = {
@@ -117,7 +116,7 @@ export function createWeakMapProxy(
     }
 
     if (valChange) {
-      if (observer.watchers?.[key]) {
+      if (observer.watchers[key]) {
         observer.watchers[key].forEach(cb => {
           cb(key, oldValue, newValue, mutation);
         });

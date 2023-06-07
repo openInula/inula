@@ -62,11 +62,12 @@ export function createProxy(rawObj: any, isHookObserver: boolean, listener: { cu
   // 创建Proxy
   let proxyObj;
   if (!isHookObserver) {
-    proxyObj = createObjectProxy(rawObj, true, {
-      current: change => {
-        listener.current(change);
+    proxyObj = createObjectProxy(rawObj, {
+        current: change => {
+          listener.current(change);
+        },
       },
-    });
+      true);
   } else if (isArray(rawObj)) {
     // 数组
     proxyObj = createArrayProxy(rawObj as [], {
@@ -76,18 +77,20 @@ export function createProxy(rawObj: any, isHookObserver: boolean, listener: { cu
     });
   } else if (isCollection(rawObj)) {
     // 集合
-    proxyObj = createCollectionProxy(rawObj, true, {
-      current: change => {
-        listener.current(change);
+    proxyObj = createCollectionProxy(rawObj, {
+        current: change => {
+          listener.current(change);
+        },
       },
-    });
+      true);
   } else {
     // 原生对象 或 函数
-    proxyObj = createObjectProxy(rawObj, false, {
-      current: change => {
-        listener.current(change);
+    proxyObj = createObjectProxy(rawObj, {
+        current: change => {
+          listener.current(change);
+        },
       },
-    });
+      false);
   }
 
   proxyMap.set(rawObj, proxyObj);

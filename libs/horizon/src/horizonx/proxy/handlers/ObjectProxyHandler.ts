@@ -29,7 +29,7 @@ function set(rawObj: object, key: string, value: any, receiver: any): boolean {
   const mutation = isPanelActive() ? resolveMutation(oldObject, rawObj) : resolveMutation(null, rawObj);
 
   if (!isSame(newValue, oldValue)) {
-    if (observer.watchers?.[key]) {
+    if (observer.watchers[key]) {
       observer.watchers[key].forEach(cb => {
         cb(key, oldValue, newValue, mutation);
       });
@@ -41,10 +41,9 @@ function set(rawObj: object, key: string, value: any, receiver: any): boolean {
 
 export function createObjectProxy<T extends object>(
   rawObj: T,
-  singleLevel: boolean,
-  listener: { current: (...args) => any }
+  listener: { current: (...args) => any },
+  singleLevel = false
 ): ProxyHandler<T> {
-  singleLevel = singleLevel || false;
   let listeners = [] as ((...args) => void)[];
 
   function get(rawObj: object, key: string | symbol, receiver: any): any {

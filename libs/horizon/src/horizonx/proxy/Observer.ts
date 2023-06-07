@@ -97,10 +97,6 @@ export class Observer implements IObserver {
   }
 
   triggerUpdate(vNode: VNode): void {
-    if (!vNode) {
-      return;
-    }
-
     // 触发VNode更新
     launchUpdateFromVNode(vNode);
   }

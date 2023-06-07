@@ -48,7 +48,7 @@ export function setDomProps(dom: Element, props: Object, isNativeTag: boolean, i
       }
     } else if (propName === 'dangerouslySetInnerHTML') {
       dom.innerHTML = propVal.__html;
-    } else if (!isInit || propVal !== null || propVal !== undefined) {
+    } else if (!isInit || (propVal !== null && propVal !== undefined)) {
       updateCommonProp(dom, propName, propVal, isNativeTag);
     }
   }
@@ -103,7 +103,7 @@ export function compareProps(oldProps: Object, newProps: Object): Object {
   for (let i = 0; i < keysOfNewProps.length; i++) {
     propName = keysOfNewProps[i];
     newPropValue = newProps[propName];
-    oldPropValue = oldProps !== null ? oldProps[propName] : null;
+    oldPropValue = oldProps !== null && oldProps !== undefined ? oldProps[propName] : null;
 
     if (
       newPropValue === oldPropValue
@@ -144,7 +144,7 @@ export function compareProps(oldProps: Object, newProps: Object): Object {
     } else if (propName === 'dangerouslySetInnerHTML') {
       newHTML = newPropValue ? newPropValue.__html : undefined;
       oldHTML = oldPropValue ? oldPropValue.__html : undefined;
-      if (newHTML != null) {
+      if (newHTML !== null && newHTML !== undefined) {
         if (oldHTML !== newHTML) {
           toUpdateProps[propName] = newPropValue;
         }

@@ -20,10 +20,9 @@ const COLLECTION_CHANGE = '_collectionChange';
 
 export function createSetProxy<T extends object>(
   rawObj: T,
-  hookObserver: boolean,
-  listener: { current: (...args) => any }
+  listener: { current: (...args) => any },
+  hookObserver = true
 ): ProxyHandler<T> {
-  hookObserver = hookObserver || true;
   let listeners: ((mutation) => {})[] = [];
   let proxies = new WeakMap();
 

@@ -20,14 +20,17 @@ import { isPanelActive } from '../../devtools';
 
 const COLLECTION_CHANGE = '_collectionChange';
 
-export function createMapProxy(rawObj: Object, hookObserver: boolean, listener: { current: (...args) => any }): Object {
-  hookObserver = hookObserver || true;
+export function createMapProxy(
+  rawObj: Object,
+  listener: { current: (...args) => any },
+  hookObserver = true
+): Object {
   let listeners: ((mutation) => {})[] = [];
   let oldData: [any, any][] = [];
   let proxies = new Map();
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  function getFun(rawObj: { get: (key: any) => any; has: (key: any) => boolean }, key: any) {
+  function getFun(rawObj: { get: (key: any) => any; has: (key: any) => boolean }, key: any): any {
     const keyProxy = rawObj.has(key) ? key : proxies.get(key);
     if (!keyProxy) return;
     const observer = getObserver(rawObj);
@@ -61,7 +64,7 @@ export function createMapProxy(rawObj: Object, hookObserver: boolean, listener: 
     },
     key: any,
     value: any
-  ) {
+  ): any {
     if (rawObj.has(key) || rawObj.has(proxies.get(key))) {
       // VALUE CHANGE (whole value for selected key is changed)
       const oldValue = rawObj.get(proxies.get(key));
@@ -71,7 +74,7 @@ export function createMapProxy(rawObj: Object, hookObserver: boolean, listener: 
       const observer = getObserver(rawObj);
       observer.setProp(COLLECTION_CHANGE, mutation);
 
-      if (observer.watchers?.[key]) {
+      if (observer.watchers[key]) {
         observer.watchers[key].forEach(cb => {
           cb(key, oldValue, value, mutation);
         });

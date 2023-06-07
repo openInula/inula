@@ -72,15 +72,10 @@ function mergeDefault(sourceObj, defaultObj) {
 // ['key', 'ref', '__source', '__self']属性不从setting获取
 const keyArray = ['key', 'ref', '__source', '__self'];
 
-function getSettingArgs(setting, isClone, type) {
-  const key = setting && setting.key !== undefined ? String(setting.key) : (isClone ? type.key : null);
-  const ref = setting && setting.ref !== undefined ? setting.ref : (isClone ? type.ref : null);
-  return { key, ref };
-}
-
 function buildElement(isClone, type, setting, children) {
   // setting中的值优先级最高，clone情况下从 type 中取值，创建情况下直接赋值为 null
-  const { key, ref } = getSettingArgs(setting, isClone, type);
+  const key = (setting && setting.key !== undefined) ? String(setting.key) : (isClone ? type.key : null);
+  const ref = (setting && setting.ref !== undefined) ? setting.ref : (isClone ? type.ref : null);
   const props = isClone ? { ...type.props } : {};
   let vNode = isClone ? type[BELONG_CLASS_VNODE_KEY] : getProcessingClassVNode();
 
