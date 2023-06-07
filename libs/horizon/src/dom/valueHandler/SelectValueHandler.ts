@@ -14,7 +14,6 @@
  */
 
 import { HorizonSelect, Props } from '../utils/Interface';
-import { isNull } from '../utils/Common';
 
 function updateMultipleValue(options, newValues) {
   const newValueSet = new Set();
@@ -70,18 +69,18 @@ export function updateSelectValue(dom: HorizonSelect, props: Props, isInit = fal
   dom._multiple = newMultiple;
 
   // 设置了 value 属性
-  if (!isNull(value)) {
+  if (value !== null && value !== undefined) {
     updateValue(dom.options, value, newMultiple);
   } else if (oldMultiple !== newMultiple) {
     // 修改了 multiple 属性
     // 切换 multiple 之后，如果设置了 defaultValue 需要重新应用
-    if (!isNull(defaultValue)) {
+    if (defaultValue !== null && defaultValue !== undefined) {
       updateValue(dom.options, defaultValue, newMultiple);
     } else {
       // 恢复到未选定状态
       updateValue(dom.options, newMultiple ? [] : '', newMultiple);
     }
-  } else if (isInit && !isNull(defaultValue)) {
+  } else if (isInit && defaultValue !== null && defaultValue !== undefined) {
     // 设置了 defaultValue 属性
     updateValue(dom.options, defaultValue, newMultiple);
   }

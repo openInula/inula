@@ -85,6 +85,6 @@ export function shouldAutoFocus(tagName: string, props: Props): boolean {
   return types.includes(tagName) ? Boolean(props.autoFocus) : false;
 }
 
-export function isNull(val) {
-  return val === null || val === undefined;
+export function isNotNull(object: any): boolean {
+  return object !== null && object !== undefined;
 }

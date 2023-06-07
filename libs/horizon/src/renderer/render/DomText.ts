@@ -27,7 +27,7 @@ export function captureRender(): VNode | null {
 export function bubbleRender(processing: VNode) {
   const newText = processing.props;
 
-  if (!processing.isCreated && !isNull(processing.realNode)) {
+  if (!processing.isCreated && processing.realNode !== null) {
     // 更新
     const oldText = processing.oldProps;
     // 如果文本不同，将其标记为更新

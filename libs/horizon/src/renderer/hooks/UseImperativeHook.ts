@@ -17,10 +17,7 @@ import { useLayoutEffectImpl } from './UseEffectHook';
 import { getHookStage } from './HookStage';
 import { throwNotInFuncError } from './BaseHook';
 import type { Ref } from './HookType';
-
-function isNotNull(object: any): boolean {
-  return object !== null && object !== undefined;
-}
+import { isNotNull } from '../../dom/utils/Common';
 
 function effectFunc<R>(func: () => R, ref: Ref<R> | ((any) => any) | null): (() => void) | null {
   if (typeof ref === 'function') {

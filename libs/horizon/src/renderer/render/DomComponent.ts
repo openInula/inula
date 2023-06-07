@@ -23,7 +23,6 @@ import { markRef } from './BaseComponent';
 import { DomComponent, DomPortal, DomText } from '../vnode/VNodeTags';
 import { travelVNodeTree } from '../vnode/VNodeUtils';
 import { createChildrenByDiff } from '../diff/nodeDiffComparator';
-import { isNull } from '../../dom/utils/Common';
 
 function updateDom(processing: VNode, type: any, newProps: Props) {
   // 如果oldProps !== newProps，意味着存在更新，并且需要处理其相关的副作用
@@ -55,7 +54,7 @@ export function bubbleRender(processing: VNode) {
 
   const type = processing.type;
   const newProps = processing.props;
-  if (!processing.isCreated && !isNull(processing.realNode)) {
+  if (!processing.isCreated && processing.realNode !== null) {
     // 更新dom属性
     updateDom(processing, type, newProps);
 

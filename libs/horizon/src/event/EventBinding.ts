@@ -73,7 +73,7 @@ export function lazyDelegateOnRoot(currentRoot: VNode, eventName: string) {
     const nativeFullName = isCapture ? nativeEvent + 'capture' : nativeEvent;
 
     // 事件存储在DOM节点属性，避免多个VNode(root和portal)对应同一个DOM, 造成事件重复监听
-    currentRoot.realNode.$EV = currentRoot.realNode.$EV || {};
+    currentRoot.realNode.$EV = currentRoot.realNode.$EV ?? {};
     const events = currentRoot.realNode.$EV;
 
     if (!events[nativeFullName]) {

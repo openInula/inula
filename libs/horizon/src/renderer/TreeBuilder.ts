@@ -54,7 +54,6 @@ import {
 import { getPathArr } from './utils/vNodePath';
 import { injectUpdater } from '../external/devtools';
 import { popCurrentRoot, pushCurrentRoot } from './RootStack';
-import { isNull } from '../dom/utils/Common';
 
 // 不可恢复错误
 let unrecoverableErrorDuringBuild: any = null;
@@ -140,7 +139,7 @@ function bubbleVNode(vNode: VNode): void {
     node = parent;
     // 更新processing，抛出异常时可以使用
     processing = node;
-  } while (!isNull(node));
+  } while (node);
 
   // 修改结果
   if (getBuildResult() === BuildInComplete) {
@@ -181,7 +180,7 @@ function getChildByIndex(vNode: VNode, idx: number) {
   let node = vNode.child;
   for (let i = 0; i < idx; i++) {
     // 场景：当组件被销毁，业务若异步（定时器）调用setState修改状态，可能出现路径错误，此处进行保护。
-    if (isNull(node)) {
+    if (node === null || node === undefined) {
       return null;
     }
 
@@ -226,7 +225,7 @@ export function calcStartUpdateVNode(treeRoot: VNode) {
     const pathIndex = Number(startNodePath[i]);
     node = getChildByIndex(node, pathIndex)!;
     // 路径错误时，回退到从根更新
-    if (isNull(node)) {
+    if (node === null) {
       return treeRoot;
     }
   }

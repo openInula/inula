@@ -14,13 +14,12 @@
  */
 
 import { Props } from '../utils/Interface';
-import { isNull } from '../utils/Common';
 
 // 值的优先级 value > children > defaultValue
 function getInitValue(props: Props) {
   const { value } = props;
 
-  if (isNull(value)) {
+  if (value === undefined) {
     const { defaultValue, children } = props;
     let initValue = defaultValue;
 
