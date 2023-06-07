@@ -96,6 +96,10 @@ export function createWeakMapProxy(
       };
     }
 
+    if (key === '_rawValue') {
+      return rawObj;
+    }
+
     return Reflect.get(rawObj, key, receiver);
   }
 

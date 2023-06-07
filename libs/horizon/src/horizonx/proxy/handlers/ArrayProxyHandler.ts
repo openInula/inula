@@ -137,6 +137,10 @@ export function createArrayProxy(rawObj: any[], listener: { current: (...args) =
       return objectGet(rawObj, key, receiver);
     }
 
+    if (key === '_rawValue') {
+      return rawObj;
+    }
+
     return Reflect.get(rawObj, key, receiver);
   }
 

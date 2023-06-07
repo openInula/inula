@@ -52,7 +52,15 @@ export function createProxy(rawObj: any, listener: { current: (...args) => any }
   let observer: IObserver = getObserver(rawObj);
   if (!observer) {
     observer = isHookObserver ? new Observer() : new HooklessObserver();
-    rawObj[OBSERVER_KEY] = observer;
+    if (typeof OBSERVER_KEY === 'string') {
+      Object.defineProperty(rawObj, OBSERVER_KEY, {
+        configurable: false,
+        enumerable: false,
+        value: observer,
+      });
+    } else {
+      rawObj[OBSERVER_KEY] = observer;
+    }
   }
 
   hookObserverMap.set(rawObj, isHookObserver);
@@ -95,4 +103,8 @@ export function createProxy(rawObj: any, listener: { current: (...args) => any }
   proxyMap.set(proxyObj, proxyObj);
 
   return proxyObj;
+}
+
+export function toRaw<T>(observed: T): T {
+  return observed && (observed)['_rawValue'];
 }

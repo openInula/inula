@@ -78,6 +78,10 @@ export function createObjectProxy<T extends object>(
       };
     }
 
+    if (key === '_rawValue') {
+      return rawObj;
+    }
+
     observer.useProp(key);
 
     const value = Reflect.get(rawObj, key, receiver);

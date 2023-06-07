@@ -179,6 +179,11 @@ export function createSetProxy<T extends object>(
         };
       };
     }
+
+    if (key === '_rawValue') {
+      return rawObj;
+    }
+
     return Reflect.get(rawObj, key, receiver);
   }
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

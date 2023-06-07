@@ -388,6 +388,10 @@ export function createMapProxy(
       };
     }
 
+    if (key === '_rawValue') {
+      return rawObj;
+    }
+
     return Reflect.get(rawObj, key, receiver);
   }
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
