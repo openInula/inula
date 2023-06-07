@@ -15,6 +15,7 @@
 
 import { resolveMutation } from '../../CommonUtils';
 import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
+import { RAW_VALUE } from "../../Constants";
 
 export function createWeakSetProxy<T extends object>(
   rawObj: T,
@@ -61,7 +62,7 @@ export function createWeakSetProxy<T extends object>(
       };
     }
 
-    if (key === '_rawValue') {
+    if (key === RAW_VALUE) {
       return rawObj;
     }
 

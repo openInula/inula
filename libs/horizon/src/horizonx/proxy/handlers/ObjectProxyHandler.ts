@@ -15,7 +15,7 @@
 
 import { isSame, resolveMutation } from '../../CommonUtils';
 import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
-import { OBSERVER_KEY } from '../../Constants';
+import { OBSERVER_KEY, RAW_VALUE } from '../../Constants';
 import { isPanelActive } from '../../devtools';
 
 function set(rawObj: object, key: string, value: any, receiver: any): boolean {
@@ -78,7 +78,7 @@ export function createObjectProxy<T extends object>(
       };
     }
 
-    if (key === '_rawValue') {
+    if (key === RAW_VALUE) {
       return rawObj;
     }
 

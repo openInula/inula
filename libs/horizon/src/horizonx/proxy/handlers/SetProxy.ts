@@ -15,6 +15,7 @@
 
 import { resolveMutation } from '../../CommonUtils';
 import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
+import { RAW_VALUE } from "../../Constants";
 
 const COLLECTION_CHANGE = '_collectionChange';
 
@@ -180,7 +181,7 @@ export function createSetProxy<T extends object>(
       };
     }
 
-    if (key === '_rawValue') {
+    if (key === RAW_VALUE) {
       return rawObj;
     }
 
