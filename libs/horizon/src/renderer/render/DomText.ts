@@ -18,6 +18,7 @@ import type { VNode } from '../Types';
 import { throwIfTrue } from '../utils/throwIfTrue';
 import { newTextDom } from '../../dom/DOMOperator';
 import { FlagUtils } from '../vnode/VNodeFlags';
+import { isNull } from '../../dom/utils/Common';
 
 export function captureRender(): VNode | null {
   return null;
@@ -26,7 +27,7 @@ export function captureRender(): VNode | null {
 export function bubbleRender(processing: VNode) {
   const newText = processing.props;
 
-  if (!processing.isCreated && processing.realNode != null) {
+  if (!processing.isCreated && !isNull(processing.realNode)) {
     // 更新
     const oldText = processing.oldProps;
     // 如果文本不同，将其标记为更新

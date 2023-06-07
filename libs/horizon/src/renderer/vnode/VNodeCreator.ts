@@ -44,6 +44,7 @@ import {
 import { VNode } from './VNode';
 import { JSXElement, Source } from '../Types';
 import { markVNodePath } from '../utils/vNodePath';
+import { isNull } from '../../dom/utils/Common';
 
 const typeLazyMap = {
   [TYPE_FORWARD_REF]: ForwardRef,
@@ -136,7 +137,7 @@ export function createUndeterminedVNode(type, key, props, source: Source | null)
     vNodeTag = typeMap[type.vtype];
     isLazy = type.vtype === TYPE_LAZY;
   } else {
-    throw Error(`Component type is invalid, got: ${type == null ? type : componentType}`);
+    throw Error(`Component type is invalid, got: ${isNull(type) ? type : componentType}`);
   }
 
   const vNode = newVirtualNode(vNodeTag, key, props);
@@ -183,7 +184,7 @@ export function createTreeRootVNode(container) {
   return vNode;
 }
 
-// TODO: 暂时保留给测试用例使用，后续修改测试用例
+// 暂时保留给测试用例使用，后续修改测试用例
 export function createVNode(tag: VNodeTag | string, ...secondArg) {
   let vNode = null;
   switch (tag) {

@@ -36,71 +36,71 @@ export const ForceUpdate = /**     */ 1 << 12; // For suspense
 export const Clear = /**     */ 1 << 13;
 const LifecycleEffectArr = Update | Callback | Ref | Snapshot;
 
-export class FlagUtils {
-  static removeFlag(node: VNode, flag: number) {
+export const FlagUtils = {
+  removeFlag(node: VNode, flag: number) {
     node.flags &= ~flag;
-  }
+  },
 
-  static removeLifecycleEffectFlags(node) {
+  removeLifecycleEffectFlags(node) {
     node.flags &= ~LifecycleEffectArr;
-  }
+  },
 
-  static hasAnyFlag(node: VNode) {
+  hasAnyFlag(node: VNode) {
     // 有标志位
     return node.flags !== InitFlag;
-  }
+  },
 
-  static hasFlag(node: VNode, flag) {
+  hasFlag(node: VNode, flag) {
     return (node.flags & flag) !== 0;
-  }
+  },
 
-  static setNoFlags(node: VNode) {
+  setNoFlags(node: VNode) {
     node.flags = InitFlag;
-  }
+  },
 
-  static markAddition(node: VNode) {
+  markAddition(node: VNode) {
     node.flags |= Addition;
-  }
+  },
 
-  static setAddition(node: VNode) {
+  setAddition(node: VNode) {
     node.flags = Addition;
-  }
+  },
 
-  static markDirectAddition(node: VNode) {
+  markDirectAddition(node: VNode) {
     node.flags |= DirectAddition;
-  }
-  static markUpdate(node: VNode) {
+  },
+  markUpdate(node: VNode) {
     node.flags |= Update;
-  }
-  static setDeletion(node: VNode) {
+  },
+  setDeletion(node: VNode) {
     node.flags = Deletion;
-  }
-  static markContentReset(node: VNode) {
+  },
+  markContentReset(node: VNode) {
     node.flags |= ResetText;
-  }
-  static markCallback(node: VNode) {
+  },
+  markCallback(node: VNode) {
     node.flags |= Callback;
-  }
-  static markDidCapture(node: VNode) {
+  },
+  markDidCapture(node: VNode) {
     node.flags |= DidCapture;
-  }
-  static markShouldCapture(node: VNode) {
+  },
+  markShouldCapture(node: VNode) {
     node.flags |= ShouldCapture;
-  }
-  static markRef(node: VNode) {
+  },
+  markRef(node: VNode) {
     node.flags |= Ref;
-  }
-  static markSnapshot(node: VNode) {
+  },
+  markSnapshot(node: VNode) {
     node.flags |= Snapshot;
-  }
-  static markInterrupted(node: VNode) {
+  },
+  markInterrupted(node: VNode) {
     node.flags |= Interrupted;
-  }
-  static markForceUpdate(node: VNode) {
+  },
+  markForceUpdate(node: VNode) {
     node.flags |= ForceUpdate;
-  }
+  },
 
-  static markClear(node: VNode) {
+  markClear(node: VNode) {
     node.flags |= Clear;
   }
 }

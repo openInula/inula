@@ -22,7 +22,7 @@ function isNotNull(object: any): boolean {
   return object !== null && object !== undefined;
 }
 
-function effectFunc<R>(func: () => R, ref: Ref<R> | ((any) => any) | null): (() => void) | void {
+function effectFunc<R>(func: () => R, ref: Ref<R> | ((any) => any) | null): (() => void) | null {
   if (typeof ref === 'function') {
     const value = func();
     ref(value);
@@ -37,6 +37,7 @@ function effectFunc<R>(func: () => R, ref: Ref<R> | ((any) => any) | null): (() 
       ref.current = null;
     };
   }
+  return null;
 }
 
 export function useImperativeHandleImpl<R>(

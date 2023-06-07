@@ -64,7 +64,7 @@ function handleContextChange(processing: VNode, context: ContextType<any>): void
     node => {
       const depContexts = node.depContexts;
       if (depContexts && depContexts.length) {
-        isMatch = matchDependencies(depContexts, context, node) ?? isMatch;
+        isMatch = matchDependencies(depContexts, context, node) || isMatch;
       }
     },
     node =>

@@ -35,7 +35,7 @@ function callRenderQueue() {
 
     try {
       let callback;
-      while ((callback = renderQueue.shift())) {
+      while (callback = renderQueue.shift()) {
         callback();
       }
 
