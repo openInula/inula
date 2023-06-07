@@ -42,18 +42,20 @@ export function createWeakMapProxy(
 
     const value = rawObj.get(key);
     // 对于value也需要进一步代理
-    const valProxy = createProxy(value, hookObserverMap.get(rawObj), {
-      current: change => {
-        if (!change.parents) change.parents = [];
-        change.parents.push(rawObj);
-        let mutation = resolveMutation(
-          { ...rawObj, [key]: change.mutation.from },
-          { ...rawObj, [key]: change.mutation.to }
-        );
-        listener.current({ ...change, mutation });
-        listeners.forEach(lst => lst({ ...change, mutation }));
+    const valProxy = createProxy(value, {
+        current: change => {
+          if (!change.parents) change.parents = [];
+          change.parents.push(rawObj);
+          let mutation = resolveMutation(
+            { ...rawObj, [key]: change.mutation.from },
+            { ...rawObj, [key]: change.mutation.to }
+          );
+          listener.current({ ...change, mutation });
+          listeners.forEach(lst => lst({ ...change, mutation }));
+        },
       },
-    });
+      hookObserverMap.get(rawObj)
+    );
 
     return valProxy;
   }
@@ -116,7 +118,7 @@ export function createWeakMapProxy(
     }
 
     if (valChange) {
-      if (observer.watchers[key]) {
+      if (observer.watchers?.[key]) {
         observer.watchers[key].forEach(cb => {
           cb(key, oldValue, newValue, mutation);
         });

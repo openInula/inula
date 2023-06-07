@@ -66,18 +66,20 @@ export function createWeakSetProxy<T extends object>(
   // Set的add方法
   function add(rawObj: { add: (any) => void; has: (any) => boolean }, value: any): Object {
     if (!rawObj.has(proxies.get(value))) {
-      const proxy = createProxy(value, hookObserverMap.get(rawObj), {
-        current: change => {
-          if (!change.parents) change.parents = [];
-          change.parents.push(rawObj);
-          let mutation = resolveMutation(
-            { ...rawObj, [value]: change.mutation.from },
-            { ...rawObj, [value]: change.mutation.to }
-          );
-          listener.current({ ...change, mutation });
-          listeners.forEach(lst => lst({ ...change, mutation }));
+      const proxy = createProxy(value, {
+          current: change => {
+            if (!change.parents) change.parents = [];
+            change.parents.push(rawObj);
+            let mutation = resolveMutation(
+              { ...rawObj, [value]: change.mutation.from },
+              { ...rawObj, [value]: change.mutation.to }
+            );
+            listener.current({ ...change, mutation });
+            listeners.forEach(lst => lst({ ...change, mutation }));
+          },
         },
-      });
+        hookObserverMap.get(rawObj)
+      );
 
       proxies.set(value, proxy);
 

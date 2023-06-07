@@ -29,26 +29,28 @@ export function createSetProxy<T extends object>(
   // Set的add方法
   function add(rawObj: { add: (any) => void; has: (any) => boolean; values: () => any[] }, value: any): Object {
     if (!rawObj.has(proxies.get(value))) {
-      const proxy = createProxy(value, hookObserverMap.get(rawObj), {
-        current: change => {
-          if (!change.parents) change.parents = [];
-          change.parents.push(rawObj);
-          let mutation = resolveMutation(
-            { ...rawObj, valueChange: change.mutation.from },
-            { ...rawObj, valueChange: change.mutation.to }
-          );
-          listener.current({
-            ...change,
-            mutation,
-          });
-          listeners.forEach(lst =>
-            lst({
+      const proxy = createProxy(value, {
+          current: change => {
+            if (!change.parents) change.parents = [];
+            change.parents.push(rawObj);
+            let mutation = resolveMutation(
+              { ...rawObj, valueChange: change.mutation.from },
+              { ...rawObj, valueChange: change.mutation.to }
+            );
+            listener.current({
               ...change,
               mutation,
-            })
-          );
+            });
+            listeners.forEach(lst =>
+              lst({
+                ...change,
+                mutation,
+              })
+            );
+          },
         },
-      });
+        hookObserverMap.get(rawObj)
+      );
       const oldValues = Array.from(rawObj.values());
 
       proxies.set(value, proxy);
@@ -210,13 +212,13 @@ export function createSetProxy<T extends object>(
         };
         const { value, done } = rawIt.next();
         if (done) {
-          return { value: createProxy(value, hookObserver, currentListener), done };
+          return { value: createProxy(value, currentListener, hookObserver), done };
         }
 
         observer.useProp(COLLECTION_CHANGE);
 
         let newVal;
-        newVal = createProxy(value, hookObserver, currentListener);
+        newVal = createProxy(value, currentListener, hookObserver);
 
         return { value: newVal, done };
       },
@@ -274,8 +276,8 @@ export function createSetProxy<T extends object>(
           );
         },
       };
-      const valProxy = createProxy(value, hookObserverMap.get(rawObj), currentListener);
-      const keyProxy = createProxy(key, hookObserverMap.get(rawObj), currentListener);
+      const valProxy = createProxy(value, currentListener, hookObserverMap.get(rawObj));
+      const keyProxy = createProxy(key, currentListener, hookObserverMap.get(rawObj));
       // 最后一个参数要返回代理对象
       return callback(valProxy, keyProxy, rawObj);
     });

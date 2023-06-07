@@ -161,7 +161,7 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
     current: listener => {},
   };
 
-  const proxyObj = createProxy(config.state, !config.options?.isReduxAdapter, listener);
+  const proxyObj = createProxy(config.state, listener, !config.options?.isReduxAdapter);
 
   proxyObj.$pending = false;
 
