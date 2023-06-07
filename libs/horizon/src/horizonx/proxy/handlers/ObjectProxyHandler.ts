@@ -41,8 +41,8 @@ function set(rawObj: object, key: string, value: any, receiver: any): boolean {
 
 export function createObjectProxy<T extends object>(
   rawObj: T,
-  singleLevel = false,
-  listener: { current: (...args) => any }
+  listener: { current: (...args) => any },
+  singleLevel = false
 ): ProxyHandler<T> {
   let listeners = [] as ((...args) => void)[];
 
@@ -87,7 +87,7 @@ export function createObjectProxy<T extends object>(
       // 对于value也需要进一步代理
       const valProxy = singleLevel
         ? value
-        : createProxy(value, hookObserverMap.get(rawObj), {
+        : createProxy(value, {
             current: change => {
               if (!change.parents) change.parents = [];
               change.parents.push(rawObj);
@@ -98,7 +98,9 @@ export function createObjectProxy<T extends object>(
               listener.current({ ...change, mutation });
               listeners.forEach(lst => lst({ ...change, mutation }));
             },
-          });
+          },
+          hookObserverMap.get(rawObj)
+        );
 
       return valProxy;
     }

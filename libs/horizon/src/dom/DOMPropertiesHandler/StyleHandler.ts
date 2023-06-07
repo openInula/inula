@@ -67,7 +67,7 @@ export function adjustStyleValue(name, value) {
 
   if (typeof value === 'number' && value !== 0 && isNeedUnitCSS(name)) {
     validValue = `${value}px`;
-  } else if (value === '' || value == null || typeof value === 'boolean') {
+  } else if (value === '' || value === null || value === undefined || typeof value === 'boolean') {
     validValue = '';
   }
 

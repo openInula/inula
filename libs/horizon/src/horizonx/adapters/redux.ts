@@ -140,7 +140,8 @@ export function createStore(reducer: Reducer, preloadedState?: any, enhancers?):
 }
 
 export function combineReducers(reducers: { [key: string]: Reducer }): Reducer {
-  return (state = {}, action) => {
+  return (state, action) => {
+    state = state || {};
     const newState = {};
     Object.entries(reducers).forEach(([key, reducer]) => {
       newState[key] = reducer(state[key], action);

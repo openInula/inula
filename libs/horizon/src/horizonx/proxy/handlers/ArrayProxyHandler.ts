@@ -97,7 +97,7 @@ export function createArrayProxy(rawObj: any[], listener: { current: (...args) =
       // 对于value也需要进一步代理
       const valProxy = singleLevel
         ? value
-        : createProxy(value, hookObserverMap.get(rawObj), {
+        : createProxy(value, {
             current: change => {
               if (!change.parents) change.parents = [];
               change.parents.push(rawObj);
@@ -108,7 +108,9 @@ export function createArrayProxy(rawObj: any[], listener: { current: (...args) =
               listener.current(mutation);
               listeners.forEach(lst => lst(mutation));
             },
-          });
+          },
+          hookObserverMap.get(rawObj)
+        );
 
       return valProxy;
     }

@@ -31,7 +31,7 @@ export function getObserver(rawObj: any): Observer {
   return rawObj[OBSERVER_KEY];
 }
 
-export function createProxy(rawObj: any, isHookObserver = true, listener: { current: (...args) => any }): any {
+export function createProxy(rawObj: any, listener: { current: (...args) => any }, isHookObserver = true): any {
   // 不是对象（是原始数据类型）不用代理
   if (!(rawObj && isObject(rawObj))) {
     return rawObj;
@@ -60,11 +60,12 @@ export function createProxy(rawObj: any, isHookObserver = true, listener: { curr
   // 创建Proxy
   let proxyObj;
   if (!isHookObserver) {
-    proxyObj = createObjectProxy(rawObj, true, {
-      current: change => {
-        listener.current(change);
+    proxyObj = createObjectProxy(rawObj, {
+        current: change => {
+          listener.current(change);
+        },
       },
-    });
+      true);
   } else if (isArray(rawObj)) {
     // 数组
     proxyObj = createArrayProxy(rawObj as [], {
@@ -74,18 +75,20 @@ export function createProxy(rawObj: any, isHookObserver = true, listener: { curr
     });
   } else if (isCollection(rawObj)) {
     // 集合
-    proxyObj = createCollectionProxy(rawObj, true, {
-      current: change => {
-        listener.current(change);
+    proxyObj = createCollectionProxy(rawObj, {
+        current: change => {
+          listener.current(change);
+        },
       },
-    });
+      true);
   } else {
     // 原生对象 或 函数
-    proxyObj = createObjectProxy(rawObj, false, {
-      current: change => {
-        listener?.current(change);
+    proxyObj = createObjectProxy(rawObj, {
+        current: change => {
+          listener.current(change);
+        },
       },
-    });
+      false);
   }
 
   proxyMap.set(rawObj, proxyObj);

@@ -18,11 +18,18 @@ import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
 
 export function createWeakSetProxy<T extends object>(
   rawObj: T,
+  listener: { current: (...args) => any },
   hookObserver = true,
-  listener: { current: (...args) => any }
 ): ProxyHandler<T> {
   let listeners: ((mutation) => {})[] = [];
   let proxies = new WeakMap();
+
+  const handler = {
+    get,
+    add,
+    delete: deleteFun,
+    has,
+  };
 
   function get(rawObj: { size: number }, key: any, receiver: any): any {
     if (Object.prototype.hasOwnProperty.call(handler, key)) {
@@ -59,18 +66,20 @@ export function createWeakSetProxy<T extends object>(
   // Set的add方法
   function add(rawObj: { add: (any) => void; has: (any) => boolean }, value: any): Object {
     if (!rawObj.has(proxies.get(value))) {
-      const proxy = createProxy(value, hookObserverMap.get(rawObj), {
-        current: change => {
-          if (!change.parents) change.parents = [];
-          change.parents.push(rawObj);
-          let mutation = resolveMutation(
-            { ...rawObj, [value]: change.mutation.from },
-            { ...rawObj, [value]: change.mutation.to }
-          );
-          listener.current({ ...change, mutation });
-          listeners.forEach(lst => lst({ ...change, mutation }));
+      const proxy = createProxy(value, {
+          current: change => {
+            if (!change.parents) change.parents = [];
+            change.parents.push(rawObj);
+            let mutation = resolveMutation(
+              { ...rawObj, [value]: change.mutation.from },
+              { ...rawObj, [value]: change.mutation.to }
+            );
+            listener.current({ ...change, mutation });
+            listeners.forEach(lst => lst({ ...change, mutation }));
+          },
         },
-      });
+        hookObserverMap.get(rawObj)
+      );
 
       proxies.set(value, proxy);
 
@@ -108,13 +117,6 @@ export function createWeakSetProxy<T extends object>(
 
     return false;
   }
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  const handler = {
-    get,
-    add,
-    delete: deleteFun,
-    has,
-  };
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   getObserver(rawObj).addListener(change => {
     if (!change.parents) change.parents = [];

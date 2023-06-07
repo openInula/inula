@@ -20,13 +20,17 @@ import { isPanelActive } from '../../devtools';
 
 const COLLECTION_CHANGE = '_collectionChange';
 
-export function createMapProxy(rawObj: Object, hookObserver = true, listener: { current: (...args) => any }): Object {
+export function createMapProxy(
+  rawObj: Object,
+  listener: { current: (...args) => any },
+  hookObserver = true
+): Object {
   let listeners: ((mutation) => {})[] = [];
   let oldData: [any, any][] = [];
   let proxies = new Map();
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  function getFun(rawObj: { get: (key: any) => any; has: (key: any) => boolean }, key: any) {
+  function getFun(rawObj: { get: (key: any) => any; has: (key: any) => boolean }, key: any): any {
     const keyProxy = rawObj.has(key) ? key : proxies.get(key);
     if (!keyProxy) return;
     const observer = getObserver(rawObj);
@@ -34,18 +38,20 @@ export function createMapProxy(rawObj: Object, hookObserver = true, listener: { 
     const value = rawObj.get(keyProxy);
 
     // 对于value也需要进一步代理
-    const valProxy = createProxy(value, hookObserverMap.get(rawObj), {
-      current: change => {
-        if (!change.parents) change.parents = [];
-        change.parents.push(rawObj);
-        let mutation = resolveMutation(
-          { ...rawObj, [key]: change.mutation.from },
-          { ...rawObj, [key]: change.mutation.to }
-        );
-        listener.current({ ...change, mutation });
-        listeners.forEach(lst => lst({ ...change, mutation }));
+    const valProxy = createProxy(value, {
+        current: change => {
+          if (!change.parents) change.parents = [];
+          change.parents.push(rawObj);
+          let mutation = resolveMutation(
+            { ...rawObj, [key]: change.mutation.from },
+            { ...rawObj, [key]: change.mutation.to }
+          );
+          listener.current({ ...change, mutation });
+          listeners.forEach(lst => lst({ ...change, mutation }));
+        },
       },
-    });
+      hookObserverMap.get(rawObj)
+    );
 
     return valProxy;
   }
@@ -60,7 +66,7 @@ export function createMapProxy(rawObj: Object, hookObserver = true, listener: { 
     },
     key: any,
     value: any
-  ) {
+  ): any {
     if (rawObj.has(key) || rawObj.has(proxies.get(key))) {
       // VALUE CHANGE (whole value for selected key is changed)
       const oldValue = rawObj.get(proxies.get(key));
@@ -70,7 +76,7 @@ export function createMapProxy(rawObj: Object, hookObserver = true, listener: { 
       const observer = getObserver(rawObj);
       observer.setProp(COLLECTION_CHANGE, mutation);
 
-      if (observer.watchers?.[key]) {
+      if (observer.watchers[key]) {
         observer.watchers[key].forEach(cb => {
           cb(key, oldValue, value, mutation);
         });
@@ -80,19 +86,21 @@ export function createMapProxy(rawObj: Object, hookObserver = true, listener: { 
       oldData = [...Array.from(rawObj.entries())];
     } else {
       // NEW VALUE
-      const keyProxy = createProxy(key, hookObserverMap.get(rawObj), {
-        current: change => {
-          // KEY CHANGE
-          if (!change.parents) change.parents = [];
-          change.parents.push(rawObj);
-          let mutation = resolveMutation(
-            { ...rawObj, ['_keyChange']: change.mutation.from },
-            { ...rawObj, ['_keyChange']: change.mutation.to }
-          );
-          listener.current({ ...change, mutation });
-          listeners.forEach(lst => lst({ ...change, mutation }));
+      const keyProxy = createProxy(key, {
+          current: change => {
+            // KEY CHANGE
+            if (!change.parents) change.parents = [];
+            change.parents.push(rawObj);
+            let mutation = resolveMutation(
+              { ...rawObj, ['_keyChange']: change.mutation.from },
+              { ...rawObj, ['_keyChange']: change.mutation.to }
+            );
+            listener.current({ ...change, mutation });
+            listeners.forEach(lst => lst({ ...change, mutation }));
+          },
         },
-      });
+        hookObserverMap.get(rawObj)
+      );
       proxies.set(key, keyProxy);
 
       rawObj.set(keyProxy, value);
@@ -176,32 +184,36 @@ export function createMapProxy(rawObj: Object, hookObserver = true, listener: { 
     const observer = getObserver(rawObj);
     observer.useProp(COLLECTION_CHANGE);
     rawObj.forEach((value, key) => {
-      const keyProxy = createProxy(value, hookObserverMap.get(rawObj), {
-        current: change => {
-          //KEY ATTRIBUTES CHANGED
-          if (!change.parents) change.parents = [];
-          change.parents.push(rawObj);
-          let mutation = resolveMutation(
-            { ...rawObj, ['_keyChange']: change.mutation.from },
-            { ...rawObj, ['_keyChange']: change.mutation.to }
-          );
-          listener.current({ ...change, mutation });
-          listeners.forEach(lst => lst({ ...change, mutation }));
+      const keyProxy = createProxy(value, {
+          current: change => {
+            //KEY ATTRIBUTES CHANGED
+            if (!change.parents) change.parents = [];
+            change.parents.push(rawObj);
+            let mutation = resolveMutation(
+              { ...rawObj, ['_keyChange']: change.mutation.from },
+              { ...rawObj, ['_keyChange']: change.mutation.to }
+            );
+            listener.current({ ...change, mutation });
+            listeners.forEach(lst => lst({ ...change, mutation }));
+          },
         },
-      });
-      const valProxy = createProxy(key, hookObserverMap.get(rawObj), {
-        current: change => {
-          // VALUE ATTRIBUTE CHANGED
-          if (!change.parents) change.parents = [];
-          change.parents.push(rawObj);
-          let mutation = resolveMutation(
-            { ...rawObj, key: change.mutation.from },
-            { ...rawObj, key: change.mutation.to }
-          );
-          listener.current({ ...change, mutation });
-          listeners.forEach(lst => lst({ ...change, mutation }));
+        hookObserverMap.get(rawObj)
+      );
+      const valProxy = createProxy(key, {
+          current: change => {
+            // VALUE ATTRIBUTE CHANGED
+            if (!change.parents) change.parents = [];
+            change.parents.push(rawObj);
+            let mutation = resolveMutation(
+              { ...rawObj, key: change.mutation.from },
+              { ...rawObj, key: change.mutation.to }
+            );
+            listener.current({ ...change, mutation });
+            listeners.forEach(lst => lst({ ...change, mutation }));
+          },
         },
-      });
+        hookObserverMap.get(rawObj)
+      );
       // 最后一个参数要返回代理对象
       return callback(keyProxy, valProxy, rawObj);
     });
@@ -217,18 +229,20 @@ export function createMapProxy(rawObj: Object, hookObserver = true, listener: { 
         const { value, done } = rawIt.next();
         if (done) {
           return {
-            value: createProxy(value, hookObserver, {
-              current: change => {
-                if (!change.parents) change.parents = [];
-                change.parents.push(rawObj);
-                let mutation = resolveMutation(
-                  { ...rawObj, [value]: change.mutation.from },
-                  { ...rawObj, [value]: change.mutation.to }
-                );
-                listener.current({ ...change, mutation });
-                listeners.forEach(lst => lst({ ...change, mutation }));
+            value: createProxy(value, {
+                current: change => {
+                  if (!change.parents) change.parents = [];
+                  change.parents.push(rawObj);
+                  let mutation = resolveMutation(
+                    { ...rawObj, [value]: change.mutation.from },
+                    { ...rawObj, [value]: change.mutation.to }
+                  );
+                  listener.current({ ...change, mutation });
+                  listeners.forEach(lst => lst({ ...change, mutation }));
+                },
               },
-            }),
+              hookObserver
+            ),
             done,
           };
         }
@@ -238,45 +252,51 @@ export function createMapProxy(rawObj: Object, hookObserver = true, listener: { 
         if (type === 'entries') {
           //ENTRY CHANGED
           newVal = [
-            createProxy(value[0], hookObserver, {
-              current: change => {
-                if (!change.parents) change.parents = [];
-                change.parents.push(rawObj);
-                let mutation = resolveMutation(
-                  { ...rawObj, ['itemChange']: { key: change.mutation.from, value: value[1] } },
-                  { ...rawObj, ['itemChange']: { key: change.mutation.to, value: value[1] } }
-                );
-                listener.current({ ...change, mutation });
-                listeners.forEach(lst => lst({ ...change, mutation }));
+            createProxy(value[0], {
+                current: change => {
+                  if (!change.parents) change.parents = [];
+                  change.parents.push(rawObj);
+                  let mutation = resolveMutation(
+                    { ...rawObj, ['itemChange']: { key: change.mutation.from, value: value[1] } },
+                    { ...rawObj, ['itemChange']: { key: change.mutation.to, value: value[1] } }
+                  );
+                  listener.current({ ...change, mutation });
+                  listeners.forEach(lst => lst({ ...change, mutation }));
+                },
               },
-            }),
-            createProxy(value[1], hookObserver, {
-              current: change => {
-                if (!change.parents) change.parents = [];
-                change.parents.push(rawObj);
-                let mutation = resolveMutation(
-                  { ...rawObj, item: { key: value[0], value: change.mutation.from } },
-                  { ...rawObj, item: { key: value[0], value: change.mutation.to } }
-                );
-                listener.current({ ...change, mutation });
-                listeners.forEach(lst => lst({ ...change, mutation }));
+              hookObserver
+            ),
+            createProxy(value[1], {
+                current: change => {
+                  if (!change.parents) change.parents = [];
+                  change.parents.push(rawObj);
+                  let mutation = resolveMutation(
+                    { ...rawObj, item: { key: value[0], value: change.mutation.from } },
+                    { ...rawObj, item: { key: value[0], value: change.mutation.to } }
+                  );
+                  listener.current({ ...change, mutation });
+                  listeners.forEach(lst => lst({ ...change, mutation }));
+                },
               },
-            }),
+              hookObserver
+            ),
           ];
         } else {
           // SINGLE VALUE CHANGED
-          newVal = createProxy(value, hookObserver, {
-            current: change => {
-              if (!change.parents) change.parents = [];
-              change.parents.push(rawObj);
-              let mutation = resolveMutation(
-                { ...rawObj, [type === 'keys' ? 'key' : 'value']: change.mutation.from },
-                { ...rawObj, [type === 'keys' ? 'key' : 'value']: change.mutation.to }
-              );
-              listener.current({ ...change, mutation });
-              listeners.forEach(lst => lst({ ...change, mutation }));
+          newVal = createProxy(value, {
+              current: change => {
+                if (!change.parents) change.parents = [];
+                change.parents.push(rawObj);
+                let mutation = resolveMutation(
+                  { ...rawObj, [type === 'keys' ? 'key' : 'value']: change.mutation.from },
+                  { ...rawObj, [type === 'keys' ? 'key' : 'value']: change.mutation.to }
+                );
+                listener.current({ ...change, mutation });
+                listeners.forEach(lst => lst({ ...change, mutation }));
+              },
             },
-          });
+            hookObserver
+          );
         }
 
         return { value: newVal, done };
@@ -313,6 +333,20 @@ export function createMapProxy(rawObj: Object, hookObserver = true, listener: { 
   }) {
     return wrapIterator(rawObj, rawObj.entries(), 'entries');
   }
+
+  const handler = {
+    get,
+    set,
+    delete: deleteFun,
+    clear,
+    has,
+    entries,
+    forEach,
+    keys,
+    values,
+    // 判断Symbol类型，兼容IE
+    [typeof Symbol === 'function' ? Symbol.iterator : '@@iterator']: forOf,
+  };
 
   function get(rawObj: { size: number }, key: any, receiver: any): any {
     if (key === 'size') {
@@ -356,20 +390,6 @@ export function createMapProxy(rawObj: Object, hookObserver = true, listener: { 
 
     return Reflect.get(rawObj, key, receiver);
   }
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  const handler = {
-    get,
-    set,
-    delete: deleteFun,
-    clear,
-    has,
-    entries,
-    forEach,
-    keys,
-    values,
-    // 判断Symbol类型，兼容IE
-    [typeof Symbol === 'function' ? Symbol.iterator : '@@iterator']: forOf,
-  };
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const boundHandler = {};
   Object.entries(handler).forEach(([id, val]) => {
