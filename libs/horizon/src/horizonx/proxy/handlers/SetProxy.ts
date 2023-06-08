@@ -15,7 +15,7 @@
 
 import { resolveMutation } from '../../CommonUtils';
 import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
-import { RAW_VALUE } from "../../Constants";
+import { RAW_VALUE } from '../../Constants';
 
 const COLLECTION_CHANGE = '_collectionChange';
 

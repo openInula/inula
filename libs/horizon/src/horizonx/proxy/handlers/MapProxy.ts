@@ -17,7 +17,7 @@ import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
 import { isSame } from '../../CommonUtils';
 import { resolveMutation } from '../../CommonUtils';
 import { isPanelActive } from '../../devtools';
-import { RAW_VALUE } from "../../Constants";
+import { RAW_VALUE } from '../../Constants';
 
 const COLLECTION_CHANGE = '_collectionChange';
 
