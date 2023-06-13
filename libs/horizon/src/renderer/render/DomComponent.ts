@@ -54,7 +54,7 @@ export function bubbleRender(processing: VNode) {
 
   const type = processing.type;
   const newProps = processing.props;
-  if (!processing.isCreated && processing.realNode != null) {
+  if (!processing.isCreated && processing.realNode !== null) {
     // 更新dom属性
     updateDom(processing, type, newProps);
 

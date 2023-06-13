@@ -63,12 +63,12 @@ export function add(node: Node): void {
 
 export function first(): Node | null {
   const val: Node | null | undefined = taskQueue[0];
-  return val !== undefined ? val : null;
+  return val ?? null;
 }
 
 export function shift(): Node | null {
   const val = taskQueue.shift();
-  return val !== undefined ? val : null;
+  return val ?? null;
 }
 
 export function remove(node: Node) {

@@ -52,7 +52,7 @@ export function createHook(state: any = null): Hook<any, any> {
   return currentHook;
 }
 
-export function getNextHook(hook: Hook<any, any>, hooks: Array<Hook<any, any>>) {
+export function getNextHook(hook: Hook<any, any>, hooks: Array<Hook<any, any>>): Hook<any, any> | null {
   return hooks[hook.hIndex + 1] || null;
 }
 

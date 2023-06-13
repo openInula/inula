@@ -19,7 +19,7 @@ import { Props } from '../utils/Interface';
 function getInitValue(props: Props) {
   const { value } = props;
 
-  if (value == null) {
+  if (value === undefined) {
     const { defaultValue, children } = props;
     let initValue = defaultValue;
 
@@ -30,7 +30,7 @@ function getInitValue(props: Props) {
     }
 
     // defaultValue 属性未配置，置为空字符串
-    initValue = initValue != null ? initValue : '';
+    initValue = initValue ?? '';
     return initValue;
   } else {
     return value;

@@ -136,7 +136,7 @@ export function createUndeterminedVNode(type, key, props, source: Source | null)
     vNodeTag = typeMap[type.vtype];
     isLazy = type.vtype === TYPE_LAZY;
   } else {
-    throw Error(`Component type is invalid, got: ${type == null ? type : componentType}`);
+    throw Error(`Component type is invalid, got: ${type === null || type === undefined ? type : componentType}`);
   }
 
   const vNode = newVirtualNode(vNodeTag, key, props);
@@ -183,7 +183,7 @@ export function createTreeRootVNode(container) {
   return vNode;
 }
 
-// TODO: 暂时保留给测试用例使用，后续修改测试用例
+// 暂时保留给测试用例使用，后续修改测试用例
 export function createVNode(tag: VNodeTag | string, ...secondArg) {
   let vNode = null;
   switch (tag) {
