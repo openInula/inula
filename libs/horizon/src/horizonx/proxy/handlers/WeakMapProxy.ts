@@ -17,6 +17,7 @@ import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
 import { isSame } from '../../CommonUtils';
 import { resolveMutation } from '../../CommonUtils';
 import { isPanelActive } from '../../devtools';
+import { RAW_VALUE } from '../../Constants';
 
 const COLLECTION_CHANGE = '_collectionChange';
 
@@ -94,6 +95,10 @@ export function createWeakMapProxy(
       return listener => {
         listeners = listeners.filter(item => item != listener);
       };
+    }
+
+    if (key === RAW_VALUE) {
+      return rawObj;
     }
 
     return Reflect.get(rawObj, key, receiver);

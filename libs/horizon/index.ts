@@ -69,6 +69,7 @@ import {
 } from './src/dom/DOMExternal';
 
 import { syncUpdates as flushSync } from './src/renderer/TreeBuilder';
+import { toRaw } from './src/horizonx/proxy/ProxyHandler';
 
 const Horizon = {
   Children,
@@ -157,6 +158,7 @@ export {
   clearStore,
   reduxAdapter,
   watch,
+  toRaw,
   // 兼容ReactIs
   isFragment,
   isElement,

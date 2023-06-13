@@ -13,4 +13,6 @@
  * See the Mulan PSL v2 for more details.
  */
 
-export const OBSERVER_KEY = '_horizonObserver';
+export const OBSERVER_KEY = typeof Symbol === 'function' ? Symbol('_horizonObserver') : '_horizonObserver';
+
+export const RAW_VALUE = '_rawValue';

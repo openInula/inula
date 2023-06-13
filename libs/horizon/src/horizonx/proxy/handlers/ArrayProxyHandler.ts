@@ -17,7 +17,7 @@ import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
 import { isSame, isValidIntegerKey } from '../../CommonUtils';
 import { resolveMutation } from '../../CommonUtils';
 import { isPanelActive } from '../../devtools';
-import { OBSERVER_KEY } from '../../Constants';
+import { OBSERVER_KEY, RAW_VALUE } from '../../Constants';
 
 function set(rawObj: any[], key: string, value: any, receiver: any) {
   const oldValue = rawObj[key];
@@ -135,6 +135,10 @@ export function createArrayProxy(rawObj: any[], listener: { current: (...args) =
 
     if (isValidIntegerKey(key) || key === 'length') {
       return objectGet(rawObj, key, receiver);
+    }
+
+    if (key === RAW_VALUE) {
+      return rawObj;
     }
 
     return Reflect.get(rawObj, key, receiver);

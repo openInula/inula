@@ -20,7 +20,7 @@ import { isArray, isCollection, isObject } from '../CommonUtils';
 import { createArrayProxy } from './handlers/ArrayProxyHandler';
 import { createCollectionProxy } from './handlers/CollectionProxyHandler';
 import type { IObserver } from '../types';
-import { OBSERVER_KEY } from '../Constants';
+import { OBSERVER_KEY, RAW_VALUE } from '../Constants';
 
 // 保存rawObj -> Proxy
 const proxyMap = new WeakMap();
@@ -30,6 +30,18 @@ export const hookObserverMap = new WeakMap();
 export function getObserver(rawObj: any): Observer {
   return rawObj[OBSERVER_KEY];
 }
+
+const setObserverKey = typeof OBSERVER_KEY === 'string'
+  ? (rawObj, observer) => {
+    Object.defineProperty(rawObj, OBSERVER_KEY, {
+      configurable: false,
+      enumerable: false,
+      value: observer,
+    });
+  }
+  : (rawObj, observer) => {
+    rawObj[OBSERVER_KEY] = observer;
+  };
 
 export function createProxy(rawObj: any, listener: { current: (...args) => any }, isHookObserver = true): any {
   // 不是对象（是原始数据类型）不用代理
@@ -52,7 +64,7 @@ export function createProxy(rawObj: any, listener: { current: (...args) => any }
   let observer: IObserver = getObserver(rawObj);
   if (!observer) {
     observer = isHookObserver ? new Observer() : new HooklessObserver();
-    rawObj[OBSERVER_KEY] = observer;
+    setObserverKey(rawObj, observer);
   }
 
   hookObserverMap.set(rawObj, isHookObserver);
@@ -95,4 +107,8 @@ export function createProxy(rawObj: any, listener: { current: (...args) => any }
   proxyMap.set(proxyObj, proxyObj);
 
   return proxyObj;
+}
+
+export function toRaw<T>(observed: T): T {
+  return observed && (observed)[RAW_VALUE];
 }
