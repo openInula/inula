@@ -1,0 +1,81 @@
+version: 2.0
+workspace:
+  path: "/usr1"
+env:
+  resource:
+    type: docker
+    image: szvecr02.his.huawei.com:80/ecr-build/euleros_v2r7spc522_x64_opmt_cs6.0:v3.0  # codecheck检查因执行资源因素一直使用苏州镜像，保证机器数量、缓存等检查效率稳定
+  cache:
+    - type: workspaceCompile  # 缓存功能
+params:
+  - name: pkg_model
+    value: VM
+  - name: ci_package_name
+    value: ""
+  - name: checkRoot
+    value: ./
+  - name: os_type
+    value: euler
+  - name: enable_parallel_compile
+    value: true #mr检查模式后两种，会按语言拆出来。目前只拆C和JAVA
+steps:
+  pre_codecheck:
+  - checkout:
+      url: ${ci_service_git_address}
+      branch: $branch
+      path: code
+  - gitlab:
+      url: https://szv-y.codehub.huawei.com/CloudSOP/CloudSOP-CI.git
+      branch: master
+      path: CI
+  - artget:
+      artifact_type: cmcbinary
+      action: pull
+      dependency: CI/build/tool/cmc/download_second_party_dependency_vm.xml
+      agent: CloudSOP_Platform
+      username: pspoictosys
+      password: encryption:ETMsDgAAAX+0YduoABRBRVMvQ0JDL1BLQ1M1UGFkZGluZwCAABAAEFvVh+8WgSL6OkFCfxYKvXcAAAAgVHmrmjYjGKKiMhNJ0i2zKofacS6/XTl7PgfzrjiJcTEAFJ3oc6PjsgLaOhXlddtsyBp5I1qL
+  - artget:
+      artifact_type: opensource
+      action: pull
+      dependency: CI/build/tool/cmc/download_opensource_cmc_dependency.xml
+      agent: opensource_cmc
+      username: pspoictosys
+      password: encryption:ETMsDgAAAX+0YduoABRBRVMvQ0JDL1BLQ1M1UGFkZGluZwCAABAAEFvVh+8WgSL6OkFCfxYKvXcAAAAgVHmrmjYjGKKiMhNJ0i2zKofacS6/XTl7PgfzrjiJcTEAFJ3oc6PjsgLaOhXlddtsyBp5I1qL
+  - sh: # 两层门禁场景需要进行代码预合并操作,目前通过CodeCCP注入参数实现场景区分，正常MR和版本级检查没有“codecheckVersionScan”环境变量
+      command: |
+        if [[ "${codecheckVersionScan}"  == "true" ]];then
+          sh ${WORKSPACE}/CI/build/bin/codecheck/code_merge.sh
+        fi
+  - sh:
+      command: ${ci_clang_shell_cmd}
+      effect_tool: pclint-plus,clangtidy
+  - sh:
+      command: |
+        sh ${WORKSPACE}/CI/build/bin/codecheck/build_codecheck.sh ${ci_package_name}
+      effect_tool: spotbugs,sonarqube,binscope
+tool_params:
+  secsolar:
+    compile_script: sh ${WORKSPACE}/CI/build/bin/codecheck/buildSecsolar.sh ${ci_package_name}
+    secbrella:
+      compile_scripts:
+        - language: java
+          compile_script: ../CI/build/bin/codecheck/buildSecsolar.sh bazel-json ${ci_package_name}
+    fortify:
+      custom_params:
+        exclude: '**/test/**/*.py:**/CI/**/*.py'
+      compile_scripts:
+        - language: python
+          compile_script: ../CI/build/bin/codecheck/fortify_python.sh
+  clangtidy:
+    compilerCommandsPath: ${WORKSPACE}/CI/build/bin/codecheck/compile_commands.json
+  pclint-plus:
+    lntPath: ${WORKSPACE}/CI/build/bin/codecheck/
+    lntMain: project.lnt
+    lntEnv: PROJECTROOT=./
+    compiler: ${WORKSPACE}/CI/build/bin/codecheck/co-gcc.lnt
+  spotbugs:
+    isIncAnalysis: true   # 开启后，支持按变更文件进行spotbugs检查，不需要可以删除
+  binscope:
+    scan_dirs: ${ci_package_name}
+    relative_dir: ${ci_package_name}
