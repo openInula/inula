@@ -21,7 +21,7 @@ steps:
         path: horizon-core
     - gitlab:
         url: https://szv-y.codehub.huawei.com/CloudSOP/CloudSOP-CI.git
-        branch: $branch
+        branch: master
         path: CI
   BUILD:
     - build_execute:
