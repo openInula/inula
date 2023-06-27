@@ -1,17 +1,17 @@
-# 欢迎使用 Horizon!
+# 欢迎使用 InulaJS!
 ## 项目介绍：
-Horizon是用于构建用户界面的Javascript库，与React保持一致API的特性，
+InulaJS 是用于构建用户界面的Javascript库，与React保持一致API的特性，
 同时可以无缝兼容到React的相关生态（react-redux、react-router、react-intl、axios等）。
-Horizon提供响应式API、相比virtual dom方式，提升渲染效率30%以上。
-提供5大常用核心组件：状态管理器、路由、国际化、请求组件、应用脚手架，帮助开发者高效、高质量的构筑基于Horizon的前端产品。
+InulaJS 提供响应式API、相比virtual dom方式，提升渲染效率30%以上。
+提供5大常用核心组件：状态管理器、路由、国际化、请求组件、应用脚手架，帮助开发者高效、高质量的构筑基于 InulaJS 的前端产品。
 
 ## 安装指南
 
-欢迎使用响应式前端框架Horizon！本指南将为您提供详细的安装步骤，以便您可以开始在前端项目中使用该框架。
+欢迎使用响应式前端框架 InulaJS！本指南将为您提供详细的安装步骤，以便您可以开始在前端项目中使用该框架。
 
-### 步骤1：安装Horizon
+### 步骤1：安装InulaJS
 
-您可以通过以下几种方式安装Horizon
+您可以通过以下几种方式安装InulaJS
 
 #### 使用npm安装
 
@@ -23,10 +23,10 @@ node -v
 
 如果成功显示 Node.js 的版本号，则说明已经安装。
 
-在命令行中运行以下命令来通过npm安装 Horizon：
+在命令行中运行以下命令来通过npm安装 InulaJS：
 
 ```shell
-npm install horizon
+npm install inulaJS
 ```
 
 #### 使用yarn安装
@@ -47,37 +47,37 @@ yarn --version
 
 如果成功显示 yarn 的版本号，则说明安装成功。
 
-最后，在命令行中运行以下命令来通过yarn安装Horizon：
+最后，在命令行中运行以下命令来通过yarn安装InulaJS：
 
 ```shell
-yarn add horizon
+yarn add inulaJS
 ```
 
 注意：yarn 和 npm 是两个独立的包管理器，您可以根据自己的喜好选择使用哪个。它们可以在同一个项目中共存，但建议在一个项目中只使用其中一个来管理依赖。
 
-### 步骤2：开始使用Horizon
+### 步骤2：开始使用InulaJS
 
-恭喜！您已经成功安装了Horizon。现在您可以根据您的项目需求自由使用Horizon提供的组件和功能。
+恭喜！您已经成功安装了InulaJS。现在您可以根据您的项目需求自由使用InulaJS提供的组件和功能。
 
-请查阅Horizon的用户使用指南文档以了解更多关于如何使用和配置框架的详细信息。
+请查阅InulaJS的用户使用指南文档以了解更多关于如何使用和配置框架的详细信息。
 
 ## 用户使用指南
 
 ### 创建应用
 #### 渲染入口
-Horizon提供一个render方法，将Horizon根组件绑定到DOM节点进行渲染：
+InulaJS提供一个render方法，将InulaJS根组件绑定到DOM节点进行渲染：
 
 ```JavaScript
-import Horizon from '@cloudsop/horizon';
+import InulaJS from 'inulaJS';
 import App from './components/App';
 
-Horizon.render(<App />, document.querySelector('#root'));
+InulaJS.render(<App />, document.querySelector('#root'));
 ```
 
 #### 根组件
-Horizon应用通常是一颗嵌套的、可重用的组件树组成。这里我们示例中根组件没有嵌套子组件，仅作为简单应用展示
+InulaJS应用通常是一颗嵌套的、可重用的组件树组成。这里我们示例中根组件没有嵌套子组件，仅作为简单应用展示
 ```JavaScript
-import Horizon from '@cloudsop/horizon';
+import InulaJS from 'inulaJS';
 import Box from './Box';
 const App = () => {
     return <p>Hello world!</p>;
@@ -134,11 +134,11 @@ const Greeting = () => {
 };
 ```
 
-#### map、&&、||在Horizon中的使用
+#### map、&&、||在InulaJS中的使用
 
-`map`、`&&` 和 `||` 是常用的 JavaScript 操作符和方法，它们也可以在 Horizon组件中使用。下面是它们的使用方式：
+`map`、`&&` 和 `||` 是常用的 JavaScript 操作符和方法，它们也可以在 InulaJS组件中使用。下面是它们的使用方式：
 
-**map**:`map` 是 JavaScript 中数组的原生方法，用于遍历数组并返回一个新的数组。在 Horizon中，可以使用 `map` 来遍历数组并渲染多个组件或元素。通过 `map`，可以根据数组的每个元素生成相应的组件或元素，并将它们放置在 JSX 中。以下是在 Horizon中使用 `map` 的简单示例：
+**map**:`map` 是 JavaScript 中数组的原生方法，用于遍历数组并返回一个新的数组。在 InulaJS中，可以使用 `map` 来遍历数组并渲染多个组件或元素。通过 `map`，可以根据数组的每个元素生成相应的组件或元素，并将它们放置在 JSX 中。以下是在 InulaJS中使用 `map` 的简单示例：
 
 ```jsx
 const numbers = [1, 2, 3, 4, 5];
@@ -154,7 +154,7 @@ const NumberList = () => {
 };
 ```
 
-**&&**：`&&` 是 JavaScript 中的逻辑与操作符。在 Horizon中，我们可以使用 `&&` 来进行条件渲染，即根据某个条件决定是否渲染某个组件或元素。以下是在 Horizon中使用 `&&` 进行条件渲染的示例：
+**&&**：`&&` 是 JavaScript 中的逻辑与操作符。在 InulaJS中，我们可以使用 `&&` 来进行条件渲染，即根据某个条件决定是否渲染某个组件或元素。以下是在 InulaJS中使用 `&&` 进行条件渲染的示例：
 
 ```jsx
 const ShowExample = ({ isShow }) => {
@@ -168,7 +168,7 @@ const ShowExample = ({ isShow }) => {
 
 在上述示例中，如果 `isShow` 属性的值为 `true`，则渲染 `<p>` 元素，否则不进行渲染。
 
-**||**:`||` 是 JavaScript 中的逻辑或操作符。在 Horizon中，我们可以使用 `||` 进行条件渲染或提供默认值。以下是在 Horizon中使用 `||` 进行条件渲染或提供默认值的示例：
+**||**:`||` 是 JavaScript 中的逻辑或操作符。在 InulaJS中，我们可以使用 `||` 进行条件渲染或提供默认值。以下是在 InulaJS中使用 `||` 进行条件渲染或提供默认值的示例：
 
 ```jsx
 const Greeting = ({ name }) => {
@@ -183,15 +183,15 @@ const Greeting = ({ name }) => {
 在上述示例中，如果 `name` 属性存在，则渲染 `name` 的值，否则渲染默认值 `'小明'`。
 
 ### 组件
-Horizon界面开发都是以组件为基础的。组件可以将界面分为若干独立的，可重用的部分。组件通过嵌套、排列组成一颗组件树，将内部逻辑进行隔离。Horizon可以支持函数式组件和class组件，这里不再对class组件进行介绍。
+InulaJS界面开发都是以组件为基础的。组件可以将界面分为若干独立的，可重用的部分。组件通过嵌套、排列组成一颗组件树，将内部逻辑进行隔离。InulaJS可以支持函数式组件和class组件，这里不再对class组件进行介绍。
 
 #### props
 
-Horizon函数式组件是一种使用函数来定义的组件形式。函数式组件相对于传统的类组件更简洁和直观，它不依赖于类和组件状态，而是通过接收 props 参数并返回 JSX 元素来描述组件的外观和行为。 在`||`逻辑运算符的使用示例中 ，`Greeting`即为一个简单的函数式组件，通过函数传入的参数接收了props中的name属性，并在JSX标签中使用。
+InulaJS函数式组件是一种使用函数来定义的组件形式。函数式组件相对于传统的类组件更简洁和直观，它不依赖于类和组件状态，而是通过接收 props 参数并返回 JSX 元素来描述组件的外观和行为。 在`||`逻辑运算符的使用示例中 ，`Greeting`即为一个简单的函数式组件，通过函数传入的参数接收了props中的name属性，并在JSX标签中使用。
 
 #### hooks
 
-Hooks允许我们在函数式组件中使用状态（state）和其他 Horizon特性，如生命周期方法和上下文（context），而无需使用类组件。通过 Hooks，我们可以在函数式组件中编写更具可读性和可维护性的代码，使组件逻辑更加灵活和可复用。
+Hooks允许我们在函数式组件中使用状态（state）和其他 InulaJS特性，如生命周期方法和上下文（context），而无需使用类组件。通过 Hooks，我们可以在函数式组件中编写更具可读性和可维护性的代码，使组件逻辑更加灵活和可复用。
 
 **useState** ：
 
@@ -248,10 +248,10 @@ const Counter = () => {
 
 **useContext** ：
 
-`useContext` 允许在函数式组件中访问 Horizon上下文。它接收一个上下文对象并返回当前上下文的值。以下是`useContext` 的使用示例：
+`useContext` 允许在函数式组件中访问 InulaJS上下文。它接收一个上下文对象并返回当前上下文的值。以下是`useContext` 的使用示例：
 
 ```jsx
-const ThemeContext = Horizon.createContext('亮色主题');
+const ThemeContext = InulaJS.createContext('亮色主题');
 
 const ThemeDisplay = () => {
   const theme = useContext(ThemeContext);
@@ -332,14 +332,14 @@ const TextInput = () => {
 
 ### 场景一：项目不打包React
 
-该情况是指项目没有将React源码打包，默认使用externals方式的配置 ，在该场景下可以通过如下步骤将React项目迁移至Horizon：
+该情况是指项目没有将React源码打包，默认使用externals方式的配置 ，在该场景下可以通过如下步骤将React项目迁移至InulaJS：
 
-**1、修改webpack配置文件中`externals`，名称修改为`Horizon`，如下：**
+**1、修改webpack配置文件中`externals`，名称修改为`InulaJS`，如下：**
 
 ```js
 	externals: {
-	  react: 'Horizon',  // React 修改成 Horizon
-	  'react-dom': 'Horizon', // ReactDOM 修改成 Horizon
+	  react: 'InulaJS',  // React 修改成 InulaJS
+	  'react-dom': 'InulaJS', // ReactDOM 修改成 InulaJS
 	},
 ```
 
@@ -364,7 +364,7 @@ const TextInput = () => {
             "@babel/preset-react",
             {
                 "runtime": "automatic", // 新增
-	            "importSource": "@cloudsop/horizon" // 新增
+	            "importSource": "inulaJS" // 新增
 	        }
         ]
     ]
@@ -390,7 +390,7 @@ const TextInput = () => {
       "@babel/plugin-transform-react-jsx",
       {
         "runtime": "automatic", // 新增
-        "importSource": "@cloudsop/horizon" // 新增
+        "importSource": "inulaJS" // 新增
       }
     ]
   ]
@@ -412,27 +412,27 @@ const TextInput = () => {
       ...
 ```
 
-**4、在package.json中增加`"horizon": "0.0.x"`**
+**4、在package.json中增加`"inulaJS": "0.0.x"`**
 
 ### 场景二：项目会打包React
 
-该情况是指项目会将React源码打包，在该场景下可以通过如下步骤将React项目迁移至Horizon：
+该情况是指项目会将React源码打包，在该场景下可以通过如下步骤将React项目迁移至InulaJS：
 
 **1、修改webpack配置文件中`alias`，新增react、react-dom别名，如下：**
 
 ```js
 alias: {
   // 省略其它...
-  'react': 'horizon', // 新增
-  'react-dom': 'horizon', // 新增
+  'react': 'inulaJS', // 新增
+  'react-dom': 'inulaJS', // 新增
 }
 ```
 
-**2、在package.json中增加`"horizon": "0.0.x"`**
+**2、在package.json中增加`"inulaJS": "0.0.x"`**
 
 ## 贡献指南
 
-本指南会指导你如何为Horizon贡献自己的一份力量，请你在提出issue或pull request前花费几分钟来了解Horizon社区的贡献指南。
+本指南会指导你如何为InulaJS贡献自己的一份力量，请你在提出issue或pull request前花费几分钟来了解InulaJS社区的贡献指南。
 
 ### 行为准则
 
@@ -473,7 +473,7 @@ alias: {
 代表社区的情形包括使用官方电子邮件地址、通过官方社交媒体帐户发帖或在线上或线下活动中担任指定代表。
 
 #### 监督
-辱骂、骚扰或其他不可接受的行为可通过 XX@huawei.com 向负责监督的社区领袖报告。 所有投诉都将得到及时和公平的审查和调查。
+辱骂、骚扰或其他不可接受的行为可通过 XX@XXX.com 向负责监督的社区领袖报告。 所有投诉都将得到及时和公平的审查和调查。
 
 所有社区领袖都有义务尊重任何事件报告者的隐私和安全。
 
@@ -484,7 +484,7 @@ alias: {
 我们所有的工作都会放在 [Gitee](https://www.gitee.com) 上。不管是核心团队的成员还是外部贡献者的 pull request 都需要经过同样流程的 review。
 
 ### 分支管理
-Horizon长期维护XX分支。如果你要修复一个Bug或增加一个新的功能，那么请Pull Request到XX分支上
+InulaJS长期维护XX分支。如果你要修复一个Bug或增加一个新的功能，那么请Pull Request到XX分支上
 
 ### Bug提交
 我们使用 Gitee Issues来进行Bug跟踪。在你发现Bug后，请通过我们提供的模板来提Issue，以便你发现的Bug能被快速解决。
@@ -501,7 +501,7 @@ Horizon长期维护XX分支。如果你要修复一个Bug或增加一个新的�
 
 ### 开发指南
 
-Horizon团队会关注所有Pull Request，我们会review以及合入你的代码，也有可能要求你做一些修改或者告诉你我们我们为什么不能接受你的修改。
+InulaJS团队会关注所有Pull Request，我们会review以及合入你的代码，也有可能要求你做一些修改或者告诉你我们我们为什么不能接受你的修改。
 
 在你发送 Pull Request 之前，请确认你是按照下面的步骤来做的：
 
@@ -513,12 +513,12 @@ Horizon团队会关注所有Pull Request，我们会review以及合入你的代�
 
 #### 常用命令介绍
 
-1. `npm run build` 同时构建Horizon UMD的prod版本和dev版本
-2. `build-types` 单独构建Horizon的类型提示@types目录
+1. `npm run build` 同时构建InulaJS UMD的prod版本和dev版本
+2. `build-types` 单独构建InulaJS的类型提示@types目录
 
 #### 配套开发工具
 
-- [Horizon-devtool](https://www.huawei.com)： 可视化Horizon项目页面的vDom树
+- [InulaJS-devtool](https://www.XXXX.com)： 可视化InulaJS项目页面的vDom树
 
 ## 开源许可协议
 
