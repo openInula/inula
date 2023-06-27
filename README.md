@@ -523,3 +523,11 @@ Horizon团队会关注所有Pull Request，我们会review以及合入你的代�
 ## 开源许可协议
 
 请查阅 License 获取开源许可协议的更多信息.
+
+版权说明：
+
+InulaJS 前端框架，版权所有 © 2023-，InulaJS开发团队。保留一切权利。
+
+除非另有明示，本网站上的内容采用以下许可证进行许可：Creative Commons Attribution 4.0 International License。
+
+如需了解更多信息，请查看完整的许可证协议：https://creativecommons.org/licenses/by/4.0/legalcode
