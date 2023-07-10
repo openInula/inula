@@ -34,7 +34,7 @@ export function setCurrentHook(hook: Hook<any, any> | null) {
   currentHook = hook;
 }
 
-export function throwNotInFuncError() {
+export function throwNotInFuncError(): never {
   throw Error('Hooks should be used inside function component.');
 }
 
