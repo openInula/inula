@@ -18,6 +18,12 @@ import type { VNode } from '../Types';
 import { getLastTimeHook, setLastTimeHook, setCurrentHook, getNextHook } from './BaseHook';
 import { HookStage, setHookStage } from './HookStage';
 
+function resetGlobalVariable() {
+  setHookStage(null);
+  setLastTimeHook(null);
+  setCurrentHook(null);
+}
+
 // hook对外入口
 export function runFunctionWithHooks<Props extends Record<string, any>, Arg>(
   funcComp: (props: Props, arg: Arg) => any,
@@ -56,10 +62,4 @@ export function runFunctionWithHooks<Props extends Record<string, any>, Arg>(
   resetGlobalVariable();
 
   return comp;
-}
-
-function resetGlobalVariable() {
-  setHookStage(null);
-  setLastTimeHook(null);
-  setCurrentHook(null);
 }

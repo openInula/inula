@@ -41,63 +41,6 @@ const LOOPING_UPDATE_LIMIT = 50;
 let loopingUpdateCount = 0;
 let lastRoot: VNode | null = null;
 
-export function submitToRender(treeRoot) {
-  treeRoot.shouldUpdate = treeRoot.childShouldUpdate;
-  // 置空task，让才能加入新的render任务
-  treeRoot.task = null;
-
-  const startVNode = getStartVNode();
-
-  if (FlagUtils.hasAnyFlag(startVNode)) {
-    // 把自己加上
-    if (startVNode.dirtyNodes === null) {
-      startVNode.dirtyNodes = [startVNode];
-    } else {
-      startVNode.dirtyNodes.push(startVNode);
-    }
-  }
-
-  const dirtyNodes = startVNode.dirtyNodes;
-  if (dirtyNodes !== null && dirtyNodes.length) {
-    const preMode = copyExecuteMode();
-    changeMode(InRender, true);
-
-    prepareForSubmit();
-    // before submit阶段
-    beforeSubmit(dirtyNodes);
-
-    // submit阶段
-    submit(dirtyNodes);
-
-    resetAfterSubmit();
-
-    // after submit阶段
-    afterSubmit(dirtyNodes);
-
-    setExecuteMode(preMode);
-    dirtyNodes.length = 0;
-    startVNode.dirtyNodes = null;
-  }
-
-  if (isSchedulingEffects()) {
-    setSchedulingEffects(false);
-  }
-
-  // 统计root同步重渲染的次数，如果太多可能是无线循环
-  countLoopingUpdate(treeRoot);
-
-  // 在退出`submit` 之前始终调用此函数，以确保任何已计划在此根上执行的update被执行。
-  tryRenderFromRoot(treeRoot);
-
-  if (rootThrowError) {
-    const error = rootThrowError;
-    rootThrowError = null;
-    throw error;
-  }
-
-  return null;
-}
-
 function beforeSubmit(dirtyNodes: Array<VNode>) {
   let node;
   const nodesLength = dirtyNodes.length;
@@ -213,4 +156,61 @@ export function checkLoopingUpdateLimit() {
       A component maybe repeatedly invokes setState on componentWillUpdate or componentDidUpdate.`
     );
   }
+}
+
+export function submitToRender(treeRoot) {
+  treeRoot.shouldUpdate = treeRoot.childShouldUpdate;
+  // 置空task，让才能加入新的render任务
+  treeRoot.task = null;
+
+  const startVNode = getStartVNode();
+
+  if (FlagUtils.hasAnyFlag(startVNode)) {
+    // 把自己加上
+    if (startVNode.dirtyNodes === null) {
+      startVNode.dirtyNodes = [startVNode];
+    } else {
+      startVNode.dirtyNodes.push(startVNode);
+    }
+  }
+
+  const dirtyNodes = startVNode.dirtyNodes;
+  if (dirtyNodes !== null && dirtyNodes.length) {
+    const preMode = copyExecuteMode();
+    changeMode(InRender, true);
+
+    prepareForSubmit();
+    // before submit阶段
+    beforeSubmit(dirtyNodes);
+
+    // submit阶段
+    submit(dirtyNodes);
+
+    resetAfterSubmit();
+
+    // after submit阶段
+    afterSubmit(dirtyNodes);
+
+    setExecuteMode(preMode);
+    dirtyNodes.length = 0;
+    startVNode.dirtyNodes = null;
+  }
+
+  if (isSchedulingEffects()) {
+    setSchedulingEffects(false);
+  }
+
+  // 统计root同步重渲染的次数，如果太多可能是无线循环
+  countLoopingUpdate(treeRoot);
+
+  // 在退出`submit` 之前始终调用此函数，以确保任何已计划在此根上执行的update被执行。
+  tryRenderFromRoot(treeRoot);
+
+  if (rootThrowError) {
+    const error = rootThrowError;
+    rootThrowError = null;
+    throw error;
+  }
+
+  return null;
 }

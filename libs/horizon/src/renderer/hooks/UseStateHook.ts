@@ -21,6 +21,6 @@ function defaultReducer<S>(state: S, action: ((S) => S) | S): S {
   return typeof action === 'function' ? action(state) : action;
 }
 
-export function useStateImpl<S>(initArg: (() => S) | S): [S, Trigger<((S) => S) | S>] {
+export function useStateImpl<S>(initArg?: (() => S) | S): [S, Trigger<((S) => S) | S>] {
   return useReducerImpl(defaultReducer, initArg, undefined, true);
 }

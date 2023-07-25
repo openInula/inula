@@ -20,15 +20,15 @@ export const NSS = {
 };
 
 // 创建DOM元素
-export function createDom(tagName: string, parentNamespace: string): Element {
+export function createDom(tagName: string, parentNamespace: string, doc: Document): Element {
   let dom: Element;
   const selfNamespace = NSS[tagName] || NSS.html;
   const ns = parentNamespace !== NSS.html ? parentNamespace : selfNamespace;
 
   if (ns !== NSS.html) {
-    dom = document.createElementNS(ns, tagName);
+    dom = doc.createElementNS(ns, tagName);
   } else {
-    dom = document.createElement(tagName);
+    dom = doc.createElement(tagName);
   }
   return dom;
 }

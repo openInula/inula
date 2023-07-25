@@ -53,6 +53,40 @@ export type ReduxMiddleware = (
 
 type Reducer = (state: any, action: ReduxAction) => any;
 
+function mergeData(state, data) {
+  if (!data) {
+    state.stateWrapper = data;
+    return;
+  }
+
+  if (Array.isArray(data) && Array.isArray(state?.stateWrapper)) {
+    state.stateWrapper.length = data.length;
+    data.forEach((item, idx) => {
+      if (item != state.stateWrapper[idx]) {
+        state.stateWrapper[idx] = item;
+      }
+    });
+    return;
+  }
+
+  if (typeof data === 'object' && typeof state?.stateWrapper === 'object') {
+    Object.keys(state.stateWrapper).forEach(key => {
+      if (!Object.prototype.hasOwnProperty.call(data, key)) {
+        delete state.stateWrapper[key];
+      }
+    });
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (state.stateWrapper[key] !== value) {
+        state.stateWrapper[key] = value;
+      }
+    });
+    return;
+  }
+
+  state.stateWrapper = data;
+}
+
 export function createStore(reducer: Reducer, preloadedState?: any, enhancers?): ReduxStoreHandler {
   const store = createStoreX({
     id: 'defaultStore',
@@ -106,18 +140,13 @@ export function createStore(reducer: Reducer, preloadedState?: any, enhancers?):
 }
 
 export function combineReducers(reducers: { [key: string]: Reducer }): Reducer {
-  return (state = {}, action) => {
+  return (state, action) => {
+    state = state || {};
     const newState = {};
     Object.entries(reducers).forEach(([key, reducer]) => {
       newState[key] = reducer(state[key], action);
     });
     return newState;
-  };
-}
-
-export function applyMiddleware(...middlewares: ReduxMiddleware[]): (store: ReduxStoreHandler) => void {
-  return store => {
-    return applyMiddlewares(store, middlewares);
   };
 }
 
@@ -129,6 +158,12 @@ function applyMiddlewares(store: ReduxStoreHandler, middlewares: ReduxMiddleware
     dispatch = middleware(store)(dispatch);
   });
   store.dispatch = dispatch;
+}
+
+export function applyMiddleware(...middlewares: ReduxMiddleware[]): (store: ReduxStoreHandler) => void {
+  return store => {
+    return applyMiddlewares(store, middlewares);
+  };
 }
 
 type ActionCreator = (...params: any[]) => ReduxAction;

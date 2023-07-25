@@ -25,6 +25,11 @@ import { EffectConstant } from '../hooks/EffectConstant';
 
 let hookEffects: Array<HookEffect | VNode> = [];
 let hookRemoveEffects: Array<HookEffect | VNode> = [];
+
+export function hasAsyncEffects() {
+  return hookEffects.length > 0 || hookRemoveEffects.length > 0;
+}
+
 // 是否正在异步调度effects
 let isScheduling = false;
 
@@ -33,28 +38,6 @@ export function setSchedulingEffects(value) {
 }
 export function isSchedulingEffects() {
   return isScheduling;
-}
-
-export function callUseEffects(vNode: VNode) {
-  const effectList: EffectList = vNode.effectList;
-  if (effectList !== null) {
-    effectList.forEach(effect => {
-      const { effectConstant } = effect;
-      if (
-        (effectConstant & EffectConstant.Effect) !== EffectConstant.NoEffect &&
-        (effectConstant & EffectConstant.DepsChange) !== EffectConstant.NoEffect
-      ) {
-        hookEffects.push(effect);
-        hookRemoveEffects.push(effect);
-
-        // 异步调用
-        if (!isScheduling) {
-          isScheduling = true;
-          runAsync(runAsyncEffects);
-        }
-      }
-    });
-  }
 }
 
 export function runAsyncEffects() {
@@ -91,6 +74,28 @@ export function runAsyncEffects() {
   });
 
   setExecuteMode(preMode);
+}
+
+export function callUseEffects(vNode: VNode) {
+  const effectList: EffectList = vNode.effectList;
+  if (effectList !== null) {
+    effectList.forEach(effect => {
+      const { effectConstant } = effect;
+      if (
+        (effectConstant & EffectConstant.Effect) !== EffectConstant.NoEffect &&
+        (effectConstant & EffectConstant.DepsChange) !== EffectConstant.NoEffect
+      ) {
+        hookEffects.push(effect);
+        hookRemoveEffects.push(effect);
+
+        // 异步调用
+        if (!isScheduling) {
+          isScheduling = true;
+          runAsync(runAsyncEffects);
+        }
+      }
+    });
+  }
 }
 
 // 在销毁vNode的时候调用remove

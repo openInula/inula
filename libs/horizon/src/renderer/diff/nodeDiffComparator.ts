@@ -27,6 +27,7 @@ import {
 import { isSameType, getIteratorFn, isTextType, isIteratorType, isObjectType } from './DiffTools';
 import { travelChildren } from '../vnode/VNodeUtils';
 import { markVNodePath } from '../utils/vNodePath';
+import { BELONG_CLASS_VNODE_KEY } from '../vnode/VNode';
 
 enum DiffCategory {
   TEXT_NODE = 'TEXT_NODE',
@@ -166,11 +167,11 @@ function getNewNode(parentNode: VNode, newChild: any, oldNode: VNode | null) {
         if (oldNode === null || !isSameType(oldNode, newChild)) {
           resultNode = createVNodeFromElement(newChild);
           resultNode.ref = newChild.ref;
-          resultNode.belongClassVNode = newChild.belongClassVNode;
+          resultNode[BELONG_CLASS_VNODE_KEY] = newChild[BELONG_CLASS_VNODE_KEY];
         } else {
           resultNode = updateVNode(oldNode, newChild.props);
           resultNode.ref = newChild.ref;
-          resultNode.belongClassVNode = newChild.belongClassVNode;
+          resultNode[BELONG_CLASS_VNODE_KEY] = newChild[BELONG_CLASS_VNODE_KEY];
         }
         break;
       } else if (newChild.vtype === TYPE_PORTAL) {
@@ -181,6 +182,10 @@ function getNewNode(parentNode: VNode, newChild: any, oldNode: VNode | null) {
         }
         break;
       }
+      break;
+    }
+    default: {
+      break;
     }
   }
 
@@ -229,6 +234,19 @@ function getOldNodeFromMap(nodeMap: Map<string | number, VNode>, newIdx: number,
     }
   }
   return null;
+}
+
+// 设置vNode中的cIndex属性，cIndex是节点在children中的位置
+function setVNodesCIndex(startChild: VNode | null, startIdx: number) {
+  let node: VNode | null = startChild;
+  let idx = startIdx;
+
+  while (node !== null) {
+    node.cIndex = idx;
+    markVNodePath(node);
+    node = node.next;
+    idx++;
+  }
 }
 
 // diff数组类型的节点，核心算法
@@ -360,7 +378,7 @@ function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newC
   // 4. 新节点还有一部分，但是老节点已经没有了
   if (oldNode === null) {
     let isDirectAdd = false;
-    // TODO: 是否可以扩大至非dom类型节点
+    // 是否可以扩大至非dom类型节点待确认
     // 如果dom节点在上次添加前没有节点，说明本次添加时，可以直接添加到最后，不需要通过 getSiblingDom 函数找到 before 节点
     if (
       parentNode.tag === DomComponent &&
@@ -478,19 +496,6 @@ function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newC
   return resultingFirstChild;
 }
 
-// 设置vNode中的cIndex属性，cIndex是节点在children中的位置
-function setVNodesCIndex(startChild: VNode | null, startIdx: number) {
-  let node: VNode | null = startChild;
-  let idx = startIdx;
-
-  while (node !== null) {
-    node.cIndex = idx;
-    markVNodePath(node);
-    node = node.next;
-    idx++;
-  }
-}
-
 // 新节点是迭代器类型
 function diffIteratorNodesHandler(
   parentNode: VNode,
@@ -512,7 +517,7 @@ function diffIteratorNodesHandler(
 }
 
 // 新节点是字符串类型
-function diffStringNodeHandler(parentNode: VNode, newChild: any, firstChildVNode: VNode, isComparing: boolean) {
+function diffStringNodeHandler(parentNode: VNode, newChild: any, firstChildVNode: VNode | null, isComparing: boolean) {
   let newTextNode: VNode | null = null;
 
   // 第一个vNode是Text，则复用
@@ -559,7 +564,7 @@ function diffObjectNodeHandler(
   }
 
   let resultNode: VNode | null = null;
-  let startDelVNode = firstChildVNode;
+  let startDelVNode: VNode | null = firstChildVNode;
   if (newChild.vtype === TYPE_COMMON_ELEMENT) {
     if (canReuseNode) {
       // 可以复用
@@ -570,7 +575,7 @@ function diffObjectNodeHandler(
       } else if (isSameType(canReuseNode, newChild)) {
         resultNode = updateVNode(canReuseNode, newChild.props);
         resultNode.ref = newChild.ref;
-        resultNode.belongClassVNode = newChild.belongClassVNode;
+        resultNode[BELONG_CLASS_VNODE_KEY] = newChild[BELONG_CLASS_VNODE_KEY];
         startDelVNode = resultNode.next;
         resultNode.next = null;
       }
@@ -583,7 +588,7 @@ function diffObjectNodeHandler(
       } else {
         resultNode = createVNodeFromElement(newChild);
         resultNode.ref = newChild.ref;
-        resultNode.belongClassVNode = newChild.belongClassVNode;
+        resultNode[BELONG_CLASS_VNODE_KEY] = newChild[BELONG_CLASS_VNODE_KEY];
       }
     }
   } else if (newChild.vtype === TYPE_PORTAL) {

@@ -13,11 +13,20 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { TYPE_FORWARD_REF } from '../../external/JSXElementType';
+import {TYPE_FORWARD_REF, TYPE_MEMO} from '../../external/JSXElementType';
 
 export function forwardRef(render: Function) {
-  return {
+  const forwardRefJSXElement = {
     vtype: TYPE_FORWARD_REF,
+    $$typeof: TYPE_FORWARD_REF, // 规避三方件hoist-non-react-statics中，通过$$typeof获取类型，但获取不到，导致render被覆盖
     render,
   };
+
+  // 控制vtype不能修改，规避三方件hoist-non-react-statics修改vtype导致问题
+  Object.defineProperty(forwardRefJSXElement, 'vtype', {
+    configurable: false,
+    writable: false,
+  });
+
+  return forwardRefJSXElement;
 }

@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import type { VNode } from './Types';
+import type { VNode, Callback } from './Types';
 import { FlagUtils, ShouldCapture } from './vnode/VNodeFlags';
 
 export type Update = {
@@ -21,8 +21,6 @@ export type Update = {
   content: any;
   callback: Callback | null;
 };
-
-export type Callback = () => any;
 
 export type Updates = Array<Update> | null;
 

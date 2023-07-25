@@ -139,7 +139,7 @@ function bubbleVNode(vNode: VNode): void {
     node = parent;
     // 更新processing，抛出异常时可以使用
     processing = node;
-  } while (node !== null);
+  } while (node);
 
   // 修改结果
   if (getBuildResult() === BuildInComplete) {
@@ -179,6 +179,11 @@ function isEqualByIndex(idx: number, pathArrays: string[][]) {
 function getChildByIndex(vNode: VNode, idx: number) {
   let node = vNode.child;
   for (let i = 0; i < idx; i++) {
+    // 场景：当组件被销毁，业务若异步（定时器）调用setState修改状态，可能出现路径错误，此处进行保护。
+    if (node === null || node === undefined) {
+      return null;
+    }
+
     node = node.next;
   }
   return node;
@@ -220,12 +225,46 @@ export function calcStartUpdateVNode(treeRoot: VNode) {
     const pathIndex = Number(startNodePath[i]);
     node = getChildByIndex(node, pathIndex)!;
     // 路径错误时，回退到从根更新
-    if (node == null) {
+    if (node === null) {
       return treeRoot;
     }
   }
 
   return node;
+}
+
+// 在局部更新时，从上到下恢复父节点的context和PortalStack
+function recoverTreeContext(vNode: VNode) {
+  const contextProviders: VNode[] = [];
+  let parent = vNode.parent;
+  while (parent !== null) {
+    if (parent.tag === ContextProvider) {
+      contextProviders.unshift(parent);
+    }
+    if (parent.tag === DomPortal) {
+      pushCurrentRoot(parent);
+    }
+    parent = parent.parent;
+  }
+
+  contextProviders.forEach(node => {
+    setContext(node, node.props.value);
+  });
+}
+
+// 在局部更新时，从下到上重置父节点的context
+function resetTreeContext(vNode: VNode) {
+  let parent = vNode.parent;
+
+  while (parent !== null) {
+    if (parent.tag === ContextProvider) {
+      resetContext(parent);
+    }
+    if (parent.tag === DomPortal) {
+      popCurrentRoot();
+    }
+    parent = parent.parent;
+  }
 }
 
 // ============================== 深度遍历 ==============================
@@ -299,43 +338,11 @@ function buildVNodeTree(treeRoot: VNode) {
   setExecuteMode(preMode);
 }
 
-// 在局部更新时，从上到下恢复父节点的context和PortalStack
-function recoverTreeContext(vNode: VNode) {
-  const contextProviders: VNode[] = [];
-  let parent = vNode.parent;
-  while (parent !== null) {
-    if (parent.tag === ContextProvider) {
-      contextProviders.unshift(parent);
-    }
-    if (parent.tag === DomPortal) {
-      pushCurrentRoot(parent);
-    }
-    parent = parent.parent;
-  }
-  contextProviders.forEach(node => {
-    setContext(node, node.props.value);
-  });
-}
-
-// 在局部更新时，从下到上重置父节点的context
-function resetTreeContext(vNode: VNode) {
-  let parent = vNode.parent;
-
-  while (parent !== null) {
-    if (parent.tag === ContextProvider) {
-      resetContext(parent);
-    }
-    if (parent.tag === DomPortal) {
-      popCurrentRoot();
-    }
-    parent = parent.parent;
-  }
-}
-
 // 总体任务入口
 function renderFromRoot(treeRoot) {
   runAsyncEffects();
   pushCurrentRoot(treeRoot);
+
   // 1. 构建vNode树
   buildVNodeTree(treeRoot);
 
@@ -346,6 +353,7 @@ function renderFromRoot(treeRoot) {
 
   // 2. 提交变更
   submitToRender(treeRoot);
+
   popCurrentRoot();
   if (window.__HORIZON_DEV_HOOK__) {
     const hook = window.__HORIZON_DEV_HOOK__;

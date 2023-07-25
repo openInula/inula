@@ -17,14 +17,49 @@ import { throwIfTrue } from '../renderer/utils/throwIfTrue';
 import { TYPE_COMMON_ELEMENT, TYPE_PORTAL } from './JSXElementType';
 
 import { isValidElement, JSXElement } from './JSXElement';
+import { BELONG_CLASS_VNODE_KEY } from '../renderer/vnode/VNode';
 
 // 生成key
 function getItemKey(item: any, index: number): string {
-  if (typeof item === 'object' && item !== null && item.key != null) {
+  if (typeof item === 'object' && item !== null && item.key !== null && item.key !== undefined) {
     return '.$' + item.key;
   }
   // 使用36进制减少生成字符串的长度以节省空间
   return '.' + index.toString(36);
+}
+
+function processArrayChildren(children: any, arr: Array<any>, prefix: string, callback: Function) {
+  for (let i = 0; i < children.length; i++) {
+    const childItem = children[i];
+    const nextPrefix = prefix + getItemKey(childItem, i);
+    mapChildrenToArray(childItem, arr, nextPrefix, callback);
+  }
+}
+
+function callMapFun(children: any, arr: Array<any>, prefix: string, callback: Function) {
+  let mappedChild = callback(children);
+  if (Array.isArray(mappedChild)) {
+    // 维持原有规格，如果callback返回结果是数组，处理函数修改为返回数组item
+    processArrayChildren(mappedChild, arr, prefix + '/', subChild => subChild);
+  } else if (mappedChild !== null && mappedChild !== undefined) {
+    // 给一个key值，确保返回的对象一定带有key
+    if (isValidElement(mappedChild)) {
+      const childKey = prefix === '' ? getItemKey(children, 0) : '';
+      const mappedKey = getItemKey(mappedChild, 0);
+      const newKey =
+        prefix + childKey + (mappedChild.key && mappedKey !== getItemKey(children, 0) ? '.$' + mappedChild.key : '');
+      // 返回一个修改key的children
+      mappedChild = JSXElement(
+        mappedChild.type,
+        newKey,
+        mappedChild.ref,
+        mappedChild[BELONG_CLASS_VNODE_KEY],
+        mappedChild.props,
+        mappedChild.src
+      );
+    }
+    arr.push(mappedChild);
+  }
 }
 
 function mapChildrenToArray(children: any, arr: Array<any>, prefix: string, callback?: Function): number | void {
@@ -55,40 +90,6 @@ function mapChildrenToArray(children: any, arr: Array<any>, prefix: string, call
       }
       throw new Error('Object is invalid as a Horizon child. ');
     // No Default
-  }
-}
-
-function processArrayChildren(children: any, arr: Array<any>, prefix: string, callback: Function) {
-  for (let i = 0; i < children.length; i++) {
-    const childItem = children[i];
-    const nextPrefix = prefix + getItemKey(childItem, i);
-    mapChildrenToArray(childItem, arr, nextPrefix, callback);
-  }
-}
-
-function callMapFun(children: any, arr: Array<any>, prefix: string, callback: Function) {
-  let mappedChild = callback(children);
-  if (Array.isArray(mappedChild)) {
-    // 维持原有规格，如果callback返回结果是数组，处理函数修改为返回数组item
-    processArrayChildren(mappedChild, arr, prefix + '/', subChild => subChild);
-  } else if (mappedChild !== null && mappedChild !== undefined) {
-    // 给一个key值，确保返回的对象一定带有key
-    if (isValidElement(mappedChild)) {
-      const childKey = prefix === '' ? getItemKey(children, 0) : '';
-      const mappedKey = getItemKey(mappedChild, 0);
-      const newKey =
-        prefix + childKey + (mappedChild.key && mappedKey !== getItemKey(children, 0) ? '.$' + mappedChild.key : '');
-      // 返回一个修改key的children
-      mappedChild = JSXElement(
-        mappedChild.type,
-        newKey,
-        mappedChild.ref,
-        mappedChild.belongClassVNode,
-        mappedChild.props,
-        mappedChild.src
-      );
-    }
-    arr.push(mappedChild);
   }
 }
 

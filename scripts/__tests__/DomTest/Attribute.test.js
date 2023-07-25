@@ -83,6 +83,12 @@ describe('Dom Attribute', () => {
       expect(window.getComputedStyle(div).getPropertyValue('height')).toBe('20px');
     });
 
+    it('WebkitLineClamp和lineClamp样式不会把数字转换成字符串或者追加"px"', () => {
+      Horizon.render(<div id={'div'} style={{ WebkitLineClamp: 2 }} />, container);
+      // 浏览器可以将WebkitLineClamp识别为-webkit-line-clamp,测试框架不可以
+      expect(container.querySelector('div').style.WebkitLineClamp).toBe(2);
+    });
+
     it('空字符串做属性名', () => {
       const emptyStringProps = { '': '' };
       expect(() => {

@@ -20,14 +20,30 @@ import { isArray, isCollection, isObject } from '../CommonUtils';
 import { createArrayProxy } from './handlers/ArrayProxyHandler';
 import { createCollectionProxy } from './handlers/CollectionProxyHandler';
 import type { IObserver } from '../types';
-import { OBSERVER_KEY } from '../Constants';
+import { OBSERVER_KEY, RAW_VALUE } from '../Constants';
 
 // 保存rawObj -> Proxy
 const proxyMap = new WeakMap();
 
 export const hookObserverMap = new WeakMap();
 
-export function createProxy(rawObj: any, id, isHookObserver = true): any {
+export function getObserver(rawObj: any): Observer {
+  return rawObj[OBSERVER_KEY];
+}
+
+const setObserverKey = typeof OBSERVER_KEY === 'string'
+  ? (rawObj, observer) => {
+    Object.defineProperty(rawObj, OBSERVER_KEY, {
+      configurable: false,
+      enumerable: false,
+      value: observer,
+    });
+  }
+  : (rawObj, observer) => {
+    rawObj[OBSERVER_KEY] = observer;
+  };
+
+export function createProxy(rawObj: any, listener: { current: (...args) => any }, isHookObserver = true): any {
   // 不是对象（是原始数据类型）不用代理
   if (!(rawObj && isObject(rawObj))) {
     return rawObj;
@@ -48,7 +64,7 @@ export function createProxy(rawObj: any, id, isHookObserver = true): any {
   let observer: IObserver = getObserver(rawObj);
   if (!observer) {
     observer = isHookObserver ? new Observer() : new HooklessObserver();
-    rawObj[OBSERVER_KEY] = observer;
+    setObserverKey(rawObj, observer);
   }
 
   hookObserverMap.set(rawObj, isHookObserver);
@@ -56,16 +72,35 @@ export function createProxy(rawObj: any, id, isHookObserver = true): any {
   // 创建Proxy
   let proxyObj;
   if (!isHookObserver) {
-    proxyObj = createObjectProxy(rawObj, true);
+    proxyObj = createObjectProxy(rawObj, {
+        current: change => {
+          listener.current(change);
+        },
+      },
+      true);
   } else if (isArray(rawObj)) {
     // 数组
-    proxyObj = createArrayProxy(rawObj as []);
+    proxyObj = createArrayProxy(rawObj as [], {
+      current: change => {
+        listener.current(change);
+      },
+    });
   } else if (isCollection(rawObj)) {
     // 集合
-    proxyObj = createCollectionProxy(rawObj);
+    proxyObj = createCollectionProxy(rawObj, {
+        current: change => {
+          listener.current(change);
+        },
+      },
+      true);
   } else {
     // 原生对象 或 函数
-    proxyObj = createObjectProxy(rawObj);
+    proxyObj = createObjectProxy(rawObj, {
+        current: change => {
+          listener.current(change);
+        },
+      },
+      false);
   }
 
   proxyMap.set(rawObj, proxyObj);
@@ -74,6 +109,6 @@ export function createProxy(rawObj: any, id, isHookObserver = true): any {
   return proxyObj;
 }
 
-export function getObserver(rawObj: any): Observer {
-  return rawObj[OBSERVER_KEY];
+export function toRaw<T>(observed: T): T {
+  return observed && (observed)[RAW_VALUE];
 }

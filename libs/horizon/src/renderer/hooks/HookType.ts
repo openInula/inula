@@ -57,4 +57,4 @@ export type Ref<V> = {
   current: V;
 };
 
-export type Trigger<A> = (A) => void;
+export type Trigger<A> = (state: A) => void;

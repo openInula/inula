@@ -13,6 +13,37 @@
  * See the Mulan PSL v2 for more details.
  */
 
+/**
+ * 不需要加长度单位的 css 属性
+ */
+const noUnitCSS = [
+  'animationIterationCount',
+  'columnCount',
+  'columns',
+  'gridArea',
+  'fontWeight',
+  'lineClamp',
+  'lineHeight',
+  'opacity',
+  'order',
+  'orphans',
+  'tabSize',
+  'widows',
+  'zIndex',
+  'zoom',
+];
+
+const length = noUnitCSS.length;
+for (let i = 0; i < length; i++) {
+  const cssKey = noUnitCSS[i];
+  const attributeKey =  cssKey.charAt(0).toUpperCase() + cssKey.slice(1);
+
+  // css 兼容性前缀 webkit: chrome, mo: IE或者Edge, Moz: 火狐
+  noUnitCSS.push('Webkit' + attributeKey);
+  noUnitCSS.push('mo' + attributeKey);
+  noUnitCSS.push('Moz' + attributeKey);
+}
+
 function isNeedUnitCSS(styleName: string) {
   return !(
     noUnitCSS.includes(styleName) ||
@@ -36,7 +67,7 @@ export function adjustStyleValue(name, value) {
 
   if (typeof value === 'number' && value !== 0 && isNeedUnitCSS(name)) {
     validValue = `${value}px`;
-  } else if (value === '' || value == null || typeof value === 'boolean') {
+  } else if (value === '' || value === null || value === undefined || typeof value === 'boolean') {
     validValue = '';
   }
 
@@ -54,27 +85,12 @@ export function setStyles(dom, styles) {
   const style = dom.style;
   Object.keys(styles).forEach(name => {
     const styleVal = styles[name];
-
-    style[name] = adjustStyleValue(name, styleVal);
+    // 以--开始的样式直接设置即可
+    if (name.indexOf('--') === 0) {
+      style.setProperty(name, styleVal);
+    } else {
+      // 使用这种赋值方式，浏览器可以将'WebkitLineClamp'， 'backgroundColor'分别识别为'-webkit-line-clamp'和'backgroud-color'
+      style[name] = adjustStyleValue(name, styleVal);
+    }
   });
 }
-
-/**
- * 不需要加长度单位的 css 属性
- */
-const noUnitCSS = [
-  'animationIterationCount',
-  'columnCount',
-  'columns',
-  'gridArea',
-  'fontWeight',
-  'lineClamp',
-  'lineHeight',
-  'opacity',
-  'order',
-  'orphans',
-  'tabSize',
-  'widows',
-  'zIndex',
-  'zoom',
-];

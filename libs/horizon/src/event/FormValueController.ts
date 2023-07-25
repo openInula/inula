@@ -14,7 +14,7 @@
  */
 
 import { getVNodeProps } from '../dom/DOMInternalKeys';
-import { getDomTag } from '../dom/utils/Common';
+import { getDomTag, isNotNull } from '../dom/utils/Common';
 import { Props } from '../dom/utils/Interface';
 import { updateTextareaValue } from '../dom/valueHandler/TextareaValueHandler';
 import { updateInputHandlerIfChanged } from '../dom/valueHandler/ValueChangeHandler';
@@ -37,15 +37,26 @@ export function shouldControlValue(): boolean {
   return changeEventTargets !== null && changeEventTargets.length > 0;
 }
 
-// 从缓存队列中对受控组件进行赋值
-export function tryControlValue() {
-  if (!changeEventTargets) {
-    return;
+function controlInputValue(inputDom: HTMLInputElement, props: Props) {
+  const { name, type } = props;
+
+  // 如果是 radio，找出同一form内，name相同的Radio，更新它们Handler的Value
+  if (type === 'radio' && isNotNull(name)) {
+    const radioList = document.querySelectorAll<HTMLInputElement>(`input[type="radio"][name="${name}"]`);
+    for (let i = 0; i < radioList.length; i++) {
+      const radio = radioList[i];
+      if (radio === inputDom) {
+        continue;
+      }
+      if (isNotNull(radio.form) && isNotNull(inputDom.form) && radio.form !== inputDom.form) {
+        continue;
+      }
+
+      updateInputHandlerIfChanged(radio);
+    }
+  } else {
+    updateInputValue(inputDom, props);
   }
-  changeEventTargets.forEach(target => {
-    controlValue(target);
-  });
-  changeEventTargets = null;
 }
 
 // 受控组件值重新赋值
@@ -66,24 +77,13 @@ function controlValue(target: Element) {
   }
 }
 
-function controlInputValue(inputDom: HTMLInputElement, props: Props) {
-  const { name, type } = props;
-
-  // 如果是 radio，找出同一form内，name相同的Radio，更新它们Handler的Value
-  if (type === 'radio' && name != null) {
-    const radioList = document.querySelectorAll<HTMLInputElement>(`input[type="radio"][name="${name}"]`);
-    for (let i = 0; i < radioList.length; i++) {
-      const radio = radioList[i];
-      if (radio === inputDom) {
-        continue;
-      }
-      if (radio.form != null && inputDom.form != null && radio.form !== inputDom.form) {
-        continue;
-      }
-
-      updateInputHandlerIfChanged(radio);
-    }
-  } else {
-    updateInputValue(inputDom, props);
+// 从缓存队列中对受控组件进行赋值
+export function tryControlValue() {
+  if (!changeEventTargets) {
+    return;
   }
+  changeEventTargets.forEach(target => {
+    controlValue(target);
+  });
+  changeEventTargets = null;
 }

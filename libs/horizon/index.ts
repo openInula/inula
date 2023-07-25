@@ -18,6 +18,8 @@ import {
   TYPE_PROFILER as Profiler,
   TYPE_STRICT_MODE as StrictMode,
   TYPE_SUSPENSE as Suspense,
+  TYPE_FORWARD_REF as ForwardRef,
+  TYPE_MEMO as Memo,
 } from './src/external/JSXElementType';
 
 import { Component, PureComponent } from './src/renderer/components/BaseClassComponent';
@@ -42,9 +44,6 @@ import {
   useState,
   useDebugValue,
 } from './src/renderer/hooks/HookExternal';
-import { asyncUpdates } from './src/renderer/TreeBuilder';
-import { callRenderQueueImmediate } from './src/renderer/taskExecutor/RenderQueue';
-import { runAsyncEffects } from './src/renderer/submit/HookEffectHandler';
 import {
   isContextProvider,
   isContextConsumer,
@@ -59,13 +58,7 @@ import {
 import { createStore, useStore, clearStore } from './src/horizonx/store/StoreHandler';
 import * as reduxAdapter from './src/horizonx/adapters/redux';
 import { watch } from './src/horizonx/proxy/watch';
-
-// act用于测试，作用是：如果fun触发了刷新（包含了异步刷新），可以保证在act后面的代码是在刷新完成后才执行。
-const act = fun => {
-  asyncUpdates(fun);
-  callRenderQueueImmediate();
-  runAsyncEffects();
-};
+import { act } from './src/external/TestUtil';
 
 import {
   render,
@@ -74,6 +67,9 @@ import {
   findDOMNode,
   unmountComponentAtNode,
 } from './src/dom/DOMExternal';
+
+import { syncUpdates as flushSync } from './src/renderer/TreeBuilder';
+import { toRaw } from './src/horizonx/proxy/ProxyHandler';
 
 const Horizon = {
   Children,
@@ -94,10 +90,6 @@ const Horizon = {
   useReducer,
   useRef,
   useState,
-  Fragment,
-  Profiler,
-  StrictMode,
-  Suspense,
   createElement,
   cloneElement,
   isValidElement,
@@ -107,6 +99,7 @@ const Horizon = {
   findDOMNode,
   unmountComponentAtNode,
   act,
+  flushSync,
   createStore,
   useStore,
   clearStore,
@@ -121,6 +114,12 @@ const Horizon = {
   isPortal,
   isContextProvider,
   isContextConsumer,
+  ForwardRef,
+  Memo,
+  Fragment,
+  Profiler,
+  StrictMode,
+  Suspense,
 };
 
 export const version = __VERSION__;
@@ -143,10 +142,6 @@ export {
   useReducer,
   useRef,
   useState,
-  Fragment,
-  Profiler,
-  StrictMode,
-  Suspense,
   createElement,
   cloneElement,
   isValidElement,
@@ -156,12 +151,14 @@ export {
   findDOMNode,
   unmountComponentAtNode,
   act,
+  flushSync,
   // 状态管理器HorizonX接口
   createStore,
   useStore,
   clearStore,
   reduxAdapter,
   watch,
+  toRaw,
   // 兼容ReactIs
   isFragment,
   isElement,
@@ -172,6 +169,12 @@ export {
   isPortal,
   isContextProvider,
   isContextConsumer,
+  ForwardRef,
+  Memo,
+  Fragment,
+  Profiler,
+  StrictMode,
+  Suspense,
 };
 
 export default Horizon;

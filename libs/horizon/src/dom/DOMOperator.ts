@@ -16,7 +16,7 @@
 import { saveVNode, updateVNodeProps } from './DOMInternalKeys';
 import { createDom } from './utils/DomCreator';
 import { getSelectionInfo, resetSelectionRange, SelectionData } from './SelectionRangeHandler';
-import { shouldAutoFocus } from './utils/Common';
+import { isDocument, shouldAutoFocus } from './utils/Common';
 import { NSS } from './utils/DomCreator';
 import { adjustStyleValue } from './DOMPropertiesHandler/StyleHandler';
 import type { VNode } from '../renderer/Types';
@@ -26,6 +26,7 @@ import { isNativeElement, validateProps } from './validators/ValidateProps';
 import { watchValueChange } from './valueHandler/ValueChangeHandler';
 import { DomComponent, DomText } from '../renderer/vnode/VNodeTags';
 import { updateCommonProp } from './DOMPropertiesHandler/UpdateCommonProp';
+import {getCurrentRoot} from '../renderer/RootStack';
 
 export type Props = Record<string, any> & {
   autoFocus?: boolean;
@@ -45,7 +46,7 @@ function getChildNS(parentNS: string | null, tagName: string): string {
     return NSS.html;
   }
 
-  if (parentNS == null || parentNS === NSS.html) {
+  if (parentNS === null || parentNS === NSS.html) {
     // 没有父命名空间，或父命名空间为xhtml
     return NSS[tagName] ?? NSS.html;
   }
@@ -70,7 +71,12 @@ export function resetAfterSubmit(): void {
 
 // 创建 DOM 对象
 export function newDom(tagName: string, props: Props, parentNamespace: string, vNode: VNode): Element {
-  const dom: Element = createDom(tagName, parentNamespace);
+  // document取值于treeRoot对应的DOM的ownerDocument。
+  // 解决：在iframe中使用top的horizon时，horizon在创建DOM时用到的document并不是iframe的document，而是top中的document的问题。
+  const rootDom = getCurrentRoot().realNode;
+  const doc = isDocument(rootDom) ? rootDom : rootDom.ownerDocument;
+
+  const dom: Element = createDom(tagName, parentNamespace, doc);
   // 将 vNode 节点挂到 DOM 对象上
   saveVNode(vNode, dom);
   // 将属性挂到 DOM 对象上
@@ -124,7 +130,8 @@ export function isTextChild(type: string, props: Props): boolean {
     return (
       props.dangerouslySetInnerHTML &&
       typeof props.dangerouslySetInnerHTML === 'object' &&
-      props.dangerouslySetInnerHTML.__html != null
+      props.dangerouslySetInnerHTML.__html !== null &&
+      props.dangerouslySetInnerHTML.__html !== undefined
     );
   }
 }
@@ -135,14 +142,14 @@ export function newTextDom(text: string, processing: VNode): Text {
   return textNode;
 }
 
-// 提交vNode的类型为Component或者Text的更新
+// 提交vNode的类型为DomComponent或者DomText的更新
 export function submitDomUpdate(tag: string, vNode: VNode) {
   const newProps = vNode.props;
   const element: Element | null = vNode.realNode;
 
   if (tag === DomComponent) {
     // DomComponent类型
-    if (element != null) {
+    if (element !== null && element !== undefined) {
       const type = vNode.type;
       const changeList = vNode.changeList;
       vNode.changeList = null;
@@ -152,7 +159,14 @@ export function submitDomUpdate(tag: string, vNode: VNode) {
         updateVNodeProps(element, newProps);
         // 应用diff更新Properties.
         // 当一个选中的radio改变名称,浏览器使另一个radio的复选框为false.
-        if (type === 'input' && newProps.type === 'radio' && newProps.name != null && newProps.checked != null) {
+        if (
+          type === 'input'
+          && newProps.type === 'radio'
+          && newProps.name !== null
+          && newProps.name !== undefined
+          && newProps.checked !== null
+          && newProps.checked !== undefined
+        ) {
           updateCommonProp(element, 'checked', newProps.checked, true);
         }
         const isNativeTag = isNativeElement(type, newProps);
@@ -196,7 +210,7 @@ export function hideDom(tag: string, dom: Element | Text) {
 }
 
 // 不隐藏元素
-export function unHideDom(tag: string, dom: Element | Text, props: Props) {
+export function unHideDom(tag: string, dom: Element | Text, props?: Props) {
   if (tag === DomComponent) {
     dom.style.display = adjustStyleValue('display', props?.style?.display ?? '');
   } else if (tag === DomText) {

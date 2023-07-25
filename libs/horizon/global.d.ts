@@ -19,3 +19,5 @@
 declare var isDev: boolean;
 declare var isTest: boolean;
 declare const __VERSION__: string;
+declare var setImmediate: Function;
+declare var __HORIZON_DEV_HOOK__: any;

@@ -17,7 +17,7 @@ import { createStore } from '@cloudsop/horizon/src/horizonx/store/StoreHandler';
 import { watch } from '@cloudsop/horizon/src/horizonx/proxy/watch';
 
 describe('watch', () => {
-  it('shouhld watch promitive state variable', async () => {
+  it('shouhld watch primitive state variable', async () => {
     const useStore = createStore({
       state: {
         variable: 'x',

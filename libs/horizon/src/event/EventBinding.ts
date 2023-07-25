@@ -16,15 +16,13 @@
 /**
  * 事件绑定实现，分为绑定委托事件和非委托事件
  */
-import { allDelegatedHorizonEvents, allDelegatedNativeEvents } from './EventHub';
+import { allDelegatedHorizonEvents, simulatedDelegatedEvents } from './EventHub';
 import { isDocument } from '../dom/utils/Common';
 import { getNearestVNode, getNonDelegatedListenerMap } from '../dom/DOMInternalKeys';
 import { asyncUpdates, runDiscreteUpdates } from '../renderer/TreeBuilder';
 import { handleEventMain } from './HorizonEventMain';
 import { decorateNativeEvent } from './EventWrapper';
 import { VNode } from '../renderer/vnode/VNode';
-
-const listeningMarker = '_horizonListening' + Math.random().toString(36).slice(4);
 
 // 触发委托事件
 function triggerDelegatedEvent(
@@ -56,6 +54,14 @@ function listenToNativeEvent(nativeEvtName: string, delegatedElement: Element, i
   return listener;
 }
 
+// 是否捕获事件
+function isCaptureEvent(horizonEventName) {
+  if (horizonEventName === 'onLostPointerCapture' || horizonEventName === 'onGotPointerCapture') {
+    return false;
+  }
+  return horizonEventName.slice(-7) === 'Capture';
+}
+
 // 事件懒委托，当用户定义事件后，再进行委托到根节点
 export function lazyDelegateOnRoot(currentRoot: VNode, eventName: string) {
   currentRoot.delegatedEvents.add(eventName);
@@ -67,17 +73,20 @@ export function lazyDelegateOnRoot(currentRoot: VNode, eventName: string) {
     const nativeFullName = isCapture ? nativeEvent + 'capture' : nativeEvent;
 
     // 事件存储在DOM节点属性，避免多个VNode(root和portal)对应同一个DOM, 造成事件重复监听
-    let events = currentRoot.realNode.$EV;
-
-    if (!events) {
-      events = (currentRoot.realNode as any).$EV = {};
-    }
+    currentRoot.realNode.$EV = currentRoot.realNode.$EV ?? {};
+    const events = currentRoot.realNode.$EV;
 
     if (!events[nativeFullName]) {
-      const listener = listenToNativeEvent(nativeEvent, currentRoot.realNode, isCapture);
-      events[nativeFullName] = listener;
+      events[nativeFullName] = listenToNativeEvent(nativeEvent, currentRoot.realNode, isCapture);
     }
   });
+}
+
+// 利用冒泡事件模拟不冒泡事件，需要直接在根节点绑定
+export function listenSimulatedDelegatedEvents(root: VNode) {
+  for (let i = 0; i < simulatedDelegatedEvents.length; i++) {
+    lazyDelegateOnRoot(root, simulatedDelegatedEvents[i]);
+  }
 }
 
 // 通过horizon事件名获取到native事件名
@@ -92,14 +101,6 @@ function getNativeEvtName(horizonEventName, capture) {
     return '';
   }
   return nativeName.toLowerCase();
-}
-
-// 是否捕获事件
-function isCaptureEvent(horizonEventName) {
-  if (horizonEventName === 'onLostPointerCapture' || horizonEventName === 'onGotPointerCapture') {
-    return false;
-  }
-  return horizonEventName.slice(-7) === 'Capture';
 }
 
 // 封装监听函数

@@ -73,7 +73,7 @@ export function isInvalidValue(
   propDetails: PropDetails | null,
   isNativeTag: boolean
 ): boolean {
-  if (value == null) {
+  if (value === null || value === undefined) {
     return true;
   }
 
@@ -98,13 +98,13 @@ export function validateProps(type, props) {
     return;
   }
 
-  // 非内置的变迁
+  // 非内置的元素
   if (!isNativeElement(type, props)) {
     return;
   }
 
   // style属性必须是对象
-  if (props.style != null && typeof props.style !== 'object') {
+  if (props.style !== null && props.style !== undefined && typeof props.style !== 'object') {
     throw new Error('style should be a object.');
   }
 

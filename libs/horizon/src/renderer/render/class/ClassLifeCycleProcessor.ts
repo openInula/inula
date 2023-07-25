@@ -35,7 +35,7 @@ export function callDerivedStateFromProps(
     const newState = getDerivedStateFromProps(nextProps, oldState);
 
     // 组件未返回state,需要返回旧的preState
-    processing.state = newState === null || newState === undefined ? oldState : { ...oldState, ...newState };
+    processing.state = newState ? { ...oldState, ...newState } : oldState;
   }
 }
 

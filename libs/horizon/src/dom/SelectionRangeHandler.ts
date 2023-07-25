@@ -30,7 +30,7 @@ function setSelectionRange(dom: HTMLInputElement | HTMLTextAreaElement, range) {
   const { start, end } = range;
   let realEnd = end;
 
-  if (realEnd == null) {
+  if (realEnd === null || realEnd === undefined) {
     realEnd = start;
   }
 

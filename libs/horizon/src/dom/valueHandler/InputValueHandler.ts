@@ -29,7 +29,7 @@ function getInitValue(dom: HTMLInputElement, props: Props) {
 export function getInputPropsWithoutValue(dom: HTMLInputElement, props: Props) {
   // checked属于必填属性，无法置
   let { checked } = props;
-  if (checked == null) {
+  if (checked === undefined) {
     checked = getInitValue(dom, props).initChecked;
   }
 
@@ -45,12 +45,12 @@ export function getInputPropsWithoutValue(dom: HTMLInputElement, props: Props) {
 export function updateInputValue(dom: HTMLInputElement, props: Props) {
   const { value, checked } = props;
 
-  if (value != null) {
+  if (value !== undefined) {
     // 处理 dom.value 逻辑
     if (dom.value !== String(value)) {
       dom.value = String(value);
     }
-  } else if (checked != null) {
+  } else if (checked !== undefined) {
     updateCommonProp(dom, 'checked', checked, true);
   }
 }
@@ -60,7 +60,7 @@ export function setInitInputValue(dom: HTMLInputElement, props: Props) {
   const { value, defaultValue } = props;
   const { initValue, initChecked } = getInitValue(dom, props);
 
-  if (value != null || defaultValue != null) {
+  if (value !== undefined || defaultValue !== undefined) {
     // value 的使用优先级 value 属性 > defaultValue 属性 > 空字符串
     const initValueStr = String(initValue);
 

@@ -38,6 +38,7 @@ import {
   ACTION_QUEUED,
   INITIALIZED,
   QUEUE_FINISHED,
+  QUEUE_PENDING,
   STATE_CHANGE,
   SUBSCRIBED,
   UNSUBSCRIBED,
@@ -52,6 +53,100 @@ const idGenerator = {
 
 const storeMap = new Map<string, StoreObj<any, any, any>>();
 
+// 通过该方法执行store.$queue中的action
+function tryNextAction(storeObj, proxyObj, config, plannedActions) {
+  if (!plannedActions.length) {
+    if (proxyObj.$pending) {
+      const timestamp = Date.now();
+      const duration = timestamp - proxyObj.$pending;
+      proxyObj.$pending = false;
+      devtools.emit(QUEUE_FINISHED, {
+        store: storeObj,
+        endedAt: timestamp,
+        duration,
+      });
+    }
+    return;
+  }
+
+  const nextAction = plannedActions.shift()!;
+  const result = config.actions
+    ? config.actions[nextAction.action].bind(storeObj, proxyObj)(...nextAction.payload)
+    : undefined;
+
+  if (isPromise(result)) {
+    result.then(value => {
+      nextAction.resolve(value);
+      tryNextAction(storeObj, proxyObj, config, plannedActions);
+    });
+  } else {
+    nextAction.resolve(result);
+    tryNextAction(storeObj, proxyObj, config, plannedActions);
+  }
+}
+
+// 删除Observers中保存的这个VNode的相关数据
+export function clearVNodeObservers(vNode: VNode) {
+  if (!vNode.observers) {
+    return;
+  }
+
+  vNode.observers.forEach(observer => {
+    observer.clearByVNode(vNode);
+  });
+
+  vNode.observers.clear();
+}
+
+// 注册VNode销毁时的清理动作
+function registerDestroyFunction() {
+  const processingVNode = getProcessingVNode();
+
+  // 获取不到当前运行的VNode，说明不在组件中运行，属于非法场景
+  if (!processingVNode) {
+    return;
+  }
+
+  if (!processingVNode.observers) {
+    processingVNode.observers = new Set<Observer>();
+  }
+
+  // 函数组件
+  if (processingVNode.tag === FunctionComponent) {
+    const vNodeRef = useRef(processingVNode);
+
+    useEffect(() => {
+      return () => {
+        clearVNodeObservers(vNodeRef.current);
+        vNodeRef.current.observers = null;
+      };
+    }, []);
+  } else if (processingVNode.tag === ClassComponent) {
+    // 类组件
+    if (!processingVNode.classComponentWillUnmount) {
+      processingVNode.classComponentWillUnmount = vNode => {
+        clearVNodeObservers(vNode);
+        vNode.observers = null;
+      };
+    }
+  }
+}
+
+// createStore返回的是一个getStore的函数，这个函数必须要在组件（函数/类组件）里面被执行，因为要注册VNode销毁时的清理动作
+function createGetStore<S extends object, A extends UserActions<S>, C extends UserComputedValues<S>>(
+  storeObj: StoreObj<S, A, C>
+): () => StoreObj<S, A, C> {
+  const getStore = () => {
+    if (!storeObj.$config.options?.isReduxAdapter) {
+      registerDestroyFunction();
+    }
+
+    return storeObj;
+  };
+
+  return getStore;
+}
+
 export function createStore<S extends object, A extends UserActions<S>, C extends UserComputedValues<S>>(
   config: StoreConfig<S, A, C>
 ): () => StoreObj<S, A, C> {
@@ -62,7 +157,11 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
 
   const id = config.id || idGenerator.get('UNNAMED_STORE');
 
-  const proxyObj = createProxy(config.state, id, !config.options?.isReduxAdapter);
+  const listener = {
+    current: listener => {},
+  };
+
+  const proxyObj = createProxy(config.state, listener, !config.options?.isReduxAdapter);
 
   proxyObj.$pending = false;
 
@@ -76,15 +175,27 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
     $c: $c as ComputedValues<S, C>,
     $queue: $queue as QueuedStoreActions<S, A>,
     $config: config,
+    $listeners: [
+      change => {
+        devtools.emit(STATE_CHANGE, {
+          store: storeObj,
+          change,
+        });
+      },
+    ],
     $subscribe: listener => {
       devtools.emit(SUBSCRIBED, { store: storeObj, listener });
-      proxyObj.addListener(listener);
+      storeObj.$listeners.push(listener);
     },
     $unsubscribe: listener => {
-      devtools.emit(UNSUBSCRIBED, storeObj);
-      proxyObj.removeListener(listener);
+      devtools.emit(UNSUBSCRIBED, { store: storeObj });
+      storeObj.$listeners = storeObj.$listeners.filter(item => item != listener);
     },
   } as unknown as StoreObj<S, A, C>;
+
+  listener.current = (...args) => {
+    storeObj.$listeners.forEach(listener => listener(...args));
+  };
 
   const plannedActions: PlannedAction<S, ActionFunction<S>>[] = [];
 
@@ -104,7 +215,11 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
         });
         return new Promise(resolve => {
           if (!proxyObj.$pending) {
-            proxyObj.$pending = true;
+            proxyObj.$pending = Date.now();
+            devtools.emit(QUEUE_PENDING, {
+              store: storeObj,
+              startedAt: proxyObj.$pending,
+            });
 
             const result = config.actions![action].bind(storeObj, proxyObj)(...payload);
 
@@ -192,99 +307,7 @@ export function createStore<S extends object, A extends UserActions<S>, C extend
     store: storeObj,
   });
 
-  proxyObj.addListener(change => {
-    devtools.emit(STATE_CHANGE, {
-      store: storeObj,
-      change,
-    });
-  });
-
   return createGetStore(storeObj);
-}
-
-// 通过该方法执行store.$queue中的action
-function tryNextAction(storeObj, proxyObj, config, plannedActions) {
-  if (!plannedActions.length) {
-    proxyObj.$pending = false;
-    return;
-  }
-
-  const nextAction = plannedActions.shift()!;
-  const result = config.actions
-    ? config.actions[nextAction.action].bind(storeObj, proxyObj)(...nextAction.payload)
-    : undefined;
-
-  if (isPromise(result)) {
-    result.then(value => {
-      nextAction.resolve(value);
-      tryNextAction(storeObj, proxyObj, config, plannedActions);
-    });
-  } else {
-    nextAction.resolve(result);
-    tryNextAction(storeObj, proxyObj, config, plannedActions);
-  }
-}
-
-// createStore返回的是一个getStore的函数，这个函数必须要在组件（函数/类组件）里面被执行，因为要注册VNode销毁时的清理动作
-function createGetStore<S extends object, A extends UserActions<S>, C extends UserComputedValues<S>>(
-  storeObj: StoreObj<S, A, C>
-): () => StoreObj<S, A, C> {
-  const getStore = () => {
-    if (!storeObj.$config.options?.isReduxAdapter) {
-      registerDestroyFunction();
-    }
-
-    return storeObj;
-  };
-
-  return getStore;
-}
-
-// 删除Observers中保存的这个VNode的相关数据
-export function clearVNodeObservers(vNode: VNode) {
-  if (!vNode.observers) {
-    return;
-  }
-
-  vNode.observers.forEach(observer => {
-    observer.clearByVNode(vNode);
-  });
-
-  vNode.observers.clear();
-}
-
-// 注册VNode销毁时的清理动作
-function registerDestroyFunction() {
-  const processingVNode = getProcessingVNode();
-
-  // 获取不到当前运行的VNode，说明不在组件中运行，属于非法场景
-  if (!processingVNode) {
-    return;
-  }
-
-  if (!processingVNode.observers) {
-    processingVNode.observers = new Set<Observer>();
-  }
-
-  // 函数组件
-  if (processingVNode.tag === FunctionComponent) {
-    const vNodeRef = useRef(processingVNode);
-
-    useEffect(() => {
-      return () => {
-        clearVNodeObservers(vNodeRef.current);
-        vNodeRef.current.observers = null;
-      };
-    }, []);
-  } else if (processingVNode.tag === ClassComponent) {
-    // 类组件
-    if (!processingVNode.classComponentWillUnmount) {
-      processingVNode.classComponentWillUnmount = vNode => {
-        clearVNodeObservers(vNode);
-        vNode.observers = null;
-      };
-    }
-  }
 }
 
 // 函数组件中使用的hook

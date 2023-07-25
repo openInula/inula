@@ -165,7 +165,7 @@ function canCapturePromise(vNode: VNode | null): boolean {
 
 // 处理Suspense子组件抛出的promise
 export function handleSuspenseChildThrowError(parent: VNode, processing: VNode, promise: PromiseType<any>): boolean {
-  let vNode = parent;
+  let vNode: VNode | null = parent;
 
   // 向上找到最近的不在fallback状态的Suspense，并触发重新渲染
   do {

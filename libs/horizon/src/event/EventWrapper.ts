@@ -37,6 +37,9 @@ export class WrappedEvent {
   key: string;
   currentTarget: EventTarget | null = null;
 
+  target: HTMLElement;
+  relatedTarget: HTMLElement;
+
   stopPropagation: () => void;
   preventDefault: () => void;
 

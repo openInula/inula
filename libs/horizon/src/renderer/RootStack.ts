@@ -14,15 +14,21 @@
  */
 
 import { VNode } from './vnode/VNode';
-const currentRootStack: VNode[] = [];
+
+const currentRootStack: (VNode | undefined)[] = [];
+let index = -1;
 export function getCurrentRoot() {
-  return currentRootStack[currentRootStack.length - 1];
+  return currentRootStack[index];
 }
 
 export function pushCurrentRoot(root: VNode) {
-  return currentRootStack.push(root);
+  index++;
+  currentRootStack[index] = root;
 }
 
 export function popCurrentRoot() {
-  return currentRootStack.pop();
+  const target = currentRootStack[index];
+  currentRootStack[index] = undefined;
+  index--;
+  return target;
 }

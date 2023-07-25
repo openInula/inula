@@ -38,6 +38,8 @@ import type { Hook } from '../hooks/HookType';
 import { InitFlag } from './VNodeFlags';
 import { Observer } from '../../horizonx/proxy/Observer';
 
+export const BELONG_CLASS_VNODE_KEY = typeof Symbol === 'function' ? Symbol('belongClassVNode') : 'belongClassVNode';
+
 export class VNode {
   tag: VNodeTag;
   key: string | null; // 唯一标识符
@@ -89,7 +91,7 @@ export class VNode {
   oldChild: VNode | null = null;
   promiseResolve: boolean; // suspense的promise是否resolve
   devProps: any; // 用于dev插件临时保存更新props值
-  suspenseState: SuspenseState;
+  suspenseState: SuspenseState | null;
 
   path = ''; // 保存从根到本节点的路径
 
@@ -97,7 +99,7 @@ export class VNode {
   toUpdateNodes: Set<VNode> | null; // 保存要更新的节点
   delegatedEvents: Set<string>;
 
-  belongClassVNode: VNode | null = null; // 记录JSXElement所属class vNode，处理ref的时候使用
+  [BELONG_CLASS_VNODE_KEY]: VNode | null = null; // 记录JSXElement所属class vNode，处理ref的时候使用
 
   // 状态管理器HorizonX使用
   isStoreChange: boolean;
@@ -199,6 +201,8 @@ export class VNode {
       case ForwardRef:
         break;
       case Profiler:
+        break;
+      default:
         break;
     }
   }

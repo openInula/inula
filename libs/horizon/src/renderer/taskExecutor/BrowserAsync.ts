@@ -19,10 +19,20 @@
 
 let isMessageLoopRunning = false;
 let browserCallback = null;
-const { port1, port2 } = new MessageChannel();
+let port1 = null;
+let port2 = null;
+let isTestRuntime = false;
 
 export function isOverTime() {
   return false;
+}
+
+function asyncCall() {
+  if (isTestRuntime) {
+    setTimeout(callRenderTasks, 0);
+  } else {
+    port2.postMessage(null);
+  }
 }
 
 // 1、设置deadline；2、回调TaskExecutor传过来的browserCallback
@@ -41,21 +51,30 @@ const callRenderTasks = () => {
       browserCallback = null;
     } else {
       // 还有task，继续调用
-      port2.postMessage(null);
+      asyncCall();
     }
   } catch (error) {
-    port2.postMessage(null);
+    asyncCall();
     throw error;
   }
 };
 
-port1.onmessage = callRenderTasks;
+if (typeof MessageChannel === 'function') {
+  const mc = new MessageChannel();
+  port1 = mc.port1;
+  port1.onmessage = callRenderTasks;
+  port2 = mc.port2;
+} else {
+  // 测试环境没有 MessageChannel
+  isTestRuntime = true;
+}
 
 export function requestBrowserCallback(callback) {
   browserCallback = callback;
 
   if (!isMessageLoopRunning) {
     isMessageLoopRunning = true;
-    port2.postMessage(null);
+    asyncCall();
   }
 }
+
