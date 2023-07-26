@@ -1,4 +1,7 @@
 {
+  "name": "inulajs",
+  "description": "InulaJS is a JavaScript framework library.",
+  "version": "0.0.52",
   "private": true,
   "workspaces": [
     "libs/*"
@@ -8,10 +11,8 @@
     "prettier": "prettier -w libs/**/*.ts",
     "build": "rollup --config ./scripts/rollup/rollup.config.js",
     "build:watch": "rollup --watch --config ./scripts/rollup/rollup.config.js",
-    "build:3rdLib": "node ./scripts/gen3rdLib.js build:3rdLib",
-    "build:3rdLib-dev": "npm run build & node ./scripts/gen3rdLib.js build:3rdLib-dev",
-    "build:horizon3rdLib-dev": "npm run build & node ./scripts/gen3rdLib.js build:horizon3rdLib-dev",
-    "build-types": "tsc -p ./libs/horizon/index.ts --emitDeclarationOnly --declaration --declarationDir ./build/horizon/@types --skipLibCheck || echo \"WARNING: TSC exited with status $?\"",
+    "build:inula3rdLib-dev": "npm run build & node ./scripts/gen3rdLib.js build:inula3rdLib-dev",
+    "build-types": "tsc -p libs/inula/index.ts --emitDeclarationOnly --declaration --declarationDir ./build/inula/@types --skipLibCheck || echo \\\"WARNING: TSC exited with status $?\\\"",
     "debug-test": "yarn test --debug",
     "test": "jest --config=jest.config.js",
     "watch-test": "yarn test --watch --dev"
@@ -35,11 +36,11 @@
     "@babel/plugin-transform-object-super": "7.16.7",
     "@babel/plugin-transform-parameters": "7.16.7",
     "@babel/plugin-transform-react-jsx": "7.16.7",
+    "@babel/plugin-transform-react-jsx-source": "^7.16.7",
     "@babel/plugin-transform-runtime": "7.16.7",
     "@babel/plugin-transform-shorthand-properties": "7.16.7",
     "@babel/plugin-transform-spread": "7.16.7",
     "@babel/plugin-transform-template-literals": "7.16.7",
-    "@babel/plugin-transform-react-jsx-source": "^7.16.7",
     "@babel/preset-env": "7.16.7",
     "@babel/preset-typescript": "7.16.7",
     "@rollup/plugin-babel": "^5.3.1",
@@ -50,6 +51,7 @@
     "@typescript-eslint/eslint-plugin": "4.8.0",
     "@typescript-eslint/parser": "4.8.0",
     "babel-jest": "^27.5.1",
+    "ejs": "^3.1.8",
     "eslint": "7.13.0",
     "eslint-config-prettier": "^6.9.0",
     "eslint-plugin-jest": "^22.15.0",
@@ -67,5 +69,6 @@
   "engines": {
     "node": ">=10.x",
     "npm": ">=7.x"
-  }
+  },
+  "dependencies": {}
 }

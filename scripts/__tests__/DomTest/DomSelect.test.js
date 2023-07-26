@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../libs/inula/index';
 
 describe('Dom Select', () => {
   it('设置value', () => {
@@ -24,12 +24,12 @@ describe('Dom Select', () => {
         <option value='Angular'>Angular.js</option>
       </select>
     );
-    const realNode = Horizon.render(selectNode, container);
+    const realNode = Inula.render(selectNode, container);
     expect(realNode.value).toBe('Vue');
     expect(realNode.options[1].selected).toBe(true);
     realNode.value = 'React';
     // 改变value会影响select的状态
-    Horizon.render(selectNode, container);
+    Inula.render(selectNode, container);
     expect(realNode.options[0].selected).toBe(true);
     expect(realNode.value).toBe('React');
   });
@@ -47,7 +47,7 @@ describe('Dom Select', () => {
         <option value='Angular'>Angular.js</option>
       </select>
     );
-    const realNode = Horizon.render(selectNode, container);
+    const realNode = Inula.render(selectNode, container);
     expect(realNode.value).toBe('Vue');
     expect(realNode.options[1].selected).toBe(true);
     selectValue = {
@@ -63,7 +63,7 @@ describe('Dom Select', () => {
       </select>
     );
     // 改变value会影响select的状态
-    Horizon.render(newSelectNode, container);
+    Inula.render(newSelectNode, container);
     expect(realNode.options[0].selected).toBe(true);
     expect(realNode.value).toBe('React');
   });
@@ -76,7 +76,7 @@ describe('Dom Select', () => {
         <option value='Angular'>Angular.js</option>
       </select>
     );
-    const realNode = Horizon.render(selectNode, container);
+    const realNode = Inula.render(selectNode, container);
     expect(realNode.value).toBe('Vue');
     expect(realNode.options[1].selected).toBe(true);
     const newSelectNode = (
@@ -86,7 +86,7 @@ describe('Dom Select', () => {
         <option value='Angular'>Angular.js</option>
       </select>
     );
-    Horizon.render(newSelectNode, container);
+    Inula.render(newSelectNode, container);
     // selected不变
     expect(realNode.options[0].selected).toBe(false);
     expect(realNode.options[1].selected).toBe(true);
@@ -102,13 +102,13 @@ describe('Dom Select', () => {
         <option value='Angular'>Angular.js</option>
       </select>
     );
-    let realNode = Horizon.render(selectNode, container);
+    let realNode = Inula.render(selectNode, container);
     expect(realNode.value).toBe('Vue');
     expect(realNode.options[1].selected).toBe(true);
 
     defaultVal = 'React';
     // 改变defaultValue没有影响
-    realNode = Horizon.render(selectNode, container);
+    realNode = Inula.render(selectNode, container);
     expect(realNode.value).toBe('Vue');
     expect(realNode.options[0].selected).toBe(false);
     expect(realNode.options[1].selected).toBe(true);
@@ -122,7 +122,7 @@ describe('Dom Select', () => {
         <option value='Angular'>Angular.js</option>
       </select>
     );
-    let realNode = Horizon.render(selectNode, container);
+    let realNode = Inula.render(selectNode, container);
     expect(realNode.value).toBe('Vue');
     expect(realNode.options[1].selected).toBe(true);
 
@@ -139,7 +139,7 @@ describe('Dom Select', () => {
       }),
     );
     // 鼠标改变受控select生效,select不受控
-    Horizon.render(selectNode, container);
+    Inula.render(selectNode, container);
     // 'React'项没被选中
     expect(realNode.options[0].selected).toBe(true);
     expect(realNode.options[1].selected).toBe(false);
@@ -156,7 +156,7 @@ describe('Dom Select', () => {
       </select>
     );
     expect(
-      () => Horizon.render(selectNode, container)
+      () => Inula.render(selectNode, container)
     ).toThrowError('newValues.forEach is not a function');
   });
 
@@ -169,7 +169,7 @@ describe('Dom Select', () => {
       </select>
     );
     expect(
-      () => Horizon.render(selectNode, container)
+      () => Inula.render(selectNode, container)
     ).not.toThrow();
     expect(document.getElementById('se').options[0].selected).toBe(false);
     expect(document.getElementById('se').options[1].selected).toBe(true);
@@ -183,7 +183,7 @@ describe('Dom Select', () => {
         <option value='Angular'>Angular.js</option>
       </select>
     );
-    Horizon.render(selectNode, container);
+    Inula.render(selectNode, container);
     expect(document.getElementById('se').options[0].selected).toBe(false);
     expect(document.getElementById('se').options[1].selected).toBe(true);
     expect(document.getElementById('se').options[2].selected).toBe(true);
@@ -198,7 +198,7 @@ describe('Dom Select', () => {
       </select>
     );
     expect(
-      () => Horizon.render(selectNode, container)
+      () => Inula.render(selectNode, container)
     ).not.toThrow();
     expect(document.getElementById('se').options[0].selected).toBe(false);
     expect(document.getElementById('se').options[1].selected).toBe(true);
@@ -212,7 +212,7 @@ describe('Dom Select', () => {
         <option value='Angular'>Angular.js</option>
       </select>
     );
-    Horizon.render(selectNode, container);
+    Inula.render(selectNode, container);
     expect(document.getElementById('se').options[0].selected).toBe(true);
     expect(document.getElementById('se').options[1].selected).toBe(false);
     expect(document.getElementById('se').options[2].selected).toBe(false);
@@ -226,7 +226,7 @@ describe('Dom Select', () => {
         <option value='Angular'>Angular.js</option>
       </select>
     );
-    Horizon.render(selectNode, container);
+    Inula.render(selectNode, container);
     expect(document.getElementById('se').options[0].selected).toBe(false);
     expect(document.getElementById('se').options[1].selected).toBe(true);
     expect(document.getElementById('se').options[2].selected).toBe(true);
@@ -239,7 +239,7 @@ describe('Dom Select', () => {
         <option value='Angular'>Angular.js</option>
       </select>
     );
-    Horizon.render(selectNode, container);
+    Inula.render(selectNode, container);
     expect(document.getElementById('se').options[0].selected).toBe(true);
     expect(document.getElementById('se').options[1].selected).toBe(false);
     expect(document.getElementById('se').options[2].selected).toBe(false);
@@ -253,7 +253,7 @@ describe('Dom Select', () => {
         <option value='Angular'>Angular.js</option>
       </select>
     );
-    Horizon.render(selectNode, container);
+    Inula.render(selectNode, container);
     expect(document.getElementById('se').options[0].selected).toBe(true);
     expect(document.getElementById('se').options[1].selected).toBe(false);
     expect(document.getElementById('se').options[2].selected).toBe(false);
@@ -266,7 +266,7 @@ describe('Dom Select', () => {
         <option value='Angular'>Angular.js</option>
       </select>
     );
-    Horizon.render(selectNode, container);
+    Inula.render(selectNode, container);
     expect(document.getElementById('se').options[0].selected).toBe(false);
     expect(document.getElementById('se').options[1].selected).toBe(true);
     expect(document.getElementById('se').options[2].selected).toBe(true);
@@ -280,7 +280,7 @@ describe('Dom Select', () => {
         <option disabled={true} value='Angular'>Angular.js</option>
       </select>
     );
-    const realNode = Horizon.render(selectNode, container);
+    const realNode = Inula.render(selectNode, container);
     expect(realNode.options[0].selected).toBe(false);
     expect(realNode.options[1].selected).toBe(true);
     expect(realNode.options[2].selected).toBe(false);
@@ -294,7 +294,7 @@ describe('Dom Select', () => {
         <option key='Angular' value='Angular'>Angular.js</option>
       </select>
     );
-    const realNode = Horizon.render(selectNode, container);
+    const realNode = Inula.render(selectNode, container);
     expect(realNode.options[0].selected).toBe(false);
     expect(realNode.options[1].selected).toBe(true);
     expect(realNode.options[2].selected).toBe(false);
@@ -305,7 +305,7 @@ describe('Dom Select', () => {
         <option key='Angular' value='Angular'>Angular.js</option>
       </select>
     );
-    Horizon.render(newNode, container);
+    Inula.render(newNode, container);
     expect(realNode.options[0].selected).toBe(false);
     expect(realNode.options[1].selected).toBe(false);
 
@@ -317,7 +317,7 @@ describe('Dom Select', () => {
       </select>
     );
     // 重新添加不会影响
-    Horizon.render(newSelectNode, container);
+    Inula.render(newSelectNode, container);
     expect(realNode.options[0].selected).toBe(false);
     expect(realNode.options[1].selected).toBe(false);
     expect(realNode.options[2].selected).toBe(false);

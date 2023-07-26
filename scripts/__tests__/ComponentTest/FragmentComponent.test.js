@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../libs/inula/index';
 import { Text } from '../jest/commonComponents';
 import { getLogUtils } from '../jest/testUtils';
 
@@ -23,24 +23,24 @@ describe('Fragment', () => {
     useEffect,
     useRef,
     act,
-  } = Horizon;
+  } = Inula;
   it('可以渲染空元素', () => {
     const element = (
-      <Horizon.Fragment />
+      <Inula.Fragment />
     );
 
-    Horizon.render(element, container);
+    Inula.render(element, container);
 
     expect(container.textContent).toBe('');
   });
   it('可以渲染单个元素', () => {
     const element = (
-      <Horizon.Fragment>
+      <Inula.Fragment>
         <Text text="Fragment" />
-      </Horizon.Fragment>
+      </Inula.Fragment>
     );
 
-    Horizon.render(element, container);
+    Inula.render(element, container);
 
     expect(LogUtils.getAndClear()).toEqual(['Fragment']);
     expect(container.textContent).toBe('Fragment');
@@ -48,12 +48,12 @@ describe('Fragment', () => {
 
   it('可以渲染混合元素', () => {
     const element = (
-      <Horizon.Fragment>
+      <Inula.Fragment>
         Java and <Text text="JavaScript" />
-      </Horizon.Fragment>
+      </Inula.Fragment>
     );
 
-    Horizon.render(element, container);
+    Inula.render(element, container);
 
     expect(LogUtils.getAndClear()).toEqual(['JavaScript']);
     expect(container.textContent).toBe('Java and JavaScript');
@@ -67,7 +67,7 @@ describe('Fragment', () => {
       </>
     );
 
-    Horizon.render(element, container);
+    Inula.render(element, container);
 
     expect(LogUtils.getAndClear()).toEqual(['Java', 'JavaScript']);
     expect(container.textContent).toBe('JavaJavaScript');
@@ -103,18 +103,18 @@ describe('Fragment', () => {
     };
 
     act(() => {
-      Horizon.render(<App change={true} />, container);
+      Inula.render(<App change={true} />, container);
     });
     expect(LogUtils.getNotClear()).toEqual([]);
     act(() => {
-      Horizon.render(<App change={false} />, container);
+      Inula.render(<App change={false} />, container);
     });
     // 切换到不同层级Fragment时，副作用状态不会保留
     expect(LogUtils.getNotClear()).toEqual([]);
     expect(container.textContent).toBe('2');
 
     act(() => {
-      Horizon.render(<App change={true} />, container);
+      Inula.render(<App change={true} />, container);
     });
     expect(LogUtils.getNotClear()).toEqual([]);
     expect(container.textContent).toBe('1');
@@ -145,18 +145,18 @@ describe('Fragment', () => {
     };
 
     act(() => {
-      Horizon.render(<App change={true} />, container);
+      Inula.render(<App change={true} />, container);
     });
     expect(LogUtils.getNotClear()).toEqual([]);
     act(() => {
-      Horizon.render(<App change={false} />, container);
+      Inula.render(<App change={false} />, container);
     });
     // 状态会保留
     expect(LogUtils.getNotClear()).toEqual(['useEffect']);
     expect(container.textContent).toBe('2');
 
     act(() => {
-      Horizon.render(<App change={true} />, container);
+      Inula.render(<App change={true} />, container);
     });
     expect(LogUtils.getNotClear()).toEqual(['useEffect', 'useEffect']);
     expect(container.textContent).toBe('1');
@@ -188,18 +188,18 @@ describe('Fragment', () => {
     };
 
     act(() => {
-      Horizon.render(<App change={true} />, container);
+      Inula.render(<App change={true} />, container);
     });
     expect(LogUtils.getNotClear()).toEqual([]);
     act(() => {
-      Horizon.render(<App change={false} />, container);
+      Inula.render(<App change={false} />, container);
     });
     // 状态不会保留
     expect(LogUtils.getNotClear()).toEqual([]);
     expect(container.textContent).toBe('1232');
 
     act(() => {
-      Horizon.render(<App change={true} />, container);
+      Inula.render(<App change={true} />, container);
     });
     expect(LogUtils.getNotClear()).toEqual([]);
     expect(container.textContent).toBe('1');
@@ -234,18 +234,18 @@ describe('Fragment', () => {
     };
 
     act(() => {
-      Horizon.render(<App change={true} />, container);
+      Inula.render(<App change={true} />, container);
     });
     expect(LogUtils.getNotClear()).toEqual([]);
     act(() => {
-      Horizon.render(<App change={false} />, container);
+      Inula.render(<App change={false} />, container);
     });
     // 状态不会保留
     expect(LogUtils.getNotClear()).toEqual([]);
     expect(container.textContent).toBe('2');
 
     act(() => {
-      Horizon.render(<App change={true} />, container);
+      Inula.render(<App change={true} />, container);
     });
     expect(LogUtils.getNotClear()).toEqual([]);
     expect(container.textContent).toBe('1');
@@ -286,18 +286,18 @@ describe('Fragment', () => {
     };
 
     act(() => {
-      Horizon.render(<App change={true} />, container);
+      Inula.render(<App change={true} />, container);
     });
     expect(LogUtils.getNotClear()).toEqual([]);
     act(() => {
-      Horizon.render(<App change={false} />, container);
+      Inula.render(<App change={false} />, container);
     });
     // 状态会保留
     expect(LogUtils.getNotClear()).toEqual(['useEffect']);
     expect(container.textContent).toBe('2');
 
     act(() => {
-      Horizon.render(<App change={true} />, container);
+      Inula.render(<App change={true} />, container);
     });
     expect(LogUtils.getNotClear()).toEqual(['useEffect', 'useEffect']);
     expect(container.textContent).toBe('1');
@@ -338,18 +338,18 @@ describe('Fragment', () => {
     };
 
     act(() => {
-      Horizon.render(<App change={true} />, container);
+      Inula.render(<App change={true} />, container);
     });
     expect(LogUtils.getNotClear()).toEqual([]);
     act(() => {
-      Horizon.render(<App change={false} />, container);
+      Inula.render(<App change={false} />, container);
     });
     // 状态会保留
     expect(LogUtils.getNotClear()).toEqual(['useEffect']);
     expect(container.textContent).toBe('2');
 
     act(() => {
-      Horizon.render(<App change={true} />, container);
+      Inula.render(<App change={true} />, container);
     });
     expect(LogUtils.getNotClear()).toEqual(['useEffect', 'useEffect']);
     expect(container.textContent).toBe('1');
@@ -380,18 +380,18 @@ describe('Fragment', () => {
     };
 
     act(() => {
-      Horizon.render(<App change={true} />, container);
+      Inula.render(<App change={true} />, container);
     });
     expect(LogUtils.getNotClear()).toEqual([]);
     act(() => {
-      Horizon.render(<App change={false} />, container);
+      Inula.render(<App change={false} />, container);
     });
     // 状态会保留
     expect(LogUtils.getNotClear()).toEqual(['useEffect']);
     expect(container.textContent).toBe('2');
 
     act(() => {
-      Horizon.render(<App change={true} />, container);
+      Inula.render(<App change={true} />, container);
     });
     expect(LogUtils.getNotClear()).toEqual(['useEffect', 'useEffect']);
     expect(container.textContent).toBe('1');
@@ -426,18 +426,18 @@ describe('Fragment', () => {
     };
 
     act(() => {
-      Horizon.render(<App change={true} />, container);
+      Inula.render(<App change={true} />, container);
     });
     expect(LogUtils.getNotClear()).toEqual([]);
     act(() => {
-      Horizon.render(<App change={false} />, container);
+      Inula.render(<App change={false} />, container);
     });
     // 状态会保留
     expect(LogUtils.getNotClear()).toEqual([]);
     expect(container.textContent).toBe('2');
 
     act(() => {
-      Horizon.render(<App change={true} />, container);
+      Inula.render(<App change={true} />, container);
     });
     expect(LogUtils.getNotClear()).toEqual([]);
     expect(container.textContent).toBe('[1]');
@@ -459,29 +459,29 @@ describe('Fragment', () => {
 
     const App = (props) => {
       return props.change ? (
-        <Horizon.Fragment key='hf'>
+        <Inula.Fragment key='hf'>
           <ChildApp logo={1} />
-        </Horizon.Fragment>
+        </Inula.Fragment>
       ) : (
-          <Horizon.Fragment key='nhf'>
+          <Inula.Fragment key='nhf'>
             <ChildApp logo={2} />
-          </Horizon.Fragment>
+          </Inula.Fragment>
         );
     };
 
     act(() => {
-      Horizon.render(<App change={true} />, container);
+      Inula.render(<App change={true} />, container);
     });
     expect(LogUtils.getNotClear()).toEqual([]);
     act(() => {
-      Horizon.render(<App change={false} />, container);
+      Inula.render(<App change={false} />, container);
     });
     // 状态不会保留
     expect(LogUtils.getNotClear()).toEqual([]);
     expect(container.textContent).toBe('2');
 
     act(() => {
-      Horizon.render(<App change={true} />, container);
+      Inula.render(<App change={true} />, container);
     });
     expect(LogUtils.getNotClear()).toEqual([]);
     expect(container.textContent).toBe('1');

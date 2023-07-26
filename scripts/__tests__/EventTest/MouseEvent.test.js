@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../libs/inula/index';
 import { getLogUtils } from '../jest/testUtils';
 
 describe('MouseEvent Test', () => {
@@ -21,7 +21,7 @@ describe('MouseEvent Test', () => {
 
   describe('onClick Test', () => {
     it('绑定this', () => {
-      class App extends Horizon.Component {
+      class App extends Inula.Component {
         constructor(props) {
           super(props);
           this.state = {
@@ -52,7 +52,7 @@ describe('MouseEvent Test', () => {
         }
       }
 
-      Horizon.render(<App num={0} price={100} />, container);
+      Inula.render(<App num={0} price={100} />, container);
       expect(container.querySelector('p').innerHTML).toBe('0');
       expect(container.querySelector('#p').innerHTML).toBe('100');
       // 点击按钮触发num加1
@@ -65,7 +65,7 @@ describe('MouseEvent Test', () => {
 
     it('点击触发', () => {
       const handleClick = jest.fn();
-      Horizon.render(<button onClick={handleClick}>Click Me</button>, container);
+      Inula.render(<button onClick={handleClick}>Click Me</button>, container);
       container.querySelector('button').click();
       expect(handleClick).toHaveBeenCalledTimes(1);
       for (let i = 0; i < 5; i++) {
@@ -76,8 +76,8 @@ describe('MouseEvent Test', () => {
 
     it('disable不触发click', () => {
       const handleClick = jest.fn();
-      const spanRef = Horizon.createRef();
-      Horizon.render(
+      const spanRef = Inula.createRef();
+      Inula.render(
         <button onClick={handleClick} disabled={true}>
           <span ref={spanRef}>Click Me</span>
         </button>,
@@ -90,7 +90,7 @@ describe('MouseEvent Test', () => {
   });
 
   const test = (name, config) => {
-    const node = Horizon.render(config, container);
+    const node = Inula.render(config, container);
     let event = new MouseEvent(name, {
       relatedTarget: null,
       bubbles: true,
@@ -163,7 +163,7 @@ describe('MouseEvent Test', () => {
     });
 
     it('KeyboardEvent.getModifierState should not fail', () => {
-      const input = Horizon.render(<input
+      const input = Inula.render(<input
         onMouseDown={(e) => {
           e.getModifierState('CapsLock');
         }}

@@ -13,18 +13,18 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../libs/inula/index';
 
 describe('Memo Test', () => {
   it('Memo should not make the path wrong', function () {
     let updateApp;
 
     function Child() {
-      const [_, update] = Horizon.useState({});
+      const [_, update] = Inula.useState({});
       updateApp = () => update({});
       return <div></div>;
     }
-    const MemoChild = Horizon.memo(Child);
+    const MemoChild = Inula.memo(Child);
 
     function App() {
       return (
@@ -33,14 +33,14 @@ describe('Memo Test', () => {
         </div>
       );
     }
-    const MemoApp = Horizon.memo(App);
-    Horizon.render(
+    const MemoApp = Inula.memo(App);
+    Inula.render(
       <div>
         <MemoApp key="1" />
       </div>,
       container
     );
-    Horizon.render(
+    Inula.render(
       <div>
         <span></span>
         <MemoApp key="1" />

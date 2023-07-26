@@ -13,14 +13,14 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../libs/inula/index';
 import { getLogUtils } from '../jest/testUtils';
 
 describe('合成滚轮事件', () => {
   const LogUtils = getLogUtils();
 
   it('onWheel', () => {
-    const realNode = Horizon.render(
+    const realNode = Inula.render(
       <div
         onWheel={event => LogUtils.log(`onWheel: ${event.type}`)}
         onWheelCapture={event => LogUtils.log(`onWheelCapture: ${event.type}`)}
@@ -50,7 +50,7 @@ describe('合成滚轮事件', () => {
       expect(e.isPropagationStopped()).toBe(true);
       LogUtils.log(e.type + ' handle');
     };
-    const realNode = Horizon.render(
+    const realNode = Inula.render(
       <div onWheel={eventHandler} />,
       container
     );

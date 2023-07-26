@@ -13,14 +13,14 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../libs/inula/index';
 describe('FunctionComponent Test', () => {
   it('渲染无状态组件', () => {
     const App = (props) => {
       return <p>{props.text}</p>;
     };
 
-    Horizon.render(<App text='app' />, container);
+    Inula.render(<App text='app' />, container);
     expect(container.querySelector('p').innerHTML).toBe('app');
   });
 
@@ -29,13 +29,13 @@ describe('FunctionComponent Test', () => {
       return <p>{props.text}</p>;
     };
 
-    Horizon.render(<App text='app' />, container);
+    Inula.render(<App text='app' />, container);
     expect(container.querySelector('p').innerHTML).toBe('app');
 
-    Horizon.render(<App text='ABC' />, container);
+    Inula.render(<App text='ABC' />, container);
     expect(container.querySelector('p').innerHTML).toBe('ABC');
 
-    Horizon.render(<App text='abc' />, container);
+    Inula.render(<App text='abc' />, container);
     expect(container.querySelector('p').innerHTML).toBe('abc');
   });
 
@@ -44,10 +44,10 @@ describe('FunctionComponent Test', () => {
       return <p>{props.text}</p>;
     };
 
-    Horizon.render(<App text='app' />, container);
+    Inula.render(<App text='app' />, container);
     expect(container.querySelector('p').innerHTML).toBe('app');
 
-    Horizon.unmountComponentAtNode(container);
+    Inula.unmountComponentAtNode(container);
     expect(container.querySelector('p')).toBe(null);
   });
 
@@ -56,8 +56,38 @@ describe('FunctionComponent Test', () => {
       return <div />;
     };
 
-    const realNode = Horizon.render(<App />, container);
+    const realNode = Inula.render(<App />, container);
     expect(realNode).toBe(null);
+  });
+
+  it('测试函数组件的defaultProps：Inula.memo(Inula.forwardRef(()=>{}))两层包装的场景后，defaultProps依然正常', () => {
+    const App = () => {
+      return <DefaultPropsCompMemo />;
+    };
+
+    const DefaultPropsComp = Inula.forwardRef(props => {
+      return <div>{props.name}</div>;
+    });
+    DefaultPropsComp.defaultProps = {
+      name: 'Hello!',
+    };
+    const DefaultPropsCompMemo = Inula.memo(DefaultPropsComp);
+
+    Inula.render(<App />, container);
+    expect(container.querySelector('div').innerHTML).toBe('Hello!');
+  });
+
+  it('测试', () => {
+    const App = () => {
+      return <StyleComp />;
+    };
+
+    const StyleComp = props => {
+      return <div style={{ '--max-segment-num': 10 }}>{props.name}</div>;
+    };
+
+    Inula.render(<App />, container);
+    expect(container.querySelector('div').style['_values']['--max-segment-num']).toBe(10);
   });
 
 });

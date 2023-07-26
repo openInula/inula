@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../../libs/inula/index';
 import { getLogUtils } from '../../jest/testUtils';
 import { Text } from '../../jest/commonComponents';
 
@@ -25,7 +25,7 @@ describe('useEffect Hook Test', () => {
     memo,
     forwardRef,
     act,
-  } = Horizon;
+  } = Inula;
 
   const LogUtils = getLogUtils();
   it('简单使用useEffect', () => {
@@ -41,7 +41,7 @@ describe('useEffect Hook Test', () => {
         </>
       );
     };
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
     expect(document.getElementById('p').style.display).toBe('block');
     // 点击按钮触发num加1
     container.querySelector('button').click();
@@ -57,7 +57,7 @@ describe('useEffect Hook Test', () => {
     };
 
     act(() => {
-      Horizon.render(<App />, container, () => {
+      Inula.render(<App />, container, () => {
         LogUtils.log('num effect');
       });
       // 第一次渲染为同步，所以同步执行的可以写在act里做判断
@@ -65,7 +65,7 @@ describe('useEffect Hook Test', () => {
       expect(container.textContent).toBe('op');
     });
     act(() => {
-      Horizon.render(null, container, () => {
+      Inula.render(null, container, () => {
         LogUtils.log('num effect89');
       });
       // 第二次渲染为异步，所以同步执行的不可以写在act里做判断，act里拿到的为空数组
@@ -87,7 +87,7 @@ describe('useEffect Hook Test', () => {
     };
     const na = <NewApp />;
     // <App />必须设置key值，否则在diff的时候na会被视为不同组件
-    Horizon.render([<App key="app" />, na], container);
+    Inula.render([<App key="app" />, na], container);
     expect(LogUtils.getAndClear()).toEqual([
       'App',
       'NewApp'
@@ -95,7 +95,7 @@ describe('useEffect Hook Test', () => {
     expect(container.textContent).toBe('AppNewApp');
     expect(LogUtils.getAndClear()).toEqual([]);
     // 在执行新的render前，会执行完上一次render的useEffect，所以LogUtils会加入'NewApp effect'。
-    Horizon.render([na], container);
+    Inula.render([na], container);
     expect(LogUtils.getAndClear()).toEqual(['NewApp effect', 'NewApp']);
     expect(container.textContent).toBe('NewApp');
     expect(LogUtils.getAndClear()).toEqual([]);
@@ -119,7 +119,7 @@ describe('useEffect Hook Test', () => {
       return <Text text="NewApp" />;
     };
     // <App />必须设置key值，否则在diff的时候na会被视为不同组件
-    Horizon.render([<App key="app" />, <NewApp />], container);
+    Inula.render([<App key="app" />, <NewApp />], container);
     expect(LogUtils.getAndClear()).toEqual([
       'App',
       'NewApp',
@@ -137,7 +137,7 @@ describe('useEffect Hook Test', () => {
     const App = () => {
       useLayoutEffect(() => {
         LogUtils.log('App Layout effect');
-        Horizon.render(<Text text="NewContainer" />, newContainer);
+        Inula.render(<Text text="NewContainer" />, newContainer);
       });
       return <Text text="App" />;
     };
@@ -148,7 +148,7 @@ describe('useEffect Hook Test', () => {
       return <Text text="NewApp" />;
     };
     // <App />必须设置key值，否则在diff的时候na会被视为不同组件
-    Horizon.render([<App key="app" />, <NewApp />], container);
+    Inula.render([<App key="app" />, <NewApp />], container);
     expect(LogUtils.getAndClear()).toEqual([
       'App',
       'NewApp',
@@ -168,13 +168,13 @@ describe('useEffect Hook Test', () => {
       return <Text text={'num: ' + props.num} />;
     };
     act(() => {
-      Horizon.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
+      Inula.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
       expect(LogUtils.getAndClear()).toEqual(['num: 0', 'callback effect']);
       expect(container.textContent).toEqual('num: 0');
     });
     expect(LogUtils.getAndClear()).toEqual(['First effect [0]']);
     act(() => {
-      Horizon.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
+      Inula.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
 
     });
     // 此时异步执行，act执行完后会执行新render的useEffect
@@ -197,13 +197,13 @@ describe('useEffect Hook Test', () => {
       return <Text text={'num: ' + props.num} />;
     };
     act(() => {
-      Horizon.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
+      Inula.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
       expect(LogUtils.getAndClear()).toEqual(['num: 0', 'callback effect']);
       expect(container.textContent).toEqual('num: 0');
     });
     expect(LogUtils.getAndClear()).toEqual(['First effect [0]', 'Second effect [0]']);
     act(() => {
-      Horizon.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
+      Inula.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
     });
     // 第二次render时异步执行，act保证所有效果都已更新，所以先常规记录日志
     // 然后记录useEffect的日志
@@ -246,7 +246,7 @@ describe('useEffect Hook Test', () => {
     };
 
     act(() => {
-      Horizon.render(<App num={0} word={'App'} />, container, () => LogUtils.log('callback effect'));
+      Inula.render(<App num={0} word={'App'} />, container, () => LogUtils.log('callback effect'));
       expect(LogUtils.getAndClear()).toEqual([
         'num: 0,word: App',
         'num Layouteffect [0]',
@@ -261,21 +261,21 @@ describe('useEffect Hook Test', () => {
 
     act(() => {
       // 此时word改变，num不变
-      Horizon.render(<App num={0} word={'Horizon'} />, container, () => LogUtils.log('callback effect'));
+      Inula.render(<App num={0} word={'Inula'} />, container, () => LogUtils.log('callback effect'));
     });
     expect(LogUtils.getAndClear()).toEqual([
-      'num: 0,word: Horizon',
+      'num: 0,word: Inula',
       'word Layouteffect destroy',
-      'word Layouteffect [Horizon]',
+      'word Layouteffect [Inula]',
       'callback effect',
       // 最后执行异步的
       'word effect destroy',
-      'word effect [Horizon]',
+      'word effect [Inula]',
     ]);
 
     act(() => {
       // 此时num和word的所有effect都销毁
-      Horizon.render(null, container, () => LogUtils.log('callback effect'));
+      Inula.render(null, container, () => LogUtils.log('callback effect'));
     });
     expect(LogUtils.getAndClear()).toEqual([
       'num Layouteffect destroy',
@@ -299,7 +299,7 @@ describe('useEffect Hook Test', () => {
     };
 
     act(() => {
-      Horizon.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
+      Inula.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
       expect(LogUtils.getAndClear()).toEqual([
         'num: 0',
         'callback effect'
@@ -311,7 +311,7 @@ describe('useEffect Hook Test', () => {
     ]);
 
     act(() => {
-      Horizon.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
+      Inula.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
     });
     expect(LogUtils.getAndClear()).toEqual([
       'num: 1',
@@ -324,7 +324,7 @@ describe('useEffect Hook Test', () => {
     expect(LogUtils.getAndClear()).toEqual([]);
 
     act(() => {
-      Horizon.render(null, container, () => LogUtils.log('callback effect'));
+      Inula.render(null, container, () => LogUtils.log('callback effect'));
     });
     expect(LogUtils.getAndClear()).toEqual([
       'callback effect',
@@ -346,7 +346,7 @@ describe('useEffect Hook Test', () => {
     };
 
     act(() => {
-      Horizon.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
+      Inula.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
       expect(LogUtils.getAndClear()).toEqual([
         'num: 0',
         'callback effect'
@@ -358,7 +358,7 @@ describe('useEffect Hook Test', () => {
     ]);
 
     act(() => {
-      Horizon.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
+      Inula.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
     });
     expect(LogUtils.getAndClear()).toEqual([
       'num: 1',
@@ -369,7 +369,7 @@ describe('useEffect Hook Test', () => {
     expect(LogUtils.getAndClear()).toEqual([]);
 
     act(() => {
-      Horizon.render(null, container, () => LogUtils.log('callback effect'));
+      Inula.render(null, container, () => LogUtils.log('callback effect'));
     });
     expect(LogUtils.getAndClear()).toEqual([
       'callback effect',
@@ -382,7 +382,7 @@ describe('useEffect Hook Test', () => {
   it('useEffect里使用useState(1', () => {
     let setNum;
     const App = () => {
-      const [num, _setNum] = Horizon.useState(0);
+      const [num, _setNum] = Inula.useState(0);
       useEffect(() => {
         LogUtils.log(`num effect [${num}]`);
         setNum = () => _setNum(1);
@@ -397,7 +397,7 @@ describe('useEffect Hook Test', () => {
     };
 
     act(() => {
-      Horizon.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
+      Inula.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
       expect(LogUtils.getAndClear()).toEqual([
         'num: 0',
         'num Layouteffect [0]',
@@ -430,7 +430,7 @@ describe('useEffect Hook Test', () => {
       return <Text text={'Num: ' + num} />;
     };
 
-    Horizon.render(<App />, container, () => LogUtils.log('App callback effect'));
+    Inula.render(<App />, container, () => LogUtils.log('App callback effect'));
     expect(LogUtils.getAndClear()).toEqual(['Num: 0', 'App callback effect']);
     expect(container.textContent).toEqual('Num: 0');
     act(() => {
@@ -460,7 +460,7 @@ describe('useEffect Hook Test', () => {
       return <Text text={num} />;
     });
     act(() => {
-      Horizon.render(<App />, container, () => LogUtils.log('callback effect'));
+      Inula.render(<App />, container, () => LogUtils.log('callback effect'));
       expect(LogUtils.getAndClear()).toEqual([
         0,
         'callback effect'
@@ -471,7 +471,7 @@ describe('useEffect Hook Test', () => {
 
     // 不会重新渲染
     act(() => {
-      Horizon.render(<App />, container, () => LogUtils.log('callback effect'));
+      Inula.render(<App />, container, () => LogUtils.log('callback effect'));
     });
     expect(LogUtils.getAndClear()).toEqual(['callback effect']);
     expect(container.textContent).toEqual('0');
@@ -490,7 +490,7 @@ describe('useEffect Hook Test', () => {
     expect(LogUtils.getAndClear()).toEqual([]);
 
     act(() => {
-      Horizon.render(null, container, () => LogUtils.log('callback effect'));
+      Inula.render(null, container, () => LogUtils.log('callback effect'));
     });
     expect(LogUtils.getAndClear()).toEqual([
       'callback effect',
@@ -512,7 +512,7 @@ describe('useEffect Hook Test', () => {
       return <Text text={props.num} />;
     }, compare);
     act(() => {
-      Horizon.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
+      Inula.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
       expect(LogUtils.getAndClear()).toEqual([
         0,
         'callback effect'
@@ -523,7 +523,7 @@ describe('useEffect Hook Test', () => {
 
     // 不会重新渲染
     act(() => {
-      Horizon.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
+      Inula.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
     });
     expect(LogUtils.getAndClear()).toEqual(['callback effect']);
     expect(container.textContent).toEqual('0');
@@ -531,7 +531,7 @@ describe('useEffect Hook Test', () => {
 
     // 会重新渲染
     act(() => {
-      Horizon.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
+      Inula.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
     });
     expect(LogUtils.getAndClear()).toEqual([
       1,
@@ -544,7 +544,7 @@ describe('useEffect Hook Test', () => {
     expect(LogUtils.getAndClear()).toEqual([]);
 
     act(() => {
-      Horizon.render(null, container, () => LogUtils.log('callback effect'));
+      Inula.render(null, container, () => LogUtils.log('callback effect'));
     });
     expect(LogUtils.getAndClear()).toEqual(['callback effect', 'num effect destroy 1']);
     expect(container.textContent).toEqual('');
@@ -565,7 +565,7 @@ describe('useEffect Hook Test', () => {
       return <Text text={'Number: ' + props.num} />;
     };
     act(() => {
-      Horizon.render(<App num={0} />, container, () =>
+      Inula.render(<App num={0} />, container, () =>
         LogUtils.log('App callback effect'),
       );
       expect(LogUtils.getAndClear()).toEqual(['Number: 0', 'App callback effect']);
@@ -575,7 +575,7 @@ describe('useEffect Hook Test', () => {
     expect(LogUtils.getAndClear()).toEqual(['throw Error']);
 
     act(() => {
-      Horizon.render(null, container, () =>
+      Inula.render(null, container, () =>
         LogUtils.log('App callback effect'),
       );
     });
@@ -607,14 +607,14 @@ describe('useEffect Hook Test', () => {
     };
 
     act(() => {
-      Horizon.render(<App num={0} />, container, () => LogUtils.log('num effect'));
+      Inula.render(<App num={0} />, container, () => LogUtils.log('num effect'));
       expect(LogUtils.getAndClear()).toEqual(['Number: 0', 'num effect']);
       expect(container.textContent).toBe('Number: 0');
     });
     expect(LogUtils.getAndClear()).toEqual(['num effect [0]']);
 
     act(() => {
-      Horizon.render(null, container, () => LogUtils.log('num effect'));
+      Inula.render(null, container, () => LogUtils.log('num effect'));
     });
     expect(LogUtils.getAndClear()).toEqual(['num effect', 'num effect destroy 0']);
     expect(container.textContent).toBe('');
@@ -633,7 +633,7 @@ describe('useEffect Hook Test', () => {
       return <Text text={`Number: ${num}`} />;
     };
 
-    Horizon.render(<App />, container, () => LogUtils.log('num effect'));
+    Inula.render(<App />, container, () => LogUtils.log('num effect'));
     expect(LogUtils.getAndClear()).toEqual(['Number: 0', 'num effect']);
     expect(container.textContent).toBe('Number: 0');
 
@@ -663,13 +663,13 @@ describe('useEffect Hook Test', () => {
     };
 
     act(() => {
-      Horizon.render(<App />, container, () => LogUtils.log('num effect'));
+      Inula.render(<App />, container, () => LogUtils.log('num effect'));
       expect(LogUtils.getAndClear()).toEqual(['useEffect', 'num effect']);
     });
     expect(LogUtils.getAndClear()).toEqual(['effect']);
 
     act(() => {
-      Horizon.render(null, container);
+      Inula.render(null, container);
     });
     // 不会处理setNum(1)
     expect(LogUtils.getAndClear()).toEqual(['effect destroy']);
@@ -678,7 +678,7 @@ describe('useEffect Hook Test', () => {
   it('当组件的更新方法在卸载函数中，组件的子组件更新不会告警', () => {
     const App = () => {
       LogUtils.log('App');
-      const appRef = Horizon.createRef(null);
+      const appRef = Inula.createRef(null);
       useEffect(() => {
         LogUtils.log('App effect');
         return () => {
@@ -701,7 +701,7 @@ describe('useEffect Hook Test', () => {
     AppChild = forwardRef(AppChild);
 
     act(() => {
-      Horizon.render(<App />, container, () => LogUtils.log('num effect'));
+      Inula.render(<App />, container, () => LogUtils.log('num effect'));
       expect(LogUtils.getAndClear()).toEqual([
         'App',
         'AppChild',
@@ -711,7 +711,7 @@ describe('useEffect Hook Test', () => {
     expect(LogUtils.getAndClear()).toEqual(['Child effect', 'App effect']);
 
     act(() => {
-      Horizon.render(null, container);
+      Inula.render(null, container);
     });
     // 销毁时执行appRef.current(1)不会报错
     expect(LogUtils.getAndClear()).toEqual(['App effect destroy']);
@@ -737,7 +737,7 @@ describe('useEffect Hook Test', () => {
     };
 
     act(() => {
-      Horizon.render(<App />, container, () => LogUtils.log('num effect'));
+      Inula.render(<App />, container, () => LogUtils.log('num effect'));
       expect(LogUtils.getAndClear()).toEqual([
         'App',
         'AppChild',
@@ -747,7 +747,7 @@ describe('useEffect Hook Test', () => {
     expect(LogUtils.getAndClear()).toEqual(['Child effect']);
 
     act(() => {
-      Horizon.render(null, container);
+      Inula.render(null, container);
     });
     // 销毁时执行 props.setNum(1);不会报错
     expect(LogUtils.getAndClear()).toEqual(['Child effect destroy']);

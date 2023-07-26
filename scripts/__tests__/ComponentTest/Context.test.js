@@ -13,18 +13,18 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../libs/inula/index';
 import { getLogUtils } from '../jest/testUtils';
 
 describe('Context Test', () => {
   const LogUtils = getLogUtils();
-  it('Provider及其内部consumer组件都不受制于shouldComponentUpdate函数或者Horizon.memo()', () => {
+  it('Provider及其内部consumer组件都不受制于shouldComponentUpdate函数或者Inula.memo()', () => {
     const LanguageTypes = {
       JAVA: 'Java',
       JAVASCRIPT: 'JavaScript',
     };
     const defaultValue = { type: LanguageTypes.JAVASCRIPT };
-    const SystemLanguageContext = Horizon.createContext(defaultValue);
+    const SystemLanguageContext = Inula.createContext(defaultValue);
     const SystemLanguageConsumer = SystemLanguageContext.Consumer;
     const SystemLanguageProvider = (props) => {
       LogUtils.log('SystemLanguageProvider');
@@ -47,7 +47,7 @@ describe('Context Test', () => {
       );
     };
 
-    class Middle extends Horizon.Component {
+    class Middle extends Inula.Component {
       shouldComponentUpdate() {
         return false;
       }
@@ -70,7 +70,7 @@ describe('Context Test', () => {
       );
     };
 
-    Horizon.render(<App value={LanguageTypes.JAVA} />, container);
+    Inula.render(<App value={LanguageTypes.JAVA} />, container);
     expect(container.querySelector('p').innerHTML).toBe('Java');
     expect(LogUtils.getAndClear()).toEqual([
       'App',
@@ -82,14 +82,14 @@ describe('Context Test', () => {
     ]);
 
     // 组件不变，Middle没有更新，消费者也不会执行
-    Horizon.render(<App value={LanguageTypes.JAVA} />, container);
+    Inula.render(<App value={LanguageTypes.JAVA} />, container);
     expect(container.querySelector('p').innerHTML).toBe('Java');
     expect(LogUtils.getAndClear()).toEqual([
       'App',
       'SystemLanguageProvider'
     ]);
 
-    Horizon.render(<App value={LanguageTypes.JAVASCRIPT} />, container);
+    Inula.render(<App value={LanguageTypes.JAVASCRIPT} />, container);
     expect(container.querySelector('p').innerHTML).toBe('JavaScript');
     // 组件更新，但是Middle没有更新，会绕过Middle
     expect(LogUtils.getAndClear()).toEqual([
@@ -104,7 +104,7 @@ describe('Context Test', () => {
       ONE: 1,
       TWO: 2,
     };
-    const NumberContext = Horizon.createContext(0);
+    const NumberContext = Inula.createContext(0);
     const NumberConsumer = NumberContext.Consumer;
     const NumberProvider = (props) => {
       LogUtils.log(`SystemLanguageProvider: ${props.type}`);
@@ -127,7 +127,7 @@ describe('Context Test', () => {
       );
     };
 
-    class Middle extends Horizon.Component {
+    class Middle extends Inula.Component {
       shouldComponentUpdate() {
         return false;
       }
@@ -151,7 +151,7 @@ describe('Context Test', () => {
     };
 
     // Consumer决定于距离它最近的provider
-    Horizon.render(<App value={Num.ONE} />, container);
+    Inula.render(<App value={Num.ONE} />, container);
     expect(container.querySelector('p').innerHTML).toBe('2');
     expect(LogUtils.getAndClear()).toEqual([
       'App',
@@ -162,7 +162,7 @@ describe('Context Test', () => {
       'Consumer DOM mutations'
     ]);
     // 更新
-    Horizon.render(<App value={Num.TWO} />, container);
+    Inula.render(<App value={Num.TWO} />, container);
     expect(container.querySelector('p').innerHTML).toBe('3');
     expect(LogUtils.getAndClear()).toEqual([
       'App',
@@ -177,8 +177,8 @@ describe('Context Test', () => {
       ONE: 1,
       TWO: 2,
     };
-    const NumberContext = Horizon.createContext(0);
-    const NewNumberContext = Horizon.createContext(1);
+    const NumberContext = Inula.createContext(0);
+    const NewNumberContext = Inula.createContext(1);
     const NumberConsumer = NumberContext.Consumer;
     const NumberProvider = props => {
       return (
@@ -195,7 +195,7 @@ describe('Context Test', () => {
       );
     };
 
-    class Middle extends Horizon.Component {
+    class Middle extends Inula.Component {
       shouldComponentUpdate() {
         return false;
       }
@@ -234,18 +234,18 @@ describe('Context Test', () => {
       );
     };
 
-    Horizon.render(<NewApp value={Num.ONE} />, container);
+    Inula.render(<NewApp value={Num.ONE} />, container);
     // 没有匹配到Provider,会使用defaultValue
     expect(container.querySelector('p').innerHTML).toBe('0');
 
     // 更新,设置value为undefined
-    Horizon.render(<App value={undefined} />, container);
+    Inula.render(<App value={undefined} />, container);
     // 设置value为undefined时，defaultValue不生效
     expect(container.querySelector('p').innerHTML).toBe('');
   });
 
   it('不同provider下的多个consumer', () => {
-    const NumContext = Horizon.createContext(1);
+    const NumContext = Inula.createContext(1);
     const Consumer = NumContext.Consumer;
 
     function Provider(props) {
@@ -260,7 +260,7 @@ describe('Context Test', () => {
       );
     }
 
-    class Middle extends Horizon.Component {
+    class Middle extends Inula.Component {
       shouldComponentUpdate() {
         return false;
       }
@@ -290,22 +290,22 @@ describe('Context Test', () => {
       );
     };
 
-    Horizon.render(<App value={2} />, container);
+    Inula.render(<App value={2} />, container);
     expect(container.querySelector('p').innerHTML).toBe('4');
     expect(container.querySelector('#p').innerHTML).toBe('2');
 
-    Horizon.render(<App value={3} />, container);
+    Inula.render(<App value={3} />, container);
     expect(container.querySelector('p').innerHTML).toBe('6');
     expect(container.querySelector('#p').innerHTML).toBe('3');
   });
 
   it('consumer里的child更新是不会重新渲染', () => {
-    const NumContext = Horizon.createContext(1);
+    const NumContext = Inula.createContext(1);
     const Consumer = NumContext.Consumer;
 
     let setNum;
     const ReturnDom = props => {
-      const [num, _setNum] = Horizon.useState(0);
+      const [num, _setNum] = Inula.useState(0);
       setNum = _setNum;
       LogUtils.log('ReturnDom');
       return (
@@ -326,7 +326,7 @@ describe('Context Test', () => {
       );
     };
 
-    Horizon.render(<App value={2} />, container);
+    Inula.render(<App value={2} />, container);
     expect(container.querySelector('p').innerHTML).toBe('Context: 2, Num: 0');
     expect(LogUtils.getAndClear()).toEqual([
       'Consumer',
@@ -339,11 +339,11 @@ describe('Context Test', () => {
 
 
   it('consumer可以拿到其他context的值', () => {
-    const NumContext = Horizon.createContext(1);
-    const TypeContext = Horizon.createContext('typeA');
+    const NumContext = Inula.createContext(1);
+    const TypeContext = Inula.createContext('typeA');
 
     const NumAndType = () => {
-      const type = Horizon.useContext(TypeContext);
+      const type = Inula.useContext(TypeContext);
       return (
         <NumContext.Consumer>
           {value => {
@@ -364,23 +364,23 @@ describe('Context Test', () => {
       );
     };
 
-    Horizon.render(<App num={2} type={'typeB'} />, container);
+    Inula.render(<App num={2} type={'typeB'} />, container);
     expect(container.querySelector('p').innerHTML).toBe('Num: 2, Type: typeB');
 
-    Horizon.render(<App num={2} type={'typeR'} />, container);
+    Inula.render(<App num={2} type={'typeR'} />, container);
     expect(container.querySelector('p').innerHTML).toBe('Num: 2, Type: typeR');
 
-    Horizon.render(<App num={8} type={'typeR'} />, container);
+    Inula.render(<App num={8} type={'typeR'} />, container);
     expect(container.querySelector('p').innerHTML).toBe('Num: 8, Type: typeR');
   });
 
   // antd menu 级连context场景，menu路径使用级联context实现
   it('nested context', () => {
-    const NestedContext = Horizon.createContext([]);
+    const NestedContext = Inula.createContext([]);
     let updateContext;
 
     function App() {
-      const [state, useState] = Horizon.useState([]);
+      const [state, useState] = Inula.useState([]);
       updateContext = useState;
       return (
         <NestedContext.Provider value={state}>
@@ -390,13 +390,13 @@ describe('Context Test', () => {
       );
     }
 
-    const div1Ref = Horizon.createRef();
-    const div2Ref = Horizon.createRef();
+    const div1Ref = Inula.createRef();
+    const div2Ref = Inula.createRef();
 
     let updateSub1;
     function Sub1() {
-      const path = Horizon.useContext(NestedContext);
-      const [_, setState] = Horizon.useState({});
+      const path = Inula.useContext(NestedContext);
+      const [_, setState] = Inula.useState({});
       updateSub1 = () => setState({});
       return (
         <NestedContext.Provider value={[...path, 1]}>
@@ -406,7 +406,7 @@ describe('Context Test', () => {
     }
 
     function Sub2() {
-      const path = Horizon.useContext(NestedContext);
+      const path = Inula.useContext(NestedContext);
 
       return (
         <NestedContext.Provider value={[...path, 2]}>
@@ -416,7 +416,7 @@ describe('Context Test', () => {
     }
 
     function Sub3() {
-      const path = Horizon.useContext(NestedContext);
+      const path = Inula.useContext(NestedContext);
 
       return (
         <NestedContext.Provider value={[...path, 3]}>
@@ -426,7 +426,7 @@ describe('Context Test', () => {
     }
 
     function Son({ divRef }) {
-      const path = Horizon.useContext(NestedContext);
+      const path = Inula.useContext(NestedContext);
       return (
         <NestedContext.Provider value={path}>
           <div ref={divRef}>{path.join(',')}</div>
@@ -434,7 +434,7 @@ describe('Context Test', () => {
       );
     }
 
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
     updateSub1();
     expect(div1Ref.current.innerHTML).toEqual('1');
     expect(div2Ref.current.innerHTML).toEqual('2,3');

@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../libs/inula/index';
 import { Text } from '../jest/commonComponents';
 import { getLogUtils } from '../jest/testUtils';
 
@@ -42,18 +42,18 @@ describe('SuspenseComponent Test', () => {
 
   it('挂载lazy组件', async () => {
     // 用同步的代码来实现异步操作
-    class LazyComponent extends Horizon.Component {
+    class LazyComponent extends Inula.Component {
       render() {
         return <Text text={this.props.num} />;
       }
     }
 
-    const Lazy = Horizon.lazy(() => mockImport(LazyComponent));
+    const Lazy = Inula.lazy(() => mockImport(LazyComponent));
 
-    Horizon.render(
-      <Horizon.Suspense fallback={<Text text="Loading..." />}>
+    Inula.render(
+      <Inula.Suspense fallback={<Text text="Loading..." />}>
         <Lazy num={5} />
-      </Horizon.Suspense>,
+      </Inula.Suspense>,
       container
     );
 
@@ -61,10 +61,10 @@ describe('SuspenseComponent Test', () => {
     expect(container.textContent).toBe('Loading...');
 
     await Promise.resolve();
-    Horizon.render(
-      <Horizon.Suspense fallback={<Text text="Loading..." />}>
+    Inula.render(
+      <Inula.Suspense fallback={<Text text="Loading..." />}>
         <Lazy num={5} />
-      </Horizon.Suspense>,
+      </Inula.Suspense>,
       container
     );
     expect(LogUtils.getAndClear()).toEqual([5]);

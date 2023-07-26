@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../../libs/inula/index';
 import { getLogUtils } from '../../jest/testUtils';
 import { Text } from '../../jest/commonComponents';
 
@@ -23,7 +23,7 @@ describe('useLayoutEffect Hook Test', () => {
     useEffect,
     useLayoutEffect,
     act,
-  } = Horizon;
+  } = Inula;
   const LogUtils = getLogUtils();
   it('简单使用useLayoutEffect', () => {
     const App = () => {
@@ -38,7 +38,7 @@ describe('useLayoutEffect Hook Test', () => {
         </>
       );
     };
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
     expect(document.getElementById('p').style.display).toBe('none');
     container.querySelector('button').click();
     expect(container.querySelector('p').style.display).toBe('inline');
@@ -51,7 +51,7 @@ describe('useLayoutEffect Hook Test', () => {
       });
       return <Text text={props.num} />;
     };
-    Horizon.render(<App num={1} />, container, () => LogUtils.log('Sync effect'));
+    Inula.render(<App num={1} />, container, () => LogUtils.log('Sync effect'));
     expect(LogUtils.getAndClear()).toEqual([
       1,
       // 同步在渲染之后
@@ -60,7 +60,7 @@ describe('useLayoutEffect Hook Test', () => {
     ]);
     expect(container.querySelector('p').innerHTML).toBe('1');
     // 更新
-    Horizon.render(<App num={2} />, container, () => LogUtils.log('Sync effect'));
+    Inula.render(<App num={2} />, container, () => LogUtils.log('Sync effect'));
     expect(LogUtils.getAndClear()).toEqual([
       2,
       'LayoutEffect',
@@ -87,7 +87,7 @@ describe('useLayoutEffect Hook Test', () => {
     };
 
     act(() => {
-      Horizon.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
+      Inula.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
       expect(LogUtils.getAndClear()).toEqual([
         'num: 0',
         'num Layouteffect [0]',
@@ -98,7 +98,7 @@ describe('useLayoutEffect Hook Test', () => {
 
     // 更新
     act(() => {
-      Horizon.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
+      Inula.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
     });
     expect(LogUtils.getAndClear()).toEqual([
       // 异步effect
@@ -116,7 +116,7 @@ describe('useLayoutEffect Hook Test', () => {
     ]);
 
     act(() => {
-      Horizon.render(null, container, () => LogUtils.log('callback effect'));
+      Inula.render(null, container, () => LogUtils.log('callback effect'));
     });
     expect(LogUtils.getAndClear()).toEqual([
       // 同步Layouteffect销毁

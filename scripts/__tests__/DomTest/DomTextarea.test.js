@@ -13,20 +13,20 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../libs/inula/index';
 
 describe('Dom Textarea', () => {
   it('设置value', () => {
-    let realNode = Horizon.render(<textarea value='text' />, container);
+    let realNode = Inula.render(<textarea value='text' />, container);
     expect(realNode.getAttribute('value')).toBe(null);
     expect(realNode.value).toBe('text');
-    realNode = Horizon.render(<textarea value={0} />, container);
+    realNode = Inula.render(<textarea value={0} />, container);
     expect(realNode.getAttribute('value')).toBe(null);
     expect(realNode.value).toBe('0');
-    realNode = Horizon.render(<textarea value={true} />, container);
+    realNode = Inula.render(<textarea value={true} />, container);
     expect(realNode.getAttribute('value')).toBe(null);
     expect(realNode.value).toBe('true');
-    realNode = Horizon.render(<textarea value={false} />, container);
+    realNode = Inula.render(<textarea value={false} />, container);
     expect(realNode.getAttribute('value')).toBe(null);
     expect(realNode.value).toBe('false');
   });
@@ -40,7 +40,7 @@ describe('Dom Textarea', () => {
     const textareaNode = (
       <textarea value={textareaValue} />
     );
-    const realNode = Horizon.render(textareaNode, container);
+    const realNode = Inula.render(textareaNode, container);
     expect(realNode.value).toBe('Vue');
     textareaValue = {
       toString: () => {
@@ -49,37 +49,37 @@ describe('Dom Textarea', () => {
     };
     const newTextareaNode = <textarea value={textareaValue} />;
     // 改变value会影响select的状态
-    Horizon.render(newTextareaNode, container);
+    Inula.render(newTextareaNode, container);
     expect(realNode.value).toBe('React');
   });
 
   it('设置defaultValue', () => {
     let defaultVal = 'Vue';
     const textareaNode = <textarea defaultValue={defaultVal} />;
-    let realNode = Horizon.render(textareaNode, container);
+    let realNode = Inula.render(textareaNode, container);
     expect(realNode.value).toBe('Vue');
 
     defaultVal = 'React';
     // 改变defaultValue没有影响
-    realNode = Horizon.render(textareaNode, container);
+    realNode = Inula.render(textareaNode, container);
     expect(realNode.value).toBe('Vue');
 
-    Horizon.unmountComponentAtNode(container);
+    Inula.unmountComponentAtNode(container);
     defaultVal = 0;
-    realNode = Horizon.render(<textarea defaultValue={defaultVal} />, container);
+    realNode = Inula.render(<textarea defaultValue={defaultVal} />, container);
     expect(realNode.value).toBe('0');
 
-    Horizon.unmountComponentAtNode(container);
+    Inula.unmountComponentAtNode(container);
     defaultVal = true;
-    realNode = Horizon.render(<textarea defaultValue={defaultVal} />, container);
+    realNode = Inula.render(<textarea defaultValue={defaultVal} />, container);
     expect(realNode.value).toBe('true');
 
-    Horizon.unmountComponentAtNode(container);
+    Inula.unmountComponentAtNode(container);
     defaultVal = false;
-    realNode = Horizon.render(<textarea defaultValue={defaultVal} />, container);
+    realNode = Inula.render(<textarea defaultValue={defaultVal} />, container);
     expect(realNode.value).toBe('false');
 
-    Horizon.render(<textarea>123</textarea>, container);
+    Inula.render(<textarea>123</textarea>, container);
     expect(realNode.value).toBe('false');
   });
 
@@ -92,14 +92,14 @@ describe('Dom Textarea', () => {
     const textareaNode = (
       <textarea defaultValue={textareaValue} />
     );
-    const realNode = Horizon.render(textareaNode, container);
+    const realNode = Inula.render(textareaNode, container);
     expect(realNode.value).toBe('Vue');
 
   });
 
   it('设置defaultValue后,select不受控', () => {
     const textareaNode = <textarea defaultValue={'text'} />;
-    let realNode = Horizon.render(textareaNode, container);
+    let realNode = Inula.render(textareaNode, container);
     expect(realNode.value).toBe('text');
 
     // 先修改
@@ -115,29 +115,29 @@ describe('Dom Textarea', () => {
       }),
     );
     // 鼠标改变textarea生效
-    Horizon.render(textareaNode, container);
+    Inula.render(textareaNode, container);
     expect(realNode.value).toBe('ABC');
   });
 
   it('受控与非受控切换', () => {
     // 非受控切换为受控
-    let realNode = Horizon.render(<textarea defaultValue='text' />, container);
+    let realNode = Inula.render(<textarea defaultValue='text' />, container);
     expect(realNode.value).toBe('text');
-    Horizon.render(<textarea value='newtext' onChange={() => { }} />, container);
+    Inula.render(<textarea value='newtext' onChange={() => { }} />, container);
     expect(realNode.value).toBe('newtext');
 
-    Horizon.unmountComponentAtNode(container);
+    Inula.unmountComponentAtNode(container);
     // 受控切换为非受控
-    realNode = Horizon.render(<textarea value='text' onChange={() => { }} />, container);
+    realNode = Inula.render(<textarea value='text' onChange={() => { }} />, container);
     expect(realNode.value).toBe('text');
-    Horizon.render(<textarea defaultValue='newtext' onChange={() => { }} />, container);
+    Inula.render(<textarea defaultValue='newtext' onChange={() => { }} />, container);
     expect(realNode.value).toBe('text');
   });
 
   it('textarea的孩子', () => {
-    let realNode = Horizon.render(<textarea>{1234}</textarea>, container);
+    let realNode = Inula.render(<textarea>{1234}</textarea>, container);
     expect(realNode.value).toBe('1234');
-    realNode = Horizon.render(<textarea>{5678}</textarea>, container);
+    realNode = Inula.render(<textarea>{5678}</textarea>, container);
     // realNode.value依旧为1234
     expect(realNode.value).toBe('1234');
   });

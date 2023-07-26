@@ -13,10 +13,10 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../../libs/inula/index';
 
 describe('useContext Hook Test', () => {
-  const { useState, useContext, createContext, act, unmountComponentAtNode } = Horizon;
+  const { useState, useContext, createContext, act, unmountComponentAtNode } = Inula;
 
   it('简单使用useContext', () => {
     const LanguageTypes = {
@@ -24,7 +24,7 @@ describe('useContext Hook Test', () => {
       JAVASCRIPT: 'JavaScript',
     };
     const defaultValue = { type: LanguageTypes.JAVASCRIPT };
-    const SystemLanguageContext = Horizon.createContext(defaultValue);
+    const SystemLanguageContext = Inula.createContext(defaultValue);
 
     const SystemLanguageProvider = ({ type, children }) => {
       return (
@@ -49,11 +49,11 @@ describe('useContext Hook Test', () => {
         </div>
       );
     };
-    Horizon.render(<TestFunction />, container);
+    Inula.render(<TestFunction />, container);
     // 测试当Provider未提供时，获取到的默认值'JavaScript'。
     expect(container.querySelector('p').innerHTML).toBe('JavaScript');
     unmountComponentAtNode(container);
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
     // 测试当Provider提供时，可以获取到Provider的值'Java'。
     expect(container.querySelector('p').innerHTML).toBe('Java');
     // 测试当Provider改变时，可以获取到最新Provider的值。
@@ -63,7 +63,7 @@ describe('useContext Hook Test', () => {
 
   it('更新后useContext仍能获取到context', () => {
     const Context = createContext({});
-    const ref = Horizon.createRef();
+    const ref = Inula.createRef();
 
     function App() {
       return (
@@ -87,7 +87,7 @@ describe('useContext Hook Test', () => {
       return <div ref={ref}>{context.text}</div>;
     }
 
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
     expect(ref.current.innerHTML).toBe('context');
 
     update();
