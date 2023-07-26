@@ -1,4 +1,4 @@
-import { createStore, useStore } from '@cloudsop/horizon/src/horizonx/store/StoreHandler';
+import { createStore, useStore } from '../../../../libs/inula';
 import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
 
 describe('Using deep variables', () => {

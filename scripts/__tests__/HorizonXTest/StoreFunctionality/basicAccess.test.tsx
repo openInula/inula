@@ -14,13 +14,13 @@
  */
 
 //@ts-ignore
-import Horizon from '@cloudsop/horizon/index.ts';
+import Inula from '../../../../libs/inula/index';
 import { triggerClickEvent } from '../../jest/commonComponents';
 import { useLogStore } from './store';
 import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
-import { createStore } from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
+import { createStore } from '../../../../libs/inula/src/inulax/store/StoreHandler';
 
-const { unmountComponentAtNode } = Horizon;
+const { unmountComponentAtNode } = Inula;
 
 describe('Basic store manipulation', () => {
   let container: HTMLElement | null = null;
@@ -46,7 +46,7 @@ describe('Basic store manipulation', () => {
       return <div id={RESULT_ID}>{logStore.length}</div>;
     }
 
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
 
     expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('1');
   });
@@ -70,9 +70,9 @@ describe('Basic store manipulation', () => {
       );
     }
 
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, BUTTON_ID);
     });
 
@@ -98,9 +98,9 @@ describe('Basic store manipulation', () => {
       );
     }
 
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, BUTTON_ID);
     });
 
@@ -142,9 +142,9 @@ describe('Basic store manipulation', () => {
       );
     }
 
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, BUTTON_ID);
     });
 
@@ -187,9 +187,9 @@ describe('Basic store manipulation', () => {
       );
     }
 
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, BUTTON_ID);
     });
 

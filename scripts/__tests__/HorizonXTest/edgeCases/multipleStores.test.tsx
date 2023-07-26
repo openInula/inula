@@ -14,11 +14,11 @@
  */
 
 //@ts-ignore
-import Horizon, { createStore } from '@cloudsop/horizon/index.ts';
+import Inula, { createStore } from '../../../../libs/inula/index';
 import { triggerClickEvent } from '../../jest/commonComponents';
 import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
 
-const { unmountComponentAtNode } = Horizon;
+const { unmountComponentAtNode } = Inula;
 
 const useStore1 = createStore({
   state: { counter: 1 },
@@ -57,7 +57,7 @@ describe('Using multiple stores', () => {
   });
 
   it('Should use multiple stores in class component', () => {
-    class App extends Horizon.Component {
+    class App extends Inula.Component {
       render() {
         const { counter, add } = useStore1();
         const { counter2, add2 } = useStore2();
@@ -88,15 +88,15 @@ describe('Using multiple stores', () => {
       }
     }
 
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
 
     expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('1 1');
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, BUTTON_ID);
     });
     expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('2 1');
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, BUTTON_ID2);
     });
     expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('2 2');
@@ -107,7 +107,7 @@ describe('Using multiple stores', () => {
       store: any;
       store2: any;
     }
-    class App extends Horizon.Component {
+    class App extends Inula.Component {
       constructor() {
         super();
         this.store = useStore1();
@@ -151,15 +151,15 @@ describe('Using multiple stores', () => {
       }
     }
 
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
 
     expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('1 1');
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, BUTTON_ID);
     });
     expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('2 1');
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, BUTTON_ID2);
     });
     expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('2 2');
@@ -196,15 +196,15 @@ describe('Using multiple stores', () => {
       );
     }
 
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
 
     expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('1 1');
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, BUTTON_ID);
     });
     expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('2 1');
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, BUTTON_ID2);
     });
     expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('2 2');

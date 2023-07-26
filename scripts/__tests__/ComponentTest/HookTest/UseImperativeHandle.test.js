@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../../libs/inula/index';
 import { Text } from '../../jest/commonComponents';
 import { getLogUtils } from '../../jest/testUtils';
 
@@ -23,8 +23,8 @@ describe('useImperativeHandle Hook Test', () => {
     useImperativeHandle,
     forwardRef,
     act,
-  } = Horizon;
-  const { unmountComponentAtNode } = Horizon;
+  } = Inula;
+  const { unmountComponentAtNode } = Inula;
   const LogUtils = getLogUtils();
   it('测试useImperativeHandle', () => {
 
@@ -41,9 +41,9 @@ describe('useImperativeHandle Hook Test', () => {
 
     App = forwardRef(App);
     App1 = forwardRef(App1);
-    const counter = Horizon.createRef(null);
-    const counter1 = Horizon.createRef(null);
-    Horizon.render(<App ref={counter} />, container);
+    const counter = Inula.createRef(null);
+    const counter1 = Inula.createRef(null);
+    Inula.render(<App ref={counter} />, container);
     expect(counter.current.num).toBe(0);
     act(() => {
       counter.current.setNum(1);
@@ -53,7 +53,7 @@ describe('useImperativeHandle Hook Test', () => {
     // 清空container
     unmountComponentAtNode(container);
 
-    Horizon.render(<App1 ref={counter1} />, container);
+    Inula.render(<App1 ref={counter1} />, container);
     expect(counter1.current.num1).toBe(0);
     act(() => {
       counter1.current.setNum1(1);
@@ -76,9 +76,9 @@ describe('useImperativeHandle Hook Test', () => {
 
     App = forwardRef(App);
     App1 = forwardRef(App1);
-    const counter = Horizon.createRef(null);
-    const counter1 = Horizon.createRef(null);
-    Horizon.render(<App ref={counter} />, container);
+    const counter = Inula.createRef(null);
+    const counter1 = Inula.createRef(null);
+    Inula.render(<App ref={counter} />, container);
     expect(LogUtils.getAndClear()).toEqual([0]);
     expect(counter.current.num).toBe(0);
     act(() => {
@@ -90,7 +90,7 @@ describe('useImperativeHandle Hook Test', () => {
     // 清空container
     unmountComponentAtNode(container);
 
-    Horizon.render(<App1 ref={counter1} />, container);
+    Inula.render(<App1 ref={counter1} />, container);
     expect(LogUtils.getAndClear()).toEqual([0]);
     expect(counter1.current.num1).toBe(0);
     act(() => {

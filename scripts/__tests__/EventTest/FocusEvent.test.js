@@ -13,14 +13,14 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../libs/inula/index';
 import { getLogUtils } from '../jest/testUtils';
 
 describe('合成焦点事件', () => {
   const LogUtils = getLogUtils();
 
   it('onFocus', () => {
-    const realNode = Horizon.render(
+    const realNode = Inula.render(
       <input
         onFocus={event => LogUtils.log(`onFocus: ${event.type}`)}
         onFocusCapture={event => LogUtils.log(`onFocusCapture: ${event.type}`)}
@@ -40,7 +40,7 @@ describe('合成焦点事件', () => {
   });
 
   it('onBlur', () => {
-    const realNode = Horizon.render(
+    const realNode = Inula.render(
       <input
         onBlur={event => LogUtils.log(`onBlur: ${event.type}`)}
         onBlurCapture={event => LogUtils.log(`onBlurCapture: ${event.type}`)}

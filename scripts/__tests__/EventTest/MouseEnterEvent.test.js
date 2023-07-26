@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../libs/inula/index';
 
 describe('mouseenter和mouseleave事件测试', () => {
   let container;
@@ -39,7 +39,7 @@ describe('mouseenter和mouseleave事件测试', () => {
     iframeDocument.close();
 
     const leaveEvents = [];
-    const node = Horizon.render(
+    const node = Inula.render(
       <div
         onMouseLeave={e => {
           e.persist();
@@ -72,7 +72,7 @@ describe('mouseenter和mouseleave事件测试', () => {
     iframeDocument.close();
 
     const enterEvents = [];
-    const node = Horizon.render(
+    const node = Inula.render(
       <div
         onMouseEnter={e => {
           e.persist();
@@ -100,7 +100,7 @@ describe('mouseenter和mouseleave事件测试', () => {
     let childEnterCalls = 0;
     let parent = null;
 
-    class Parent extends Horizon.Component {
+    class Parent extends Inula.Component {
       render() {
         return (
           <div
@@ -114,8 +114,8 @@ describe('mouseenter和mouseleave事件测试', () => {
       }
     }
 
-    Horizon.render(<Parent/>, container);
-    Horizon.render(<Parent showChild={true}/>, container);
+    Inula.render(<Parent/>, container);
+    Inula.render(<Parent showChild={true}/>, container);
 
     parent.dispatchEvent(
       new MouseEvent('mouseout', {
@@ -133,14 +133,14 @@ describe('mouseenter和mouseleave事件测试', () => {
     const mockFn2 = jest.fn();
     const mockFn3 = jest.fn();
 
-    class Parent extends Horizon.Component {
+    class Parent extends Inula.Component {
       constructor(props) {
         super(props);
-        this.parentEl = Horizon.createRef();
+        this.parentEl = Inula.createRef();
       }
 
       componentDidMount() {
-        Horizon.render(<MouseEnterDetect/>, this.parentEl.current);
+        Inula.render(<MouseEnterDetect/>, this.parentEl.current);
       }
 
       render() {
@@ -148,11 +148,11 @@ describe('mouseenter和mouseleave事件测试', () => {
       }
     }
 
-    class MouseEnterDetect extends Horizon.Component {
+    class MouseEnterDetect extends Inula.Component {
       constructor(props) {
         super(props);
-        this.firstEl = Horizon.createRef();
-        this.siblingEl = Horizon.createRef();
+        this.firstEl = Inula.createRef();
+        this.siblingEl = Inula.createRef();
       }
 
       componentDidMount() {
@@ -171,28 +171,28 @@ describe('mouseenter和mouseleave事件测试', () => {
 
       render() {
         return (
-          <Horizon.Fragment>
+          <Inula.Fragment>
             <div ref={this.firstEl} id="first" onMouseEnter={mockFn1}/>
             <div ref={this.siblingEl} id="sibling" onMouseLeave={mockFn2}/>
-          </Horizon.Fragment>
+          </Inula.Fragment>
         );
       }
     }
 
-    Horizon.render(<Parent/>, container);
+    Inula.render(<Parent/>, container);
   });
 
-  it('未被horizon管理的节点触发mouseout事件，mouseenter事件也能正常触发', done => {
+  it('未被inula管理的节点触发mouseout事件，mouseenter事件也能正常触发', done => {
     const mockFn = jest.fn();
 
-    class Parent extends Horizon.Component {
+    class Parent extends Inula.Component {
       constructor(props) {
         super(props);
-        this.parentEl = Horizon.createRef();
+        this.parentEl = Inula.createRef();
       }
 
       componentDidMount() {
-        Horizon.render(<MouseEnterDetect/>, this.parentEl.current);
+        Inula.render(<MouseEnterDetect/>, this.parentEl.current);
       }
 
       render() {
@@ -200,11 +200,11 @@ describe('mouseenter和mouseleave事件测试', () => {
       }
     }
 
-    class MouseEnterDetect extends Horizon.Component {
+    class MouseEnterDetect extends Inula.Component {
       constructor(props) {
         super(props);
-        this.divRef = Horizon.createRef();
-        this.siblingEl = Horizon.createRef();
+        this.divRef = Inula.createRef();
+        this.siblingEl = Inula.createRef();
       }
 
       componentDidMount() {
@@ -230,22 +230,22 @@ describe('mouseenter和mouseleave事件测试', () => {
       }
     }
 
-    Horizon.render(<Parent/>, container);
+    Inula.render(<Parent/>, container);
   });
 
   it('外部portal节点触发的mouseout事件，根节点的mouseleave事件也能响应', () => {
-    const divRef = Horizon.createRef();
+    const divRef = Inula.createRef();
     const onMouseLeave = jest.fn();
 
     function Component() {
       return (
         <div onMouseLeave={onMouseLeave} id="parent">
-          {Horizon.createPortal(<div ref={divRef} id="sub"/>, document.body)}
+          {Inula.createPortal(<div ref={divRef} id="sub"/>, document.body)}
         </div>
       );
     }
 
-    Horizon.render(<Component/>, container);
+    Inula.render(<Component/>, container);
 
     divRef.current.dispatchEvent(
       new MouseEvent('mouseout', {
@@ -259,14 +259,14 @@ describe('mouseenter和mouseleave事件测试', () => {
   });
 
   it('外部portal节点触发的mouseout事件，根节点的mouseEnter事件也能响应', () => {
-    const divRef = Horizon.createRef();
-    const otherDivRef = Horizon.createRef();
+    const divRef = Inula.createRef();
+    const otherDivRef = Inula.createRef();
     const onMouseEnter = jest.fn();
 
     function Component() {
       return (
         <div ref={divRef}>
-          {Horizon.createPortal(
+          {Inula.createPortal(
             <div ref={otherDivRef} onMouseEnter={onMouseEnter}/>,
             document.body,
           )}
@@ -274,7 +274,7 @@ describe('mouseenter和mouseleave事件测试', () => {
       );
     }
 
-    Horizon.render(<Component/>, container);
+    Inula.render(<Component/>, container);
 
     divRef.current.dispatchEvent(
       new MouseEvent('mouseout', {

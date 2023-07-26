@@ -13,8 +13,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
-import { createStore, applyMiddleware, thunk } from '../../../../libs/horizon/src/horizonx/adapters/redux';
+import * as Inula from '../../../../libs/inula/index';
+import { createStore, applyMiddleware, thunk } from '../../../../libs/inula/src/inulax/adapters/redux';
 import {describe, it, expect} from '@jest/globals';
 
 describe('Redux thunk', () => {

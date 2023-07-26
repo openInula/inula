@@ -13,14 +13,14 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../libs/inula/index';
 import { getLogUtils } from '../jest/testUtils';
 
 describe('LifeCycle Test', () => {
   const LogUtils = getLogUtils();
   describe('LifeCycle function', () => {
     it('不能在componentWillMount里setState', () => {
-      class App extends Horizon.Component {
+      class App extends Inula.Component {
         state = {};
 
         UNSAFE_componentWillMount() {
@@ -34,13 +34,13 @@ describe('LifeCycle Test', () => {
         }
       }
 
-      const realNode = Horizon.render(<App />, container);
+      const realNode = Inula.render(<App />, container);
       // 不能在componentWillMount里setState
       expect(realNode.textContent).toBe(undefined);
     });
 
     it('componentDidMount里调用setState()将触发额外渲染', () => {
-      class ChildApp extends Horizon.Component {
+      class ChildApp extends Inula.Component {
         constructor(props) {
           super(props);
         }
@@ -54,7 +54,7 @@ describe('LifeCycle Test', () => {
         }
       }
 
-      class App extends Horizon.Component {
+      class App extends Inula.Component {
         constructor(props) {
           super(props);
           LogUtils.log('constructor');
@@ -75,7 +75,7 @@ describe('LifeCycle Test', () => {
         }
       }
 
-      const realNode = Horizon.render(<App />, container);
+      const realNode = Inula.render(<App />, container);
       // 确实触发了额外渲染
       expect(LogUtils.getAndClear()).toEqual([
         'constructor',
@@ -89,7 +89,7 @@ describe('LifeCycle Test', () => {
     });
 
     it('调用 this.setState() 通常不会触发 UNSAFE_componentWillReceiveProps()', () => {
-      class App extends Horizon.Component {
+      class App extends Inula.Component {
         state = {};
 
         update = () => {
@@ -108,14 +108,14 @@ describe('LifeCycle Test', () => {
         }
       }
 
-      const realNode = Horizon.render(<App />, container);
+      const realNode = Inula.render(<App />, container);
       expect(realNode.textContent).toBe(undefined);
       realNode.update();
       expect(LogUtils.getAndClear()).toEqual([]);
     });
 
     it('不能在componentWillReceiveProps里setState', () => {
-      class ChildApp extends Horizon.Component {
+      class ChildApp extends Inula.Component {
         state = {};
 
         UNSAFE_componentWillReceiveProps() {
@@ -127,7 +127,7 @@ describe('LifeCycle Test', () => {
           return <div>{this.state.text}</div>;
         }
       }
-      class App extends Horizon.Component {
+      class App extends Inula.Component {
         state = {};
 
         update = () => {
@@ -139,7 +139,7 @@ describe('LifeCycle Test', () => {
         }
       }
 
-      const realNode = Horizon.render(<App />, container);
+      const realNode = Inula.render(<App />, container);
       expect(realNode.textContent).toBe(undefined);
       realNode.update();
       expect(LogUtils.getAndClear()).toEqual([
@@ -151,7 +151,7 @@ describe('LifeCycle Test', () => {
     });
 
     it('shouldComponentUpdate与getDerivedStateFromProps', () => {
-      class App extends Horizon.Component {
+      class App extends Inula.Component {
         constructor(props) {
           super(props);
           this.state = {
@@ -175,24 +175,24 @@ describe('LifeCycle Test', () => {
         }
       }
 
-      Horizon.render(<App num={1} />, container);
+      Inula.render(<App num={1} />, container);
       // 初次渲染不会调用shouldComponentUpdate
       expect(LogUtils.getAndClear()).toEqual([]);
       expect(container.querySelector('p').innerHTML).toBe('1');
 
-      Horizon.render(<App num={1} />, container);
+      Inula.render(<App num={1} />, container);
       // getDerivedStateFromProps判断state没有变化时，会调用shouldComponentUpdate
       expect(LogUtils.getAndClear()).toEqual(['shouldComponentUpdate']);
       expect(container.querySelector('p').innerHTML).toBe('1');
 
-      Horizon.render(<App num={2} />, container);
+      Inula.render(<App num={2} />, container);
       // getDerivedStateFromProps判断state变化时，会调用shouldComponentUpdate
       expect(LogUtils.getAndClear()).toEqual(['shouldComponentUpdate']);
       expect(container.querySelector('p').innerHTML).toBe('2');
     });
 
     it('如果shouldComponentUpdate()返回值为false,则不会调用componentDidUpdate()', () => {
-      class App extends Horizon.Component {
+      class App extends Inula.Component {
         constructor(props) {
           super(props);
           this.state = {
@@ -219,22 +219,22 @@ describe('LifeCycle Test', () => {
         }
       }
 
-      Horizon.render(<App num={1} />, container);
+      Inula.render(<App num={1} />, container);
       expect(container.querySelector('p').innerHTML).toBe('1');
 
-      Horizon.render(<App num={1} />, container);
+      Inula.render(<App num={1} />, container);
       // 不会调用componentDidUpdate()
       expect(LogUtils.getAndClear()).toEqual([]);
       expect(container.querySelector('p').innerHTML).toBe('1');
 
-      Horizon.render(<App num={2} />, container);
+      Inula.render(<App num={2} />, container);
       // 调用componentDidUpdate()
       expect(LogUtils.getAndClear()).toEqual(['componentDidUpdate']);
       expect(container.querySelector('p').innerHTML).toBe('2');
     });
 
     it('getSnapshotBeforeUpdate()的返回值会作为componentDidUpdate()的第三个参数', () => {
-      class App extends Horizon.Component {
+      class App extends Inula.Component {
         constructor(props) {
           super(props);
           this.state = {
@@ -263,11 +263,11 @@ describe('LifeCycle Test', () => {
           return <p>{this.state.num}</p>;
         }
       }
-      Horizon.render(<App />, container);
+      Inula.render(<App />, container);
       expect(LogUtils.getAndClear()).toEqual([]);
       expect(container.querySelector('p').innerHTML).toBe('');
 
-      Horizon.render(<App num={1} />, container);
+      Inula.render(<App num={1} />, container);
       // Snapshot作为componentDidUpdate()的第三个参数
       expect(LogUtils.getAndClear()).toEqual([
         'getSnapshotBeforeUpdate prevProps:undefined prevState:undefined',
@@ -275,14 +275,14 @@ describe('LifeCycle Test', () => {
       ]);
       expect(container.querySelector('p').innerHTML).toBe('1');
 
-      Horizon.render(<App num={1} />, container);
+      Inula.render(<App num={1} />, container);
       expect(LogUtils.getAndClear()).toEqual([
         'getSnapshotBeforeUpdate prevProps:1 prevState:1',
         'componentDidUpdate prevProps:1 prevState:1 snapshot:Snapshot',
       ]);
       expect(container.querySelector('p').innerHTML).toBe('1');
 
-      Horizon.render(<App num={2} />, container);
+      Inula.render(<App num={2} />, container);
       expect(LogUtils.getAndClear()).toEqual([
         'getSnapshotBeforeUpdate prevProps:1 prevState:1',
         'componentDidUpdate prevProps:1 prevState:1 snapshot:Snapshot',
@@ -291,7 +291,7 @@ describe('LifeCycle Test', () => {
     });
 
     it('无论什么原因触发了渲染,只要有渲染就会触发getDerivedStateFromProps', () => {
-      class App extends Horizon.Component {
+      class App extends Inula.Component {
         constructor(props) {
           super(props);
           this.state = {
@@ -308,8 +308,8 @@ describe('LifeCycle Test', () => {
           return <p>{this.state.num}</p>;
         }
       }
-      let realNode = Horizon.render(<App />, container);
-      realNode = Horizon.render(<App num={1} />, container);
+      let realNode = Inula.render(<App />, container);
+      realNode = Inula.render(<App num={1} />, container);
       realNode.forceUpdate();
       // 触发了3次渲染
       expect(LogUtils.getAndClear()).toEqual([
@@ -321,7 +321,7 @@ describe('LifeCycle Test', () => {
   });
 
   it('生命周期执行顺序', () => {
-    class ChildApp extends Horizon.Component {
+    class ChildApp extends Inula.Component {
       UNSAFE_componentWillMount() {
         LogUtils.log('Child componentWillMount');
       }
@@ -350,7 +350,7 @@ describe('LifeCycle Test', () => {
       }
     }
 
-    class App extends Horizon.Component {
+    class App extends Inula.Component {
       UNSAFE_componentWillMount() {
         LogUtils.log('componentWillMount');
       }
@@ -379,7 +379,7 @@ describe('LifeCycle Test', () => {
       }
     }
 
-    Horizon.render(<App num={1} />, container);
+    Inula.render(<App num={1} />, container);
     expect(container.textContent).toBe('1');
     expect(LogUtils.getAndClear()).toEqual([
       'componentWillMount',
@@ -387,7 +387,7 @@ describe('LifeCycle Test', () => {
       'Child componentDidMount',
       'componentDidMount'
     ]);
-    Horizon.render(<App num={2} />, container);
+    Inula.render(<App num={2} />, container);
     expect(container.textContent).toBe('2');
     expect(LogUtils.getAndClear()).toEqual([
       'componentWillReceiveProps',
@@ -399,7 +399,7 @@ describe('LifeCycle Test', () => {
       'Child componentDidUpdate',
       'componentDidUpdate'
     ]);
-    Horizon.unmountComponentAtNode(container);
+    Inula.unmountComponentAtNode(container);
     expect(container.textContent).toBe('');
     expect(LogUtils.getAndClear()).toEqual([
       'componentWillUnmount',
@@ -408,7 +408,7 @@ describe('LifeCycle Test', () => {
   });
 
   it('新生命周期执行顺序', () => {
-    class ChildApp extends Horizon.Component {
+    class ChildApp extends Inula.Component {
       static getDerivedStateFromProps(props, state) {
         LogUtils.log('Child getDerivedStateFromProps');
       }
@@ -434,7 +434,7 @@ describe('LifeCycle Test', () => {
       }
     }
 
-    class App extends Horizon.Component {
+    class App extends Inula.Component {
       static getDerivedStateFromProps(props, state) {
         LogUtils.log('getDerivedStateFromProps');
       }
@@ -460,7 +460,7 @@ describe('LifeCycle Test', () => {
       }
     }
 
-    Horizon.render(<App num={1} />, container);
+    Inula.render(<App num={1} />, container);
     expect(container.textContent).toBe('1');
     expect(LogUtils.getAndClear()).toEqual([
       'getDerivedStateFromProps',
@@ -468,7 +468,7 @@ describe('LifeCycle Test', () => {
       'Child componentDidMount',
       'componentDidMount'
     ]);
-    Horizon.render(<App num={2} />, container);
+    Inula.render(<App num={2} />, container);
     expect(container.textContent).toBe('2');
     expect(LogUtils.getAndClear()).toEqual([
       'getDerivedStateFromProps',
@@ -480,7 +480,7 @@ describe('LifeCycle Test', () => {
       'Child componentDidUpdate',
       'componentDidUpdate'
     ]);
-    Horizon.unmountComponentAtNode(container);
+    Inula.unmountComponentAtNode(container);
     expect(container.textContent).toBe('');
     expect(LogUtils.getAndClear()).toEqual([
       'componentWillUnmount',

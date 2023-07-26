@@ -13,15 +13,15 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../../libs/inula/index';
 import * as LogUtils from '../../jest/logUtils';
-import {clearStore, createStore, useStore} from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
+import {clearStore, createStore, useStore} from '../../../../libs/inula/src/inulax/store/StoreHandler';
 import {Text, triggerClickEvent} from '../../jest/commonComponents';
-import {getObserver} from '../../../../libs/horizon/src/horizonx/proxy/ProxyHandler';
+import {getObserver} from '../../../../libs/inula/src/inulax/proxy/ProxyHandler';
 import {describe, beforeEach, afterEach, it, expect} from '@jest/globals';
 
 describe('测试 Class VNode 清除时，对引用清除', () => {
-  const {unmountComponentAtNode} = Horizon;
+  const {unmountComponentAtNode} = Inula;
   let container:HTMLElement|null = null;
   let globalState = {
     name: 'bing dun dun',
@@ -62,7 +62,7 @@ describe('测试 Class VNode 清除时，对引用清除', () => {
   });
 
   it('test observer.clearByNode', () => {
-    class Child extends Horizon.Component {
+    class Child extends Inula.Component {
       userStore = useStore('user');
 
       render() {
@@ -78,7 +78,7 @@ describe('测试 Class VNode 清除时，对引用清除', () => {
     }
 
     expect(() => {
-      Horizon.render(<Child/>, container);
+      Inula.render(<Child/>, container);
     }).toThrow('The number of updates exceeds the upper limit 50.\n' +
       '      A component maybe repeatedly invokes setState on componentWillUpdate or componentDidUpdate.');
 

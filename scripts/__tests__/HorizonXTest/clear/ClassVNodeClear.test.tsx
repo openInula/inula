@@ -13,15 +13,15 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../../libs/inula/index';
 import * as LogUtils from '../../jest/logUtils';
-import {clearStore, createStore, useStore} from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
+import {clearStore, createStore, useStore} from '../../../../libs/inula/src/inulax/store/StoreHandler';
 import {Text, triggerClickEvent} from '../../jest/commonComponents';
-import {getObserver} from '../../../../libs/horizon/src/horizonx/proxy/ProxyHandler';
+import {getObserver} from '../../../../libs/inula/src/inulax/proxy/ProxyHandler';
 import {describe, it, beforeEach, afterEach, expect} from '@jest/globals';
 
 describe('测试 Class VNode 清除时，对引用清除', () => {
-  const {unmountComponentAtNode} = Horizon;
+  const {unmountComponentAtNode} = Inula;
   let container:HTMLElement|null = null;
   let globalState = {
     name: 'bing dun dun',
@@ -62,7 +62,7 @@ describe('测试 Class VNode 清除时，对引用清除', () => {
   });
 
   it('test observer.clearByNode', () => {
-    class App extends Horizon.Component {
+    class App extends Inula.Component {
       userStore = useStore('user');
 
       render() {
@@ -75,7 +75,7 @@ describe('测试 Class VNode 清除时，对引用清除', () => {
       }
     }
 
-    class Parent extends Horizon.Component {
+    class Parent extends Inula.Component {
       userStore = useStore('user');
 
       setWin = () => {
@@ -92,7 +92,7 @@ describe('测试 Class VNode 清除时，对引用清除', () => {
       }
     }
 
-    class Child extends Horizon.Component {
+    class Child extends Inula.Component {
       userStore = useStore('user');
 
       render() {
@@ -105,24 +105,24 @@ describe('测试 Class VNode 清除时，对引用清除', () => {
       }
     }
 
-    Horizon.render(<App/>, container);
+    Inula.render(<App/>, container);
 
     // Parent and Child hold the isWin key
     expect(getObserver(globalState).keyVNodes.get('isWin').size).toBe(2);
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'toggleBtn');
     });
     // Parent hold the isWin key
     expect(getObserver(globalState).keyVNodes.get('isWin').size).toBe(1);
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'toggleBtn');
     });
     // Parent and Child hold the isWin key
     expect(getObserver(globalState).keyVNodes.get('isWin').size).toBe(2);
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'hideBtn');
     });
     // no component hold the isWin key

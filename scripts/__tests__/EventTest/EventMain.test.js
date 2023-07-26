@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../libs/inula/index';
 import * as TestUtils from '../jest/testUtils';
 
 function dispatchChangeEvent(input) {
@@ -38,7 +38,7 @@ describe('事件', () => {
         </>
       );
     };
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
     const a = container.querySelector('button');
     a.click();
     expect(LogUtils.getAndClear()).toEqual([
@@ -54,7 +54,7 @@ describe('事件', () => {
 
   it('returns 0', () => {
     let keyCode = null;
-    const node = Horizon.render(
+    const node = Inula.render(
       <input
         onKeyPress={e => {
           keyCode = e.keyCode;
@@ -87,7 +87,7 @@ describe('事件', () => {
         </>
       );
     };
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
     container.querySelector('button').click();
 
     expect(LogUtils.getAndClear()).toEqual([
@@ -114,7 +114,7 @@ describe('事件', () => {
         </>
       );
     };
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
     container.querySelector('button').click();
 
     expect(LogUtils.getAndClear()).toEqual([
@@ -133,7 +133,7 @@ describe('事件', () => {
         </div>
       );
     };
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
     container.querySelector('div').addEventListener(
       'click',
       () => {
@@ -162,15 +162,15 @@ describe('事件', () => {
 
   it('动态增加事件', () => {
     let update;
-    let inputRef = Horizon.createRef();
+    let inputRef = Inula.createRef();
 
     function Test() {
-      const [inputProps, setProps] = Horizon.useState({});
+      const [inputProps, setProps] = Inula.useState({});
       update = setProps;
       return <input ref={inputRef} {...inputProps} />;
     }
 
-    Horizon.render(<Test />, container);
+    Inula.render(<Test />, container);
     update({
       onChange: () => {
         LogUtils.log('change');
@@ -193,10 +193,10 @@ describe('事件', () => {
       radio2Called++;
     }
 
-    const radio1Ref = Horizon.createRef();
-    const radio2Ref = Horizon.createRef();
+    const radio1Ref = Inula.createRef();
+    const radio2Ref = Inula.createRef();
 
-    Horizon.render(
+    Inula.render(
       <>
         <input type="radio" ref={radio1Ref} name="name" onChange={onChange1} />
         <input type="radio" ref={radio2Ref} name="name" onChange={onChange2} />
@@ -228,7 +228,7 @@ describe('事件', () => {
     let input1, input2, update1, update2;
 
     function App1() {
-      const [props, setProps] = Horizon.useState({});
+      const [props, setProps] = Inula.useState({});
       update1 = setProps;
       return (
         <input
@@ -242,7 +242,7 @@ describe('事件', () => {
     }
 
     function App2() {
-      const [props, setProps] = Horizon.useState({});
+      const [props, setProps] = Inula.useState({});
       update2 = setProps;
 
       return (
@@ -257,8 +257,8 @@ describe('事件', () => {
     }
 
     // 多根mount阶段挂载onChange事件
-    Horizon.render(<App1 key={1} />, root1);
-    Horizon.render(<App2 key={2} />, root2);
+    Inula.render(<App1 key={1} />, root1);
+    Inula.render(<App2 key={2} />, root2);
 
     dispatchChangeEvent(input1);
     expect(LogUtils.getAndClear()).toEqual(['input1 changed']);

@@ -13,12 +13,12 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../../libs/inula/index';
 import { getLogUtils } from '../../jest/testUtils';
 import { Text } from '../../jest/commonComponents';
 
 describe('useRef Hook Test', () => {
-  const { useState, useRef } = Horizon;
+  const { useState, useRef } = Inula;
   const LogUtils = getLogUtils();
 
   it('测试useRef', () => {
@@ -36,7 +36,7 @@ describe('useRef Hook Test', () => {
         </>
       );
     };
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
     expect(container.querySelector('p').innerHTML).toBe('1');
     expect(container.querySelector('#sp').innerHTML).toBe('1');
     // 点击按钮触发num加1,ref不变
@@ -59,7 +59,7 @@ describe('useRef Hook Test', () => {
         </>
       );
     };
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
     expect(LogUtils.getAndClear()).toEqual([1]);
     expect(container.querySelector('p').innerHTML).toBe('1');
     // 点击按钮触发ref.current加1

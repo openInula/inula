@@ -21,13 +21,13 @@ import replace from '@rollup/plugin-replace';
 import copy from './copy-plugin';
 import execute from 'rollup-plugin-execute';
 import {terser} from 'rollup-plugin-terser';
-import {version as horizonVersion} from '@cloudsop/horizon/package.json';
+import {version as inulaVersion} from '../../package.json';
 
 const extensions = ['.js', '.ts'];
 
-const libDir = path.join(__dirname, '../../libs/horizon');
+const libDir = path.join(__dirname, '../../libs/inula');
 const rootDir = path.join(__dirname, '../..');
-const outDir = path.join(rootDir, 'build', 'horizon');
+const outDir = path.join(rootDir, 'build', 'inula');
 
 if (!fs.existsSync(path.join(rootDir, 'build'))) {
   fs.mkdirSync(path.join(rootDir, 'build'));
@@ -59,7 +59,7 @@ const getBasicPlugins = (mode) => {
         'process.env.NODE_ENV': `"${mode}"`,
         isDev: isDev(mode).toString(),
         isTest: false,
-        __VERSION__: `"${horizonVersion}"`,
+        __VERSION__: `"${inulaVersion}"`,
       },
       preventAssignment: true,
     }),
@@ -68,7 +68,7 @@ const getBasicPlugins = (mode) => {
 
 
 function getOutputName(mode) {
-  return mode === 'production' ? `horizon.${mode}.min.js` : `horizon.${mode}.js`;
+  return mode === 'production' ? `inula.${mode}.min.js` : `inula.${mode}.js`;
 }
 
 function genConfig(mode) {
@@ -84,7 +84,7 @@ function genConfig(mode) {
       {
         file: outputResolve('umd', getOutputName(mode)),
         sourcemap,
-        name: 'Horizon',
+        name: 'Inula',
         format: 'umd',
       },
     ],

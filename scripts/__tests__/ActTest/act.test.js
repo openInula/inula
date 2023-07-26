@@ -13,9 +13,9 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Horizon, { render, useState, act, useEffect } from '@cloudsop/horizon/index.ts';
+import Inula, { render, useState, act, useEffect } from '../../../libs/inula/index';
 
-describe('Horizon.act function Test', () => {
+describe('Inula.act function Test', () => {
   it('The act can wait for the useEffect update to complete.', function () {
     const Parent = props => {
       const [buttonOptions, setBtn] = useState([]);

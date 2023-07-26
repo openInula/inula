@@ -13,13 +13,13 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
-import { clearStore, createStore, useStore } from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
-import { OBSERVER_KEY } from '../../../../libs/horizon/src/horizonx/Constants';
+import * as Inula from '../../../../libs/inula/index';
+import { clearStore, createStore, useStore } from '../../../../libs/inula/src/inulax/store/StoreHandler';
+import { OBSERVER_KEY } from '../../../../libs/inula/src/inulax/Constants';
 import { App, Text, triggerClickEvent } from '../../jest/commonComponents';
 
 describe('测试对store.state对象进行深度克隆', () => {
-  const { unmountComponentAtNode } = Horizon;
+  const { unmountComponentAtNode } = Inula;
   let container = null;
   beforeEach(() => {
     // 创建一个 DOM 元素作为渲染目标
@@ -81,7 +81,7 @@ describe('测试对store.state对象进行深度克隆', () => {
     );
   }
 
-  it('The observer object of symbol (\'_horizonObserver\') cannot be accessed to  from Proxy', () => {
+  it('The observer object of symbol (\'_inulaObserver\') cannot be accessed to  from Proxy', () => {
     let userStore = null;
     function Child(props) {
       userStore = useStore('user');
@@ -93,13 +93,13 @@ describe('测试对store.state对象进行深度克隆', () => {
       );
     }
 
-    Horizon.render(<App parent={Parent} child={Child} />, container);
+    Inula.render(<App parent={Parent} child={Child} />, container);
 
-    // The observer object of symbol ('_horizonObserver') cannot be accessed to  from Proxy prevent errors caused by clonedeep.
+    // The observer object of symbol ('_inulaObserver') cannot be accessed to  from Proxy prevent errors caused by clonedeep.
     expect(userStore.persons[0][OBSERVER_KEY]).toBe(undefined);
   });
 
-  it('The observer object of symbol (\'_horizonObserver\') cannot be accessed to  from Proxy', () => {
+  it('The observer object of symbol (\'_inulaObserver\') cannot be accessed to  from Proxy', () => {
     let userStore = null;
     function Child(props) {
       userStore = useStore('user');
@@ -111,7 +111,7 @@ describe('测试对store.state对象进行深度克隆', () => {
       );
     }
 
-    Horizon.render(<App parent={Parent} child={Child} />, container);
+    Inula.render(<App parent={Parent} child={Child} />, container);
 
     // NO throw this Exception, TypeError: 'get' on proxy: property 'prototype' is a read-only and non-configurable data property on the proxy target but the proxy did not return its actual value
     const proxyObj = userStore.persons[0].constructor;

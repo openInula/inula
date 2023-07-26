@@ -13,9 +13,9 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../../libs/inula/index';
 import * as LogUtils from '../../jest/logUtils';
-import {clearStore, createStore, useStore} from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
+import {clearStore, createStore, useStore} from '../../../../libs/inula/src/inulax/store/StoreHandler';
 import {App, Text, triggerClickEvent} from '../../jest/commonComponents';
 import {describe, beforeEach, afterEach, it, expect} from '@jest/globals';
 
@@ -42,7 +42,7 @@ const useUserStore = createStore({
 });
 
 describe('在Class组件中，测试store中的Map', () => {
-  const { unmountComponentAtNode } = Horizon;
+  const { unmountComponentAtNode } = Inula;
   let container:HTMLElement|null = null;
   beforeEach(() => {
     // 创建一个 DOM 元素作为渲染目标
@@ -64,7 +64,7 @@ describe('在Class组件中，测试store中的Map', () => {
 
   const newPerson = { name: 'p3', age: 3 };
 
-  class Parent extends Horizon.Component {
+  class Parent extends Inula.Component {
     userStore = useUserStore();
     props = {children:[]}
 
@@ -104,7 +104,7 @@ describe('在Class组件中，测试store中的Map', () => {
   }
 
   it('测试Map方法: set()、delete()、clear()', () => {
-    class Child extends Horizon.Component {
+    class Child extends Inula.Component {
       userStore = useUserStore();
 
       render() {
@@ -116,30 +116,30 @@ describe('在Class组件中，测试store中的Map', () => {
       }
     }
 
-    Horizon.render(<App parent={Parent} child={Child} />, container);
+    Inula.render(<App parent={Parent} child={Child} />, container);
 
     expect(container?.querySelector('#size')?.innerHTML).toBe('persons number: 2');
     // 在Map中增加一个对象
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'addBtn');
     });
     expect(container?.querySelector('#size')?.innerHTML).toBe('persons number: 3');
 
     // 在Map中删除一个对象
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'delBtn');
     });
     expect(container?.querySelector('#size')?.innerHTML).toBe('persons number: 2');
 
     // clear Map
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'clearBtn');
     });
     expect(container?.querySelector('#size')?.innerHTML).toBe('persons number: 0');
   });
 
   it('测试Map方法: keys()', () => {
-    class Child extends Horizon.Component {
+    class Child extends Inula.Component {
       userStore = useUserStore();
 
       render() {
@@ -157,30 +157,30 @@ describe('在Class组件中，测试store中的Map', () => {
       }
     }
 
-    Horizon.render(<App parent={Parent} child={Child} />, container);
+    Inula.render(<App parent={Parent} child={Child} />, container);
 
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2');
     // 在Map中增加一个对象
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'addBtn');
     });
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2 p3');
 
     // 在Map中删除一个对象
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'delBtn');
     });
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2');
 
     // clear Map
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'clearBtn');
     });
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: ');
   });
 
   it('测试Map方法: values()', () => {
-    class Child extends Horizon.Component {
+    class Child extends Inula.Component {
       userStore = useUserStore();
 
       render() {
@@ -198,30 +198,30 @@ describe('在Class组件中，测试store中的Map', () => {
       }
     }
 
-    Horizon.render(<App parent={Parent} child={Child} />, container);
+    Inula.render(<App parent={Parent} child={Child} />, container);
 
     expect(container?.querySelector('#ageList')?.innerHTML).toBe('age list: 1 2');
     // 在Map中增加一个对象
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'addBtn');
     });
     expect(container?.querySelector('#ageList')?.innerHTML).toBe('age list: 1 2 3');
 
     // 在Map中删除一个对象
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'delBtn');
     });
     expect(container?.querySelector('#ageList')?.innerHTML).toBe('age list: 1 2');
 
     // clear Map
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'clearBtn');
     });
     expect(container?.querySelector('#ageList')?.innerHTML).toBe('age list: ');
   });
 
   it('测试Map方法: entries()', () => {
-    class Child extends Horizon.Component {
+    class Child extends Inula.Component {
       userStore = useUserStore();
 
       render() {
@@ -239,30 +239,30 @@ describe('在Class组件中，测试store中的Map', () => {
       }
     }
 
-    Horizon.render(<App parent={Parent} child={Child} />, container);
+    Inula.render(<App parent={Parent} child={Child} />, container);
 
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2');
     // 在Map中增加一个对象
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'addBtn');
     });
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2 p3');
 
     // 在Map中删除一个对象
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'delBtn');
     });
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2');
 
     // clear Map
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'clearBtn');
     });
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: ');
   });
 
   it('测试Map方法: forEach()', () => {
-    class Child extends Horizon.Component {
+    class Child extends Inula.Component {
       userStore = useUserStore();
 
       render() {
@@ -279,30 +279,30 @@ describe('在Class组件中，测试store中的Map', () => {
       }
     }
 
-    Horizon.render(<App parent={Parent} child={Child} />, container);
+    Inula.render(<App parent={Parent} child={Child} />, container);
 
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2');
     // 在Map中增加一个对象
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'addBtn');
     });
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2 p3');
 
     // 在Map中删除一个对象
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'delBtn');
     });
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2');
 
     // clear Map
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'clearBtn');
     });
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: ');
   });
 
   it('测试Map方法: has()', () => {
-    class Child extends Horizon.Component {
+    class Child extends Inula.Component {
       userStore = useUserStore();
 
       render() {
@@ -314,18 +314,18 @@ describe('在Class组件中，测试store中的Map', () => {
       }
     }
 
-    Horizon.render(<App parent={Parent} child={Child} />, container);
+    Inula.render(<App parent={Parent} child={Child} />, container);
 
     expect(container?.querySelector('#hasPerson')?.innerHTML).toBe('has new person: false');
     // 在Map中增加一个对象
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'addBtn');
     });
     expect(container?.querySelector('#hasPerson')?.innerHTML).toBe('has new person: true');
   });
 
   it('测试Map方法: for of()', () => {
-    class Child extends Horizon.Component {
+    class Child extends Inula.Component {
       userStore = useUserStore();
 
       render() {
@@ -342,23 +342,23 @@ describe('在Class组件中，测试store中的Map', () => {
       }
     }
 
-    Horizon.render(<App parent={Parent} child={Child} />, container);
+    Inula.render(<App parent={Parent} child={Child} />, container);
 
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2');
     // 在Map中增加一个对象
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'addBtn');
     });
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2 p3');
 
     // 在Map中删除一个对象
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'delBtn');
     });
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2');
 
     // clear Map
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'clearBtn');
     });
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: ');

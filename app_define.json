@@ -1,1 +1,1 @@
-{"fileVersion":"1","name":"Horizon","serviceId":"067e5bef6cd240ae9460229d107a99a6","description":"","version":"1.0.0","type":"microService","processes":{"Horizon":{"subscribes":[]}}}
+{"fileVersion":"1","name":"Inula","serviceId":"067e5bef6cd240ae9460229d107a99a6","description":"","version":"1.0.0","type":"microService","processes":{"Inula":{"subscribes":[]}}}

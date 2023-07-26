@@ -14,12 +14,12 @@
  */
 
 //@ts-ignore
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../../libs/inula/index';
 import { triggerClickEvent } from '../../jest/commonComponents';
 import { useLogStore } from './store';
 import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
 
-const { unmountComponentAtNode } = Horizon;
+const { unmountComponentAtNode } = Inula;
 
 describe('Dollar store access', () => {
   let container: HTMLElement | null = null;
@@ -45,7 +45,7 @@ describe('Dollar store access', () => {
       return <div id={RESULT_ID}>{logStore.$c.length()}</div>;
     }
 
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
 
     expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('1');
   });
@@ -69,9 +69,9 @@ describe('Dollar store access', () => {
       );
     }
 
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, BUTTON_ID);
     });
 

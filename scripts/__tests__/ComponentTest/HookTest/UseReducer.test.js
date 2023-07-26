@@ -13,10 +13,10 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../../libs/inula/index';
 
 describe('useReducer Hook Test', () => {
-  const { useReducer } = Horizon;
+  const { useReducer } = Inula;
 
   it('简单使用useReducer', () => {
     const intlCar = { logo: '', price: 0 };
@@ -59,7 +59,7 @@ describe('useReducer Hook Test', () => {
         </div>
       );
     };
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
     expect(container.querySelector('p').innerHTML).toBe('');
     expect(container.querySelector('#senP').innerHTML).toBe('0');
     // 触发bmw
@@ -77,7 +77,7 @@ describe('useReducer Hook Test', () => {
     const reducer = () => {
       return { data: nextId++ };
     };
-    const btnRef = Horizon.createRef();
+    const btnRef = Inula.createRef();
     const Main = () => {
       const [{ data }, dispatch] = useReducer(reducer, { data: 0 });
       const dispatchLogging = () => {
@@ -95,8 +95,8 @@ describe('useReducer Hook Test', () => {
       );
     };
 
-    Horizon.render(<Main />, container);
-    Horizon.act(() => {
+    Inula.render(<Main />, container);
+    Inula.act(() => {
       btnRef.current.click();
     });
     expect(nextId).toBe(2);

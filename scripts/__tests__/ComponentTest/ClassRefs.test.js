@@ -13,13 +13,13 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../libs/inula/index';
 
 describe('Class refs Test', () => {
   it('Parent can get Child instance by refs', function () {
     let pInst;
 
-    class Parent extends Horizon.Component {
+    class Parent extends Inula.Component {
       componentDidMount() {
         pInst = this;
       }
@@ -35,7 +35,7 @@ describe('Class refs Test', () => {
       }
     }
 
-    class Child extends Horizon.Component {
+    class Child extends Inula.Component {
       state = { y: 0 };
 
       render() {
@@ -43,7 +43,7 @@ describe('Class refs Test', () => {
       }
     }
 
-    Horizon.render(<Parent />, container);
+    Inula.render(<Parent />, container);
 
     expect(pInst.refs['child'].state.y).toEqual(0);
     expect(pInst.refs['childDiv'].innerHTML).toEqual('childDiv');

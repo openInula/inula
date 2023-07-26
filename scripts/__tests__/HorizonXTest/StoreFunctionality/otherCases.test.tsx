@@ -14,12 +14,12 @@
  */
 
 //@ts-ignore
-import * as Horizon from '@cloudsop/horizon/index.ts';
-import { createStore } from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
+import * as Inula from '../../../../libs/inula/index';
+import { createStore } from '../../../../libs/inula/src/inulax/store/StoreHandler';
 import { triggerClickEvent } from '../../jest/commonComponents';
 import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
 
-const { unmountComponentAtNode } = Horizon;
+const { unmountComponentAtNode } = Inula;
 
 describe('Self referencing', () => {
   let container: HTMLElement | null = null;
@@ -69,17 +69,17 @@ describe('Self referencing', () => {
       );
     }
 
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
 
     expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('4');
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, BUTTON_ID);
     });
 
     expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('6');
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, BUTTON_ID);
     });
 
@@ -110,11 +110,11 @@ describe('Self referencing', () => {
       );
     }
 
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
 
     expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('5');
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, BUTTON_ID);
     });
 
@@ -154,10 +154,10 @@ describe('Self referencing', () => {
       );
     }
 
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
     expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('abc');
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, BUTTON_ID);
     });
     expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('def');

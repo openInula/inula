@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../libs/inula/index';
 import {getLogUtils} from '../jest/testUtils';
 
 describe('Keyboard Event', () => {
@@ -29,7 +29,7 @@ describe('Keyboard Event', () => {
   };
 
   it('keydown,keypress,keyup的keycode,charcode', () => {
-    const node = Horizon.render(
+    const node = Inula.render(
       <input
         onKeyUp={(e) => {
           LogUtils.log('onKeyUp: keycode: ' + e.keyCode + ',charcode: ' + e.charCode);
@@ -50,7 +50,7 @@ describe('Keyboard Event', () => {
   });
 
   it('keypress的keycode,charcode', () => {
-    const node = Horizon.render(
+    const node = Inula.render(
       <input
         onKeyPress={(e) => {
           LogUtils.log('onKeyPress: keycode: ' + e.keyCode + ',charcode: ' + e.charCode);
@@ -66,7 +66,7 @@ describe('Keyboard Event', () => {
   });
 
   it('当charcode为13,且不设置keycode的时候', () => {
-    const node = Horizon.render(
+    const node = Inula.render(
       <input
         onKeyPress={(e) => {
           LogUtils.log('onKeyPress: keycode: ' + e.keyCode + ',charcode: ' + e.charCode);
@@ -81,7 +81,7 @@ describe('Keyboard Event', () => {
   });
 
   it('keydown,keypress,keyup的code', () => {
-    const node = Horizon.render(
+    const node = Inula.render(
       <input
         onKeyUp={(e) => {
           LogUtils.log('onKeyUp: code: ' + e.code);
@@ -124,7 +124,7 @@ describe('Keyboard Event', () => {
       expect(e.isPropagationStopped()).toBe(true);
       LogUtils.log(e.type + ' handle');
     };
-    const div = Horizon.render(
+    const div = Inula.render(
       <div
         onKeyDown={keyboardProcessing}
         onKeyUp={keyboardProcessing}

@@ -14,7 +14,7 @@
  */
 
 //@ts-ignore
-import horizon, * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../../libs/inula/index';
 import {
   batch,
   connect,
@@ -25,10 +25,10 @@ import {
   useStore,
   createSelectorHook,
   createDispatchHook
-} from '../../../../libs/horizon/src/horizonx/adapters/redux';
+} from '../../../../libs/inula/src/inulax/adapters/redux';
 import {triggerClickEvent} from '../../jest/commonComponents';
 import {describe, it, beforeEach, afterEach, expect} from '@jest/globals';
-import { ReduxStoreHandler } from '@cloudsop/horizon/src/horizonx/types';
+import { ReduxStoreHandler } from '../../../../libs/inula/src/inulax/adapters/redux';
 
 const BUTTON = 'button';
 const BUTTON2 = 'button2';
@@ -64,7 +64,7 @@ describe('Redux/React binding adapter', () => {
       </Provider>;
     };
 
-    Horizon.render(<Wrapper/>, getE(CONTAINER));
+    Inula.render(<Wrapper/>, getE(CONTAINER));
 
     expect(getE(RESULT).innerHTML).toBe('state');
   });
@@ -92,11 +92,11 @@ describe('Redux/React binding adapter', () => {
       </Provider>;
     };
 
-    Horizon.render(<Wrapper/>, getE(CONTAINER));
+    Inula.render(<Wrapper/>, getE(CONTAINER));
 
     expect(reduxStore.getState()).toBe(0);
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(getE(CONTAINER), BUTTON);
     });
 
@@ -127,11 +127,11 @@ describe('Redux/React binding adapter', () => {
       </Provider>;
     };
 
-    Horizon.render(<Wrapper/>, getE(CONTAINER));
+    Inula.render(<Wrapper/>, getE(CONTAINER));
 
     expect(getE(RESULT).innerHTML).toBe('0');
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(getE(CONTAINER), BUTTON);
       triggerClickEvent(getE(CONTAINER), BUTTON);
     });
@@ -181,7 +181,7 @@ describe('Redux/React binding adapter', () => {
 
     const Wrapper = () => {
       //@ts-ignore
-      const [amount, setAmount] = Horizon.useState(5);
+      const [amount, setAmount] = Inula.useState(5);
       return <Provider store={reduxStore}>
         <Child amount={amount}/>
         <button id={BUTTON2} onClick={() => {
@@ -191,21 +191,21 @@ describe('Redux/React binding adapter', () => {
       </Provider>;
     };
 
-    Horizon.render(<Wrapper/>, getE(CONTAINER));
+    Inula.render(<Wrapper/>, getE(CONTAINER));
 
     expect(getE(RESULT).innerHTML).toBe('+0');
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(getE(CONTAINER), BUTTON);
     });
 
     expect(getE(RESULT).innerHTML).toBe('+5');
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(getE(CONTAINER), BUTTON2);
     });
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(getE(CONTAINER), BUTTON);
     });
 
@@ -238,12 +238,12 @@ describe('Redux/React binding adapter', () => {
       </div>;
     }
 
-    Horizon.render(<Provider store={reduxStore}><Counter/></Provider>, getE(CONTAINER));
+    Inula.render(<Provider store={reduxStore}><Counter/></Provider>, getE(CONTAINER));
 
     expect(getE(RESULT).innerHTML).toBe('0');
     expect(renderCounter).toBe(1);
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(getE(CONTAINER), BUTTON);
     });
 
@@ -262,8 +262,8 @@ describe('Redux/React binding adapter', () => {
       return state;
     });
 
-    const counterContext = horizon.createContext();
-    const toggleContext = horizon.createContext();
+    const counterContext = Inula.createContext();
+    const toggleContext = Inula.createContext();
 
     function Counter() {
       const count = createSelectorHook(counterContext)();
@@ -295,12 +295,12 @@ describe('Redux/React binding adapter', () => {
       </div>;
     }
 
-    Horizon.render(<Wrapper/>, getE(CONTAINER));
+    Inula.render(<Wrapper/>, getE(CONTAINER));
 
     expect(getE(BUTTON).innerHTML).toBe('0');
     expect(getE(BUTTON2).innerHTML).toBe('false');
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(getE(CONTAINER), BUTTON);
       triggerClickEvent(getE(CONTAINER), BUTTON2);
     });

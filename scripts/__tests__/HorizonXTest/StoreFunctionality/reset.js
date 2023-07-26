@@ -13,11 +13,11 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
-import {createStore} from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
+import * as Inula from '../../../../libs/inula/index';
+import {createStore} from '../../../../libs/inula/src/inulax/store/StoreHandler';
 import {triggerClickEvent} from '../../jest/commonComponents';
 
-const {unmountComponentAtNode} = Horizon;
+const {unmountComponentAtNode} = Inula;
 
 describe('Reset', () => {
   it('RESET NOT IMPLEMENTED', async () => {
@@ -69,25 +69,25 @@ describe('Reset', () => {
       </div>
     }
 
-    Horizon.render(<App/>, container);
+    Inula.render(<App/>, container);
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, BUTTON_ID);
     });
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, BUTTON_ID);
     });
 
     expect(document.getElementById(RESULT_ID).innerHTML).toBe('2');
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, RESET_ID);
     });
 
     expect(document.getElementById(RESULT_ID).innerHTML).toBe('0');
 
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, BUTTON_ID);
     });
 

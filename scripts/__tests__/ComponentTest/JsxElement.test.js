@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../libs/inula/index';
 
 describe('JSX Element test', () => {
   it('symbol attribute prevent cloneDeep unlimited loop', function () {
@@ -29,7 +29,7 @@ describe('JSX Element test', () => {
       })
       return result;
     }
-    class Demo extends Horizon.Component {
+    class Demo extends Inula.Component {
       render() {
         return (
           <div>
@@ -39,7 +39,7 @@ describe('JSX Element test', () => {
       }
     }
 
-    const ele = Horizon.createElement(Demo);
+    const ele = Inula.createElement(Demo);
     const copy = cloneDeep(ele);
     expect(copy.vtype).toEqual(ele.vtype);
     expect(Object.getOwnPropertySymbols(copy).length).toEqual(0);

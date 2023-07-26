@@ -14,7 +14,7 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../libs/inula/index';
 import { getLogUtils } from './testUtils';
 
 export const App = props => {

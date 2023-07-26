@@ -20,8 +20,8 @@ module.exports = {
     [
       '@babel/plugin-transform-react-jsx',
       {
-        pragma: 'Horizon.createElement',
-        pragmaFrag: 'Horizon.Fragment',
+        pragma: 'Inula.createElement',
+        pragmaFrag: 'Inula.Fragment',
       },
     ],
     ['@babel/plugin-proposal-class-properties', { loose: true }],

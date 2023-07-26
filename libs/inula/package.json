@@ -1,0 +1,17 @@
+{
+  "name": "inulajs",
+  "description": "InulaJS is a JavaScript framework library.",
+  "keywords": [
+    "inula"
+  ],
+  "version": "0.0.52",
+  "homepage": "",
+  "bugs": "",
+  "main": "index.js",
+  "repository": {},
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "dependencies": {},
+  "types": "@types/index.d.ts"
+}

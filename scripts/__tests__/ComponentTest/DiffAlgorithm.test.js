@@ -13,13 +13,13 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../libs/inula/index';
 
 describe('Diff Algorithm', () => {
   it('null should diff correctly', () => {
     const fn = jest.fn();
 
-    class C extends Horizon.Component {
+    class C extends Inula.Component {
       constructor() {
         super();
         fn();
@@ -33,7 +33,7 @@ describe('Diff Algorithm', () => {
     let update;
 
     function App() {
-      const [current, setCurrent] = Horizon.useState(1);
+      const [current, setCurrent] = Inula.useState(1);
       update = setCurrent;
       return (
         <>
@@ -44,7 +44,7 @@ describe('Diff Algorithm', () => {
       );
     }
 
-    Horizon.render(<App text="app" />, container);
+    Inula.render(<App text="app" />, container);
     expect(fn).toHaveBeenCalledTimes(1);
 
     update(2);

@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../libs/inula/index';
 import { getLogUtils } from '../jest/testUtils';
 import dispatchChangeEvent from '../utils/dispatchChangeEvent';
 
@@ -23,23 +23,23 @@ describe('PortalComponent Test', () => {
   it('将子节点渲染到存在于父组件以外的 DOM 节点', () => {
     const portalRoot = document.createElement('div');
 
-    class PortalApp extends Horizon.Component {
+    class PortalApp extends Inula.Component {
       constructor(props) {
         super(props);
         this.element = portalRoot;
       }
 
       render() {
-        return Horizon.createPortal(this.props.child, this.element);
+        return Inula.createPortal(this.props.child, this.element);
       }
     }
 
-    Horizon.render(<PortalApp child={<div>PortalApp</div>} />, container);
+    Inula.render(<PortalApp child={<div>PortalApp</div>} />, container);
     expect(container.textContent).toBe('');
     // <div>PortalApp</div>被渲染到了portalRoot而非container
     expect(portalRoot.textContent).toBe('PortalApp');
 
-    Horizon.unmountComponentAtNode(container);
+    Inula.unmountComponentAtNode(container);
     expect(container.textContent).toBe('');
     expect(portalRoot.textContent).toBe('');
   });
@@ -48,7 +48,7 @@ describe('PortalComponent Test', () => {
     const portalRoot1st = document.createElement('div');
     const portalRoot2nd = document.createElement('div');
 
-    class PortalApp extends Horizon.Component {
+    class PortalApp extends Inula.Component {
       constructor(props) {
         super(props);
         this.element = portalRoot1st;
@@ -57,19 +57,19 @@ describe('PortalComponent Test', () => {
 
       render() {
         return [
-          Horizon.createPortal(this.props.child, this.element),
-          Horizon.createPortal(this.props.child, this.newElement),
+          Inula.createPortal(this.props.child, this.element),
+          Inula.createPortal(this.props.child, this.newElement),
         ];
       }
     }
 
-    Horizon.render(<PortalApp child={<div>PortalApp</div>} />, container);
+    Inula.render(<PortalApp child={<div>PortalApp</div>} />, container);
     expect(container.textContent).toBe('');
     // <div>PortalApp</div>被渲染到了portalRoot而非container
     expect(portalRoot1st.textContent).toBe('PortalApp');
     expect(portalRoot2nd.textContent).toBe('PortalApp');
 
-    Horizon.unmountComponentAtNode(container);
+    Inula.unmountComponentAtNode(container);
     expect(container.textContent).toBe('');
     expect(portalRoot1st.textContent).toBe('');
     expect(portalRoot2nd.textContent).toBe('');
@@ -80,7 +80,7 @@ describe('PortalComponent Test', () => {
     const portalRoot2nd = document.createElement('div');
     const portalRoot3rd = document.createElement('div');
 
-    class PortalApp extends Horizon.Component {
+    class PortalApp extends Inula.Component {
       constructor(props) {
         super(props);
         this.element = portalRoot1st;
@@ -91,24 +91,24 @@ describe('PortalComponent Test', () => {
       render() {
         return [
           <div>PortalApp1st</div>,
-          Horizon.createPortal(
-            [<div>PortalApp4</div>, Horizon.createPortal(this.props.child, this.element3rd)],
+          Inula.createPortal(
+            [<div>PortalApp4</div>, Inula.createPortal(this.props.child, this.element3rd)],
             this.element
           ),
           <div>PortalApp2nd</div>,
-          Horizon.createPortal(this.props.child, this.newElement),
+          Inula.createPortal(this.props.child, this.newElement),
         ];
       }
     }
 
-    Horizon.render(<PortalApp child={<div>PortalApp</div>} />, container);
+    Inula.render(<PortalApp child={<div>PortalApp</div>} />, container);
     expect(container.textContent).toBe('PortalApp1stPortalApp2nd');
     // <div>PortalApp4</div>会挂载在this.element上
     expect(portalRoot1st.textContent).toBe('PortalApp4');
     expect(portalRoot2nd.textContent).toBe('PortalApp');
     expect(portalRoot3rd.textContent).toBe('PortalApp');
 
-    Horizon.unmountComponentAtNode(container);
+    Inula.unmountComponentAtNode(container);
     expect(container.textContent).toBe('');
     expect(portalRoot1st.textContent).toBe('');
     expect(portalRoot2nd.textContent).toBe('');
@@ -117,50 +117,50 @@ describe('PortalComponent Test', () => {
   it('改变Portal的参数', () => {
     const portalRoot = document.createElement('div');
 
-    class PortalApp extends Horizon.Component {
+    class PortalApp extends Inula.Component {
       constructor(props) {
         super(props);
         this.element = portalRoot;
       }
 
       render() {
-        return Horizon.createPortal(this.props.child, this.element);
+        return Inula.createPortal(this.props.child, this.element);
       }
     }
 
-    Horizon.render(<PortalApp key="portal" child={<div>PortalApp</div>} />, container);
+    Inula.render(<PortalApp key="portal" child={<div>PortalApp</div>} />, container);
     expect(container.textContent).toBe('');
     expect(portalRoot.textContent).toBe('PortalApp');
 
-    Horizon.render(<PortalApp key="portal" child={<div>AppPortal</div>} />, container);
+    Inula.render(<PortalApp key="portal" child={<div>AppPortal</div>} />, container);
     expect(container.textContent).toBe('');
     expect(portalRoot.textContent).toBe('AppPortal');
 
-    Horizon.render(<PortalApp key="portal" child={['por', 'tal']} />, container);
+    Inula.render(<PortalApp key="portal" child={['por', 'tal']} />, container);
     expect(container.textContent).toBe('');
     expect(portalRoot.textContent).toBe('portal');
 
-    Horizon.render(<PortalApp key="portal" child={null} />, container);
+    Inula.render(<PortalApp key="portal" child={null} />, container);
     expect(container.textContent).toBe('');
     expect(portalRoot.textContent).toBe('');
 
-    Horizon.unmountComponentAtNode(container);
+    Inula.unmountComponentAtNode(container);
     expect(container.textContent).toBe('');
     expect(portalRoot.textContent).toBe('');
   });
 
   it('通过Portal进行事件冒泡', () => {
     const portalRoot = document.createElement('div');
-    const buttonRef = Horizon.createRef();
+    const buttonRef = Inula.createRef();
 
-    class PortalApp extends Horizon.Component {
+    class PortalApp extends Inula.Component {
       constructor(props) {
         super(props);
         this.element = portalRoot;
       }
 
       render() {
-        return Horizon.createPortal(this.props.child, this.element);
+        return Inula.createPortal(this.props.child, this.element);
       }
     }
 
@@ -187,7 +187,7 @@ describe('PortalComponent Test', () => {
         </div>
       );
     };
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
     const event = document.createEvent('Event');
     event.initEvent('click', true, true);
     buttonRef.current.dispatchEvent(event);
@@ -200,21 +200,21 @@ describe('PortalComponent Test', () => {
   });
 
   it('Create portal at app root should not add event listener multiple times', () => {
-    const btnRef = Horizon.createRef();
+    const btnRef = Inula.createRef();
 
-    class PortalApp extends Horizon.Component {
+    class PortalApp extends Inula.Component {
       constructor(props) {
         super(props);
       }
 
       render() {
-        return Horizon.createPortal(this.props.child, container);
+        return Inula.createPortal(this.props.child, container);
       }
     }
 
     const onClick = jest.fn();
 
-    class App extends Horizon.Component {
+    class App extends Inula.Component {
       constructor(props) {
         super(props);
       }
@@ -229,13 +229,13 @@ describe('PortalComponent Test', () => {
       }
     }
 
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
     btnRef.current.click();
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
   it('#76 Portal onChange should activate', () => {
-    class Dialog extends Horizon.Component {
+    class Dialog extends Inula.Component {
       node;
 
       constructor(props) {
@@ -245,20 +245,20 @@ describe('PortalComponent Test', () => {
       }
 
       render() {
-        return Horizon.createPortal(this.props.children, this.node);
+        return Inula.createPortal(this.props.children, this.node);
       }
     }
 
     let showPortalInput;
     const fn = jest.fn();
-    const inputRef = Horizon.createRef();
+    const inputRef = Inula.createRef();
 
     function App() {
       const Input = () => {
-        const [show, setShow] = Horizon.useState(false);
+        const [show, setShow] = Inula.useState(false);
         showPortalInput = setShow;
 
-        Horizon.useEffect(() => {
+        Inula.useEffect(() => {
           setTimeout(() => {
             setShow(true);
           }, 0);
@@ -280,7 +280,7 @@ describe('PortalComponent Test', () => {
       );
     }
 
-    Horizon.render(<App />, container);
+    Inula.render(<App />, container);
     showPortalInput(true);
     jest.advanceTimersToNextTimer();
     dispatchChangeEvent(inputRef.current, 'test');

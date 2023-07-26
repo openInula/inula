@@ -1,4 +1,4 @@
-import { resolveMutation } from '../../../../libs/horizon/src/horizonx/CommonUtils';
+import { resolveMutation } from '../../../../libs/inula/src/inulax/CommonUtils';
 
 describe('Mutation resolve', () => {
   it('should resolve mutation different types', () => {

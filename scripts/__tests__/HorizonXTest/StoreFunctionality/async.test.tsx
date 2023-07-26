@@ -14,12 +14,12 @@
  */
 
 //@ts-ignore
-import * as Horizon from '../../../../libs/horizon';
-import { createStore } from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
+import * as Inula from '../../../../libs/inula/index';
+import { createStore } from '../../../../libs/inula/src/inulax/store/StoreHandler';
 import { triggerClickEvent } from '../../jest/commonComponents';
 import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
 
-const { unmountComponentAtNode } = Horizon;
+const { unmountComponentAtNode } = Inula;
 
 function postpone(timer, func) {
   return new Promise(resolve => {

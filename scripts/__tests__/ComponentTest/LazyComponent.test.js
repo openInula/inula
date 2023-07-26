@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../libs/inula/index';
 import { Text } from '../jest/commonComponents';
 import { getLogUtils } from '../jest/testUtils';
 
@@ -23,8 +23,8 @@ describe('LazyComponent Test', () => {
     return { default: component };
   });
 
-  it('Horizon.lazy()', async () => {
-    class LazyComponent extends Horizon.Component {
+  it('Inula.lazy()', async () => {
+    class LazyComponent extends Inula.Component {
       static defaultProps = { language: 'Java' };
 
       render() {
@@ -33,12 +33,12 @@ describe('LazyComponent Test', () => {
       }
     }
 
-    const Lazy = Horizon.lazy(() => mockImport(LazyComponent));
+    const Lazy = Inula.lazy(() => mockImport(LazyComponent));
 
-    Horizon.render(
-      <Horizon.Suspense fallback={<Text text="Loading..." />}>
+    Inula.render(
+      <Inula.Suspense fallback={<Text text="Loading..." />}>
         <Lazy greeting="Hi" />
-      </Horizon.Suspense>,
+      </Inula.Suspense>,
       container
     );
 
@@ -47,10 +47,10 @@ describe('LazyComponent Test', () => {
     expect(container.querySelector('span')).toBe(null);
 
     await Promise.resolve();
-    Horizon.render(
-      <Horizon.Suspense fallback={<Text text="Loading..." />}>
+    Inula.render(
+      <Inula.Suspense fallback={<Text text="Loading..." />}>
         <Lazy greeting="Goodbye" />
-      </Horizon.Suspense>,
+      </Inula.Suspense>,
       container
     );
 
@@ -59,16 +59,16 @@ describe('LazyComponent Test', () => {
   });
 
   it('同步解析', async () => {
-    const LazyApp = Horizon.lazy(() => ({
+    const LazyApp = Inula.lazy(() => ({
       then(cb) {
         cb({ default: Text });
       },
     }));
 
-    Horizon.render(
-      <Horizon.Suspense fallback={<div>Loading...</div>}>
+    Inula.render(
+      <Inula.Suspense fallback={<div>Loading...</div>}>
         <LazyApp text="Lazy" />
-      </Horizon.Suspense>,
+      </Inula.Suspense>,
       container
     );
 
@@ -77,7 +77,7 @@ describe('LazyComponent Test', () => {
   });
 
   it('异常捕获边界', async () => {
-    class ErrorBoundary extends Horizon.Component {
+    class ErrorBoundary extends Inula.Component {
       state = {};
       static getDerivedStateFromError(error) {
         return { message: error.message };
@@ -90,7 +90,7 @@ describe('LazyComponent Test', () => {
     }
 
     const LazyComponent = () => {
-      const [num, setNum] = Horizon.useState(0);
+      const [num, setNum] = Inula.useState(0);
       if (num === 2) {
         throw new Error('num is 2');
       } else {
@@ -103,24 +103,24 @@ describe('LazyComponent Test', () => {
       }
     };
 
-    const LazyApp = Horizon.lazy(() => mockImport(LazyComponent));
+    const LazyApp = Inula.lazy(() => mockImport(LazyComponent));
 
-    Horizon.render(
+    Inula.render(
       <ErrorBoundary>
-        <Horizon.Suspense fallback={<div>Loading...</div>}>
+        <Inula.Suspense fallback={<div>Loading...</div>}>
           <LazyApp />
-        </Horizon.Suspense>
+        </Inula.Suspense>
       </ErrorBoundary>,
       container
     );
     expect(container.textContent).toBe('Loading...');
 
     await Promise.resolve();
-    Horizon.render(
+    Inula.render(
       <ErrorBoundary>
-        <Horizon.Suspense fallback={<Text text="Loading..." />}>
+        <Inula.Suspense fallback={<Text text="Loading..." />}>
           <LazyApp />
-        </Horizon.Suspense>
+        </Inula.Suspense>
       </ErrorBoundary>,
       container
     );
@@ -133,7 +133,7 @@ describe('LazyComponent Test', () => {
   });
 
   it('componentDidCatch捕获异常', async () => {
-    class ErrorBoundary extends Horizon.Component {
+    class ErrorBoundary extends Inula.Component {
       state = {
         catchError: false,
         error: null,
@@ -157,7 +157,7 @@ describe('LazyComponent Test', () => {
     }
 
     const LazyComponent = () => {
-      const [num, setNum] = Horizon.useState(0);
+      const [num, setNum] = Inula.useState(0);
       if (num === 2) {
         throw new Error('num is 2');
       } else {
@@ -170,24 +170,24 @@ describe('LazyComponent Test', () => {
       }
     };
 
-    const LazyApp = Horizon.lazy(() => mockImport(LazyComponent));
+    const LazyApp = Inula.lazy(() => mockImport(LazyComponent));
 
-    Horizon.render(
+    Inula.render(
       <ErrorBoundary>
-        <Horizon.Suspense fallback={<div>Loading...</div>}>
+        <Inula.Suspense fallback={<div>Loading...</div>}>
           <LazyApp />
-        </Horizon.Suspense>
+        </Inula.Suspense>
       </ErrorBoundary>,
       container
     );
     expect(container.textContent).toBe('Loading...');
 
     await Promise.resolve();
-    Horizon.render(
+    Inula.render(
       <ErrorBoundary>
-        <Horizon.Suspense fallback={<Text text="Loading..." />}>
+        <Inula.Suspense fallback={<Text text="Loading..." />}>
           <LazyApp />
-        </Horizon.Suspense>
+        </Inula.Suspense>
       </ErrorBoundary>,
       container
     );
@@ -202,25 +202,25 @@ describe('LazyComponent Test', () => {
 
   it('#24 配合memo', async () => {
     const fnComp = () => {
-      return <h1>horizon</h1>;
+      return <h1>inula</h1>;
     };
-    const LazyApp = Horizon.lazy(() => ({
+    const LazyApp = Inula.lazy(() => ({
       then(cb) {
-        cb({ default: Horizon.memo(() => fnComp, false) });
+        cb({ default: Inula.memo(() => fnComp, false) });
       },
     }));
     expect(() => {
-      Horizon.render(
-        <Horizon.Suspense fallback={<div>Loading...</div>}>
+      Inula.render(
+        <Inula.Suspense fallback={<div>Loading...</div>}>
           <LazyApp text="Lazy" />
-        </Horizon.Suspense>,
+        </Inula.Suspense>,
         container
       );
 
-      Horizon.render(
-        <Horizon.Suspense fallback={<div>Loading...</div>}>
+      Inula.render(
+        <Inula.Suspense fallback={<div>Loading...</div>}>
           <LazyApp text="Lazy" />
-        </Horizon.Suspense>,
+        </Inula.Suspense>,
         container
       );
     }).not.toThrow();

@@ -14,13 +14,13 @@
  */
 
 //@ts-ignore
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../../libs/inula/index';
 import * as LogUtils from '../../jest/logUtils';
-import { clearStore, createStore, useStore } from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
+import { clearStore, createStore, useStore } from '../../../../libs/inula/src/inulax/store/StoreHandler';
 import { App, Text, triggerClickEvent } from '../../jest/commonComponents';
 
 describe('测试store中的混合类型变化', () => {
-  const { unmountComponentAtNode } = Horizon;
+  const { unmountComponentAtNode } = Inula;
   let container: HTMLElement | null = null;
   beforeEach(() => {
     // 创建一个 DOM 元素作为渲染目标
@@ -98,10 +98,10 @@ describe('测试store中的混合类型变化', () => {
       );
     }
 
-    Horizon.render(<App parent={Parent} child={Child} />, container);
+    Inula.render(<App parent={Parent} child={Child} />, container);
 
     expect(container?.querySelector('#dayList')?.innerHTML).toBe('love: 1 3 5');
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'addBtn');
     });
     expect(container?.querySelector('#dayList')?.innerHTML).toBe('love: 1 3 5 7');
@@ -168,7 +168,7 @@ describe('测试store中的混合类型变化', () => {
       );
     }
 
-    Horizon.render(<App parent={Parent} child={Child} />, container);
+    Inula.render(<App parent={Parent} child={Child} />, container);
 
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('p1 p2');
 

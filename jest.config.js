@@ -26,8 +26,8 @@ module.exports = {
   testEnvironment: 'jest-environment-jsdom-sixteen',
 
   testMatch: [
-    // '<rootDir>/scripts/__tests__/HorizonXTest/edgeCases/deepVariableObserver.test.tsx',
-    // '<rootDir>/scripts/__tests__/HorizonXTest/StateManager/StateMap.test.tsx',
+    // '<rootDir>/scripts/__tests__/InulaXTest/edgeCases/deepVariableObserver.test.tsx',
+    // '<rootDir>/scripts/__tests__/InulaXTest/StateManager/StateMap.test.tsx',
     '<rootDir>/scripts/__tests__/**/*.test.js',
     '<rootDir>/scripts/__tests__/**/*.test.tsx',
   ],

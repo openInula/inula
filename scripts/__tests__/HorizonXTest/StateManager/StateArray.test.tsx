@@ -14,9 +14,9 @@
  */
 
 //@ts-ignore
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../../libs/inula/index';
 import * as LogUtils from '../../jest/logUtils';
-import { clearStore, createStore, useStore } from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
+import { clearStore, createStore, useStore } from '../../../../libs/inula/src/inulax/store/StoreHandler';
 import { App, Text, triggerClickEvent } from '../../jest/commonComponents';
 import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
 
@@ -49,7 +49,7 @@ const useUserStore = createStore({
 });
 
 describe('测试store中的Array', () => {
-  const { unmountComponentAtNode } = Horizon;
+  const { unmountComponentAtNode } = Inula;
   let container: HTMLElement | null = null;
   beforeEach(() => {
     // 创建一个 DOM 元素作为渲染目标
@@ -102,17 +102,17 @@ describe('测试store中的Array', () => {
       );
     }
 
-    Horizon.render(<App parent={Parent} child={Child} />, container);
+    Inula.render(<App parent={Parent} child={Child} />, container);
 
     expect(container?.querySelector('#hasPerson')?.innerHTML).toBe('has new person: 2');
     // 在Array中增加一个对象
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'addBtn');
     });
     expect(container?.querySelector('#hasPerson')?.innerHTML).toBe('has new person: 3');
 
     // 在Array中删除一个对象
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'delBtn');
     });
     expect(container?.querySelector('#hasPerson')?.innerHTML).toBe('has new person: 2');
@@ -138,7 +138,7 @@ describe('测试store中的Array', () => {
       );
     }
 
-    Horizon.render(<App parent={Parent} child={Child} />, container);
+    Inula.render(<App parent={Parent} child={Child} />, container);
 
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2');
     // push
@@ -188,7 +188,7 @@ describe('测试store中的Array', () => {
       );
     }
 
-    Horizon.render(<App parent={Parent} child={Child} />, container);
+    Inula.render(<App parent={Parent} child={Child} />, container);
 
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2');
     // push

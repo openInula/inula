@@ -1,6 +1,6 @@
 {
-  "name": "horizon-core",
-  "description": "Horizon is a JavaScript framework library.",
+  "name": "inulajs",
+  "description": "InulaJS is a JavaScript framework library.",
   "version": "0.0.52",
   "private": true,
   "workspaces": [
@@ -11,8 +11,8 @@
     "prettier": "prettier -w libs/**/*.ts",
     "build": "rollup --config ./scripts/rollup/rollup.config.js",
     "build:watch": "rollup --watch --config ./scripts/rollup/rollup.config.js",
-    "build:horizon3rdLib-dev": "npm run build & node ./scripts/gen3rdLib.js build:horizon3rdLib-dev",
-    "build-types": "tsc -p ./libs/horizon/index.ts --emitDeclarationOnly --declaration --declarationDir ./build/horizon/@types --skipLibCheck || echo \"WARNING: TSC exited with status $?\"",
+    "build:inula3rdLib-dev": "npm run build & node ./scripts/gen3rdLib.js build:inula3rdLib-dev",
+    "build-types": "tsc -p libs/inula/index.ts --emitDeclarationOnly --declaration --declarationDir ./build/inula/@types --skipLibCheck || echo \\\"WARNING: TSC exited with status $?\\\"",
     "debug-test": "yarn test --debug",
     "test": "jest --config=jest.config.js",
     "watch-test": "yarn test --watch --dev"

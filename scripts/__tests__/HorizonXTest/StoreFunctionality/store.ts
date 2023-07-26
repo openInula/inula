@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { createStore } from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
+import { createStore } from '../../../../libs/inula/src/inulax/store/StoreHandler';
 
 export const useLogStore = createStore({
   id: 'logStore', // you do not need to specify ID for local store

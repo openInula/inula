@@ -14,13 +14,13 @@
  */
 
 //@ts-ignore
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../../libs/inula/index';
 import {
   createStore,
   applyMiddleware,
   combineReducers,
   bindActionCreators,
-} from '../../../../libs/horizon/src/horizonx/adapters/redux';
+} from '../../../../libs/inula/src/inulax/adapters/redux';
 import { describe, it, expect } from '@jest/globals';
 
 describe('Redux adapter', () => {

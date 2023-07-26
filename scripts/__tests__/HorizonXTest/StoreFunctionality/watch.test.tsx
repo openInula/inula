@@ -13,8 +13,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { createStore } from '@cloudsop/horizon/src/horizonx/store/StoreHandler';
-import { watch } from '@cloudsop/horizon/src/horizonx/proxy/watch';
+import { createStore } from '../../../../libs/inula';
+import { watch } from '../../../../libs/inula';
 
 describe('watch', () => {
   it('shouhld watch primitive state variable', async () => {

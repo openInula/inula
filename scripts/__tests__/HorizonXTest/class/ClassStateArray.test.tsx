@@ -13,9 +13,9 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Horizon from '@cloudsop/horizon/index.ts';
+import * as Inula from '../../../../libs/inula/index';
 import * as LogUtils from '../../jest/logUtils';
-import {clearStore, createStore, useStore} from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
+import {clearStore, createStore, useStore} from '../../../../libs/inula/src/inulax/store/StoreHandler';
 import {App, Text, triggerClickEvent} from '../../jest/commonComponents';
 import {describe, beforeEach, afterEach, it, expect} from '@jest/globals';
 
@@ -42,7 +42,7 @@ let useUserStore =  createStore({
 });
 
 describe('在Class组件中，测试store中的Array', () => {
-  const { unmountComponentAtNode } = Horizon;
+  const { unmountComponentAtNode } = Inula;
   let container:HTMLElement|null = null;
   beforeEach(() => {
     // 创建一个 DOM 元素作为渲染目标
@@ -61,7 +61,7 @@ describe('在Class组件中，测试store中的Array', () => {
   });
 
   const newPerson = { name: 'p3', age: 3 };
-  class Parent extends Horizon.Component {
+  class Parent extends Inula.Component {
     userStore = useUserStore();
     props:{
       children:any[]
@@ -96,7 +96,7 @@ describe('在Class组件中，测试store中的Array', () => {
   }
 
   it('测试Array方法: push()、pop()', () => {
-    class Child extends Horizon.Component {
+    class Child extends Inula.Component {
       userStore = useUserStore();
 
       render() {
@@ -108,17 +108,17 @@ describe('在Class组件中，测试store中的Array', () => {
       }
     }
 
-    Horizon.render(<App parent={Parent} child={Child} />, container);
+    Inula.render(<App parent={Parent} child={Child} />, container);
 
     expect(container?.querySelector('#hasPerson')?.innerHTML).toBe('has new person: 2');
     // 在Array中增加一个对象
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'addBtn');
     });
     expect(container?.querySelector('#hasPerson')?.innerHTML).toBe('has new person: 3');
 
     // 在Array中删除一个对象
-    Horizon.act(() => {
+    Inula.act(() => {
       triggerClickEvent(container, 'delBtn');
     });
     expect(container?.querySelector('#hasPerson')?.innerHTML).toBe('has new person: 2');
@@ -127,7 +127,7 @@ describe('在Class组件中，测试store中的Array', () => {
   it('测试Array方法: entries()、push()、shift()、unshift、直接赋值', () => {
     let globalStore = useUserStore();
 
-    class Child extends Horizon.Component {
+    class Child extends Inula.Component {
       userStore = useUserStore();
 
       constructor(props) {
@@ -152,7 +152,7 @@ describe('在Class组件中，测试store中的Array', () => {
       }
     }
 
-    Horizon.render(<App parent={Parent} child={Child} />, container);
+    Inula.render(<App parent={Parent} child={Child} />, container);
 
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2');
     // push
@@ -188,7 +188,7 @@ describe('在Class组件中，测试store中的Array', () => {
   it('测试Array方法: forEach()', () => {
     let globalStore = useUserStore();
     globalStore.$s.persons.push({ name: 'p2', age: 2 });
-    class Child extends Horizon.Component {
+    class Child extends Inula.Component {
       userStore = useUserStore();
 
       constructor(props) {
@@ -210,7 +210,7 @@ describe('在Class组件中，测试store中的Array', () => {
       }
     }
 
-    Horizon.render(<App parent={Parent} child={Child} />, container);
+    Inula.render(<App parent={Parent} child={Child} />, container);
 
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1 p2');
     // push
