@@ -1,4 +1,4 @@
-import inula from 'inula';
+import inula from 'inulajs';
 import { BrowserRouter } from 'react-router-dom';
 
 import 'antd/dist/antd.css';

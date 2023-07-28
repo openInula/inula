@@ -1,5 +1,5 @@
 import api from '../../services';
-import { createStore } from 'inula';
+import { createStore } from 'inulajs';
 
 const { queryUserList, createUser, removeUser, updateUser, removeUserList } = api;
 

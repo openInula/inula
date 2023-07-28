@@ -21,7 +21,7 @@ module.exports = {
                 '@babel/preset-react',
                 {
                   runtime: 'automatic', // 新增
-                  importSource: 'inula', // 新增
+                  importSource: 'inulajs', // 新增
                 },
               ],
             ],

@@ -13,7 +13,7 @@
     "@babel/plugin-proposal-export-default-from": "^7.18.6",
     "@babel/plugin-transform-react-jsx": "^7.21.0",
     "@babel/runtime": "7.6.2",
-    "inula": "0.0.52",
+    "inulajs": "^0.0.3",
     "antd": "^4.0.0",
     "axios": "^0.21.0",
     "classnames": "^2.2.6",

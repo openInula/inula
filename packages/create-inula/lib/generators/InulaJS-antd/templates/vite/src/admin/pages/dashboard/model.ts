@@ -2,7 +2,7 @@ import { parse } from 'qs';
 import api from '../../services';
 
 import { pathToRegexp } from 'path-to-regexp';
-import { createStore } from 'inula';
+import { createStore } from 'inulajs';
 
 const { queryDashboard, queryWeather } = api;
 const avatar = '//cdn.antd-admin.zuiidea.com/bc442cf0cc6f7940dcc567e465048d1a8d634493198c4-sPx5BR_fw236.jpeg';

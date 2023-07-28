@@ -1,4 +1,4 @@
-import inula from 'inula';
+import inula from 'inulajs';
 import './index.css';
 
 function App() {
