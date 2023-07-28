@@ -1,4 +1,4 @@
-import inula from 'inula';
+import inula from 'inulajs';
 import './styles.css';
 
 class App extends inula.Component {

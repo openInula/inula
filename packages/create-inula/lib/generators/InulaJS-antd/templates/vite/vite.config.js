@@ -11,9 +11,9 @@ let alias = {
   config: path.resolve('src/admin/utils/config'),
   themes: path.resolve('src/admin/themes'),
   utils: path.resolve('src/admin/utils'),
-  react: 'inula', // 新增
-  'react-dom': 'inula', // 新增
-  'react/jsx-dev-runtime': 'inula/jsx-dev-runtime',
+  react: 'inulajs', // 新增
+  'react-dom': 'inulajs', // 新增
+  'react/jsx-dev-runtime': 'inulajs/jsx-dev-runtime',
 };
 
 // https://vitejs.dev/config/

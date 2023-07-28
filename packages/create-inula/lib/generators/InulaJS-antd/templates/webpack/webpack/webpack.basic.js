@@ -14,9 +14,8 @@ module.exports = {
       themes: path.resolve('src/themes'),
       utils: path.resolve('src/utils'),
 
-      react: 'inula', // 新增
-      'react-dom': 'inula', // 新增
-      inula: 'inula', // 新增
+      react: 'inulajs', // 新增
+      'react-dom': 'inulajs', // 新增
     },
   },
   rules: [
