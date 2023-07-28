@@ -1,0 +1,11 @@
+export declare const TYPE_COMMON_ELEMENT = 1;
+export declare const TYPE_PORTAL = 2;
+export declare const TYPE_FRAGMENT = 3;
+export declare const TYPE_STRICT_MODE = 4;
+export declare const TYPE_PROVIDER = 5;
+export declare const TYPE_CONTEXT = 6;
+export declare const TYPE_FORWARD_REF = 7;
+export declare const TYPE_SUSPENSE = 8;
+export declare const TYPE_PROFILER = 9;
+export declare const TYPE_MEMO = 10;
+export declare const TYPE_LAZY = 11;

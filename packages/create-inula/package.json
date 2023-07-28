@@ -1,0 +1,21 @@
+{
+  "name": "create-inula",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "create-inula": "bin/cli.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "4.0.0",
+    "glob": "^10.3.3",
+    "yargs-parser": "^21.1.1",
+    "yeoman-environment": "^3.15.0",
+    "yeoman-generator": "^5.8.0"
+  },
+  "devDependencies": {
+    "lodash": "^4.17.21"
+  }
+}

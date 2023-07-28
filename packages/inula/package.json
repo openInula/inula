@@ -1,0 +1,27 @@
+{
+  "name": "inulajs",
+  "description": "InulaJS is a JavaScript framework library.",
+  "keywords": [
+    "inula"
+  ],
+  "version": "0.0.52",
+  "homepage": "",
+  "bugs": "",
+  "main": "index.js",
+  "repository": {},
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "build": "rollup --config ./scripts/rollup/rollup.config.js",
+    "build-types": "tsc -p ./src/index.ts --emitDeclarationOnly --declaration --declarationDir ./build/inula/@types --skipLibCheck || echo \"WARNING: TSC exited with status $?\"",
+    "build:inula3rdLib-dev": "npm run build & node ./scripts/gen3rdLib.js build:inula3rdLib-dev",
+    "build:watch": "rollup --watch --config ./scripts/rollup/rollup.config.js",
+    "debug-test": "yarn test --debug",
+    "lint": "eslint . --ext .ts --fix",
+    "prettier": "prettier -w libs/**/*.ts",
+    "test": "jest --config=jest.config.js",
+    "watch-test": "yarn test --watch --dev"
+  },
+  "types": "./build/inula/@types/index.d.ts"
+}

@@ -3,19 +3,9 @@
   "description": "InulaJS is a JavaScript framework library.",
   "version": "0.0.52",
   "private": true,
-  "workspaces": [
-    "libs/*"
-  ],
   "scripts": {
     "lint": "eslint . --ext .ts --fix",
-    "prettier": "prettier -w libs/**/*.ts",
-    "build": "rollup --config ./scripts/rollup/rollup.config.js",
-    "build:watch": "rollup --watch --config ./scripts/rollup/rollup.config.js",
-    "build:inula3rdLib-dev": "npm run build & node ./scripts/gen3rdLib.js build:inula3rdLib-dev",
-    "build-types": "tsc -p libs/inula/index.ts --emitDeclarationOnly --declaration --declarationDir ./build/inula/@types --skipLibCheck || echo \\\"WARNING: TSC exited with status $?\\\"",
-    "debug-test": "yarn test --debug",
-    "test": "jest --config=jest.config.js",
-    "watch-test": "yarn test --watch --dev"
+    "prettier": "prettier -w libs/**/*.ts"
   },
   "devDependencies": {
     "@babel/core": "7.16.7",
@@ -69,6 +59,5 @@
   "engines": {
     "node": ">=10.x",
     "npm": ">=7.x"
-  },
-  "dependencies": {}
+  }
 }

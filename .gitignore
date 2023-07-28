@@ -1,7 +1,5 @@
-node_modules
-build/
+/node_modules
 .idea
 .vscode
 package-lock.json
-libs/**/dist
-scripts/*.ejs
+pnpm-lock.yaml
