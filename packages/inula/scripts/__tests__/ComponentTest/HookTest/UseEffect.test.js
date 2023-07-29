@@ -18,14 +18,7 @@ import { getLogUtils } from '../../jest/testUtils';
 import { Text } from '../../jest/commonComponents';
 
 describe('useEffect Hook Test', () => {
-  const {
-    useEffect,
-    useLayoutEffect,
-    useState,
-    memo,
-    forwardRef,
-    act,
-  } = Inula;
+  const { useEffect, useLayoutEffect, useState, memo, forwardRef, act } = Inula;
 
   const LogUtils = getLogUtils();
   it('简单使用useEffect', () => {
@@ -36,7 +29,9 @@ describe('useEffect Hook Test', () => {
       });
       return (
         <>
-          <p style={{ display: 'block' }} id="p">{num}</p>
+          <p style={{ display: 'block' }} id="p">
+            {num}
+          </p>
           <button onClick={() => setNum(num + 1)} />
         </>
       );
@@ -88,10 +83,7 @@ describe('useEffect Hook Test', () => {
     const na = <NewApp />;
     // <App />必须设置key值，否则在diff的时候na会被视为不同组件
     Inula.render([<App key="app" />, na], container);
-    expect(LogUtils.getAndClear()).toEqual([
-      'App',
-      'NewApp'
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['App', 'NewApp']);
     expect(container.textContent).toBe('AppNewApp');
     expect(LogUtils.getAndClear()).toEqual([]);
     // 在执行新的render前，会执行完上一次render的useEffect，所以LogUtils会加入'NewApp effect'。
@@ -161,7 +153,7 @@ describe('useEffect Hook Test', () => {
   });
 
   it('执行新render的useEffect前会先执行旧render的useEffect', () => {
-    const App = (props) => {
+    const App = props => {
       useEffect(() => {
         LogUtils.log(`First effect [${props.num}]`);
       });
@@ -175,19 +167,14 @@ describe('useEffect Hook Test', () => {
     expect(LogUtils.getAndClear()).toEqual(['First effect [0]']);
     act(() => {
       Inula.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
-
     });
     // 此时异步执行，act执行完后会执行新render的useEffect
-    expect(LogUtils.getAndClear()).toEqual([
-      'num: 1',
-      'callback effect',
-      'First effect [1]'
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['num: 1', 'callback effect', 'First effect [1]']);
     expect(container.textContent).toEqual('num: 1');
   });
 
   it('混合使用useEffect', () => {
-    const App = (props) => {
+    const App = props => {
       useEffect(() => {
         LogUtils.log(`First effect [${props.num}]`);
       });
@@ -207,17 +194,12 @@ describe('useEffect Hook Test', () => {
     });
     // 第二次render时异步执行，act保证所有效果都已更新，所以先常规记录日志
     // 然后记录useEffect的日志
-    expect(LogUtils.getAndClear()).toEqual([
-      'num: 1',
-      'callback effect',
-      'First effect [1]',
-      'Second effect [1]'
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['num: 1', 'callback effect', 'First effect [1]', 'Second effect [1]']);
     expect(container.textContent).toEqual('num: 1');
   });
 
   it('创建，销毁useEffect', () => {
-    const App = (props) => {
+    const App = props => {
       useEffect(() => {
         LogUtils.log(`num effect [${props.num}]`);
         return () => {
@@ -251,13 +233,10 @@ describe('useEffect Hook Test', () => {
         'num: 0,word: App',
         'num Layouteffect [0]',
         'word Layouteffect [App]',
-        'callback effect'
+        'callback effect',
       ]);
     });
-    expect(LogUtils.getAndClear()).toEqual([
-      'num effect [0]',
-      'word effect [App]',
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['num effect [0]', 'word effect [App]']);
 
     act(() => {
       // 此时word改变，num不变
@@ -288,7 +267,7 @@ describe('useEffect Hook Test', () => {
   });
 
   it('销毁不含依赖数组的useEffect', () => {
-    const App = (props) => {
+    const App = props => {
       useEffect(() => {
         LogUtils.log(`num effect [${props.num}]`);
         return () => {
@@ -300,15 +279,10 @@ describe('useEffect Hook Test', () => {
 
     act(() => {
       Inula.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
-      expect(LogUtils.getAndClear()).toEqual([
-        'num: 0',
-        'callback effect'
-      ]);
+      expect(LogUtils.getAndClear()).toEqual(['num: 0', 'callback effect']);
       expect(container.textContent).toEqual('num: 0');
     });
-    expect(LogUtils.getAndClear()).toEqual([
-      'num effect [0]',
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['num effect [0]']);
 
     act(() => {
       Inula.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
@@ -326,16 +300,13 @@ describe('useEffect Hook Test', () => {
     act(() => {
       Inula.render(null, container, () => LogUtils.log('callback effect'));
     });
-    expect(LogUtils.getAndClear()).toEqual([
-      'callback effect',
-      'num effect destroy'
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['callback effect', 'num effect destroy']);
     expect(container.textContent).toEqual('');
     expect(LogUtils.getAndClear()).toEqual([]);
   });
 
   it('销毁依赖空数组的useEffect', () => {
-    const App = (props) => {
+    const App = props => {
       useEffect(() => {
         LogUtils.log(`num effect [${props.num}]`);
         return () => {
@@ -347,22 +318,17 @@ describe('useEffect Hook Test', () => {
 
     act(() => {
       Inula.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
-      expect(LogUtils.getAndClear()).toEqual([
-        'num: 0',
-        'callback effect'
-      ]);
+      expect(LogUtils.getAndClear()).toEqual(['num: 0', 'callback effect']);
       expect(container.textContent).toEqual('num: 0');
     });
-    expect(LogUtils.getAndClear()).toEqual([
-      'num effect [0]',
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['num effect [0]']);
 
     act(() => {
       Inula.render(<App num={1} />, container, () => LogUtils.log('callback effect'));
     });
     expect(LogUtils.getAndClear()).toEqual([
       'num: 1',
-      'callback effect'
+      'callback effect',
       // 依赖空数组，没有执行useEffect
     ]);
     expect(container.textContent).toEqual('num: 1');
@@ -371,10 +337,7 @@ describe('useEffect Hook Test', () => {
     act(() => {
       Inula.render(null, container, () => LogUtils.log('callback effect'));
     });
-    expect(LogUtils.getAndClear()).toEqual([
-      'callback effect',
-      'num effect destroy'
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['callback effect', 'num effect destroy']);
     expect(container.textContent).toEqual('');
     expect(LogUtils.getAndClear()).toEqual([]);
   });
@@ -398,23 +361,14 @@ describe('useEffect Hook Test', () => {
 
     act(() => {
       Inula.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
-      expect(LogUtils.getAndClear()).toEqual([
-        'num: 0',
-        'num Layouteffect [0]',
-        'callback effect'
-      ]);
+      expect(LogUtils.getAndClear()).toEqual(['num: 0', 'num Layouteffect [0]', 'callback effect']);
     });
-    expect(LogUtils.getAndClear()).toEqual([
-      'num effect [0]',
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['num effect [0]']);
 
     act(() => {
       setNum();
     });
-    expect(LogUtils.getAndClear()).toEqual([
-      'num: 1',
-      'num effect [1]'
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['num: 1', 'num effect [1]']);
     expect(LogUtils.getAndClear()).toEqual([]);
   });
 
@@ -438,10 +392,7 @@ describe('useEffect Hook Test', () => {
     });
 
     // 虽然执行了setNum(2)，但执行到setNum(1)，所以最终num为1
-    expect(LogUtils.getAndClear()).toEqual([
-      'App effect',
-      'Num: 1',
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['App effect', 'Num: 1']);
 
     expect(container.textContent).toEqual('Num: 1');
   });
@@ -461,10 +412,7 @@ describe('useEffect Hook Test', () => {
     });
     act(() => {
       Inula.render(<App />, container, () => LogUtils.log('callback effect'));
-      expect(LogUtils.getAndClear()).toEqual([
-        0,
-        'callback effect'
-      ]);
+      expect(LogUtils.getAndClear()).toEqual([0, 'callback effect']);
       expect(container.textContent).toEqual('0');
     });
     expect(LogUtils.getAndClear()).toEqual(['num effect [0]']);
@@ -481,28 +429,21 @@ describe('useEffect Hook Test', () => {
     act(() => {
       setNum(1);
     });
-    expect(LogUtils.getAndClear()).toEqual([
-      1,
-      'num effect destroy 0',
-      'num effect [1]'
-    ]);
+    expect(LogUtils.getAndClear()).toEqual([1, 'num effect destroy 0', 'num effect [1]']);
     expect(container.textContent).toEqual('1');
     expect(LogUtils.getAndClear()).toEqual([]);
 
     act(() => {
       Inula.render(null, container, () => LogUtils.log('callback effect'));
     });
-    expect(LogUtils.getAndClear()).toEqual([
-      'callback effect',
-      'num effect destroy 1'
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['callback effect', 'num effect destroy 1']);
     expect(container.textContent).toEqual('');
     expect(LogUtils.getAndClear()).toEqual([]);
   });
 
   it('useEffect与memo一起使用(2', () => {
     const compare = (prevProps, nextProps) => prevProps.num === nextProps.num;
-    const App = memo((props) => {
+    const App = memo(props => {
       useEffect(() => {
         LogUtils.log(`num effect [${props.num}]`);
         return () => {
@@ -513,10 +454,7 @@ describe('useEffect Hook Test', () => {
     }, compare);
     act(() => {
       Inula.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
-      expect(LogUtils.getAndClear()).toEqual([
-        0,
-        'callback effect'
-      ]);
+      expect(LogUtils.getAndClear()).toEqual([0, 'callback effect']);
       expect(container.textContent).toEqual('0');
     });
     expect(LogUtils.getAndClear()).toEqual(['num effect [0]']);
@@ -538,7 +476,7 @@ describe('useEffect Hook Test', () => {
       'callback effect',
       // 执行异步，先清除旧的，再执行新的
       'num effect destroy 0',
-      'num effect [1]'
+      'num effect [1]',
     ]);
     expect(container.textContent).toEqual('1');
     expect(LogUtils.getAndClear()).toEqual([]);
@@ -552,7 +490,7 @@ describe('useEffect Hook Test', () => {
   });
 
   it('useEffect处理错误', () => {
-    const App = (props) => {
+    const App = props => {
       useEffect(() => {
         LogUtils.log('throw Error');
         throw new Error('mistake');
@@ -565,9 +503,7 @@ describe('useEffect Hook Test', () => {
       return <Text text={'Number: ' + props.num} />;
     };
     act(() => {
-      Inula.render(<App num={0} />, container, () =>
-        LogUtils.log('App callback effect'),
-      );
+      Inula.render(<App num={0} />, container, () => LogUtils.log('App callback effect'));
       expect(LogUtils.getAndClear()).toEqual(['Number: 0', 'App callback effect']);
       expect(container.textContent).toEqual('Number: 0');
     });
@@ -575,9 +511,7 @@ describe('useEffect Hook Test', () => {
     expect(LogUtils.getAndClear()).toEqual(['throw Error']);
 
     act(() => {
-      Inula.render(null, container, () =>
-        LogUtils.log('App callback effect'),
-      );
+      Inula.render(null, container, () => LogUtils.log('App callback effect'));
     });
     expect(LogUtils.getAndClear()).toEqual([
       'App callback effect',
@@ -588,7 +522,7 @@ describe('useEffect Hook Test', () => {
   });
 
   it('卸载useEffect', () => {
-    const App = (props) => {
+    const App = props => {
       useEffect(() => {
         LogUtils.log(`num effect [${props.num}]`);
         return () => {
@@ -702,11 +636,7 @@ describe('useEffect Hook Test', () => {
 
     act(() => {
       Inula.render(<App />, container, () => LogUtils.log('num effect'));
-      expect(LogUtils.getAndClear()).toEqual([
-        'App',
-        'AppChild',
-        'num effect'
-      ]);
+      expect(LogUtils.getAndClear()).toEqual(['App', 'AppChild', 'num effect']);
     });
     expect(LogUtils.getAndClear()).toEqual(['Child effect', 'App effect']);
 
@@ -724,7 +654,7 @@ describe('useEffect Hook Test', () => {
       return <AppChild num={num} setNum={setNum} />;
     };
 
-    let AppChild = (props) => {
+    let AppChild = props => {
       LogUtils.log('AppChild');
       useEffect(() => {
         LogUtils.log('Child effect');
@@ -738,11 +668,7 @@ describe('useEffect Hook Test', () => {
 
     act(() => {
       Inula.render(<App />, container, () => LogUtils.log('num effect'));
-      expect(LogUtils.getAndClear()).toEqual([
-        'App',
-        'AppChild',
-        'num effect'
-      ]);
+      expect(LogUtils.getAndClear()).toEqual(['App', 'AppChild', 'num effect']);
     });
     expect(LogUtils.getAndClear()).toEqual(['Child effect']);
 

@@ -20,7 +20,7 @@ import { RAW_VALUE } from '../../Constants';
 export function createWeakSetProxy<T extends object>(
   rawObj: T,
   listener: { current: (...args) => any },
-  hookObserver = true,
+  hookObserver = true
 ): ProxyHandler<T> {
   let listeners: ((mutation) => {})[] = [];
   let proxies = new WeakMap();
@@ -72,7 +72,9 @@ export function createWeakSetProxy<T extends object>(
   // Set的add方法
   function add(rawObj: { add: (any) => void; has: (any) => boolean }, value: any): Object {
     if (!rawObj.has(proxies.get(value))) {
-      const proxy = createProxy(value, {
+      const proxy = createProxy(
+        value,
+        {
           current: change => {
             if (!change.parents) change.parents = [];
             change.parents.push(rawObj);

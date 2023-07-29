@@ -17,11 +17,11 @@
  * 提供：vNode的“遍历”，“查找”，“判断”的相关工具方法
  */
 
-import type {VNode} from '../Types';
+import type { VNode } from '../Types';
 
-import {DomComponent, DomPortal, DomText, TreeRoot} from './VNodeTags';
-import {getNearestVNode} from '../../dom/DOMInternalKeys';
-import {Addition, InitFlag} from './VNodeFlags';
+import { DomComponent, DomPortal, DomText, TreeRoot } from './VNodeTags';
+import { getNearestVNode } from '../../dom/DOMInternalKeys';
+import { Addition, InitFlag } from './VNodeFlags';
 import { BELONG_CLASS_VNODE_KEY } from './VNode';
 
 export function travelChildren(
@@ -98,7 +98,7 @@ export function clearVNode(vNode: VNode) {
   vNode.isCleared = true;
 
   // 孩子节点的parent也置空
-  travelChildren(vNode.child, (node) => {
+  travelChildren(vNode.child, node => {
     node.parent = null;
   });
   vNode.child = null;

@@ -18,16 +18,10 @@ import { Text } from '../../jest/commonComponents';
 import { getLogUtils } from '../../jest/testUtils';
 
 describe('useImperativeHandle Hook Test', () => {
-  const {
-    useState,
-    useImperativeHandle,
-    forwardRef,
-    act,
-  } = Inula;
+  const { useState, useImperativeHandle, forwardRef, act } = Inula;
   const { unmountComponentAtNode } = Inula;
   const LogUtils = getLogUtils();
   it('测试useImperativeHandle', () => {
-
     let App = (props, ref) => {
       const [num, setNum] = useState(0);
       useImperativeHandle(ref, () => ({ num, setNum }), []);

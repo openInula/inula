@@ -36,7 +36,7 @@ const noUnitCSS = [
 const length = noUnitCSS.length;
 for (let i = 0; i < length; i++) {
   const cssKey = noUnitCSS[i];
-  const attributeKey =  cssKey.charAt(0).toUpperCase() + cssKey.slice(1);
+  const attributeKey = cssKey.charAt(0).toUpperCase() + cssKey.slice(1);
 
   // css 兼容性前缀 webkit: chrome, mo: IE或者Edge, Moz: 火狐
   noUnitCSS.push('Webkit' + attributeKey);

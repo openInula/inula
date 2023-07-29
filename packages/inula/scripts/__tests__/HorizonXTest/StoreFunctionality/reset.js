@@ -14,16 +14,16 @@
  */
 
 import * as Inula from '../../../../libs/inula/index';
-import {createStore} from '../../../../libs/inula/src/inulax/store/StoreHandler';
-import {triggerClickEvent} from '../../jest/commonComponents';
+import { createStore } from '../../../../libs/inula/src/inulax/store/StoreHandler';
+import { triggerClickEvent } from '../../jest/commonComponents';
 
-const {unmountComponentAtNode} = Inula;
+const { unmountComponentAtNode } = Inula;
 
 describe('Reset', () => {
   it('RESET NOT IMPLEMENTED', async () => {
     // console.log('reset functionality is not yet implemented')
     expect(true).toBe(true);
-  })
+  });
   return;
 
   let container = null;
@@ -34,14 +34,14 @@ describe('Reset', () => {
 
   const useCounter = createStore({
     state: {
-      counter: 0
+      counter: 0,
     },
     actions: {
       increment: function (state) {
         state.counter++;
-      }
+      },
     },
-    computed: {}
+    computed: {},
   });
 
   beforeEach(() => {
@@ -59,17 +59,25 @@ describe('Reset', () => {
     function App() {
       const store = useCounter();
 
-      return <div>
-        <p id={RESULT_ID}>{store.$s.counter}</p>
-        <button onClick={store.increment} id={BUTTON_ID}>add</button>
-        <button onClick={() => {
-          store.$reset();
-        }} id={RESET_ID}>reset
-        </button>
-      </div>
+      return (
+        <div>
+          <p id={RESULT_ID}>{store.$s.counter}</p>
+          <button onClick={store.increment} id={BUTTON_ID}>
+            add
+          </button>
+          <button
+            onClick={() => {
+              store.$reset();
+            }}
+            id={RESET_ID}
+          >
+            reset
+          </button>
+        </div>
+      );
     }
 
-    Inula.render(<App/>, container);
+    Inula.render(<App />, container);
 
     Inula.act(() => {
       triggerClickEvent(container, BUTTON_ID);

@@ -26,7 +26,7 @@ import { isNativeElement, validateProps } from './validators/ValidateProps';
 import { watchValueChange } from './valueHandler/ValueChangeHandler';
 import { DomComponent, DomText } from '../renderer/vnode/VNodeTags';
 import { updateCommonProp } from './DOMPropertiesHandler/UpdateCommonProp';
-import {getCurrentRoot} from '../renderer/RootStack';
+import { getCurrentRoot } from '../renderer/RootStack';
 
 export type Props = Record<string, any> & {
   autoFocus?: boolean;
@@ -160,12 +160,12 @@ export function submitDomUpdate(tag: string, vNode: VNode) {
         // 应用diff更新Properties.
         // 当一个选中的radio改变名称,浏览器使另一个radio的复选框为false.
         if (
-          type === 'input'
-          && newProps.type === 'radio'
-          && newProps.name !== null
-          && newProps.name !== undefined
-          && newProps.checked !== null
-          && newProps.checked !== undefined
+          type === 'input' &&
+          newProps.type === 'radio' &&
+          newProps.name !== null &&
+          newProps.name !== undefined &&
+          newProps.checked !== null &&
+          newProps.checked !== undefined
         ) {
           updateCommonProp(element, 'checked', newProps.checked, true);
         }

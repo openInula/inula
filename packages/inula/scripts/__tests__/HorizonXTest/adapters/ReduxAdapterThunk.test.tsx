@@ -15,7 +15,7 @@
 
 import * as Inula from '../../../../libs/inula/index';
 import { createStore, applyMiddleware, thunk } from '../../../../libs/inula/src/inulax/adapters/redux';
-import {describe, it, expect} from '@jest/globals';
+import { describe, it, expect } from '@jest/globals';
 
 describe('Redux thunk', () => {
   it('should use apply thunk middleware', async () => {
@@ -26,21 +26,27 @@ describe('Redux thunk', () => {
         const state = getState();
 
         if (state.todos.length < MAX_TODOS) {
-          dispatch({type: 'ADD_TODO', text: todoText});
+          dispatch({ type: 'ADD_TODO', text: todoText });
         }
-      }
+      };
     }
 
-    const todoStore = createStore((state = {todos: []}, action) => {
-      if (action.type === 'ADD_TODO') {
-        return {todos: state.todos?.concat(action.text)};
-      }
-      return state;
-    }, null, applyMiddleware(thunk));
+    const todoStore = createStore(
+      (state = { todos: [] }, action) => {
+        if (action.type === 'ADD_TODO') {
+          return { todos: state.todos?.concat(action.text) };
+        }
+        return state;
+      },
+      null,
+      applyMiddleware(thunk)
+    );
 
     for (let i = 0; i < 10; i++) {
       //TODO: resolve thunk problems
-      (todoStore.dispatch as unknown as (delayedAction:(dispatch,getState)=>void)=>void)(addTodosIfAllowed('todo no.' + i));
+      (todoStore.dispatch as unknown as (delayedAction: (dispatch, getState) => void) => void)(
+        addTodosIfAllowed('todo no.' + i)
+      );
     }
 
     expect(todoStore.getState().todos.length).toBe(5);

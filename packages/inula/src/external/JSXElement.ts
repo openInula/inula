@@ -41,7 +41,7 @@ export function JSXElement(type, key, ref, vNode, props, source: Source | null) 
     [BELONG_CLASS_VNODE_KEY]: vNode,
   };
   // 兼容IE11不支持Symbol
-  if (typeof BELONG_CLASS_VNODE_KEY  === 'string') {
+  if (typeof BELONG_CLASS_VNODE_KEY === 'string') {
     Object.defineProperty(ele, BELONG_CLASS_VNODE_KEY, {
       configurable: false,
       enumerable: false,
@@ -74,13 +74,12 @@ const keyArray = ['key', 'ref', '__source', '__self'];
 
 function buildElement(isClone, type, setting, children) {
   // setting中的值优先级最高，clone情况下从 type 中取值，创建情况下直接赋值为 null
-  const key = (setting && setting.key !== undefined) ? String(setting.key) : (isClone ? type.key : null);
-  const ref = (setting && setting.ref !== undefined) ? setting.ref : (isClone ? type.ref : null);
+  const key = setting && setting.key !== undefined ? String(setting.key) : isClone ? type.key : null;
+  const ref = setting && setting.ref !== undefined ? setting.ref : isClone ? type.ref : null;
   const props = isClone ? { ...type.props } : {};
   let vNode = isClone ? type[BELONG_CLASS_VNODE_KEY] : getProcessingClassVNode();
 
   if (setting !== null && setting !== undefined) {
-
     for (const k in setting) {
       if (!keyArray.includes(k)) {
         props[k] = setting[k];

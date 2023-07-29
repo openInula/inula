@@ -102,5 +102,5 @@ export const FlagUtils = {
 
   markClear(node: VNode) {
     node.flags |= Clear;
-  }
-}
+  },
+};

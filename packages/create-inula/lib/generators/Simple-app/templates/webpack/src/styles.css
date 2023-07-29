@@ -2,7 +2,8 @@
   box-sizing: border-box;
 }
 
-body, html {
+body,
+html {
   margin: 0;
   padding: 0;
   font-family: 'Montserrat', sans-serif;
@@ -44,7 +45,8 @@ body, html {
   backdrop-filter: blur(4px);
 }
 
-.card h2, .card p {
+.card h2,
+.card p {
   color: #fff;
 }
 

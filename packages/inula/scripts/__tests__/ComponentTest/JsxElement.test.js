@@ -17,7 +17,6 @@ import * as Inula from '../../../libs/inula/index';
 
 describe('JSX Element test', () => {
   it('symbol attribute prevent cloneDeep unlimited loop', function () {
-
     function cloneDeep(obj) {
       const result = {};
       Object.keys(obj).forEach(key => {
@@ -26,16 +25,12 @@ describe('JSX Element test', () => {
         } else {
           result[key] = obj[key];
         }
-      })
+      });
       return result;
     }
     class Demo extends Inula.Component {
       render() {
-        return (
-          <div>
-            hello
-          </div>
-        );
+        return <div>hello</div>;
       }
     }
 
@@ -45,4 +40,3 @@ describe('JSX Element test', () => {
     expect(Object.getOwnPropertySymbols(copy).length).toEqual(0);
   });
 });
-

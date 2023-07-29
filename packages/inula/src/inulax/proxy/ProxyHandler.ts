@@ -31,17 +31,18 @@ export function getObserver(rawObj: any): Observer {
   return rawObj[OBSERVER_KEY];
 }
 
-const setObserverKey = typeof OBSERVER_KEY === 'string'
-  ? (rawObj, observer) => {
-    Object.defineProperty(rawObj, OBSERVER_KEY, {
-      configurable: false,
-      enumerable: false,
-      value: observer,
-    });
-  }
-  : (rawObj, observer) => {
-    rawObj[OBSERVER_KEY] = observer;
-  };
+const setObserverKey =
+  typeof OBSERVER_KEY === 'string'
+    ? (rawObj, observer) => {
+        Object.defineProperty(rawObj, OBSERVER_KEY, {
+          configurable: false,
+          enumerable: false,
+          value: observer,
+        });
+      }
+    : (rawObj, observer) => {
+        rawObj[OBSERVER_KEY] = observer;
+      };
 
 export function createProxy(rawObj: any, listener: { current: (...args) => any }, isHookObserver = true): any {
   // 不是对象（是原始数据类型）不用代理
@@ -72,12 +73,15 @@ export function createProxy(rawObj: any, listener: { current: (...args) => any }
   // 创建Proxy
   let proxyObj;
   if (!isHookObserver) {
-    proxyObj = createObjectProxy(rawObj, {
+    proxyObj = createObjectProxy(
+      rawObj,
+      {
         current: change => {
           listener.current(change);
         },
       },
-      true);
+      true
+    );
   } else if (isArray(rawObj)) {
     // 数组
     proxyObj = createArrayProxy(rawObj as [], {
@@ -87,20 +91,26 @@ export function createProxy(rawObj: any, listener: { current: (...args) => any }
     });
   } else if (isCollection(rawObj)) {
     // 集合
-    proxyObj = createCollectionProxy(rawObj, {
+    proxyObj = createCollectionProxy(
+      rawObj,
+      {
         current: change => {
           listener.current(change);
         },
       },
-      true);
+      true
+    );
   } else {
     // 原生对象 或 函数
-    proxyObj = createObjectProxy(rawObj, {
+    proxyObj = createObjectProxy(
+      rawObj,
+      {
         current: change => {
           listener.current(change);
         },
       },
-      false);
+      false
+    );
   }
 
   proxyMap.set(rawObj, proxyObj);
@@ -110,5 +120,5 @@ export function createProxy(rawObj: any, listener: { current: (...args) => any }
 }
 
 export function toRaw<T>(observed: T): T {
-  return observed && (observed)[RAW_VALUE];
+  return observed && observed[RAW_VALUE];
 }

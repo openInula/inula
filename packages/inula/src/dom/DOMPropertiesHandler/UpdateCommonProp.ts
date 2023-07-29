@@ -85,7 +85,7 @@ const svgHumpAttr = new Set();
   'xChannelSelector',
   'yChannelSelector',
   'zoomAndPan',
-].forEach((name) => svgHumpAttr.add(name));
+].forEach(name => svgHumpAttr.add(name));
 
 // 驼峰 变 “-”
 function convertToLowerCase(str) {

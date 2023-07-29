@@ -30,7 +30,9 @@ export function createSetProxy<T extends object>(
   // Set的add方法
   function add(rawObj: { add: (any) => void; has: (any) => boolean; values: () => any[] }, value: any): Object {
     if (!rawObj.has(proxies.get(value))) {
-      const proxy = createProxy(value, {
+      const proxy = createProxy(
+        value,
+        {
           current: change => {
             if (!change.parents) change.parents = [];
             change.parents.push(rawObj);

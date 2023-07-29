@@ -15,18 +15,18 @@
 
 import * as Inula from '../../../../libs/inula/index';
 import * as LogUtils from '../../jest/logUtils';
-import {clearStore, createStore, useStore} from '../../../../libs/inula/src/inulax/store/StoreHandler';
-import {Text, triggerClickEvent} from '../../jest/commonComponents';
-import {getObserver} from '../../../../libs/inula/src/inulax/proxy/ProxyHandler';
-import {describe, it, beforeEach, afterEach, expect} from '@jest/globals';
+import { clearStore, createStore, useStore } from '../../../../libs/inula/src/inulax/store/StoreHandler';
+import { Text, triggerClickEvent } from '../../jest/commonComponents';
+import { getObserver } from '../../../../libs/inula/src/inulax/proxy/ProxyHandler';
+import { describe, it, beforeEach, afterEach, expect } from '@jest/globals';
 
 describe('测试VNode清除时，对引用清除', () => {
-  const {unmountComponentAtNode} = Inula;
-  let container:HTMLElement|null = null;
+  const { unmountComponentAtNode } = Inula;
+  let container: HTMLElement | null = null;
   let globalState = {
     name: 'bing dun dun',
     isWin: true,
-    isShow: true
+    isShow: true,
   };
 
   beforeEach(() => {
@@ -41,9 +41,9 @@ describe('测试VNode清除时，对引用清除', () => {
         setWin: (state, val) => {
           state.isWin = val;
         },
-        hide: (state) => {
+        hide: state => {
           state.isShow = false;
-        }
+        },
       },
     });
   });
@@ -63,12 +63,14 @@ describe('测试VNode清除时，对引用清除', () => {
       userStore = useStore('user');
 
       render() {
-        return <div>
-          <button id={'hideBtn'} onClick={this.userStore?.hide}>
-            toggle
-          </button>
-          {this.userStore?.isShow && <Parent/>}
-        </div>;
+        return (
+          <div>
+            <button id={'hideBtn'} onClick={this.userStore?.hide}>
+              toggle
+            </button>
+            {this.userStore?.isShow && <Parent />}
+          </div>
+        );
       }
     }
 
@@ -77,15 +79,17 @@ describe('测试VNode清除时，对引用清除', () => {
 
       setWin = () => {
         this.userStore?.setWin(!this.userStore.isWin);
-      }
+      };
 
       render() {
-        return <div>
-          <button id={'toggleBtn'} onClick={this.setWin}>
-            toggle
-          </button>
-          {this.userStore?.isWin && <Child/>}
-        </div>;
+        return (
+          <div>
+            <button id={'toggleBtn'} onClick={this.setWin}>
+              toggle
+            </button>
+            {this.userStore?.isWin && <Child />}
+          </div>
+        );
       }
     }
 
@@ -93,14 +97,16 @@ describe('测试VNode清除时，对引用清除', () => {
       userStore = useStore('user');
 
       render() {
-        return <div>
-          <Text id={'name'} text={`name: ${this.userStore?.name}`}/>
-          <Text id={'isWin'} text={`isWin: ${this.userStore?.isWin}`}/>
-        </div>;
+        return (
+          <div>
+            <Text id={'name'} text={`name: ${this.userStore?.name}`} />
+            <Text id={'isWin'} text={`isWin: ${this.userStore?.isWin}`} />
+          </div>
+        );
       }
     }
 
-    Inula.render(<App/>, container);
+    Inula.render(<App />, container);
 
     // Parent and Child hold the isWin key
     expect(getObserver(globalState).keyVNodes.get('isWin').size).toBe(2);

@@ -20,8 +20,8 @@ import fs from 'fs';
 import replace from '@rollup/plugin-replace';
 import copy from './copy-plugin';
 import execute from 'rollup-plugin-execute';
-import {terser} from 'rollup-plugin-terser';
-import {version as inulaVersion} from '../../package.json';
+import { terser } from 'rollup-plugin-terser';
+import { version as inulaVersion } from '../../package.json';
 
 const extensions = ['.js', '.ts'];
 
@@ -38,11 +38,11 @@ if (!fs.existsSync(outDir)) {
 
 const outputResolve = (...p) => path.resolve(outDir, ...p);
 
-const isDev = (mode) => {
+const isDev = mode => {
   return mode === 'development';
-}
+};
 
-const getBasicPlugins = (mode) => {
+const getBasicPlugins = mode => {
   return [
     nodeResolve({
       extensions,
@@ -64,8 +64,7 @@ const getBasicPlugins = (mode) => {
       preventAssignment: true,
     }),
   ];
-}
-
+};
 
 function getOutputName(mode) {
   return mode === 'production' ? `inula.${mode}.min.js` : `inula.${mode}.js`;
@@ -97,6 +96,10 @@ function genConfig(mode) {
           from: path.join(libDir, '/npm/index.js'),
           to: path.join(outDir, 'index.js'),
         },
+        {
+          from: path.join(libDir, 'package.json'),
+          to: path.join(outDir, 'package.json'),
+        },
       ]),
     ],
   };
@@ -109,9 +112,7 @@ function genJSXRuntimeConfig(mode) {
       file: outputResolve('jsx-runtime.js'),
       format: 'cjs',
     },
-    plugins: [
-      ...getBasicPlugins(mode)
-    ]
+    plugins: [...getBasicPlugins(mode)],
   };
 }
 
@@ -122,9 +123,7 @@ function genJSXDEVRuntimeConfig(mode) {
       file: outputResolve('jsx-dev-runtime.js'),
       format: 'cjs',
     },
-    plugins: [
-      ...getBasicPlugins(mode)
-    ]
+    plugins: [...getBasicPlugins(mode)],
   };
 }
 

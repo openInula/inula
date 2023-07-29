@@ -19,7 +19,7 @@ import { getLogUtils } from '../jest/testUtils';
 
 describe('SuspenseComponent Test', () => {
   const LogUtils = getLogUtils();
-  const mockImport = jest.fn(async (component) => {
+  const mockImport = jest.fn(async component => {
     return { default: component };
   });
 
@@ -70,5 +70,4 @@ describe('SuspenseComponent Test', () => {
     expect(LogUtils.getAndClear()).toEqual([5]);
     expect(container.querySelector('p').innerHTML).toBe('5');
   });
-
 });

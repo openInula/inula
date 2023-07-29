@@ -42,11 +42,11 @@ describe('ForwardRef', () => {
   });
 
   it('memo组件包裹的类组件', () => {
-   class Component extends Inula.Component {
-     render() {
-       return <button>123</button>;
-     }
-   }
+    class Component extends Inula.Component {
+      render() {
+        return <button>123</button>;
+      }
+    }
 
     const Wrapper = Inula.memo(Component);
 

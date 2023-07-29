@@ -14,7 +14,7 @@
  */
 
 import * as Inula from '../../../libs/inula/index';
-import {getLogUtils} from '../jest/testUtils';
+import { getLogUtils } from '../jest/testUtils';
 
 describe('Keyboard Event', () => {
   const LogUtils = getLogUtils();
@@ -31,69 +31,62 @@ describe('Keyboard Event', () => {
   it('keydown,keypress,keyup的keycode,charcode', () => {
     const node = Inula.render(
       <input
-        onKeyUp={(e) => {
+        onKeyUp={e => {
           LogUtils.log('onKeyUp: keycode: ' + e.keyCode + ',charcode: ' + e.charCode);
         }}
-        onKeyDown={(e) => {
+        onKeyDown={e => {
           LogUtils.log('onKeyDown: keycode: ' + e.keyCode + ',charcode: ' + e.charCode);
         }}
       />,
-      container,
+      container
     );
     node.dispatchEvent(getKeyboardEvent('keydown', 50, 'Digit2'));
     node.dispatchEvent(getKeyboardEvent('keyup', 50, 'Digit2'));
 
-    expect(LogUtils.getAndClear()).toEqual([
-      'onKeyDown: keycode: 50,charcode: 0',
-      'onKeyUp: keycode: 50,charcode: 0',
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['onKeyDown: keycode: 50,charcode: 0', 'onKeyUp: keycode: 50,charcode: 0']);
   });
 
   it('keypress的keycode,charcode', () => {
     const node = Inula.render(
       <input
-        onKeyPress={(e) => {
+        onKeyPress={e => {
           LogUtils.log('onKeyPress: keycode: ' + e.keyCode + ',charcode: ' + e.charCode);
         }}
       />,
-      container,
+      container
     );
     node.dispatchEvent(getKeyboardEvent('keypress', undefined, 'Digit2', 50));
 
-    expect(LogUtils.getAndClear()).toEqual([
-      'onKeyPress: keycode: 0,charcode: 50',
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['onKeyPress: keycode: 0,charcode: 50']);
   });
 
   it('当charcode为13,且不设置keycode的时候', () => {
     const node = Inula.render(
       <input
-        onKeyPress={(e) => {
+        onKeyPress={e => {
           LogUtils.log('onKeyPress: keycode: ' + e.keyCode + ',charcode: ' + e.charCode);
         }}
       />,
-      container,
+      container
     );
     node.dispatchEvent(getKeyboardEvent('keypress', undefined, undefined, 13));
-    expect(LogUtils.getAndClear()).toEqual([
-      'onKeyPress: keycode: 0,charcode: 13',
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['onKeyPress: keycode: 0,charcode: 13']);
   });
 
   it('keydown,keypress,keyup的code', () => {
     const node = Inula.render(
       <input
-        onKeyUp={(e) => {
+        onKeyUp={e => {
           LogUtils.log('onKeyUp: code: ' + e.code);
         }}
-        onKeyPress={(e) => {
+        onKeyPress={e => {
           LogUtils.log('onKeyPress: code: ' + e.code);
         }}
-        onKeyDown={(e) => {
+        onKeyDown={e => {
           LogUtils.log('onKeyDown: code: ' + e.code);
         }}
       />,
-      container,
+      container
     );
     node.dispatchEvent(getKeyboardEvent('keydown', undefined, 'Digit2'));
     node.dispatchEvent(getKeyboardEvent('keypress', undefined, 'Digit2', 50));
@@ -103,7 +96,7 @@ describe('Keyboard Event', () => {
         code: 'Digit2',
         bubbles: true,
         cancelable: true,
-      }),
+      })
     );
 
     expect(LogUtils.getAndClear()).toEqual([
@@ -125,21 +118,13 @@ describe('Keyboard Event', () => {
       LogUtils.log(e.type + ' handle');
     };
     const div = Inula.render(
-      <div
-        onKeyDown={keyboardProcessing}
-        onKeyUp={keyboardProcessing}
-        onKeyPress={keyboardProcessing}
-      />,
-      container,
+      <div onKeyDown={keyboardProcessing} onKeyUp={keyboardProcessing} onKeyPress={keyboardProcessing} />,
+      container
     );
     div.dispatchEvent(getKeyboardEvent('keydown', 40));
     div.dispatchEvent(getKeyboardEvent('keyup', 40));
     div.dispatchEvent(getKeyboardEvent('keypress', 40));
 
-    expect(LogUtils.getAndClear()).toEqual([
-      'keydown handle',
-      'keyup handle',
-      'keypress handle',
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['keydown handle', 'keyup handle', 'keypress handle']);
   });
 });

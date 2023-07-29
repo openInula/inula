@@ -1,6 +1,7 @@
 node_modules
 .idea
 .vscode
+build
 package-lock.json
 libs/**/dist
 scripts/*.ejs

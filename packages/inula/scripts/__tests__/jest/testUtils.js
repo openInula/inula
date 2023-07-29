@@ -31,7 +31,7 @@ class LogUtils {
     this.dataArray = null;
   }
 
-  log = (value) => {
+  log = value => {
     if (this.dataArray === null) {
       this.dataArray = [value];
     } else {
@@ -59,7 +59,7 @@ class LogUtils {
 
 let logger;
 export function getLogUtils() {
-  if(!logger) {
+  if (!logger) {
     logger = new LogUtils();
   }
   return logger;

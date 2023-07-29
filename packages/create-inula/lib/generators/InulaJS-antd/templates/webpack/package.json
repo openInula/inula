@@ -4,10 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:admin": "node ./webpack/devServer.js admin",
-    "build:admin": "webpack --config ./webpack/admin/webpack.prod.js",
-    "build-dev:admin": "webpack --config ./webpack/admin/webpack.dev.js",
-    "build:proxy": "node ./proxy.js"
+    "start": "node ./webpack/devServer.js admin",
+    "build": "webpack --config ./webpack/admin/webpack.prod.js"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "7.18.6",

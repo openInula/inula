@@ -32,13 +32,13 @@ describe('Self referencing', () => {
       val: 2,
     },
     actions: {
-      increaseVal: function(state) {
+      increaseVal: function (state) {
         state.val = state.val * 2 - 1;
       },
     },
     computed: {
       value: state => state.val,
-      double: function() {
+      double: function () {
         return this.value * 2;
       },
     },

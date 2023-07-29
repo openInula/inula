@@ -38,7 +38,10 @@ function UserModal({ item = {}, onOk, form, ...modalProps }) {
       <Form
         ref={formRef}
         name="control-ref"
-        initialValues={{ ...item, address: item.address && item.address.split(' ') }}
+        initialValues={{
+          ...item,
+          address: item.address && item.address.split(' '),
+        }}
         layout="horizontal"
       >
         <FormItem name="name" rules={[{ required: true }]} label={t`Name`} hasFeedback {...formItemLayout}>
@@ -62,7 +65,13 @@ function UserModal({ item = {}, onOk, form, ...modalProps }) {
         </FormItem>
         <FormItem
           name="phone"
-          rules={[{ required: true, pattern: /^1[34578]\d{9}$/, message: t`The input is not valid phone!` }]}
+          rules={[
+            {
+              required: true,
+              pattern: /^1[34578]\d{9}$/,
+              message: t`The input is not valid phone!`,
+            },
+          ]}
           label={t`Phone`}
           hasFeedback
           {...formItemLayout}

@@ -127,11 +127,14 @@ export const devtools = {
     if (!isPanelActive()) {
       return;
     }
-    window.postMessage({
-      type: 'INULA_DEV_TOOLS',
-      payload: makeStoreSnapshot({ type, data }),
-      from: 'dev tool hook',
-    }, '');
+    window.postMessage(
+      {
+        type: 'INULA_DEV_TOOLS',
+        payload: makeStoreSnapshot({ type, data }),
+        from: 'dev tool hook',
+      },
+      ''
+    );
   },
 };
 
@@ -171,11 +174,14 @@ window.addEventListener('message', (messageEvent?) => {
   if (messageEvent?.data?.payload?.type === 'inulax request observed components') {
     // get observed components
     setTimeout(() => {
-      window.postMessage({
-        type: 'INULA_DEV_TOOLS',
-        payload: { type: OBSERVED_COMPONENTS, data: getAffectedComponents() },
-        from: 'dev tool hook',
-      }, '');
+      window.postMessage(
+        {
+          type: 'INULA_DEV_TOOLS',
+          payload: { type: OBSERVED_COMPONENTS, data: getAffectedComponents() },
+          from: 'dev tool hook',
+        },
+        ''
+      );
     }, 100);
   }
 

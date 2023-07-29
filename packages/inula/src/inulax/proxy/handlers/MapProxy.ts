@@ -21,11 +21,7 @@ import { RAW_VALUE } from '../../Constants';
 
 const COLLECTION_CHANGE = '_collectionChange';
 
-export function createMapProxy(
-  rawObj: Object,
-  listener: { current: (...args) => any },
-  hookObserver = true
-): Object {
+export function createMapProxy(rawObj: Object, listener: { current: (...args) => any }, hookObserver = true): Object {
   let listeners: ((mutation) => {})[] = [];
   let oldData: [any, any][] = [];
   let proxies = new Map();
@@ -39,7 +35,9 @@ export function createMapProxy(
     const value = rawObj.get(keyProxy);
 
     // 对于value也需要进一步代理
-    const valProxy = createProxy(value, {
+    const valProxy = createProxy(
+      value,
+      {
         current: change => {
           if (!change.parents) change.parents = [];
           change.parents.push(rawObj);
@@ -87,7 +85,9 @@ export function createMapProxy(
       oldData = [...Array.from(rawObj.entries())];
     } else {
       // NEW VALUE
-      const keyProxy = createProxy(key, {
+      const keyProxy = createProxy(
+        key,
+        {
           current: change => {
             // KEY CHANGE
             if (!change.parents) change.parents = [];
@@ -185,7 +185,9 @@ export function createMapProxy(
     const observer = getObserver(rawObj);
     observer.useProp(COLLECTION_CHANGE);
     rawObj.forEach((value, key) => {
-      const keyProxy = createProxy(value, {
+      const keyProxy = createProxy(
+        value,
+        {
           current: change => {
             //KEY ATTRIBUTES CHANGED
             if (!change.parents) change.parents = [];
@@ -200,7 +202,9 @@ export function createMapProxy(
         },
         hookObserverMap.get(rawObj)
       );
-      const valProxy = createProxy(key, {
+      const valProxy = createProxy(
+        key,
+        {
           current: change => {
             // VALUE ATTRIBUTE CHANGED
             if (!change.parents) change.parents = [];
@@ -230,7 +234,9 @@ export function createMapProxy(
         const { value, done } = rawIt.next();
         if (done) {
           return {
-            value: createProxy(value, {
+            value: createProxy(
+              value,
+              {
                 current: change => {
                   if (!change.parents) change.parents = [];
                   change.parents.push(rawObj);
@@ -253,7 +259,9 @@ export function createMapProxy(
         if (type === 'entries') {
           //ENTRY CHANGED
           newVal = [
-            createProxy(value[0], {
+            createProxy(
+              value[0],
+              {
                 current: change => {
                   if (!change.parents) change.parents = [];
                   change.parents.push(rawObj);
@@ -267,7 +275,9 @@ export function createMapProxy(
               },
               hookObserver
             ),
-            createProxy(value[1], {
+            createProxy(
+              value[1],
+              {
                 current: change => {
                   if (!change.parents) change.parents = [];
                   change.parents.push(rawObj);
@@ -284,7 +294,9 @@ export function createMapProxy(
           ];
         } else {
           // SINGLE VALUE CHANGED
-          newVal = createProxy(value, {
+          newVal = createProxy(
+            value,
+            {
               current: change => {
                 if (!change.parents) change.parents = [];
                 change.parents.push(rawObj);

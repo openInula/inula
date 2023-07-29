@@ -23,5 +23,5 @@
     "test": "jest --config=jest.config.js",
     "watch-test": "yarn test --watch --dev"
   },
-  "types": "./build/inula/@types/index.d.ts"
+  "types": "@types/index.d.ts"
 }

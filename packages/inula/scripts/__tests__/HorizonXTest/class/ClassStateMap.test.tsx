@@ -15,15 +15,18 @@
 
 import * as Inula from '../../../../libs/inula/index';
 import * as LogUtils from '../../jest/logUtils';
-import {clearStore, createStore, useStore} from '../../../../libs/inula/src/inulax/store/StoreHandler';
-import {App, Text, triggerClickEvent} from '../../jest/commonComponents';
-import {describe, beforeEach, afterEach, it, expect} from '@jest/globals';
+import { clearStore, createStore, useStore } from '../../../../libs/inula/src/inulax/store/StoreHandler';
+import { App, Text, triggerClickEvent } from '../../jest/commonComponents';
+import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
 
 const useUserStore = createStore({
   id: 'user',
   state: {
     type: 'bing dun dun',
-    persons: new Map([['p1', 1], ['p2', 2]]),
+    persons: new Map([
+      ['p1', 1],
+      ['p2', 2],
+    ]),
   },
   actions: {
     addOnePerson: (state, person) => {
@@ -32,18 +35,21 @@ const useUserStore = createStore({
     delOnePerson: (state, person) => {
       state.persons.delete(person.name);
     },
-    clearPersons: (state) => {
+    clearPersons: state => {
       state.persons.clear();
     },
-    reset: (state)=>{
-      state.persons=new Map([['p1', 1], ['p2', 2]]);
-    }
+    reset: state => {
+      state.persons = new Map([
+        ['p1', 1],
+        ['p2', 2],
+      ]);
+    },
   },
 });
 
 describe('在Class组件中，测试store中的Map', () => {
   const { unmountComponentAtNode } = Inula;
-  let container:HTMLElement|null = null;
+  let container: HTMLElement | null = null;
   beforeEach(() => {
     // 创建一个 DOM 元素作为渲染目标
     container = document.createElement('div');
@@ -66,22 +72,22 @@ describe('在Class组件中，测试store中的Map', () => {
 
   class Parent extends Inula.Component {
     userStore = useUserStore();
-    props = {children:[]}
+    props = { children: [] };
 
-    constructor(props){
+    constructor(props) {
       super(props);
       this.props = props;
     }
 
     addOnePerson = () => {
       this.userStore.addOnePerson(newPerson);
-    }
+    };
     delOnePerson = () => {
       this.userStore.delOnePerson(newPerson);
-    }
+    };
     clearPersons = () => {
       this.userStore.clearPersons();
-    }
+    };
 
     render() {
       return (
@@ -95,9 +101,7 @@ describe('在Class组件中，测试store中的Map', () => {
           <button id={'clearBtn'} onClick={this.clearPersons}>
             clear persons
           </button>
-          <div>
-            {this.props.children}
-          </div>
+          <div>{this.props.children}</div>
         </div>
       );
     }
@@ -143,7 +147,7 @@ describe('在Class组件中，测试store中的Map', () => {
       userStore = useUserStore();
 
       render() {
-        const nameList:string[] = [];
+        const nameList: string[] = [];
         const keys = this.userStore.$s.persons.keys();
         for (const key of keys) {
           nameList.push(key);
@@ -184,7 +188,7 @@ describe('在Class组件中，测试store中的Map', () => {
       userStore = useUserStore();
 
       render() {
-        const ageList:number[] = [];
+        const ageList: number[] = [];
         const values = this.userStore.$s.persons.values();
         for (const val of values) {
           ageList.push(val);
@@ -225,7 +229,7 @@ describe('在Class组件中，测试store中的Map', () => {
       userStore = useUserStore();
 
       render() {
-        const nameList:string[] = [];
+        const nameList: string[] = [];
         const entries = this.userStore.$s.persons.entries();
         for (const entry of entries) {
           nameList.push(entry[0]);
@@ -266,7 +270,7 @@ describe('在Class组件中，测试store中的Map', () => {
       userStore = useUserStore();
 
       render() {
-        const nameList:string[] = [];
+        const nameList: string[] = [];
         this.userStore.$s.persons.forEach((val, key) => {
           nameList.push(key);
         });
@@ -329,7 +333,7 @@ describe('在Class组件中，测试store中的Map', () => {
       userStore = useUserStore();
 
       render() {
-        const nameList:string[] = [];
+        const nameList: string[] = [];
         for (const per of this.userStore.$s.persons) {
           nameList.push(per[0]);
         }

@@ -91,20 +91,22 @@ export function createObjectProxy<T extends object>(
       // 对于value也需要进一步代理
       const valProxy = singleLevel
         ? value
-        : createProxy(value, {
-            current: change => {
-              if (!change.parents) change.parents = [];
-              change.parents.push(rawObj);
-              let mutation = resolveMutation(
-                { ...rawObj, [key]: change.mutation.from },
-                { ...rawObj, [key]: change.mutation.to }
-              );
-              listener.current({ ...change, mutation });
-              listeners.forEach(lst => lst({ ...change, mutation }));
+        : createProxy(
+            value,
+            {
+              current: change => {
+                if (!change.parents) change.parents = [];
+                change.parents.push(rawObj);
+                let mutation = resolveMutation(
+                  { ...rawObj, [key]: change.mutation.from },
+                  { ...rawObj, [key]: change.mutation.to }
+                );
+                listener.current({ ...change, mutation });
+                listeners.forEach(lst => lst({ ...change, mutation }));
+              },
             },
-          },
-          hookObserverMap.get(rawObj)
-        );
+            hookObserverMap.get(rawObj)
+          );
 
       return valProxy;
     }

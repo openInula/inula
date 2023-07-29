@@ -15,7 +15,11 @@ function User({ location, history }) {
 
   useEffect(() => {
     if (pathToRegexp('/user').exec(location.pathname)) {
-      const payload = { page: 1, pageSize: 10, ...parseSearch(location.search) };
+      const payload = {
+        page: 1,
+        pageSize: 10,
+        ...parseSearch(location.search),
+      };
       st.query(payload);
     }
   }, [st.pagination.total]);

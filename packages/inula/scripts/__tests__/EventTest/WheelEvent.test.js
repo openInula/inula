@@ -24,19 +24,18 @@ describe('合成滚轮事件', () => {
       <div
         onWheel={event => LogUtils.log(`onWheel: ${event.type}`)}
         onWheelCapture={event => LogUtils.log(`onWheelCapture: ${event.type}`)}
-      />, container);
+      />,
+      container
+    );
 
     realNode.dispatchEvent(
       new MouseEvent('wheel', {
         bubbles: true,
         cancelable: false,
-      }),
+      })
     );
 
-    expect(LogUtils.getAndClear()).toEqual([
-      'onWheelCapture: wheel',
-      'onWheel: wheel'
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['onWheelCapture: wheel', 'onWheel: wheel']);
   });
 
   it('可以执行preventDefault和stopPropagation', () => {
@@ -50,20 +49,14 @@ describe('合成滚轮事件', () => {
       expect(e.isPropagationStopped()).toBe(true);
       LogUtils.log(e.type + ' handle');
     };
-    const realNode = Inula.render(
-      <div onWheel={eventHandler} />,
-      container
-    );
+    const realNode = Inula.render(<div onWheel={eventHandler} />, container);
 
     realNode.dispatchEvent(
       new MouseEvent('wheel', {
         bubbles: true,
         cancelable: true,
-      }),
+      })
     );
-    expect(LogUtils.getAndClear()).toEqual([
-      'wheel handle'
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['wheel handle']);
   });
-
 });

@@ -16,35 +16,35 @@
 import * as Inula from '../../../libs/inula/index';
 describe('FunctionComponent Test', () => {
   it('渲染无状态组件', () => {
-    const App = (props) => {
+    const App = props => {
       return <p>{props.text}</p>;
     };
 
-    Inula.render(<App text='app' />, container);
+    Inula.render(<App text="app" />, container);
     expect(container.querySelector('p').innerHTML).toBe('app');
   });
 
   it('更新无状态组件', () => {
-    const App = (props) => {
+    const App = props => {
       return <p>{props.text}</p>;
     };
 
-    Inula.render(<App text='app' />, container);
+    Inula.render(<App text="app" />, container);
     expect(container.querySelector('p').innerHTML).toBe('app');
 
-    Inula.render(<App text='ABC' />, container);
+    Inula.render(<App text="ABC" />, container);
     expect(container.querySelector('p').innerHTML).toBe('ABC');
 
-    Inula.render(<App text='abc' />, container);
+    Inula.render(<App text="abc" />, container);
     expect(container.querySelector('p').innerHTML).toBe('abc');
   });
 
   it('卸载无状态组件', () => {
-    const App = (props) => {
+    const App = props => {
       return <p>{props.text}</p>;
     };
 
-    Inula.render(<App text='app' />, container);
+    Inula.render(<App text="app" />, container);
     expect(container.querySelector('p').innerHTML).toBe('app');
 
     Inula.unmountComponentAtNode(container);
@@ -89,5 +89,4 @@ describe('FunctionComponent Test', () => {
     Inula.render(<App />, container);
     expect(container.querySelector('div').style['_values']['--max-segment-num']).toBe(10);
   });
-
 });
