@@ -87,7 +87,6 @@ export function getListenersFromTree(
   return listeners;
 }
 
-
 // 获取父节点
 function getParent(inst: VNode | null): VNode | null {
   if (inst === null) {
@@ -113,11 +112,7 @@ function getCommonAncestor(instA: VNode, instB: VNode): VNode | null {
   return null;
 }
 
-function getMouseListenersFromTree(
-  event: WrappedEvent,
-  target: VNode,
-  commonParent: VNode | null,
-): ListenerUnitList {
+function getMouseListenersFromTree(event: WrappedEvent, target: VNode, commonParent: VNode | null): ListenerUnitList {
   const registrationName = event.customEventName;
   const listeners: ListenerUnitList = [];
 
@@ -127,7 +122,7 @@ function getMouseListenersFromTree(
     if (vNode === commonParent) {
       break;
     }
-    const {realNode, tag} = vNode;
+    const { realNode, tag } = vNode;
     if (tag === DomComponent && realNode !== null) {
       const currentTarget = realNode;
       const listener = getListenerFromVNode(vNode, registrationName);
@@ -150,27 +145,19 @@ export function collectMouseListeners(
   leaveEvent: null | WrappedEvent,
   enterEvent: null | WrappedEvent,
   from: VNode | null,
-  to: VNode | null,
+  to: VNode | null
 ): ListenerUnitList {
   // 确定公共父节点，作为在树上遍历的终点
   const commonParent = from && to ? getCommonAncestor(from, to) : null;
   let leaveEventList: ListenerUnitList = [];
   if (from && leaveEvent) {
     // 遍历树，获取绑定的leave事件
-    leaveEventList = getMouseListenersFromTree(
-      leaveEvent,
-      from,
-      commonParent,
-    );
+    leaveEventList = getMouseListenersFromTree(leaveEvent, from, commonParent);
   }
   let enterEventList: ListenerUnitList = [];
   if (to && enterEvent) {
     // 先触发父节点enter事件，所以需要逆序
-    enterEventList = getMouseListenersFromTree(
-      enterEvent,
-      to,
-      commonParent,
-    ).reverse();
+    enterEventList = getMouseListenersFromTree(enterEvent, to, commonParent).reverse();
   }
   return [...leaveEventList, ...enterEventList];
 }

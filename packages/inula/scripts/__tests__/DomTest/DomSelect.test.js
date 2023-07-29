@@ -18,10 +18,10 @@ import * as Inula from '../../../libs/inula/index';
 describe('Dom Select', () => {
   it('设置value', () => {
     const selectNode = (
-      <select value='Vue'>
-        <option value='React'>React.js</option>
-        <option value='Vue'>Vue.js</option>
-        <option value='Angular'>Angular.js</option>
+      <select value="Vue">
+        <option value="React">React.js</option>
+        <option value="Vue">Vue.js</option>
+        <option value="Angular">Angular.js</option>
       </select>
     );
     const realNode = Inula.render(selectNode, container);
@@ -38,13 +38,13 @@ describe('Dom Select', () => {
     let selectValue = {
       toString: () => {
         return 'Vue';
-      }
+      },
     };
     const selectNode = (
       <select value={selectValue}>
-        <option value='React'>React.js</option>
-        <option value='Vue'>Vue.js</option>
-        <option value='Angular'>Angular.js</option>
+        <option value="React">React.js</option>
+        <option value="Vue">Vue.js</option>
+        <option value="Angular">Angular.js</option>
       </select>
     );
     const realNode = Inula.render(selectNode, container);
@@ -53,13 +53,13 @@ describe('Dom Select', () => {
     selectValue = {
       toString: () => {
         return 'React';
-      }
+      },
     };
     const newSelectNode = (
       <select value={selectValue}>
-        <option value='React'>React.js</option>
-        <option value='Vue'>Vue.js</option>
-        <option value='Angular'>Angular.js</option>
+        <option value="React">React.js</option>
+        <option value="Vue">Vue.js</option>
+        <option value="Angular">Angular.js</option>
       </select>
     );
     // 改变value会影响select的状态
@@ -70,10 +70,10 @@ describe('Dom Select', () => {
 
   it('受控select转为不受控会保存原来select', () => {
     const selectNode = (
-      <select value='Vue'>
-        <option value='React'>React.js</option>
-        <option value='Vue'>Vue.js</option>
-        <option value='Angular'>Angular.js</option>
+      <select value="Vue">
+        <option value="React">React.js</option>
+        <option value="Vue">Vue.js</option>
+        <option value="Angular">Angular.js</option>
       </select>
     );
     const realNode = Inula.render(selectNode, container);
@@ -81,9 +81,9 @@ describe('Dom Select', () => {
     expect(realNode.options[1].selected).toBe(true);
     const newSelectNode = (
       <select>
-        <option value='React'>React.js</option>
-        <option value='Vue'>Vue.js</option>
-        <option value='Angular'>Angular.js</option>
+        <option value="React">React.js</option>
+        <option value="Vue">Vue.js</option>
+        <option value="Angular">Angular.js</option>
       </select>
     );
     Inula.render(newSelectNode, container);
@@ -97,9 +97,9 @@ describe('Dom Select', () => {
     let defaultVal = 'Vue';
     const selectNode = (
       <select defaultValue={defaultVal}>
-        <option value='React'>React.js</option>
-        <option value='Vue'>Vue.js</option>
-        <option value='Angular'>Angular.js</option>
+        <option value="React">React.js</option>
+        <option value="Vue">Vue.js</option>
+        <option value="Angular">Angular.js</option>
       </select>
     );
     let realNode = Inula.render(selectNode, container);
@@ -117,9 +117,9 @@ describe('Dom Select', () => {
   it('设置defaultValue后,select不受控', () => {
     const selectNode = (
       <select defaultValue={'Vue'}>
-        <option value='React'>React.js</option>
-        <option value='Vue'>Vue.js</option>
-        <option value='Angular'>Angular.js</option>
+        <option value="React">React.js</option>
+        <option value="Vue">Vue.js</option>
+        <option value="Angular">Angular.js</option>
       </select>
     );
     let realNode = Inula.render(selectNode, container);
@@ -127,16 +127,13 @@ describe('Dom Select', () => {
     expect(realNode.options[1].selected).toBe(true);
 
     // 先修改
-    Object.getOwnPropertyDescriptor(
-      HTMLSelectElement.prototype,
-      'value',
-    ).set.call(realNode, 'React');
+    Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set.call(realNode, 'React');
     // 再触发事件
     container.querySelector('select').dispatchEvent(
       new Event('change', {
         bubbles: true,
         cancelable: true,
-      }),
+      })
     );
     // 鼠标改变受控select生效,select不受控
     Inula.render(selectNode, container);
@@ -149,38 +146,34 @@ describe('Dom Select', () => {
   xit('设置multiple(一)', () => {
     jest.spyOn(console, 'error').mockImplementation();
     const selectNode = (
-      <select multiple='multiple' defaultValue={'Vue'}>
-        <option value='React'>React.js</option>
-        <option value='Vue'>Vue.js</option>
-        <option value='Angular'>Angular.js</option>
+      <select multiple="multiple" defaultValue={'Vue'}>
+        <option value="React">React.js</option>
+        <option value="Vue">Vue.js</option>
+        <option value="Angular">Angular.js</option>
       </select>
     );
-    expect(
-      () => Inula.render(selectNode, container)
-    ).toThrowError('newValues.forEach is not a function');
+    expect(() => Inula.render(selectNode, container)).toThrowError('newValues.forEach is not a function');
   });
 
   it('设置multiple(二)', () => {
     let selectNode = (
-      <select id='se' multiple='multiple' defaultValue={['Vue', 'Angular']}>
-        <option value='React'>React.js</option>
-        <option value='Vue'>Vue.js</option>
-        <option value='Angular'>Angular.js</option>
+      <select id="se" multiple="multiple" defaultValue={['Vue', 'Angular']}>
+        <option value="React">React.js</option>
+        <option value="Vue">Vue.js</option>
+        <option value="Angular">Angular.js</option>
       </select>
     );
-    expect(
-      () => Inula.render(selectNode, container)
-    ).not.toThrow();
+    expect(() => Inula.render(selectNode, container)).not.toThrow();
     expect(document.getElementById('se').options[0].selected).toBe(false);
     expect(document.getElementById('se').options[1].selected).toBe(true);
     expect(document.getElementById('se').options[2].selected).toBe(true);
 
     // 改变defaultValue没有影响
     selectNode = (
-      <select id='se' multiple='multiple' defaultValue={['React']}>
-        <option value='React'>React.js</option>
-        <option value='Vue'>Vue.js</option>
-        <option value='Angular'>Angular.js</option>
+      <select id="se" multiple="multiple" defaultValue={['React']}>
+        <option value="React">React.js</option>
+        <option value="Vue">Vue.js</option>
+        <option value="Angular">Angular.js</option>
       </select>
     );
     Inula.render(selectNode, container);
@@ -191,25 +184,23 @@ describe('Dom Select', () => {
 
   it('设置multiple(三)', () => {
     let selectNode = (
-      <select id='se' multiple='multiple' value={['Vue', 'Angular']}>
-        <option value='React'>React.js</option>
-        <option value='Vue'>Vue.js</option>
-        <option value='Angular'>Angular.js</option>
+      <select id="se" multiple="multiple" value={['Vue', 'Angular']}>
+        <option value="React">React.js</option>
+        <option value="Vue">Vue.js</option>
+        <option value="Angular">Angular.js</option>
       </select>
     );
-    expect(
-      () => Inula.render(selectNode, container)
-    ).not.toThrow();
+    expect(() => Inula.render(selectNode, container)).not.toThrow();
     expect(document.getElementById('se').options[0].selected).toBe(false);
     expect(document.getElementById('se').options[1].selected).toBe(true);
     expect(document.getElementById('se').options[2].selected).toBe(true);
 
     // 改变value有影响
     selectNode = (
-      <select id='se' multiple='multiple' value={['React']}>
-        <option value='React'>React.js</option>
-        <option value='Vue'>Vue.js</option>
-        <option value='Angular'>Angular.js</option>
+      <select id="se" multiple="multiple" value={['React']}>
+        <option value="React">React.js</option>
+        <option value="Vue">Vue.js</option>
+        <option value="Angular">Angular.js</option>
       </select>
     );
     Inula.render(selectNode, container);
@@ -220,10 +211,10 @@ describe('Dom Select', () => {
 
   it('defaultValue设置multiple与非multiple切换(一)', () => {
     let selectNode = (
-      <select id='se' multiple='multiple' defaultValue={['Vue', 'Angular']}>
-        <option value='React'>React.js</option>
-        <option value='Vue'>Vue.js</option>
-        <option value='Angular'>Angular.js</option>
+      <select id="se" multiple="multiple" defaultValue={['Vue', 'Angular']}>
+        <option value="React">React.js</option>
+        <option value="Vue">Vue.js</option>
+        <option value="Angular">Angular.js</option>
       </select>
     );
     Inula.render(selectNode, container);
@@ -233,10 +224,10 @@ describe('Dom Select', () => {
 
     // 改变value有影响
     selectNode = (
-      <select id='se' defaultValue='React'>
-        <option value='React'>React.js</option>
-        <option value='Vue'>Vue.js</option>
-        <option value='Angular'>Angular.js</option>
+      <select id="se" defaultValue="React">
+        <option value="React">React.js</option>
+        <option value="Vue">Vue.js</option>
+        <option value="Angular">Angular.js</option>
       </select>
     );
     Inula.render(selectNode, container);
@@ -247,10 +238,10 @@ describe('Dom Select', () => {
 
   it('defaultValue设置multiple与非multiple切换(二)', () => {
     let selectNode = (
-      <select id='se' defaultValue='React'>
-        <option value='React'>React.js</option>
-        <option value='Vue'>Vue.js</option>
-        <option value='Angular'>Angular.js</option>
+      <select id="se" defaultValue="React">
+        <option value="React">React.js</option>
+        <option value="Vue">Vue.js</option>
+        <option value="Angular">Angular.js</option>
       </select>
     );
     Inula.render(selectNode, container);
@@ -260,10 +251,10 @@ describe('Dom Select', () => {
 
     // 改变value有影响
     selectNode = (
-      <select id='se' multiple='multiple' defaultValue={['Vue', 'Angular']}>
-        <option value='React'>React.js</option>
-        <option value='Vue'>Vue.js</option>
-        <option value='Angular'>Angular.js</option>
+      <select id="se" multiple="multiple" defaultValue={['Vue', 'Angular']}>
+        <option value="React">React.js</option>
+        <option value="Vue">Vue.js</option>
+        <option value="Angular">Angular.js</option>
       </select>
     );
     Inula.render(selectNode, container);
@@ -274,10 +265,14 @@ describe('Dom Select', () => {
 
   it('未指定value或者defaultValue时，默认选择第一个可选的', () => {
     const selectNode = (
-      <select id='se'>
-        <option disabled={true} value='React'>React.js</option>
-        <option value='Vue'>Vue.js</option>
-        <option disabled={true} value='Angular'>Angular.js</option>
+      <select id="se">
+        <option disabled={true} value="React">
+          React.js
+        </option>
+        <option value="Vue">Vue.js</option>
+        <option disabled={true} value="Angular">
+          Angular.js
+        </option>
       </select>
     );
     const realNode = Inula.render(selectNode, container);
@@ -289,9 +284,15 @@ describe('Dom Select', () => {
   it('删除添加option', () => {
     const selectNode = (
       <select multiple={true} defaultValue={['Vue']}>
-        <option key='React' value='React'>React.js</option>
-        <option key='Vue' value='Vue'>Vue.js</option>
-        <option key='Angular' value='Angular'>Angular.js</option>
+        <option key="React" value="React">
+          React.js
+        </option>
+        <option key="Vue" value="Vue">
+          Vue.js
+        </option>
+        <option key="Angular" value="Angular">
+          Angular.js
+        </option>
       </select>
     );
     const realNode = Inula.render(selectNode, container);
@@ -301,8 +302,12 @@ describe('Dom Select', () => {
 
     const newNode = (
       <select multiple={true} defaultValue={['Vue']}>
-        <option key='React' value='React'>React.js</option>
-        <option key='Angular' value='Angular'>Angular.js</option>
+        <option key="React" value="React">
+          React.js
+        </option>
+        <option key="Angular" value="Angular">
+          Angular.js
+        </option>
       </select>
     );
     Inula.render(newNode, container);
@@ -311,9 +316,15 @@ describe('Dom Select', () => {
 
     const newSelectNode = (
       <select multiple={true} defaultValue={['Vue']}>
-        <option key='React' value='React'>React.js</option>
-        <option key='Vue' value='Vue'>Vue.js</option>
-        <option key='Angular' value='Angular'>Angular.js</option>
+        <option key="React" value="React">
+          React.js
+        </option>
+        <option key="Vue" value="Vue">
+          Vue.js
+        </option>
+        <option key="Angular" value="Angular">
+          Angular.js
+        </option>
       </select>
     );
     // 重新添加不会影响

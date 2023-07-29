@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import {Callback} from '../Types';
+import { Callback } from '../Types';
 
 /**
  * Component的api setState和forceUpdate在实例生成阶段实现

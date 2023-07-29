@@ -33,8 +33,8 @@ export function useContext<T>(Context: ContextType<T>): T {
   const processingVNode = getProcessingVNode();
   return getNewContext(processingVNode!, Context, true);
 }
-export function useState<S = undefined>(): [S | undefined, Dispatch<BasicStateAction<S | undefined>>]
-export function useState<S>(initialState: (() => S) | S): [S, Dispatch<BasicStateAction<S>>]
+export function useState<S = undefined>(): [S | undefined, Dispatch<BasicStateAction<S | undefined>>];
+export function useState<S>(initialState: (() => S) | S): [S, Dispatch<BasicStateAction<S>>];
 export function useState<S>(initialState?: (() => S) | S): [S, Dispatch<BasicStateAction<S>>] {
   return useStateImpl(initialState);
 }
@@ -43,8 +43,8 @@ export function useReducer<S, I, A>(reducer: (S, A) => S, initialArg: I, init?: 
   return useReducerImpl(reducer, initialArg, init);
 }
 
-export function useRef<T = undefined>(): Ref<T | undefined>
-export function useRef<T>(initialValue: T): Ref<T>
+export function useRef<T = undefined>(): Ref<T | undefined>;
+export function useRef<T>(initialValue: T): Ref<T>;
 export function useRef<T>(initialValue?: T): Ref<T> {
   return useRefImpl(initialValue);
 }

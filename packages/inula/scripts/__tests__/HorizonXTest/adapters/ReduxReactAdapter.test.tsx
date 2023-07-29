@@ -24,19 +24,19 @@ import {
   useSelector,
   useStore,
   createSelectorHook,
-  createDispatchHook
+  createDispatchHook,
 } from '../../../../libs/inula/src/inulax/adapters/redux';
-import {triggerClickEvent} from '../../jest/commonComponents';
-import {describe, it, beforeEach, afterEach, expect} from '@jest/globals';
+import { triggerClickEvent } from '../../jest/commonComponents';
+import { describe, it, beforeEach, afterEach, expect } from '@jest/globals';
 import { ReduxStoreHandler } from '../../../../libs/inula/src/inulax/adapters/redux';
 
 const BUTTON = 'button';
 const BUTTON2 = 'button2';
 const RESULT = 'result';
-const CONTAINER = 'container'
+const CONTAINER = 'container';
 
-function getE(id):HTMLElement {
-  return document.getElementById(id)||document.body;
+function getE(id): HTMLElement {
+  return document.getElementById(id) || document.body;
 }
 
 describe('Redux/React binding adapter', () => {
@@ -59,12 +59,14 @@ describe('Redux/React binding adapter', () => {
     };
 
     const Wrapper = () => {
-      return <Provider store={reduxStore}>
-        <Child/>
-      </Provider>;
+      return (
+        <Provider store={reduxStore}>
+          <Child />
+        </Provider>
+      );
     };
 
-    Inula.render(<Wrapper/>, getE(CONTAINER));
+    Inula.render(<Wrapper />, getE(CONTAINER));
 
     expect(getE(RESULT).innerHTML).toBe('state');
   });
@@ -78,21 +80,28 @@ describe('Redux/React binding adapter', () => {
     const Child = () => {
       const store = useStore() as unknown as ReduxStoreHandler;
       const dispatch = useDispatch();
-      return <div>
-        <p id={RESULT}>{store.getState()}</p>
-        <button id={BUTTON} onClick={() => {
-          dispatch({type: 'ADD'});
-        }}></button>
-      </div>;
+      return (
+        <div>
+          <p id={RESULT}>{store.getState()}</p>
+          <button
+            id={BUTTON}
+            onClick={() => {
+              dispatch({ type: 'ADD' });
+            }}
+          ></button>
+        </div>
+      );
     };
 
     const Wrapper = () => {
-      return <Provider store={reduxStore}>
-        <Child/>
-      </Provider>;
+      return (
+        <Provider store={reduxStore}>
+          <Child />
+        </Provider>
+      );
     };
 
-    Inula.render(<Wrapper/>, getE(CONTAINER));
+    Inula.render(<Wrapper />, getE(CONTAINER));
 
     expect(reduxStore.getState()).toBe(0);
 
@@ -110,24 +119,32 @@ describe('Redux/React binding adapter', () => {
     });
 
     const Child = () => {
-      const count = useSelector((state) => state);
+      const count = useSelector(state => state);
       const dispatch = useDispatch();
-      return <div>
-        <p id={RESULT}>{count}</p>
-        <button id={BUTTON} onClick={() => {
-          dispatch({type: 'ADD'});
-        }}>click
-        </button>
-      </div>;
+      return (
+        <div>
+          <p id={RESULT}>{count}</p>
+          <button
+            id={BUTTON}
+            onClick={() => {
+              dispatch({ type: 'ADD' });
+            }}
+          >
+            click
+          </button>
+        </div>
+      );
     };
 
     const Wrapper = () => {
-      return <Provider store={reduxStore}>
-        <Child/>
-      </Provider>;
+      return (
+        <Provider store={reduxStore}>
+          <Child />
+        </Provider>
+      );
     };
 
-    Inula.render(<Wrapper/>, getE(CONTAINER));
+    Inula.render(<Wrapper />, getE(CONTAINER));
 
     expect(getE(RESULT).innerHTML).toBe('0');
 
@@ -140,58 +157,82 @@ describe('Redux/React binding adapter', () => {
   });
 
   it('Should use connect', async () => {
-    const reduxStore = createStore((state, action) => {
-      switch (action.type) {
-        case('INCREMENT'):
-          return {
-            ...state,
-            value: state.negative ? state.value - action.amount : state.value + action.amount
-          };
-        case('TOGGLE'):
-          return {
-            ...state,
-            negative: !state.negative
-          };
-        default:
-          return state;
-      }
-    }, {negative: false, value: 0});
+    const reduxStore = createStore(
+      (state, action) => {
+        switch (action.type) {
+          case 'INCREMENT':
+            return {
+              ...state,
+              value: state.negative ? state.value - action.amount : state.value + action.amount,
+            };
+          case 'TOGGLE':
+            return {
+              ...state,
+              negative: !state.negative,
+            };
+          default:
+            return state;
+        }
+      },
+      { negative: false, value: 0 }
+    );
 
-    const Child = connect((state, ownProps) => {
-      // map state to props
-      return {...state, ...ownProps};
-    }, (dispatch, ownProps) => {
-      // map dispatch to props
-      return {
-        // @ts-ignore
-        increment: () => dispatch({type: 'INCREMENT', amount: ownProps?.amount})
-      };
-    }, (stateProps, dispatchProps, ownProps) => {
-      //merge props
-      return {stateProps, dispatchProps, ownProps};
-    }, {})((props) => {
+    const Child = connect(
+      (state, ownProps) => {
+        // map state to props
+        return { ...state, ...ownProps };
+      },
+      (dispatch, ownProps) => {
+        // map dispatch to props
+        return {
+          // @ts-ignore
+          increment: () => dispatch({ type: 'INCREMENT', amount: ownProps?.amount }),
+        };
+      },
+      (stateProps, dispatchProps, ownProps) => {
+        //merge props
+        return { stateProps, dispatchProps, ownProps };
+      },
+      {}
+    )(props => {
       const n = props.stateProps.negative;
-      return <div>
-        <div id={RESULT}>{n ? '-' : '+'}{props.stateProps.value}</div>
-        <button id={BUTTON} onClick={() => {
-          props.dispatchProps.increment();
-        }}>add {props.ownProps.amount}</button>
-      </div>;
+      return (
+        <div>
+          <div id={RESULT}>
+            {n ? '-' : '+'}
+            {props.stateProps.value}
+          </div>
+          <button
+            id={BUTTON}
+            onClick={() => {
+              props.dispatchProps.increment();
+            }}
+          >
+            add {props.ownProps.amount}
+          </button>
+        </div>
+      );
     });
 
     const Wrapper = () => {
       //@ts-ignore
       const [amount, setAmount] = Inula.useState(5);
-      return <Provider store={reduxStore}>
-        <Child amount={amount}/>
-        <button id={BUTTON2} onClick={() => {
-          setAmount(3);
-        }}>change amount
-        </button>
-      </Provider>;
+      return (
+        <Provider store={reduxStore}>
+          <Child amount={amount} />
+          <button
+            id={BUTTON2}
+            onClick={() => {
+              setAmount(3);
+            }}
+          >
+            change amount
+          </button>
+        </Provider>
+      );
     };
 
-    Inula.render(<Wrapper/>, getE(CONTAINER));
+    Inula.render(<Wrapper />, getE(CONTAINER));
 
     expect(getE(RESULT).innerHTML).toBe('+0');
 
@@ -210,7 +251,7 @@ describe('Redux/React binding adapter', () => {
     });
 
     expect(getE(RESULT).innerHTML).toBe('+8');
-  })
+  });
 
   it('Should batch dispatches', async () => {
     const reduxStore = createStore((state = 0, action) => {
@@ -223,22 +264,32 @@ describe('Redux/React binding adapter', () => {
     function Counter() {
       renderCounter++;
 
-      const value = useSelector((state) => state);
+      const value = useSelector(state => state);
       const dispatch = useDispatch();
 
-      return <div>
-        <p id={RESULT}>{value}</p>
-        <button id={BUTTON} onClick={() => {
-          batch(() => {
-            for (let i = 0; i < 10; i++) {
-              dispatch({type: 'ADD'});
-            }
-          });
-        }}></button>
-      </div>;
+      return (
+        <div>
+          <p id={RESULT}>{value}</p>
+          <button
+            id={BUTTON}
+            onClick={() => {
+              batch(() => {
+                for (let i = 0; i < 10; i++) {
+                  dispatch({ type: 'ADD' });
+                }
+              });
+            }}
+          ></button>
+        </div>
+      );
     }
 
-    Inula.render(<Provider store={reduxStore}><Counter/></Provider>, getE(CONTAINER));
+    Inula.render(
+      <Provider store={reduxStore}>
+        <Counter />
+      </Provider>,
+      getE(CONTAINER)
+    );
 
     expect(getE(RESULT).innerHTML).toBe('0');
     expect(renderCounter).toBe(1);
@@ -269,33 +320,49 @@ describe('Redux/React binding adapter', () => {
       const count = createSelectorHook(counterContext)();
       const dispatch = createDispatchHook(counterContext)();
 
-      return <button id={BUTTON} onClick={() => {
-        dispatch({type: 'ADD'});
-      }}>{count}</button>;
+      return (
+        <button
+          id={BUTTON}
+          onClick={() => {
+            dispatch({ type: 'ADD' });
+          }}
+        >
+          {count}
+        </button>
+      );
     }
 
     function Toggle() {
       const check = createSelectorHook(toggleContext)();
       const dispatch = createDispatchHook(toggleContext)();
 
-      return <button id={BUTTON2} onClick={() => {
-        dispatch({type: 'TOGGLE'});
-      }}>{check ? 'true' : 'false'}</button>;
+      return (
+        <button
+          id={BUTTON2}
+          onClick={() => {
+            dispatch({ type: 'TOGGLE' });
+          }}
+        >
+          {check ? 'true' : 'false'}
+        </button>
+      );
     }
 
     function Wrapper() {
-      return <div>
-        <Provider store={counterStore} context={counterContext}>
-          <Counter/>
-        </Provider>
+      return (
+        <div>
+          <Provider store={counterStore} context={counterContext}>
+            <Counter />
+          </Provider>
 
-        <Provider store={toggleStore} context={toggleContext}>
-          <Toggle/>
-        </Provider>
-      </div>;
+          <Provider store={toggleStore} context={toggleContext}>
+            <Toggle />
+          </Provider>
+        </div>
+      );
     }
 
-    Inula.render(<Wrapper/>, getE(CONTAINER));
+    Inula.render(<Wrapper />, getE(CONTAINER));
 
     expect(getE(BUTTON).innerHTML).toBe('0');
     expect(getE(BUTTON2).innerHTML).toBe('false');

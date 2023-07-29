@@ -56,7 +56,7 @@ describe('useMemo Hook Test', () => {
   });
 
   it('触发useMemo', () => {
-    const App = (props) => {
+    const App = props => {
       const num = useMemo(() => {
         LogUtils.log(props._num);
         return props._num + 1;
@@ -64,17 +64,11 @@ describe('useMemo Hook Test', () => {
       return <Text text={num} />;
     };
     Inula.render(<App _num={0} />, container);
-    expect(LogUtils.getAndClear()).toEqual([
-      0,
-      1
-    ]);
+    expect(LogUtils.getAndClear()).toEqual([0, 1]);
     expect(container.textContent).toBe('1');
 
     Inula.render(<App _num={1} />, container);
-    expect(LogUtils.getAndClear()).toEqual([
-      1,
-      2
-    ]);
+    expect(LogUtils.getAndClear()).toEqual([1, 2]);
     expect(container.textContent).toBe('2');
 
     Inula.render(<App _num={1} />, container);
@@ -83,15 +77,12 @@ describe('useMemo Hook Test', () => {
     expect(container.textContent).toBe('2');
 
     Inula.render(<App _num={2} />, container);
-    expect(LogUtils.getAndClear()).toEqual([
-      2,
-      3
-    ]);
+    expect(LogUtils.getAndClear()).toEqual([2, 3]);
     expect(container.textContent).toBe('3');
   });
 
   it('输入不变，重新渲染也会触发useMemo', () => {
-    const App = (props) => {
+    const App = props => {
       const num = useMemo(props._num);
       return <Text text={num} />;
     };

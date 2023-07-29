@@ -25,7 +25,7 @@ describe('LifeCycle Test', () => {
 
         UNSAFE_componentWillMount() {
           this.setState = {
-            num: 1
+            num: 1,
           };
         }
 
@@ -67,25 +67,17 @@ describe('LifeCycle Test', () => {
         }
 
         render() {
-          return (
-            <div>
-              {this.state.shouldShowChild ? <ChildApp isShow={this.state.shouldShowChild} /> : <div />}
-            </div>
-          );
+          return <div>{this.state.shouldShowChild ? <ChildApp isShow={this.state.shouldShowChild} /> : <div />}</div>;
         }
       }
 
       const realNode = Inula.render(<App />, container);
       // 确实触发了额外渲染
-      expect(LogUtils.getAndClear()).toEqual([
-        'constructor',
-        'componentDidMount',
-        true
-      ]);
+      expect(LogUtils.getAndClear()).toEqual(['constructor', 'componentDidMount', true]);
       // 可以在 componentDidMount() 里直接调用 setState()。它将触发额外渲染，但此渲染会发生在浏览器更新屏幕之前
       expect(container.querySelector('p').innerHTML).toBe('');
       // 在 componentDidMount() 里可以更新state
-      expect(realNode.state).toStrictEqual({ 'shouldShowChild': true });
+      expect(realNode.state).toStrictEqual({ shouldShowChild: true });
     });
 
     it('调用 this.setState() 通常不会触发 UNSAFE_componentWillReceiveProps()', () => {
@@ -94,12 +86,12 @@ describe('LifeCycle Test', () => {
 
         update = () => {
           this.setState({ num: 4 });
-        }
+        };
 
         UNSAFE_componentWillReceiveProps() {
           LogUtils.log('componentWillReceiveProps');
           this.setState = {
-            num: 1
+            num: 1,
           };
         }
 
@@ -132,7 +124,7 @@ describe('LifeCycle Test', () => {
 
         update = () => {
           this.setState({ num: 4 });
-        }
+        };
 
         render() {
           return <ChildApp num={this.state.num} />;
@@ -142,10 +134,7 @@ describe('LifeCycle Test', () => {
       const realNode = Inula.render(<App />, container);
       expect(realNode.textContent).toBe(undefined);
       realNode.update();
-      expect(LogUtils.getAndClear()).toEqual([
-        undefined,
-        'text',
-      ]);
+      expect(LogUtils.getAndClear()).toEqual([undefined, 'text']);
       // 不能在componentWillMount里setState
       expect(realNode.textContent).toBe(undefined);
     });
@@ -248,15 +237,11 @@ describe('LifeCycle Test', () => {
           return { num: nextProps.num };
         }
         getSnapshotBeforeUpdate(prevProps, prevState) {
-          LogUtils.log(
-            `getSnapshotBeforeUpdate prevProps:${prevProps.num} prevState:${prevState.num}`,
-          );
+          LogUtils.log(`getSnapshotBeforeUpdate prevProps:${prevProps.num} prevState:${prevState.num}`);
           return 'Snapshot';
         }
         componentDidUpdate(prevProps, prevState, snapshot) {
-          LogUtils.log(
-            `componentDidUpdate prevProps:${prevProps.num} prevState:${prevState.num} snapshot:${snapshot}`,
-          );
+          LogUtils.log(`componentDidUpdate prevProps:${prevProps.num} prevState:${prevState.num} snapshot:${snapshot}`);
         }
 
         render() {
@@ -299,9 +284,7 @@ describe('LifeCycle Test', () => {
           };
         }
         static getDerivedStateFromProps(nextProps, prevState) {
-          LogUtils.log(
-            `getDerivedStateFromProps nextProps:${nextProps.num} prevState:${prevState.num}`,
-          );
+          LogUtils.log(`getDerivedStateFromProps nextProps:${nextProps.num} prevState:${prevState.num}`);
         }
 
         render() {
@@ -385,7 +368,7 @@ describe('LifeCycle Test', () => {
       'componentWillMount',
       'Child componentWillMount',
       'Child componentDidMount',
-      'componentDidMount'
+      'componentDidMount',
     ]);
     Inula.render(<App num={2} />, container);
     expect(container.textContent).toBe('2');
@@ -397,14 +380,11 @@ describe('LifeCycle Test', () => {
       'Child shouldComponentUpdates',
       'Child componentWillUpdate',
       'Child componentDidUpdate',
-      'componentDidUpdate'
+      'componentDidUpdate',
     ]);
     Inula.unmountComponentAtNode(container);
     expect(container.textContent).toBe('');
-    expect(LogUtils.getAndClear()).toEqual([
-      'componentWillUnmount',
-      'Child componentWillUnmount'
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['componentWillUnmount', 'Child componentWillUnmount']);
   });
 
   it('新生命周期执行顺序', () => {
@@ -466,7 +446,7 @@ describe('LifeCycle Test', () => {
       'getDerivedStateFromProps',
       'Child getDerivedStateFromProps',
       'Child componentDidMount',
-      'componentDidMount'
+      'componentDidMount',
     ]);
     Inula.render(<App num={2} />, container);
     expect(container.textContent).toBe('2');
@@ -478,13 +458,10 @@ describe('LifeCycle Test', () => {
       'Child getSnapshotBeforeUpdate',
       'getSnapshotBeforeUpdate',
       'Child componentDidUpdate',
-      'componentDidUpdate'
+      'componentDidUpdate',
     ]);
     Inula.unmountComponentAtNode(container);
     expect(container.textContent).toBe('');
-    expect(LogUtils.getAndClear()).toEqual([
-      'componentWillUnmount',
-      'Child componentWillUnmount'
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['componentWillUnmount', 'Child componentWillUnmount']);
   });
 });

@@ -62,10 +62,10 @@ describe('测试对store.state对象进行深度克隆', () => {
 
   function Parent({ children }) {
     const userStore = useStore('user');
-    const addOnePerson = function() {
+    const addOnePerson = function () {
       userStore.addOnePerson(newPerson);
     };
-    const delOnePerson = function() {
+    const delOnePerson = function () {
       userStore.delOnePerson();
     };
     return (
@@ -81,7 +81,7 @@ describe('测试对store.state对象进行深度克隆', () => {
     );
   }
 
-  it('The observer object of symbol (\'_inulaObserver\') cannot be accessed to  from Proxy', () => {
+  it("The observer object of symbol ('_inulaObserver') cannot be accessed to  from Proxy", () => {
     let userStore = null;
     function Child(props) {
       userStore = useStore('user');
@@ -99,7 +99,7 @@ describe('测试对store.state对象进行深度克隆', () => {
     expect(userStore.persons[0][OBSERVER_KEY]).toBe(undefined);
   });
 
-  it('The observer object of symbol (\'_inulaObserver\') cannot be accessed to  from Proxy', () => {
+  it("The observer object of symbol ('_inulaObserver') cannot be accessed to  from Proxy", () => {
     let userStore = null;
     function Child(props) {
       userStore = useStore('user');
@@ -117,5 +117,4 @@ describe('测试对store.state对象进行深度克隆', () => {
     const proxyObj = userStore.persons[0].constructor;
     expect(proxyObj.prototype !== undefined).toBeTruthy();
   });
-
 });

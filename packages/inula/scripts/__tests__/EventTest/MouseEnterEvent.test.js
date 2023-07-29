@@ -33,9 +33,7 @@ describe('mouseenter和mouseleave事件测试', () => {
     const iframe = document.createElement('iframe');
     container.appendChild(iframe);
     const iframeDocument = iframe.contentDocument;
-    iframeDocument.write(
-      '<!DOCTYPE html><html><head></head><body><div></div></body></html>',
-    );
+    iframeDocument.write('<!DOCTYPE html><html><head></head><body><div></div></body></html>');
     iframeDocument.close();
 
     const leaveEvents = [];
@@ -46,7 +44,7 @@ describe('mouseenter和mouseleave事件测试', () => {
           leaveEvents.push(e);
         }}
       />,
-      iframeDocument.body.getElementsByTagName('div')[0],
+      iframeDocument.body.getElementsByTagName('div')[0]
     );
 
     node.dispatchEvent(
@@ -54,7 +52,7 @@ describe('mouseenter和mouseleave事件测试', () => {
         bubbles: true,
         cancelable: true,
         relatedTarget: iframe.contentWindow,
-      }),
+      })
     );
 
     expect(leaveEvents.length).toBe(1);
@@ -66,9 +64,7 @@ describe('mouseenter和mouseleave事件测试', () => {
     const iframe = document.createElement('iframe');
     container.appendChild(iframe);
     const iframeDocument = iframe.contentDocument;
-    iframeDocument.write(
-      '<!DOCTYPE html><html><head></head><body><div></div></body></html>',
-    );
+    iframeDocument.write('<!DOCTYPE html><html><head></head><body><div></div></body></html>');
     iframeDocument.close();
 
     const enterEvents = [];
@@ -79,7 +75,7 @@ describe('mouseenter和mouseleave事件测试', () => {
           enterEvents.push(e);
         }}
       />,
-      iframeDocument.body.getElementsByTagName('div')[0],
+      iframeDocument.body.getElementsByTagName('div')[0]
     );
 
     node.dispatchEvent(
@@ -87,7 +83,7 @@ describe('mouseenter和mouseleave事件测试', () => {
         bubbles: true,
         cancelable: true,
         relatedTarget: null,
-      }),
+      })
     );
 
     expect(enterEvents.length).toBe(1);
@@ -103,26 +99,22 @@ describe('mouseenter和mouseleave事件测试', () => {
     class Parent extends Inula.Component {
       render() {
         return (
-          <div
-            onMouseEnter={() => parentEnterCalls++}
-            ref={node => (parent = node)}>
-            {this.props.showChild && (
-              <div onMouseEnter={() => childEnterCalls++}/>
-            )}
+          <div onMouseEnter={() => parentEnterCalls++} ref={node => (parent = node)}>
+            {this.props.showChild && <div onMouseEnter={() => childEnterCalls++} />}
           </div>
         );
       }
     }
 
-    Inula.render(<Parent/>, container);
-    Inula.render(<Parent showChild={true}/>, container);
+    Inula.render(<Parent />, container);
+    Inula.render(<Parent showChild={true} />, container);
 
     parent.dispatchEvent(
       new MouseEvent('mouseout', {
         bubbles: true,
         cancelable: true,
         relatedTarget: parent.firstChild,
-      }),
+      })
     );
     expect(childEnterCalls).toBe(1);
     expect(parentEnterCalls).toBe(0);
@@ -140,11 +132,11 @@ describe('mouseenter和mouseleave事件测试', () => {
       }
 
       componentDidMount() {
-        Inula.render(<MouseEnterDetect/>, this.parentEl.current);
+        Inula.render(<MouseEnterDetect />, this.parentEl.current);
       }
 
       render() {
-        return <div ref={this.parentEl} id="parent" onMouseLeave={mockFn3}/>;
+        return <div ref={this.parentEl} id="parent" onMouseLeave={mockFn3} />;
       }
     }
 
@@ -161,7 +153,7 @@ describe('mouseenter和mouseleave事件测试', () => {
             bubbles: true,
             cancelable: true,
             relatedTarget: this.firstEl.current,
-          }),
+          })
         );
         expect(mockFn1.mock.calls.length).toBe(1);
         expect(mockFn2.mock.calls.length).toBe(1);
@@ -172,14 +164,14 @@ describe('mouseenter和mouseleave事件测试', () => {
       render() {
         return (
           <Inula.Fragment>
-            <div ref={this.firstEl} id="first" onMouseEnter={mockFn1}/>
-            <div ref={this.siblingEl} id="sibling" onMouseLeave={mockFn2}/>
+            <div ref={this.firstEl} id="first" onMouseEnter={mockFn1} />
+            <div ref={this.siblingEl} id="sibling" onMouseLeave={mockFn2} />
           </Inula.Fragment>
         );
       }
     }
 
-    Inula.render(<Parent/>, container);
+    Inula.render(<Parent />, container);
   });
 
   it('未被inula管理的节点触发mouseout事件，mouseenter事件也能正常触发', done => {
@@ -192,11 +184,11 @@ describe('mouseenter和mouseleave事件测试', () => {
       }
 
       componentDidMount() {
-        Inula.render(<MouseEnterDetect/>, this.parentEl.current);
+        Inula.render(<MouseEnterDetect />, this.parentEl.current);
       }
 
       render() {
-        return <div ref={this.parentEl}/>;
+        return <div ref={this.parentEl} />;
       }
     }
 
@@ -215,7 +207,7 @@ describe('mouseenter和mouseleave事件测试', () => {
             bubbles: true,
             cancelable: true,
             relatedTarget: this.siblingEl.current,
-          }),
+          })
         );
         expect(mockFn.mock.calls.length).toBe(1);
         done();
@@ -224,13 +216,13 @@ describe('mouseenter和mouseleave事件测试', () => {
       render() {
         return (
           <div ref={this.divRef}>
-            <div ref={this.siblingEl} onMouseEnter={mockFn}/>
+            <div ref={this.siblingEl} onMouseEnter={mockFn} />
           </div>
         );
       }
     }
 
-    Inula.render(<Parent/>, container);
+    Inula.render(<Parent />, container);
   });
 
   it('外部portal节点触发的mouseout事件，根节点的mouseleave事件也能响应', () => {
@@ -240,19 +232,19 @@ describe('mouseenter和mouseleave事件测试', () => {
     function Component() {
       return (
         <div onMouseLeave={onMouseLeave} id="parent">
-          {Inula.createPortal(<div ref={divRef} id="sub"/>, document.body)}
+          {Inula.createPortal(<div ref={divRef} id="sub" />, document.body)}
         </div>
       );
     }
 
-    Inula.render(<Component/>, container);
+    Inula.render(<Component />, container);
 
     divRef.current.dispatchEvent(
       new MouseEvent('mouseout', {
         bubbles: true,
         cancelable: true,
         relatedTarget: document.body,
-      }),
+      })
     );
 
     expect(onMouseLeave).toHaveBeenCalledTimes(1);
@@ -266,26 +258,21 @@ describe('mouseenter和mouseleave事件测试', () => {
     function Component() {
       return (
         <div ref={divRef}>
-          {Inula.createPortal(
-            <div ref={otherDivRef} onMouseEnter={onMouseEnter}/>,
-            document.body,
-          )}
+          {Inula.createPortal(<div ref={otherDivRef} onMouseEnter={onMouseEnter} />, document.body)}
         </div>
       );
     }
 
-    Inula.render(<Component/>, container);
+    Inula.render(<Component />, container);
 
     divRef.current.dispatchEvent(
       new MouseEvent('mouseout', {
         bubbles: true,
         cancelable: true,
         relatedTarget: otherDivRef.current,
-      }),
+      })
     );
 
     expect(onMouseEnter).toHaveBeenCalledTimes(1);
   });
 });
-
-

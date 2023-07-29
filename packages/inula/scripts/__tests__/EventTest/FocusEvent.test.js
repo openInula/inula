@@ -24,19 +24,18 @@ describe('合成焦点事件', () => {
       <input
         onFocus={event => LogUtils.log(`onFocus: ${event.type}`)}
         onFocusCapture={event => LogUtils.log(`onFocusCapture: ${event.type}`)}
-      />, container);
+      />,
+      container
+    );
 
     realNode.dispatchEvent(
       new FocusEvent('focusin', {
         bubbles: true,
         cancelable: false,
-      }),
+      })
     );
 
-    expect(LogUtils.getAndClear()).toEqual([
-      'onFocusCapture: focus',
-      'onFocus: focus',
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['onFocusCapture: focus', 'onFocus: focus']);
   });
 
   it('onBlur', () => {
@@ -44,18 +43,17 @@ describe('合成焦点事件', () => {
       <input
         onBlur={event => LogUtils.log(`onBlur: ${event.type}`)}
         onBlurCapture={event => LogUtils.log(`onBlurCapture: ${event.type}`)}
-      />, container);
+      />,
+      container
+    );
 
     realNode.dispatchEvent(
       new FocusEvent('focusout', {
         bubbles: true,
         cancelable: false,
-      }),
+      })
     );
 
-    expect(LogUtils.getAndClear()).toEqual([
-      'onBlurCapture: blur',
-      'onBlur: blur',
-    ]);
+    expect(LogUtils.getAndClear()).toEqual(['onBlurCapture: blur', 'onBlur: blur']);
   });
 });

@@ -13,9 +13,9 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import {createProxy} from '../../../../libs/inula/src/inulax/proxy/ProxyHandler';
-import {readonlyProxy} from '../../../../libs/inula/src/inulax/proxy/readonlyProxy';
-import {describe, beforeEach, afterEach, it, expect} from '@jest/globals';
+import { createProxy } from '../../../../libs/inula/src/inulax/proxy/ProxyHandler';
+import { readonlyProxy } from '../../../../libs/inula/src/inulax/proxy/readonlyProxy';
+import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
 
 describe('Proxy', () => {
   const arr = [];
@@ -39,25 +39,25 @@ describe('Proxy', () => {
   it('Readonly proxy should prevent changes', async () => {
     const proxy1 = readonlyProxy([1]);
 
-    try{
+    try {
       proxy1.push('a');
-      expect(true).toBe(false);//we expect exception above
-    }catch(e){
-     //expected
+      expect(true).toBe(false); //we expect exception above
+    } catch (e) {
+      //expected
     }
 
-    try{
-      proxy1[0]=null;
-      expect(true).toBe(false);//we expect exception above
-    }catch(e){
-     //expected
+    try {
+      proxy1[0] = null;
+      expect(true).toBe(false); //we expect exception above
+    } catch (e) {
+      //expected
     }
 
-    try{
+    try {
       delete proxy1[0];
-      expect(true).toBe(false);//we expect exception above
-    }catch(e){
-     //expected
+      expect(true).toBe(false); //we expect exception above
+    } catch (e) {
+      //expected
     }
   });
 });

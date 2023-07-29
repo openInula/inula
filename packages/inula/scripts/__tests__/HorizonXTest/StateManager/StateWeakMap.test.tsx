@@ -73,13 +73,13 @@ describe('测试store中的WeakMap', () => {
 
   function Parent(props) {
     const userStore = useUserStore();
-    const addOnePerson = function() {
+    const addOnePerson = function () {
       userStore.addOnePerson(newPerson);
     };
-    const delOnePerson = function() {
+    const delOnePerson = function () {
       userStore.delOnePerson(newPerson);
     };
-    const clearPersons = function() {
+    const clearPersons = function () {
       userStore.clearPersons();
     };
 

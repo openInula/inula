@@ -24,7 +24,7 @@ export function isInputElement(dom?: HTMLElement): boolean {
 export function setPropertyWritable(obj, propName) {
   const desc = Object.getOwnPropertyDescriptor(obj, propName);
   if (!desc || !desc.writable) {
-    Object.defineProperty(obj, propName, {writable: true});
+    Object.defineProperty(obj, propName, { writable: true });
   }
 }
 

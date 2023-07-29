@@ -1,11 +1,11 @@
-import inula from 'inulajs';
+import Inula from 'inulajs';
 import { BrowserRouter } from 'react-router-dom';
 
 import 'antd/dist/antd.css';
 
 import Layout from './layouts';
 
-inula.render(
+Inula.render(
   <BrowserRouter>
     <Layout></Layout>
   </BrowserRouter>,

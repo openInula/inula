@@ -60,13 +60,7 @@ import * as reduxAdapter from './inulax/adapters/redux';
 import { watch } from './inulax/proxy/watch';
 import { act } from './external/TestUtil';
 
-import {
-  render,
-  createPortal,
-  unstable_batchedUpdates,
-  findDOMNode,
-  unmountComponentAtNode,
-} from './dom/DOMExternal';
+import { render, createPortal, unstable_batchedUpdates, findDOMNode, unmountComponentAtNode } from './dom/DOMExternal';
 
 import { syncUpdates as flushSync } from './renderer/TreeBuilder';
 import { toRaw } from './inulax/proxy/ProxyHandler';

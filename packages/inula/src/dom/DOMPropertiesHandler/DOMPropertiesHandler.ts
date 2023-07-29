@@ -70,7 +70,7 @@ export function compareProps(oldProps: Object, newProps: Object): Object {
   for (let i = 0; i < oldPropsLength; i++) {
     propName = keysOfOldProps[i];
     // 新属性中包含该属性或者该属性为空值的属性不需要处理
-    if ( oldProps[propName] === null || oldProps[propName] === undefined || keysOfNewProps.includes(propName)) {
+    if (oldProps[propName] === null || oldProps[propName] === undefined || keysOfNewProps.includes(propName)) {
       continue;
     }
 
@@ -106,9 +106,8 @@ export function compareProps(oldProps: Object, newProps: Object): Object {
     oldPropValue = oldProps !== null && oldProps !== undefined ? oldProps[propName] : null;
 
     if (
-      newPropValue === oldPropValue
-      || ((newPropValue === null || newPropValue === undefined)
-        && (oldPropValue === null || oldPropValue === undefined))
+      newPropValue === oldPropValue ||
+      ((newPropValue === null || newPropValue === undefined) && (oldPropValue === null || oldPropValue === undefined))
     ) {
       // 新旧属性值未发生变化，或者新旧属性皆为空值，不需要进行处理
       continue;

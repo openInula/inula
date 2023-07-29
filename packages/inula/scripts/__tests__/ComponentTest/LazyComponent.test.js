@@ -19,7 +19,7 @@ import { getLogUtils } from '../jest/testUtils';
 
 describe('LazyComponent Test', () => {
   const LogUtils = getLogUtils();
-  const mockImport = jest.fn(async (component) => {
+  const mockImport = jest.fn(async component => {
     return { default: component };
   });
 
@@ -83,9 +83,7 @@ describe('LazyComponent Test', () => {
         return { message: error.message };
       }
       render() {
-        return this.state.message
-          ? <h2>Error: {this.state.message}</h2>
-          : this.props.children;
+        return this.state.message ? <h2>Error: {this.state.message}</h2> : this.props.children;
       }
     }
 
@@ -137,22 +135,19 @@ describe('LazyComponent Test', () => {
       state = {
         catchError: false,
         error: null,
-        componentStack: null
+        componentStack: null,
       };
       componentDidCatch(error, info) {
-        if(error){
+        if (error) {
           this.setState({
             catchError: true,
             error,
-            componentStack: info.componentStack
+            componentStack: info.componentStack,
           });
         }
-
       }
       render() {
-        return this.state.catchError
-          ? <h2>Error: {this.state.error.message}</h2>
-          : this.props.children;
+        return this.state.catchError ? <h2>Error: {this.state.error.message}</h2> : this.props.children;
       }
     }
 

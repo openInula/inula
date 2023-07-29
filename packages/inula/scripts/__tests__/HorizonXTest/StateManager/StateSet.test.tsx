@@ -72,13 +72,13 @@ describe('测试store中的Set', () => {
   const newPerson = { name: 'p3', age: 3 };
   function Parent(props) {
     const userStore = useUserStore();
-    const addOnePerson = function() {
+    const addOnePerson = function () {
       userStore.addOnePerson(newPerson);
     };
-    const delOnePerson = function() {
+    const delOnePerson = function () {
       userStore.delOnePerson(newPerson);
     };
-    const clearPersons = function() {
+    const clearPersons = function () {
       userStore.clearPersons();
     };
 

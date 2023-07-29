@@ -163,11 +163,14 @@ describe('MouseEvent Test', () => {
     });
 
     it('KeyboardEvent.getModifierState should not fail', () => {
-      const input = Inula.render(<input
-        onMouseDown={(e) => {
-          e.getModifierState('CapsLock');
-        }}
-      />, container);
+      const input = Inula.render(
+        <input
+          onMouseDown={e => {
+            e.getModifierState('CapsLock');
+          }}
+        />,
+        container
+      );
       const event = new MouseEvent('mousedown', {
         relatedTarget: null,
         bubbles: true,

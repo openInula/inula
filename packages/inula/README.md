@@ -1,5 +1,7 @@
 # 欢迎使用 InulaJS!
+
 ## 项目介绍：
+
 InulaJS 是用于构建用户界面的Javascript库，与React保持一致API的特性，
 同时可以无缝兼容到React的相关生态（react-redux、react-router、react-intl、axios等）。
 InulaJS 提供响应式API、相比virtual dom方式，提升渲染效率30%以上。
@@ -64,20 +66,24 @@ yarn add inulaJS
 ## 用户使用指南
 
 ### 创建应用
+
 #### 渲染入口
+
 InulaJS提供一个render方法，将InulaJS根组件绑定到DOM节点进行渲染：
 
 ```JavaScript
-import InulaJS from 'inulaJS';
+import Inula from 'inulaJS';
 import App from './components/App';
 
-InulaJS.render(<App />, document.querySelector('#root'));
+Inula.render(<App />, document.querySelector('#root'));
 ```
 
 #### 根组件
+
 InulaJS应用通常是一颗嵌套的、可重用的组件树组成。这里我们示例中根组件没有嵌套子组件，仅作为简单应用展示
+
 ```JavaScript
-import InulaJS from 'inulaJS';
+import Inula from 'inulaJS';
 import Box from './Box';
 const App = () => {
     return <p>Hello world!</p>;
@@ -87,25 +93,35 @@ export default App;
 ```
 
 ### jsx语法
+
 #### 基本语法
+
 jsx写法上和HTML类似，但是比HTML更加严格，标签必须闭合。组件返回的jsx标签必须包含在一个标签内。jsx中常量"greet"可以直接用双引号包裹赋值给className属性， style属性值则需要{{}}包裹，style属性名采用驼峰风格。
+
 ```JavaScript
 <div className="greet" style={{ fontSize: '16px'}}>
   <p>你好</p>
 </div>
 ```
+
 #### 变量绑定
+
 在jsx中，给一个属性绑定变量需要用{}包裹。将user的class和name字段绑定到dom节点上，如下所示
+
 ```JavaScript
 <div className={ user.class } style={{ fontSize: '16px'}}>
   <p>{ user.name }</p>
 </div>
 ```
+
 #### 事件绑定
+
 在jsx中，事件绑定需要在事件名前加'on‘，事件名采用驼峰风格，如onMouseMove。onClick事件绑定如下所示
+
 ```JavaScript
 <button onClick={(e)=>{console.log('click')}}></button>
 ```
+
 #### 在JSX中使用JavaScript
 
 在 JSX 中，可以使用大括号 `{}` 来嵌入 JavaScript 表达式和代码。这允许我们在 JSX 中使用变量、函数调用、条件语句等 JavaScript 功能，以便动态地生成和渲染组件。
@@ -146,7 +162,7 @@ const numbers = [1, 2, 3, 4, 5];
 const NumberList = () => {
   return (
     <ul>
-      {numbers.map((number) => (
+      {numbers.map(number => (
         <li key={number}>{number}</li>
       ))}
     </ul>
@@ -158,11 +174,7 @@ const NumberList = () => {
 
 ```jsx
 const ShowExample = ({ isShow }) => {
-  return (
-    <div>
-      {isShow && <p>这是一个简单示例</p>}
-    </div>
-  );
+  return <div>{isShow && <p>这是一个简单示例</p>}</div>;
 };
 ```
 
@@ -183,6 +195,7 @@ const Greeting = ({ name }) => {
 在上述示例中，如果 `name` 属性存在，则渲染 `name` 的值，否则渲染默认值 `'小明'`。
 
 ### 组件
+
 InulaJS界面开发都是以组件为基础的。组件可以将界面分为若干独立的，可重用的部分。组件通过嵌套、排列组成一颗组件树，将内部逻辑进行隔离。InulaJS可以支持函数式组件和class组件，这里不再对class组件进行介绍。
 
 #### props
@@ -463,34 +476,42 @@ alias: {
 - 其他有理由认定为违反职业操守的不当行为
 
 #### 责任和权力
+
 社区领袖有责任解释和落实我们所认可的行为准则，并妥善公正地对他们认为不当、威胁、冒犯或有害的任何行为采取纠正措施。
 
 社区领导有权力和责任删除、编辑或拒绝或拒绝与本行为准则不相符的评论（comment）、提交（commits）、代码、维基（wiki）编辑、议题（issues）或其他贡献，并在适当时机知采取措施的理由。
 
 #### 适用范围
+
 本行为准则适用于所有社区场合，也适用于在公共场所代表社区时的个人。
 
 代表社区的情形包括使用官方电子邮件地址、通过官方社交媒体帐户发帖或在线上或线下活动中担任指定代表。
 
 #### 监督
+
 辱骂、骚扰或其他不可接受的行为可通过 XX@XXX.com 向负责监督的社区领袖报告。 所有投诉都将得到及时和公平的审查和调查。
 
 所有社区领袖都有义务尊重任何事件报告者的隐私和安全。
 
 #### 参见
+
 本行为准则改编自 Contributor Covenant 2.1 版, 参见 https://www.contributor-covenant.org/version/2/1/code_of_conduct.html。
 
 ### 公正透明的开发流程
+
 我们所有的工作都会放在 [Gitee](https://www.gitee.com) 上。不管是核心团队的成员还是外部贡献者的 pull request 都需要经过同样流程的 review。
 
 ### 分支管理
+
 InulaJS长期维护XX分支。如果你要修复一个Bug或增加一个新的功能，那么请Pull Request到XX分支上
 
 ### Bug提交
+
 我们使用 Gitee Issues来进行Bug跟踪。在你发现Bug后，请通过我们提供的模板来提Issue，以便你发现的Bug能被快速解决。
 在你报告一个 bug 之前，请先确保不和已有Issue重复以及查阅了我们的用户使用指南。
 
 ### 新增功能
+
 如果你有帮助我们改进API或者新增功能的想法，我们同样推荐你使用我们提供Issue模板来新建一个添加新功能的 Issue。
 
 ### 第一次贡献

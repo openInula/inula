@@ -1,4 +1,4 @@
-import inula from 'inulajs';
+import Inula from 'inulajs';
 import App from './App';
 
-inula.render(<App />, document.getElementById('root'));
+Inula.render(<App />, document.getElementById('root'));

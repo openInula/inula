@@ -40,7 +40,8 @@ import { getNearestMountedVNode } from './utils';
  */
 
 function getWrapperEvents(nativeEventTarget, fromInst, toInst, nativeEvent, targetInst): (WrappedEvent | null)[] {
-  const vWindow = nativeEventTarget.window === nativeEventTarget ? nativeEventTarget : nativeEventTarget.ownerDocument.defaultView;
+  const vWindow =
+    nativeEventTarget.window === nativeEventTarget ? nativeEventTarget : nativeEventTarget.ownerDocument.defaultView;
 
   // 起点或者终点为空的话默认值为所在window
   const fromNode = fromInst?.realNode || vWindow;
@@ -65,7 +66,7 @@ function getWrapperEvents(nativeEventTarget, fromInst, toInst, nativeEvent, targ
 function getEndpointVNode(
   domEventName: string,
   targetInst: null | VNode,
-  nativeEvent: AnyNativeEvent,
+  nativeEvent: AnyNativeEvent
 ): (VNode | null)[] {
   let fromVNode;
   let toVNode;
@@ -90,9 +91,8 @@ export function getMouseEnterListeners(
   domEventName: string,
   targetInst: null | VNode,
   nativeEvent: AnyNativeEvent,
-  nativeEventTarget: null | EventTarget,
+  nativeEventTarget: null | EventTarget
 ): ListenerUnitList {
-
   // 获取起点和终点的VNode
   const [fromVNode, toVNode] = getEndpointVNode(domEventName, targetInst, nativeEvent);
   if (fromVNode === toVNode) {
@@ -105,5 +105,3 @@ export function getMouseEnterListeners(
   // 收集事件的监听方法
   return collectMouseListeners(leave, enter, fromVNode, toVNode);
 }
-
-

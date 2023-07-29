@@ -43,7 +43,9 @@ export function createWeakMapProxy(
 
     const value = rawObj.get(key);
     // 对于value也需要进一步代理
-    const valProxy = createProxy(value, {
+    const valProxy = createProxy(
+      value,
+      {
         current: change => {
           if (!change.parents) change.parents = [];
           change.parents.push(rawObj);

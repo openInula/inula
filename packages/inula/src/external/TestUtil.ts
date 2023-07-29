@@ -13,11 +13,10 @@
  * See the Mulan PSL v2 for more details.
  */
 
-
-import {asyncUpdates} from '../renderer/TreeBuilder';
-import {callRenderQueueImmediate} from '../renderer/taskExecutor/RenderQueue';
-import {hasAsyncEffects, runAsyncEffects} from '../renderer/submit/HookEffectHandler';
-import {isPromise} from '../renderer/ErrorHandler';
+import { asyncUpdates } from '../renderer/TreeBuilder';
+import { callRenderQueueImmediate } from '../renderer/taskExecutor/RenderQueue';
+import { hasAsyncEffects, runAsyncEffects } from '../renderer/submit/HookEffectHandler';
+import { isPromise } from '../renderer/ErrorHandler';
 
 interface Thenable {
   then(resolve: (val?: any) => void, reject: (err: any) => void): void;
@@ -63,7 +62,7 @@ function act(fun: () => void | Thenable): Thenable {
           },
           err => {
             reject(err);
-          },
+          }
         );
       },
     };
@@ -76,6 +75,4 @@ function act(fun: () => void | Thenable): Thenable {
   }
 }
 
-export {
-  act
-};
+export { act };

@@ -19,7 +19,7 @@ describe('useCallback Hook Test', () => {
   const { useState, useCallback } = Inula;
 
   it('测试useCallback', () => {
-    const App = (props) => {
+    const App = props => {
       const [num, setNum] = useState(0);
       const NumUseCallback = useCallback(() => {
         setNum(num + props.text);
