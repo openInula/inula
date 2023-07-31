@@ -17,8 +17,8 @@ const devServerOptions = {
     overlay: {
       errors: true,
       warnings: false,
-      runtimeErrors: (error) => {
-        if (error.message === "ResizeObserver loop limit exceeded") {
+      runtimeErrors: error => {
+        if (error.message === 'ResizeObserver loop limit exceeded') {
           return false;
         }
         return true;
