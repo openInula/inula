@@ -163,6 +163,16 @@ export function setLocale(language) {
 
 export function parseSearch(search) {
   const searchObj = {};
-  search.replace(/([^?&=]+)=([^&]+)/g, (_, k, v) => (searchObj[k] = decodeURI(v)));
+  search.replace(/([^?&=]+)=([^&]+)/g, (_, k, v) => {
+    if (k === "address") {
+      if (searchObj[k]) {
+        searchObj[k].push(decodeURI(v));
+      } else {
+        searchObj[k] = [decodeURI(v)]
+      }
+    } else {
+      searchObj[k] = decodeURI(v)
+    }
+  });
   return searchObj;
 }
