@@ -22,7 +22,6 @@ function User({ location, history }) {
 
   const handleRefresh = newQuery => {
     const { search, pathname } = location;
-
     const params = {
       ...parseSearch(search),
       ...newQuery,
