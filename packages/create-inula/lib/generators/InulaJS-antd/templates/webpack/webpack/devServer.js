@@ -13,6 +13,18 @@ const devServerOptions = {
   port: '8890',
   open: true,
   historyApiFallback: true, // 使用HTML5 History API时，/dashboard 会返回404，需要这个配置项解决
+  client: {
+    overlay: {
+      errors: true,
+      warnings: false,
+      runtimeErrors: (error) => {
+        if (error.message === "ResizeObserver loop limit exceeded") {
+          return false;
+        }
+        return true;
+      },
+    },
+  },
 };
 
 const server = new WebpackDevServer(compiler, devServerOptions);
