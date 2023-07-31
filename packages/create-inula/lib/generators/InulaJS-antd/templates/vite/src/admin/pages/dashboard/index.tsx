@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Row, Col, Card } from 'antd';
 import Color from '../../utils/theme';
 import { Page, ScrollBar } from '../../components';
-import { NumberCard, Quote, Sales, Weather, RecentSales, Comments, Completed, Browser, Cpu, User } from './components';
+import { NumberCard, Quote, Sales, Weather } from './components';
 import styles from './index.module.less';
 import store from 'store';
 import { getStore } from './model';
@@ -28,12 +28,6 @@ function Dashboard() {
   const sales = st.sales;
   const quote = st.quote;
   const numbers = st.numbers;
-  const recentSales = st.recentSales;
-  const comments = st.comments;
-  const completed = st.completed;
-  const browser = st.browser;
-  const cpu = st.cpu;
-  const user = st.user;
 
   const numberCards = numbers.map((item, key) => (
     <Col key={key} lg={6} md={12}>
@@ -87,45 +81,6 @@ function Dashboard() {
             </Col>
           </Row>
         </Col>
-        {/* <Col lg={12} md={24}>
-          <Card bordered={false} {...bodyStyle}>
-            <RecentSales data={recentSales} />
-          </Card>
-        </Col>
-        <Col lg={12} md={24}>
-          <Card bordered={false} {...bodyStyle}>
-            <ScrollBar>
-              <Comments data={comments} />
-            </ScrollBar>
-          </Card>
-        </Col> */}
-        {/* <Col lg={24} md={24}>
-          <Card
-            bordered={false}
-            bodyStyle={{
-              padding: '24px 36px 24px 0',
-            }}
-          >
-            <Completed data={completed} />
-          </Card>
-        </Col> */}
-        {/* <Col lg={8} md={24}>
-          <Card bordered={false} {...bodyStyle}>
-            <Browser data={browser} />
-          </Card>
-        </Col>
-        <Col lg={8} md={24}>
-          <Card bordered={false} {...bodyStyle}>
-            <ScrollBar>
-              <Cpu {...cpu} />
-            </ScrollBar>
-          </Card>
-        </Col>
-        <Col lg={8} md={24}>
-          <Card bordered={false} bodyStyle={{ ...bodyStyle.bodyStyle, padding: 0 }}>
-            <User {...user} avatar={avatar} username={username} />
-          </Card>
-        </Col> */}
       </Row>
     </Page>
   );

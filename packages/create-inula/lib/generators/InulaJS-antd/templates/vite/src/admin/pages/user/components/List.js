@@ -1,9 +1,8 @@
 import React from 'react';
-import { Table, Modal, Avatar } from 'antd';
+import { Table, Modal } from 'antd';
 import { DropOption } from 'components';
 import { t } from 'utils/intl';
 import { Trans } from 'utils/intl';
-import { Link } from 'react-router-dom';
 import styles from './List.module.less';
 
 const { confirm } = Modal;
@@ -23,14 +22,6 @@ function List({ onDeleteItem, onEditItem, ...tableProps }) {
   };
 
   const columns = [
-    {
-      title: <Trans>Avatar</Trans>,
-      dataIndex: 'avatar',
-      key: 'avatar',
-      width: '7%',
-      fixed: 'left',
-      render: text => <Avatar style={{ marginLeft: 8 }} src={text} />,
-    },
     {
       title: <Trans>Name</Trans>,
       dataIndex: 'name',

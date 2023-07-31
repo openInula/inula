@@ -1,6 +1,5 @@
 import { Constant } from './_utils';
 import Mock from 'mockjs';
-import qs from 'qs';
 import { randomAvatar } from './_utils';
 import url from 'url';
 
@@ -18,9 +17,6 @@ let usersListData = Mock.mock({
       isMale: '@boolean',
       email: '@email',
       createTime: '@datetime',
-      avatar() {
-        return randomAvatar();
-      },
     },
   ],
 });
@@ -111,31 +107,38 @@ export default [
     response: req => {
       const { query } = url.parse(req.url, true);
       let { pageSize, page, ...other } = query;
+      if (other['address[]']) {
+        other['address'] = other['address[]'];
+        delete other['address[]'];
+      }
       pageSize = pageSize || 10;
       page = page || 1;
 
       let newData = database;
       for (let key in other) {
-        if ({}.hasOwnProperty.call(other, key)) {
-          newData = newData.filter(item => {
-            if ({}.hasOwnProperty.call(item, key)) {
-              if (key === 'address') {
-                return other[key].every(iitem => item[key].indexOf(iitem) > -1);
-              } else if (key === 'createTime') {
-                const start = new Date(other[key][0]).getTime();
-                const end = new Date(other[key][1]).getTime();
-                const now = new Date(item[key]).getTime();
-
-                if (start && end) {
-                  return now >= start && now <= end;
+        newData = newData.filter(item => {
+          if ({}.hasOwnProperty.call(item, key)) {
+            if (key === 'address') {
+              for (const addr of other[key]) {
+                if (item[key].indexOf(addr) === -1) {
+                  return false;
                 }
-                return true;
               }
-              return String(item[key]).trim().indexOf(decodeURI(other[key]).trim()) > -1;
+              return true;
+            } else if (key === 'createTime') {
+              const start = new Date(other[key][0]).getTime();
+              const end = new Date(other[key][1]).getTime();
+              const now = new Date(item[key]).getTime();
+
+              if (start && end) {
+                return now >= start && now <= end;
+              }
+              return true;
             }
-            return true;
-          });
-        }
+            return String(item[key]).trim().indexOf(decodeURI(other[key]).trim()) > -1;
+          }
+          return false;
+        });
       }
       return {
         data: newData.slice((page - 1) * pageSize, page * pageSize),
