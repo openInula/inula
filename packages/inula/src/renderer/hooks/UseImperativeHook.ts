@@ -19,7 +19,7 @@ import { throwNotInFuncError } from './BaseHook';
 import type { Ref } from './HookType';
 import { isNotNull } from '../../dom/utils/Common';
 
-function effectFunc<R>(func: () => R, ref: Ref<R> | ((any) => any) | null): (() => void) | null {
+function effectFunc<R>(func: () => R, ref: Ref<R> | ((any) => any) | null): (() => void) | void {
   if (typeof ref === 'function') {
     const value = func();
     ref(value);
@@ -34,7 +34,6 @@ function effectFunc<R>(func: () => R, ref: Ref<R> | ((any) => any) | null): (() 
       ref.current = null;
     };
   }
-  return null;
 }
 
 export function useImperativeHandleImpl<R>(
