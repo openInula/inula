@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Inula from '../../../libs/inula/index';
+import * as Inula from '../../../src/index';
 
 describe('Dom Attribute', () => {
   it('属性值为null或undefined时，不会设置此属性', () => {

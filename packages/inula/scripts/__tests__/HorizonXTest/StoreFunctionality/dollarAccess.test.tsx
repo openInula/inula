@@ -14,7 +14,7 @@
  */
 
 //@ts-ignore
-import * as Inula from '../../../../libs/inula/index';
+import * as Inula from '../../../../src/index';
 import { triggerClickEvent } from '../../jest/commonComponents';
 import { useLogStore } from './store';
 import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';

@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Inula from '../../../libs/inula/index';
+import * as Inula from '../../../src/index';
 import { getLogUtils } from '../jest/testUtils';
 
 describe('MouseEvent Test', () => {

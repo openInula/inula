@@ -14,9 +14,9 @@
  */
 
 //@ts-ignore
-import * as Inula from '../../../../libs/inula/index';
+import * as Inula from '../../../../src/index';
 import * as LogUtils from '../../jest/logUtils';
-import { clearStore, createStore, useStore } from '../../../../libs/inula/src/inulax/store/StoreHandler';
+import { clearStore, createStore, useStore } from '../../../../src/inulax/store/StoreHandler';
 import { App, Text, triggerClickEvent } from '../../jest/commonComponents';
 
 describe('测试store中的混合类型变化', () => {

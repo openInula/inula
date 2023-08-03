@@ -14,7 +14,7 @@
  */
 
 /* eslint-disable @typescript-eslint/no-empty-function */
-import * as Inula from '../../../libs/inula/index';
+import * as Inula from '../../../src/index';
 import { getLogUtils } from '../jest/testUtils';
 
 describe('Dom Input', () => {

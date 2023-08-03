@@ -14,7 +14,7 @@
  */
 
 //@ts-ignore
-import * as Inula from '../../../../libs/inula/index';
+import * as Inula from '../../../../src/index';
 import {
   batch,
   connect,
@@ -25,10 +25,10 @@ import {
   useStore,
   createSelectorHook,
   createDispatchHook,
-} from '../../../../libs/inula/src/inulax/adapters/redux';
+} from '../../../../src/inulax/adapters/redux';
 import { triggerClickEvent } from '../../jest/commonComponents';
 import { describe, it, beforeEach, afterEach, expect } from '@jest/globals';
-import { ReduxStoreHandler } from '../../../../libs/inula/src/inulax/adapters/redux';
+import { ReduxStoreHandler } from '../../../../src/inulax/adapters/redux';
 
 const BUTTON = 'button';
 const BUTTON2 = 'button2';

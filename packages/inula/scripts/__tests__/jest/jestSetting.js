@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { unmountComponentAtNode } from '../../../libs/inula/src/dom/DOMExternal';
+import { unmountComponentAtNode } from '../../../src/dom/DOMExternal';
 import { getLogUtils } from './testUtils';
 
 const LogUtils = getLogUtils();

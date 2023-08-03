@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Inula from '../../../libs/inula/index';
+import * as Inula from '../../../src/index';
 describe('FunctionComponent Test', () => {
   it('渲染无状态组件', () => {
     const App = props => {

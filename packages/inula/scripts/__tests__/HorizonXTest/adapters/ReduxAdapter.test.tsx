@@ -14,13 +14,13 @@
  */
 
 //@ts-ignore
-import * as Inula from '../../../../libs/inula/index';
+import * as Inula from '../../../../src/index';
 import {
   createStore,
   applyMiddleware,
   combineReducers,
   bindActionCreators,
-} from '../../../../libs/inula/src/inulax/adapters/redux';
+} from '../../../../src/inulax/adapters/redux';
 import { describe, it, expect } from '@jest/globals';
 
 describe('Redux adapter', () => {

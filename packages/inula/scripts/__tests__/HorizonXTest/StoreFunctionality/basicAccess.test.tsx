@@ -14,11 +14,11 @@
  */
 
 //@ts-ignore
-import Inula from '../../../../libs/inula/index';
+import Inula from '../../../../src/index';
 import { triggerClickEvent } from '../../jest/commonComponents';
 import { useLogStore } from './store';
 import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
-import { createStore } from '../../../../libs/inula/src/inulax/store/StoreHandler';
+import { createStore } from '../../../../src/inulax/store/StoreHandler';
 
 const { unmountComponentAtNode } = Inula;
 

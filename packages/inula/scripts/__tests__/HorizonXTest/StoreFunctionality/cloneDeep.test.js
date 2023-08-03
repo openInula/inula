@@ -13,9 +13,9 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Inula from '../../../../libs/inula/index';
-import { clearStore, createStore, useStore } from '../../../../libs/inula/src/inulax/store/StoreHandler';
-import { OBSERVER_KEY } from '../../../../libs/inula/src/inulax/Constants';
+import * as Inula from '../../../../src/index';
+import { clearStore, createStore, useStore } from '../../../../src/inulax/store/StoreHandler';
+import { OBSERVER_KEY } from '../../../../src/inulax/Constants';
 import { App, Text, triggerClickEvent } from '../../jest/commonComponents';
 
 describe('测试对store.state对象进行深度克隆', () => {

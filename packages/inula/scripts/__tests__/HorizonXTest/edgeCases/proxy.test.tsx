@@ -13,8 +13,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { createProxy } from '../../../../libs/inula/src/inulax/proxy/ProxyHandler';
-import { readonlyProxy } from '../../../../libs/inula/src/inulax/proxy/readonlyProxy';
+import { createProxy } from '../../../../src/inulax/proxy/ProxyHandler';
+import { readonlyProxy } from '../../../../src/inulax/proxy/readonlyProxy';
 import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
 
 describe('Proxy', () => {

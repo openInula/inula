@@ -13,9 +13,9 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Inula from '../../../../libs/inula/index';
+import * as Inula from '../../../../src/index';
 import * as LogUtils from '../../jest/logUtils';
-import { clearStore, createStore, useStore } from '../../../../libs/inula/src/inulax/store/StoreHandler';
+import { clearStore, createStore, useStore } from '../../../../src/inulax/store/StoreHandler';
 import { App, Text, triggerClickEvent } from '../../jest/commonComponents';
 import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
 

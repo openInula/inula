@@ -20,4 +20,4 @@ global.MessageChannel = function MessageChannel() {
     postMessage() {},
   };
 };
-global.__VERSION__ = require('../../../libs/inula/package.json').version;
+global.__VERSION__ = require('../../../package.json').version;

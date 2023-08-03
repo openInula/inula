@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Inula from '../../../libs/inula/index';
+import * as Inula from '../../../src/index';
 
 describe('Class refs Test', () => {
   it('Parent can get Child instance by refs', function () {

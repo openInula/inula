@@ -13,8 +13,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Inula from '../../../../libs/inula/index';
-import { createStore } from '../../../../libs/inula/src/inulax/store/StoreHandler';
+import * as Inula from '../../../../src/index';
+import { createStore } from '../../../../src/inulax/store/StoreHandler';
 import { triggerClickEvent } from '../../jest/commonComponents';
 
 const { unmountComponentAtNode } = Inula;

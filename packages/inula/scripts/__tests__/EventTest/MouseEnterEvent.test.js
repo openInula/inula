@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Inula from '../../../libs/inula/index';
+import * as Inula from '../../../src/index';
 
 describe('mouseenter和mouseleave事件测试', () => {
   let container;

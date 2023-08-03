@@ -13,11 +13,11 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as Inula from '../../../../libs/inula/index';
+import * as Inula from '../../../../src/index';
 import * as LogUtils from '../../jest/logUtils';
-import { clearStore, createStore, useStore } from '../../../../libs/inula/src/inulax/store/StoreHandler';
+import { clearStore, createStore, useStore } from '../../../../src/inulax/store/StoreHandler';
 import { Text, triggerClickEvent } from '../../jest/commonComponents';
-import { getObserver } from '../../../../libs/inula/src/inulax/proxy/ProxyHandler';
+import { getObserver } from '../../../../src/inulax/proxy/ProxyHandler';
 import { describe, it, beforeEach, afterEach, expect } from '@jest/globals';
 
 describe('测试VNode清除时，对引用清除', () => {
