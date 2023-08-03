@@ -1,4 +1,4 @@
-import { createStore, useStore } from '../../../../libs/inula';
+import { createStore, useStore } from '../../../../src/index';
 import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
 
 describe('Using deep variables', () => {

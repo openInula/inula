@@ -14,7 +14,7 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import * as Inula from '../../../libs/inula/index';
+import * as Inula from '../../../src/index';
 import { getLogUtils } from './testUtils';
 
 export const App = props => {

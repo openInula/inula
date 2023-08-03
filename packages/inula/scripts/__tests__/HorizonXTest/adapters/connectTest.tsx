@@ -1,7 +1,7 @@
-import { createElement } from '../../../../libs/inula/src/external/JSXElement';
-import { createDomTextVNode } from '../../../../libs/inula/src/renderer/vnode/VNodeCreator';
-import { createStore } from '../../../../libs/inula/src/inulax/adapters/redux';
-import { connect } from '../../../../libs/inula/src/inulax/adapters/reduxReact';
+import { createElement } from '../../../../src/external/JSXElement';
+import { createDomTextVNode } from '../../../../src/renderer/vnode/VNodeCreator';
+import { createStore } from '../../../../src/inulax/adapters/redux';
+import { connect } from '../../../../src/inulax/adapters/reduxReact';
 
 createStore((state: number = 0, action): number => {
   if (action.type === 'add') return state + 1;

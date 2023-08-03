@@ -1,4 +1,4 @@
-import { resolveMutation } from '../../../../libs/inula/src/inulax/CommonUtils';
+import { resolveMutation } from '../../../../src/inulax/CommonUtils';
 
 describe('Mutation resolve', () => {
   it('should resolve mutation different types', () => {

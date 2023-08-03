@@ -13,8 +13,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { createStore } from '../../../../libs/inula';
-import { watch } from '../../../../libs/inula';
+import { createStore } from '../../../../src/index';
+import { watch } from '../../../../src/index';
 
 describe('watch', () => {
   it('shouhld watch primitive state variable', async () => {
