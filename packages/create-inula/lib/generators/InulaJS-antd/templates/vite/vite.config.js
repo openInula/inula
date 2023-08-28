@@ -22,7 +22,13 @@ export default defineConfig({
     react({
       babel: {
         plugins: [
-          '@babel/plugin-transform-react-jsx',
+          [
+            "@babel/plugin-transform-react-jsx", 
+            { 
+              "runtime": "automatic", // 新增 
+              "importSource": "inulajs" // 新增
+            } 
+          ],
           '@babel/plugin-proposal-class-properties',
           '@babel/plugin-syntax-dynamic-import',
           '@babel/plugin-proposal-export-default-from',
