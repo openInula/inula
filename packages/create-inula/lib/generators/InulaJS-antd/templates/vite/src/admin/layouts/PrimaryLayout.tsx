@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment } from 'react';
+import Inula, { useEffect, Fragment } from 'inulajs';
 import PropTypes from 'prop-types';
 import { MyLayout, GlobalFooter } from '../components';
 import { BackTop, Layout, Drawer } from 'antd';

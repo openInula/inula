@@ -1,4 +1,4 @@
-import React from 'react';
+import Inula from 'inulajs';
 import { Redirect } from 'react-router-dom';
 
 function Index() {

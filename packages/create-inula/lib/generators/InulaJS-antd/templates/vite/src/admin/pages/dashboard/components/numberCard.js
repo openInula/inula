@@ -1,4 +1,4 @@
-import React from 'react';
+import Inula from 'inulajs';
 import PropTypes from 'prop-types';
 import { Card } from 'antd';
 import CountUp from 'react-countup';

@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import Inula, { PureComponent } from 'inulajs';
 import PropTypes from 'prop-types';
 import { Page } from 'components';
 import styles from './index.less';

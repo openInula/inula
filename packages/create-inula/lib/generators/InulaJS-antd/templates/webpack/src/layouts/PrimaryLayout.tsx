@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment } from 'react';
+import Inula, { useEffect, Fragment } from 'inulajs';
 import { MyLayout, GlobalFooter } from '../components';
 import { BackTop, Layout } from 'antd';
 import { pathToRegexp } from 'path-to-regexp';

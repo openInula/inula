@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import Inula, { Suspense } from 'inulajs';
 import { ConfigProvider } from 'antd';
 import { IntlProvider } from 'react-intl';
 import { getLocale } from '../utils';

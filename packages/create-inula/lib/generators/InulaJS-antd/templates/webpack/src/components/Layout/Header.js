@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import Inula, { Fragment } from 'inulajs';
 import { Menu, Layout, Avatar, Popover, List } from 'antd';
 import { Ellipsis } from 'components';
 import { RightOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';

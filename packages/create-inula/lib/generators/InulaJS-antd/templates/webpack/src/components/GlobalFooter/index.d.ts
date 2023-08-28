@@ -1,14 +1,14 @@
-import React from 'react';
+import Inula from 'inulajs';
 export interface GlobalFooterProps {
   links?: Array<{
     key?: string;
-    title: React.ReactNode;
+    title: Inula.ReactNode;
     href: string;
     blankTarget?: boolean;
   }>;
-  copyright?: React.ReactNode;
-  style?: React.CSSProperties;
+  copyright?: Inula.ReactNode;
+  style?: Inula.CSSProperties;
   className?: string;
 }
 
-export default class GlobalFooter extends React.Component<GlobalFooterProps, any> {}
+export default class GlobalFooter extends Inula.Component<GlobalFooterProps, any> {}

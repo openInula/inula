@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import Inula, { Fragment } from 'inulajs';
 import { Breadcrumb } from 'antd';
 import { Link } from 'react-router-dom';
 import { t } from 'utils/intl';

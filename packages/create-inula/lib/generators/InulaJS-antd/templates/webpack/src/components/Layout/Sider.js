@@ -1,4 +1,4 @@
-import React from 'react';
+import Inula from 'inulajs';
 import { Switch, Layout } from 'antd';
 import { t } from 'utils/intl';
 import { Trans } from 'utils/intl';

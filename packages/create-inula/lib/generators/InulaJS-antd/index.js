@@ -1,4 +1,3 @@
-const debug = require('debug')('create-umi:generator');
 const BasicGenerator = require('../../BasicGenerator');
 const fs = require('fs');
 

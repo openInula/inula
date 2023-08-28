@@ -1,4 +1,4 @@
-import React from 'react';
+import Inula from 'inulajs';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import { Table, Tag } from 'antd';

@@ -1,4 +1,4 @@
-import React from 'react';
+import Inula from 'inulajs';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import styles from './Loader.module.less';
