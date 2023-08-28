@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "vite",
-    "build": "vite build",
+    "build": "vite build"
   },
   "dependencies": {
     "@ant-design/icons": "^5.0.1",
