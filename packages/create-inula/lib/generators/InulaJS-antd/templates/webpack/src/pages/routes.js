@@ -1,4 +1,4 @@
-import React, { lazy } from 'react';
+import Inula, { lazy } from 'inulajs';
 
 export function getRoutes() {
   const routes = [

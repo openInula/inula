@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import Inula, { Fragment } from 'inulajs';
 import { Helmet } from 'react-helmet';
 import { queryLayout } from 'utils';
 import config from 'utils/config';

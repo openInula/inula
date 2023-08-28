@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import Inula, { useEffect } from 'inulajs';
 import { Row, Col, Button, Popconfirm } from 'antd';
 import { Page } from '../../components';
 import { stringify } from 'qs';

@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import Inula, { useState, Fragment } from 'inulajs';
 import PropTypes from 'prop-types';
 import { Menu } from 'antd';
 import { NavLink } from 'react-router-dom';

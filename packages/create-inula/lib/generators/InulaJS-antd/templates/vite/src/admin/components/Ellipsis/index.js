@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import Inula, { Component } from 'inulajs';
 import { Tooltip } from 'antd';
 import classNames from 'classnames';
 import styles from './index.module.less';

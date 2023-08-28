@@ -1,4 +1,4 @@
-import React from 'react';
+import Inula from 'inulajs';
 import classNames from 'classnames';
 import styles from './index.module.less';
 

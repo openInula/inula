@@ -1,4 +1,4 @@
-import React from 'react';
+import Inula from 'inulajs';
 import { Table, Modal, Avatar } from 'antd';
 import { DropOption } from 'components';
 import { t } from 'utils/intl';

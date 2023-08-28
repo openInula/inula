@@ -1,4 +1,4 @@
-import React from 'react';
+import Inula from 'inulajs';
 import { TooltipProps } from 'antd/lib/tooltip';
 
 export interface EllipsisTooltipProps extends TooltipProps {
@@ -10,7 +10,7 @@ export interface EllipsisProps {
   tooltip?: boolean | EllipsisTooltipProps;
   length?: number;
   lines?: number;
-  style?: React.CSSProperties;
+  style?: Inula.CSSProperties;
   className?: string;
   fullWidthRecognition?: boolean;
 }
@@ -18,4 +18,4 @@ export interface EllipsisProps {
 export function getStrFullLength(str: string): number;
 export function cutStrByFullLength(str: string, maxLength: number): string;
 
-export default class Ellipsis extends React.Component<EllipsisProps, any> {}
+export default class Ellipsis extends Inula.Component<EllipsisProps, any> {}

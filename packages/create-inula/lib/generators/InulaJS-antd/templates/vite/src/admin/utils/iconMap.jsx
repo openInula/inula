@@ -1,4 +1,4 @@
-import React from 'react';
+import Inula from 'inulajs';
 import {
   PayCircleOutlined,
   ShoppingCartOutlined,

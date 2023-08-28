@@ -1,4 +1,4 @@
-import React from 'react';
+import Inula from 'inulajs';
 import PropTypes from 'prop-types';
 import styles from './FilterItem.module.less';
 

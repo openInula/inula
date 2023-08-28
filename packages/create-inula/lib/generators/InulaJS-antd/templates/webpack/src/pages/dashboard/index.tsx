@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import Inula, { useEffect } from 'inulajs';
 import { Row, Col, Card } from 'antd';
 import { Color } from '../../utils';
 import { Page, ScrollBar } from '../../components';
