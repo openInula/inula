@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node ./webpack/devServer.js admin",
-    "build": "webpack --config ./webpack/admin/webpack.prod.js"
+    "start": "node ./webpack/devServer.js",
+    "build": "webpack --config ./webpack/webpack.prod.js"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "7.18.6",
