@@ -18,7 +18,7 @@ const devServerOptions = {
       errors: true,
       warnings: false,
       runtimeErrors: error => {
-        if (error.message === 'ResizeObserver loop limit exceeded') {
+        if (error.message.indexOf('ResizeObserver') !== -1) {
           return false;
         }
         return true;
