@@ -1,7 +1,7 @@
 import { Token, TokenType } from './types';
 import { cleanPath } from './utils';
 
-const validChar = /[^/:*()]/;
+const validChar = /[^/:()*?$^+]/;
 
 // 对Url模板进行词法解析，解析结果为Tokens
 export function lexer(path: string): Token[] {
@@ -63,6 +63,11 @@ export function lexer(path: string): Token[] {
     }
     if (curChar === ')') {
       tokens.push({ type: TokenType.RBracket, value: ')' });
+      skipChar(1);
+      continue;
+    }
+    if (['*', '?', '$', '^', '+'].includes(curChar)) {
+      tokens.push({ type: TokenType.Pattern, value: curChar });
       skipChar(1);
       continue;
     }

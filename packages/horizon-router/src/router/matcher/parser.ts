@@ -39,6 +39,12 @@ const BASE_PARAM_PATTERN = '[^/]+';
 
 const DefaultDelimiter = '/#?';
 
+/**
+ * URL匹配整体流程
+ * 1.词法解析，将URL模板解析为Token
+ * 2.使用Token生成正则表达式
+ * 3.利用正则表达式解析URL中参数或填充URL模板
+ */
 export function createPathParser<Str extends string>(pathname: Str, option?: ParserOption): Parser<GetURLParams<Str>>;
 export function createPathParser<P = unknown>(pathname: string, option?: ParserOption): Parser<P>;
 export function createPathParser<P = unknown>(pathname: string, option: ParserOption = defaultOption): Parser<P> {
@@ -47,12 +53,7 @@ export function createPathParser<P = unknown>(pathname: string, option: ParserOp
     strictMode = defaultOption.strictMode,
     exact = defaultOption.exact,
   } = option;
-  /**
-   * URL匹配整体流程
-   * 1.词法解析，将URL模板解析为Token
-   * 2.使用Token生成正则表达式
-   * 3.利用正则表达式解析URL中参数或填充URL模板
-   */
+
   let pattern = '^';
   const keys: string[] = [];
   const scores: number[] = [];
@@ -61,29 +62,61 @@ export function createPathParser<P = unknown>(pathname: string, option: ParserOp
   const onlyHasWildCard = tokens.length === 1 && tokens[0].type === TokenType.WildCard;
   const tokenCount = tokens.length;
   const lastToken = tokens[tokenCount - 1];
+  let asteriskCount = 0;
 
+  /**
+   * 用于支持URL中的可选参数/:parma?
+   * @description 向前扫描到下一个分隔符/，检查其中是否有?
+   * @param currentIdx
+   */
+  const lookToNextDelimiter = (currentIdx: number): boolean => {
+    let hasOptionalParam = false;
+    while (currentIdx < tokens.length && tokens[currentIdx].type !== TokenType.Delimiter) {
+      if (tokens[currentIdx].value === '?' || tokens[currentIdx].value === '*') {
+        hasOptionalParam = true;
+      }
+      currentIdx++;
+    }
+    return hasOptionalParam;
+  };
   for (let tokenIdx = 0; tokenIdx < tokenCount; tokenIdx++) {
     const token = tokens[tokenIdx];
     const nextToken = tokens[tokenIdx + 1];
     switch (token.type) {
       case TokenType.Delimiter:
-        pattern += '/';
+        const hasOptional = lookToNextDelimiter(tokenIdx + 1);
+        pattern += `/${hasOptional ? '?' : ''}`;
         break;
       case TokenType.Static:
         pattern += token.value.replace(REGEX_CHARS_RE, '\\$&');
+        if (nextToken && nextToken.type === TokenType.Pattern) {
+          pattern += `(.${nextToken.value})`;
+          keys.push(String(asteriskCount));
+          asteriskCount++;
+        }
         scores.push(MatchScore.static);
         break;
       case TokenType.Param:
+        // 动态参数支持形如/:param、/:param*、/:param?、/:param(\\d+)的形式
         let paramRegexp = '';
-        if (nextToken && nextToken.type === TokenType.LBracket) {
+        if (nextToken) {
+          switch (nextToken.type) {
+            case TokenType.LBracket:
           // 跳过当前Token和左括号
           tokenIdx += 2;
           while (tokens[tokenIdx].type !== TokenType.RBracket) {
             paramRegexp += tokens[tokenIdx].value;
             tokenIdx++;
+              }
+              paramRegexp = `(${paramRegexp})`;
+              break;
+            case TokenType.Pattern:
+              tokenIdx++;
+              paramRegexp += `(${nextToken.value === '*' ? '.*' : BASE_PARAM_PATTERN})${nextToken.value}`;
+              break;
           }
         }
-        pattern += paramRegexp ? `((?:${paramRegexp}))` : `(${BASE_PARAM_PATTERN})`;
+        pattern += paramRegexp ? `(?:${paramRegexp})` : `(${BASE_PARAM_PATTERN})`;
         keys.push(token.value);
         scores.push(MatchScore.param);
         break;
@@ -139,7 +172,7 @@ export function createPathParser<P = unknown>(pathname: string, option: ParserOp
           ...new Array(value.length).fill(MatchScore.wildcard),
         );
       } else {
-        params[key] = param ? param : [];
+        params[key] = param ? param : undefined;
       }
     }
 

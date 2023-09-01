@@ -34,10 +34,13 @@ describe('parser test', () => {
     const parser = createPathParser('/www.a.com/a/*', { exact: true });
     const params = parser.parse('/www.a.com/a/b1/c1/d1');
     const params1 = parser.parse('/www.a.com/a/b1/c1/');
+    const params2 = parser.parse('/www.a.com/a/b1/');
     expect(params!.params).toStrictEqual({ '*': ['b1', 'c1', 'd1'] });
     expect(params!.score).toStrictEqual([10, 10, 3, 3, 3]);
     expect(params1!.params).toStrictEqual({ '*': ['b1', 'c1'] });
     expect(params1!.score).toStrictEqual([10, 10, 3, 3]);
+    expect(params2!.params).toStrictEqual({ '*': ['b1'] });
+    expect(params2!.score).toStrictEqual([10, 10, 3]);
   });
 
   it('compile wildcard', function () {
@@ -191,9 +194,30 @@ describe('parser test', () => {
     });
   });
 
+  it('wildcard after dynamic param with pattern', () => {
+    const parser = createPathParser('/detail/:action(info)/*');
+    const res = parser.parse('/detail/info/123');
+    expect(res).toEqual({
+      isExact: true,
+      path: '/detail/:action(info)/*',
+      url: '/detail/info/123',
+      score: [10, 6, 3],
+      params: { action: 'info', '*': ['123'] },
+    });
+  });
+  it('dynamic param with regexp pattern after wildcard', () => {
+    const parser = createPathParser('/detail/*/:action(\\d+)');
+    const res = parser.parse('/detail/abc/xyz/123');
+    expect(res).toEqual({
+      isExact: true,
+      path: '/detail/*/:action(\\d+)',
+      url: '/detail/abc/xyz/123',
+      score: [10, 3, 3, 6],
+      params: { action: '123', '*': ['abc', 'xyz'] },
+    });
+  });
   it('dynamic param with regexp pattern', () => {
     const parser = createPathParser('/detail/:action(\\d+)');
-    console.log(parser.regexp);
     const res = parser.parse('/detail/123');
     expect(res).toEqual({
       isExact: true,
@@ -243,6 +267,123 @@ describe('parser test', () => {
     expect(res!.params).toEqual({
       '*': ['d', 'x', 'yy', 'zzz'],
       c: 'abc',
+    });
+  });
+  it('support wildcard "*" in end of static path 1', function () {
+    const parser = createPathParser('/home*');
+    const res = parser.parse('/homeAbc/a123');
+    expect(res).toEqual({
+      isExact: true,
+      path: '/home*',
+      url: '/homeAbc/a123',
+      score: [10],
+      params: { '0': 'Abc/a123' },
+    });
+  });
+  it('support wildcard "*" in url and dynamic param at end', function () {
+    const parser = createPathParser('/home*/:a+');
+    const res = parser.parse('/homeAbc/a');
+    expect(res).toEqual({
+      path: '/home*/:a+',
+      url: '/homeAbc/a',
+      isExact: true,
+      score: [10, 6],
+      params: { '0': 'Abc', a: 'a' },
+    });
+  });
+  it('parse url with optional param 1', () => {
+    const parser = createPathParser('/catalog/logical-view/:pageType/:viewName?');
+    const res = parser.parse('/catalog/logical-view/create');
+    expect(res).toStrictEqual({
+      isExact: true,
+      path: '/catalog/logical-view/:pageType/:viewName?',
+      url: '/catalog/logical-view/create',
+      score: [10, 10, 6, 6],
+      params: { pageType: 'create', viewName: undefined },
+    });
+    const res2 = parser.parse('/catalog/logical-view/create/view1');
+    expect(res2).toStrictEqual({
+      isExact: true,
+      path: '/catalog/logical-view/:pageType/:viewName?',
+      url: '/catalog/logical-view/create/view1',
+      score: [10, 10, 6, 6],
+      params: { pageType: 'create', viewName: 'view1' },
+    });
+  });
+  it('parse url with wildcard param 1', () => {
+    const parser = createPathParser('/home/:p*');
+    const res = parser.parse('/home/123');
+    expect(res).toStrictEqual({
+      path: '/home/:p*',
+      url: '/home/123',
+      isExact: true,
+      params: { p: '123' },
+      score: [10, 6],
+    });
+    const res2 = parser.parse('/home/123/456');
+    expect(res2).toStrictEqual({
+      path: '/home/:p*',
+      url: '/home/123/456',
+      isExact: true,
+      params: { p: '123/456' },
+      score: [10, 6],
+    });
+  });
+  it('parse url with wildcard param in middle of URL', () => {
+    const parser = createPathParser('/home/:p*/link');
+    const res = parser.parse('/home/123/link');
+    expect(res).toStrictEqual({
+      path: '/home/:p*/link',
+      url: '/home/123/link',
+      isExact: true,
+      params: { p: '123' },
+      score: [10, 6, 10],
+    });
+    const res2 = parser.parse('/home/link');
+    expect(res2).toStrictEqual({
+      path: '/home/:p*/link',
+      url: '/home/link',
+      isExact: true,
+      params: { p: undefined },
+      score: [10, 6, 10],
+    });
+  });
+  it('parse url with optional param 2', () => {
+    const parser = createPathParser('/user/:userid?/profile');
+    const res = parser.parse('/user/profile');
+    expect(res).toStrictEqual({
+      isExact: true,
+      params: { userid: undefined },
+      path: '/user/:userid?/profile',
+      score: [10, 6, 10],
+      url: '/user/profile',
+    });
+    const res2 = parser.parse('/user/123/profile');
+    expect(res2).toStrictEqual({
+      isExact: true,
+      params: { userid: '123' },
+      path: '/user/:userid?/profile',
+      score: [10, 6, 10],
+      url: '/user/123/profile',
+    });
+  });
+  it('complex url pattern test 1', function () {
+    const parser = createPathParser('/dump/taskList/:action(add|config)/lifecyclePolicy/:name?');
+    const res = parser.parse('/dump/taskList/add/lifecyclePolicy/');
+    expect(res).toStrictEqual({
+      isExact: true,
+      path: '/dump/taskList/:action(add|config)/lifecyclePolicy/:name?',
+      url: '/dump/taskList/add/lifecyclePolicy/',
+      score: [10, 10, 6, 10, 6],
+      params: { action: 'add', name: undefined },
+    });
+    const res1 = parser.parse('/dump/taskList/add/lifecyclePolicy/new');
+    expect(res1).toStrictEqual({
+      isExact: true,
+      path: '/dump/taskList/:action(add|config)/lifecyclePolicy/:name?',
+      url: '/dump/taskList/add/lifecyclePolicy/new',
+      score: [10, 10, 6, 10, 6],
+      params: { action: 'add', name: 'new' },
     });
   });
 });

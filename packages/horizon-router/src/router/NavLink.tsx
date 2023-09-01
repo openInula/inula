@@ -6,7 +6,6 @@ import { Location, matchPath } from './index';
 import { Matched } from './matcher/parser';
 import Context from './context';
 import { parsePath } from '../history/utils';
-import { escapeStr } from './matcher/utils';
 
 type NavLinkProps = {
   to: Partial<Location> | string | ((location: Location) => string | Partial<Location>);
@@ -23,10 +22,9 @@ function NavLink<P extends NavLinkProps>(props: P) {
 
   const toLocation = typeof to === 'function' ? to(context.location) : to;
 
-  const { pathname: path } = typeof toLocation === 'string' ? parsePath(toLocation) : toLocation;
-  // 把正则表达式的特殊符号加两个反斜杠进行转义
-  const escapedPath = path ? escapeStr(path) : '';
-  const match = escapedPath ? matchPath(context.location.pathname, escapedPath) : null;
+  const { pathname } = typeof toLocation === 'string' ? parsePath(toLocation) : toLocation;
+
+  const match = pathname ? matchPath(context.location.pathname, pathname) : null;
 
   const isLinkActive = match && isActive ? isActive(match, context.location) : false;
 

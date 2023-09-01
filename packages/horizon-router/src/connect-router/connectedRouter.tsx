@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { connect, ReactReduxContext } from 'react-redux';
 import { Store } from 'redux';
 import { reduxAdapter } from '@cloudsop/horizon';
@@ -28,41 +28,43 @@ function ConnectedRouterWithoutMemo<S>(props: ConnectedRouter<S>) {
   const { getLocation } = stateReader(storeType);
 
   // 监听store变化
-  const unsubscribe = store.subscribe(() => {
-    // 获取redux State中的location信息
-    const {
-      pathname: pathnameInStore,
-      search: searchInStore,
-      hash: hashInStore,
-      state: stateInStore,
-    } = getLocation<S>(store.getState());
+  const unsubscribe = useRef<null | (() => void)>(
+    store.subscribe(() => {
+      // 获取redux State中的location信息
+      const {
+        pathname: pathnameInStore,
+        search: searchInStore,
+        hash: hashInStore,
+        state: stateInStore,
+      } = getLocation<S>(store.getState());
 
-    // 获取当前history对象中的location信息
-    const {
-      pathname: pathnameInHistory,
-      search: searchInHistory,
-      hash: hashInHistory,
-      state: stateInHistory,
-    } = history.location;
+      // 获取当前history对象中的location信息
+      const {
+        pathname: pathnameInHistory,
+        search: searchInHistory,
+        hash: hashInHistory,
+        state: stateInHistory,
+      } = history.location;
 
-    // 两个location不一致 执行跳转
-    if (
-      history.action === 'PUSH' &&
-      (pathnameInHistory !== pathnameInStore ||
-        searchInHistory !== searchInStore ||
-        hashInHistory !== hashInStore ||
-        stateInHistory !== stateInStore)
-    ) {
-      history.push(
-        {
-          pathname: pathnameInStore,
-          search: searchInStore,
-          hash: hashInStore,
-        },
-        stateInStore,
-      );
-    }
-  });
+      // 两个location不一致 执行跳转
+      if (
+        history.action === 'PUSH' &&
+        (pathnameInHistory !== pathnameInStore ||
+          searchInHistory !== searchInStore ||
+          hashInHistory !== hashInStore ||
+          stateInHistory !== stateInStore)
+      ) {
+        history.push(
+          {
+            pathname: pathnameInStore,
+            search: searchInStore,
+            hash: hashInStore,
+          },
+          stateInStore,
+        );
+      }
+    }),
+  );
 
   const handleLocationChange = (args: Navigation<S>, isFirstRendering: boolean = false) => {
     const { location, action } = args;
@@ -70,12 +72,12 @@ function ConnectedRouterWithoutMemo<S>(props: ConnectedRouter<S>) {
   };
 
   // 监听history更新
-  const unListen = () => history.listen(handleLocationChange);
+  const unListen = useRef<null | (() => void)>(history.listen(handleLocationChange));
 
   useLayoutEffect(() => {
     return () => {
-      unListen();
-      unsubscribe();
+      unListen.current && unListen.current();
+      unsubscribe.current && unsubscribe.current();
     };
   }, []);
 
