@@ -40,6 +40,6 @@ export type { RouteComponentProps, RouteChildrenProps, RouteProps } from './Rout
 
 // ============================ Connect-router ============================
 
-export { connectRouter, routerMiddleware } from '../connect-router';
+export { connectRouter, routerMiddleware, push, go, replace } from '../connect-router';
 export const ConnectedRouter = getConnectedRouter('Redux');
 export const ConnectedHRouter = getConnectedRouter('HorizonXCompat');

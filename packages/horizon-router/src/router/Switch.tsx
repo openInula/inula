@@ -31,15 +31,9 @@ function Switch<P extends SwitchProps>(props: P): React.ReactElement | null {
 
       // node可能是Route和Redirect
       if (node.type === Route) {
-        const props = node.props as RouteProps;
-        strict = props.strict;
-        sensitive = props.sensitive;
-        path = props.path;
+        ({ strict, sensitive, path } = node.props as RouteProps);
       } else if (node.type === Redirect) {
-        const props = node.props as RedirectProps;
-        path = props.path;
-        strict = props.strict;
-        from = props.from;
+        ({ path, strict, from } = node.props as RedirectProps);
       }
 
       const exact = node.props.exact;

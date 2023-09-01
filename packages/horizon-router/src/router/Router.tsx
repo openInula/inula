@@ -16,17 +16,19 @@ function Router<P extends RouterProps>(props: P) {
   const pendingLocation = useRef<Location | null>(null);
 
   // 在Router加载时就监听history地址变化，以保证在始渲染时重定向能正确触发
-  let unListen: null | (() => void) = history.listen(arg => {
-    pendingLocation.current = arg.location;
-  });
+  const unListen = useRef<null | (() => void)>(
+    history.listen(arg => {
+      pendingLocation.current = arg.location;
+    }),
+  );
 
   // 模拟componentDidMount和componentWillUnmount
   useLayoutEffect(() => {
-    if (unListen) {
-      unListen();
+    if (unListen.current) {
+      unListen.current();
     }
     // 监听history中的位置变化
-    unListen = history.listen(arg => {
+    unListen.current = history.listen(arg => {
       setLocation(arg.location);
     });
 
@@ -35,9 +37,9 @@ function Router<P extends RouterProps>(props: P) {
     }
 
     return () => {
-      if (unListen) {
-        unListen();
-        unListen = null;
+      if (unListen.current) {
+        unListen.current();
+        unListen.current = null;
         pendingLocation.current = null;
       }
     };

@@ -53,6 +53,20 @@ describe('path lexer Test', () => {
     ]);
   });
 
+  it('dynamic params with pattern 2', () => {
+    const tokens = lexer('/www.a.com/:b(abc|xyz)/*');
+    expect(tokens).toStrictEqual([
+      { type: 'delimiter', value: '/' },
+      { type: 'static', value: 'www.a.com' },
+      { type: 'delimiter', value: '/' },
+      { type: 'param', value: 'b' },
+      { type: '(', value: '(' },
+      { type: 'pattern', value: 'abc|xyz' },
+      { type: ')', value: ')' },
+      { type: 'delimiter', value: '/' },
+      { type: 'wildcard', value: '*' },
+    ]);
+  });
   it('wildcard params test', () => {
     const tokens = lexer('/www.a.com/:b');
     expect(tokens).toStrictEqual([
@@ -60,6 +74,47 @@ describe('path lexer Test', () => {
       { type: 'static', value: 'www.a.com' },
       { type: 'delimiter', value: '/' },
       { type: 'param', value: 'b' },
+    ]);
+  });
+  it('wildcard in end of static param', () => {
+    const tokens = lexer('/abc*');
+    expect(tokens).toStrictEqual([
+      { type: 'delimiter', value: '/' },
+      { type: 'static', value: 'abc' },
+      { type: 'pattern', value: '*' },
+    ]);
+  });
+  it('wildcard in end of static param 2', () => {
+    const tokens = lexer('/abc*/xyz*');
+    expect(tokens).toStrictEqual([
+      { type: 'delimiter', value: '/' },
+      { type: 'static', value: 'abc' },
+      { type: 'pattern', value: '*' },
+      { type: 'delimiter', value: '/' },
+      { type: 'static', value: 'xyz' },
+      { type: 'pattern', value: '*' },
+    ]);
+  });
+  it('url contain optional param at end', () => {
+    const tokens = lexer('/user/:name?');
+    expect(tokens).toEqual([
+      { type: 'delimiter', value: '/' },
+      { type: 'static', value: 'user' },
+      { type: 'delimiter', value: '/' },
+      { type: 'param', value: 'name' },
+      { type: 'pattern', value: '?' },
+    ]);
+  });
+  it('url contain optional param at middle', () => {
+    const tokens = lexer('/user/:name?/profile');
+    expect(tokens).toEqual([
+      { type: 'delimiter', value: '/' },
+      { type: 'static', value: 'user' },
+      { type: 'delimiter', value: '/' },
+      { type: 'param', value: 'name' },
+      { type: 'pattern', value: '?' },
+      { type: 'delimiter', value: '/' },
+      { type: 'static', value: 'profile' },
     ]);
   });
 });

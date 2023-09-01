@@ -1,9 +1,10 @@
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import babel from '@rollup/plugin-babel';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import execute from 'rollup-plugin-execute';
-import fs from 'fs';
+import { terser } from 'rollup-plugin-terser';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,70 +20,95 @@ if (!fs.existsSync(path.join(output, 'connectRouter'))) {
   fs.mkdirSync(path.join(output, 'connectRouter'), { recursive: true });
 }
 
-const routerBuildConfig = {
-  input: { router: routerEntry },
-  output: [
+const routerBuildConfig = mode => {
+  const prod = mode.startsWith('prod');
+  const outputList = [
     {
-      dir: path.resolve(output, 'router/cjs'),
-      sourcemap: 'inline',
+      file: path.join(output, `router/cjs/router.${prod ? 'min.' : ''}js`),
+      sourcemap: 'true',
       format: 'cjs',
     },
     {
-      dir: path.resolve(output, 'router/esm'),
-      sourcemap: 'inline',
-      format: 'esm',
+      file: path.join(output, `router/umd/router.${prod ? 'min.' : ''}js`),
+      name: `HorizonRouter`,
+      sourcemap: 'true',
+      format: 'umd',
     },
-  ],
-  plugins: [
-    nodeResolve({
-      extensions,
-      modulesOnly: true,
-    }),
-    babel({
-      exclude: 'node_modules/**',
-      configFile: path.join(__dirname, '/babel.config.js'),
-      babelHelpers: 'runtime',
-      extensions,
-    }),
-    execute('npm run build-types-router'),
-  ],
+  ];
+  if (!prod) {
+    outputList.push({
+      file: path.join(output, `router/esm/router.js`),
+      sourcemap: 'true',
+      format: 'esm',
+    });
+  }
+  return {
+    input: routerEntry,
+    output: outputList,
+    plugins: [
+      nodeResolve({
+        extensions,
+        modulesOnly: true,
+      }),
+      babel({
+        exclude: 'node_modules/**',
+        configFile: path.join(__dirname, '/babel.config.js'),
+        babelHelpers: 'runtime',
+        extensions,
+      }),
+      execute('npm run build-types-router'),
+      prod && terser(),
+    ],
+  };
 };
 
-const connectRouterConfig = {
-  input: { connectRouter: connectRouterEntry },
-  output: [
+const connectRouterConfig = mode => {
+  const prod = mode.startsWith('prod');
+  const outputList = [
     {
-      dir: path.resolve(output, 'connectRouter/cjs'),
-      sourcemap: 'inline',
+      file: path.join(output, `connectRouter/cjs/connectRouter.${prod ? 'min.' : ''}js`),
+      sourcemap: 'true',
       format: 'cjs',
     },
     {
-      dir: path.resolve(output, 'connectRouter/esm'),
-      sourcemap: 'inline',
-      format: 'esm',
+      file: path.join(output, `connectRouter/umd/connectRouter.${prod ? 'min.' : ''}js`),
+      name: 'HorizonRouter',
+      sourcemap: 'true',
+      format: 'umd',
     },
-  ],
-  plugins: [
-    nodeResolve({
-      extensions,
-      modulesOnly: true,
-    }),
-    babel({
-      exclude: 'node_modules/**',
-      configFile: path.join(__dirname, '/babel.config.js'),
-      babelHelpers: 'runtime',
-      extensions,
-    }),
-    execute('npm run build-types-all'),
-    copyFiles([
-      {
-        from: path.join(__dirname, 'src/configs/package.json'),
-        to: path.join(output, '/connectRouter/package.json'),
-      },
-    ]),
-  ],
+  ];
+  if (!prod) {
+    outputList.push({
+      file: path.join(output, `connectRouter/esm/connectRouter.js`),
+      sourcemap: 'true',
+      format: 'esm',
+    });
+  }
+  return {
+    input: connectRouterEntry,
+    output: outputList,
+    plugins: [
+      nodeResolve({
+        extensions,
+        modulesOnly: true,
+      }),
+      babel({
+        exclude: 'node_modules/**',
+        configFile: path.join(__dirname, '/babel.config.js'),
+        babelHelpers: 'runtime',
+        extensions,
+      }),
+      execute('npm run build-types-all'),
+      prod && terser(),
+      copyFiles([
+        {
+          from: path.join(__dirname, 'src/configs/package.json'),
+          to: path.join(output, '/connectRouter/package.json'),
+        },
+      ]),
+    ],
+  };
 };
-
 
 function copyFiles(copyPairs) {
   return {
@@ -96,5 +122,9 @@ function copyFiles(copyPairs) {
   };
 }
 
-
-export default [routerBuildConfig, connectRouterConfig];
+export default [
+  routerBuildConfig('dev'),
+  routerBuildConfig('prod'),
+  connectRouterConfig('dev'),
+  connectRouterConfig('prod'),
+];
