@@ -44,7 +44,7 @@ export default {
       terser(),
     ],
     external:[
-        "@cloudsop/horizon",
+        "inulajs",
         "react",
         "react-dom"
     ]

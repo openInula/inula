@@ -2,7 +2,7 @@
  * Copyright (c) Huawei Technologies Co., Ltd. 2023-2023. All rights reserved.
  */
 
-import Horizon, { useState } from '@cloudsop/horizon';
+import Inula, { useState } from 'inulajs';
 import { IntlProvider } from "../index";
 import zh from "./locale/zh";
 import en from "./locale/en";
@@ -23,7 +23,7 @@ const App = () => {
 
     return (
     <IntlProvider locale={locale} messages={locale === 'zh' ? zh : en}>
-      <header>Horizon-Intl API Test Demo</header>
+      <header>Inula-Intl API Test Demo</header>
 
       <div className='container'>
         <Example1/>
