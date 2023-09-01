@@ -1,7 +1,7 @@
 /*
  * Copyright (c) Huawei Technologies Co., Ltd. 2023-2023. All rights reserved.
  */
-import Horizon , { createContext, forwardRef } from '@cloudsop/horizon';
+import Horizon , { createContext, forwardRef } from 'inulajs';
 import { isVariantI18n } from '../../utils/utils';
 import copyStaticProps from '../../utils/copyStaticProps';
 import { InjectOptions } from '../../types/interfaces';

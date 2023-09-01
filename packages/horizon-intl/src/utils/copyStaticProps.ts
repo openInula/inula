@@ -1,7 +1,7 @@
 /*
  * Copyright (c) Huawei Technologies Co., Ltd. 2023-2023. All rights reserved.
  */
-import { isMemo, ForwardRef } from '@cloudsop/horizon';
+import { isMemo, ForwardRef } from 'inulajs';
 import {
   HORIZON_FORWARD_REF_STATICS,
   HORIZON_MEMO_STATICS,

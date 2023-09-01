@@ -1,7 +1,7 @@
 /*
  * Copyright (c) Huawei Technologies Co., Ltd. 2023-2023. All rights reserved.
  */
-import Horizon, {useRef, useState, useEffect, useMemo, Component} from '@cloudsop/horizon';
+import Horizon, {useRef, useState, useEffect, useMemo, Component} from 'inulajs';
 import utils from '../../utils/utils';
 import { InjectProvider } from './InjectI18n';
 import { I18nProviderProps} from '../../types/interfaces';
