@@ -12,11 +12,17 @@ function processUploadProgress(
 ) {
   if (onUploadProgress) {
     let totalBytesToUpload = 0; // 上传的总字节数
-    data.forEach(value => {
-      if (value instanceof Blob) {
-        totalBytesToUpload += value.size;
-      }
-    });
+
+    if (data instanceof File) {
+      totalBytesToUpload = data.size;
+    }
+    if (data instanceof FormData) {
+      data.forEach(value => {
+        if (value instanceof Blob) {
+          totalBytesToUpload += value.size;
+        }
+      });
+    }
 
     const handleUploadProgress = () => {
       const xhr = new XMLHttpRequest();

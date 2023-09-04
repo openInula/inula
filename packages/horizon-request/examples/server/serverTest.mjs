@@ -23,12 +23,12 @@ app.use(cors(corsOptions));
 
 // 处理 GET 请求
 app.get('/', (req, res) => {
-  res.send('Hello Horizon Request!');
+  res.send('Hello Inula Request!');
 })
 
 app.get('/data', (req, res) => {
   const data = {
-    message: 'Hello Horizon Request!',
+    message: 'Hello Inula Request!',
   };
 
   res.setHeader('Content-Type', 'application/json');
@@ -37,7 +37,7 @@ app.get('/data', (req, res) => {
 });
 
 app.get('/download', (req, res) => {
-  const filePath = 'D:\\code\\MRcode\\Horizon-Request\\examples\\request\\downloadTest.html';
+  const filePath = 'D:\\code\\MRcode\\inula-Request\\examples\\request\\downloadTest.html';
   const fileName = 'downloadTest.html';
   const fileSize = fs.statSync(filePath).size;
 

@@ -4,7 +4,7 @@ const path = require('path');
 // webpack配置信息
 module.exports = {
   // 指定入口文件
-  entry: './src/horizonRequest.ts',
+  entry: './src/inulaRequest.ts',
 
   // 指定打包文件信息
   output: {
@@ -12,7 +12,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     library: 'myLibrary',
     libraryTarget: 'umd',
-    filename: 'horizonRequest.js',
+    filename: 'inulaRequest.js',
   },
 
   // 指定打包时使用的模块
