@@ -1,5 +1,5 @@
-import horizonRequest from '../../horizonRequest';
-import { CacheItem, HrRequestConfig, Limitation, QueryOptions } from '../../types/interfaces';
+import inulaRequest from '../../inulaRequest';
+import { CacheItem, IrRequestConfig, Limitation, QueryOptions } from '../../types/interfaces';
 import utils from "../../utils/commonUtils/utils";
 
 // 兼容 IE 上没有 CustomEvent 对象
@@ -10,12 +10,12 @@ function createCustomEvent(eventName: string, options?: Record<string, any>) {
   return event;
 }
 
-class HRClient {
+class IRClient {
   private cache: Map<string, CacheItem> = new Map();
   private historyData: string[] = [];
   public requestEvent = utils.isIE() ? createCustomEvent('request') : new CustomEvent('request');
 
-  public async query(url: string, config?: HrRequestConfig, options: QueryOptions = {}): Promise<any> {
+  public async query(url: string, config?: IrRequestConfig, options: QueryOptions = {}): Promise<any> {
     const {
       pollingInterval,
       enablePollingOptimization,
@@ -29,7 +29,7 @@ class HRClient {
       return cacheItem.data; // 返回缓存中的数据
     }
 
-    const response = await horizonRequest.get(url, config);
+    const response = await inulaRequest.get(url, config);
     const data = response.data;
 
     // 如果轮询已配置，设置一个定时器
@@ -143,4 +143,4 @@ class HRClient {
   }
 }
 
-export default HRClient;
+export default IRClient;

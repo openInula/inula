@@ -53,21 +53,21 @@
 <script src="../../dist/bundle.js"></script>
 
 <script>
-  // 创建使用拦截器的 HR 实例
-  const hrInstance = horizonRequest.create();
+  // 创建使用拦截器的 IR 实例
+  const irInstance = inulaRequest.create();
 
   // 添加请求拦截器
-  hrInstance.interceptors.request.use(function(config) {
+  irInstance.interceptors.request.use(function(config) {
     // 为请求添加自定义请求头
-    config.headers['HR-Custom-Header'] = 'CustomHeaderValue';
-    document.getElementById('requestInterceptorFeedback').textContent = '请求已拦截，并添加请求头HR-Custom-Header';
+    config.headers['IR-Custom-Header'] = 'CustomHeaderValue';
+    document.getElementById('requestInterceptorFeedback').textContent = '请求已拦截，并添加请求头IR-Custom-Header';
     return config;
   }, function(error) {
     return Promise.reject(error);
   });
 
   // 添加响应拦截器
-  hrInstance.interceptors.response.use(function(response) {
+  irInstance.interceptors.response.use(function(response) {
     // 更新响应状态码
     response.status = 404;
     document.getElementById('responseStatusWithInterceptor').textContent = String(response.status);
@@ -79,7 +79,7 @@
 
   // 使用拦截器的请求
   document.getElementById('sendRequestWithInterceptor').addEventListener('click', function () {
-    hrInstance.get('http://localhost:3001/')
+    irInstance.get('http://localhost:3001/')
       .then(function (response) {
         document.getElementById('responseDataWithInterceptor').textContent = JSON.stringify(response.data, null, 2);
     }).catch(function (error) {

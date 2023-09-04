@@ -1,5 +1,5 @@
 import getMergedConfig from '../utils/configUtils/getMergedConfig';
-import HrHeaders from './HrHeaders';
+import IrHeaders from './IrHeaders';
 import InterceptorManager from '../interceptor/InterceptorManager';
 import processRequest from '../request/processRequest';
 import getRequestInterceptorsInfo from '../interceptor/getRequestInterceptorsInfo';
@@ -9,19 +9,19 @@ import handleSyncInterceptor from '../interceptor/handleSyncInterceptor';
 import defaultConfig from '../config/defaultConfig';
 import { Method } from '../types/types';
 import {
-  HrRequestConfig,
-  HrResponse,
-  HrInterface,
-  HrInstance,
+  IrRequestConfig,
+  IrResponse,
+  IrInterface,
+  IrInstance,
   Interceptors,
 } from '../types/interfaces';
 
-class HorizonRequest implements HrInterface {
-  defaultConfig: HrRequestConfig;
+class InulaRequest implements IrInterface {
+  defaultConfig: IrRequestConfig;
   interceptors: Interceptors;
-  processRequest: (config: HrRequestConfig) => Promise<any>;
+  processRequest: (config: IrRequestConfig) => Promise<any>;
 
-  constructor(config: HrRequestConfig) {
+  constructor(config: IrRequestConfig) {
     this.defaultConfig = config;
     // 初始化拦截器
     this.interceptors = {
@@ -31,7 +31,7 @@ class HorizonRequest implements HrInterface {
     this.processRequest = processRequest;
   }
 
-  request<T = unknown>(requestParam: string | Record<string, any>, config?: HrRequestConfig): Promise<HrResponse<T>> {
+  request<T = unknown>(requestParam: string | Record<string, any>, config?: IrRequestConfig): Promise<IrResponse<T>> {
     // 1. 解析参数
     const mergedConfig = this.preprocessing(requestParam, config);
 
@@ -63,7 +63,7 @@ class HorizonRequest implements HrInterface {
     );
   }
 
-  private preprocessing(requestParam: string | Record<string, any>, config?: HrRequestConfig) {
+  private preprocessing(requestParam: string | Record<string, any>, config?: IrRequestConfig) {
     let configOperation: Record<string, any> = {};
 
     if (typeof requestParam === 'object') {
@@ -73,7 +73,7 @@ class HorizonRequest implements HrInterface {
       configOperation = { ...configOperation, ...config };
     }
 
-    const mergedConfig: HrRequestConfig = getMergedConfig(this.defaultConfig, configOperation);
+    const mergedConfig: IrRequestConfig = getMergedConfig(this.defaultConfig, configOperation);
     mergedConfig.method = (mergedConfig.method || this.defaultConfig.method || 'GET').toUpperCase() as Method;
 
     const { headers } = mergedConfig;
@@ -91,13 +91,13 @@ class HorizonRequest implements HrInterface {
         });
       }
 
-      mergedConfig.headers = HrHeaders.concat(contextHeaders, headers);
+      mergedConfig.headers = IrHeaders.concat(contextHeaders, headers);
     }
 
     return mergedConfig;
   }
 
-  get<T = unknown>(url: string, config: HrRequestConfig) {
+  get<T = unknown>(url: string, config: IrRequestConfig) {
     return this.request<T>(
       getMergedConfig(config || {}, {
         method: 'get',
@@ -107,7 +107,7 @@ class HorizonRequest implements HrInterface {
     );
   }
 
-  delete<T = unknown>(url: string, config: HrRequestConfig) {
+  delete<T = unknown>(url: string, config: IrRequestConfig) {
     return this.request<T>(
       getMergedConfig(config || {}, {
         method: 'delete',
@@ -117,7 +117,7 @@ class HorizonRequest implements HrInterface {
     );
   }
 
-  head<T = unknown>(url: string, config: HrRequestConfig) {
+  head<T = unknown>(url: string, config: IrRequestConfig) {
     return this.request<T>(
       getMergedConfig(config || {}, {
         method: 'head',
@@ -127,7 +127,7 @@ class HorizonRequest implements HrInterface {
     );
   }
 
-  options<T = unknown>(url: string, config: HrRequestConfig) {
+  options<T = unknown>(url: string, config: IrRequestConfig) {
     return this.request<T>(
       getMergedConfig(config || {}, {
         method: 'options',
@@ -137,7 +137,7 @@ class HorizonRequest implements HrInterface {
     );
   }
 
-  post<T = unknown>(url: string, data: any, config: HrRequestConfig) {
+  post<T = unknown>(url: string, data: any, config: IrRequestConfig) {
     return this.request<T>(
       getMergedConfig(config || {}, {
         method: 'post',
@@ -147,7 +147,7 @@ class HorizonRequest implements HrInterface {
     );
   }
 
-  postForm<T = unknown>(url: string, data: any, config: HrRequestConfig) {
+  postForm<T = unknown>(url: string, data: any, config: IrRequestConfig) {
     return this.request<T>(
       getMergedConfig(config || {}, {
         method: 'post',
@@ -158,7 +158,7 @@ class HorizonRequest implements HrInterface {
     );
   }
 
-  put<T = unknown>(url: string, data: any, config: HrRequestConfig) {
+  put<T = unknown>(url: string, data: any, config: IrRequestConfig) {
     return this.request<T>(
       getMergedConfig(config || {}, {
         method: 'put',
@@ -168,7 +168,7 @@ class HorizonRequest implements HrInterface {
     );
   }
 
-  putForm<T = unknown>(url: string, data: any, config: HrRequestConfig) {
+  putForm<T = unknown>(url: string, data: any, config: IrRequestConfig) {
     return this.request<T>(
       getMergedConfig(config || {}, {
         method: 'put',
@@ -179,7 +179,7 @@ class HorizonRequest implements HrInterface {
     );
   }
 
-  patch<T = unknown>(url: string, data: any, config: HrRequestConfig) {
+  patch<T = unknown>(url: string, data: any, config: IrRequestConfig) {
     return this.request<T>(
       getMergedConfig(config || {}, {
         method: 'patch',
@@ -189,7 +189,7 @@ class HorizonRequest implements HrInterface {
     );
   }
 
-  patchForm<T = unknown>(url: string, data: any, config: HrRequestConfig) {
+  patchForm<T = unknown>(url: string, data: any, config: IrRequestConfig) {
     return this.request<T>(
       getMergedConfig(config || {}, {
         method: 'patch',
@@ -200,12 +200,12 @@ class HorizonRequest implements HrInterface {
     );
   }
 
-  // 创建 Hr 实例
-  static create(instanceConfig?: HrRequestConfig): HrInstance {
+  // 创建 Ir 实例
+  static create(instanceConfig?: IrRequestConfig): IrInstance {
     const config = getMergedConfig(defaultConfig, instanceConfig || {});
 
-    return new HorizonRequest(config) as unknown as HrInstance;
+    return new InulaRequest(config) as unknown as IrInstance;
   }
 }
 
-export default HorizonRequest;
+export default InulaRequest;

@@ -1,12 +1,12 @@
 import { FulfilledFn } from '../types/types';
-import { HrRequestConfig } from '../types/interfaces';
+import { IrRequestConfig } from '../types/interfaces';
 
 // 处理含有异步拦截器情况
 function handleAsyncInterceptor(
   processFunc: (value: any) => any,
   requestInterceptorChain: (FulfilledFn<any> | undefined)[],
   responseInterceptorChain: (FulfilledFn<any> | undefined)[],
-  mergedConfig: HrRequestConfig
+  mergedConfig: IrRequestConfig
 ): Promise<any> {
   // undefined 占位 rejected 回调函数
   const chain = [...requestInterceptorChain, processFunc, undefined, ...responseInterceptorChain];

@@ -1,11 +1,11 @@
-import HrError from '../core/HrError';
-import HrHeaders from '../core/HrHeaders';
-import { Method, ResponseType, HrTransformer, FulfilledFn, RejectedFn, Callback } from './types';
+import IrError from '../core/IrError';
+import IrHeaders from '../core/IrHeaders';
+import { Method, ResponseType, IrTransformer, FulfilledFn, RejectedFn, Callback } from './types';
 import CancelError from "../cancel/CancelError";
 import { CanceledError } from "../../index";
 
 // 请求配置
-export interface HrRequestConfig {
+export interface IrRequestConfig {
   url?: string;
 
   method?: Method;
@@ -59,7 +59,7 @@ export interface TransitionalOptions {
 }
 
 // 请求响应
-export type HrResponse<T = any> = {
+export type IrResponse<T = any> = {
   // 响应数据
   data: T;
 
@@ -73,7 +73,7 @@ export type HrResponse<T = any> = {
   headers: any;
 
   // 请求配置
-  config: HrRequestConfig;
+  config: IrRequestConfig;
 
   // 请求对象
   request?: any;
@@ -82,39 +82,39 @@ export type HrResponse<T = any> = {
   event?: string;
 };
 
-// Hr 类接口类型
-export interface HrInterface {
-  request<T = unknown>(url: string | Record<string, any>, config?: HrRequestConfig): Promise<HrResponse<T>>;
+// Ir 类接口类型
+export interface IrInterface {
+  request<T = unknown>(url: string | Record<string, any>, config?: IrRequestConfig): Promise<IrResponse<T>>;
 
-  get<T = unknown>(url: string, config?: HrRequestConfig): Promise<HrResponse<T>>;
+  get<T = unknown>(url: string, config?: IrRequestConfig): Promise<IrResponse<T>>;
 
-  post<T = unknown>(url: string, data?: any, config?: HrRequestConfig): Promise<HrResponse<T>>;
+  post<T = unknown>(url: string, data?: any, config?: IrRequestConfig): Promise<IrResponse<T>>;
 
-  put<T = unknown>(url: string, data?: any, config?: HrRequestConfig): Promise<HrResponse<T>>;
+  put<T = unknown>(url: string, data?: any, config?: IrRequestConfig): Promise<IrResponse<T>>;
 
-  delete<T = unknown>(url: string, config?: HrRequestConfig): Promise<HrResponse<T>>;
+  delete<T = unknown>(url: string, config?: IrRequestConfig): Promise<IrResponse<T>>;
 
-  head<T = unknown>(url: string, config?: HrRequestConfig): Promise<HrResponse<T>>;
+  head<T = unknown>(url: string, config?: IrRequestConfig): Promise<IrResponse<T>>;
 
-  options<T = unknown>(url: string, config?: HrRequestConfig): Promise<HrResponse<T>>;
+  options<T = unknown>(url: string, config?: IrRequestConfig): Promise<IrResponse<T>>;
 
-  postForm<T = unknown>(url: string, data: any, config: HrRequestConfig): Promise<HrResponse<T>>;
+  postForm<T = unknown>(url: string, data: any, config: IrRequestConfig): Promise<IrResponse<T>>;
 
-  putForm<T = unknown>(url: string, data: any, config: HrRequestConfig): Promise<HrResponse<T>>;
+  putForm<T = unknown>(url: string, data: any, config: IrRequestConfig): Promise<IrResponse<T>>;
 
-  patchForm<T = unknown>(url: string, data: any, config: HrRequestConfig): Promise<HrResponse<T>>;
+  patchForm<T = unknown>(url: string, data: any, config: IrRequestConfig): Promise<IrResponse<T>>;
 }
 
-// Hr 实例接口类型
-export interface HrInstance extends HrInterface {
-  // Hr 类
-  HorizonRequest: HrInterface;
+// Ir 实例接口类型
+export interface IrInstance extends IrInterface {
+  // Ir 类
+  InulaRequest: IrInterface;
 
-  // 创建 Hr 实例
-  create: (config?: HrRequestConfig) => HrInstance;
+  // 创建 Ir 实例
+  create: (config?: IrRequestConfig) => IrInstance;
 
   // 使用内置的配置初始化实例属性
-  defaults: HrRequestConfig;
+  defaults: IrRequestConfig;
 
   // 取消当前正在进行的请求
   CancelToken: CancelTokenStatic;
@@ -134,21 +134,21 @@ export interface HrInstance extends HrInterface {
   // 封装多个 Promise 至数组，便于作为 all 传入参数
   spread: <T>(callback: Callback<T>) => (arr: any[]) => T;
 
-  // horizonRequest 对象的默认实例
-  default: HrInstance;
+  // inulaRequest 对象的默认实例
+  default: IrInstance;
 
   CanceledError: typeof CancelError;
 
-  // HrError 错误
-  HrError: typeof HrError;
+  // IrError 错误
+  IrError: typeof IrError;
 
-  // 判断输入值是否为 HrError
-  isHrError: (avl: any) => boolean;
+  // 判断输入值是否为 IrError
+  isIrError: (avl: any) => boolean;
 
-  // HrHeaders 响应头
-  HrHeaders: typeof HrHeaders;
+  // IrHeaders 响应头
+  IrHeaders: typeof IrHeaders;
 
-  useHR: <T = any>(url: string, config?: HrRequestConfig, options?: QueryOptions) => { data?: T; error?: any };
+  useIR: <T = any>(url: string, config?: IrRequestConfig, options?: QueryOptions) => { data?: T; error?: any };
 
   /*----------------兼容axios--------------------*/
   Axios: any;
@@ -161,8 +161,8 @@ export interface HrInstance extends HrInterface {
 }
 
 export interface Interceptors {
-  request: HrInterceptorManager<HrRequestConfig>;
-  response: HrInterceptorManager<HrResponse>;
+  request: IrInterceptorManager<IrRequestConfig>;
+  response: IrInterceptorManager<IrResponse>;
 }
 
 // 拦截器接口类型
@@ -181,7 +181,7 @@ export interface InterceptorHandler<T> {
 }
 
 // 拦截器管理器接口类型
-export interface HrInterceptorManager<T> {
+export interface IrInterceptorManager<T> {
   // 添加拦截器
   use(
     fulfilled?: FulfilledFn<T>,
@@ -202,18 +202,18 @@ export interface HrInterceptorManager<T> {
   forEach(func: Function): void;
 }
 
-export interface HrErrorInterface {
+export interface IrErrorInterface {
   // 产生错误的请求配置对象
-  config?: HrRequestConfig;
+  config?: IrRequestConfig;
 
   // 表示请求错误的字符串代码。例如，"ECONNABORTED"表示连接被中止。
   code?: string;
 
   // 产生错误的原始请求实例。
-  request?: HrInstance;
+  request?: IrInstance;
 
   // 包含错误响应的响应实例。如果请求成功完成，但服务器返回错误状态码（例如404或500），则此属性存在。
-  response?: HrResponse;
+  response?: IrResponse;
 }
 
 // 请求取消令牌
@@ -273,7 +273,7 @@ export interface Limitation {
   maxInterval: number,
 }
 
-// useHR 缓存
+// useIR 缓存
 export interface CacheItem {
   data: any;
   lastUpdated: number;

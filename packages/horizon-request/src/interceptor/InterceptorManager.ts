@@ -1,8 +1,8 @@
 import utils from '../utils/commonUtils/utils';
-import { InterceptorHandler, HrInterceptorManager } from '../types/interfaces';
+import { InterceptorHandler, IrInterceptorManager } from '../types/interfaces';
 import { FulfilledFn, RejectedFn } from '../types/types';
 
-class InterceptorManager<V> implements HrInterceptorManager<V> {
+class InterceptorManager<V> implements IrInterceptorManager<V> {
   private handlers: (InterceptorHandler<V> | null)[];
 
   constructor() {

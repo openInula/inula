@@ -5,12 +5,12 @@ import checkHeaderName from '../utils/headerUtils/checkHeaderName';
 import processValueByParser from '../utils/headerUtils/processValueByParser';
 import deleteHeader from '../utils/headerUtils/deleteHeader';
 
-class HrHeaders {
-  // 定义 HrHeaders 类索引签名
+class IrHeaders {
+  // 定义 IrHeaders 类索引签名
   [key: string]: any;
 
-  constructor(headers?: Record<string, string | string[]> | HrHeaders) {
-    // 将默认响应头加入 HrHeaders
+  constructor(headers?: Record<string, string | string[]> | IrHeaders) {
+    // 将默认响应头加入 IrHeaders
     this.defineAccessor();
 
     if (headers) {
@@ -19,7 +19,7 @@ class HrHeaders {
   }
 
   private _setHeader(
-    header: Record<string, string | string[]> | HrHeaders | string,
+    header: Record<string, string | string[]> | IrHeaders | string,
     _value: string | string[],
     _header: string
   ) {
@@ -32,14 +32,14 @@ class HrHeaders {
     }
   };
 
-  private _setHeaders(headers: Record<string, string | string[]> | HrHeaders | string) {
+  private _setHeaders(headers: Record<string, string | string[]> | IrHeaders | string) {
     return utils.forEach(headers, (_value: string | string[], _header: string) => {
       return this._setHeader(headers, _value, _header);
     });
   }
 
-  set(header: Record<string, string | string[]> | HrHeaders | string): this {
-    // 通过传入的 headers 创建 HrHeaders 对象
+  set(header: Record<string, string | string[]> | IrHeaders | string): this {
+    // 通过传入的 headers 创建 IrHeaders 对象
     if (utils.checkPlainObject(header) || header instanceof this.constructor) {
       this._setHeaders(header);
     } else if (utils.checkString(header) && (header = header.trim()) && !checkHeaderName(header as string)) {
@@ -103,8 +103,8 @@ class HrHeaders {
     return deleted;
   }
 
-  concat(...items: (Record<string, string | string[]> | HrHeaders)[]): HrHeaders {
-    return HrHeaders.concat(this, ...items);
+  concat(...items: (Record<string, string | string[]> | IrHeaders)[]): IrHeaders {
+    return IrHeaders.concat(this, ...items);
   }
 
   toJSON(arrayToStr?: boolean): Record<string, string | string[]> {
@@ -168,7 +168,7 @@ class HrHeaders {
     // 定义默认头部
     const defaultHeaders = ['Content-Type', 'Content-Length', 'Accept', 'Accept-Encoding', 'User-Agent'];
 
-    // 将默认响应头加入 HrHeaders
+    // 将默认响应头加入 IrHeaders
     defaultHeaders.forEach(header => {
       if (!accessors[header]) {
         Object.defineProperty(this, header, {
@@ -182,11 +182,11 @@ class HrHeaders {
     });
   }
 
-  static from(thing: Record<string, string | string[]> | HrHeaders): HrHeaders {
-    if (thing instanceof HrHeaders) {
+  static from(thing: Record<string, string | string[]> | IrHeaders): IrHeaders {
+    if (thing instanceof IrHeaders) {
       return thing;
     } else {
-      const newInstance = new HrHeaders(thing);
+      const newInstance = new IrHeaders(thing);
 
       // 删除值为 undefined 请求头， fetch 进行自动配置
       for (const key in newInstance) {
@@ -200,11 +200,11 @@ class HrHeaders {
   }
 
   static concat(
-    firstItem: Record<string, string | string[]> | HrHeaders,
-    ...otherItems: (Record<string, string | string[]> | HrHeaders)[]
-  ): HrHeaders {
-    // 初始化一个 HrHeaders 对象实例
-    const newInstance = new HrHeaders(firstItem);
+    firstItem: Record<string, string | string[]> | IrHeaders,
+    ...otherItems: (Record<string, string | string[]> | IrHeaders)[]
+  ): IrHeaders {
+    // 初始化一个 IrHeaders 对象实例
+    const newInstance = new IrHeaders(firstItem);
     const mergedObject = Object.assign({}, newInstance, ...otherItems);
 
     for (const key in mergedObject) {
@@ -224,4 +224,4 @@ class HrHeaders {
   }
 }
 
-export default HrHeaders;
+export default IrHeaders;

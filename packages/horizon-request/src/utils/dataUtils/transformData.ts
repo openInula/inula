@@ -1,11 +1,11 @@
-import HrHeaders from '../../core/HrHeaders';
+import IrHeaders from '../../core/IrHeaders';
 import defaultConfig from '../../config/defaultConfig';
-import { HrRequestConfig, HrResponse } from '../../types/interfaces';
+import { IrRequestConfig, IrResponse } from '../../types/interfaces';
 
-function transformData(inputConfig: HrRequestConfig, func: Function, response?: HrResponse) {
+function transformData(inputConfig: IrRequestConfig, func: Function, response?: IrResponse) {
   const config = inputConfig || defaultConfig;
   const context = response || config;
-  const headers = HrHeaders.from(context.headers);
+  const headers = IrHeaders.from(context.headers);
 
   const transformedData = func.call(config, context.data, headers.normalize(), response ? response.status : undefined);
   headers.normalize();

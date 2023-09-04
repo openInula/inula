@@ -1,5 +1,4 @@
-import HrHeaders from '../core/HrHeaders';
-import { HrRequestConfig, HrResponse } from './interfaces';
+import IrHeaders from '../core/IrHeaders';
 
 export type Method =
   | 'get'
@@ -20,7 +19,7 @@ export type Method =
 export type ResponseType = 'text' | 'json' | 'blob' | 'arraybuffer';
 
 // 请求和响应数据转换器
-export type HrTransformer = (data: any, headers?: HrHeaders) => any;
+export type IrTransformer = (data: any, headers?: IrHeaders) => any;
 
 // Headers
 export type HeaderMap = Record<string, string | string[]>;
@@ -34,8 +33,6 @@ export type RejectedFn = (error: any) => any;
 export type FilterFunc = (obj: Record<string, any>, destObj: Record<string, any>) => boolean;
 export type PropFilterFunc = (prop: string | symbol, obj: Record<string, any>, destObj: Record<string, any>) => boolean;
 
-export type ObjectDescriptor = PropertyDescriptorMap & ThisType<any>;
-
 // Cancel
 export type CancelFunction = (message?: string) => void;
 export type CancelExecutor = (cancel: CancelFunction) => void;
@@ -43,5 +40,5 @@ export type CancelExecutor = (cancel: CancelFunction) => void;
 export type Callback<T> = (...args: any[]) => T;
 
 export type Strategy = {
-  (data: any, headers: HrHeaders, ...args: any[]): any;
+  (data: any, headers: IrHeaders, ...args: any[]): any;
 };

@@ -1,16 +1,16 @@
-import { HrRequestConfig, HrResponse } from '../types/interfaces';
-import HrError from "../core/HrError";
+import { IrRequestConfig, IrResponse } from '../types/interfaces';
+import IrError from "../core/IrError";
 
 function processUploadProgress(
   onUploadProgress: Function | null,
   data: FormData,
   reject: (reason?: any) => void,
-  resolve: (value: PromiseLike<HrResponse<any>> | HrResponse<any>) => void,
+  resolve: (value: PromiseLike<IrResponse<any>> | IrResponse<any>) => void,
   method: string,
   url: string | undefined,
-  config: HrRequestConfig,
+  config: IrRequestConfig,
 ) {
-  if (onUploadProgress && data instanceof FormData) {
+  if (onUploadProgress) {
     let totalBytesToUpload = 0; // 上传的总字节数
     data.forEach(value => {
       if (value instanceof Blob) {
@@ -47,7 +47,7 @@ function processUploadProgress(
           } catch (e) {
             reject('parse error');
           }
-          const response: HrResponse = {
+          const response: IrResponse = {
             data: parsedText,
             status: xhr.status,
             statusText: xhr.statusText,
@@ -59,7 +59,7 @@ function processUploadProgress(
             // 如果 fetch 请求已经成功或者拒绝，则此处不生效
             resolve(response);
           } else {
-            const error = new HrError(xhr.statusText, '', config, xhr, response);
+            const error = new IrError(xhr.statusText, '', config, xhr, response);
             reject(error);
           }
         }
@@ -72,13 +72,13 @@ function processUploadProgress(
         xhr.ontimeout = function () {
           xhr.abort();
           const errorMsg = config.timeoutErrorMessage ?? `timeout of ${config.timeout}ms exceeded`;
-          throw new HrError(errorMsg, '', config, xhr, undefined);
+          throw new IrError(errorMsg, '', config, xhr, undefined);
         }
       }
 
       for (const header in config.headers) {
         if (
-          !['Content-Length', 'Accept-Encoding', 'User-Agent', 'Content-Type'].includes(header) // 过滤不安全的请求头设置
+          !['Content-Length', 'Accept-Encoding', 'User-Agent'].includes(header) // 过滤不安全的请求头设置
           && Object.prototype.hasOwnProperty.call(config.headers, header) // 不遍历请求头原型上的方法
         ) {
           xhr.setRequestHeader(header, config.headers[header]);

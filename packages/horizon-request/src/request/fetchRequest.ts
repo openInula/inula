@@ -1,11 +1,11 @@
 import utils from '../utils/commonUtils/utils';
-import HrError from '../core/HrError';
-import { HrRequestConfig, HrResponse, Cancel } from '../types/interfaces';
+import IrError from '../core/IrError';
+import { IrRequestConfig, IrResponse, Cancel } from '../types/interfaces';
 import { Method, ResponseType } from '../types/types';
 import processUploadProgress from './processUploadProgress';
 import processDownloadProgress from './processDownloadProgress';
 
-export const fetchRequest = (config: HrRequestConfig): Promise<HrResponse> => {
+export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
   return new Promise((resolve, reject) => {
     let {
       method = 'GET',
@@ -62,7 +62,7 @@ export const fetchRequest = (config: HrRequestConfig): Promise<HrResponse> => {
       setTimeout(() => {
         controller.abort();
         const errorMsg = timeoutErrorMessage ?? `timeout of ${timeout}ms exceeded`;
-        const error = new HrError(errorMsg, '', config, undefined, undefined);
+        const error = new IrError(errorMsg, '', config, undefined, undefined);
         reject(error);
       }, timeout);
     }
@@ -85,7 +85,7 @@ export const fetchRequest = (config: HrRequestConfig): Promise<HrResponse> => {
 
           config.method = config.method!.toLowerCase() as Method;
 
-          const responseData: HrResponse = {
+          const responseData: IrResponse = {
             data: '',
             status: response.status,
             statusText: response.statusText,
@@ -142,11 +142,11 @@ export const fetchRequest = (config: HrRequestConfig): Promise<HrResponse> => {
               if (responseData.config.validateStatus!(responseData.status)) {
                 resolve(responseData);
               } else {
-                const error = new HrError(responseData.statusText, '', responseData.config, responseData.request, responseData);
+                const error = new IrError(responseData.statusText, '', responseData.config, responseData.request, responseData);
                 reject(error);
               }
             })
-            .catch((error: HrError) => {
+            .catch((error: IrError) => {
               if (error.name === 'AbortError') {
                 reject(error.message);
               } else {
@@ -154,7 +154,7 @@ export const fetchRequest = (config: HrRequestConfig): Promise<HrResponse> => {
               }
             });
         })
-        .catch((error: HrError) => {
+        .catch((error: IrError) => {
           if (error.name === 'AbortError') {
             reject(error.message);
           } else {

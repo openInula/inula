@@ -1,10 +1,10 @@
-import HrError from '../core/HrError';
-import { HrRequestConfig } from '../types/interfaces';
+import IrError from '../core/IrError';
+import { IrRequestConfig } from '../types/interfaces';
 
-class CancelError extends HrError {
-  constructor(message: string | undefined, config: HrRequestConfig, request?: any) {
+class CancelError extends IrError {
+  constructor(message: string | undefined, config: IrRequestConfig, request?: any) {
     const errorMessage = message || 'canceled';
-    super(errorMessage, (HrError as any).ERR_CANCELED, config, request);
+    super(errorMessage, (IrError as any).ERR_CANCELED, config, request);
     this.name = 'CanceledError';
   }
 }
