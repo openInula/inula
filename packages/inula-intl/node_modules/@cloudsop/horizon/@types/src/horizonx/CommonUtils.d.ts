@@ -1,0 +1,14 @@
+export declare function isObject(obj: any): boolean;
+export declare function isSet(obj: any): boolean;
+export declare function isWeakSet(obj: any): boolean;
+export declare function isMap(obj: any): boolean;
+export declare function isWeakMap(obj: any): boolean;
+export declare function isArray(obj: any): boolean;
+export declare function isCollection(obj: any): boolean;
+export declare function isString(obj: any): boolean;
+export declare function isValidIntegerKey(key: any): boolean;
+export declare function isPromise(obj: any): boolean;
+export declare function isSame(x: any, y: any): boolean;
+export declare function getDetailedType(val: any): "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function" | "map" | "null" | "promise" | "array" | "weakMap" | "weakSet" | "set";
+export declare function resolveMutation(from: any, to: any): any;
+export declare function omit(obj: any, ...attrs: any[]): any;

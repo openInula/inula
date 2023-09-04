@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Horizon Request Cancel Request Test</title>
+    <link rel="stylesheet" type="text/css" href="cancelStyles.css">
+</head>
+<body>
+<header>Horizon Request Cancel Request Test</header>
+<div class="container">
+    <div class="button-group">
+        <button id="sendRequestButton">Send Request</button>
+        <button id="cancelRequestButton">Cancel Request</button>
+    </div>
+    <div class="message" id="message">等待发送请求...</div>
+</div>
+<script src="../../dist/bundle.js"></script>
+<script>
+  const sendRequestButton = document.getElementById('sendRequestButton');
+  const cancelRequestButton = document.getElementById('cancelRequestButton');
+  const message = document.getElementById('message');
+
+  let cancelTokenSource;
+
+  sendRequestButton.addEventListener('click', function() {
+    message.innerHTML = '';
+    cancelTokenSource = inulaRequest.CancelToken.source();
+
+    inulaRequest.get('http://localhost:3001/data', {
+      cancelToken: cancelTokenSource.token
+    }).then(function(response) {
+      message.innerHTML = '请求成功: ' + JSON.stringify(response.data, null, 2);
+    }).catch(function(error) {
+      message.innerHTML = JSON.stringify(error, null, 2);
+    });
+  });
+
+  cancelRequestButton.addEventListener('click', function () {
+    const CancelToken = inulaRequest.CancelToken;
+    const source = CancelToken.source();
+
+    inulaRequest.get('http://localhost:3001/data', {
+      cancelToken: source.token
+    }).then(function(response) {
+      console.log(response.data);
+    }).catch(function(error) {
+      if (inulaRequest.isCancel(error)) {
+        message.innerHTML = '请求已被取消：' + error.message;
+      } else {
+        message.innerHTML = '请求出错：' + error.message;
+      }
+    });
+
+    source.cancel('请求被用户取消。');
+  });
+</script>
+</body>
+</html>

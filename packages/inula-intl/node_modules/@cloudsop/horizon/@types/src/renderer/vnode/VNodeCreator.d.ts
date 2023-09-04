@@ -1,0 +1,14 @@
+import type { VNodeTag } from './VNodeTags';
+import { VNode } from './VNode';
+import { JSXElement, Source } from '../Types';
+export declare function getLazyVNodeTag(lazyComp: any): string;
+export declare function updateVNode(vNode: VNode, vNodeProps?: any): VNode;
+export declare function createFragmentVNode(fragmentKey: any, fragmentProps: any): VNode;
+export declare function createDomTextVNode(content: any): VNode;
+export declare function createPortalVNode(portal: any): VNode;
+export declare function createUndeterminedVNode(type: any, key: any, props: any, source: Source | null): VNode;
+export declare function getElementTag(element: JSXElement): string;
+export declare function createTreeRootVNode(container: any): VNode;
+export declare function createVNode(tag: VNodeTag | string, ...secondArg: any[]): any;
+export declare function createVNodeFromElement(element: JSXElement): VNode;
+export declare function onlyUpdateChildVNodes(processing: VNode): VNode | null;
