@@ -1,9 +1,0 @@
-export declare function isElement(ele: any): boolean;
-export declare function isFragment(ele: any): boolean;
-export declare function isForwardRef(ele: any): boolean;
-export declare function isLazy(ele: any): boolean;
-export declare function isMemo(ele: any): boolean;
-export declare function isPortal(ele: any): boolean;
-export declare function isContextProvider(ele: any): boolean;
-export declare function isContextConsumer(ele: any): boolean;
-export declare function isValidElementType(type: any): boolean;
