@@ -21,7 +21,7 @@ module.exports = {
                 "@babel/preset-react",
                 {
                   "runtime": "automatic",
-                  "importSource": "@cloudsop/horizon"
+                  "importSource": "inulajs"
                 }
               ],
               '@babel/preset-typescript'
