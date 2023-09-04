@@ -19,7 +19,7 @@
     "url": "ssh://git@szv-open.codehub.huawei.com:2222/innersource/fenghuang/horizon/horizon-ecosystem.git"
   },
   "keywords": [
-    "horizon-request"
+    "inula-request"
   ],
   "author": "",
   "license": "ISC",
@@ -61,7 +61,7 @@
     "webpack-dev-server": "^4.13.3"
   },
   "dependencies": {
-    "@cloudsop/horizon": "0.0.50"
+    "inulajs": "0.0.11"
   },
   "exclude": [
     "node_modules"

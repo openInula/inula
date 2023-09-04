@@ -1,5 +1,5 @@
 import Horizon, { useState } from '@cloudsop/horizon';
-import { useHR } from '../../index';
+import { useIR } from '../../index';
 
 const App = () => {
 
@@ -10,7 +10,7 @@ const App = () => {
     enablePollingOptimization: true,
     limitation: {minInterval: 500, maxInterval: 4000}
   };
-  const {data} = useHR('http://localhost:3001/', null, options);
+  const {data} = useIR('http://localhost:3001/', null, options);
 
   const handleClick = () => {
     setSend(true);
@@ -18,7 +18,7 @@ const App = () => {
 
   return (
     <>
-      <header>useHR Test</header>
+      <header>useIR Test</header>
       <div className="container">
         <div className="card">
           <h2 style={{whiteSpace: "pre-wrap"}}>{options ? `实时数据流已激活\n更新间隔：${options?.pollingInterval} ms`

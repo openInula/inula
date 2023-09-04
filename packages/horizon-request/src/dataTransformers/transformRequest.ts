@@ -1,5 +1,5 @@
 import utils from '../utils/commonUtils/utils';
-import HrHeaders from '../core/HrHeaders';
+import IrHeaders from '../core/IrHeaders';
 import getJSONByFormData from '../utils/dataUtils/getJSONByFormData';
 import getFormData from '../utils/dataUtils/getFormData';
 import { Strategy } from '../types/types';
@@ -29,7 +29,7 @@ const strategies: Record<string, Strategy> = {
   },
 };
 
-function transformRequest(data: any, headers: HrHeaders): any {
+function transformRequest(data: any, headers: IrHeaders): any {
   const contentType = headers['Content-Type'] || '';
   const hasJSONContentType = contentType.indexOf('application/json') > -1;
   const isObjectPayload = utils.checkObject(data);

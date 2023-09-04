@@ -1,10 +1,10 @@
-import { HrRequestConfig, InterceptorHandler, Interceptors } from '../types/interfaces';
+import { IrRequestConfig, InterceptorHandler, Interceptors } from '../types/interfaces';
 import { FulfilledFn } from '../types/types';
 
 // 获取请求拦截器链以及是否异步信息
 function getRequestInterceptorsInfo(
   interceptors: Interceptors,
-  config: HrRequestConfig | undefined,
+  config: IrRequestConfig | undefined,
   isSync: boolean | undefined
 ) {
   const requestInterceptorChain: (FulfilledFn<any> | undefined)[] = [];

@@ -1,10 +1,10 @@
 import utils from '../utils/commonUtils/utils';
-import HrError from '../core/HrError';
+import IrError from '../core/IrError';
 import CustomAbortController from './ieCompatibility/CustomAbortController';
-import { HrRequestConfig, HrResponse, Cancel } from '../types/interfaces';
+import { IrRequestConfig, IrResponse, Cancel } from '../types/interfaces';
 import { Method, ResponseType } from '../types/types';
 
-export const ieFetchRequest = (config: HrRequestConfig): Promise<HrResponse> => {
+export const ieFetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
   return new Promise((resolve, reject) => {
     let {
       method = 'get',
@@ -76,7 +76,7 @@ export const ieFetchRequest = (config: HrRequestConfig): Promise<HrResponse> => 
 
         config.method = config.method!.toLowerCase() as Method;
 
-        const responseData: HrResponse = {
+        const responseData: IrResponse = {
           data: '',
           status: response.status,
           statusText: response.statusText,
@@ -130,7 +130,7 @@ export const ieFetchRequest = (config: HrRequestConfig): Promise<HrResponse> => 
             responseData.data = parsedData;
             resolve(responseData);
           })
-          .catch((error: HrError) => {
+          .catch((error: IrError) => {
             if (error.name === 'AbortError') {
               reject(error.message);
             } else {
@@ -138,7 +138,7 @@ export const ieFetchRequest = (config: HrRequestConfig): Promise<HrResponse> => 
             }
           });
       })
-      .catch((error: HrError) => {
+      .catch((error: IrError) => {
         if (error.name === 'AbortError') {
           reject(error.message);
         } else {

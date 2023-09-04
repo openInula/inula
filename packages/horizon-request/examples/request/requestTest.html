@@ -85,8 +85,8 @@
   const resetButton = document.getElementById('resetButton');
 
   queryButton.addEventListener('click', function () {
-    const hrInstance = horizonRequest.create();
-    hrInstance.request('http://localhost:3001/', {method: 'GET', data: {}})
+    const inulaRequest = inulaRequest.create();
+    inulaRequest.request('http://localhost:3001/', {method: 'GET', data: {}})
       .then(function (response) {
         requestResult.innerHTML = JSON.stringify(response.data, null, 2);
       })
@@ -94,7 +94,7 @@
         requestResult.innerHTML = JSON.stringify(error, null, 2);
       })
 
-    horizonRequest.default.get('http://localhost:3001/')
+    inulaRequest.default.get('http://localhost:3001/')
       .then(function (response) {
         getResult.innerHTML = JSON.stringify(response.data, null, 2);
       })
@@ -102,7 +102,7 @@
         getResult.innerHTML = JSON.stringify(error, null, 2);
       });
 
-    horizonRequest('http://localhost:3001/', {method:'POST', name: 'Alice'})
+    inulaRequest('http://localhost:3001/', {method:'POST', name: 'Alice'})
       .then(function (response) {
         postResult.innerHTML = JSON.stringify(response.data, null, 2);
       })
@@ -110,7 +110,7 @@
         postResult.innerHTML = JSON.stringify(error, null, 2);
       });
 
-    horizonRequest.put('http://localhost:3001/users', {id: 1, name: 'Bob'})
+    inulaRequest.put('http://localhost:3001/users', {id: 1, name: 'Bob'})
       .then(function (response) {
         putResult.innerHTML = JSON.stringify(response.data, null, 2);
       })
@@ -118,7 +118,7 @@
         putResult.innerHTML = JSON.stringify(error, null, 2);
       });
 
-    horizonRequest.delete('http://localhost:3001/users', {params: {id: 1}})
+    inulaRequest.delete('http://localhost:3001/users', {params: {id: 1}})
       .then(function (response) {
         deleteResult.innerHTML = JSON.stringify(response.data, null, 2);
       })
@@ -126,7 +126,7 @@
         deleteResult.innerHTML = JSON.stringify(error, null, 2);
       });
 
-    horizonRequest.head('http://localhost:3001/')
+    inulaRequest.head('http://localhost:3001/')
       .then(function (response) {
         headResult.innerHTML = 'Header: ' + JSON.stringify(response.headers['x-powered-by'], null, 2); // IE 浏览器不支持 HEAD 方式访问响应头
       })
@@ -134,7 +134,7 @@
         headResult.innerHTML = JSON.stringify(error, null, 2);
       });
 
-    horizonRequest.options('http://localhost:3001/', {
+    inulaRequest.options('http://localhost:3001/', {
       headers: {
         'Access-Control-Request-Method': 'POST'
       }
@@ -146,7 +146,7 @@
         optionsResult.innerHTML = JSON.stringify(error, null, 2);
       });
 
-    horizonRequest.patch('http://localhost:3001/', {name: 'HR'})
+    inulaRequest.patch('http://localhost:3001/', {name: 'IR'})
       .then(function (response) {
         patchResult.innerHTML = JSON.stringify(response.data, null, 2);
       })
@@ -154,7 +154,7 @@
         patchResult.innerHTML = JSON.stringify(error, null, 2);
       });
 
-    horizonRequest.get('http://localhost:3001/download', {
+    inulaRequest.get('http://localhost:3001/download', {
       responseType: 'text',
       onDownloadProgress: function (progressEvent) {
         const loaded = progressEvent.loaded;

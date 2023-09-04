@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const corsOptions = {
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
-  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'X-Requested-With,content-type', 'HR-Custom-Header'],
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'X-Requested-With,content-type', 'IR-Custom-Header'],
   exposedHeaders: ['X-Powered-By'],
   optionsSuccessStatus: 200, // 设置 OPTIONS 请求成功时的状态码为 200
   credentials: true

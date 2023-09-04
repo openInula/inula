@@ -3,11 +3,11 @@ import resolve from 'rollup-plugin-node-resolve'; // 解析第三方模块，并
 import commonjs from 'rollup-plugin-commonjs'; // 将 CommonJS 模块转换为 ES6 模块
 
 export default {
-  input: './src/horizonRequest.ts',
+  input: './src/inulaRequest.ts',
   output: {
     file: 'dist/bundle.js',
     format: 'umd',
-    name: 'horizonRequest',
+    name: 'inulaRequest',
   },
   plugins: [
     typescript({

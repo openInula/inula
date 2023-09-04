@@ -1,5 +1,5 @@
-import horizonRequest from './src/horizonRequest';
-import useHR from './src/core/useHR/useHR';
+import inulaRequest from './src/inulaRequest';
+import useIR from './src/core/useIR/useIR';
 
 const {
   create,
@@ -10,22 +10,22 @@ const {
   ['delete']: propToDelete,
   head,
   options,
-  HorizonRequest,
-  HrError,
+  InulaRequest,
+  IrError,
   CanceledError,
   isCancel,
   CancelToken,
   all,
   Cancel,
-  isHrError,
+  isIrError,
   spread,
-  HrHeaders,
+  IrHeaders,
   // 兼容axios
   Axios,
   AxiosError,
   AxiosHeaders,
   isAxiosError,
-} = horizonRequest;
+} = inulaRequest;
 
 export {
   create,
@@ -36,17 +36,17 @@ export {
   propToDelete as delete,
   head,
   options,
-  HorizonRequest,
-  HrError,
+  InulaRequest,
+  IrError,
   CanceledError,
   isCancel,
   CancelToken,
   all,
   Cancel,
-  isHrError,
+  isIrError,
   spread,
-  HrHeaders,
-  useHR,
+  IrHeaders,
+  useIR,
   // 兼容axios
   Axios,
   AxiosError,
@@ -54,4 +54,4 @@ export {
   isAxiosError,
 };
 
-export default horizonRequest;
+export default inulaRequest;

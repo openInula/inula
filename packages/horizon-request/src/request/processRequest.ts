@@ -1,6 +1,6 @@
 import CancelError from '../cancel/CancelError';
-import { HrRequestConfig, HrResponse } from '../types/interfaces';
-import HrHeaders from '../core/HrHeaders';
+import { IrRequestConfig, IrResponse } from '../types/interfaces';
+import IrHeaders from '../core/IrHeaders';
 import transformData from '../utils/dataUtils/transformData';
 import { fetchRequest } from './fetchRequest';
 import transformRequest from '../dataTransformers/transformRequest';
@@ -9,7 +9,7 @@ import checkCancel from '../cancel/checkCancel';
 import { ieFetchRequest } from './ieFetchRequest';
 import utils from '../utils/commonUtils/utils';
 
-export default function processRequest(config: HrRequestConfig): Promise<HrResponse> {
+export default function processRequest(config: IrRequestConfig): Promise<IrResponse> {
   if (config.cancelToken) {
     config.cancelToken.throwIfRequested();
   }
@@ -19,7 +19,7 @@ export default function processRequest(config: HrRequestConfig): Promise<HrRespo
   }
 
   // 拦截可能会传入普通对象
-  config.headers = HrHeaders.from(config.headers as Record<string, any>);
+  config.headers = IrHeaders.from(config.headers as Record<string, any>);
 
   // 转换请求数据
   if (config.data) {
