@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horizon Request Interceptor Test</title>
+    <title>Inula Request Interceptor Test</title>
     <link rel="stylesheet" type="text/css" href="interceptorStyles.css">
 </head>
 <body>
-<header>Horizon Request interceptor Test</header>
+<header>Inula Request interceptor Test</header>
 <h2>使用拦截器：</h2>
 <div class="response-container">
     <h3>响应状态码：</h3>
@@ -89,7 +89,7 @@
 
   // 不使用拦截器的请求
   document.getElementById('sendRequestWithoutInterceptor').addEventListener('click', function () {
-    horizonRequest.get('http://localhost:3001/')
+    inulaRequest.get('http://localhost:3001/')
       .then(function (response) {
         document.getElementById('responseStatusWithoutInterceptor').textContent = response.status;
         document.getElementById('responseDataWithoutInterceptor').textContent = JSON.stringify(response.data, null, 2);

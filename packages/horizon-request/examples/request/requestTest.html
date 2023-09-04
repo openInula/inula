@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Horizon Request API Test</title>
+    <title>Inula Request API Test</title>
     <link rel="stylesheet" type="text/css" href="requestStyles.css">
 </head>
 <body>
-<header>Horizon Request API Test</header>
+<header>Inula Request API Test</header>
 <div class="container">
     <div class="card">
         <h2>Request</h2>
@@ -85,8 +85,8 @@
   const resetButton = document.getElementById('resetButton');
 
   queryButton.addEventListener('click', function () {
-    const inulaRequest = inulaRequest.create();
-    inulaRequest.request('http://localhost:3001/', {method: 'GET', data: {}})
+    const irInstance = inulaRequest.create();
+    irInstance.request('http://localhost:3001/', {method: 'GET', data: {}})
       .then(function (response) {
         requestResult.innerHTML = JSON.stringify(response.data, null, 2);
       })
@@ -189,7 +189,7 @@
     const formData = new FormData();
     formData.append('file', file);
 
-    horizonRequest.post('http://localhost:3001/', formData, {
+    inulaRequest.post('http://localhost:3001/', formData, {
       onUploadProgress: function (progressEvent) {
         const loaded = progressEvent.loaded;
         const total = progressEvent.total;

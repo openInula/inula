@@ -7,10 +7,10 @@ import { babel } from '@rollup/plugin-babel';
 export default {
   input: './index.ts',
   output: {
-    file: 'dist/horizonRequest.js',
+    file: 'dist/inulaRequest.js',
     format: 'umd',
     exports: 'named',
-    name: 'horizonRequest',
+    name: 'inulaRequest',
     sourcemap: false,
   },
   plugins: [
