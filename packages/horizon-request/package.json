@@ -1,5 +1,5 @@
 {
-  "name": "@cloudsop/horizon-request",
+  "name": "inula-request",
   "version": "1.0.20",
   "description": "Horizon-request brings you a convenient request experience!",
   "main": "index.ts",
@@ -7,7 +7,7 @@
     "test": "jest --config jest.config.cjs",
     "buildExample": "rollup -c rollup.config.example.js --bundleConfigAsCjs",
     "build": "rollup -c rollup.config.js --bundleConfigAsCjs",
-    "useHRExample": "webpack serve --config webpack.useHR.config.js --mode development",
+    "useIRExample": "webpack serve --config webpack.useHR.config.js --mode development",
     "server": "nodemon .\\examples\\server\\serverTest.mjs"
   },
   "files": [
