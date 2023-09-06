@@ -29,6 +29,16 @@ class InulaRequest implements IrInterface {
       response: new InterceptorManager(),
     };
     this.processRequest = processRequest;
+
+    // 支持动态传递请求方法保证 this 指向正确
+    this.request = this.request.bind(this);
+    this.get = this.get.bind(this);
+    this.delete = this.delete.bind(this);
+    this.head = this.head.bind(this);
+    this.options = this.options.bind(this);
+    this.post = this.post.bind(this);
+    this.put = this.put.bind(this);
+    this.patch = this.patch.bind(this);
   }
 
   request<T = unknown>(requestParam: string | Record<string, any>, config?: IrRequestConfig): Promise<IrResponse<T>> {
