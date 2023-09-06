@@ -21,10 +21,13 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
       withCredentials = false,
       onUploadProgress = null,
       onDownloadProgress = null,
+      signal,
     } = config;
 
     let controller = new AbortController();
-    let signal = controller.signal;
+    if (!signal) {
+      signal = controller.signal;
+    }
 
     // 处理请求取消
     if (cancelToken) {
