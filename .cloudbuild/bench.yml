@@ -1,0 +1,34 @@
+version: 2.0
+notifications:
+  notifier:
+    espace:
+      true: false
+    email:
+      true: false
+params:
+  - name: build_system
+    value: build2
+env:
+  resource:
+    image: kweecr02.his.huawei.com:80/ecr-build/cloudsop_javascript_test:cloudsop_javascript_test
+    type: docker
+    class: 4U8G
+steps:
+  PRE_BUILD:
+    - checkout:
+        path: horizon-core
+    - gitlab:
+        url: https://szv-open.codehub.huawei.com/innersource/shanhai/wutong/react/horizon-test.git
+        branch: one_tree_dev
+        path: horizon-test
+  BUILD:
+    - build_execute:
+        command: |
+          yarn config set strict-ssl false
+          cd horizon-core
+          yarn
+          cd ../horizon-test
+          yarn
+          yarn run test
+buildspace:
+  fixed: true
