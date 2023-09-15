@@ -1,10 +1,10 @@
 {
-  "name": "@cloudsop/horizon",
-  "description": "Horizon is a JavaScript framework library.",
+  "name": "inulajs",
+  "description": "Inulajs is a JavaScript framework library.",
   "keywords": [
-    "horizon"
+    "inulajs"
   ],
-  "version": "0.0.55",
+  "version": "0.0.1",
   "homepage": "",
   "bugs": "",
   "main": "index.js",
@@ -15,7 +15,6 @@
   "scripts": {
     "build": "rollup --config ./scripts/rollup/rollup.config.js",
     "build-types": "tsc -p tsconfig.build.json || echo \"WARNING: TSC exited with status $?\" && rollup -c ./scripts/rollup/build-types.js",
-    "build:inula3rdLib-dev": "npm run build & node ./scripts/gen3rdLib.js build:horizon3rdLib-dev",
     "build:watch": "rollup --watch --config ./scripts/rollup/rollup.config.js",
     "debug-test": "yarn test --debug",
     "lint": "eslint . --ext .ts --fix",
