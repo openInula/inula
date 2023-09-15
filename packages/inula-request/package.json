@@ -1,7 +1,7 @@
 {
-  "name": "@cloudsop/horizon-request",
-  "version": "1.0.31",
-  "description": "Horizon-request brings you a convenient request experience!",
+  "name": "inula-request",
+  "version": "0.0.1",
+  "description": "Inula-request brings you a convenient request experience!",
   "main": "./dist/index.ts",
   "scripts": {
     "test": "jest --config jest.config.cjs",
@@ -16,10 +16,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "ssh://git@szv-open.codehub.huawei.com:2222/innersource/fenghuang/horizon/horizon-ecosystem.git"
+    "url": ""
   },
   "keywords": [
-    "horizon-request"
+    "inula-request"
   ],
   "author": "",
   "license": "ISC",
@@ -61,7 +61,7 @@
     "webpack-dev-server": "^4.13.3"
   },
   "dependencies": {
-    "@cloudsop/horizon": "0.0.58"
+    "inulajs": "0.0.11"
   },
   "exclude": [
     "node_modules"
