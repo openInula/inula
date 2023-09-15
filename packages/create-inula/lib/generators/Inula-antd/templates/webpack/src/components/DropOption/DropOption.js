@@ -1,4 +1,4 @@
-import Inula from '@cloudsop/Inula';
+import Inula from 'inulajs';
 import PropTypes from 'prop-types';
 import { BarsOutlined, DownOutlined } from '@ant-design/icons';
 import { Dropdown, Button, Menu } from 'antd';
