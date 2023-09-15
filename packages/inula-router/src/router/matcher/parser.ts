@@ -15,7 +15,6 @@ enum MatchScore {
 
 export type Params<P> = { [K in keyof P]?: P[K] };
 
-// 兼容 react v5 matched类型
 export type Matched<P = any> = {
   score: number[];
   params: Params<P>;

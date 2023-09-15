@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from '@cloudsop/horizon';
+import { useLayoutEffect, useRef } from 'inulajs';
 
 export type LifeCycleProps = {
   onMount?: () => void;

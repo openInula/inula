@@ -1,4 +1,4 @@
-import { useContext } from '@cloudsop/horizon';
+import { useContext } from 'inulajs';
 import RouterContext from './context';
 import { Matched, matchPath, Params } from './matcher/parser';
 import { History } from '../history/types';

@@ -1,4 +1,4 @@
-import { createContext } from '@cloudsop/horizon';
+import { createContext } from 'inulajs';
 import { History, Location } from './index';
 import { Matched } from './matcher/parser';
 

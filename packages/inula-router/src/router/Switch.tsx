@@ -1,5 +1,5 @@
-import Inula from '@cloudsop/horizon';
-import { useContext, Children, isValidElement, cloneElement, InulaNode, InulaElement } from '@cloudsop/horizon';
+import Inula from 'inulajs';
+import { useContext, Children, isValidElement, cloneElement, InulaNode, InulaElement } from 'inulajs';
 
 import { Location } from './index';
 import RouterContext from './context';
@@ -19,7 +19,7 @@ function Switch<P extends SwitchProps>(props: P): InulaElement | null {
   let element: InulaElement | null = null;
   let match: Matched | null = null;
 
-  // 使用forEach不会给React.ReactNode增加key属性,防止重新渲染
+  // 使用forEach不会给InulaNode增加key属性,防止重新渲染
   Children.forEach(props.children, node => {
     if (match === null && isValidElement(node)) {
       element = node;

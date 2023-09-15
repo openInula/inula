@@ -1,5 +1,5 @@
-import Inula from '@cloudsop/horizon';
-import { useLayoutEffect, useRef, reduxAdapter, InulaNode } from '@cloudsop/horizon';
+import Inula from 'inulajs';
+import { useLayoutEffect, useRef, reduxAdapter, InulaNode } from 'inulajs';
 import { connect, ReactReduxContext } from 'react-redux';
 import { Store } from 'redux';
 import { History, Location, Router } from '../router';
