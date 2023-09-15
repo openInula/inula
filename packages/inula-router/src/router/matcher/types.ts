@@ -30,7 +30,7 @@ export type ParserOption = {
   caseSensitive?: boolean;
   // 是否启用严格模式
   strictMode?: boolean;
-  // 精准匹配 兼容 React-RouterV5
+  // 精准匹配
   exact?: boolean;
 };
 

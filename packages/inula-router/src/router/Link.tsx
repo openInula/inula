@@ -1,5 +1,5 @@
-import Inula from '@cloudsop/horizon';
-import { useContext, MouseEvent, ComponentType, Ref } from '@cloudsop/horizon';
+import Inula from 'inulajs';
+import { useContext, MouseEvent, ComponentType, Ref } from 'inulajs';
 import RouterContext from './context';
 import { Location } from './index';
 import { createPath, parsePath } from '../history/utils';
@@ -10,10 +10,6 @@ export type LinkProps = {
   to: Partial<Location> | string | ((location: Location) => string | Partial<Location>);
   replace?: boolean;
   tag?: string;
-  /**
-   * @deprecated
-   * React16以后不再需要该属性
-   **/
   innerRef?: Ref<HTMLAnchorElement>;
 } & { [key: string]: any };
 

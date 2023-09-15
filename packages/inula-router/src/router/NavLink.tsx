@@ -1,5 +1,5 @@
-import Inula from '@cloudsop/horizon';
-import { useContext } from '@cloudsop/horizon';
+import Inula from 'inulajs';
+import { useContext } from 'inulajs';
 import type { LinkProps } from './Link';
 import Link from './Link';
 import { Location, matchPath } from './index';
@@ -10,7 +10,6 @@ import { parsePath } from '../history/utils';
 type NavLinkProps = {
   to: Partial<Location> | string | ((location: Location) => string | Partial<Location>);
   isActive?: (match: Matched | null, location: Location) => boolean;
-  // compat react-router NavLink props type
   [key: string]: any;
 } & LinkProps;
 

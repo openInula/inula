@@ -1,5 +1,5 @@
-import Inula from '@cloudsop/horizon';
-import { useContext, ComponentType } from '@cloudsop/horizon';
+import Inula from 'inulajs';
+import { useContext, ComponentType } from 'inulajs';
 import RouterContext from './context';
 
 function withRouter<C extends ComponentType>(Component: C) {
