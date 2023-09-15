@@ -20,11 +20,8 @@ export default {
     output: [
         {
             file: path.resolve(output, 'intl.umd.js'),
-            name: 'HorizonI18n',
+            name: 'InulaI18n',
             format: 'umd',
-            globals:{
-              '@cloudsop/horizon':'Horizon'
-            }
         },
     ],
     plugins: [
@@ -46,7 +43,7 @@ export default {
       terser(),
     ],
     external:[
-        '@cloudsop/horizon',
+        'inulajs',
         'react',
         'react-dom'
     ]

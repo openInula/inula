@@ -3,7 +3,7 @@
  */
 import copyStaticProps from '../../src/utils/copyStaticProps';
 
-describe('hoistNonReactStatics', () => {
+describe('copyStaticProps', () => {
   test('should hoist static properties from sourceComponent to targetComponent', () => {
     class SourceComponent {
       static staticProp = 'sourceProp';

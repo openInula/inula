@@ -1,6 +1,6 @@
 {
-  "name": "@cloudsop/horizon-intl",
-  "version": "1.0.22",
+  "name": "inula-intl",
+  "version": "0.0.1",
   "description": "",
   "main": "build/intl.umd.js",
   "type": "commonjs",
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://szv-open.codehub.huawei.com/innersource/fenghuang/horizon/horizon-core.git"
+    "url": ""
   },
   "files": [
     "build",
@@ -23,7 +23,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@cloudsop/horizon": "^0.0.58"
+    "inulajs": "^0.0.11"
   },
   "devDependencies": {
     "@babel/core": "7.21.3",
