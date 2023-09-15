@@ -14,7 +14,7 @@
  */
 
 import { useEffect, useRef } from '../../renderer/hooks/HookExternal';
-import { getProcessingVNode, getStartVNode } from '../../renderer/GlobalVar';
+import { getProcessingVNode } from '../../renderer/GlobalVar';
 import { createProxy } from '../proxy/ProxyHandler';
 import readonlyProxy from '../proxy/readonlyProxy';
 import { Observer } from '../proxy/Observer';
@@ -117,8 +117,8 @@ function registerDestroyFunction() {
 
     useEffect(() => {
       return () => {
-        clearVNodeObservers(vNodeRef.current);
-        vNodeRef.current.observers = null;
+        clearVNodeObservers(vNodeRef.current!);
+        vNodeRef.current!.observers = null;
       };
     }, []);
   } else if (processingVNode.tag === ClassComponent) {
@@ -133,7 +133,7 @@ function registerDestroyFunction() {
 }
 
 // createStore返回的是一个getStore的函数，这个函数必须要在组件（函数/类组件）里面被执行，因为要注册VNode销毁时的清理动作
-function createGetStore<S extends object, A extends UserActions<S>, C extends UserComputedValues<S>>(
+function createGetStore<S extends Record<string, any>, A extends UserActions<S>, C extends UserComputedValues<S>>(
   storeObj: StoreObj<S, A, C>
 ): () => StoreObj<S, A, C> {
   const getStore = () => {
@@ -147,7 +147,7 @@ function createGetStore<S extends object, A extends UserActions<S>, C extends Us
   return getStore;
 }
 
-export function createStore<S extends object, A extends UserActions<S>, C extends UserComputedValues<S>>(
+export function createStore<S extends Record<string, any>, A extends UserActions<S>, C extends UserComputedValues<S>>(
   config: StoreConfig<S, A, C>
 ): () => StoreObj<S, A, C> {
   // 校验

@@ -17,13 +17,13 @@ import { resolveMutation } from '../../CommonUtils';
 import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
 import { RAW_VALUE } from '../../Constants';
 
-export function createWeakSetProxy<T extends object>(
+export function createWeakSetProxy<T extends Record<string, any>>(
   rawObj: T,
   listener: { current: (...args) => any },
   hookObserver = true
 ): ProxyHandler<T> {
-  let listeners: ((mutation) => {})[] = [];
-  let proxies = new WeakMap();
+  let listeners: ((mutation) => Record<string, any>)[] = [];
+  const proxies = new WeakMap();
 
   const handler = {
     get,
@@ -70,7 +70,7 @@ export function createWeakSetProxy<T extends object>(
   }
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Set的add方法
-  function add(rawObj: { add: (any) => void; has: (any) => boolean }, value: any): Object {
+  function add(rawObj: { add: (any) => void; has: (any) => boolean }, value: any): Record<string, any> {
     if (!rawObj.has(proxies.get(value))) {
       const proxy = createProxy(
         value,
@@ -78,7 +78,7 @@ export function createWeakSetProxy<T extends object>(
           current: change => {
             if (!change.parents) change.parents = [];
             change.parents.push(rawObj);
-            let mutation = resolveMutation(
+            const mutation = resolveMutation(
               { ...rawObj, [value]: change.mutation.from },
               { ...rawObj, [value]: change.mutation.to }
             );

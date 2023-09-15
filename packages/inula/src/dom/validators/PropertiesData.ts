@@ -30,6 +30,8 @@ export type PropDetails = {
   attrNS: string | null;
 };
 
+type PropData = string | PROPERTY_TYPE | undefined | null;
+
 // 属性相关数据
 // 依次为 propertyName、type、attributeName、attributeNamespace，不填则使用默认值
 // type 默认 STRING
@@ -113,7 +115,7 @@ const propsDetailData = {};
 
 propertiesData.forEach(record => {
   const propName = record[0];
-  let [type, attrName, attrNS] = record.slice(1);
+  let [type, attrName, attrNS] = record.slice(1) as PropData[];
 
   if (type === undefined) {
     type = PROPERTY_TYPE.STRING;
@@ -127,7 +129,7 @@ propertiesData.forEach(record => {
     attrNS = null;
   }
 
-  propsDetailData[propName] = {
+  propsDetailData[propName!] = {
     propName,
     type,
     attrName,

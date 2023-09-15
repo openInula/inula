@@ -114,12 +114,12 @@ export class Observer implements IObserver {
     this.listeners.forEach(listener =>
       listener({
         mutation,
-        vNodes: nodesList.map(vNode => {
+        vNodes: nodesList.map((vNode: VNode) => {
           let realNode = vNode.realNode;
-          let searchedNode = vNode;
+          let searchedNode: VNode | null | undefined = vNode;
           while (!realNode) {
-            searchedNode = searchedNode.child;
-            realNode = searchedNode.realNode;
+            searchedNode = searchedNode?.child;
+            realNode = searchedNode?.realNode;
           }
           return {
             type: vNode?.type?.name,

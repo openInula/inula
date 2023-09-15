@@ -3,7 +3,6 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import babel from '@rollup/plugin-babel';
 import nodeResolve from '@rollup/plugin-node-resolve';
-import execute from 'rollup-plugin-execute';
 import { terser } from 'rollup-plugin-terser';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -30,14 +29,14 @@ const routerBuildConfig = mode => {
     },
     {
       file: path.join(output, `router/umd/router.${prod ? 'min.' : ''}js`),
-      name: `HorizonRouter`,
+      name: 'HorizonRouter',
       sourcemap: 'true',
       format: 'umd',
     },
   ];
   if (!prod) {
     outputList.push({
-      file: path.join(output, `router/esm/router.js`),
+      file: path.join(output, 'router/esm/router.js'),
       sourcemap: 'true',
       format: 'esm',
     });
@@ -56,7 +55,6 @@ const routerBuildConfig = mode => {
         babelHelpers: 'runtime',
         extensions,
       }),
-      execute('npm run build-types-router'),
       prod && terser(),
     ],
   };
@@ -79,7 +77,7 @@ const connectRouterConfig = mode => {
   ];
   if (!prod) {
     outputList.push({
-      file: path.join(output, `connectRouter/esm/connectRouter.js`),
+      file: path.join(output, 'connectRouter/esm/connectRouter.js'),
       sourcemap: 'true',
       format: 'esm',
     });
@@ -98,7 +96,6 @@ const connectRouterConfig = mode => {
         babelHelpers: 'runtime',
         extensions,
       }),
-      execute('npm run build-types-all'),
       prod && terser(),
       copyFiles([
         {

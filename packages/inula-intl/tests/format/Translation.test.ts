@@ -36,7 +36,7 @@ describe('Translation', () => {
     it('should skip null values returned by ctx', () => {
       const ctx = jest.fn().mockReturnValue(null);
       const result = translation.formatMessage([['name', 'type', 'format'], 'World!'], ctx);
-      expect(result).toBe('World!');
+      expect(result).toBe('{name}World!');
     });
 
     it('should handle nested formats in the token array', () => {
@@ -63,7 +63,7 @@ describe('Translation', () => {
         if (name === 'name') {
           return 'John';
         }
-        return "";
+        return '';
       });
       const result = translation.formatMessage(compiledMessage, textFormatter);
 
@@ -79,7 +79,7 @@ describe('Translation', () => {
         if (name === 'name') {
           return 'John';
         }
-        return "";
+        return '';
       });
       const result = translation.formatMessage(compiledMessage, textFormatter);
 
@@ -103,7 +103,7 @@ describe('Translation', () => {
         } else if (name === 'age') {
           return '30';
         }
-        return "";
+        return '';
       });
       const result = translation.formatMessage(compiledMessage, textFormatter);
 

@@ -49,20 +49,20 @@ function getReg(input: string | Record<string, any>): string {
     return '(?:' + transferReg(input) + ')';
   } else if (checkRegExp(input) || checkObject(input)) {
     if (input.ignoreCase) {
-      throw new Error('/i 标志禁止使用');
+      throw new Error('/i prohibition sign');
     }
     if (input.global) {
-      throw new Error('/g 标志禁止使用');
+      throw new Error('/g prohibition sign');
     }
     if (input.sticky) {
-      throw new Error('/y 标志禁止使用');
+      throw new Error('/y prohibition sign');
     }
     if (input.multiline) {
-      throw new Error('/m 标志禁止使用');
+      throw new Error('/m prohibition sign');
     }
     return input.source;
   } else {
-    throw new Error(`${input}不符合规范！`);
+    throw new Error(`${input}Non-conformance to specifications!`);
   }
 }
 
@@ -122,7 +122,7 @@ function getRulesByArray(array: any[]) {
     }
 
     if (!obj.type) {
-      throw new Error('Rule 没有 type 属性');
+      throw new Error('The rule does not have the type attribute.');
     }
     result.push(getRuleOptions(obj.type, obj));
   }
@@ -138,7 +138,7 @@ function getRuleOptions(type, obj) {
 
   // 如果 obj 包含 'include' 属性，则抛出错误，因为匹配规则不能包含状态
   if (obj.include) {
-    throw new Error('匹配规则不能包含状态!');
+    throw new Error('The matching rule cannot contain the status!');
   }
 
   // 创建默认的选项对象，初始化各个选项属性
@@ -158,7 +158,7 @@ function getRuleOptions(type, obj) {
   Object.assign(options, obj);
 
   if (typeof options.type === 'string' && type !== options.type) {
-    throw new Error('type 属性不能为字符串！');
+    throw new Error('The type attribute cannot be a string.');
   }
 
   const match = options.match;

@@ -43,7 +43,7 @@ export function getCurrentContext(clazz, processing: VNode) {
 }
 
 // 挂载实例
-function mountInstance(ctor, processing: VNode, nextProps: object) {
+function mountInstance(ctor, processing: VNode, nextProps: Record<string, any>) {
   if (!processing.isCreated) {
     processing.isCreated = true;
     FlagUtils.markAddition(processing);
@@ -87,7 +87,7 @@ function createChildren(clazz: any, processing: VNode) {
 }
 
 // 根据isUpdateComponent，执行不同的生命周期
-function callUpdateLifeCycle(processing: VNode, nextProps: object, clazz) {
+function callUpdateLifeCycle(processing: VNode, nextProps: Record<string, any>, clazz) {
   const inst = processing.realNode;
   const newContext = getCurrentContext(clazz, processing);
   if (processing.isCreated) {
@@ -97,7 +97,7 @@ function callUpdateLifeCycle(processing: VNode, nextProps: object, clazz) {
   }
 }
 
-function markLifeCycle(processing: VNode, nextProps: object, shouldUpdate: boolean) {
+function markLifeCycle(processing: VNode, nextProps: Record<string, any>, shouldUpdate: boolean) {
   if (processing.isCreated) {
     markComponentDidMount(processing);
   } else if (processing.state !== processing.oldState || shouldUpdate) {
@@ -132,7 +132,7 @@ export function captureRender(processing: VNode): VNode | null {
     shouldUpdate = true;
   } else {
     // 更新
-    const newContext = getCurrentContext(ctor, processing);
+    const newContext = getCurrentContext(ctor, processing) as Record<string, any>;
 
     // 子节点抛出异常时，如果本class是个捕获异常的处理节点，这时候oldProps是null，所以需要使用props
     const oldProps = (processing.flags & DidCapture) === DidCapture ? processing.props : processing.oldProps;

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) Huawei Technologies Co., Ltd. 2023-2023. All rights reserved.
  */
-import Horizon, { Children, Fragment } from 'inulajs';
+import Inula, { Children, Fragment } from '@cloudsop/horizon';
 import { FormattedMessageProps } from '../../types/interfaces';
 import useI18n from '../hook/useI18n';
 

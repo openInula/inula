@@ -328,10 +328,10 @@ function submitAddition(vNode: VNode): void {
     parent = parent.parent;
   }
 
-  if ((parent.flags & ResetText) === ResetText) {
+  if ((parent!.flags & ResetText) === ResetText) {
     // 在insert之前先reset
     clearText(parentDom);
-    FlagUtils.removeFlag(parent, ResetText);
+    FlagUtils.removeFlag(parent!, ResetText);
   }
 
   if ((vNode.flags & DirectAddition) === DirectAddition) {
@@ -399,7 +399,7 @@ function submitDeletion(vNode: VNode): void {
 }
 
 function submitSuspenseComponent(vNode: VNode) {
-  const { childStatus } = vNode.suspenseState;
+  const { childStatus } = vNode.suspenseState!;
   if (childStatus !== SuspenseChildStatus.Init) {
     hideOrUnhideAllChildren(vNode.child, childStatus === SuspenseChildStatus.ShowFallback);
   }

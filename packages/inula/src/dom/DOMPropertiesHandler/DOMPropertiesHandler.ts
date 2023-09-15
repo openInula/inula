@@ -21,7 +21,7 @@ import { isEventProp } from '../validators/ValidateProps';
 import { getCurrentRoot } from '../../renderer/RootStack';
 
 // 初始化DOM属性和更新 DOM 属性
-export function setDomProps(dom: Element, props: Object, isNativeTag: boolean, isInit: boolean): void {
+export function setDomProps(dom: Element, props: Record<string, any>, isNativeTag: boolean, isInit: boolean): void {
   const keysOfProps = Object.keys(props);
   let propName;
   let propVal;
@@ -55,7 +55,7 @@ export function setDomProps(dom: Element, props: Object, isNativeTag: boolean, i
 }
 
 // 找出两个 DOM 属性的差别，生成需要更新的属性集合
-export function compareProps(oldProps: Object, newProps: Object): Object {
+export function compareProps(oldProps: Record<string, any>, newProps: Record<string, any>): Record<string, any> {
   let updatesForStyle = {};
   const toUpdateProps = {};
   const keysOfOldProps = Object.keys(oldProps);

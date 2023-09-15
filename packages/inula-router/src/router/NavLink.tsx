@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { useContext } from 'react';
+import Inula from '@cloudsop/horizon';
+import { useContext } from '@cloudsop/horizon';
 import type { LinkProps } from './Link';
 import Link from './Link';
 import { Location, matchPath } from './index';

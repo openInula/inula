@@ -99,6 +99,7 @@ export class VNode {
   toUpdateNodes: Set<VNode> | null; // 保存要更新的节点
   delegatedEvents: Set<string>;
 
+  // @ts-ignore
   [BELONG_CLASS_VNODE_KEY]: VNode | null = null; // 记录JSXElement所属class vNode，处理ref的时候使用
 
   // 状态管理器InulaX使用

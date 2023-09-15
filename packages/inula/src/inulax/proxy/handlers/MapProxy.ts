@@ -21,10 +21,14 @@ import { RAW_VALUE } from '../../Constants';
 
 const COLLECTION_CHANGE = '_collectionChange';
 
-export function createMapProxy(rawObj: Object, listener: { current: (...args) => any }, hookObserver = true): Object {
-  let listeners: ((mutation) => {})[] = [];
+export function createMapProxy(
+  rawObj: Record<string, any>,
+  listener: { current: (...args) => any },
+  hookObserver = true
+): Record<string, any> {
+  let listeners: ((mutation) => Record<string, any>)[] = [];
   let oldData: [any, any][] = [];
-  let proxies = new Map();
+  const proxies = new Map();
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   function getFun(rawObj: { get: (key: any) => any; has: (key: any) => boolean }, key: any): any {
@@ -41,7 +45,7 @@ export function createMapProxy(rawObj: Object, listener: { current: (...args) =>
         current: change => {
           if (!change.parents) change.parents = [];
           change.parents.push(rawObj);
-          let mutation = resolveMutation(
+          const mutation = resolveMutation(
             { ...rawObj, [key]: change.mutation.from },
             { ...rawObj, [key]: change.mutation.to }
           );
@@ -92,7 +96,7 @@ export function createMapProxy(rawObj: Object, listener: { current: (...args) =>
             // KEY CHANGE
             if (!change.parents) change.parents = [];
             change.parents.push(rawObj);
-            let mutation = resolveMutation(
+            const mutation = resolveMutation(
               { ...rawObj, ['_keyChange']: change.mutation.from },
               { ...rawObj, ['_keyChange']: change.mutation.to }
             );
@@ -192,7 +196,7 @@ export function createMapProxy(rawObj: Object, listener: { current: (...args) =>
             //KEY ATTRIBUTES CHANGED
             if (!change.parents) change.parents = [];
             change.parents.push(rawObj);
-            let mutation = resolveMutation(
+            const mutation = resolveMutation(
               { ...rawObj, ['_keyChange']: change.mutation.from },
               { ...rawObj, ['_keyChange']: change.mutation.to }
             );
@@ -209,7 +213,7 @@ export function createMapProxy(rawObj: Object, listener: { current: (...args) =>
             // VALUE ATTRIBUTE CHANGED
             if (!change.parents) change.parents = [];
             change.parents.push(rawObj);
-            let mutation = resolveMutation(
+            const mutation = resolveMutation(
               { ...rawObj, key: change.mutation.from },
               { ...rawObj, key: change.mutation.to }
             );
@@ -224,7 +228,7 @@ export function createMapProxy(rawObj: Object, listener: { current: (...args) =>
     });
   }
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  function wrapIterator(rawObj: Object, rawIt: { next: () => { value: any; done: boolean } }, type) {
+  function wrapIterator(rawObj: Record<string, any>, rawIt: { next: () => { value: any; done: boolean } }, type) {
     const observer = getObserver(rawObj);
     const hookObserver = hookObserverMap.get(rawObj);
     observer.useProp(COLLECTION_CHANGE);
@@ -240,7 +244,7 @@ export function createMapProxy(rawObj: Object, listener: { current: (...args) =>
                 current: change => {
                   if (!change.parents) change.parents = [];
                   change.parents.push(rawObj);
-                  let mutation = resolveMutation(
+                  const mutation = resolveMutation(
                     { ...rawObj, [value]: change.mutation.from },
                     { ...rawObj, [value]: change.mutation.to }
                   );
@@ -265,7 +269,7 @@ export function createMapProxy(rawObj: Object, listener: { current: (...args) =>
                 current: change => {
                   if (!change.parents) change.parents = [];
                   change.parents.push(rawObj);
-                  let mutation = resolveMutation(
+                  const mutation = resolveMutation(
                     { ...rawObj, ['itemChange']: { key: change.mutation.from, value: value[1] } },
                     { ...rawObj, ['itemChange']: { key: change.mutation.to, value: value[1] } }
                   );
@@ -281,7 +285,7 @@ export function createMapProxy(rawObj: Object, listener: { current: (...args) =>
                 current: change => {
                   if (!change.parents) change.parents = [];
                   change.parents.push(rawObj);
-                  let mutation = resolveMutation(
+                  const mutation = resolveMutation(
                     { ...rawObj, item: { key: value[0], value: change.mutation.from } },
                     { ...rawObj, item: { key: value[0], value: change.mutation.to } }
                   );
@@ -300,7 +304,7 @@ export function createMapProxy(rawObj: Object, listener: { current: (...args) =>
               current: change => {
                 if (!change.parents) change.parents = [];
                 change.parents.push(rawObj);
-                let mutation = resolveMutation(
+                const mutation = resolveMutation(
                   { ...rawObj, [type === 'keys' ? 'key' : 'value']: change.mutation.from },
                   { ...rawObj, [type === 'keys' ? 'key' : 'value']: change.mutation.to }
                 );

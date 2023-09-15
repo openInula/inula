@@ -85,7 +85,7 @@ export function handleRenderThrowError(sourceVNode: VNode, error: any) {
   // error是个promise
   if (isPromise(error)) {
     // 抛出异常的节点，向上寻找，是否有suspense组件
-    const foundSuspense = handleSuspenseChildThrowError(sourceVNode.parent, sourceVNode, error);
+    const foundSuspense = handleSuspenseChildThrowError(sourceVNode.parent!, sourceVNode, error);
     if (foundSuspense) {
       return;
     }
@@ -95,7 +95,7 @@ export function handleRenderThrowError(sourceVNode: VNode, error: any) {
   setBuildResult(BuildErrored);
 
   // 向上遍历寻找ClassComponent组件（同时也是Error Boundaries组件） 或者 TreeRoot
-  let vNode = sourceVNode.parent;
+  let vNode: VNode | null = sourceVNode.parent!;
   do {
     switch (vNode.tag) {
       case TreeRoot: {

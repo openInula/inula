@@ -16,10 +16,10 @@
 import { useLayoutEffectImpl } from './UseEffectHook';
 import { getHookStage } from './HookStage';
 import { throwNotInFuncError } from './BaseHook';
-import type { Ref } from './HookType';
+import type { MutableRef } from './HookType';
 import { isNotNull } from '../../dom/utils/Common';
 
-function effectFunc<R>(func: () => R, ref: Ref<R> | ((any) => any) | null): (() => void) | void {
+function effectFunc<R>(func: () => R, ref: MutableRef<R> | ((any) => any) | null): (() => void) | void {
   if (typeof ref === 'function') {
     const value = func();
     ref(value);
@@ -29,9 +29,9 @@ function effectFunc<R>(func: () => R, ref: Ref<R> | ((any) => any) | null): (() 
   }
 
   if (isNotNull(ref)) {
-    ref.current = func();
+    ref!.current = func();
     return () => {
-      ref.current = null;
+      ref!.current = null as unknown as R;
     };
   }
 }
@@ -46,6 +46,6 @@ export function useImperativeHandleImpl<R>(
     throwNotInFuncError();
   }
 
-  const params = isNotNull(dependencies) ? dependencies.concat([ref]) : null;
+  const params = isNotNull(dependencies) ? dependencies?.concat([ref]) : null;
   useLayoutEffectImpl(effectFunc.bind(null, func, ref), params);
 }

@@ -19,8 +19,8 @@
 
 let isMessageLoopRunning = false;
 let browserCallback = null;
-let port1 = null;
-let port2 = null;
+let port1: MessagePort |null = null;
+let port2: MessagePort |null = null;
 let isTestRuntime = false;
 
 export function isOverTime() {
@@ -31,7 +31,7 @@ function asyncCall() {
   if (isTestRuntime) {
     setTimeout(callRenderTasks, 0);
   } else {
-    port2.postMessage(null);
+    (port2 as unknown as MessagePort).postMessage(null);
   }
 }
 
@@ -43,7 +43,7 @@ const callRenderTasks = () => {
 
   try {
     // 执行callback
-    const hasMoreTask = browserCallback();
+    const hasMoreTask = (browserCallback as any)();
 
     if (!hasMoreTask) {
       // 没有更多task

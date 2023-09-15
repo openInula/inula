@@ -57,7 +57,7 @@ const typeMap = {
 };
 
 function newVirtualNode(tag: VNodeTag, key?: null | string, vNodeProps?: any, realNode?: any): VNode {
-  return new VNode(tag, vNodeProps, key, realNode);
+  return new VNode(tag, vNodeProps, key as null | string, realNode);
 }
 
 function isClassComponent(comp: Function) {
@@ -84,7 +84,7 @@ export function updateVNode(vNode: VNode, vNodeProps?: any): VNode {
   }
 
   if (vNode.tag === SuspenseComponent) {
-    vNode.suspenseState.oldChildStatus = vNode.suspenseState.childStatus;
+    vNode.suspenseState!.oldChildStatus = vNode.suspenseState!.childStatus;
     vNode.oldChild = vNode.child;
   }
 
@@ -185,7 +185,7 @@ export function createTreeRootVNode(container) {
 
 // 暂时保留给测试用例使用，后续修改测试用例
 export function createVNode(tag: VNodeTag | string, ...secondArg) {
-  let vNode = null;
+  let vNode: VNode | null = null;
   switch (tag) {
     case TreeRoot:
       // 创建treeRoot

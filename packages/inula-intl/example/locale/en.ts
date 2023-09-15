@@ -3,9 +3,9 @@
  */
 
 export default {
-  button: 'Welcome to the Horizon-Intl component!',
-  text1: 'Welcome to the Horizon-Intl component!',
-  text2: 'Welcome to the Horizon-Intl component!',
-  text3: 'Welcome to the Horizon-Intl component!',
-  text4: 'Welcome to the Horizon-Intl component!',
+  button: 'Welcome to the Inula-Intl component!',
+  text1: 'Welcome to the Inula-Intl component!',
+  text2: 'Welcome to the Inula-Intl component!',
+  text3: 'Welcome to the Inula-Intl component!',
+  text4: 'Welcome to the Inula-Intl component!',
 }

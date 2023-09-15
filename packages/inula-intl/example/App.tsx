@@ -2,7 +2,7 @@
  * Copyright (c) Huawei Technologies Co., Ltd. 2023-2023. All rights reserved.
  */
 
-import Inula, { useState } from 'inulajs';
+import Inula, { useState } from '@cloudsop/horizon';
 import { IntlProvider } from "../index";
 import zh from "./locale/zh";
 import en from "./locale/en";

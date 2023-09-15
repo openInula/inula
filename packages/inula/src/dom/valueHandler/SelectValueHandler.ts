@@ -54,7 +54,7 @@ function updateValue(options, newValues: any, isMultiple: boolean) {
   }
 }
 
-export function getSelectPropsWithoutValue(dom: InulaSelect, properties: Object) {
+export function getSelectPropsWithoutValue(dom: InulaSelect, properties: Record<string, any>) {
   return {
     ...properties,
     value: undefined,

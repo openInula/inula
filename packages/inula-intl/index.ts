@@ -31,6 +31,20 @@ export {
   InjectProvider as RawIntlProvider,
 };
 
+export default {
+  I18n,
+  createIntlCache: createI18nCache,
+  createIntl: createI18n,
+  DateTimeFormatter,
+  NumberFormatter,
+  useIntl: useI18n,
+  FormattedMessage,
+  I18nContext,
+  IntlProvider: I18nProvider,
+  injectIntl: injectIntl,
+  RawIntlProvider: InjectProvider,
+}
+
 // 用于定义文本
 export function defineMessages<K extends keyof any, T = MessageDescriptor, U = Record<K, T>>(msgs: U): U {
   return msgs;

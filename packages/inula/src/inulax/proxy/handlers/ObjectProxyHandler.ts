@@ -18,7 +18,7 @@ import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
 import { OBSERVER_KEY, RAW_VALUE } from '../../Constants';
 import { isPanelActive } from '../../devtools';
 
-function set(rawObj: object, key: string, value: any, receiver: any): boolean {
+function set(rawObj: Record<string, any>, key: string, value: any, receiver: any): boolean {
   const oldObject = isPanelActive() ? JSON.parse(JSON.stringify(rawObj)) : null;
   const observer = getObserver(rawObj);
 
@@ -39,14 +39,14 @@ function set(rawObj: object, key: string, value: any, receiver: any): boolean {
   return ret;
 }
 
-export function createObjectProxy<T extends object>(
+export function createObjectProxy<T extends Record<string, any>>(
   rawObj: T,
   listener: { current: (...args) => any },
   singleLevel = false
 ): ProxyHandler<T> {
   let listeners = [] as ((...args) => void)[];
 
-  function get(rawObj: object, key: string | symbol, receiver: any): any {
+  function get(rawObj: Record<string, any>, key: string | symbol, receiver: any): any {
     // The observer object of symbol ('_inulaObserver') cannot be accessed from Proxy to prevent errors caused by clonedeep.
     if (key === OBSERVER_KEY) {
       return undefined;
@@ -97,7 +97,7 @@ export function createObjectProxy<T extends object>(
               current: change => {
                 if (!change.parents) change.parents = [];
                 change.parents.push(rawObj);
-                let mutation = resolveMutation(
+                const mutation = resolveMutation(
                   { ...rawObj, [key]: change.mutation.from },
                   { ...rawObj, [key]: change.mutation.to }
                 );

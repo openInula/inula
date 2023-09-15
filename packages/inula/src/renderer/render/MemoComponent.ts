@@ -53,7 +53,7 @@ export function captureMemoComponent(processing: VNode, shouldUpdate: boolean): 
 
   const firstChild = processing.child; // Memo只有一个child
   if (!shouldUpdate) {
-    const oldProps = firstChild.props;
+    const oldProps = firstChild?.props;
     // 默认是浅对比
     const compare = Component.compare ? Component.compare : shallowCompare;
     if (compare(oldProps, newProps) && processing.oldRef === processing.ref) {
@@ -61,7 +61,7 @@ export function captureMemoComponent(processing: VNode, shouldUpdate: boolean): 
     }
   }
 
-  const newChild = updateVNode(firstChild, newProps);
+  const newChild = updateVNode(firstChild!, newProps);
   newChild.parent = processing;
   newChild.cIndex = 0;
   markVNodePath(newChild);

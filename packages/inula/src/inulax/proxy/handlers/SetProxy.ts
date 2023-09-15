@@ -19,16 +19,19 @@ import { RAW_VALUE } from '../../Constants';
 
 const COLLECTION_CHANGE = '_collectionChange';
 
-export function createSetProxy<T extends object>(
+export function createSetProxy<T extends Record<string, any>>(
   rawObj: T,
   listener: { current: (...args) => any },
   hookObserver = true
 ): ProxyHandler<T> {
-  let listeners: ((mutation) => {})[] = [];
-  let proxies = new WeakMap();
+  let listeners: ((mutation) => Record<string, any>)[] = [];
+  const proxies = new WeakMap();
 
   // Set的add方法
-  function add(rawObj: { add: (any) => void; has: (any) => boolean; values: () => any[] }, value: any): Object {
+  function add(
+    rawObj: { add: (any) => void; has: (any) => boolean; values: () => any[] },
+    value: any
+  ): Record<string, any> {
     if (!rawObj.has(proxies.get(value))) {
       const proxy = createProxy(
         value,
@@ -36,7 +39,7 @@ export function createSetProxy<T extends object>(
           current: change => {
             if (!change.parents) change.parents = [];
             change.parents.push(rawObj);
-            let mutation = resolveMutation(
+            const mutation = resolveMutation(
               { ...rawObj, valueChange: change.mutation.from },
               { ...rawObj, valueChange: change.mutation.to }
             );
@@ -191,7 +194,7 @@ export function createSetProxy<T extends object>(
   }
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  function wrapIterator(rawObj: Object, rawIt: { next: () => { value: any; done: boolean } }) {
+  function wrapIterator(rawObj: Record<string, any>, rawIt: { next: () => { value: any; done: boolean } }) {
     const observer = getObserver(rawObj);
     const hookObserver = hookObserverMap.get(rawObj);
     observer.useProp(COLLECTION_CHANGE);
@@ -202,7 +205,7 @@ export function createSetProxy<T extends object>(
           current: change => {
             if (!change.parents) change.parents = [];
             change.parents.push(rawObj);
-            let mutation = resolveMutation(
+            const mutation = resolveMutation(
               { ...rawObj, valueChange: change.mutation.from },
               { ...rawObj, valueChange: change.mutation.to }
             );
@@ -225,8 +228,7 @@ export function createSetProxy<T extends object>(
 
         observer.useProp(COLLECTION_CHANGE);
 
-        let newVal;
-        newVal = createProxy(value, currentListener, hookObserver);
+        const newVal = createProxy(value, currentListener, hookObserver);
 
         return { value: newVal, done };
       },
@@ -268,7 +270,7 @@ export function createSetProxy<T extends object>(
         current: change => {
           if (!change.parents) change.parents = [];
           change.parents.push(rawObj);
-          let mutation = resolveMutation(
+          const mutation = resolveMutation(
             { ...rawObj, valueChange: change.mutation.from },
             { ...rawObj, valueChange: change.mutation.to }
           );

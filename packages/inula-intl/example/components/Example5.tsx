@@ -2,7 +2,7 @@
  * Copyright (c) Huawei Technologies Co., Ltd. 2023-2023. All rights reserved.
  */
 
-import Inula, { Component } from 'inulajs';
+import Inula, { Component } from '@cloudsop/horizon';
 import { injectIntl } from '../../index';
 
 class Example5 extends Component<any, any, any> {

@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { useRef } from 'react';
+import Inula from '@cloudsop/horizon';
+import { useRef } from '@cloudsop/horizon';
 import { History } from '../history/types';
 import { BaseRouterProps } from './BrowserRouter';
 import { createHashHistory, urlHashType } from '../history/hashHistory';

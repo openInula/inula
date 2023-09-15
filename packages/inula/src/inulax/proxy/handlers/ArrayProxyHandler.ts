@@ -56,7 +56,7 @@ function set(rawObj: any[], key: string, value: any, receiver: any) {
 export function createArrayProxy(rawObj: any[], listener: { current: (...args) => any }): any[] {
   let listeners = [] as ((...args) => void)[];
 
-  function objectGet(rawObj: object, key: string | symbol, receiver: any, singleLevel = false): any {
+  function objectGet(rawObj: Record<string, any>, key: string | symbol, receiver: any, singleLevel = false): any {
     // The observer object of symbol ('_inulaObserver') cannot be accessed from Proxy to prevent errors caused by clonedeep.
     if (key === OBSERVER_KEY) {
       return undefined;
@@ -103,7 +103,7 @@ export function createArrayProxy(rawObj: any[], listener: { current: (...args) =
               current: change => {
                 if (!change.parents) change.parents = [];
                 change.parents.push(rawObj);
-                let mutation = resolveMutation(
+                const mutation = resolveMutation(
                   { ...rawObj, [key]: change.mutation.from },
                   { ...rawObj, [key]: change.mutation.to }
                 );

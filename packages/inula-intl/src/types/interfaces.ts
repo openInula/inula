@@ -8,14 +8,12 @@ import {
   Locale,
   Locales,
   Error,
-  PluralCategory,
   DatePool,
   SelectPool,
   RawToken,
 } from './types';
 import I18n from '../core/I18n';
 import Lexer from '../parser/Lexer';
-import injectI18n from "../core/components/InjectI18n";
 
 // FormattedMessage的参数定义
 export interface FormattedMessageProps extends MessageDescriptor {
@@ -72,8 +70,11 @@ export interface InjectOptions {
   ensureContext?: boolean;
 }
 
-export interface I18nProviderProps {
+export interface I18nContextProps {
   i18n?: I18n;
+}
+
+export interface configProps {
   locale?: Locale;
   messages?: AllMessages;
   defaultLocale?: string;
@@ -82,7 +83,7 @@ export interface I18nProviderProps {
   uesMemorize?: boolean;
 }
 
-export interface IntlMessageFormat extends I18nProviderProps, MessageOptions {
+export interface IntlMessageFormat extends configProps, MessageOptions {
   plural: (
     value: number,
     { offset, ...rules }: { [x: string]: any; offset?: number },

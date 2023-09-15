@@ -9,8 +9,8 @@
  */
 export const UNICODE_REG = /\\(?:u\{[a-fA-F0-9]+}|x[a-fA-F0-9]{2}|[nrtf'"])/g;
 
-// Horizon需要被保留静态常量
-export const HORIZON_STATICS = {
+// Inula 需要被保留静态常量
+export const INULA_STATICS = {
   childContextTypes: true,
   contextType: true,
   contextTypes: true,
@@ -35,8 +35,8 @@ export const NATIVE_STATICS = {
   arity: true,
 };
 
-// Horizon ForwardRef 组件的静态属性需要被保留
-export const HORIZON_FORWARD_REF_STATICS = {
+// Inula ForwardRef 组件的静态属性需要被保留
+export const INULA_FORWARD_REF_STATICS = {
   vtype: true,
   render: true,
   defaultProps: true,
@@ -46,18 +46,18 @@ export const HORIZON_FORWARD_REF_STATICS = {
 
 // React ForwardRef 组件的静态属性需要被保留
 export const REACT_FORWARD_REF_STATICS = {
-  $$typeof: true, // horizon 'vtype': true
+  $$typeof: true, // inula 'vtype': true
   render: true, // render
   defaultProps: true, // props
   displayName: true,
   propTypes: true, // type: type,
 };
 
-export const FORWARD_REF_STATICS = {...HORIZON_FORWARD_REF_STATICS, ...REACT_FORWARD_REF_STATICS};
+export const FORWARD_REF_STATICS = {...INULA_FORWARD_REF_STATICS, ...REACT_FORWARD_REF_STATICS};
 
-// Horizon Memo 组件的静态属性需要被保留
-export const HORIZON_MEMO_STATICS = {
-  vtype: true, // horizon 'vtype': true
+// Inula Memo 组件的静态属性需要被保留
+export const INULA_MEMO_STATICS = {
+  vtype: true, // inula 'vtype': true
   compare: true,
   defaultProps: true,
   type: true,

@@ -18,6 +18,9 @@ import { TYPE_COMMON_ELEMENT, TYPE_PORTAL } from './JSXElementType';
 
 import { isValidElement, JSXElement } from './JSXElement';
 import { BELONG_CLASS_VNODE_KEY } from '../renderer/vnode/VNode';
+import type { ChildrenType } from '../types';
+
+type Callback = ((param: any) => any) | undefined;
 
 // 生成key
 function getItemKey(item: any, index: number): string {
@@ -28,7 +31,7 @@ function getItemKey(item: any, index: number): string {
   return '.' + index.toString(36);
 }
 
-function processArrayChildren(children: any, arr: Array<any>, prefix: string, callback: Function) {
+function processArrayChildren(children: any, arr: Array<any>, prefix: string, callback: Callback) {
   for (let i = 0; i < children.length; i++) {
     const childItem = children[i];
     const nextPrefix = prefix + getItemKey(childItem, i);
@@ -36,14 +39,14 @@ function processArrayChildren(children: any, arr: Array<any>, prefix: string, ca
   }
 }
 
-function callMapFun(children: any, arr: Array<any>, prefix: string, callback: Function) {
-  let mappedChild = callback(children);
+function callMapFun(children: any, arr: Array<any>, prefix: string, callback: Callback) {
+  let mappedChild = callback!(children);
   if (Array.isArray(mappedChild)) {
     // 维持原有规格，如果callback返回结果是数组，处理函数修改为返回数组item
     processArrayChildren(mappedChild, arr, prefix + '/', subChild => subChild);
   } else if (mappedChild !== null && mappedChild !== undefined) {
     // 给一个key值，确保返回的对象一定带有key
-    if (isValidElement(mappedChild)) {
+    if (isValidElement(mappedChild as any)) {
       const childKey = prefix === '' ? getItemKey(children, 0) : '';
       const mappedKey = getItemKey(mappedChild, 0);
       const newKey =
@@ -62,7 +65,7 @@ function callMapFun(children: any, arr: Array<any>, prefix: string, callback: Fu
   }
 }
 
-function mapChildrenToArray(children: any, arr: Array<any>, prefix: string, callback?: Function): number | void {
+function mapChildrenToArray(children: any, arr: Array<any>, prefix: string, callback?: Callback): number | void {
   const type = typeof children;
   switch (type) {
     // 继承原有规格，undefined和boolean类型按照null处理
@@ -79,8 +82,7 @@ function mapChildrenToArray(children: any, arr: Array<any>, prefix: string, call
         callMapFun(null, arr, prefix, callback);
         return;
       }
-      const vtype = children.vtype;
-      if (vtype === TYPE_COMMON_ELEMENT || vtype === TYPE_PORTAL) {
+      if (children.vtype === TYPE_COMMON_ELEMENT || children.vtype === TYPE_PORTAL) {
         callMapFun(children, arr, prefix, callback);
         return;
       }
@@ -94,7 +96,7 @@ function mapChildrenToArray(children: any, arr: Array<any>, prefix: string, call
 }
 
 // 在 children 里的每个直接子节点上调用一个函数，并将 this 设置为 thisArg
-function mapChildren(children: any, func: Function, context?: any): Array<any> {
+function mapChildren(children: any, func: (a, b) => any, context?: any): Array<any> {
   if (children === null || children === undefined) {
     return children;
   }
@@ -118,7 +120,7 @@ const Children = {
     });
     return n;
   },
-  only: children => {
+  only: (children: any) => {
     throwIfTrue(!isValidElement(children), 'Inula.Children.only function received invalid element.');
     return children;
   },
@@ -127,6 +129,6 @@ const Children = {
     mapChildrenToArray(children, result, '', child => child);
     return result;
   },
-};
+} as ChildrenType;
 
 export { Children };

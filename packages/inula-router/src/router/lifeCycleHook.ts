@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from '@cloudsop/horizon';
 
 export type LifeCycleProps = {
   onMount?: () => void;

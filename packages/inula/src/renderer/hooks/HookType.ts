@@ -14,9 +14,11 @@
  */
 
 import { EffectConstant } from './EffectConstant';
+
 type ValueOf<T> = T[keyof T];
+
 export interface Hook<S, A> {
-  state: Reducer<S, A> | Effect | Memo<S> | CallBack<S> | Ref<S>;
+  state: Reducer<S, A> | Effect | Memo<S> | CallBack<S> | MutableRef<S>;
   hIndex: number;
 }
 
@@ -53,8 +55,16 @@ export type CallBack<F> = {
   dependencies: Array<any> | null;
 };
 
-export type Ref<V> = {
+export type MutableRef<V> = {
   current: V;
 };
+
+export type RefObject<T> = {
+  readonly current: T | null;
+};
+
+export type RefCallBack<T> = {
+  bivarianceHack(inst: T | null): void;
+}['bivarianceHack'];
 
 export type Trigger<A> = (state: A) => void;

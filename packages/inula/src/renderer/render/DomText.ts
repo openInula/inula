@@ -18,7 +18,6 @@ import type { VNode } from '../Types';
 import { throwIfTrue } from '../utils/throwIfTrue';
 import { newTextDom } from '../../dom/DOMOperator';
 import { FlagUtils } from '../vnode/VNodeFlags';
-import { isNull } from '../../dom/utils/Common';
 
 export function captureRender(): VNode | null {
   return null;

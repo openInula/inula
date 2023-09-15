@@ -1,8 +1,8 @@
 import IrError from '../core/IrError';
 import IrHeaders from '../core/IrHeaders';
 import { Method, ResponseType, IrTransformer, FulfilledFn, RejectedFn, Callback } from './types';
-import CancelError from "../cancel/CancelError";
-import { CanceledError } from "../../index";
+import CancelError from '../cancel/CancelError';
+import { CanceledError } from '../../index';
 
 // 请求配置
 export interface IrRequestConfig {
@@ -150,7 +150,6 @@ export interface IrInstance extends IrInterface {
 
   useIR: <T = any>(url: string, config?: IrRequestConfig, options?: QueryOptions) => { data?: T; error?: any };
 
-  /*----------------兼容axios--------------------*/
   Axios: any;
 
   AxiosError: any;
@@ -237,9 +236,13 @@ interface CancelExecutor {
   (cancel: Cancel): void;
 }
 
-interface CancelTokenSource {
+export interface Canceler {
+  (message?: string, config?: IrRequestConfig, request?: any): void;
+}
+
+export interface CancelTokenSource {
   token: CancelToken;
-  cancel: Cancel;
+  cancel: Canceler;
 }
 
 export interface CancelTokenStatic {

@@ -35,7 +35,7 @@ export function getIFrameFocusedDom() {
   while (focusedDom instanceof currentWindow.HTMLIFrameElement) {
     try {
       // 访问 HTMLIframeElement 的 contentDocument 可能会导致浏览器抛出错误
-      if (typeof focusedDom.contentWindow.location.href === 'string') {
+      if (typeof focusedDom.contentWindow?.location.href === 'string') {
         // iframe 的内容为同源
         focusedDom = getFocusedDom(focusedDom.contentWindow.document);
       } else {

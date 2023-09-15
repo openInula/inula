@@ -34,6 +34,7 @@ export type JSXElement = {
   key: any;
   ref: any;
   props: any;
+  // @ts-ignore
   [BELONG_CLASS_VNODE_KEY]: any;
 };
 

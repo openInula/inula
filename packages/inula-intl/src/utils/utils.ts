@@ -10,7 +10,7 @@ import I18n from "../core/I18n";
 
 export function isVariantI18n(i18n?: I18n) {
   if (!i18n) {
-    throw new Error(`I18n object is not found!`);
+    throw new Error('I18n object is not found!');
   }
 }
 

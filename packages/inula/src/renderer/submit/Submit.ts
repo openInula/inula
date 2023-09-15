@@ -163,7 +163,7 @@ export function submitToRender(treeRoot) {
   // 置空task，让才能加入新的render任务
   treeRoot.task = null;
 
-  const startVNode = getStartVNode();
+  const startVNode = getStartVNode()!;
 
   if (FlagUtils.hasAnyFlag(startVNode)) {
     // 把自己加上

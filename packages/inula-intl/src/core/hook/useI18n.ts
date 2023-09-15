@@ -1,16 +1,17 @@
 /*
  * Copyright (c) Huawei Technologies Co., Ltd. 2023-2023. All rights reserved.
  */
-import Inula, { useContext } from 'inulajs';
+import Inula, { useContext } from '@cloudsop/horizon';
 import utils from '../../utils/utils';
 import { I18nContext } from '../components/InjectI18n';
-import I18n from "../I18n";
+import I18n from '../I18n';
+import { IntlType } from '../../types/types';
 
 /**
- *  useI18n hook，与Horizon组件一起使用。
- *  使用useI18n钩子函数可以更方便地在函数组件中进行国际化操作
+ *  useI18n hook，与 Inula 组件一起使用。
+ *  使用 useI18n 钩子函数可以更方便地在函数组件中进行国际化操作
  */
-function useI18n() {
+function useI18n(): IntlType {
   const i18nContext = useContext<I18n>(I18nContext);
   utils.isVariantI18n(i18nContext);
   const i18n = i18nContext;

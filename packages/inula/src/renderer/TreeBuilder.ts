@@ -81,7 +81,7 @@ function collectDirtyNodes(vNode: VNode, parent: VNode): void {
     if (parent.dirtyNodes === null) {
       parent.dirtyNodes = dirtyNodes;
     } else {
-      parent.dirtyNodes.push(...vNode.dirtyNodes);
+      parent.dirtyNodes.push(...vNode.dirtyNodes!);
       dirtyNodes.length = 0;
     }
     vNode.dirtyNodes = null;
@@ -100,7 +100,7 @@ function collectDirtyNodes(vNode: VNode, parent: VNode): void {
 
 // 尝试完成当前工作单元，然后移动到下一个兄弟工作单元。如果没有更多的同级，请返回父vNode。
 function bubbleVNode(vNode: VNode): void {
-  let node = vNode;
+  let node: VNode | null = vNode;
 
   do {
     const parent = node.parent;
@@ -191,7 +191,7 @@ function getChildByIndex(vNode: VNode, idx: number) {
 
 // 从多个更新节点中，计算出开始节点。即：找到最近的共同的父辈节点
 export function calcStartUpdateVNode(treeRoot: VNode) {
-  const toUpdateNodes = Array.from(treeRoot.toUpdateNodes);
+  const toUpdateNodes = Array.from(treeRoot.toUpdateNodes!);
 
   if (toUpdateNodes.length === 0) {
     return treeRoot;
@@ -278,7 +278,7 @@ function buildVNodeTree(treeRoot: VNode) {
   setStartVNode(startVNode);
 
   // 清空toUpdateNodes
-  treeRoot.toUpdateNodes.clear();
+  treeRoot.toUpdateNodes?.clear();
 
   if (startVNode.tag !== TreeRoot) {
     // 不是根节点
@@ -421,6 +421,8 @@ export function runDiscreteUpdates() {
   runAsyncEffects();
 }
 
+export function asyncUpdates<P, R>(fn: (a: P) => R, a: P): R;
+export function asyncUpdates<R>(fn: () => R): R;
 export function asyncUpdates(fn, ...param) {
   const preMode = copyExecuteMode();
   changeMode(InEvent, true);
@@ -435,6 +437,8 @@ export function asyncUpdates(fn, ...param) {
   }
 }
 
+export function syncUpdates<P, R>(fn: (a: P) => R, a: P): R;
+export function syncUpdates<R>(fn: () => R): R;
 export function syncUpdates(fn) {
   const preMode = copyExecuteMode();
   // 去掉异步状态，添加同步状态

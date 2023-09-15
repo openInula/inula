@@ -1,4 +1,5 @@
 import IrHeaders from '../core/IrHeaders';
+import { IrRequestConfig, IrResponse } from './interfaces';
 
 export type Method =
   | 'get'
@@ -32,6 +33,8 @@ export type RejectedFn = (error: any) => any;
 // 过滤器
 export type FilterFunc = (obj: Record<string, any>, destObj: Record<string, any>) => boolean;
 export type PropFilterFunc = (prop: string | symbol, obj: Record<string, any>, destObj: Record<string, any>) => boolean;
+
+export type ObjectDescriptor = PropertyDescriptorMap & ThisType<any>;
 
 // Cancel
 export type CancelFunction = (message?: string) => void;

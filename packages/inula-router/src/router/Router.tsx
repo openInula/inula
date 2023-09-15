@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import Inula from '@cloudsop/horizon';
+import { useLayoutEffect, useMemo, useRef, useState, InulaNode } from '@cloudsop/horizon';
 
 import { History, Location } from '../history/types';
 
@@ -7,7 +7,7 @@ import RouterContext, { RouterContextValue } from './context';
 
 export type RouterProps = {
   history: History;
-  children?: React.ReactNode;
+  children?: InulaNode;
 };
 
 function Router<P extends RouterProps>(props: P) {

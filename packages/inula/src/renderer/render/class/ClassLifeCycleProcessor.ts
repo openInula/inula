@@ -13,8 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import type { VNode } from '../../Types';
-import type { Callback } from '../../UpdateHandler';
+import type { Callback, VNode } from '../../Types';
 
 import { shallowCompare } from '../../utils/compare';
 import { pushUpdate, newUpdate, UpdateState, processUpdates } from '../../UpdateHandler';
@@ -25,8 +24,8 @@ import { PureComponent } from '../../components/BaseClassComponent';
 
 export function callDerivedStateFromProps(
   processing: VNode,
-  getDerivedStateFromProps: (props: object, state: object) => object,
-  nextProps: object
+  getDerivedStateFromProps: (props: Record<string, any>, state: Record<string, any>) => Record<string, any>,
+  nextProps: Record<string, any>
 ) {
   if (getDerivedStateFromProps) {
     const oldState = processing.state;
@@ -39,7 +38,7 @@ export function callDerivedStateFromProps(
   }
 }
 
-function changeStateContent(type: UpdateState, content: object, callback: Callback) {
+function changeStateContent(type: UpdateState, content: Record<string, any>, callback: Callback) {
   // @ts-ignore
   const vNode = this._vNode;
 
@@ -58,10 +57,10 @@ function changeStateContent(type: UpdateState, content: object, callback: Callba
 
 export function callShouldComponentUpdate(
   processing: VNode,
-  oldProps: object,
-  newProps: object,
-  newState: object,
-  newContext: object
+  oldProps: Record<string, any>,
+  newProps: Record<string, any>,
+  newState: Record<string, any>,
+  newContext: Record<string, any>
 ) {
   const inst = processing.realNode;
 
@@ -125,7 +124,7 @@ export function callComponentWillUpdate(inst, newProps, newState, nextContext) {
   }
 }
 
-export function callComponentWillReceiveProps(inst, newProps: object, newContext: object) {
+export function callComponentWillReceiveProps(inst, newProps: Record<string, any>, newContext: Record<string, any>) {
   if (inst.componentWillReceiveProps) {
     const oldState = inst.state;
     inst.componentWillReceiveProps(newProps, newContext);

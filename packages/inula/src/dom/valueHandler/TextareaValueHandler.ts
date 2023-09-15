@@ -37,7 +37,7 @@ function getInitValue(props: Props) {
   }
 }
 
-export function getTextareaPropsWithoutValue(dom: HTMLTextAreaElement, properties: Object) {
+export function getTextareaPropsWithoutValue(dom: HTMLTextAreaElement, properties: Record<string, any>) {
   return {
     ...properties,
     value: undefined,

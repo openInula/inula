@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext } from '@cloudsop/horizon';
 import RouterContext from './context';
 import { Matched, matchPath, Params } from './matcher/parser';
 import { History } from '../history/types';

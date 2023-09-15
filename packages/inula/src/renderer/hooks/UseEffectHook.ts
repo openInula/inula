@@ -20,6 +20,7 @@ import type { Effect, EffectList } from './HookType';
 import { getHookStage, HookStage } from './HookStage';
 import { isArrayEqual } from '../utils/compare';
 import { getProcessingVNode } from '../GlobalVar';
+import { DependencyList, EffectCallBack } from '../../types';
 
 function createEffect(effectFunc, removeFunc, deps, effectConstant): Effect {
   const effect: Effect = {
@@ -29,13 +30,13 @@ function createEffect(effectFunc, removeFunc, deps, effectConstant): Effect {
     effectConstant: effectConstant,
   };
 
-  getProcessingVNode().effectList.push(effect);
+  getProcessingVNode()?.effectList?.push(effect);
 
   return effect;
 }
 
 export function useEffectForInit(effectFunc, deps, effectType): void {
-  FlagUtils.markUpdate(getProcessingVNode());
+  FlagUtils.markUpdate(getProcessingVNode()!);
 
   const hook = createHook();
   const nextDeps = deps !== undefined ? deps : null;
@@ -49,7 +50,7 @@ export function useEffectForUpdate(effectFunc, deps, effectType): void {
   let removeFunc;
 
   if (getLastTimeHook() !== null) {
-    const effect = getLastTimeHook().state as Effect;
+    const effect = getLastTimeHook()?.state as Effect;
     // removeEffect是通过执行effect返回的，所以需要在上一次hook中获取
     removeFunc = effect.removeEffect;
     const lastDeps = effect.dependencies;
@@ -61,12 +62,12 @@ export function useEffectForUpdate(effectFunc, deps, effectType): void {
     }
   }
 
-  FlagUtils.markUpdate(getProcessingVNode());
+  FlagUtils.markUpdate(getProcessingVNode()!);
   // 设置DepsChange标记位，构造Effect，并赋值给state
   hook.state = createEffect(effectFunc, removeFunc, nextDeps, EffectConstant.DepsChange | effectType);
 }
 
-function useEffect(effectFunc: () => (() => void) | void, deps: Array<any> | void | null, effectType: number): void {
+function useEffect(effectFunc: EffectCallBack, deps: DependencyList | undefined | null, effectType: number): void {
   const stage = getHookStage();
   if (stage === null) {
     throwNotInFuncError();
@@ -79,12 +80,12 @@ function useEffect(effectFunc: () => (() => void) | void, deps: Array<any> | voi
   }
 }
 
-export function useEffectImpl(effectFunc: () => (() => void) | void, deps?: Array<any> | null): void {
+export function useEffectImpl(effectFunc: EffectCallBack, deps?: DependencyList): void {
   // 异步触发的effect
   useEffect(effectFunc, deps, EffectConstant.Effect);
 }
 
-export function useLayoutEffectImpl(effectFunc: () => (() => void) | void, deps?: Array<any> | null): void {
+export function useLayoutEffectImpl(effectFunc: EffectCallBack, deps?: DependencyList | null): void {
   // 同步触发的effect
   useEffect(effectFunc, deps, EffectConstant.LayoutEffect);
 }

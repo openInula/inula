@@ -50,7 +50,7 @@ describe('ruleUtils test', () => {
 
       expect(() => {
         ruleUtils.getReg(input);
-      }).toThrowError('标志禁止使用');
+      }).toThrowError('Signs Prohibited');
     });
 
     it('should throw an error when input regular expression object has forbidden flags', () => {
@@ -88,19 +88,19 @@ describe('ruleUtils test', () => {
 
       expect(() => {
         ruleUtils.getReg(input1);
-      }).toThrowError('/i 标志禁止使用');
+      }).toThrowError('/i prohibition sign');
 
       expect(() => {
         ruleUtils.getReg(input2);
-      }).toThrowError('/g 标志禁止使用');
+      }).toThrowError('/g prohibition sign');
 
       expect(() => {
         ruleUtils.getReg(input3);
-      }).toThrowError('/y 标志禁止使用');
+      }).toThrowError('/y prohibition sign');
 
       expect(() => {
         ruleUtils.getReg(input4);
-      }).toThrowError('/m 标志禁止使用');
+      }).toThrowError('/m prohibition sign');
     });
   });
 
@@ -148,7 +148,7 @@ describe('ruleUtils test', () => {
 
       expect(() => {
         ruleUtils.getRuleOptions(type, obj);
-      }).toThrowError('type 属性不能为字符串！');
+      }).toThrowError('The type attribute cannot be a string.');
     });
 
     it('should throw an error if match property includes include property', () => {
@@ -157,7 +157,7 @@ describe('ruleUtils test', () => {
 
       expect(() => {
         ruleUtils.getRuleOptions(type, obj);
-      }).toThrowError('匹配规则不能包含状态!');
+      }).toThrowError('The matching rule cannot contain the status!');
     });
 
     it('should sort the match property correctly', () => {
@@ -181,7 +181,7 @@ describe('ruleUtils test', () => {
       const array = [{ match: 'abc' }, { type: 'content', match: 'def' }];
       expect(() => {
         ruleUtils.getRulesByArray(array);
-      }).toThrowError('Rule 没有 type 属性');
+      }).toThrowError('The rule does not have the type attribute.');
     });
 
     it('should handle multiple include properties', () => {

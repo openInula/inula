@@ -1,6 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const {resolve} = require("path");
+const {resolve} = require('path');
 
 module.exports = {
   entry: './examples/useIR/index.jsx', // 入口文件
@@ -18,10 +18,10 @@ module.exports = {
             presets: [
               '@babel/preset-env',
               [
-                "@babel/preset-react",
+                '@babel/preset-react',
                 {
-                  "runtime": "automatic",
-                  "importSource": "inulajs"
+                  'runtime': 'automatic',
+                  'importSource': '@cloudsop/horizon'
                 }
               ],
               '@babel/preset-typescript'

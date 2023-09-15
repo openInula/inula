@@ -1,5 +1,4 @@
 const BasicGenerator = require('../../BasicGenerator');
-const fs = require('fs');
 
 class Generator extends BasicGenerator {
   prompting() {

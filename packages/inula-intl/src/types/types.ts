@@ -2,7 +2,17 @@
  * Copyright (c) Huawei Technologies Co., Ltd. 2023-2023. All rights reserved.
  */
 
-import { Content, MissingMessageEvent, Octothorpe, PlainArg, Select, FunctionArg } from './interfaces';
+import {
+  Content,
+  MissingMessageEvent,
+  Octothorpe,
+  PlainArg,
+  Select,
+  FunctionArg,
+  I18nContextProps,
+  configProps
+} from './interfaces';
+import I18n from "../core/I18n";
 
 export type Error = string | ((message, id, context) => string);
 
@@ -49,3 +59,12 @@ export type RawToken = {
   line: number;
   col: number;
 };
+
+export type I18nProviderProps = I18nContextProps & configProps
+
+export type IntlType = {
+  i18n: I18n;
+  formatMessage: Function,
+  formatNumber: Function,
+  formatDate: Function,
+}

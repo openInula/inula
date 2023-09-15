@@ -15,7 +15,7 @@
 
 import { isObject } from '../CommonUtils';
 
-export function readonlyProxy<T extends object>(rawObj: T): ProxyHandler<T> {
+export function readonlyProxy<T extends Record<string, any>>(rawObj: T): ProxyHandler<T> {
   return new Proxy(rawObj, {
     get(rawObj, property, receiver) {
       const result = Reflect.get(rawObj, property, receiver);

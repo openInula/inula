@@ -16,8 +16,9 @@
 import { createHook, getCurrentHook, throwNotInFuncError } from './BaseHook';
 import { getHookStage, HookStage } from './HookStage';
 import { isArrayEqual } from '../utils/compare';
+import { DependencyList } from '../../types';
 
-export function useCallbackImpl<F>(func: F, dependencies?: Array<any> | null): F {
+export function useCallbackImpl<F>(func: F, dependencies?: DependencyList): F {
   const stage = getHookStage();
   if (stage === null) {
     throwNotInFuncError();

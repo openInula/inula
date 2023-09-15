@@ -14,24 +14,41 @@
  */
 
 import { Callback } from '../Types';
+import type { ComponentLifecycle, KVObject, InulaNode, Context, CSSProperties } from '../../types';
 
 /**
  * Component的api setState和forceUpdate在实例生成阶段实现
  */
-class Component<P, S, C> {
-  props: P;
-  context: C;
-  state: S | null;
-  refs: any;
-  forceUpdate: any;
+
+// eslint-disable-next-line
+interface Component<P = KVObject, S = KVObject, SS = any, C = any> extends ComponentLifecycle<P, S, SS> {
+  forceUpdate(callback?: () => void): void;
+
+  render(): InulaNode;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+class Component<P = KVObject, S = KVObject, SS = any, C = any> {
+  static contextType?: Context<any> | undefined;
+  context: C | undefined;
+
+  readonly props: Readonly<P>;
+  state: Readonly<S>;
+
+  refs: {
+    [key: string]: Component<any>;
+  };
   isReactComponent: boolean;
 
-  constructor(props: P, context: C) {
+  constructor(props: P, context?: C) {
     this.props = props;
     this.context = context;
   }
 
-  setState(state: S, callback?: Callback) {
+  setState<K extends keyof S>(
+    state: ((prevState: Readonly<S>, props: Readonly<P>) => Pick<S, K> | S | null) | Pick<S, K> | S | null,
+    callback?: Callback
+  ) {
     if (isDev) {
       console.error('Can not call `this.setState` in the constructor of class component, it will do nothing');
     }
@@ -44,7 +61,7 @@ Component.prototype.isReactComponent = true;
 /**
  * 支持PureComponent
  */
-class PureComponent<P, S, C> extends Component<P, S, C> {
+class PureComponent<P, S, SS, C = any> extends Component<P, S, SS> {
   constructor(props: P, context: C) {
     super(props, context);
   }

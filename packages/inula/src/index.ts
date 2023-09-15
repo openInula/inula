@@ -60,12 +60,19 @@ import * as reduxAdapter from './inulax/adapters/redux';
 import { watch } from './inulax/proxy/watch';
 import { act } from './external/TestUtil';
 
-import { render, createPortal, unstable_batchedUpdates, findDOMNode, unmountComponentAtNode } from './dom/DOMExternal';
+import {
+  render,
+  createPortal,
+  unstable_batchedUpdates,
+  findDOMNode,
+  unmountComponentAtNode,
+  createRoot,
+} from './dom/DOMExternal';
 
 import { syncUpdates as flushSync } from './renderer/TreeBuilder';
 import { toRaw } from './inulax/proxy/ProxyHandler';
 
-const Inula = {
+const Horizon = {
   Children,
   createRef,
   Component,
@@ -88,6 +95,7 @@ const Inula = {
   cloneElement,
   isValidElement,
   render,
+  createRoot,
   createPortal,
   unstable_batchedUpdates,
   findDOMNode,
@@ -139,6 +147,7 @@ export {
   createElement,
   cloneElement,
   isValidElement,
+  createRoot,
   render,
   createPortal,
   unstable_batchedUpdates,
@@ -171,4 +180,5 @@ export {
   Suspense,
 };
 
-export default Inula;
+export * from './types';
+export default Horizon;
