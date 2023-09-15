@@ -72,7 +72,7 @@ import {
 import { syncUpdates as flushSync } from './renderer/TreeBuilder';
 import { toRaw } from './inulax/proxy/ProxyHandler';
 
-const Horizon = {
+const Inula = {
   Children,
   createRef,
   Component,
@@ -181,4 +181,4 @@ export {
 };
 
 export * from './types';
-export default Horizon;
+export default Inula;

@@ -347,12 +347,12 @@ const TextInput = () => {
 
 该情况是指项目没有将React源码打包，默认使用externals方式的配置 ，在该场景下可以通过如下步骤将React项目迁移至InulaJS：
 
-**1、修改webpack配置文件中`externals`，名称修改为`InulaJS`，如下：**
+**1、修改webpack配置文件中`externals`，名称修改为`inulajs`，如下：**
 
 ```js
 	externals: {
-	  react: 'InulaJS',  // React 修改成 InulaJS
-	  'react-dom': 'InulaJS', // ReactDOM 修改成 InulaJS
+	  react: 'inulajs',  // React 修改成 inulajs
+	  'react-dom': 'inulajs', // ReactDOM 修改成 inulajs
 	},
 ```
 

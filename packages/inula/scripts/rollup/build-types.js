@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
  *
- * openInula is licensed under Mulan PSL v2.
+ * InulaJS is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *
@@ -53,12 +53,12 @@ export function cleanUp(folders) {
 
 function buildTypeConfig() {
   return {
-    input: ['./build/horizon/@types/index.d.ts'],
+    input: ['./build/inula/@types/index.d.ts'],
     output: {
-      file: './build/horizon/@types/index.d.ts',
+      file: './build/inula/@types/index.d.ts',
       format: 'es',
     },
-    plugins: [dts(), cleanUp(['./build/horizon/@types/'])],
+    plugins: [dts(), cleanUp(['./build/inula/@types/'])],
   };
 }
 

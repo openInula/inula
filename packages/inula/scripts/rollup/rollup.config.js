@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
  *
- * openGauss is licensed under Mulan PSL v2.
+ * InulaJS is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *
@@ -27,7 +27,7 @@ const extensions = ['.js', '.ts'];
 
 const libDir = path.join(__dirname, '../..');
 const rootDir = path.join(__dirname, '../..');
-const outDir = path.join(rootDir, 'build', 'horizon');
+const outDir = path.join(rootDir, 'build', 'inula');
 
 if (!fs.existsSync(path.join(rootDir, 'build'))) {
   fs.mkdirSync(path.join(rootDir, 'build'));
@@ -67,7 +67,7 @@ const getBasicPlugins = mode => {
 };
 
 function getOutputName(mode) {
-  return mode === 'production' ? `horizon.${mode}.min.js` : `horizon.${mode}.js`;
+  return mode === 'production' ? `inula.${mode}.min.js` : `inula.${mode}.js`;
 }
 
 function genConfig(mode) {
@@ -83,7 +83,7 @@ function genConfig(mode) {
       {
         file: outputResolve('umd', getOutputName(mode)),
         sourcemap,
-        name: 'Horizon',
+        name: 'Inula',
         format: 'umd',
       },
     ],
