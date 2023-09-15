@@ -1,4 +1,4 @@
-import Inula from '@cloudsop/horizon';
+import Inula from 'inulajs';
 import { Menu, Layout } from 'antd';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Trans } from 'utils/intl';

@@ -1,4 +1,4 @@
-import Inula, { useRef } from '@cloudsop/horizon';
+import Inula, { useRef } from 'inulajs';
 import moment from 'moment';
 import { FilterItem } from 'components';
 import { Button, Row, Col, DatePicker, Form, Input, Cascader } from 'antd';

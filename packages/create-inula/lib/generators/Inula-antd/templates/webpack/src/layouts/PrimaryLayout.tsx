@@ -1,4 +1,4 @@
-import Inula, { useEffect, Fragment } from '@cloudsop/horizon';
+import Inula, { useEffect, Fragment } from 'inulajs';
 import { MyLayout, GlobalFooter } from '../components';
 import { BackTop, Layout } from 'antd';
 import { pathToRegexp } from 'path-to-regexp';
@@ -8,7 +8,7 @@ import Error from '../pages/404';
 import styles from './PrimaryLayout.less';
 import store from 'store';
 import { getStore } from '../models/app-model';
-import { withRouter } from 'react-router-dom';
+import { withRouter } from 'inula-router';
 
 const { Content } = Layout;
 const { Header, Bread, Sider } = MyLayout;

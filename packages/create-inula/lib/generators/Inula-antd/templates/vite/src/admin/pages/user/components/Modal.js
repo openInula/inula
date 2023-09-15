@@ -1,4 +1,4 @@
-import Inula, { useRef } from '@cloudsop/horizon';
+import Inula, { useRef } from 'inulajs';
 import { Form, Input, InputNumber, Radio, Modal, Cascader } from 'antd';
 import { t, Trans } from 'utils/intl';
 import city from 'utils/city';

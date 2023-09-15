@@ -1,4 +1,4 @@
-import Inula from '@cloudsop/horizon';
+import Inula from 'inulajs';
 import classNames from 'classnames';
 import styles from './index.less';
 

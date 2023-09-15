@@ -1,13 +1,13 @@
-import Inula, { useState, Fragment } from '@cloudsop/horizon';
+import Inula, { useState, Fragment } from 'inulajs';
 import PropTypes from 'prop-types';
 import { Menu } from 'antd';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'inula-router';
 import { pathToRegexp } from 'path-to-regexp';
 import { arrayToTree, queryAncestors } from '../../utils';
 import iconMap from '../../utils/iconMap';
 import store from 'store';
 import { getStore } from '../../models/app-model';
-import { withRouter } from 'react-router-dom';
+import { withRouter } from 'inula-router';
 
 const { SubMenu } = Menu;
 

@@ -2,8 +2,8 @@
  * 国际化，支持按需加载
  */
 
-import Inula from '@cloudsop/horizon';
-import { createIntl, createIntlCache, FormattedMessage } from 'react-intl';
+import Inula from 'inulajs';
+import { createIntl, createIntlCache, FormattedMessage } from 'inula-intl';
 import zhCN from 'antd/lib/locale-provider/zh_CN';
 import enUS from 'antd/lib/locale-provider/en_US';
 import ptBR from 'antd/lib/locale-provider/pt_BR';

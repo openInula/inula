@@ -1,8 +1,8 @@
-import Inula from '@cloudsop/horizon';
-import { Redirect } from 'react-router-dom';
+import Inula from 'inulajs';
+import { Redirect } from 'inula-router';
 
 function Index() {
-  return <Redirect to={`/dashboard`} />;
+  return <Redirect to={'/dashboard'} />;
 }
 
 export default Index;

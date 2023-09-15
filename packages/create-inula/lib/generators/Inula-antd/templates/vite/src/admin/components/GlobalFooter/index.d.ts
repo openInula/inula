@@ -1,14 +1,16 @@
-import Inula from '@cloudsop/horizon';
+import Inula from 'inulajs';
+import type { InulaNode, CSSProperties, Component } from 'inulajs';
+
 export interface GlobalFooterProps {
   links?: Array<{
     key?: string;
-    title: Inula.ReactNode;
+    title: InulaNode;
     href: string;
     blankTarget?: boolean;
   }>;
-  copyright?: Inula.ReactNode;
-  style?: Inula.CSSProperties;
+  copyright?: InulaNode;
+  style?: CSSProperties;
   className?: string;
 }
 
-export default class GlobalFooter extends Inula.Component<GlobalFooterProps, any> {}
+export default class GlobalFooter extends Component<GlobalFooterProps, any> {}

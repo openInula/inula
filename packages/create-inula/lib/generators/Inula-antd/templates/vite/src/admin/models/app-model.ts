@@ -5,7 +5,7 @@ import api from '../services';
 // @ts-ignore
 const { queryRouteList, queryUserInfo } = api;
 
-import { createStore } from '@cloudsop/horizon';
+import { createStore } from 'inulajs';
 
 const goDashboard = history => {
   if (pathToRegexp(['/', '/login']).exec(window.location.pathname)) {

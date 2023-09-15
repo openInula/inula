@@ -1,4 +1,4 @@
-import Inula, { lazy } from '@cloudsop/horizon';
+import Inula, { lazy } from 'inulajs';
 
 export function getRoutes() {
   const routes = [
