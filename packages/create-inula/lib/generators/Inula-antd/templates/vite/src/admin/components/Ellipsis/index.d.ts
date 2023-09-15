@@ -1,4 +1,4 @@
-import Inula from '@cloudsop/horizon';
+import Inula from 'inulajs';
 import { TooltipProps } from 'antd/lib/tooltip';
 
 export interface EllipsisTooltipProps extends TooltipProps {

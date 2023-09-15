@@ -1,10 +1,10 @@
-import Inula, { Fragment } from '@cloudsop/horizon';
+import Inula, { Fragment } from 'inulajs';
 import { queryLayout } from 'utils';
 import config from 'utils/config';
 
 import PublicLayout from './PublicLayout';
 import PrimaryLayout from './PrimaryLayout';
-import { withRouter } from 'react-router-dom';
+import { withRouter } from 'inula-router';
 import './BaseLayout.less';
 
 const LayoutMap = {

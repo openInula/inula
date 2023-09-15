@@ -1,9 +1,9 @@
 import react from '@vitejs/plugin-react';
 
 let alias = {
-  react: '@cloudsop/horizon', // 新增
-  'react-dom': '@cloudsop/horizon', // 新增
-  'react/jsx-dev-runtime': '@cloudsop/horizon/jsx-dev-runtime',
+  react: 'inulajs', // 新增
+  'react-dom': 'inulajs', // 新增
+  'react/jsx-dev-runtime': 'inulajs/jsx-dev-runtime',
 };
 
 export default {

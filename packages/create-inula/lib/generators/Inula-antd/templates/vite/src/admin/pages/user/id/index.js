@@ -1,4 +1,4 @@
-import Inula, { PureComponent } from '@cloudsop/horizon';
+import Inula, { PureComponent } from 'inulajs';
 import PropTypes from 'prop-types';
 import { Page } from 'components';
 import styles from './index.module.less';

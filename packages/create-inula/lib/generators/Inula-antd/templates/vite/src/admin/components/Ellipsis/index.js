@@ -1,10 +1,7 @@
-import Inula, { Component } from '@cloudsop/horizon';
+import Inula, { Component } from 'inulajs';
 import { Tooltip } from 'antd';
 import classNames from 'classnames';
 import styles from './index.module.less';
-
-/* eslint react/no-did-mount-set-state: 0 */
-/* eslint no-param-reassign: 0 */
 
 const isSupportLineClamp = document.body.style.webkitLineClamp !== undefined;
 

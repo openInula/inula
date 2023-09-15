@@ -14,8 +14,8 @@ module.exports = {
       themes: path.resolve('src/themes'),
       utils: path.resolve('src/utils'),
 
-      react: '@cloudsop/horizon', // 新增
-      'react-dom': '@cloudsop/horizon', // 新增
+      react: 'inulajs', // 新增
+      'react-dom': 'inulajs', // 新增
     },
   },
   rules: [

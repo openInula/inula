@@ -1,4 +1,4 @@
-import Inula from '@cloudsop/horizon';
+import Inula from 'inulajs';
 import { FrownOutlined } from '@ant-design/icons';
 import { Page } from 'components';
 import styles from './404.less';

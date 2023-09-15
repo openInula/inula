@@ -1,4 +1,4 @@
-import Inula from '@cloudsop/horizon';
+import Inula from 'inulajs';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import styles from './Loader.less';

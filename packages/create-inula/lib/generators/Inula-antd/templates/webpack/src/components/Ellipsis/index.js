@@ -1,4 +1,4 @@
-import Inula, { Component } from '@cloudsop/horizon';
+import Inula, { Component } from 'inulajs';
 import { Tooltip } from 'antd';
 import classNames from 'classnames';
 import styles from './index.less';

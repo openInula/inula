@@ -11,9 +11,9 @@ let alias = {
   config: path.resolve('src/admin/utils/config'),
   themes: path.resolve('src/admin/themes'),
   utils: path.resolve('src/admin/utils'),
-  react: '@cloudsop/horizon', // 新增
-  'react-dom': '@cloudsop/horizon', // 新增
-  'react/jsx-dev-runtime': '@cloudsop/horizon/jsx-dev-runtime',
+  react: 'inulajs', // 新增
+  'react-dom': 'inulajs', // 新增
+  'react/jsx-dev-runtime': 'inulajs/jsx-dev-runtime',
 };
 
 // https://vitejs.dev/config/
@@ -23,11 +23,11 @@ export default defineConfig({
       babel: {
         plugins: [
           [
-            "@babel/plugin-transform-react-jsx", 
-            { 
-              "runtime": "automatic", // 新增 
-              "importSource": "@cloudsop/horizon" // 新增
-            } 
+            '@babel/plugin-transform-react-jsx',
+            {
+              runtime: 'automatic', // 新增
+              importSource: 'inulajs', // 新增
+            },
           ],
           '@babel/plugin-proposal-class-properties',
           '@babel/plugin-syntax-dynamic-import',

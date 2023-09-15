@@ -1,9 +1,9 @@
-import Inula, { Suspense } from '@cloudsop/horizon';
+import Inula, { Suspense } from 'inulajs';
 import { ConfigProvider } from 'antd';
-import { IntlProvider } from 'react-intl';
+import { IntlProvider } from 'inula-intl';
 import { getLocale } from '../utils';
 import BaseLayout from './BaseLayout';
-import { Route, withRouter } from 'react-router-dom';
+import { Route, withRouter } from 'inula-router';
 import { getRoutes } from '../pages/routes';
 import { getLangResource } from '../utils/intl';
 

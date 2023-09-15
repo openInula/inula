@@ -1,13 +1,13 @@
-import Inula, { Fragment } from '@cloudsop/horizon';
+import Inula, { Fragment } from 'inulajs';
 import { Breadcrumb } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link } from 'inula-router';
 import { t } from 'utils/intl';
 import iconMap from 'utils/iconMap';
 
 import { pathToRegexp } from 'path-to-regexp';
 import { queryAncestors } from 'utils';
 import styles from './Bread.module.less';
-import { withRouter } from 'react-router-dom';
+import { withRouter } from 'inula-router';
 
 function Bread({ routeList, history }) {
   const generateBreadcrumbs = paths => {

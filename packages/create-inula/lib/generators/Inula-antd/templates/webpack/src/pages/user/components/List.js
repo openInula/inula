@@ -1,4 +1,4 @@
-import Inula from '@cloudsop/horizon';
+import Inula from 'inulajs';
 import { Table, Modal } from 'antd';
 import { DropOption } from 'components';
 import { t } from 'utils/intl';

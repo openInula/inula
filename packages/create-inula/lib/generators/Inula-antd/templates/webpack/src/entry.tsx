@@ -1,5 +1,5 @@
-import Inula from '@cloudsop/horizon';
-import { BrowserRouter } from 'react-router-dom';
+import Inula from 'inulajs';
+import { BrowserRouter } from 'inula-router';
 import config from './utils/config';
 
 import 'antd/dist/antd.css';
