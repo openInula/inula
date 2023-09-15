@@ -1,4 +1,4 @@
-import Inula from '@cloudsop/horizon';
+import Inula from 'inulajs';
 import IRClient from './IRClient';
 import { IrRequestConfig, QueryOptions } from '../../types/interfaces';
 

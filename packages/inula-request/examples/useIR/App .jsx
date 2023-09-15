@@ -1,4 +1,4 @@
-import Inula, { useState } from '@cloudsop/horizon';
+import Inula, { useState } from 'inulajs';
 import { useIR } from '../../index';
 
 const App = () => {
