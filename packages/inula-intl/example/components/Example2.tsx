@@ -1,7 +1,7 @@
 /*
  * Copyright (c) Huawei Technologies Co., Ltd. 2023-2023. All rights reserved.
  */
-import Inula from "@cloudsop/horizon";
+import Inula from "inulajs";
 import { FormattedMessage } from "../../index";
 
 const Example2= () => {

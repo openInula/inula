@@ -1,7 +1,7 @@
 /*
  * Copyright (c) Huawei Technologies Co., Ltd. 2023-2023. All rights reserved.
  */
-import Inula, { useContext } from '@cloudsop/horizon';
+import Inula, { useContext } from 'inulajs';
 import utils from '../../utils/utils';
 import { I18nContext } from '../components/InjectI18n';
 import I18n from '../I18n';

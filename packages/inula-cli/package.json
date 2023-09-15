@@ -1,6 +1,6 @@
 {
-  "name": "@cloudsop/horizon-cli",
-  "version": "1.0.45",
+  "name": "inula-cli",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
