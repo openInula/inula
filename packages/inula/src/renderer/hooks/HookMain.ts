@@ -53,7 +53,7 @@ export function runFunctionWithHooks<Props extends Record<string, any>, Arg>(
   // 判断hook是否写在了if条件中，如果在if中会出现数量不对等的情况
   const lastTimeHook = getLastTimeHook();
   if (lastTimeHook !== null) {
-    if (getNextHook(getLastTimeHook(), processing.oldHooks) !== null) {
+    if (getNextHook(getLastTimeHook()!, processing.oldHooks!) !== null) {
       throw Error('Hooks are less than expected, please check whether the hook is written in the condition.');
     }
   }

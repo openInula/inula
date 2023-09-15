@@ -37,7 +37,7 @@ app.get('/data', (req, res) => {
 });
 
 app.get('/download', (req, res) => {
-  const filePath = 'D:\\code\\MRcode\\inula-Request\\examples\\request\\downloadTest.html';
+  const filePath = 'D:\\code\\MRcode\\Inula-Request\\examples\\request\\downloadTest.html';
   const fileName = 'downloadTest.html';
   const fileSize = fs.statSync(filePath).size;
 

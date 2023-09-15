@@ -15,8 +15,14 @@
 
 import { TYPE_PORTAL } from '../../external/JSXElementType';
 import type { PortalType } from '../Types';
+import { InulaNode, InulaPortal } from '../../types';
 
-export function createPortal(children: any, realNode: any, key = ''): PortalType {
+export function createPortal(
+  children: InulaNode,
+  realNode: Element | DocumentFragment,
+  key?: null | string
+): InulaPortal;
+export function createPortal(children: any, realNode: any, key = ''): PortalType | InulaPortal {
   return {
     vtype: TYPE_PORTAL,
     key: key == '' ? '' : '' + key,

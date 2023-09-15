@@ -1,4 +1,4 @@
-import Inula, { useState } from 'inulajs';
+import Inula, { useState } from '@cloudsop/horizon';
 import { useIR } from '../../index';
 
 const App = () => {
@@ -18,7 +18,7 @@ const App = () => {
 
   return (
     <>
-      <header>useIR Test</header>
+      <header>useHR Test</header>
       <div className="container">
         <div className="card">
           <h2 style={{whiteSpace: "pre-wrap"}}>{options ? `实时数据流已激活\n更新间隔：${options?.pollingInterval} ms`

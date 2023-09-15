@@ -16,6 +16,7 @@
 import type { PromiseType } from '../Types';
 
 import { TYPE_LAZY } from '../../external/JSXElementType';
+import { ComponentType, LazyComponent as LazyComponentType } from '../../types';
 
 enum LayStatus {
   UnProcessed = 'UnProcessed',
@@ -69,7 +70,10 @@ function lazyLoader<T>(lazyContent: LazyContent<T>): any {
   }
 }
 
-export function lazy<T>(promiseCtor: () => PromiseType<{ default: T }>): LazyComponent<T, LazyContent<T>> {
+export function lazy<T extends ComponentType<any>>(promiseCtor: () => Promise<{ default: T }>): LazyComponentType<T>;
+export function lazy<T>(
+  promiseCtor: () => PromiseType<{ default: T }> | Promise<{ default: T }>
+): LazyComponent<T, LazyContent<T>> | LazyComponentType<any> {
   return {
     vtype: TYPE_LAZY,
     _content: {

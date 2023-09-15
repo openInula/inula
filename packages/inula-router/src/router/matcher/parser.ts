@@ -70,7 +70,7 @@ export function createPathParser<P = unknown>(pathname: string, option: ParserOp
    * @param currentIdx
    */
   const lookToNextDelimiter = (currentIdx: number): boolean => {
-    let hasOptionalParam = false;
+    let hasOptionalParam: boolean = false;
     while (currentIdx < tokens.length && tokens[currentIdx].type !== TokenType.Delimiter) {
       if (tokens[currentIdx].value === '?' || tokens[currentIdx].value === '*') {
         hasOptionalParam = true;

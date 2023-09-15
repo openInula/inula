@@ -369,7 +369,7 @@ function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newC
 
     if (rightNewNode) {
       appendNode(rightNewNode);
-      setVNodesCIndex(rightNewNode, prevNewNode.cIndex + 1);
+      setVNodesCIndex(rightNewNode, prevNewNode!.cIndex + 1);
     }
 
     return resultingFirstChild;
@@ -506,7 +506,7 @@ function diffIteratorNodesHandler(
   const iteratorObj = iteratorFn.call(newChildrenIterable);
 
   // 把iterator转测数组
-  const childrenArray = [];
+  const childrenArray: any[] = [];
   let result = iteratorObj.next();
   while (!result.done) {
     childrenArray.push(result.value);
@@ -545,7 +545,7 @@ function diffObjectNodeHandler(
   parentNode: VNode,
   firstChild: VNode | null,
   newChild: any,
-  firstChildVNode: VNode,
+  firstChildVNode: VNode | null,
   isComparing: boolean
 ) {
   let canReuseNode: VNode | null = null;

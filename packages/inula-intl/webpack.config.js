@@ -18,10 +18,10 @@ module.exports = {
           options: {
             presets: ['@babel/preset-env',
               [
-              "@babel/preset-react",
+              '@babel/preset-react',
               {
-                "runtime": "automatic", // 新增
-                "importSource": "inulajs" // 新增
+                'runtime': 'automatic', // 新增
+                'importSource': '@cloudsop/horizon' // 新增
               }
             ],
             '@babel/preset-typescript'],

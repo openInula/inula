@@ -14,7 +14,7 @@
  */
 
 import { travelVNodeTree } from '../renderer/vnode/VNodeUtils';
-import { Hook, Reducer, Ref, Effect, CallBack, Memo } from '../renderer/hooks/HookType';
+import { Hook, Reducer, MutableRef, Effect, CallBack, Memo } from '../renderer/hooks/HookType';
 import { VNode } from '../renderer/vnode/VNode';
 import { launchUpdateFromVNode } from '../renderer/TreeBuilder';
 import { DomComponent } from '../renderer/vnode/VNodeTags';
@@ -23,7 +23,7 @@ import { JSXElement } from '../renderer/Types';
 import { EffectConstant } from '../renderer/hooks/EffectConstant';
 
 const isEffectHook = (state: any): state is Effect => !!state.effect;
-const isRefHook = (state: any): state is Ref<any> => Object.prototype.hasOwnProperty.call(state, 'current');
+const isRefHook = (state: any): state is MutableRef<any> => Object.prototype.hasOwnProperty.call(state, 'current');
 const isCallbackHook = (state: any): state is CallBack<any> => Object.prototype.hasOwnProperty.call(state, 'func');
 const isMemoHook = (state: any): state is Memo<any> => Object.prototype.hasOwnProperty.call(state, 'result');
 
@@ -51,7 +51,7 @@ export const helper = {
         return { name: HookName.ReducerHook, hIndex, value: (state as Reducer<any, any>).stateValue };
       }
     } else if (isRefHook(state)) {
-      return { name: HookName.RefHook, hIndex, value: (state as Ref<any>).current };
+      return { name: HookName.RefHook, hIndex, value: (state as MutableRef<any>).current };
     } else if (isEffectHook(state)) {
       const name =
         state.effectConstant == EffectConstant.LayoutEffect || EffectConstant.LayoutEffect | EffectConstant.DepsChange

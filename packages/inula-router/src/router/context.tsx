@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext } from '@cloudsop/horizon';
 import { History, Location } from './index';
 import { Matched } from './matcher/parser';
 

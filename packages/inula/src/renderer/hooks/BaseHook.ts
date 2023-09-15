@@ -40,14 +40,14 @@ export function throwNotInFuncError(): never {
 
 // 新建一个hook，并放到vNode.hooks中
 export function createHook(state: any = null): Hook<any, any> {
-  const processingVNode = getProcessingVNode();
+  const processingVNode = getProcessingVNode()!;
   const newHook: Hook<any, any> = {
     state: state,
-    hIndex: processingVNode.hooks.length,
+    hIndex: processingVNode.hooks!.length,
   };
 
   currentHook = newHook;
-  processingVNode.hooks.push(newHook);
+  processingVNode.hooks!.push(newHook);
 
   return currentHook;
 }
@@ -60,12 +60,12 @@ export function getNextHook(hook: Hook<any, any>, hooks: Array<Hook<any, any>>):
 // processing中的hook和上一次执行中的hook，需要同时往前走，
 // 原因：1.比对hook的数量有没有变化（非必要）；2.从上一次执行中的hook获取removeEffect
 export function getCurrentHook(): Hook<any, any> {
-  const processingVNode = getProcessingVNode();
+  const processingVNode = getProcessingVNode()!;
   currentHook =
-    currentHook !== null ? getNextHook(currentHook, processingVNode.hooks) : processingVNode.hooks[0] || null;
+    currentHook !== null ? getNextHook(currentHook, processingVNode.hooks!) : processingVNode.hooks![0] || null;
 
   if (lastTimeHook !== null) {
-    lastTimeHook = getNextHook(lastTimeHook, processingVNode.oldHooks);
+    lastTimeHook = getNextHook(lastTimeHook, processingVNode.oldHooks!);
   } else {
     if (processingVNode.oldHooks && processingVNode.oldHooks.length) {
       lastTimeHook = processingVNode.oldHooks[0];
@@ -82,5 +82,5 @@ export function getCurrentHook(): Hook<any, any> {
     createHook(lastTimeHook.state);
   }
 
-  return currentHook;
+  return currentHook!;
 }

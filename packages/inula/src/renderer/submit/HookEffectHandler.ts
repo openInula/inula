@@ -18,7 +18,7 @@
  */
 
 import type { VNode } from '../Types';
-import type { Effect as HookEffect, EffectList } from '../hooks/HookType';
+import type { Effect, Effect as HookEffect, EffectList } from '../hooks/HookType';
 import { runAsync } from '../taskExecutor/TaskExecutor';
 import { copyExecuteMode, InRender, setExecuteMode, changeMode } from '../ExecuteMode';
 import { EffectConstant } from '../hooks/EffectConstant';
@@ -47,7 +47,7 @@ export function runAsyncEffects() {
   // 调用effect destroy
   const removeEffects = hookRemoveEffects;
   hookRemoveEffects = [];
-  removeEffects.forEach(effect => {
+  removeEffects.forEach((effect: Effect) => {
     const destroy = effect.removeEffect;
     effect.removeEffect = undefined;
 
@@ -63,7 +63,7 @@ export function runAsyncEffects() {
   // 调用effect create
   const createEffects = hookEffects;
   hookEffects = [];
-  createEffects.forEach(effect => {
+  createEffects.forEach((effect: Effect) => {
     try {
       const create = effect.effect;
 

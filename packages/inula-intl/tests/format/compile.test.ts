@@ -30,6 +30,12 @@ describe('compile', function () {
     expect(new Translation(cache, 'en', [], {}).translate({ name: 'Joe' })).toEqual('Hey Joe!');
   });
 
+  it('should compile message with variable', function () {
+    const cache = utils.compile('Hey {name}!');
+    console.log(cache)
+    expect(new Translation(cache, 'en', [], {}).translate({})).toEqual('Hey {name}!');
+  });
+
   it('should compile select', function () {
     const translate = prepare('{value, select, female {She} other {They}}');
     expect(translate({ value: 'female' })).toEqual('She');

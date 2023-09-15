@@ -2,7 +2,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import babel from '@rollup/plugin-babel';
 import nodeResolve from '@rollup/plugin-node-resolve';
-import typescript from "@rollup/plugin-typescript";
+import typescript from '@rollup/plugin-typescript';
 import { terser } from 'rollup-plugin-terser';
 
 
@@ -20,9 +20,11 @@ export default {
     output: [
         {
             file: path.resolve(output, 'intl.umd.js'),
-            sourcemap: 'inline',
-            name: 'I18n',
+            name: 'HorizonI18n',
             format: 'umd',
+            globals:{
+              '@cloudsop/horizon':'Horizon'
+            }
         },
     ],
     plugins: [
@@ -44,8 +46,8 @@ export default {
       terser(),
     ],
     external:[
-        "inulajs",
-        "react",
-        "react-dom"
+        '@cloudsop/horizon',
+        'react',
+        'react-dom'
     ]
 };

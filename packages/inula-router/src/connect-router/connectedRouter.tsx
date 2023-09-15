@@ -1,20 +1,19 @@
-import * as React from 'react';
-import { useLayoutEffect, useRef } from 'react';
+import Inula from '@cloudsop/horizon';
+import { useLayoutEffect, useRef, reduxAdapter, InulaNode } from '@cloudsop/horizon';
 import { connect, ReactReduxContext } from 'react-redux';
 import { Store } from 'redux';
-import { reduxAdapter } from '@cloudsop/horizon';
 import { History, Location, Router } from '../router';
 import { Action, DefaultStateType, Navigation } from '../history/types';
 import { ActionMessage, onLocationChanged } from './actions';
 import stateReader from './reduxUtils';
 
-type StoreType = 'HorizonXCompat' | 'Redux';
+type StoreType = 'InulaXCompat' | 'Redux';
 
 type ConnectedRouter<S> = {
   store: Store;
   history: History<S>;
   basename: string;
-  children?: (() => React.ReactNode) | React.ReactNode;
+  children?: (() => InulaNode) | InulaNode;
   onLocationChanged: (location: Location<S>, action: Action, isFirstRendering: boolean) => ActionMessage;
   noInitialPop: boolean;
   omitRouter: boolean;
@@ -89,7 +88,7 @@ function ConnectedRouterWithoutMemo<S>(props: ConnectedRouter<S>) {
   if (omitRouter) {
     return <>{children}</>;
   }
-  let childrenNode: React.ReactNode;
+  let childrenNode: InulaNode;
   if (typeof children === 'function') {
     childrenNode = children();
   } else {
@@ -104,7 +103,7 @@ function getConnectedRouter<S = DefaultStateType>(type: StoreType) {
     onLocationChanged: (location: Location, action: Action, isFirstRendering: boolean) =>
       dispatch(onLocationChanged(location, action, isFirstRendering)),
   });
-  const ConnectedRouter = React.memo(ConnectedRouterWithoutMemo<S>);
+  const ConnectedRouter = Inula.memo(ConnectedRouterWithoutMemo<S>);
 
   const ConnectedRouterWithContext = (props: any) => {
     const Context = props.context || ReactReduxContext;
@@ -117,8 +116,8 @@ function getConnectedRouter<S = DefaultStateType>(type: StoreType) {
   };
 
   // 针对不同的Store类型，使用对应的connect函数
-  if (type === 'HorizonXCompat') {
-    return hConnect(null, mapDispatchToProps)(ConnectedRouterWithContext);
+  if (type === 'InulaXCompat') {
+    return hConnect(null as any, mapDispatchToProps)(ConnectedRouterWithContext as any);
   }
   if (type === 'Redux') {
     return connect(null, mapDispatchToProps)(ConnectedRouterWithContext);

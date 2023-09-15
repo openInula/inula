@@ -93,7 +93,7 @@ class Translation {
       }
       //调用 getContent 函数来获取给定 name、type 和 interpolateFormat 的值
       const value = textFormatter(name, type, replaceValueFormat);
-      return value ?? '';
+      return value ?? `{${name}}`;
     }).join('');
   };
 }

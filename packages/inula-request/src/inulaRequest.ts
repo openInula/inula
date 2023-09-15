@@ -43,8 +43,6 @@ inulaRequest.IrHeaders = IrHeaders;
 
 inulaRequest.defaults = defaultConfig as IrRequestConfig;
 
-/*--------------------------------兼容axios-----------------------------------*/
-
 inulaRequest.Axios = InulaRequest;
 
 inulaRequest.AxiosError = IrError;

@@ -21,7 +21,7 @@ module.exports = {
                 '@babel/preset-react',
                 {
                   runtime: 'automatic', // 新增
-                  importSource: 'inulajs', // 新增
+                  importSource: '@cloudsop/horizon', // 新增
                 },
               ],
             ],
@@ -61,6 +61,6 @@ module.exports = {
     static: path.join(__dirname, 'dist'),
     compress: true,
     port: 9000,
-    open: true
+    open: true,
   },
 };

@@ -24,51 +24,91 @@ import { useReducerImpl } from './UseReducerHook';
 import { useStateImpl } from './UseStateHook';
 import { getNewContext } from '../components/context/Context';
 import { getProcessingVNode } from '../GlobalVar';
-import { Ref, Trigger } from './HookType';
+import type { MutableRef, RefCallBack, RefObject } from './HookType';
 
-type BasicStateAction<S> = ((S) => S) | S;
-type Dispatch<A> = (value: A) => void;
+import type {
+  BasicStateAction,
+  Dispatch,
+  ReducerStateVoid,
+  ReducerVoid,
+  Reducer,
+  EffectCallBack,
+  DependencyList,
+} from '../../types';
+import { DispatchVoid, ReducerAction, ReducerState, Context } from '../../types';
 
-export function useContext<T>(Context: ContextType<T>): T {
+export function useContext<T>(Context: Context<T>): T;
+export function useContext<T>(Context: ContextType<T> | Context<T>): T {
   const processingVNode = getProcessingVNode();
-  return getNewContext(processingVNode!, Context, true);
+  return getNewContext(processingVNode!, Context as ContextType<T>, true);
 }
-export function useState<S = undefined>(): [S | undefined, Dispatch<BasicStateAction<S | undefined>>];
+
 export function useState<S>(initialState: (() => S) | S): [S, Dispatch<BasicStateAction<S>>];
+export function useState<S = undefined>(): [S | undefined, Dispatch<BasicStateAction<S | undefined>>];
 export function useState<S>(initialState?: (() => S) | S): [S, Dispatch<BasicStateAction<S>>] {
   return useStateImpl(initialState);
 }
 
-export function useReducer<S, I, A>(reducer: (S, A) => S, initialArg: I, init?: (I) => S): [S, Trigger<A>] {
+export function useReducer<R extends ReducerVoid<any>, I>(
+  reducer: R,
+  initialArg: I,
+  init: (arg: I) => ReducerVoid<R>
+): [ReducerStateVoid<R>, DispatchVoid];
+export function useReducer<R extends ReducerVoid<any>>(
+  reducer: R,
+  initialArg: ReducerStateVoid<R>,
+  init?: undefined
+): [ReducerStateVoid<R>, DispatchVoid];
+export function useReducer<R extends Reducer<any, any>, I>(
+  reducer: R,
+  initialArg: I & ReducerState<R>,
+  init?: (arg: I & ReducerState<R>) => ReducerState<R>
+): [ReducerState<R>, Dispatch<ReducerAction<R>>];
+export function useReducer<R extends Reducer<any, any>, I>(
+  reducer: R,
+  initialArg: I,
+  init?: (arg: I) => ReducerState<R>
+): [ReducerState<R>, Dispatch<ReducerAction<R>>];
+export function useReducer<R extends Reducer<any, any>>(
+  reducer: R,
+  initialArg: ReducerState<R>,
+  init?: undefined
+): [ReducerState<R>, Dispatch<ReducerAction<R>>];
+export function useReducer<R extends ReducerVoid<any> | Reducer<any, any>, I>(
+  reducer: R,
+  initialArg: ReducerState<R> | I | (I & ReducerState<R>),
+  init?: undefined | ((arg: I) => ReducerState<R> | ReducerVoid<R>) | ((arg: I & ReducerState<R>) => ReducerState<R>)
+): unknown {
   return useReducerImpl(reducer, initialArg, init);
 }
 
-export function useRef<T = undefined>(): Ref<T | undefined>;
-export function useRef<T>(initialValue: T): Ref<T>;
-export function useRef<T>(initialValue?: T): Ref<T> {
+export function useRef<T>(initialValue: T): MutableRef<T>;
+export function useRef<T>(initialValue: T | null): RefObject<T>;
+export function useRef<T = undefined>(): MutableRef<T | undefined>;
+export function useRef<T>(initialValue?: T): MutableRef<T> {
   return useRefImpl(initialValue);
 }
 
-export function useEffect(create: () => (() => void) | void, deps?: Array<any> | null): void {
+export function useEffect(create: EffectCallBack, deps?: DependencyList): void {
   return useEffectImpl(create, deps);
 }
 
-export function useLayoutEffect(create: () => (() => void) | void, deps?: Array<any> | null): void {
+export function useLayoutEffect(create: EffectCallBack, deps?: DependencyList): void {
   return useLayoutEffectImpl(create, deps);
 }
 
-export function useCallback<T>(callback: T, deps?: Array<any> | null): T {
+export function useCallback<T>(callback: T, deps: DependencyList): T {
   return useCallbackImpl(callback, deps);
 }
 
-export function useMemo<T>(create: () => T, deps?: Array<any> | null): T {
+export function useMemo<T>(create: () => T, deps: DependencyList | undefined): T {
   return useMemoImpl(create, deps);
 }
 
-export function useImperativeHandle<T>(
-  ref: { current: T | null } | ((inst: T | null) => any) | null | void,
-  create: () => T,
-  deps?: Array<any> | null
+export function useImperativeHandle<T, R extends T>(
+  ref: RefObject<T> | RefCallBack<T> | null | undefined,
+  create: () => R,
+  deps?: DependencyList
 ): void {
   return useImperativeHandleImpl(ref, create, deps);
 }

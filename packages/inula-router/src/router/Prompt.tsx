@@ -1,12 +1,12 @@
-import * as React from 'react';
-import { useContext } from 'react';
+import Inula from '@cloudsop/horizon';
+import { useContext } from '@cloudsop/horizon';
 import { LifeCycle, LifeCycleProps } from './lifeCycleHook';
 import { Location } from './index';
 import { Action } from '../history/types';
 import RouterContext from './context';
 
 type PromptProps = {
-  message?: string | ((location: Partial<Location>, action: Action) => void);
+  message?: string | ((location: Partial<Location>, action: Action) => string | boolean);
   when?: boolean | ((location: Partial<Location>) => boolean);
 };
 

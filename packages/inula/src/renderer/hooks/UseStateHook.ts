@@ -16,11 +16,14 @@
 import type { Trigger } from './HookType';
 import { useReducerImpl } from './UseReducerHook';
 
-function defaultReducer<S>(state: S, action: ((S) => S) | S): S {
-  // @ts-ignore
-  return typeof action === 'function' ? action(state) : action;
+function isFunction<T extends (...args: any) => any>(object: unknown): object is T {
+  return typeof object === 'function';
 }
 
-export function useStateImpl<S>(initArg?: (() => S) | S): [S, Trigger<((S) => S) | S>] {
+function defaultReducer<S>(state: S, action: ((S) => S) | S): S {
+  return isFunction(action) ? action(state) : action;
+}
+
+export function useStateImpl<S>(initArg?: (() => S) | S): [S, Trigger<((S) => S) | S>] | void {
   return useReducerImpl(defaultReducer, initArg, undefined, true);
 }

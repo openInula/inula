@@ -18,8 +18,9 @@ import { createPortal } from '../renderer/components/CreatePortal';
 import type { Container } from './DOMOperator';
 import { isElement } from './utils/Common';
 import { findDOMByClassInst } from '../renderer/vnode/VNodeUtils';
-import { Callback } from '../renderer/UpdateHandler';
 import { listenSimulatedDelegatedEvents } from '../event/EventBinding';
+import { Callback } from '../renderer/Types';
+import { InulaNode } from '../types';
 
 function createRoot(children: any, container: Container, callback?: Callback) {
   // 清空容器
@@ -102,6 +103,7 @@ function removeRootEventLister(container: Container) {
 }
 
 // 卸载入口
+function destroy(container: Element | DocumentFragment | Document): boolean;
 function destroy(container: Container): boolean {
   if (container._treeRoot) {
     syncUpdates(() => {
@@ -117,10 +119,28 @@ function destroy(container: Container): boolean {
   return false;
 }
 
+interface RootElement {
+  render(component: InulaNode): void;
+
+  unmount(): void;
+}
+
+function createRootElement(container: Container, option?: Record<string, any>): RootElement {
+  return {
+    render(component: InulaNode) {
+      executeRender(component, container);
+    },
+    unmount(): void {
+      destroy(container);
+    },
+  };
+}
+
 export {
   createPortal,
   asyncUpdates as unstable_batchedUpdates,
   findDOMNode,
   executeRender as render,
+  createRootElement as createRoot,
   destroy as unmountComponentAtNode,
 };

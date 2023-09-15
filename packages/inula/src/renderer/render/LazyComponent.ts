@@ -32,7 +32,7 @@ const LazyRendererMap = {
   [MemoComponent]: captureMemoComponent,
 };
 
-export function mergeDefaultProps(Component: any, props: object): object {
+export function mergeDefaultProps(Component: any, props: Record<string, any>): Record<string, any> {
   if (Component && Component.defaultProps) {
     const clonedProps = { ...props };
     const defaultProps = Component.defaultProps;

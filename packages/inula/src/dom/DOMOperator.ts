@@ -73,7 +73,7 @@ export function resetAfterSubmit(): void {
 export function newDom(tagName: string, props: Props, parentNamespace: string, vNode: VNode): Element {
   // document取值于treeRoot对应的DOM的ownerDocument。
   // 解决：在iframe中使用top的inula时，inula在创建DOM时用到的document并不是iframe的document，而是top中的document的问题。
-  const rootDom = getCurrentRoot().realNode;
+  const rootDom = getCurrentRoot()?.realNode;
   const doc = isDocument(rootDom) ? rootDom : rootDom.ownerDocument;
 
   const dom: Element = createDom(tagName, parentNamespace, doc);
@@ -90,7 +90,7 @@ export function initDomProps(dom: Element, tagName: string, rawProps: Props): bo
   validateProps(tagName, rawProps);
 
   // 获取不包括value，defaultValue的属性
-  const props: Object = getPropsWithoutValue(tagName, dom, rawProps);
+  const props: Record<string, any> = getPropsWithoutValue(tagName, dom, rawProps);
 
   // 初始化DOM属性（不包括value，defaultValue）
   const isNativeTag = isNativeElement(tagName, props);
@@ -108,13 +108,18 @@ export function initDomProps(dom: Element, tagName: string, rawProps: Props): bo
 }
 
 // 准备更新之前进行一系列校验 DOM，寻找属性差异等准备工作
-export function getPropChangeList(dom: Element, type: string, lastRawProps: Props, nextRawProps: Props): Object {
+export function getPropChangeList(
+  dom: Element,
+  type: string,
+  lastRawProps: Props,
+  nextRawProps: Props
+): Record<string, any> {
   // 校验两个对象的不同
   validateProps(type, nextRawProps);
 
   // 重新定义的属性不需要参与对比，被代理的组件需要把这些属性覆盖到props中
-  const oldProps: Object = getPropsWithoutValue(type, dom, lastRawProps);
-  const newProps: Object = getPropsWithoutValue(type, dom, nextRawProps);
+  const oldProps: Record<string, any> = getPropsWithoutValue(type, dom, lastRawProps);
+  const newProps: Record<string, any> = getPropsWithoutValue(type, dom, nextRawProps);
 
   return compareProps(oldProps, newProps);
 }
@@ -203,7 +208,7 @@ export function removeChildDom(parent: Element | Container, child: Element | Tex
 // 隐藏元素
 export function hideDom(tag: string, dom: Element | Text) {
   if (tag === DomComponent) {
-    dom.style.display = 'none';
+    (dom as HTMLElement).style.display = 'none';
   } else if (tag === DomText) {
     dom.textContent = '';
   }
@@ -212,8 +217,8 @@ export function hideDom(tag: string, dom: Element | Text) {
 // 不隐藏元素
 export function unHideDom(tag: string, dom: Element | Text, props?: Props) {
   if (tag === DomComponent) {
-    dom.style.display = adjustStyleValue('display', props?.style?.display ?? '');
+    (dom as HTMLElement).style.display = adjustStyleValue('display', props?.style?.display ?? '');
   } else if (tag === DomText) {
-    dom.textContent = props;
+    dom.textContent = props as any;
   }
 }

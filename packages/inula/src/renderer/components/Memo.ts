@@ -14,8 +14,17 @@
  */
 
 import { TYPE_MEMO } from '../../external/JSXElementType';
+import { ComponentType, ExoticComponent, FunctionComponent, MemoComponent } from '../../types';
 
-export function memo<Props>(type, compare?: (oldProps: Props, newProps: Props) => boolean) {
+export function memo<Props extends Record<string, any>>(
+  type: FunctionComponent<Props>,
+  compare?: (oldProps: Readonly<Props>, newProps: Readonly<Props>) => boolean
+): ExoticComponent<Props>;
+export function memo<T extends ComponentType<any>>(
+  type: T,
+  compare?: (oldProps: any, newProps: any) => boolean
+): MemoComponent<T>;
+export function memo<Props>(type, compare?: (oldProps: Props, newProps: Props) => boolean): unknown {
   const memoJSXElement = {
     vtype: TYPE_MEMO,
     $$typeof: TYPE_MEMO, // 规避三方件hoist-non-react-statics中，通过$$typeof获取类型，但获取不到，导致type被覆盖

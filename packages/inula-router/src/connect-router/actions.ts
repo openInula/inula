@@ -4,8 +4,8 @@ type Location = Partial<Path>
 
 // 定义位置变化和history方法调用的Action type
 export enum ActionName {
-  LOCATION_CHANGE = '$horizon-router/LOCATION_CHANGE',
-  CALL_HISTORY_METHOD = '$horizon-router/CALL_HISTORY_METHOD'
+  LOCATION_CHANGE = '$inula-router/LOCATION_CHANGE',
+  CALL_HISTORY_METHOD = '$inula-router/CALL_HISTORY_METHOD'
 }
 
 // 定义Action的两种数据类型

@@ -77,12 +77,28 @@ export const useStore = () => {
   return createStoreHook(DefaultContext)();
 };
 
-export function connect(
-  mapStateToProps?: (state: any, ownProps: { [key: string]: any }) => object,
-  mapDispatchToProps?:
-    | { [key: string]: (...args: any[]) => ReduxAction }
-    | ((dispatch: (action: ReduxAction) => any, ownProps?: object) => object),
-  mergeProps?: (stateProps: object, dispatchProps: object, ownProps: object) => object,
+type MapStateToPropsP<StateProps, OwnProps> = (state: any, ownProps: OwnProps) => StateProps;
+type MapDispatchToPropsP<DispatchProps, OwnProps> =
+  | { [key: string]: (...args: any[]) => ReduxAction }
+  | ((dispatch: (action: ReduxAction) => any, ownProps: OwnProps) => DispatchProps);
+type MergePropsP<StateProps, DispatchProps, OwnProps, MergedProps> = (
+  stateProps: StateProps,
+  dispatchProps: DispatchProps,
+  ownProps: OwnProps
+) => MergedProps;
+
+type WrappedComponent<OwnProps> = (props: OwnProps) => ReturnType<typeof createElement>;
+type OriginalComponent<MergedProps> = (props: MergedProps) => ReturnType<typeof createElement>;
+type Connector<OwnProps, MergedProps> = (Component: OriginalComponent<MergedProps>) => WrappedComponent<OwnProps>;
+
+export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
+  mapStateToProps: MapStateToPropsP<StateProps, OwnProps> = () => ({} as StateProps),
+  mapDispatchToProps: MapDispatchToPropsP<DispatchProps, OwnProps> = () => ({} as DispatchProps),
+  mergeProps: MergePropsP<StateProps, DispatchProps, OwnProps, MergedProps> = (
+    stateProps,
+    dispatchProps,
+    ownProps
+  ): MergedProps => ({ ...stateProps, ...dispatchProps, ...ownProps } as unknown as MergedProps),
   options?: {
     areStatesEqual?: (oldState: any, newState: any) => boolean;
     context?: Context;

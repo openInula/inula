@@ -27,7 +27,7 @@ const extensions = ['.js', '.ts'];
 
 const libDir = path.join(__dirname, '../..');
 const rootDir = path.join(__dirname, '../..');
-const outDir = path.join(rootDir, 'build', 'inula');
+const outDir = path.join(rootDir, 'build', 'horizon');
 
 if (!fs.existsSync(path.join(rootDir, 'build'))) {
   fs.mkdirSync(path.join(rootDir, 'build'));
@@ -67,7 +67,7 @@ const getBasicPlugins = mode => {
 };
 
 function getOutputName(mode) {
-  return mode === 'production' ? `inula.${mode}.min.js` : `inula.${mode}.js`;
+  return mode === 'production' ? `horizon.${mode}.min.js` : `horizon.${mode}.js`;
 }
 
 function genConfig(mode) {
@@ -83,13 +83,13 @@ function genConfig(mode) {
       {
         file: outputResolve('umd', getOutputName(mode)),
         sourcemap,
-        name: 'Inula',
+        name: 'Horizon',
         format: 'umd',
       },
     ],
     plugins: [
       ...getBasicPlugins(mode),
-      execute('npm run build-types'),
+      execute('npm run build-types', true),
       mode === 'production' && terser(),
       copy([
         {

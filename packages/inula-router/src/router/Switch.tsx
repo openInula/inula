@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { useContext, Children, isValidElement, cloneElement } from 'react';
+import Inula from '@cloudsop/horizon';
+import { useContext, Children, isValidElement, cloneElement, InulaNode, InulaElement } from '@cloudsop/horizon';
 
 import { Location } from './index';
 import RouterContext from './context';
@@ -9,14 +9,14 @@ import Redirect, { RedirectProps } from './Redirect';
 
 export type SwitchProps = {
   location?: Location;
-  children?: React.ReactNode;
+  children?: InulaNode;
 };
 
-function Switch<P extends SwitchProps>(props: P): React.ReactElement | null {
+function Switch<P extends SwitchProps>(props: P): InulaElement | null {
   const context = useContext(RouterContext);
   const location = props.location || context.location;
 
-  let element: React.ReactElement | null = null;
+  let element: InulaElement | null = null;
   let match: Matched | null = null;
 
   // 使用forEach不会给React.ReactNode增加key属性,防止重新渲染

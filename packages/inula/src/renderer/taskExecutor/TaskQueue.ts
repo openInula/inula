@@ -21,6 +21,7 @@ type Queue = Array<Node>;
 export type Node = {
   id: number;
   order: number;
+  callback: (() => void) | null;
 };
 
 // 任务队列

@@ -5,7 +5,7 @@ import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
-describe('Horizon-router Test', () => {
+describe('Inula-router Test', () => {
 
   it('Render app and Jump use <Link>', async () => {
     const history = createBrowserHistory();

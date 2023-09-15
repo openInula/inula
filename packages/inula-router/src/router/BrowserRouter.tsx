@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { useRef, ReactNode } from 'react';
+import Inula from '@cloudsop/horizon';
+import { useRef, InulaNode } from '@cloudsop/horizon';
 import Router from './Router';
 import { createBrowserHistory } from '../history/browerHistory';
 import { ConfirmationFunc, History } from '../history/types';
@@ -7,7 +7,7 @@ import { ConfirmationFunc, History } from '../history/types';
 export type BaseRouterProps = {
   basename: string;
   getUserConfirmation: ConfirmationFunc;
-  children?: ReactNode;
+  children?: InulaNode;
 };
 
 export type BrowserRouterProps = BaseRouterProps & {

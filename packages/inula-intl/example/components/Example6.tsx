@@ -2,7 +2,7 @@
  * Copyright (c) Huawei Technologies Co., Ltd. 2023-2023. All rights reserved.
  */
 
-import Inula from "inulajs";
+import Inula from "@cloudsop/horizon";
 import { createIntl, createIntlCache, RawIntlProvider } from "../../index";
 import Example6Child from "./Example6Child";
 

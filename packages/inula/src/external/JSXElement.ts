@@ -17,6 +17,7 @@ import { TYPE_COMMON_ELEMENT } from './JSXElementType';
 import { getProcessingClassVNode } from '../renderer/GlobalVar';
 import { Source } from '../renderer/Types';
 import { BELONG_CLASS_VNODE_KEY } from '../renderer/vnode/VNode';
+import { InulaElement, KVObject } from '../types';
 
 /**
  * vtype 节点的类型，这里固定是element
@@ -118,7 +119,7 @@ export function cloneElement(element, setting, ...children) {
 }
 
 // 检测结构体是否为合法的Element
-export function isValidElement(element) {
+export function isValidElement<P>(element: KVObject | null | undefined): element is InulaElement<P> {
   return !!(element && element.vtype === TYPE_COMMON_ELEMENT);
 }
 

@@ -1,25 +1,25 @@
 /*
  * Copyright (c) Huawei Technologies Co., Ltd. 2023-2023. All rights reserved.
  */
-import { isMemo, ForwardRef } from 'inulajs';
+import { isMemo, ForwardRef } from '@cloudsop/horizon';
 import {
-  HORIZON_FORWARD_REF_STATICS,
-  HORIZON_MEMO_STATICS,
-  HORIZON_STATICS,
+  INULA_FORWARD_REF_STATICS,
+  INULA_MEMO_STATICS,
+  INULA_STATICS,
   NATIVE_STATICS,
 } from '../constants';
 
 const staticsMap = new Map();
-staticsMap.set(ForwardRef, HORIZON_FORWARD_REF_STATICS);
+staticsMap.set(ForwardRef, INULA_FORWARD_REF_STATICS);
 
 // 确定给定的组件是否为Memo组件，并返回相应的静态属性
 function getStatics(component) {
   if (isMemo(component)) {
-    return HORIZON_MEMO_STATICS;
+    return INULA_MEMO_STATICS;
   }
 
  if (staticsMap.has(component['vtype'])) {
-    return staticsMap.get(component['vtype']) || HORIZON_STATICS;
+    return staticsMap.get(component['vtype']) || INULA_STATICS;
   }
 }
 

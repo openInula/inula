@@ -18,8 +18,12 @@
  */
 
 import { getIFrameFocusedDom, isText } from './utils/Common';
-
 import { isElement } from './utils/Common';
+
+type SelectionRange = {
+  start: number | null,
+  end: number | null
+}
 
 /**
  * 设置聚焦的 textarea 或 input 节点的选择范围
@@ -44,8 +48,8 @@ function setSelectionRange(dom: HTMLInputElement | HTMLTextAreaElement, range) {
  * @param dom 需要设置选择范围的 input 或 textarea
  * @return {start: selectionStart, end: selectionEnd}
  */
-function getSelectionRange(dom: Element | HTMLInputElement | HTMLTextAreaElement | void) {
-  const selectionRange = { start: 0, end: 0 };
+function getSelectionRange(dom: Element | HTMLInputElement | HTMLTextAreaElement | void | null) {
+  const selectionRange: SelectionRange = { start: 0, end: 0 };
 
   if (!dom) {
     return selectionRange;
@@ -130,19 +134,19 @@ export interface SelectionData {
 }
 
 // 防止选择范围内的信息因为节点删除或其他原因导致的信息丢失
-export function resetSelectionRange(preSelectionRangeData: SelectionData) {
+export function resetSelectionRange(preSelectionRangeData: SelectionData | null) {
   // 当前 focus 的元素
   const currentFocusedDom = getIFrameFocusedDom();
 
   // 先前 focus 的元素
-  const preFocusedDom = preSelectionRangeData.focusedDom;
+  const preFocusedDom = preSelectionRangeData?.focusedDom;
 
   if (!preFocusedDom) {
     return;
   }
 
   // 先前的选择范围信息
-  const preSelectionRange = preSelectionRangeData.selectionRange;
+  const preSelectionRange = preSelectionRangeData?.selectionRange;
 
   if (currentFocusedDom !== preFocusedDom && isInDocument(preFocusedDom)) {
     if (preSelectionRange !== null) {
@@ -150,13 +154,12 @@ export function resetSelectionRange(preSelectionRangeData: SelectionData) {
     }
 
     // 滚动条位置可能会因为一个节点的选中变化位置，需要做处理
-    const ancestors = [];
-    let ancestor = preFocusedDom.parentNode;
+    const ancestors: Record<string, any>[] = [];
+    let ancestor: any = preFocusedDom.parentNode;
     // 查找先前的 focus 节点的先祖
     while (ancestor) {
       if (isElement(ancestor)) {
         // 是元素节点，就把先祖信息放到先祖数组中
-        // @ts-ignore
         const { scrollLeft, scrollTop } = ancestor;
         ancestors.push({
           dom: ancestor,

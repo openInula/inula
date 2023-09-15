@@ -1,7 +1,7 @@
-import { isDomVNode } from '../../renderer/vnode/VNodeUtils';
 import { isMap, isSet, isWeakMap, isWeakSet } from '../CommonUtils';
 import { getStore, getAllStores } from '../store/StoreHandler';
 import { OBSERVED_COMPONENTS } from './constants';
+import { VNode } from "../../renderer/vnode/VNode";
 
 const sessionId = Date.now();
 
@@ -138,7 +138,7 @@ export const devtools = {
   },
 };
 
-// collects components that are dependant on inulax store and their ids
+// collects components that are dependent on inulax store and their ids
 function getAffectedComponents() {
   const allStores = getAllStores();
   const keys = Object.keys(allStores);
@@ -152,10 +152,14 @@ function getAffectedComponents() {
     const process = Array.from(allStores[key].$config.state._inulaObserver.keyVNodes.values());
     while (process.length) {
       const pivot = process.shift() as { tag: 'string' };
-      if (pivot.tag) subRes.add(pivot);
-      if (pivot.toString() === '[object Set]') Array.from(pivot).forEach(item => process.push(item));
+      if (pivot.tag) {
+        subRes.add(pivot);
+      }
+      if (pivot.toString() === '[object Set]') {
+        Array.from(pivot as any).forEach(item => process.push(item));
+      }
     }
-    res[key] = Array.from(subRes).map(vNode => {
+    res[key] = Array.from(subRes).map((vNode: VNode) => {
       return {
         name: vNode?.type
           .toString()
@@ -202,7 +206,7 @@ window.addEventListener('message', (messageEvent?) => {
     const store = getStore(data.storeId);
     if (!store?.[data.action]) return;
 
-    const action = store.$queue[data.action];
+    const action: any = store.$queue[data.action];
     const params = data.params;
     action(...params);
   }

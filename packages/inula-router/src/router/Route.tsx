@@ -1,7 +1,7 @@
-import * as React from 'react';
+import Inula from '@cloudsop/horizon';
 import { History, Location } from './index';
 import { Matched, matchPath } from './matcher/parser';
-import { useContext, Children, createElement } from 'react';
+import { useContext, Children, createElement, InulaNode, ComponentType } from '@cloudsop/horizon';
 import RouterContext from './context';
 import { GetURLParams } from './matcher/types';
 
@@ -10,14 +10,14 @@ export type RouteComponentProps<P extends Record<string, any> = {}, S = unknown>
 export type RouteChildrenProps<P extends Record<string, any> = {}, S = unknown> = {
   history: History<S>;
   location: Location<S>;
-  match: Matched<P> | null
-}
+  match: Matched<P> | null;
+};
 
 export type RouteProps<P extends Record<string, any> = {}, Path extends string = string> = {
   location?: Location;
-  component?: React.ComponentType<RouteComponentProps<P>> | React.ComponentType<any> | undefined;
-  children?: ((props: RouteChildrenProps<P>) => React.ReactNode) | React.ReactNode;
-  render?: (props: RouteComponentProps<P>) => React.ReactNode;
+  component?: ComponentType<RouteComponentProps<P>> | ComponentType<any> | undefined;
+  children?: ((props: RouteChildrenProps<P>) => InulaNode) | InulaNode;
+  render?: (props: RouteComponentProps<P>) => InulaNode;
   path?: Path | Path[];
   exact?: boolean;
   sensitive?: boolean;
@@ -53,7 +53,7 @@ function Route<Path extends string, P extends Record<string, any> = GetURLParams
    * 3.render
    * 都没有匹配到返回Null
    */
-  const getChildren = (): React.ReactNode | null => {
+  const getChildren = (): InulaNode | null => {
     // 如果 match 存在
     if (newProps.match) {
       if (children) {

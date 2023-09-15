@@ -16,7 +16,7 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "target": "es5",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": true,
@@ -31,8 +31,5 @@
     "rootDir": "./src",
     "strictNullChecks": true
   },
-  "include": [
-    "./src/*/*.ts",
-  ],
-  "exclude": ["node_modules", "**/*.spec.ts", "dev"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
 }

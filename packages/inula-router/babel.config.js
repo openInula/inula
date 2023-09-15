@@ -20,8 +20,8 @@ export default {
     [
       '@babel/plugin-transform-react-jsx',
       {
-        pragma: 'React.createElement',
-        pragmaFrag: 'React.Fragment',
+        runtime: 'automatic',
+        importSource: '@cloudsop/horizon',
       },
     ],
     ['@babel/plugin-proposal-class-properties', { loose: true }],

@@ -100,7 +100,7 @@ export function resolveMutation(from, to) {
 
   switch (getDetailedType(from)) {
     case 'array': {
-      let len = Math.max(from.length, to.length);
+      const len = Math.max(from.length, to.length);
       const res: any[] = [];
       let found = false;
       for (let i = 0; i < len; i++) {
@@ -138,7 +138,7 @@ export function resolveMutation(from, to) {
         }
       }
 
-      let keys = Object.keys({ ...from, ...to }).filter(key => key !== '_inulaObserver');
+      const keys = Object.keys({ ...from, ...to }).filter(key => key !== '_inulaObserver');
       const res = {};
       let found = false;
       keys.forEach(key => {
@@ -168,7 +168,7 @@ export function resolveMutation(from, to) {
 }
 
 export function omit(obj, ...attrs) {
-  let res = { ...obj };
+  const res = { ...obj };
   attrs.forEach(attr => delete res[attr]);
   return res;
 }

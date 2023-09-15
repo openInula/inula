@@ -17,7 +17,7 @@ export function getFormatMessage(
   let { message, context, formatOptions, useMemorize } = options;
   const memorize = useMemorize ?? i18n.useMemorize;
   if (typeof id !== 'string') {
-    values =  values || id.defaultValues;
+    values = values || id.defaultValues;
     message = id.message || id.defaultMessage;
     context = id.context;
     id = id.id;

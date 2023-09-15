@@ -13,9 +13,9 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import type { RefType } from '../Types';
+import { RefObject } from '../hooks/HookType';
 
-export function createRef(): RefType {
+export function createRef<T>(): RefObject<T> {
   return {
     current: null,
   };

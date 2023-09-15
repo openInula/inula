@@ -1,18 +1,18 @@
 /*
  * Copyright (c) Huawei Technologies Co., Ltd. 2023-2023. All rights reserved.
  */
-import Horizon, {useRef, useState, useEffect, useMemo, Component} from 'inulajs';
+import Inula, { useRef, useState, useEffect, useMemo, Component } from '@cloudsop/horizon';
 import utils from '../../utils/utils';
 import { InjectProvider } from './InjectI18n';
-import { I18nProviderProps} from '../../types/interfaces';
-import I18n, {createI18nInstance} from "../I18n";
+import I18n, { createI18nInstance } from '../I18n';
+import { I18nProviderProps } from '../../types/types';
 
 /**
  * 用于为应用程序提供国际化的格式化功能，管理程序中的语言文本信息和本地化资源信息
  * @param props
  * @constructor
  */
-const I18nProvider = (props: I18nProviderProps)=> {
+const I18nProvider = (props: I18nProviderProps) => {
   const { locale, messages, children } = props;
 
   const i18n = useMemo(() => {

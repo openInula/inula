@@ -1,10 +1,10 @@
 {
-  "name": "Inula-intl",
-  "version": "0.0.1",
+  "name": "@cloudsop/horizon-intl",
+  "version": "1.0.22",
   "description": "",
   "main": "build/intl.umd.js",
   "type": "commonjs",
-  "types": "build/index.d.ts",
+  "types": "build/@types/index.d.ts",
   "scripts": {
     "demo-serve": "webpack serve --mode=development",
     "rollup-build": "rollup --config rollup.config.js",
@@ -23,7 +23,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "inulajs": "^0.0.11"
+    "@cloudsop/horizon": "^0.0.58"
   },
   "devDependencies": {
     "@babel/core": "7.21.3",

@@ -74,7 +74,7 @@ function getEndpointVNode(
     fromVNode = null;
     toVNode = targetInst;
   } else {
-    const related = nativeEvent.relatedTarget || nativeEvent.toElement;
+    const related = (nativeEvent as any).relatedTarget || (nativeEvent as any).toElement;
     fromVNode = targetInst;
     toVNode = related ? getNearestVNode(related) : null;
     if (toVNode !== null) {

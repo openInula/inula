@@ -1,4 +1,4 @@
-import Inula from 'inulajs';
+import Inula from '@cloudsop/horizon';
 import './styles.css';
 
 class App extends Inula.Component {
@@ -18,12 +18,10 @@ class App extends Inula.Component {
           </div>
           <div class="card animate__animated animate__zoomIn">
             <h2>了解更多</h2>
-            <p>
-              要了解 Inula，查看{' '}
-              <a href="https://inula-docs.com" target="_blank">
-                Inula 文档
-              </a>
-            </p>
+          <p>
+            要了解 Inula，查看{' '}
+            <a href="https://inulajs.org" target="_blank">Inula 官网</a>
+          </p>
           </div>
         </div>
       </div>

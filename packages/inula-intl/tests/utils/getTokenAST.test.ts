@@ -55,7 +55,7 @@ describe('getTokenAST', () => {
     const input = 'invalid input';
     assert.throws(() => getTokenAST(input), Error);
   });
-  it('应该返回包含字符串的数组', () => {
+  it('An array containing strings should be returned', () => {
     const tokens = [
       'Hello',
       { type: 'octothorpe' },

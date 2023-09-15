@@ -111,7 +111,7 @@ export function createStore(reducer: Reducer, preloadedState?: any, enhancers?):
     },
   })();
 
-  const result = {
+  const result: Record<string, any> = {
     reducer,
     getState: function () {
       return store.$s.stateWrapper;
@@ -136,7 +136,7 @@ export function createStore(reducer: Reducer, preloadedState?: any, enhancers?):
 
   store.reduxHandler = result;
 
-  return result;
+  return result as ReduxStoreHandler;
 }
 
 export function combineReducers(reducers: { [key: string]: Reducer }): Reducer {

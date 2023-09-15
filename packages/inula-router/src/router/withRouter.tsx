@@ -1,8 +1,8 @@
-import * as React from 'react';
-import { useContext } from 'react';
+import Inula from '@cloudsop/horizon';
+import { useContext, ComponentType } from '@cloudsop/horizon';
 import RouterContext from './context';
 
-function withRouter<C extends React.ComponentType>(Component: C) {
+function withRouter<C extends ComponentType>(Component: C) {
 
   function ComponentWithRouterProp(props: any) {
     const { history, location, match } = useContext(RouterContext);

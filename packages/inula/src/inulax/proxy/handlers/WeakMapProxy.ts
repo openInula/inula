@@ -22,11 +22,11 @@ import { RAW_VALUE } from '../../Constants';
 const COLLECTION_CHANGE = '_collectionChange';
 
 export function createWeakMapProxy(
-  rawObj: Object,
+  rawObj: Record<string, any>,
   listener: { current: (...args) => any },
   hookObserver = true
-): Object {
-  let listeners: ((mutation) => {})[] = [];
+): Record<string, any> {
+  let listeners: ((mutation) => Record<string, any>)[] = [];
 
   const handler = {
     get,
@@ -49,7 +49,7 @@ export function createWeakMapProxy(
         current: change => {
           if (!change.parents) change.parents = [];
           change.parents.push(rawObj);
-          let mutation = resolveMutation(
+          const mutation = resolveMutation(
             { ...rawObj, [key]: change.mutation.from },
             { ...rawObj, [key]: change.mutation.to }
           );
@@ -138,7 +138,10 @@ export function createWeakMapProxy(
   }
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Set的add方法
-  function add(rawObj: { add: (any) => void; set: (string, any) => any; has: (any) => boolean }, value: any): Object {
+  function add(
+    rawObj: { add: (any) => void; set: (string, any) => any; has: (any) => boolean },
+    value: any
+  ): Record<string, any> {
     const oldCollection = isPanelActive() ? JSON.parse(JSON.stringify(rawObj)) : null;
     if (!rawObj.has(value)) {
       rawObj.add(value);

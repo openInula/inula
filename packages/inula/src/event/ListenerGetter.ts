@@ -16,11 +16,11 @@
 import { VNode } from '../renderer/Types';
 import { DomComponent } from '../renderer/vnode/VNodeTags';
 import { WrappedEvent } from './EventWrapper';
-import { ListenerUnitList } from './Types';
+import { InulaEventListener, ListenerUnitList } from './Types';
 import { EVENT_TYPE_ALL, EVENT_TYPE_BUBBLE, EVENT_TYPE_CAPTURE } from './EventHub';
 
 // 从vnode属性中获取事件listener
-function getListenerFromVNode(vNode: VNode, eventName: string): Function | null {
+function getListenerFromVNode(vNode: VNode, eventName: string): InulaEventListener | null {
   const props = vNode.props;
   const mouseEvents = ['onClick', 'onDoubleClick', 'onMouseDown', 'onMouseMove', 'onMouseUp', 'onMouseEnter'];
   const formElements = ['button', 'input', 'select', 'textarea'];
@@ -116,7 +116,7 @@ function getMouseListenersFromTree(event: WrappedEvent, target: VNode, commonPar
   const registrationName = event.customEventName;
   const listeners: ListenerUnitList = [];
 
-  let vNode = target;
+  let vNode: VNode | null = target;
   while (vNode !== null) {
     // commonParent作为终点
     if (vNode === commonParent) {

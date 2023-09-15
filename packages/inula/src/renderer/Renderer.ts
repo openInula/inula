@@ -13,12 +13,12 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import type { VNode } from './Types';
+import type { Callback, VNode } from './Types';
 import type { Update } from './UpdateHandler';
 
 import { asyncUpdates, syncUpdates, runDiscreteUpdates, launchUpdateFromVNode } from './TreeBuilder';
 import { runAsyncEffects } from './submit/HookEffectHandler';
-import { Callback, newUpdate, pushUpdate } from './UpdateHandler';
+import { newUpdate, pushUpdate } from './UpdateHandler';
 
 export { createVNode, createTreeRootVNode } from './vnode/VNodeCreator';
 export { createPortal } from './components/CreatePortal';

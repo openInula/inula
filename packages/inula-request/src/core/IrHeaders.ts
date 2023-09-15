@@ -53,7 +53,7 @@ class IrHeaders {
     return this;
   }
 
-  // 从对象中获取指定 header 的值，并根据可选的parser参数来处理和返回这个值
+  // 从对象中获取指定 header 的值，并根据可选的 parser 参数来处理和返回这个值
   get(header: string, parser?: HeaderMatcher): string | string[] | null | undefined {
     const normalizedHeader = String(header).trim().toLowerCase();
 

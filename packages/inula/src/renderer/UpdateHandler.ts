@@ -87,7 +87,7 @@ function collectCallbacks(vNode: VNode, update: Update) {
 function calcUpdates(vNode: VNode, props: any, inst: any, toProcessUpdates: Updates) {
   let newState = vNode.state;
 
-  toProcessUpdates.forEach(update => {
+  toProcessUpdates?.forEach(update => {
     newState = calcState(vNode, update, inst, newState, props);
     collectCallbacks(vNode, update);
   });

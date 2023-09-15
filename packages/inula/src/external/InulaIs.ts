@@ -23,6 +23,7 @@ import {
   TYPE_PROVIDER,
   TYPE_SUSPENSE,
 } from './JSXElementType';
+import { InulaElement, LazyComponent, MemoComponent } from '../types';
 
 function isObject(anyThing) {
   return Object.prototype.toString.call(anyThing) === '[object Object]';
@@ -64,36 +65,36 @@ function getType(ele: any) {
   return undefined;
 }
 
-export function isElement(ele: any) {
+export function isElement(ele: any): ele is InulaElement {
   return isObject(ele) && ele.vtype === TYPE_COMMON_ELEMENT;
 }
 
-export function isFragment(ele: any) {
+export function isFragment(ele: any): ele is InulaElement {
   return getType(ele) === TYPE_FRAGMENT;
 }
 
-export function isForwardRef(ele: any) {
+export function isForwardRef(ele: any): ele is InulaElement {
   return getType(ele) === TYPE_FORWARD_REF;
 }
 
-export function isLazy(ele: any) {
+export function isLazy(ele: any): ele is LazyComponent<any> {
   return getType(ele) === TYPE_LAZY;
 }
 
-export function isMemo(ele: any) {
+export function isMemo(ele: any): ele is MemoComponent<any> {
   return getType(ele) === TYPE_MEMO;
 }
 
-export function isPortal(ele: any) {
+export function isPortal(ele: any): ele is InulaElement {
   return getType(ele) === TYPE_PORTAL;
 }
 
-export function isContextProvider(ele: any) {
+export function isContextProvider(ele: any): ele is InulaElement {
   return getType(ele) === TYPE_PROVIDER;
 }
 
 // Context.consumer的类型就是context的类型
-export function isContextConsumer(ele: any) {
+export function isContextConsumer(ele: any): ele is InulaElement {
   return getType(ele) === TYPE_CONTEXT;
 }
 

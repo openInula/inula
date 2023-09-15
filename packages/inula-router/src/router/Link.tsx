@@ -1,12 +1,12 @@
-import * as React from 'react';
-import { useContext } from 'react';
+import Inula from '@cloudsop/horizon';
+import { useContext, MouseEvent, ComponentType, Ref } from '@cloudsop/horizon';
 import RouterContext from './context';
 import { Location } from './index';
 import { createPath, parsePath } from '../history/utils';
 import { Path } from '../history/types';
 
 export type LinkProps = {
-  component?: React.ComponentType<any>;
+  component?: ComponentType<any>;
   to: Partial<Location> | string | ((location: Location) => string | Partial<Location>);
   replace?: boolean;
   tag?: string;
@@ -14,14 +14,14 @@ export type LinkProps = {
    * @deprecated
    * React16以后不再需要该属性
    **/
-  innerRef?: React.Ref<HTMLAnchorElement>;
-} & React.AnchorHTMLAttributes<HTMLAnchorElement>;
+  innerRef?: Ref<HTMLAnchorElement>;
+} & { [key: string]: any };
 
-const isModifiedEvent = (event: React.MouseEvent) => {
+const isModifiedEvent = (event: MouseEvent) => {
   return event.metaKey || event.altKey || event.ctrlKey || event.shiftKey;
 };
 
-const checkTarget = (target?: React.HTMLAttributeAnchorTarget) => {
+const checkTarget = (target?: any) => {
   return !target || target === '_self';
 };
 
@@ -47,7 +47,7 @@ function Link<P extends LinkProps>(props: P) {
   }
   const href = history.createHref(path);
 
-  const linkClickEvent = (event: React.MouseEvent<HTMLAnchorElement>) => {
+  const linkClickEvent = (event: MouseEvent<HTMLAnchorElement>) => {
     try {
       if (onClick) {
         onClick(event);
@@ -67,7 +67,7 @@ function Link<P extends LinkProps>(props: P) {
   };
 
   const linkProps = { href: href, onClick: linkClickEvent, ...other };
-  return React.createElement(tag, linkProps);
+  return Inula.createElement(tag, linkProps);
 }
 
 export default Link;

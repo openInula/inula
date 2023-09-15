@@ -1,4 +1,4 @@
-import Inula from 'inulajs';
+import Inula from '@cloudsop/horizon';
 import './index.css';
 
 function App() {
@@ -19,9 +19,7 @@ function App() {
           <h2>了解更多</h2>
           <p>
             要了解 Inula，查看{' '}
-            <a href="https://inula-docs.com" target="_blank">
-              Inula 文档
-            </a>
+            <a href="https://inulajs.org" target="_blank">Inula 官网</a>
           </p>
         </div>
       </div>
