@@ -7,30 +7,30 @@ const yeoman = require('yeoman-environment');
 
 const generatorType = fs
   .readdirSync(`${__dirname}/generators`)
-  .filter(f => !f.startsWith('.'))
-  .map(f => {
+  .filter(file => !file.startsWith('.'))
+  .map(file => {
     return {
-      name: f,
-      value: f,
-      short: f,
+      name: file,
+      value: file,
+      short: file,
     };
   });
 
-const runGenerator = async (generatorPath, { name = '', cwd = process.cwd(), args = {} }) => {
+const runGenerator = async (templatePath, { name = '', cwd = process.cwd(), args = {} }) => {
   return new Promise(resolve => {
     if (name) {
       mkdirp.sync(name);
       cwd = path.join(cwd, name);
     }
 
-    const Generator = require(generatorPath);
+    const Generator = require(templatePath);
     const env = yeoman.createEnv([], {
       cwd,
     });
     const generator = new Generator({
       name,
       env,
-      resolved: require.resolve(generatorPath),
+      resolved: path.join(__dirname, templatePath),
       args,
     });
     return generator.run(() => {
@@ -41,7 +41,9 @@ const runGenerator = async (generatorPath, { name = '', cwd = process.cwd(), arg
 };
 
 const run = async config => {
-  process.send && process.send({ type: 'prompt' });
+  if (typeof process.send === 'function') {
+    process.send({ type: 'prompt' });
+  }
   process.emit('message', { type: 'prompt' });
 
   let { type } = config;
@@ -60,7 +62,7 @@ const run = async config => {
   try {
     return runGenerator(templatePath, config);
   } catch (e) {
-    console.error(chalk.red(`> Generate failed`), e);
+    console.error(chalk.red('> Generate failed'), e);
     process.exit(1);
   }
 };
