@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
+ *
+ * openInula is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 import { join, isAbsolute } from 'path';
 import Config from '../config/Config.js';
 import { BuildConfig, DevBuildConfig, DevProxy, ICommand, UserConfig } from '../types/types.js';
@@ -40,7 +55,7 @@ export default class Hub {
   pluginPaths: string[] = [];
   devProxy: DevProxy | null = null;
   logger: Logger;
-  
+
   [key: string]: any;
 
   constructor(opts: HubOpts) {
@@ -84,11 +99,11 @@ export default class Hub {
 
     // 获取编译配置
     await this.analyzeBuildConfig();
-    
+
     this.setStage(ServiceStage.initPlugins);
     this.builtInPlugins = this.getBuiltInPlugins();
     await this.pluginManager.register(this.builtInPlugins, this.userConfig.plugins);
-    
+
     this.setStage(ServiceStage.initHooks);
     this.pluginManager.initHook();
   }
