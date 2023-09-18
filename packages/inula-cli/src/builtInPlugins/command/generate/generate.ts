@@ -42,6 +42,8 @@ export default (api: API) => {
           args._.shift();
           const isESM = api.packageJson['type'] === 'module';
           await generateJest(args, api.cwd, isESM);
+          break;
+        default:
       }
     },
   });

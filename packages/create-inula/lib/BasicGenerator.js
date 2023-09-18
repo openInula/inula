@@ -53,7 +53,6 @@ class BasicGenerator extends Generator {
     readStream.pipe(writeStream);
     readStream.on('error', err => console.error(err));
     writeStream.on('error', err => console.error(err));
-    // writeStream.on('finish', () => console.log(`Copied ${src} to ${dest}`));
   }
 
   /**

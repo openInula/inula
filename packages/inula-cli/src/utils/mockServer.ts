@@ -93,8 +93,8 @@ function generateRoutes(app: any) {
           respond instanceof Function
             ? respond
             : (_req: any, res: { send: (arg0: any) => void }) => {
-                res.send(respond);
-              }
+              res.send(respond);
+            }
         );
       } catch (error) {
         console.error(error);

@@ -28,7 +28,6 @@ export default (api: any) => {
             api.applyHook({ name: 'beforeCompile', args: state });
             state.forEach((s: any) => {
               webpack(s.config, (err: any, stats: any) => {
-                // api.applyHook({ name: 'afterCompile' });
                 if (err || stats.hasErrors()) {
                   api.logger.error(`Build failed.err: ${err}, stats:${stats}`);
                 }

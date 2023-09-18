@@ -45,7 +45,7 @@ export default (api: API) => {
 
             if (api.userConfig.devBuildConfig.devProxy) {
               devServerOptions.onBeforeSetupMiddleware = (devServer: WebpackDevServer) => {
-                setupProxy(devServer.app, api)
+                setupProxy(devServer.app, api);
               }
             }
 
@@ -58,7 +58,7 @@ export default (api: API) => {
               api.applyHook({ name: 'afterStartDevServer' });
             });
           } else {
-            api.logger.error("Can't find config");
+            api.logger.error('Can\'t find config');
           }
           break;
         case 'vite':
@@ -71,9 +71,10 @@ export default (api: API) => {
                 server.printUrls();
               });
           } else {
-            api.logger.error("Can't find config");
+            api.logger.error('Can\'t find config');
           }
           break;
+        default:
       }
     },
   });

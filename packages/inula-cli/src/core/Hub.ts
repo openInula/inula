@@ -191,13 +191,7 @@ export default class Hub {
       }
     } else {
       this.userConfig.buildConfig.forEach((userBuildConfig) => {
-        // if (typeof userBuildConfig === 'string') {
-        //   const name = this.getConfigName(userBuildConfig);
-        //   this.buildConfigPath.push({name, path: userBuildConfig});
-        // }
         if (typeof userBuildConfig === 'object') {
-          // const name = userBuildConfig.name;
-          // const path = userBuildConfig.path;
           this.buildConfigPath.push(userBuildConfig);
         }
       })
