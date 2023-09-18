@@ -33,14 +33,15 @@ const generatorType = fs
 
 const runGenerator = async (templatePath, { name = '', cwd = process.cwd(), args = {} }) => {
   return new Promise(resolve => {
+    let currentPath;
     if (name) {
       mkdirp.sync(name);
-      cwd = path.join(cwd, name);
+      currentPath = path.join(cwd, name);
     }
 
     const Generator = require(templatePath);
     const env = yeoman.createEnv([], {
-      cwd,
+      cwd: currentPath,
     });
     const generator = new Generator({
       name,
