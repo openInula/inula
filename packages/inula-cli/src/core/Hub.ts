@@ -40,7 +40,7 @@ export default class Hub {
   pluginPaths: string[] = [];
   devProxy: DevProxy | null = null;
   logger: Logger;
-  
+
   [key: string]: any;
 
   constructor(opts: HubOpts) {
@@ -84,11 +84,11 @@ export default class Hub {
 
     // 获取编译配置
     await this.analyzeBuildConfig();
-    
+
     this.setStage(ServiceStage.initPlugins);
     this.builtInPlugins = this.getBuiltInPlugins();
     await this.pluginManager.register(this.builtInPlugins, this.userConfig.plugins);
-    
+
     this.setStage(ServiceStage.initHooks);
     this.pluginManager.initHook();
   }
@@ -176,13 +176,7 @@ export default class Hub {
       }
     } else {
       this.userConfig.buildConfig.forEach((userBuildConfig) => {
-        // if (typeof userBuildConfig === 'string') {
-        //   const name = this.getConfigName(userBuildConfig);
-        //   this.buildConfigPath.push({name, path: userBuildConfig});
-        // }
         if (typeof userBuildConfig === 'object') {
-          // const name = userBuildConfig.name;
-          // const path = userBuildConfig.path;
           this.buildConfigPath.push(userBuildConfig);
         }
       })
