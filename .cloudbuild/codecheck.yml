@@ -22,7 +22,7 @@ steps:
   pre_codecheck:
     - checkout:
         url: https://szv-open.codehub.huawei.com/innersource/fenghuang/horizon/horizon-core.git
-        branch: master
+        branch: out
         path: code
     - gitlab:
         url: https://szv-y.codehub.huawei.com/CloudSOP/CloudSOP-CI.git
