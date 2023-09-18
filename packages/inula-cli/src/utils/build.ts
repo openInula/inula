@@ -3,7 +3,7 @@ import fs from 'fs';
 import { build as esbuild, Plugin } from 'esbuild';
 
 const buildConfig = async (fileName: string, format: 'esm' | 'cjs' = 'esm'): Promise<string> => {
-  
+
   // 外部依赖不构建参与构建，减少执行时间
   const pluginExternalDeps: Plugin = {
     name: 'plugin-external-deps',
@@ -44,9 +44,10 @@ const buildConfig = async (fileName: string, format: 'esm' | 'cjs' = 'esm'): Pro
     },
   };
 
+  const buildEntry = [fileName];
   const result = await esbuild({
-    entryPoints: [fileName],
-    outfile: 'out.js',
+    entryPoints: buildEntry,
+    outdir: 'build',
     write: false,
     platform: 'node',
     bundle: true,
