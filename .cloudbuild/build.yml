@@ -1,0 +1,50 @@
+version: '2.0'
+notifications:
+  notifier:
+    espace:
+      'on': false
+    email:
+      'on': false
+buildspace:
+  log_collect:
+    - config/CI/build/logs
+  fixed: true
+env:
+  resource:
+    type: docker
+    image: kweecr04.his.huawei.com:80/ecr-build-arm-gzkunpeng/euleros_v2r10spc500_x64_opmt_cs6.0:v20.0
+    class: 4U8G
+    mode: toolbox
+steps:
+  PRE_BUILD:
+    - checkout:
+        path: horizon-core
+    - gitlab:
+        url: https://szv-y.codehub.huawei.com/CloudSOP/CloudSOP-CI.git
+        branch: master
+        path: CI
+  BUILD:
+    - build_execute:
+        command: |
+          PATH=$PATH:/usr2/node_prefix/bin
+          npm install pnpm -g
+          pnpm config set strict-ssl false
+          cd horizon-core
+          pnpm i
+          pnpm run build:inula
+          pnpm run build:horizon-intl
+          pnpm run build:horizon-request
+          pnpm run build:horizon-router
+          sh .cloudbuild/release.sh
+        enhance:
+          - feature: md5_source_tracement
+            build_tools: [npm]
+        check:
+          auto: true
+          buildcheck: true
+          mode: sync
+  POST_BUILD:
+    - compile_report:
+        rules:
+          - warning /.**/
+          - error /.**/
