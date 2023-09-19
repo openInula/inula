@@ -18,16 +18,15 @@ npx create-inula <项目名>
 Need to install the following packages:create-inula@1.0.0
 Ok to proceed? (y) y
 ? Please select the template (Use arrow keys)
-> lnulaJS-antd
-  Simple-app
+> Simple-app
+
 ```
 
 
 
-在创建项目过程中脚手架提供了两种模板供开发者选择：Simple-app以及lnulaJS-antd。
+在创建项目过程中脚手架提供了 Simple-app 模板供开发者选择(后续会加入更多模板)。
 
 - Simple-app已默认安装Inula，开发者可以直接在项目中专注于核心代码的开发。
-- InulaJS-antd除了安装Inula之外，还内置了路由、国际化、页面组件等常用能力，开发者可以直接使用。
 
 基于上述模板的创建的项目特性，我们更建议您使用InulaJS-antd的方法构建项目。
 
