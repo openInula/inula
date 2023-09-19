@@ -14,6 +14,7 @@
  */
 import { configProps, I18nCache } from '../types/interfaces';
 import I18n, { createI18nInstance } from './I18n';
+import creatI18nCache from '../format/cache/cache';
 
 /**
  * createI18n hook函数，用于创建国际化i8n实例，以进行相关的数据操作
@@ -22,9 +23,9 @@ import I18n, { createI18nInstance } from './I18n';
 export const createI18n = (config: configProps, cache?: I18nCache): I18n => {
   const { locale, defaultLocale, messages } = config;
   return createI18nInstance({
-    locale: locale || defaultLocale || 'en',
+    locale: locale || defaultLocale || 'zh',
     messages: messages,
-    useMemorize: !!cache,
+    cache: cache ?? creatI18nCache(),
   });
 };
 

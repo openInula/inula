@@ -15,6 +15,7 @@
 
 import utils from '../../utils/utils';
 import { Locale } from '../../types/types';
+import {I18nCache} from "../../types/interfaces";
 
 /**
  * 规则选择器
@@ -23,24 +24,25 @@ import { Locale } from '../../types/types';
  */
 class SelectFormatter {
   private readonly locale: Locale;
-  private selectCache = {};
+  private readonly cache: I18nCache;
 
-  constructor(locale) {
+  constructor(locale, cache) {
     this.locale = locale;
+    this.cache = cache;
   }
 
-  getRule(value, rules, useMemorize?) {
-    if (useMemorize) {
+  getRule(value, rules) {
+    if (this.cache.select) {
       // 创建key，用于唯一标识
       const cacheKey = utils.generateKey<Intl.NumberFormatOptions>(this.locale, rules);
 
       // 如果key存在，则使用缓存中的替代
-      if (this.selectCache[cacheKey]) {
-        return this.selectCache[cacheKey][value] || this.selectCache[cacheKey].other;
+      if (this.cache.select[cacheKey]) {
+        return this.cache.select[cacheKey][value] || this.cache.select[cacheKey].other;
       }
 
       // 如果不存在，则进行缓存
-      this.selectCache[cacheKey] = rules;
+      this.cache.select[cacheKey] = rules;
     }
 
     return rules[value] || rules.other;

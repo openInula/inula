@@ -16,6 +16,7 @@
 import creatI18nCache from '../cache/cache';
 import utils from '../../utils/utils';
 import { DatePool, Locales } from '../../types/types';
+import {I18nCache} from "../../types/interfaces";
 
 /**
  * 时间格式化
@@ -23,17 +24,13 @@ import { DatePool, Locales } from '../../types/types';
 class DateTimeFormatter {
   private readonly locales: Locales;
   private readonly formatOptions: Intl.DateTimeFormatOptions;
-
-  // 是否进行存储
-  private readonly useMemorize: boolean;
-
   // 创建一个缓存对象，用于存储DateTimeFormat的对象
-  private cache = creatI18nCache().dateTimeFormat;
+  private readonly cache?: I18nCache;
 
-  constructor(locales: Locales, formatOptions?: Intl.DateTimeFormatOptions, useMemorize?: boolean) {
+  constructor(locales: Locales, formatOptions?: Intl.DateTimeFormatOptions, cache?: I18nCache) {
     this.locales = locales;
     this.formatOptions = formatOptions ?? {};
-    this.useMemorize = useMemorize ?? true;
+    this.cache = cache ?? creatI18nCache();
   }
 
   dateTimeFormat(value: DatePool, formatOptions?: Intl.DateTimeFormatOptions): string {
@@ -45,16 +42,16 @@ class DateTimeFormatter {
     }
 
     // 如果启用了记忆化且已经有对应的数字格式化器缓存，则直接返回缓存中的格式化结果。否则创建新的格式化数据，并进行缓存
-    if (this.useMemorize) {
+    if (this.cache?.dateTimeFormat) {
       // 造缓存的key，key包含区域设置和日期时间格式选项
       const cacheKey = utils.generateKey<Intl.DateTimeFormatOptions>(this.locales, options);
 
-      if (this.cache[cacheKey]) {
-        return this.cache[cacheKey].format(value);
+      if (this.cache.dateTimeFormat[cacheKey]) {
+        return this.cache.dateTimeFormat[cacheKey].format(value);
       }
 
       // 查询缓存中的key， 若无key则创建新key
-      this.cache[cacheKey] = formatter;
+      this.cache.dateTimeFormat[cacheKey] = formatter;
       return formatter.format(value);
     }
 

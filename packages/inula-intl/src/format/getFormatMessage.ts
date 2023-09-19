@@ -18,6 +18,7 @@ import Translation from './Translation';
 import I18n from '../core/I18n';
 import { MessageDescriptor, MessageOptions } from '../types/interfaces';
 import { CompiledMessage } from '../types/types';
+import creatI18nCache from "./cache/cache";
 
 export function getFormatMessage(
   i18n: I18n,
@@ -25,8 +26,8 @@ export function getFormatMessage(
   values: Object | undefined = {},
   options: MessageOptions = {}
 ) {
-  let { message, context, formatOptions, useMemorize } = options;
-  const memorize = useMemorize ?? i18n.useMemorize;
+  let { message, context, formatOptions } = options;
+  const cache = i18n.cache ?? creatI18nCache();
   if (typeof id !== 'string') {
     values = values || id.defaultValues;
     message = id.message || id.defaultMessage;
@@ -59,6 +60,6 @@ export function getFormatMessage(
   // 对解析的messages进行parse解析，并输出解析后的Token
   compliedMessage = typeof compliedMessage === 'string' ? utils.compile(compliedMessage) : compliedMessage;
 
-  const translation = new Translation(compliedMessage, i18n.locale, i18n.locales, i18n.localeConfig, memorize);
+  const translation = new Translation(compliedMessage, i18n.locale, i18n.locales, i18n.localeConfig, cache);
   return translation.translate(values, formatOptions);
 }

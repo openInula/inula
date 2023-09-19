@@ -21,7 +21,6 @@ describe('creatI18nCache', () => {
     expect(intlCache).toEqual({
       dateTimeFormat: {},
       numberFormat: {},
-      messages: {},
       plurals: {},
       select: {},
       octothorpe: {},

@@ -18,7 +18,8 @@ import NumberFormatter from './fomatters/NumberFormatter';
 import { DatePool, Locale, Locales, SelectPool } from '../types/types';
 import PluralFormatter from './fomatters/PluralFormatter';
 import SelectFormatter from './fomatters/SelectFormatter';
-import { FormatOptions, IntlMessageFormat } from '../types/interfaces';
+import {FormatOptions, I18nCache, IntlMessageFormat} from '../types/interfaces';
+import cache from "./cache/cache";
 
 /**
  * 默认格式化接口
@@ -27,7 +28,8 @@ const generateFormatters = (
   locale: Locale | Locales,
   locales: Locales,
   localeConfig: Record<string, any> = { plurals: undefined },
-  formatOptions: FormatOptions = {} // 自定义格式对象
+  formatOptions: FormatOptions = {}, // 自定义格式对象
+  cache: I18nCache
 ): IntlMessageFormat => {
   locale = locales || locale;
   const { plurals } = localeConfig;
@@ -45,13 +47,13 @@ const generateFormatters = (
 
   return {
     // 复数规则
-    plural: (value: number, { offset = 0, ...rules }, useMemorize?) => {
+    plural: (value: number, { offset = 0, ...rules }) => {
       const pluralFormatter = new PluralFormatter(
         locale,
         locales,
         value - offset,
         rules[value] || rules[(plurals as any)?.(value - offset)] || rules.other,
-        useMemorize
+        cache
       );
       return pluralFormatter.replaceSymbol.bind(pluralFormatter);
     },
@@ -63,14 +65,14 @@ const generateFormatters = (
     },
 
     // 选择规则，如果规则对象中包含与该值相对应的属性，则返回该属性的值；否则，返回 "other" 属性的值。
-    select: (value: SelectPool, formatRules, useMemorize?) => {
-      const selectFormatter = new SelectFormatter(locale);
-      return selectFormatter.getRule(value, formatRules, useMemorize);
+    select: (value: SelectPool, formatRules) => {
+      const selectFormatter = new SelectFormatter(locale, cache);
+      return selectFormatter.getRule(value, formatRules);
     },
 
     // 用于将数字格式化为字符串，接受一个数字和一个格式化规则。它会根据规则返回格式化后的字符串。
-    numberFormat: (value: number, formatOption, useMemorize) => {
-      return new NumberFormatter(locales, getStyleOption(formatOption), useMemorize).numberFormat(value);
+    numberFormat: (value: number, formatOption) => {
+      return new NumberFormatter(locales, getStyleOption(formatOption), cache).numberFormat(value);
     },
 
     // 用于将日期格式化为字符串，接受一个日期对象和一个格式化规则。它会根据规则返回格式化后的字符串。
@@ -83,8 +85,8 @@ const generateFormatters = (
      * @param formatOption { year: 'numeric', month: 'long', day: 'numeric' }
      * @param useMemorize
      */
-    dateTimeFormat: (value: DatePool, formatOption, useMemorize) => {
-      return new DateTimeFormatter(locales, getStyleOption(formatOption), useMemorize).dateTimeFormat(
+    dateTimeFormat: (value: DatePool, formatOption) => {
+      return new DateTimeFormatter(locales, getStyleOption(formatOption), cache).dateTimeFormat(
         value,
         formatOption
       );
