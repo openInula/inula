@@ -2,10 +2,10 @@
 
 ## 项目介绍：
 
-InulaJS 是用于构建用户界面的Javascript库，与React保持一致API的特性，
-同时可以无缝兼容到React的相关生态（react-redux、react-router、react-intl、axios等）。
-InulaJS 提供响应式API、相比virtual dom方式，提升渲染效率30%以上。
-提供5大常用核心组件：状态管理器、路由、国际化、请求组件、应用脚手架，帮助开发者高效、高质量的构筑基于 InulaJS 的前端产品。
+InulaJS 是一款用于构建用户界面的Javascript库。
+InulaJS 提供响应式API，相比virtual dom方式，提升渲染效率30%以上。
+InulaJS 提供了5大常用核心组件：状态管理器、路由、国际化、请求组件、应用脚手架，帮助开发者高效、高质量的构筑产品前端。
+InulaJS 同时兼容了React API和相关生态（react-redux、react-router、react-intl、axios等）。
 
 ## 安装指南
 
