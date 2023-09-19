@@ -17,8 +17,9 @@ import EventDispatcher from '../utils/eventListener';
 import DateTimeFormatter from "../format/fomatters/DateTimeFormatter";
 import NumberFormatter from "../format/fomatters/NumberFormatter";
 import { getFormatMessage } from '../format/getFormatMessage';
-import { I18nProps, MessageDescriptor, MessageOptions } from '../types/interfaces';
+import {I18nCache, I18nProps, MessageDescriptor, MessageOptions} from '../types/interfaces';
 import { Locale, Locales, Messages, AllLocaleConfig, AllMessages, LocaleConfig, Error, Events } from '../types/types';
+import creatI18nCache from "../format/cache/cache";
 
 export class I18n extends EventDispatcher<Events> {
   public locale: Locale;
@@ -26,7 +27,7 @@ export class I18n extends EventDispatcher<Events> {
   private readonly _localeConfig: AllLocaleConfig;
   private readonly allMessages: AllMessages;
   public readonly error?: Error;
-  public readonly useMemorize?: boolean;
+  public readonly cache?: I18nCache;
 
   constructor(props: I18nProps) {
     super();
@@ -48,6 +49,8 @@ export class I18n extends EventDispatcher<Events> {
     this.formatMessage = this.formatMessage.bind(this);
     this.formatDate = this.formatDate.bind(this);
     this.formatNumber = this.formatNumber.bind(this);
+
+    this.cache = props.cache ?? creatI18nCache();
   }
 
   get messages(): string | Messages | AllMessages {
@@ -115,18 +118,18 @@ export class I18n extends EventDispatcher<Events> {
   formatMessage(
     id: MessageDescriptor | string,
     values: Object | undefined = {},
-    { message, context, formatOptions, useMemorize}: MessageOptions = {},
+    { message, context, formatOptions}: MessageOptions = {},
   ) {
-    return getFormatMessage(this, id, values, { message, context, formatOptions, useMemorize});
+    return getFormatMessage(this, id, values, { message, context, formatOptions});
   }
 
   formatDate(value: string | Date, formatOptions?: Intl.DateTimeFormatOptions): string {
-    const dateTimeFormatter = new DateTimeFormatter(this.locale || this.locales, formatOptions, this.useMemorize);
+    const dateTimeFormatter = new DateTimeFormatter(this.locale || this.locales, formatOptions, this.cache);
     return dateTimeFormatter.dateTimeFormat(value);
   }
 
   formatNumber(value: number, formatOptions?: Intl.NumberFormatOptions): string {
-    const numberFormatter = new NumberFormatter(this.locale || this.locales, formatOptions, this.useMemorize);
+    const numberFormatter = new NumberFormatter(this.locale || this.locales, formatOptions, this.cache);
     return numberFormatter.numberFormat(value);
   }
 }

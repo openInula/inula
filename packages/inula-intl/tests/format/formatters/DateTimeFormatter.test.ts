@@ -14,6 +14,7 @@
  */
 
 import { DateTimeFormatter } from '../../../index';
+import creatI18nCache from "../../../src/format/cache/cache";
 
 describe('DateTimeFormatter', () => {
   const date = new Date('2023-04-03T12:34:56Z');
@@ -25,7 +26,7 @@ describe('DateTimeFormatter', () => {
     const firstRunResult = firstRunt1 - firstRunt0;
 
     const seconddRunt0 = performance.now();
-    const dateTimeFormatter2 = new DateTimeFormatter('es', {}, false);
+    const dateTimeFormatter2 = new DateTimeFormatter('es', {});
     dateTimeFormatter2.dateTimeFormat(new Date());
     const seconddRunt1 = performance.now();
     const secondRunResult = seconddRunt1 - seconddRunt0;
@@ -62,8 +63,8 @@ describe('DateTimeFormatter', () => {
 
   it('should not memoize formatter instances when memoize is false', () => {
     const spy = jest.spyOn(Intl, 'DateTimeFormat');
-    const formatter1 = new DateTimeFormatter('en-US', { month: 'short' }, false);
-    const formatter2 = new DateTimeFormatter('en-US', { month: 'short' }, false);
+    const formatter1 = new DateTimeFormatter('en-US', { month: 'short' });
+    const formatter2 = new DateTimeFormatter('en-US', { month: 'short' });
     formatter1.dateTimeFormat(date);
     formatter2.dateTimeFormat(date);
     expect(spy).toHaveBeenCalledTimes(5);
@@ -91,7 +92,7 @@ describe('DateTimeFormatter', () => {
   });
 
   it('should format using memorized formatter when useMemorize is true', () => {
-    const formatter = new DateTimeFormatter('en-US',{"year":'numeric'}, true);
+    const formatter = new DateTimeFormatter('en-US',{"year":'numeric'}, creatI18nCache());
     const date = new Date(2023, 0, 1);
     const formatted1 = formatter.dateTimeFormat(date);
     const formatted2 = formatter.dateTimeFormat(date);

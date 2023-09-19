@@ -46,7 +46,6 @@ export interface MessageOptions {
   message?: string;
   context?: string;
   formatOptions?: FormatOptions;
-  useMemorize?: boolean;
 }
 
 // I18n类的缓存定义
@@ -54,8 +53,7 @@ export interface I18nCache {
   dateTimeFormat: Record<string, Intl.DateTimeFormat>;
   numberFormat: Record<string, Intl.NumberFormat>;
   plurals: Record<string, Intl.PluralRules>;
-  messages: Record<string, IntlMessageFormat>;
-  select: Record<string, object>;
+  select: Record<string, any>;
   octothorpe: Record<string, any>;
 }
 
@@ -65,7 +63,7 @@ export interface I18nProps {
   locales?: Locales;
   messages?: AllMessages;
   localeConfig?: AllLocaleConfig;
-  useMemorize?: boolean;
+  cache?: I18nCache;
   error?: Error;
 }
 
@@ -91,23 +89,41 @@ export interface configProps {
   defaultLocale?: string;
   RenderOnLocaleChange?: boolean;
   children?: any;
-  uesMemorize?: boolean;
+  onWarn?: Error;
 }
 
 export interface IntlMessageFormat extends configProps, MessageOptions {
   plural: (
-    value: number,
-    { offset, ...rules }: { [x: string]: any; offset?: number },
-    useMemorize?: boolean
+      value: number,
+      {
+        offset,
+        ...rules
+      }: {
+        [x: string]: any;
+        offset?: number | undefined;
+      }
   ) => (ctx: any) => any[];
   selectordinal: (
-    value: number,
-    { offset, ...rules }: { [x: string]: any; offset?: number },
-    useMemorize?: boolean
+      value: number,
+      {
+        offset,
+        ...rules
+      }: {
+        [x: string]: any;
+        offset?: number | undefined;
+      }
   ) => (ctx: any) => any[];
-  select: (value: SelectPool, formatRules: any, useMemorize?: boolean) => any;
-  numberFormat: (value: number, formatOption: any, useMemorize: boolean) => string;
-  dateTimeFormat: (value: DatePool, formatOption: any, useMemorize: boolean) => string;
+  select: (value: SelectPool, formatRules: any) => any;
+  numberFormat: (value: number, formatOption: any) => string;
+  /**
+   * eg: { year: 'numeric', month: 'long', day: 'numeric' } 是一个用于指定DateTimeFormatter如何将日期对象转换为字符串的参数。
+   *      \year: 'numeric' 表示年份的表示方式是数字形式（比如2023）。
+   *       month: 'long' 表示月份的表示方式是全名（比如January）。
+   *       day: 'numeric' 表示日期的表示方式是数字形式（比如1号）。
+   * @param value
+   * @param formatOption { year: 'numeric', month: 'long', day: 'numeric' }
+   */
+  dateTimeFormat: (value: DatePool, formatOption: any) => string;
   undefined: (value: any) => any;
 }
 

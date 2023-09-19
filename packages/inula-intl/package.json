@@ -4,7 +4,7 @@
   "description": "",
   "main": "build/intl.umd.js",
   "type": "commonjs",
-  "types": "build/@types/index.d.ts",
+  "types": "build/index.d.ts",
   "scripts": {
     "demo-serve": "webpack serve --mode=development",
     "rollup-build": "rollup --config rollup.config.js",

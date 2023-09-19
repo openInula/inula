@@ -16,7 +16,8 @@
 import { UNICODE_REG } from '../constants';
 import { CompiledMessage, Locale, LocaleConfig, Locales } from '../types/types';
 import generateFormatters from './generateFormatters';
-import { FormatOptions } from '../types/interfaces';
+import {FormatOptions, I18nCache} from '../types/interfaces';
+import {createIntlCache} from "../../index";
 
 /**
  * 获取翻译结果
@@ -26,14 +27,14 @@ class Translation {
   private readonly locale: Locale;
   private readonly locales: Locales;
   private readonly localeConfig: Record<string, any>;
-  private readonly useMemorize?: boolean;
+  private readonly cache: I18nCache;
 
-  constructor(compiledMessage, locale, locales, localeConfig, memorize?) {
+  constructor(compiledMessage, locale, locales, localeConfig, cache?) {
     this.compiledMessage = compiledMessage;
     this.locale = locale;
     this.locales = locales;
     this.localeConfig = localeConfig;
-    this.useMemorize = memorize ?? true;
+    this.cache = cache ?? createIntlCache;
   }
 
   /**
@@ -47,12 +48,11 @@ class Translation {
       values: object,
       formatOptions: FormatOptions,
       localeConfig: LocaleConfig,
-      useMemorize?: boolean
     ) => {
       const textFormatter = (name: string, type: string, format: any) => {
-        const formatters = generateFormatters(locale, locales, localeConfig, formatOptions);
+        const formatters = generateFormatters(locale, locales, localeConfig, formatOptions, this.cache);
         const value = values[name];
-        const formatter = formatters[type](value, format, useMemorize);
+        const formatter = formatters[type](value, format);
 
         let message;
         if (typeof formatter === 'function') {
@@ -73,7 +73,6 @@ class Translation {
       values,
       formatOptions,
       this.localeConfig,
-      this.useMemorize
     );
     // 通过递归方法formatCore进行格式化处理
     const result = this.formatMessage(this.compiledMessage, textFormatter);

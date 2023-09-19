@@ -43,7 +43,6 @@ describe('compile', function () {
 
   it('should compile message with variable', function () {
     const cache = utils.compile('Hey {name}!');
-    console.log(cache)
     expect(new Translation(cache, 'en', [], {}).translate({})).toEqual('Hey {name}!');
   });
 
@@ -57,7 +56,6 @@ describe('compile', function () {
     const translate = prepare('{value, plural, one {{value} Book} other {# Books}}');
     expect(translate({ value: 1 })).toEqual('1 Book');
     expect(translate({ value: 2 })).toEqual('2 Books');
-
 
     const translatePlurals = prepare('{value, plural, offset:1 =0 {No Books} one {# Book} other {# Books}}');
 

@@ -22,7 +22,6 @@ function creatI18nCache(): I18nCache {
     dateTimeFormat: {},
     numberFormat: {},
     plurals: {},
-    messages: {},
     select: {},
     octothorpe: {},
   };

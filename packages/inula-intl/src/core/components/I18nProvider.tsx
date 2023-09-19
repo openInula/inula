@@ -12,8 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import Inula, { useRef, useState, useEffect, useMemo, Component } from 'inulajs';
-import utils from '../../utils/utils';
+import Inula, { useRef, useState, useEffect, useMemo } from 'inulajs';
 import { InjectProvider } from './InjectI18n';
 import I18n, { createI18nInstance } from '../I18n';
 import { I18nProviderProps } from '../../types/types';

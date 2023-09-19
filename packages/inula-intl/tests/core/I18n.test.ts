@@ -77,7 +77,7 @@ describe('I18n', () => {
       locale: 'en',
       messages: {
         en: messages,
-        fr:{}
+        fr: {},
       },
     });
 

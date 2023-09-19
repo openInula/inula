@@ -14,6 +14,7 @@
  */
 
 import { NumberFormatter } from '../../../index';
+import creatI18nCache from "../../../src/format/cache/cache";
 
 describe('NumberFormatter', () => {
   it('number formatter is memoized', async () => {
@@ -24,7 +25,7 @@ describe('NumberFormatter', () => {
     const firstRunResult = firstRunt1 - firstRunt0;
 
     const seconddRunt0 = performance.now();
-    const numberFormatter = new NumberFormatter('es', {}, false);
+    const numberFormatter = new NumberFormatter('es', {});
     numberFormatter.numberFormat(10000);
     const secondRunt1 = performance.now();
     const secondRunResult = secondRunt1 - seconddRunt0;
@@ -82,7 +83,7 @@ describe('NumberFormatter', () => {
   });
 
   it('should format using memorized formatter when useMemorize is true', () => {
-    const formatter = new NumberFormatter('en-US', undefined, true);
+    const formatter = new NumberFormatter('en-US', undefined, creatI18nCache());
     const number = 12345.6789;
     const formatted1 = formatter.numberFormat(number);
     const formatted2 = formatter.numberFormat(number);
@@ -90,7 +91,7 @@ describe('NumberFormatter', () => {
   });
 
   it('should create a new formatter when useMemorize is false', () => {
-    const formatter = new NumberFormatter('en-US', undefined, false);
+    const formatter = new NumberFormatter('en-US', undefined);
     const number = 12345.6789;
     const formatted1 = formatter.numberFormat(number);
     const formatted2 = formatter.numberFormat(number);

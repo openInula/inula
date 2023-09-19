@@ -61,7 +61,7 @@ describe('ruleUtils test', () => {
 
       expect(() => {
         ruleUtils.getReg(input);
-      }).toThrowError('Signs Prohibited');
+      }).toThrowError('prohibition sign');
     });
 
     it('should throw an error when input regular expression object has forbidden flags', () => {
