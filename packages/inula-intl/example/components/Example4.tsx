@@ -1,0 +1,32 @@
+/*
+ * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
+ *
+ * openInula is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
+import Inula from "openinula";
+import { createIntl } from "../../index";
+
+const Example4 = (props) => {
+  // 受渲染时机影响，createIntl方式需控制时序，否则慢一拍
+  const intl = createIntl({ ...props });
+  const msg = intl.formatMessage({ id: 'text3' });
+
+  return (
+    <div className="card">
+      <h2>createIntl方式测试Demo</h2>
+      <pre>{msg}</pre>
+    </div>
+  );
+};
+
+export default Example4;

@@ -1,0 +1,29 @@
+{
+  "name": "create-inula",
+  "version": "0.0.2",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "create-inula": "bin/cli.js"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "index.js",
+    "package.json"
+  ],
+  "author": "",
+  "license": "MulanPSL2",
+  "dependencies": {
+    "glob": "^10.3.3",
+    "inquirer": "^8.0.0",
+    "mkdirp": "^3.0.1",
+    "yargs-parser": "^21.1.1",
+    "yeoman-environment": "^3.15.0",
+    "yeoman-generator": "^5.8.0",
+    "chalk": "^4.1.2"
+  },
+  "devDependencies": {
+    "lodash": "^4.17.21"
+  }
+}
