@@ -2,7 +2,7 @@
 
 ## 项目介绍
 
-lnula（发音为：[ˈɪnjʊlə]）。openInula 是一款用于构建用户界面的 JavaScript 库，提供响应式 API 帮助开发者简单高效构建 web 页面，比传统虚拟 DOM 方式渲染效率提升30%以上！同时 InulaJS 提供与 React 保持一致的 API，并且提供5大常用功能丰富的核心组件：状态管理器、路由、国际化、请求组件、应用脚手架，以便开发者高效、高质量的构筑基于 InulaJS 的前端产品。
+单词 Inula（发音为：[ˈɪnjʊlə]），意为一类旋覆花属菊科的植物。openInula 是一款用于构建用户界面的 JavaScript 库，提供响应式 API 帮助开发者简单高效构建 web 页面，比传统虚拟 DOM 方式渲染效率提升30%以上！同时 InulaJS 提供与 React 保持一致的 API，并且提供5大常用功能丰富的核心组件：状态管理器、路由、国际化、请求组件、应用脚手架，以便开发者高效、高质量的构筑基于 InulaJS 的前端产品。
 
 ## 技术架构
 
@@ -28,7 +28,7 @@ lnula（发音为：[ˈɪnjʊlə]）。openInula 是一款用于构建用户界�
 **状态管理器/inula-X**
 
 inula-X 是 openInula 默认提供的状态管理器，无需额外引入三方库，就可以简单实现跨组件/页面共享状态。
-inula-X 与 Redux 比可创建多个 Store，不需要在 Reducer 中返回 state 并且简化了 Action 和 Reducer 的创建步骤，原生支持异步能力，组件能做到精准重渲染。inula-X均可使用函数组件、class 组件，能提供 redux 的适配接口及支持响应式的特点。
+inula-X 与 Redux 比可创建多个 Store，不需要在 Reducer 中返回 state 并且简化了 Action 和 Reducer 的创建步骤，原生支持异步能力，组件能做到精准重渲染。inula-X 均可使用函数组件、class 组件，能提供 redux 的适配接口及支持响应式的特点。
 
 **路由/inula-router**
 
@@ -41,7 +41,7 @@ inula-request 是 openInula 生态组件，涵盖常见的网络请求方式，�
 
 **国际化/inula-intl**
 
-lnula-intl 是基于 openInula 生态组件，其主要提供了国际化功能，涵盖了基本的国际化组件和钩子函数，便于用户在构建国际化能力时方便操作。
+inula-intl 是基于 openInula 生态组件，其主要提供了国际化功能，涵盖了基本的国际化组件和钩子函数，便于用户在构建国际化能力时方便操作。
 
 **调试工具/inula-dev-tools**
 
@@ -49,7 +49,7 @@ inula-dev-tools 是一个为 openInula 开发者提供的强大工具集，能�
 
 **脚手架/inula-cli**
 
-lnula-cli 是一套针对 openInula 的编译期插件，它支持代码优化、JSX 语法转换以及代码分割，有助于提高应用的性能、可读性和可维护性。
+inula-cli 是一套针对 openInula 的编译期插件，它支持代码优化、JSX 语法转换以及代码分割，有助于提高应用的性能、可读性和可维护性。
 
 ## openInula 文档
 
@@ -70,7 +70,7 @@ openInula 仓库地址：[https://gitee.com/openinula](https://gitee.com/openinu
 
 ## 许可协议
 
-openInula 主要遵循Mulan Permissive Software License v2协议，详情请参考各代码仓LICENSE声明。
+openInula 主要遵循 Mulan Permissive Software License v2 协议，详情请参考各代码仓 LICENSE 声明。
 
 ## 联系方式
 
