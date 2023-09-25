@@ -36,7 +36,7 @@ export {
 // 组件
 export {
   FormattedMessage,
-  I18nContext,
+  I18nContext as IntlContext,
   I18nProvider as IntlProvider,
   injectIntl as injectIntl,
   InjectProvider as RawIntlProvider,
