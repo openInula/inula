@@ -53,12 +53,12 @@ export function cleanUp(folders) {
 
 function buildTypeConfig() {
   return {
-    input: ['./build/inula/@types/index.d.ts'],
+    input: ['./build/@types/index.d.ts'],
     output: {
-      file: './build/inula/@types/index.d.ts',
+      file: './build/@types/index.d.ts',
       format: 'es',
     },
-    plugins: [dts(), cleanUp(['./build/inula/@types/'])],
+    plugins: [dts(), cleanUp(['./build/@types/'])],
   };
 }
 

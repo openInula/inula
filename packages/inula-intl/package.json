@@ -23,7 +23,7 @@
   "author": "",
   "license": "MulanPSL2",
   "peerDependencies": {
-    "inulajs": "^0.0.12"
+    "openinula": "^0.0.1"
   },
   "devDependencies": {
     "@babel/core": "7.21.3",

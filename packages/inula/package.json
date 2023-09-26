@@ -8,7 +8,7 @@
   "homepage": "",
   "bugs": "",
   "license": "MulanPSL2",
-  "main": "index.js",
+  "main": "./build/index.js",
   "repository": {},
   "engines": {
     "node": ">=0.10.0"
@@ -23,5 +23,6 @@
     "test": "jest --config=jest.config.js",
     "watch-test": "yarn test --watch --dev"
   },
-  "types": "@types/index.d.ts"
+  "files": ["build/@types", "build/cjs", "build/umd", "build/index.js", "build/jsx-dev-runtime.js", "build/jsx-runtime.js"],
+  "types": "./build/@types/index.d.ts"
 }
