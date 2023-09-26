@@ -15,6 +15,8 @@
 
 import { updateCommonProp } from '../DOMPropertiesHandler/UpdateCommonProp';
 import { Props } from '../utils/Interface';
+import { getValue } from '../../reactive/Utils';
+import { handleReactiveProp } from '../../reactive/RContextCreator';
 
 function getInitValue(dom: HTMLInputElement, props: Props) {
   const { value, defaultValue, checked, defaultChecked } = props;
@@ -45,10 +47,12 @@ export function getInputPropsWithoutValue(dom: HTMLInputElement, props: Props) {
 export function updateInputValue(dom: HTMLInputElement, props: Props) {
   const { value, checked } = props;
 
-  if (value !== undefined) {
+  const val = getValue(value);
+
+  if (val !== undefined) {
     // 处理 dom.value 逻辑
-    if (dom.value !== String(value)) {
-      dom.value = String(value);
+    if (dom.value !== String(val)) {
+      dom.value = String(val);
     }
   } else if (checked !== undefined) {
     updateCommonProp(dom, 'checked', checked, true);
@@ -62,7 +66,9 @@ export function setInitInputValue(dom: HTMLInputElement, props: Props) {
 
   if (value !== undefined || defaultValue !== undefined) {
     // value 的使用优先级 value 属性 > defaultValue 属性 > 空字符串
-    const initValueStr = String(initValue);
+    const initValueStr = getValue(initValue);
+
+    handleReactiveProp(dom, 'value', value);
 
     dom.value = initValueStr;
 

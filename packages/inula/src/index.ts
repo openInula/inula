@@ -43,6 +43,11 @@ import {
   useRef,
   useState,
   useDebugValue,
+  useAtom,
+  useCompute,
+  useComputed,
+  useReactive,
+  useWatch,
 } from './renderer/hooks/HookExternal';
 import {
   isContextProvider,
@@ -71,6 +76,15 @@ import {
 
 import { syncUpdates as flushSync } from './renderer/TreeBuilder';
 import { toRaw } from './inulax/proxy/ProxyHandler';
+
+import { For } from './reactive/components/For';
+import { Show } from './reactive/components/Show';
+import { Switch } from './reactive/components/Switch';
+import { RText } from './reactive/components/RText';
+import { reactive } from './reactive/Reactive';
+import { computed } from './reactive/Computed';
+import { isReactiveObj } from './reactive/Utils';
+import { watch as watchReactive } from './reactive/Watch';
 
 const Inula = {
   Children,
@@ -122,6 +136,20 @@ const Inula = {
   Profiler,
   StrictMode,
   Suspense,
+  // reactive
+  reactive,
+  computed,
+  watchReactive,
+  isReactiveObj,
+  For,
+  Show,
+  Switch,
+  RText,
+  useAtom,
+  useReactive,
+  useCompute,
+  useComputed,
+  useWatch,
 };
 
 export const version = __VERSION__;
@@ -178,6 +206,20 @@ export {
   Profiler,
   StrictMode,
   Suspense,
+  // reactive
+  reactive,
+  computed,
+  watchReactive,
+  isReactiveObj,
+  For,
+  Show,
+  Switch,
+  RText,
+  useAtom,
+  useReactive,
+  useCompute,
+  useComputed,
+  useWatch,
 };
 
 export * from './types';

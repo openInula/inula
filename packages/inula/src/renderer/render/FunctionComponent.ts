@@ -22,6 +22,7 @@ import { ForwardRef } from '../vnode/VNodeTags';
 import { FlagUtils, Update } from '../vnode/VNodeFlags';
 import { onlyUpdateChildVNodes } from '../vnode/VNodeCreator';
 import { createChildrenByDiff } from '../diff/nodeDiffComparator';
+import { createComponentDependent } from '../../reactive/RContextCreator';
 
 // 在useState, useReducer的时候，会触发state变化
 let stateChange = false;
@@ -56,10 +57,14 @@ export function captureFunctionComponent(processing: VNode, funcComp: any, nextP
   // 在执行exeFunctionHook前先设置stateChange为false
   setStateChange(false);
 
-  const newElements = runFunctionWithHooks(
-    processing.tag === ForwardRef ? funcComp.render : funcComp,
-    nextProps,
-    processing.tag === ForwardRef ? processing.ref : undefined,
+  const newElements = createComponentDependent(
+    () =>
+      runFunctionWithHooks(
+        processing.tag === ForwardRef ? funcComp.render : funcComp,
+        nextProps,
+        processing.tag === ForwardRef ? processing.ref : undefined,
+        processing
+      ),
     processing
   );
 

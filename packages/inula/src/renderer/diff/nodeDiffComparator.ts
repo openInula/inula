@@ -23,11 +23,14 @@ import {
   createFragmentVNode,
   createPortalVNode,
   createDomTextVNode,
+  createReactiveVNode,
 } from '../vnode/VNodeCreator';
 import { isSameType, getIteratorFn, isTextType, isIteratorType, isObjectType } from './DiffTools';
 import { travelChildren } from '../vnode/VNodeUtils';
 import { markVNodePath } from '../utils/vNodePath';
 import { BELONG_CLASS_VNODE_KEY } from '../vnode/VNode';
+import { Operation } from '../../reactive/DiffUtils';
+import { isReactiveProxy, isReactiveObj, getRNodeFromProxy } from '../../reactive/Utils';
 
 enum DiffCategory {
   TEXT_NODE = 'TEXT_NODE',
@@ -101,6 +104,9 @@ function getNodeType(newChild: any): string | null {
     return DiffCategory.TEXT_NODE;
   }
   if (isObjectType(newChild)) {
+    if (isReactiveObj(newChild)) {
+      return DiffCategory.REACTIVE_NODE;
+    }
     if (Array.isArray(newChild) || isIteratorType(newChild)) {
       return DiffCategory.ARR_NODE;
     }
@@ -147,6 +153,14 @@ function getNewNode(parentNode: VNode, newChild: any, oldNode: VNode | null) {
     case DiffCategory.ARR_NODE: {
       if (oldNode === null || oldNode.tag !== Fragment) {
         resultNode = createFragmentVNode(null, newChild);
+      } else {
+        resultNode = updateVNode(oldNode, newChild);
+      }
+      break;
+    }
+    case DiffCategory.REACTIVE_NODE: {
+      if (oldNode === null || oldNode.tag !== ReactiveComponent) {
+        resultNode = createReactiveVNode(newChild);
       } else {
         resultNode = updateVNode(oldNode, newChild);
       }
@@ -564,7 +578,7 @@ function diffObjectNodeHandler(
   }
 
   let resultNode: VNode | null = null;
-  let startDelVNode: VNode | null = firstChildVNode;
+  let startDelVNode: VNode | null = node;
   if (newChild.vtype === TYPE_COMMON_ELEMENT) {
     if (canReuseNode) {
       // 可以复用
@@ -624,13 +638,91 @@ function diffObjectNodeHandler(
   return null;
 }
 
+// 响应式For组件专用
+function diffReactiveForNodeHandler(
+  parentNode: VNode,
+  firstChild: VNode | null,
+  newChildren: Array<any>,
+): VNode | null {
+  let oldNode = firstChild;
+  let nextOldNode: VNode | null = null;
+  let resultingFirstChild: VNode | null = null;
+  let prevNewNode: VNode | null = null;
+
+  function appendNode(newNode: VNode) {
+    if (prevNewNode === null) {
+      resultingFirstChild = newNode;
+      newNode.cIndex = 0;
+    } else {
+      prevNewNode.next = newNode;
+      newNode.cIndex = prevNewNode.cIndex + 1;
+    }
+    markVNodePath(newNode);
+    prevNewNode = newNode;
+  }
+
+  // 特殊处理
+  // 如果新节点为空
+  if (newChildren.length === 0) {
+    if (firstChild) {
+      FlagUtils.markClear(parentNode);
+      parentNode.clearChild = firstChild;
+
+      return null;
+    }
+  }
+
+  let childIndex = 0;
+  const { opts } = newChildren.diffOperator;
+  for (let i = 0; i < opts.length; i++) {
+    const opt = opts[i];
+    if (oldNode !== null) {
+      // 先保存next，因为getNewNode会修改next
+      nextOldNode = oldNode.next;
+    }
+
+    switch (opt.action) {
+      case Operation.Nop: {
+        const newNode = getNewNode(parentNode, newChildren[childIndex], oldNode);
+        newNode.eIndex = childIndex;
+        appendNode(newNode);
+        // 使用了加1
+        childIndex++;
+        // 使用了oldNode，更新
+        oldNode = nextOldNode;
+        break;
+      }
+      case Operation.Insert: {
+        const newNode = getNewNode(parentNode, newChildren[childIndex], null);
+        FlagUtils.setAddition(newNode);
+        newNode.eIndex = childIndex;
+        appendNode(newNode);
+        // 使用了加1
+        childIndex++;
+        break;
+      }
+      case Operation.Delete: {
+        deleteVNode(parentNode, oldNode);
+        // 使用了oldNode，更新
+        oldNode = nextOldNode;
+        break;
+      }
+    }
+
+  }
+
+  return resultingFirstChild;
+}
+
 // Diff算法的对外接口
 export function createChildrenByDiff(
   parentNode: VNode,
   firstChild: VNode | null,
-  newChild: any,
+  child: any,
   isComparing: boolean
 ): VNode | null {
+  let newChild = isReactiveProxy(child) ? getRNodeFromProxy(child) : child;
+
   const isFragment = isNoKeyFragment(newChild);
   newChild = isFragment ? newChild.props.children : newChild;
 
@@ -649,7 +741,11 @@ export function createChildrenByDiff(
 
   // 3. newChild是数组类型
   if (Array.isArray(newChild)) {
-    return diffArrayNodesHandler(parentNode, firstChild, newChild);
+    if (newChild.diffOperator) {
+      return diffReactiveForNodeHandler(parentNode, firstChild, newChild);
+    } else {
+      return diffArrayNodesHandler(parentNode, firstChild, newChild);
+    }
   }
 
   // 4. newChild是迭代器类型

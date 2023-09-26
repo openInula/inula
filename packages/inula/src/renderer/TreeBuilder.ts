@@ -18,7 +18,7 @@ import type { VNode } from './Types';
 import { callRenderQueueImmediate, pushRenderCallback } from './taskExecutor/RenderQueue';
 import { updateVNode } from './vnode/VNodeCreator';
 import { ContextProvider, DomComponent, DomPortal, TreeRoot } from './vnode/VNodeTags';
-import { FlagUtils, InitFlag, Interrupted } from './vnode/VNodeFlags';
+import { FlagUtils, InitFlag, Interrupted, Deletion } from './vnode/VNodeFlags';
 import { captureVNode } from './render/BaseComponent';
 import { checkLoopingUpdateLimit, submitToRender } from './submit/Submit';
 import { runAsyncEffects } from './submit/HookEffectHandler';
@@ -81,13 +81,13 @@ function collectDirtyNodes(vNode: VNode, parent: VNode): void {
     if (parent.dirtyNodes === null) {
       parent.dirtyNodes = dirtyNodes;
     } else {
-      parent.dirtyNodes.push(...vNode.dirtyNodes!);
+      parent.dirtyNodes.push(...dirtyNodes);
       dirtyNodes.length = 0;
     }
     vNode.dirtyNodes = null;
   }
 
-  if (FlagUtils.hasAnyFlag(vNode)) {
+  if (FlagUtils.hasAnyFlag(vNode) && vNode.flags !== Deletion) {
     if (parent.dirtyNodes === null) {
       parent.dirtyNodes = [vNode];
     } else {
@@ -273,44 +273,44 @@ function buildVNodeTree(treeRoot: VNode) {
   changeMode(InRender, true);
 
   // 计算出开始节点
-  const startVNode = calcStartUpdateVNode(treeRoot);
+  // const startVNode = calcStartUpdateVNode(treeRoot);
   // 缓存起来
-  setStartVNode(startVNode);
+  setStartVNode(treeRoot);
 
   // 清空toUpdateNodes
   treeRoot.toUpdateNodes?.clear();
 
-  if (startVNode.tag !== TreeRoot) {
-    // 不是根节点
-    // 设置namespace，用于createElement
-    let parent = startVNode.parent;
-    while (parent !== null) {
-      const tag = parent.tag;
-      if (tag === DomComponent) {
-        break;
-      } else if (tag === TreeRoot || tag === DomPortal) {
-        break;
-      }
-      parent = parent.parent;
-    }
-
-    // 当在componentWillUnmount中调用setState，parent可能是null，因为startVNode会被clear
-    if (parent !== null) {
-      resetNamespaceCtx(parent);
-      setNamespaceCtx(parent, parent.realNode);
-    }
-
-    // 恢复父节点的context
-    recoverTreeContext(startVNode);
-  }
+  // if (startVNode.tag !== TreeRoot) {
+  //   // 不是根节点
+  //   // 设置namespace，用于createElement
+  //   let parent = startVNode.parent;
+  //   while (parent !== null) {
+  //     const tag = parent.tag;
+  //     if (tag === DomComponent) {
+  //       break;
+  //     } else if (tag === TreeRoot || tag === DomPortal) {
+  //       break;
+  //     }
+  //     parent = parent.parent;
+  //   }
+  //
+  //   // 当在componentWillUnmount中调用setState，parent可能是null，因为startVNode会被clear
+  //   if (parent !== null) {
+  //     resetNamespaceCtx(parent);
+  //     setNamespaceCtx(parent, parent.realNode);
+  //   }
+  //
+  //   // 恢复父节点的context
+  //   recoverTreeContext(startVNode);
+  // }
 
   // 重置环境变量，为重新进行深度遍历做准备
-  resetProcessingVariables(startVNode);
+  resetProcessingVariables(treeRoot);
   // devProps 用于插件手动更新props值
-  if (startVNode.devProps !== undefined) {
-    startVNode.props = startVNode.devProps;
-    startVNode.devProps = undefined;
-  }
+  // if (startVNode.devProps !== undefined) {
+  //   startVNode.props = startVNode.devProps;
+  //   startVNode.devProps = undefined;
+  // }
 
   while (processing !== null) {
     try {
@@ -327,11 +327,11 @@ function buildVNodeTree(treeRoot: VNode) {
       handleError(treeRoot, thrownValue);
     }
   }
-  if (startVNode.tag !== TreeRoot) {
-    // 不是根节点
-    // 恢复父节点的context
-    resetTreeContext(startVNode);
-  }
+  // if (startVNode.tag !== TreeRoot) {
+  //   // 不是根节点
+  //   // 恢复父节点的context
+  //   resetTreeContext(startVNode);
+  // }
 
   setProcessingClassVNode(null);
 

@@ -23,7 +23,7 @@ import execute from 'rollup-plugin-execute';
 import { terser } from 'rollup-plugin-terser';
 import { version as inulaVersion } from '../../package.json';
 
-const extensions = ['.js', '.ts'];
+const extensions = ['.js', '.ts', '.tsx'];
 
 const libDir = path.join(__dirname, '../..');
 const rootDir = path.join(__dirname, '../..');

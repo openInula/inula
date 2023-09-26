@@ -19,6 +19,14 @@ import { setStyles } from './StyleHandler';
 import { lazyDelegateOnRoot, listenNonDelegatedEvent } from '../../event/EventBinding';
 import { isEventProp } from '../validators/ValidateProps';
 import { getCurrentRoot } from '../../renderer/RootStack';
+import { getValue, isReactiveObj} from '../../reactive/Utils';
+import { handleReactiveProp } from '../../reactive/RContextCreator';
+import { ReactiveProxy } from '../../reactive/types';
+
+export function unwrapVal(propName: string, propVal: any, dom: Element, styleName?: string) {
+  const rawVal: any = handleReactiveProp(dom, propName, propVal, styleName);
+  return rawVal;
+}
 
 // 初始化DOM属性和更新 DOM 属性
 export function setDomProps(dom: Element, props: Record<string, any>, isNativeTag: boolean, isInit: boolean): void {
@@ -43,8 +51,8 @@ export function setDomProps(dom: Element, props: Record<string, any>, isNativeTa
     } else if (propName === 'children') {
       // 只处理纯文本子节点，其他children在VNode树中处理
       const type = typeof propVal;
-      if (type === 'string' || type === 'number') {
-        dom.textContent = propVal;
+      if (type === 'string' || type === 'number' || isReactiveObj(propVal)) {
+        dom.textContent = unwrapVal(propName, propVal, dom);
       }
     } else if (propName === 'dangerouslySetInnerHTML') {
       dom.innerHTML = propVal.__html;
@@ -55,9 +63,9 @@ export function setDomProps(dom: Element, props: Record<string, any>, isNativeTa
 }
 
 // 找出两个 DOM 属性的差别，生成需要更新的属性集合
-export function compareProps(oldProps: Record<string, any>, newProps: Record<string, any>): Record<string, any> {
+export function compareProps(oldProps: Record<string, any>, newProps: Record<string, any>, dom: Element): Record<string, any> {
   let updatesForStyle = {};
-  const toUpdateProps = {};
+  const toUpdateProps: Record<string | number, any> = {};
   const keysOfOldProps = Object.keys(oldProps);
   const keysOfNewProps = Object.keys(newProps);
 
@@ -103,11 +111,14 @@ export function compareProps(oldProps: Record<string, any>, newProps: Record<str
   for (let i = 0; i < keysOfNewProps.length; i++) {
     propName = keysOfNewProps[i];
     newPropValue = newProps[propName];
-    oldPropValue = oldProps !== null && oldProps !== undefined ? oldProps[propName] : null;
+    oldPropValue = oldProps != null ? oldProps[propName] : null;
 
     if (
       newPropValue === oldPropValue ||
-      ((newPropValue === null || newPropValue === undefined) && (oldPropValue === null || oldPropValue === undefined))
+      (newPropValue == null && oldPropValue == null) ||
+      (isReactiveObj(newPropValue) &&
+        isReactiveObj(oldPropValue) &&
+        getValue(newPropValue) === getValue(oldPropValue))
     ) {
       // 新旧属性值未发生变化，或者新旧属性皆为空值，不需要进行处理
       continue;
@@ -143,31 +154,49 @@ export function compareProps(oldProps: Record<string, any>, newProps: Record<str
     } else if (propName === 'dangerouslySetInnerHTML') {
       newHTML = newPropValue ? newPropValue.__html : undefined;
       oldHTML = oldPropValue ? oldPropValue.__html : undefined;
-      if (newHTML !== null && newHTML !== undefined) {
+      if (newHTML != null) {
         if (oldHTML !== newHTML) {
-          toUpdateProps[propName] = newPropValue;
+          appendToUpdateProps(toUpdateProps, propName, newPropValue, dom);
         }
       }
     } else if (propName === 'children') {
-      if (typeof newPropValue === 'string' || typeof newPropValue === 'number') {
-        toUpdateProps[propName] = String(newPropValue);
+      if (typeof newPropValue === 'string' || typeof newPropValue === 'number' || isReactiveObj(newPropValue)) {
+        appendToUpdateProps<string | number | ReactiveProxy<any>, string>(
+          toUpdateProps,
+          propName,
+          newPropValue,
+          dom,
+          String
+        );
       }
     } else if (isEventProp(propName)) {
       const currentRoot = getCurrentRoot();
       if (!allDelegatedInulaEvents.has(propName)) {
-        toUpdateProps[propName] = newPropValue;
+        appendToUpdateProps(toUpdateProps, propName, newPropValue, dom);
       } else if (currentRoot && !currentRoot.delegatedEvents.has(propName)) {
         lazyDelegateOnRoot(currentRoot, propName);
       }
     } else {
-      toUpdateProps[propName] = newPropValue;
+      appendToUpdateProps(toUpdateProps, propName, newPropValue, dom);
     }
   }
 
   // 处理style
   if (Object.keys(updatesForStyle).length > 0) {
-    toUpdateProps['style'] = updatesForStyle;
+    appendToUpdateProps(toUpdateProps, 'style', updatesForStyle, dom);
   }
 
   return toUpdateProps;
+}
+
+function appendToUpdateProps<V, R>(
+  toUpdateProps: Record<string | number, any>,
+  propName: string,
+  propVal: V,
+  dom: Element,
+  formatter?: (value: V) => R
+) {
+  const rawVal: any = handleReactiveProp(dom, propName, propVal);
+
+  toUpdateProps[propName] = formatter ? formatter(rawVal) : rawVal;
 }

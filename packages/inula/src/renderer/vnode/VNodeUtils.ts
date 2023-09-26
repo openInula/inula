@@ -19,7 +19,7 @@
 
 import type { VNode } from '../Types';
 
-import { DomComponent, DomPortal, DomText, TreeRoot } from './VNodeTags';
+import { DomComponent, DomPortal, DomText, TreeRoot, ReactiveComponent } from './VNodeTags';
 import { getNearestVNode } from '../../dom/DOMInternalKeys';
 import { Addition, InitFlag } from './VNodeFlags';
 import { BELONG_CLASS_VNODE_KEY } from './VNode';
@@ -129,15 +129,22 @@ export function clearVNode(vNode: VNode) {
     const hook = window.__INULA_DEV_HOOK__;
     hook.deleteVNode(vNode);
   }
+
+  if (vNode.attrRContexts) {
+    vNode.attrRContexts = null;
+  }
+  if (vNode.compRContext) {
+    vNode.compRContext = null;
+  }
 }
 
 // 是dom类型的vNode
 export function isDomVNode(node: VNode) {
-  return node.tag === DomComponent || node.tag === DomText;
+  return node.tag === DomComponent || node.tag === DomText || node.tag === ReactiveComponent;
 }
 
 // 是容器类型的vNode
-function isDomContainer(vNode: VNode): boolean {
+export function isDomContainer(vNode: VNode): boolean {
   return vNode.tag === DomComponent || vNode.tag === TreeRoot || vNode.tag === DomPortal;
 }
 
@@ -276,4 +283,16 @@ export function findRoot(targetVNode, targetDom) {
     return null;
   }
   return targetVNode;
+}
+
+export function findDOMContainer(vNode: VNode): VNode {
+  let parent = vNode.parent;
+  while (parent !== null) {
+    if (isDomContainer(parent)) {
+      break;
+    }
+    parent = parent.parent;
+  }
+
+  return parent as VNode;
 }

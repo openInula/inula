@@ -24,6 +24,11 @@ import { useReducerImpl } from './UseReducerHook';
 import { useStateImpl } from './UseStateHook';
 import { getNewContext } from '../components/context/Context';
 import { getProcessingVNode } from '../GlobalVar';
+import { useAtomImpl } from './reactive/UseAtom';
+import { useComputedImpl } from './reactive/UseCompute';
+import { useReactiveImpl } from './reactive/UseReactive';
+import { AtomNode, PrimitiveType, Reactive } from '../../reactive/types';
+import { useWatchImpl } from './reactive/UseWatch';
 import type { MutableRef, RefCallBack, RefObject } from './HookType';
 
 import type {
@@ -115,3 +120,23 @@ export function useImperativeHandle<T, R extends T>(
 
 // 兼容react-redux
 export const useDebugValue = () => {};
+
+// reactive hooks
+export function useAtom<T extends PrimitiveType>(initialValue: T): [AtomNode<T>, (value: T) => void] {
+  return useAtomImpl(initialValue);
+}
+
+export function useCompute<T>(compute: () => T) {
+  return useComputedImpl(compute);
+}
+export function useComputed<T>(compute: () => T) {
+  return useComputedImpl(compute);
+}
+
+export function useReactive<T>(obj: T) {
+  return useReactiveImpl<T>(obj);
+}
+
+export function useWatch<T>(fn: () => any | Reactive, callback?: () => void) {
+  return useWatchImpl<T>(fn, callback);
+}

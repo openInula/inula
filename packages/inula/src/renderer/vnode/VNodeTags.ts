@@ -33,3 +33,4 @@ export const SuspenseComponent = 'SuspenseComponent';
 export const MemoComponent = 'MemoComponent';
 export const LazyComponent = 'LazyComponent';
 export const IncompleteClassComponent = 'IncompleteClassComponent';
+export const ReactiveComponent = 'ReactiveComponent';

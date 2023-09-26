@@ -188,7 +188,7 @@ export function submitDomUpdate(tag: string, vNode: VNode) {
 }
 
 export function clearText(dom: Element): void {
-  dom.innerHTML = '';
+  dom.textContent = '';
 }
 
 // 添加child元素

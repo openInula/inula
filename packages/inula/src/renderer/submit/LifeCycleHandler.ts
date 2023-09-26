@@ -50,9 +50,10 @@ import {
   callUseLayoutEffectRemove,
 } from './HookEffectHandler';
 import { handleSubmitError } from '../ErrorHandler';
-import { travelVNodeTree, clearVNode, isDomVNode, getSiblingDom } from '../vnode/VNodeUtils';
+import { travelVNodeTree, clearVNode, isDomVNode, getSiblingDom, findDOMContainer, isDomContainer } from '../vnode/VNodeUtils';
 import { shouldAutoFocus } from '../../dom/utils/Common';
 import { BELONG_CLASS_VNODE_KEY } from '../vnode/VNode';
+import { cleanupRContext } from '../../reactive/RContext';
 
 function callComponentWillUnmount(vNode: VNode, instance: any) {
   try {
@@ -205,48 +206,119 @@ function unmountDomComponents(vNode: VNode): void {
   // 这两个变量要一起更新
   let currentParent;
 
-  travelVNodeTree(
-    vNode,
-    node => {
-      if (!currentParentIsValid) {
-        let parent = node.parent;
-        let tag;
-        while (parent !== null) {
-          tag = parent.tag;
-          if (tag === DomComponent || tag === TreeRoot || tag === DomPortal) {
-            currentParent = parent.realNode;
-            break;
+  let node = vNode;
+
+  while (true) {
+    // handle
+    if (!currentParentIsValid) {
+      let parent = node.parent;
+      let tag;
+      while (parent !== null) {
+        tag = parent.tag;
+        if (tag === DomComponent || tag === TreeRoot || tag === DomPortal) {
+          currentParent = parent.realNode;
+          break;
+        }
+        parent = parent.parent;
+      }
+      currentParentIsValid = true;
+    }
+
+    if (node.tag === DomComponent || node.tag === DomText) {
+      let nd = node;
+
+      // 卸载vNode，递归遍历子vNode
+      outer: while (true) {
+        unmountVNode(nd);
+
+        // 找子节点
+        const childVNode = nd.child;
+        if (childVNode !== null && nd.tag !== DomPortal) {
+          childVNode.parent = nd;
+          nd = childVNode;
+          continue;
+        }
+
+        // 回到开始节点
+        if (nd === node) {
+          break;
+        }
+
+        // 找兄弟，没有就往上再找兄弟
+        while (nd.next === null) {
+          if (nd.parent === null || nd.parent === node) {
+            break outer;
           }
-          parent = parent.parent;
+          nd = nd.parent;
         }
-        currentParentIsValid = true;
+        // 找到兄弟
+        const siblingVNode = nd.next;
+        siblingVNode.parent = nd.parent;
+        nd = siblingVNode;
       }
 
-      if (node.tag === DomComponent || node.tag === DomText) {
-        // 卸载vNode，递归遍历子vNode
-        unmountNestedVNodes(node);
-
-        // 在所有子项都卸载后，删除dom树中的节点
-        removeChildDom(currentParent, node.realNode);
-      } else if (node.tag === DomPortal) {
-        if (node.child !== null) {
-          currentParent = node.realNode;
-        }
-      } else {
-        unmountVNode(node);
+      // 在所有子项都卸载后，删除dom树中的节点
+      removeChildDom(currentParent, node.realNode);
+    } else if (node.tag === DomPortal) {
+      if (node.child !== null) {
+        currentParent = node.realNode;
       }
-    },
-    node =>
-      // 如果是dom不用再遍历child
-      node.tag === DomComponent || node.tag === DomText,
-    vNode,
-    node => {
+    } else {
+      unmountVNode(node);
+    }
+
+    // 找子节点
+    const childVNode = node.child;
+    if (childVNode !== null && node.tag !== DomComponent && node.tag !== DomText) {
+      childVNode.parent = node;
+      node = childVNode;
+      continue;
+    }
+
+    // 回到开始节点
+    if (node === vNode) {
+      return null;
+    }
+
+    // 找兄弟，没有就往上再找兄弟
+    while (node.next === null) {
+      if (node.parent === null || node.parent === vNode) {
+        return null;
+      }
+      node = node.parent;
+
       if (node.tag === DomPortal) {
         // 当离开portal，需要重新设置parent
         currentParentIsValid = false;
       }
     }
-  );
+    // 找到兄弟
+    const siblingVNode = node.next;
+    siblingVNode.parent = node.parent;
+    node = siblingVNode;
+  }
+}
+
+// dom节点上的attr值，如果是reactive对象，会自动创建attrEffect。所以在清除时，需要销毁attrEffect。
+function detachAttrRContexts(vNode: VNode) {
+  const attrRContexts = vNode.attrRContexts;
+  if (attrRContexts) {
+    for (const attrRContext of attrRContexts) {
+      cleanupRContext(attrRContext);
+      attrRContext.callback = null;
+    }
+
+    attrRContexts.clear();
+  }
+}
+
+// 函数组件和Class组件会自动创rContext，所以在清除时，需要销毁rContext
+function detachCompRContext(vNode: VNode) {
+  const rContext = vNode.compRContext;
+  if (rContext) {
+    cleanupRContext(rContext);
+    rContext.callback = null;
+  }
 }
 
 // 卸载一个vNode，不会递归
@@ -256,6 +328,8 @@ function unmountVNode(vNode: VNode): void {
     case ForwardRef:
     case MemoComponent: {
       callEffectRemove(vNode);
+
+      detachCompRContext(vNode);
       break;
     }
     case ClassComponent: {
@@ -273,10 +347,14 @@ function unmountVNode(vNode: VNode): void {
         vNode.classComponentWillUnmount(vNode);
         vNode.classComponentWillUnmount = null;
       }
+
+      detachCompRContext(vNode);
       break;
     }
     case DomComponent: {
       detachRef(vNode);
+
+      detachAttrRContexts(vNode);
       break;
     }
     case DomPortal: {
@@ -390,6 +468,64 @@ function submitClear(vNode: VNode): void {
   vNode.clearChild = null;
 }
 
+function submitClear2(vNode: VNode): void {
+  let domVNode;
+  if (isDomContainer(vNode)) {
+    domVNode = vNode;
+  }
+
+  // 1、拿到最近的父DOM
+  domVNode = findDOMContainer(vNode);
+  const dom = domVNode.realNode;
+
+  // 2、复制DOM节点
+  const cloneDom = dom.cloneNode(false);
+
+  // 3、复制cloneNode未能复制的属性
+  // 真实 dom 获取的keys只包含新增的属性
+  // 比如真实 dom 拿到的 keys 一般只有两个 horizon 自定义属性
+  // 但考虑到用户可能自定义其他属性，所以采用遍历赋值的方式
+  const customizeKeys = Object.keys(dom);
+  const keyLength = customizeKeys.length;
+  for (let i = 0; i < keyLength; i++) {
+    const key = customizeKeys[i];
+    // 测试代码 mock 实例的全部可遍历属性都会被Object.keys方法读取到
+    // children 属性被复制意味着复制了子节点，因此要排除
+    if (key !== 'children') {
+      cloneDom[key] = dom[key];
+    }
+  }
+
+  // 4、拿到最近的父DOM的父DOM
+  const parentDomVNode = findDOMContainer(domVNode);
+  const parentDom = parentDomVNode.realNode;
+
+  // 5、执行unmount
+  let clearChild = vNode.clearChild as VNode;
+  // 卸载 clearChild 和 它的兄弟节点
+  while (clearChild) {
+    // 卸载子vNode，递归遍历子vNode
+    unmountNestedVNodes(clearChild);
+    clearVNode(clearChild);
+    clearChild = clearChild.next as VNode;
+  }
+
+  // 6、在所有子项都卸载后，删除dom树中的节点
+  removeChildDom(parentDom, dom);
+
+  // 7、插入cloneDom
+  const realNodeNext = getSiblingDom(domVNode);
+  insertDom(parentDom, cloneDom, realNodeNext);
+
+  // 8、重置realNode
+  domVNode.realNode = cloneDom;
+  attachRef(domVNode);
+
+  // 9、清理
+  FlagUtils.removeFlag(vNode, Clear);
+  vNode.clearChild = null;
+}
+
 function submitDeletion(vNode: VNode): void {
   // 遍历所有子节点：删除dom节点，detach ref 和 调用componentWillUnmount()
   unmountDomComponents(vNode);
@@ -440,6 +576,7 @@ export {
   submitAddition,
   submitDeletion,
   submitClear,
+  submitClear2,
   submitUpdate,
   callAfterSubmitLifeCycles,
   attachRef,

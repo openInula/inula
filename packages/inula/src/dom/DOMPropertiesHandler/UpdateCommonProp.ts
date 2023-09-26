@@ -18,6 +18,7 @@ import { isInvalidValue } from '../validators/ValidateProps';
 import { getNamespaceCtx } from '../../renderer/ContextSaver';
 import { NSS } from '../utils/DomCreator';
 import { getDomTag } from '../utils/Common';
+import { unwrapVal } from './DOMPropertiesHandler';
 
 // 不需要装换的svg属性集合
 const svgHumpAttr = new Set();
@@ -120,7 +121,7 @@ export function updateCommonProp(dom: Element, attrName: string, value: any, isN
     if (value === null) {
       dom.removeAttribute(attrName);
     } else {
-      dom.setAttribute(attrName, String(value));
+      dom.setAttribute(attrName, String(unwrapVal(attrName, value, dom)));
     }
   } else if (['checked', 'multiple', 'muted', 'selected'].includes(propDetails.attrName)) {
     if (value === null) {
@@ -141,7 +142,7 @@ export function updateCommonProp(dom: Element, attrName: string, value: any, isN
         // 即可以用作标志又可以是属性值的属性
         attributeValue = '';
       } else {
-        attributeValue = String(value);
+        attributeValue = String(unwrapVal(attrName, value, dom));
       }
 
       if (attrNS) {

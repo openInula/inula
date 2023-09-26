@@ -28,6 +28,7 @@ import {
   submitUpdate,
   detachRef,
   submitClear,
+  submitClear2,
 } from './LifeCycleHandler';
 import { tryRenderFromRoot } from '../TreeBuilder';
 import { InRender, copyExecuteMode, setExecuteMode, changeMode } from '../ExecuteMode';
@@ -98,6 +99,7 @@ function submit(dirtyNodes: Array<VNode>) {
           submitDeletion(node);
         }
         if (isClear) {
+          // submitClear2(node);
           submitClear(node);
         }
       }

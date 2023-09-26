@@ -13,6 +13,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
+import { unwrapVal } from './DOMPropertiesHandler';
+
 /**
  * 不需要加长度单位的 css 属性
  */
@@ -85,12 +87,14 @@ export function setStyles(dom, styles) {
   const style = dom.style;
   Object.keys(styles).forEach(name => {
     const styleVal = styles[name];
+    const val = unwrapVal('style', styleVal, dom, name);
+
     // 以--开始的样式直接设置即可
     if (name.indexOf('--') === 0) {
-      style.setProperty(name, styleVal);
+      style.setProperty(name, val);
     } else {
       // 使用这种赋值方式，浏览器可以将'WebkitLineClamp'， 'backgroundColor'分别识别为'-webkit-line-clamp'和'backgroud-color'
-      style[name] = adjustStyleValue(name, styleVal);
+      style[name] = adjustStyleValue(name, val);
     }
   });
 }

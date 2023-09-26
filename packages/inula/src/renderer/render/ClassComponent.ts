@@ -34,6 +34,7 @@ import { processUpdates } from '../UpdateHandler';
 import { setProcessingClassVNode } from '../GlobalVar';
 import { onlyUpdateChildVNodes } from '../vnode/VNodeCreator';
 import { createChildrenByDiff } from '../diff/nodeDiffComparator';
+import { createComponentDependent } from '../../reactive/RContextCreator';
 
 const emptyContextObj = {};
 // 获取当前节点的context
@@ -174,7 +175,7 @@ export function captureRender(processing: VNode): VNode | null {
 
   // 不复用
   if (shouldUpdate) {
-    return createChildren(ctor, processing);
+    return createComponentDependent(() => createChildren(ctor, processing), processing);
   } else {
     return onlyUpdateChildVNodes(processing);
   }
