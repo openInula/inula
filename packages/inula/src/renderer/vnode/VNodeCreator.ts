@@ -29,6 +29,7 @@ import {
   LazyComponent,
   MemoComponent,
   SuspenseComponent,
+  ReactiveComponent,
 } from './VNodeTags';
 import {
   TYPE_CONTEXT,
@@ -41,8 +42,8 @@ import {
   TYPE_STRICT_MODE,
   TYPE_SUSPENSE,
 } from '../../external/JSXElementType';
-import { VNode } from './VNode';
-import { JSXElement, Source } from '../Types';
+import { VirtualNode } from './VNode';
+import { JSXElement, Source, VNode } from '../Types';
 import { markVNodePath } from '../utils/vNodePath';
 
 const typeLazyMap = {
@@ -57,7 +58,7 @@ const typeMap = {
 };
 
 function newVirtualNode(tag: VNodeTag, key?: null | string, vNodeProps?: any, realNode?: any): VNode {
-  return new VNode(tag, vNodeProps, key as null | string, realNode);
+  return new VirtualNode(tag, vNodeProps, key as null | string, realNode);
 }
 
 function isClassComponent(comp: Function) {
@@ -102,6 +103,12 @@ export function updateVNode(vNode: VNode, vNodeProps?: any): VNode {
 
 export function createFragmentVNode(fragmentKey, fragmentProps) {
   const vNode = newVirtualNode(Fragment, fragmentKey, fragmentProps);
+  vNode.shouldUpdate = true;
+  return vNode;
+}
+
+export function createReactiveVNode(content) {
+  const vNode = newVirtualNode(ReactiveComponent, null, content);
   vNode.shouldUpdate = true;
   return vNode;
 }
@@ -231,32 +238,32 @@ export function onlyUpdateChildVNodes(processing: VNode): VNode | null {
   }
 
   // 当跳过子树更新时，父节点path更新时，需要更新所有子树path
-  if (processing.child && processing.path !== processing.child.path.slice(0, processing.path.length)) {
-    // bfs更新子树path
-    const queue: VNode[] = [];
-
-    const putChildrenIntoQueue = (vNode: VNode) => {
-      const child = vNode.child;
-      if (child) {
-        queue.push(child);
-        let sibling = child.next;
-        while (sibling) {
-          queue.push(sibling);
-          sibling = sibling.next;
-        }
-      }
-    };
-
-    putChildrenIntoQueue(processing);
-
-    while (queue.length) {
-      const vNode = queue.shift()!;
-
-      markVNodePath(vNode);
-
-      putChildrenIntoQueue(vNode);
-    }
-  }
+  // if (processing.child && processing.path !== processing.child.path.slice(0, processing.path.length)) {
+  //   // bfs更新子树path
+  //   const queue: VNode[] = [];
+  //
+  //   const putChildrenIntoQueue = (vNode: VNode) => {
+  //     const child = vNode.child;
+  //     if (child) {
+  //       queue.push(child);
+  //       let sibling = child.next;
+  //       while (sibling) {
+  //         queue.push(sibling);
+  //         sibling = sibling.next;
+  //       }
+  //     }
+  //   };
+  //
+  //   putChildrenIntoQueue(processing);
+  //
+  //   while (queue.length) {
+  //     const vNode = queue.shift()!;
+  //
+  //     markVNodePath(vNode);
+  //
+  //     putChildrenIntoQueue(vNode);
+  //   }
+  // }
   // 子树无需工作
   return null;
 }

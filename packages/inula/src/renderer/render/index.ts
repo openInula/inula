@@ -27,6 +27,7 @@ import * as DomTextRender from './DomText';
 import * as LazyComponentRender from './LazyComponent';
 import * as MemoComponentRender from './MemoComponent';
 import * as SuspenseComponentRender from './SuspenseComponent';
+import * as ReactiveComponentRender from './ReactiveComponent';
 
 import {
   ClassComponent,
@@ -42,6 +43,7 @@ import {
   LazyComponent,
   MemoComponent,
   SuspenseComponent,
+  ReactiveComponent,
 } from '../vnode/VNodeTags';
 
 export { BaseComponentRender };
@@ -60,4 +62,5 @@ export default {
   [LazyComponent]: LazyComponentRender,
   [MemoComponent]: MemoComponentRender,
   [SuspenseComponent]: SuspenseComponentRender,
+  [ReactiveComponent]: ReactiveComponentRender,
 };

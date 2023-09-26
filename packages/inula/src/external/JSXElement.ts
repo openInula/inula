@@ -18,6 +18,7 @@ import { getProcessingClassVNode } from '../renderer/GlobalVar';
 import { Source } from '../renderer/Types';
 import { BELONG_CLASS_VNODE_KEY } from '../renderer/vnode/VNode';
 import { InulaElement, KVObject } from '../types';
+import { isReactiveObj } from '../reactive/Utils';
 
 /**
  * vtype 节点的类型，这里固定是element
@@ -75,7 +76,17 @@ const keyArray = ['key', 'ref', '__source', '__self'];
 
 function buildElement(isClone, type, setting, children) {
   // setting中的值优先级最高，clone情况下从 type 中取值，创建情况下直接赋值为 null
-  const key = setting && setting.key !== undefined ? String(setting.key) : isClone ? type.key : null;
+  let key;
+  if (setting && setting.key !== undefined) {
+    if (isReactiveObj(setting.key)) {
+      key = setting.key;
+    } else {
+      key = String(setting.key);
+    }
+  } else {
+    key = isClone ? type.key : null;
+  }
+
   const ref = setting && setting.ref !== undefined ? setting.ref : isClone ? type.ref : null;
   const props = isClone ? { ...type.props } : {};
   let vNode = isClone ? type[BELONG_CLASS_VNODE_KEY] : getProcessingClassVNode();

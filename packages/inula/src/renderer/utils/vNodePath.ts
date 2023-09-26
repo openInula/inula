@@ -22,7 +22,7 @@ const PATH_DELIMITER = ',';
  * @param vNode
  */
 export function markVNodePath(vNode: VNode) {
-  vNode.path = `${vNode.parent!.path}${PATH_DELIMITER}${vNode.cIndex}`;
+  // vNode.path = `${vNode.parent!.path}${PATH_DELIMITER}${vNode.cIndex}`;
 }
 
 export function getPathArr(vNode: VNode) {

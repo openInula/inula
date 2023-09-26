@@ -14,6 +14,8 @@
  */
 
 import { Props } from '../utils/Interface';
+import { getValue } from '../../reactive/Utils';
+import { handleReactiveProp } from '../../reactive/RContextCreator';
 
 // 值的优先级 value > children > defaultValue
 function getInitValue(props: Props) {
@@ -48,7 +50,9 @@ export function updateTextareaValue(dom: HTMLTextAreaElement, props: Props, isIn
   if (isInit) {
     const initValue = getInitValue(props);
     if (initValue !== '') {
-      dom.value = initValue;
+      dom.value = getValue(initValue);
+
+      handleReactiveProp(dom, 'value', props.value);
     }
   } else {
     // 获取当前节点的 value 值

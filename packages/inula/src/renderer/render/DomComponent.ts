@@ -21,7 +21,7 @@ import { appendChildElement, newDom, initDomProps, getPropChangeList, isTextChil
 import { FlagUtils } from '../vnode/VNodeFlags';
 import { markRef } from './BaseComponent';
 import { DomComponent, DomPortal, DomText } from '../vnode/VNodeTags';
-import { travelVNodeTree } from '../vnode/VNodeUtils';
+import { isDomVNode, travelVNodeTree } from '../vnode/VNodeUtils';
 import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 
 function updateDom(processing: VNode, type: any, newProps: Props) {
@@ -74,7 +74,7 @@ export function bubbleRender(processing: VNode) {
       travelVNodeTree(
         vNode,
         node => {
-          if (node.tag === DomComponent || node.tag === DomText) {
+          if (isDomVNode(node)) {
             appendChildElement(dom, node.realNode);
           }
         },
