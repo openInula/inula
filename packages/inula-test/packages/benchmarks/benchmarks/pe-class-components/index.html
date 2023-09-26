@@ -1,0 +1,23 @@
+<html>
+<body>
+    <div id="app"></div>
+    <script>
+      performance.mark('Load Horizon');
+    </script>
+    <script src="horizon.production.js"></script>
+    <script>
+      performance.measure('Load Horizon', 'Load Horizon');
+    </script>
+    <script src="benchmark.js"></script>
+    <script>
+      performance.mark('Initial Render');
+      render();
+      performance.measure('Initial Render', 'Initial Render');
+      requestAnimationFrame(() => {
+        performance.mark('Update Render');
+        render();
+        performance.measure('Update Render', 'Update Render');
+      });
+    </script>
+  </body>
+</html>
