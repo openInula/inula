@@ -23,6 +23,6 @@
     "test": "jest --config=jest.config.js",
     "watch-test": "yarn test --watch --dev"
   },
-  "files": ["build/@types", "build/cjs", "build/umd", "build/index.js", "build/jsx-dev-runtime.js", "build/jsx-runtime.js"],
+  "files": ["build/@types", "build/cjs", "build/umd", "build/index.js", "build/jsx-dev-runtime.js", "build/jsx-runtime.js", "README.md"],
   "types": "./build/@types/index.d.ts"
 }
