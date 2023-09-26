@@ -46,6 +46,8 @@ export class WrappedEvent {
   propagationStopped = false;
   isPropagationStopped = (): boolean => this.propagationStopped;
 
+  defaultPrevented = false;
+
   // 适配Keyboard键盘事件该函数不能由合成事件调用
   getModifierState?: (keyArgs: string) => boolean;
   // 适配老版本事件api
@@ -65,7 +67,10 @@ export class WrappedEvent {
       this.propagationStopped = true;
     };
 
-    this.preventDefault = () => nativeEvent.preventDefault();
+    this.preventDefault = () => {
+      this.defaultPrevented = true;
+      nativeEvent.preventDefault();
+    };
 
     // custom事件自定义属性
     this.customEventName = customEventName;
