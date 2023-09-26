@@ -7,7 +7,7 @@
   "types": "build/index.d.ts",
   "scripts": {
     "demo-serve": "webpack serve --mode=development",
-    "rollup-build": "rollup --config rollup.config.js",
+    "build": "rollup --config rollup.config.js",
     "test": "jest --config jest.config.js",
     "test-c": "jest --coverage"
   },
