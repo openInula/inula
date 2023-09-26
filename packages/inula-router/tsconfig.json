@@ -16,7 +16,7 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "target": "es5",
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": true,
