@@ -1,0 +1,9 @@
+node_modules
+.idea
+.vscode
+.run
+path.json
+package-lock.json
+
+coverage
+packages/libs

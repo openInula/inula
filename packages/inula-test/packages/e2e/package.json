@@ -1,0 +1,26 @@
+{
+  "devDependencies": {
+    "@cloudsop/eview-ui": "^0.1.65",
+    "babel-loader": "^8.2.2",
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
+    "cross-env": "^7.0.3",
+    "css-loader": "3.4.2",
+    "express": "^4.17.1",
+    "memlab": "1.1.28",
+    "html-webpack-plugin": "4.4.1",
+    "react-router-dom": "^5.2.0",
+    "style-loader": "1.0.0",
+    "url-loader": "^4.1.1",
+    "webpack": "^4.46.0",
+    "webpack-dev-server": "^3.10.3",
+    "webpack-cli": "3.3.6"
+  },
+  "scripts": {
+    "memlab": "memlab run --scenario ./memlab/scenario.js",
+    "runPage": "webpack-dev-server --config ./webpack.config.js --mode development"
+  },
+  "dependencies": {
+    "@cloudsop/horizon": "0.0.22",
+    "memlab": "^1.1.28"
+  }
+}
