@@ -7,7 +7,8 @@
   "types": "build/index.d.ts",
   "scripts": {
     "demo-serve": "webpack serve --mode=development",
-    "rollup-build": "rollup --config rollup.config.js",
+    "rollup-build": "rollup --config rollup.config.js && npm run build-types ",
+    "build-types": "tsc -p tsconfig.json && rollup -c build-type.js",
     "test": "jest --config jest.config.js",
     "test-c": "jest --coverage"
   },
@@ -16,8 +17,7 @@
     "url": ""
   },
   "files": [
-    "build",
-    "example"
+    "build"
   ],
   "keywords": [],
   "author": "",
@@ -50,6 +50,7 @@
     "rollup-plugin-livereload": "^2.0.5",
     "rollup-plugin-serve": "^1.1.0",
     "rollup-plugin-terser": "^5.3.0",
+    "rollup-plugin-dts": "^6.0.1",
     "tslib": "^2.6.1",
     "ts-jest": "29.0.3",
     "ts-node": "10.9.1",
@@ -57,7 +58,8 @@
     "webpack": "^5.81.0",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.13.3",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react": "18.2.0-h3",
+    "react-dom": "18.2.0-h3",
+    "core-js": "3.31.0"
   }
 }
