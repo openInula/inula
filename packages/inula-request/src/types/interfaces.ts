@@ -95,6 +95,9 @@ export type IrResponse<T = any> = {
 
   // 响应事件消息
   event?: string;
+
+  // 响应对象上的完整 URL
+  responseURL?: string;
 };
 
 // Ir 类接口类型

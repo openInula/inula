@@ -74,7 +74,8 @@ function processUploadProgress(
             statusText: xhr.statusText,
             headers: xhr.getAllResponseHeaders(),
             config: config,
-          }
+            request: xhr
+          };
 
           if (config.validateStatus!(xhr.status)) {
             // 如果 fetch 请求已经成功或者拒绝，则此处不生效

@@ -98,6 +98,7 @@ export const ieFetchRequest = (config: IrRequestConfig): Promise<IrResponse> => 
           headers: response.headers,
           config,
           request: null,
+          responseURL: response.url
         };
 
         // 根据 responseType 选择相应的解析方法
