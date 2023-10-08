@@ -110,6 +110,7 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
             headers: headersObj,
             config,
             request: null,
+            responseURL: response.url
           };
 
           const responseBody = onDownloadProgress
