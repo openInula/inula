@@ -2,7 +2,7 @@
 
 ## 项目介绍
 
-单词 Inula（发音为：[ˈɪnjʊlə]），意为一类旋覆花属菊科的植物。openInula 是一款用于构建用户界面的 JavaScript 库，提供响应式 API 帮助开发者简单高效构建 web 页面，比传统虚拟 DOM 方式渲染效率提升30%以上！同时 InulaJS 提供与 React 保持一致的 API，并且提供5大常用功能丰富的核心组件：状态管理器、路由、国际化、请求组件、应用脚手架，以便开发者高效、高质量的构筑基于 InulaJS 的前端产品。
+单词 Inula（发音为：[ˈɪnjʊlə]），意为一类旋覆花属菊科的植物。openInula 是一款用于构建用户界面的 JavaScript 库，提供响应式 API 帮助开发者简单高效构建 Web 页面，比传统虚拟 DOM 方式渲染效率提升30%以上！同时 openInula 提供与 React 保持一致的 API，并且提供5大常用功能组件：状态管理器、路由、国际化、请求组件、应用脚手架，以便开发者高效、高质量的构筑基于 openInula 的前端产品。
 
 ## 技术架构
 
@@ -12,11 +12,11 @@
 
 **响应式API**
 
-* openInula 通过最小化重新渲染的范围，从而进行高效的UI渲染。这种方式避免了虚拟DOM的开销，使得 openInula 在性能方面表现出色。
+* openInula 通过最小化重新渲染的范围，从而进行高效的UI渲染。这种方式避免了虚拟 DOM 的开销，使得 openInula 在性能方面表现出色。
 * openInula 通过比较变化前后的 JavaScript 对象以细粒度的依赖追踪机制来实现响应式更新，无需用户过度关注性能优化。
 * 简洁API：
-  1. openInula 提供了两组简洁直观的API--响应式 API 和与 React 一致的传统API，使得开发者可以轻松地构建复杂的交互式界面。
-  2. openInula 简洁的API极大降低了开发者的学习成本，开发者使用响应式API可以快速构建高效的前端界面。
+  1. openInula 提供了两组简洁直观的API--响应式 API 和与 React 一致的传统 API，使得开发者可以轻松地构建复杂的交互式界面。
+  2. openInula 简洁的 API 极大降低了开发者的学习成本，开发者使用响应式API可以快速构建高效的前端界面。
 
 **兼容 ReactAPI**
 
@@ -53,9 +53,10 @@ inula-cli 是一套针对 openInula 的编译期插件，它支持代码优化�
 
 ## openInula 文档
 
-欢迎访问 openInula 官网文档仓库，参与 openInula 开发者文档开源项目，与我们一起完善开发者文档。
+欢迎访问 openInula 官网与文档仓库，参与 openInula 开发者文档开源项目，与我们一起完善开发者文档。
 
-[访问官网](https://www.openinula.net/)
+openInula 官网地址：[https://www.openinula.net/](https://www.openinula.net/)
+openInula 文档站地址：[https://docs.openinula.net/](https://docs.openinula.net/)
 
 ## 代码仓地址
 
@@ -64,9 +65,9 @@ openInula 仓库地址：[https://gitee.com/openinula](https://gitee.com/openinu
 ## 如何参与
 
 **参与贡献**
-欢迎您参与[贡献](https://gitee.com/openinula/docs/blob/master/%E8%B4%A1%E7%8C%AE%E6%8C%87%E5%8D%97.md)，我们鼓励开发者以各种方式参与文档反馈和贡献。
+欢迎您参与贡献，我们鼓励开发者以各种方式参与文档反馈和贡献。
 
-您可以对现有文档进行评价、简单更改、反馈文档质量问题、贡献您的原创内容，详细请参考[贡献文档](https://gitee.com/openinula/docs/blob/master/%E8%B4%A1%E7%8C%AE%E6%8C%87%E5%8D%97.md)。
+您可以对现有文档进行评价、简单更改、反馈文档质量问题、贡献您的原创内容，详细请参考[贡献指南](https://docs.openinula.net/docs/%E8%B4%A1%E7%8C%AE%E6%8C%87%E5%8D%97)。
 
 ## 许可协议
 
