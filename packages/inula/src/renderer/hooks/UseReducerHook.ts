@@ -21,6 +21,7 @@ import { setStateChange } from '../render/FunctionComponent';
 import { getHookStage, HookStage } from './HookStage';
 import type { VNode } from '../Types';
 import { getProcessingVNode } from '../GlobalVar';
+import { markUpdatedInRender } from "./HookMain";
 
 // 构造新的Update数组
 function insertUpdate<S, A>(action: A, hook: Hook<S, A>): Update<S, A> {
@@ -64,8 +65,13 @@ export function TriggerAction<S, A>(vNode: VNode, hook: Hook<S, A>, isUseState: 
     }
   }
 
-  // 执行vNode节点渲染
-  launchUpdateFromVNode(vNode);
+  if (vNode === getProcessingVNode()) {
+    // 绑定的VNode就是当前渲染的VNode时，就是在函数组件体内触发setState
+    markUpdatedInRender();
+  } else {
+    // 执行vNode节点渲染
+    launchUpdateFromVNode(vNode);
+  }
 }
 
 export function useReducerForInit<S, A>(reducer, initArg, init, isUseState?: boolean): [S, Trigger<A>] {
