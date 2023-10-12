@@ -1,3 +1,28 @@
+# 0.0.2 版本
+
+## 新特性
+
+- **inula-request** 新增响应体中获取完整 URL 能力。
+
+## API变更
+
+无
+
+## Bug修复
+
+- **inula** 解决事件卸载失败问题。
+- **inula** 解决 mouseover 重复触发 mouseEnter 事件问题。
+- **inula** 大数组合并使用 concat。
+- **inula** 事件支持 defaultPrevented 属性
+
+## CVE漏洞修复
+
+无
+
+## 已知问题
+
+无
+
 # 0.0.1 版本
 
 ## 新特性
