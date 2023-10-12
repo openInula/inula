@@ -146,7 +146,7 @@ function triggerInulaEvents(
 
   let mouseEnterListeners: ListenerUnitList = [];
   if (inulaEventToNativeMap.get('onMouseEnter')!.includes(nativeEvtName)) {
-    mouseEnterListeners = getMouseEnterListeners(nativeEvtName, vNode, nativeEvent, target);
+    mouseEnterListeners = getMouseEnterListeners(nativeEvtName, vNode, nativeEvent as MouseEvent, target);
   }
 
   let changeEvents: ListenerUnitList = [];
