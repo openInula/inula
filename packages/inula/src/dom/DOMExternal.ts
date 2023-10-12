@@ -89,7 +89,7 @@ function findDOMNode(domOrEle?: Element): null | Element | Text {
 
 // 情况根节点监听器
 function removeRootEventLister(container: Container) {
-  const events = (container._treeRoot as any).$EV;
+  const events = (container as any).$EV;
   if (events) {
     Object.keys(events).forEach(event => {
       const listener = events[event];
