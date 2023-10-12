@@ -18,10 +18,17 @@ import type { VNode } from '../Types';
 import { getLastTimeHook, setLastTimeHook, setCurrentHook, getNextHook } from './BaseHook';
 import { HookStage, setHookStage } from './HookStage';
 
+const NESTED_UPDATE_LIMIT = 50;
+// state updated in render phrase
+let hasUpdatedInRender = false;
 function resetGlobalVariable() {
   setHookStage(null);
   setLastTimeHook(null);
   setCurrentHook(null);
+}
+
+export function markUpdatedInRender() {
+  hasUpdatedInRender = true;
 }
 
 // hook对外入口
@@ -45,8 +52,14 @@ export function runFunctionWithHooks<Props extends Record<string, any>, Arg>(
     setHookStage(HookStage.Update);
   }
 
-  const comp = funcComp(props, arg);
+  let comp = funcComp(props, arg);
 
+  if (hasUpdatedInRender) {
+    resetGlobalVariable();
+    processing.oldHooks = processing.hooks;
+    setHookStage(HookStage.Update);
+    comp = runFunctionAgain(funcComp, props, arg);
+  }
   // 设置hook阶段为null，用于判断hook是否在函数组件中调用
   setHookStage(null);
 
@@ -62,4 +75,23 @@ export function runFunctionWithHooks<Props extends Record<string, any>, Arg>(
   resetGlobalVariable();
 
   return comp;
+}
+
+function runFunctionAgain<Props extends Record<string, any>, Arg>(
+  funcComp: (props: Props, arg: Arg) => any,
+  props: Props,
+  arg: Arg
+) {
+  let reRenderTimes = 0;
+  let childElements;
+  while (hasUpdatedInRender) {
+    reRenderTimes++;
+    if (reRenderTimes > NESTED_UPDATE_LIMIT) {
+      throw new Error('Too many setState called in function component');
+    }
+    hasUpdatedInRender = false;
+    childElements = funcComp(props, arg);
+  }
+
+  return childElements;
 }

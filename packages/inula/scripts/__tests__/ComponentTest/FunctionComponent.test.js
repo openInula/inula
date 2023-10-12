@@ -14,6 +14,7 @@
  */
 
 import * as Inula from '../../../src/index';
+const { useState } = Inula;
 describe('FunctionComponent Test', () => {
   it('渲染无状态组件', () => {
     const App = props => {
@@ -89,4 +90,39 @@ describe('FunctionComponent Test', () => {
     Inula.render(<App />, container);
     expect(container.querySelector('div').style['_values']['--max-segment-num']).toBe(10);
   });
+
+  it('函数组件渲染中重新发生setState不触发整个应用重新更新', () => {
+    function CountLabel({ count }) {
+      const [prevCount, setPrevCount] = useState(count);
+      const [trend, setTrend] = useState(null);
+      if (prevCount !== count) {
+        setPrevCount(count);
+        setTrend(count > prevCount ? 'increasing' : 'decreasing');
+      }
+      return (
+        <>
+          <h1>{count}</h1>
+          <Child trend={trend} />
+          {trend && <p>The count is {trend}</p>}
+        </>
+      );
+    }
+
+    let count = 0;
+    function Child({ trend }) {
+      count++;
+      return <div>{trend}</div>;
+    }
+
+    let update;
+    function App() {
+      const [count, setCount] = useState(0);
+      update = setCount;
+      return <CountLabel count={count} />;
+    }
+
+    Inula.render(<App />, container);
+    update(1);
+    expect(count).toBe(2);
+  })
 });
