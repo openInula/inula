@@ -280,7 +280,10 @@ chrome.runtime.onMessage.addListener(function (message, sender) {
             type: 'inulax stores',
             stores: storesPerTab[message.payload.tabId]?.map(store => {
               requestObservedComponents(message.payload.tabId);
-              const observedComponents = getObservedComponents(store.id, message.payload.tabId);
+              const observedComponents = getObservedComponents(
+                store.id,
+                message.payload.tabId
+              );
               return { ...store, observedComponents };
             }) || [],
           },
