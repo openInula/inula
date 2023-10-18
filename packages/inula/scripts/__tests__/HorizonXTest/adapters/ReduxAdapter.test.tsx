@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-//@ts-ignore
+// @ts-ignore
 import * as Inula from '../../../../src/index';
 import {
   createStore,
