@@ -32,7 +32,7 @@ const App = () => {
   const message = locale === 'zh' ? zh : en
 
 
-    return (
+  return (
     <IntlProvider locale={locale} messages={locale === 'zh' ? zh : en}>
       <header>Inula-Intl API Test Demo</header>
 
