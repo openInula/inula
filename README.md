@@ -20,7 +20,7 @@
 
 **兼容 ReactAPI**
 
-* 与 React 保持一致 API 的特性、可以无缝支持 React 生态。
+* 与React保持一致、可以无缝支持 React 生态。
 * 使用传统 API 可以无缝将 React 项目切换至 openInula，React 应用可零修改切换至 openInula。
 
 ### openInula 配套组件
@@ -28,7 +28,7 @@
 **状态管理器/inula-X**
 
 inula-X 是 openInula 默认提供的状态管理器，无需额外引入三方库，就可以简单实现跨组件/页面共享状态。
-inula-X 与 Redux 比可创建多个 Store，不需要在 Reducer 中返回 state 并且简化了 Action 和 Reducer 的创建步骤，原生支持异步能力，组件能做到精准重渲染。inula-X 均可使用函数组件、class 组件，能提供 redux 的适配接口及支持响应式的特点。
+inula-X 与 Redux 相比，可创建多个 Store，不需要在 Reducer 中返回 state 并且简化了 Action 和 Reducer 的创建步骤，原生支持异步能力，组件能做到精准重渲染。inula-X 均可使用函数组件、class 组件，能提供 redux 的适配接口及支持响应式的特点。
 
 **路由/inula-router**
 
