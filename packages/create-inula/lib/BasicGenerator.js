@@ -128,9 +128,9 @@ class BasicGenerator extends Generator {
         if (fs.existsSync(fullpath)) {
           this.traverseDirCapture(fullpath, dirCallback, fileCallback);
         }
-        continue;
+      } else {
+        fileCallback(fullpath);
       }
-      fileCallback(fullpath);
     }
   }
 
