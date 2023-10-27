@@ -109,12 +109,12 @@ export function stripBasename(path: string, prefix: string): string {
 export function createMemoryRecord<T, S>(initVal: S, fn: (arg: S) => T) {
   let visitedRecord: T[] = [fn(initVal)];
 
-  function getDelta(to: S, form: S): number {
-    let toIdx = visitedRecord.lastIndexOf(fn(to));
+  function getDelta(toKey: S, fromKey: S): number {
+    let toIdx = visitedRecord.lastIndexOf(fn(toKey));
     if (toIdx === -1) {
       toIdx = 0;
     }
-    let fromIdx = visitedRecord.lastIndexOf(fn(form));
+    let fromIdx = visitedRecord.lastIndexOf(fn(fromKey));
     if (fromIdx === -1) {
       fromIdx = 0;
     }
