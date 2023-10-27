@@ -68,7 +68,7 @@ export function isPromise(obj: any): boolean {
 }
 
 export function isSame(x, y) {
-  if (!(typeof Object.is === 'function')) {
+  if (typeof Object.is !== 'function') {
     if (x === y) {
       // +0 != -0
       return x !== 0 || 1 / x === 1 / y;
