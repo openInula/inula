@@ -13,7 +13,6 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { UNICODE_REG } from '../constants';
 import { CompiledMessage, Locale, LocaleConfig, Locales } from '../types/types';
 import generateFormatters from './generateFormatters';
 import {FormatOptions, I18nCache} from '../types/interfaces';
