@@ -29,10 +29,6 @@ export default function processRequest(config: IrRequestConfig): Promise<IrRespo
     config.cancelToken.throwIfRequested();
   }
 
-  if (config.signal && config.signal.aborted) {
-    throw new CancelError(undefined, config);
-  }
-
   // 拦截可能会传入普通对象
   config.headers = IrHeaders.from(config.headers as Record<string, any>);
 
@@ -53,6 +49,16 @@ export default function processRequest(config: IrRequestConfig): Promise<IrRespo
       return response;
     })
     .catch(error => {
+      if (config.signal?.aborted) {
+        error.response = {
+          data: null,
+          headers: config.headers,
+          status: 200,
+          statusText: 'ok',
+          config,
+        };
+      }
+
       if (!checkCancel(error)) {
         if (config.cancelToken) {
           config.cancelToken.throwIfRequested();
