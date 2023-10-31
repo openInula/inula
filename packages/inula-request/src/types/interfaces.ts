@@ -125,6 +125,9 @@ export interface IrInterface {
 
 // Ir 实例接口类型
 export interface IrInstance extends IrInterface {
+  <T = any, R = IrResponse<T>>(config: IrRequestConfig): Promise<R>;
+  <T = any, R = IrResponse<T>>(url: string, config?: IrRequestConfig): Promise<R>;
+
   // Ir 类
   InulaRequest: IrInterface;
 
@@ -175,6 +178,18 @@ export interface IrInstance extends IrInterface {
   isAxiosError: (val: any) => boolean;
 
   AxiosHeaders: any;
+}
+
+export interface IrProgressEvent {
+  loaded: string | number;
+  total?: string | number | null;
+  progress?: number;
+  bytes?: number;
+  rate?: number;
+  estimated?: number;
+  upload?: boolean;
+  download?: boolean;
+  event?: any;
 }
 
 export interface Interceptors {

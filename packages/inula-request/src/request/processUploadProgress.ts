@@ -13,11 +13,11 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { IrRequestConfig, IrResponse } from '../types/interfaces';
-import IrError from "../core/IrError";
+import { IrProgressEvent, IrRequestConfig, IrResponse } from '../types/interfaces';
+import IrError from '../core/IrError';
 
 function processUploadProgress(
-  onUploadProgress: Function | null,
+  onUploadProgress: (progressEvent: IrProgressEvent) => void | null,
   data: FormData,
   reject: (reason?: any) => void,
   resolve: (value: PromiseLike<IrResponse<any>> | IrResponse<any>) => void,

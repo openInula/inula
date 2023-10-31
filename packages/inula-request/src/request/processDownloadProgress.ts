@@ -13,7 +13,13 @@
  * See the Mulan PSL v2 for more details.
  */
 
-function processDownloadProgress(stream: ReadableStream | null, response: Response, onProgress: Function | null) {
+import { IrProgressEvent } from '../types/interfaces';
+
+function processDownloadProgress(
+  stream: ReadableStream | null,
+  response: Response,
+  onProgress: (progressEvent: IrProgressEvent) => void | null
+) {
   // 文件下载过程中更新进度
   if (onProgress) {
     const reader = stream?.getReader();
