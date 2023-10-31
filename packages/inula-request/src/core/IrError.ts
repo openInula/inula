@@ -98,6 +98,7 @@ const errorTypes = [
   'ERR_CANCELED',
   'ERR_NOT_SUPPORT',
   'ERR_INVALID_URL',
+  'ERR_FETCH_FAILED',
 ];
 
 const descriptors: PropertyDescriptorMap = errorTypes.reduce((acc, code) => {
