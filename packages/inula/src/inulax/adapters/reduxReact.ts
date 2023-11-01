@@ -17,7 +17,6 @@ import { useState, useContext, useEffect, useRef } from '../../renderer/hooks/Ho
 import { createContext } from '../../renderer/components/context/CreateContext';
 import { createElement } from '../../external/JSXElement';
 import type { ReduxStoreHandler, ReduxAction, BoundActionCreator } from './redux';
-import { forwardRef } from '../../renderer/components/ForwardRef';
 
 const DefaultContext = createContext(null);
 type Context = typeof DefaultContext;
@@ -91,11 +90,6 @@ type MergePropsP<StateProps, DispatchProps, OwnProps, MergedProps> = (
 type WrappedComponent<OwnProps> = (props: OwnProps) => ReturnType<typeof createElement>;
 type OriginalComponent<MergedProps> = (props: MergedProps) => ReturnType<typeof createElement>;
 type Connector<OwnProps, MergedProps> = (Component: OriginalComponent<MergedProps>) => WrappedComponent<OwnProps>;
-type ConnectOption<State = any> = {
-  areStatesEqual?: (oldState: State, newState: State) => boolean;
-  context?: Context;
-  forwardRef?: boolean
-}
 
 export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
   mapStateToProps: MapStateToPropsP<StateProps, OwnProps> = () => ({} as StateProps),
@@ -103,9 +97,12 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
   mergeProps: MergePropsP<StateProps, DispatchProps, OwnProps, MergedProps> = (
     stateProps,
     dispatchProps,
-    ownProps,
+    ownProps
   ): MergedProps => ({ ...stateProps, ...dispatchProps, ...ownProps } as unknown as MergedProps),
-  options: ConnectOption,
+  options?: {
+    areStatesEqual?: (oldState: any, newState: any) => boolean;
+    context?: Context;
+  }
 ): Connector<OwnProps, MergedProps> {
   if (!options) {
     options = {};
@@ -162,7 +159,6 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
           mappedDispatch = mapDispatchToProps(store.dispatch, props);
         }
       }
-      mappedDispatch = Object.assign({}, mappedDispatch, { dispatch: store.dispatch });
       const mergedProps = (
         mergeProps ||
         ((state, dispatch, originalProps) => {
@@ -175,13 +171,6 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
       const node = createElement(Component, mergedProps);
       return node;
     };
-
-    if (options.forwardRef) {
-      const forwarded = forwardRef(function (props, ref) {
-        return Wrapper({ ...props, ref: ref });
-      });
-      return forwarded as WrappedComponent<OwnProps>;
-    }
 
     return Wrapper;
   };
