@@ -20,10 +20,11 @@ import RouterContext from './context';
 function withRouter<C extends ComponentType>(Component: C) {
 
   function ComponentWithRouterProp(props: any) {
+    const { wrappedComponentRef, ...rest } = props;
     const { history, location, match } = useContext(RouterContext);
     const routeProps = { history: history, location: location, match: match };
 
-    return <Component {...props} {...routeProps} />;
+    return <Component {...routeProps} {...rest} ref={wrappedComponentRef} />;
   }
 
   return ComponentWithRouterProp;
