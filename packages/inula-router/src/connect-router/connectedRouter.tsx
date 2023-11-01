@@ -130,9 +130,14 @@ function getConnectedRouter(type: StoreType) {
     );
   };
 
+  const ConnectHRouterWithContext = (props: any) => {
+    const { store, ...rest } = props;
+    return <ConnectedRouter store={store} storeType={type} {...rest} />;
+  };
+
   // 针对不同的Store类型，使用对应的connect函数
   if (type === 'InulaXCompat') {
-    return hConnect(null as any, mapDispatchToProps)(ConnectedRouterWithContext as any);
+    return hConnect(null as any, mapDispatchToProps)(ConnectHRouterWithContext as any);
   }
   if (type === 'Redux') {
     return connect(null, mapDispatchToProps)(ConnectedRouterWithContext);
