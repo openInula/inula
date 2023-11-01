@@ -107,7 +107,7 @@ export function createHashHistory<S = DefaultStateType>(option: HashHistoryOptio
     warning(state !== undefined, 'Hash history does not support state, it will be ignored');
 
     const action = Action.push;
-    const location = createLocation<S>(history.location, to, state, '');
+    const location = createLocation<S>(history.location, to, undefined, '');
 
     transitionManager.confirmJumpTo(location, action, getUserConfirmation, isJump => {
       if (!isJump) {
@@ -132,7 +132,7 @@ export function createHashHistory<S = DefaultStateType>(option: HashHistoryOptio
   function replace(to: To, state?: S) {
     warning(state !== undefined, 'Hash history does not support state, it will be ignored');
     const action = Action.replace;
-    const location = createLocation<S>(history.location, to, state, '');
+    const location = createLocation<S>(history.location, to, undefined, '');
 
     transitionManager.confirmJumpTo(location, action, getUserConfirmation, isJump => {
       if (!isJump) {
