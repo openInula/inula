@@ -24,5 +24,13 @@
     "watch-test": "yarn test --watch --dev"
   },
   "files": ["build/@types", "build/cjs", "build/umd", "build/index.js", "build/jsx-dev-runtime.js", "build/jsx-runtime.js", "README.md"],
-  "types": "./build/@types/index.d.ts"
+  "types": "./build/@types/index.d.ts",
+  "exports": {
+    ".": {
+      "default": "./index.js"
+    },
+    "./package.json": "./package.json",
+    "./jsx-runtime": "./jsx-runtime.js",
+    "./jsx-dev-runtime": "./jsx-dev-runtime.js"
+  }
 }
