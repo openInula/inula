@@ -78,4 +78,7 @@ module.exports = {
     port: 9000,
     open: true,
   },
+  resolve: {
+    extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json'],
+  },
 };
