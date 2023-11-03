@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "outDir": "./dist",
-    "incremental": false,
     "allowJs": true,
     "strict": true,
     "noImplicitAny": false,
@@ -17,6 +16,6 @@
     }
   },
   "include": [
-    "./src/*/*.ts", "./src/index.d.ts", "./src/*/*.tsx"
+    "./src/**/*.ts", "./src/index.d.ts", "./src/**/*.tsx", "./externals.d.ts"
   ]
 }
