@@ -20,7 +20,7 @@
 export default class ItemMap<T> {
 
   // 不要用 indexOf 进行位置计算，它会遍历数组
-  private lastRenderItemToIndexMap: Map<T, number>;
+  private lastRenderItemToIndexMap: Map<T | undefined, number>;
 
   constructor() {
     this.lastRenderItemToIndexMap = new Map();
@@ -34,10 +34,10 @@ export default class ItemMap<T> {
       return nextItems;
     }
 
-    const nextRenderItems: T[] = [];
+    const nextRenderItems: (T | undefined)[] = [];
     const length = nextItems.length;
-    const nextRenderItemToIndexMap = new Map<T, number>();
-    const addItems = [];
+    const nextRenderItemToIndexMap = new Map<T | undefined, number>();
+    const addItems: T[] = [];
 
     // 遍历 nextItems 找到复用 item 和新增 item
     nextItems.forEach(item => {
