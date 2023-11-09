@@ -48,7 +48,7 @@ function parseTranslate<T>(data: T[], itemHeight: number) {
 
 export function VList<T extends { id: number | string }>(props: IProps<T>) {
   const { data, maxDeep, height, width, children, itemHeight, scrollToItem, onRendered } = props;
-  const [scrollTop, setScrollTop] = useState(Math.max(data.indexOf(scrollToItem), 0) * itemHeight);
+  const [scrollTop, setScrollTop] = useState(Math.max(data.indexOf(scrollToItem!), 0) * itemHeight);
   const renderInfoRef: { current: RenderInfoType<T> } = useRef({
     visibleItems: [],
   });
@@ -75,7 +75,7 @@ export function VList<T extends { id: number | string }>(props: IProps<T>) {
         const index = data.indexOf(scrollToItem);
         // 显示在页面中间
         const top = Math.max(index * itemHeight - height / 2, 0);
-        containerRef.current.scrollTo({ top: top });
+        containerRef.current?.scrollTo({ top: top });
       }
     }
   }, [scrollToItem]);
@@ -87,9 +87,9 @@ export function VList<T extends { id: number | string }>(props: IProps<T>) {
       setScrollTop(scrollTop);
     };
     const container = containerRef.current;
-    container.addEventListener('scroll', handleScroll);
+    container?.addEventListener('scroll', handleScroll);
     return () => {
-      container.removeEventListener('scroll', handleScroll);
+      container?.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -117,7 +117,7 @@ export function VList<T extends { id: number | string }>(props: IProps<T>) {
     }
     return (
       <div
-        key={String(i)} // 固定 key 值，这样就只会更新 translateY 的值
+        key={String(index)} // 固定 key 值，这样就只会更新 translateY 的值
         className={styles.item}
         style={{ transform: `translateY(${itemToTranslateYMap.get(item)}px)` }}
       >
