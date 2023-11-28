@@ -38,7 +38,7 @@ export function injectSrc(src) {
   ).appendChild(script);
 }
 
-function injectCode(code) {
+export function injectCode(code) {
   const script = document.createElement('script');
   script.textContent = code;
 
