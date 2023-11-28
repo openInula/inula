@@ -16,7 +16,7 @@
 import { isMap, isSet, isWeakMap, isWeakSet } from '../CommonUtils';
 import { getStore, getAllStores } from '../store/StoreHandler';
 import { OBSERVED_COMPONENTS } from './constants';
-import { VNode } from "../../renderer/vnode/VNode";
+import { VNode } from '../../renderer/vnode/VNode';
 
 const sessionId = Date.now();
 
