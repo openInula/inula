@@ -53,8 +53,8 @@ export type ReduxMiddleware = (
 
 type Reducer = (state: any, action: ReduxAction) => any;
 
-type StoreCreator = (reducer: Reducer, preloadedState?: any) => ReduxStoreHandler
-type StoreEnhancer = (next: StoreCreator) => StoreCreator
+type StoreCreator = (reducer: Reducer, preloadedState?: any) => ReduxStoreHandler;
+type StoreEnhancer = (next: StoreCreator) => StoreCreator;
 
 function mergeData(state, data) {
   if (!data) {

@@ -92,7 +92,7 @@ type Connector<OwnProps, MergedProps> = (Component: OriginalComponent<MergedProp
 type ConnectOption<State = any> = {
   areStatesEqual?: (oldState: State, newState: State) => boolean;
   context?: Context;
-  forwardRef?: boolean
+  forwardRef?: boolean;
 }
 
 export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
