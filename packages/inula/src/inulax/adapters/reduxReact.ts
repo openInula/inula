@@ -41,29 +41,27 @@ export function createStoreHook(context: Context): () => ReduxStoreHandler {
   };
 }
 
-export function createSelectorHook(context: Context): (selector?: (any) => any) => any {
-  const store = createStoreHook(context)() as unknown as ReduxStoreHandler;
-  return function (selector = state => state) {
-    const [b, fr] = useState(false);
+export function createSelectorHook(context: Context): (selector?: ((state: unknown) => any) | undefined) => any {
+  const store = createStoreHook(context)();
+  return function useSelector(selector = state => state) {
+    const [state, setState] = useState(() => store.getState());
 
     useEffect(() => {
-      const unsubscribe = store.subscribe(() => fr(!b));
-      return () => {
-        unsubscribe();
-      };
-    });
+      const unsubscribe = store.subscribe(() => {
+        setState(store.getState());
+      });
+      return () => unsubscribe();
+    }, []);
 
-    return selector(store.getState());
+    return selector(state);
   };
 }
 
 export function createDispatchHook(context: Context): () => BoundActionCreator {
-  const store = createStoreHook(context)() as unknown as ReduxStoreHandler;
-  return function () {
-    return action => {
-      store.dispatch(action);
-    };
-  }.bind(store);
+  const store = createStoreHook(context)();
+  return function useDispatch() {
+    return store.dispatch;
+  };
 }
 
 export const useSelector = selector => {
