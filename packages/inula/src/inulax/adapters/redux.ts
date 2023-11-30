@@ -133,11 +133,13 @@ export function createStore(reducer: Reducer, preloadedState?: any, enhancers?: 
     dispatch: store.$a.dispatch,
   };
 
-  enhancers && enhancers(result);
-
   result.dispatch({ type: 'InulaX' });
 
   store.reduxHandler = result;
+
+  if (typeof enhancers === 'function') {
+    return enhancers(createStore)(reducer, preloadedState);
+  }
 
   return result as ReduxStoreHandler;
 }
@@ -190,12 +192,12 @@ export function bindActionCreators(actionCreators: ActionCreators, dispatch: Dis
   return boundActionCreators;
 }
 
-export function compose(...middlewares: ReduxMiddleware[]) {
-  return (store: ReduxStoreHandler, extraArgument: any) => {
-    let val;
-    middlewares.reverse().forEach((middleware: ReduxMiddleware, index) => {
+export function compose<T = StoreCreator>(...middlewares: ((...args: any[]) => any)[]): (...args: any[]) => T {
+  return (...args) => {
+    let val: any;
+    middlewares.reverse().forEach((middleware, index) => {
       if (!index) {
-        val = middleware(store, extraArgument);
+        val = middleware(...args);
         return;
       }
       val = middleware(val);
