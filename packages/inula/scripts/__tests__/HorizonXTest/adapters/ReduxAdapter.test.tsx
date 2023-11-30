@@ -187,7 +187,7 @@ describe('Redux adapter', () => {
     reduxStore.dispatch({ type: 'toggle' });
     reduxStore.dispatch({ type: 'toggle' });
 
-    expect(counter).toBe(3); // NOTE: first action is always store initialization
+    expect(counter).toBe(2); // execute dispatch two times, applyMiddleware was called same times
   });
 
   it('Should apply multiple enhancers', async () => {
@@ -226,7 +226,7 @@ describe('Redux adapter', () => {
 
     reduxStore.dispatch({ type: 'toggle' });
 
-    expect(counter).toBe(2); // NOTE: first action is always store initialization
+    expect(counter).toBe(1); // execute dispatch two times, applyMiddleware was called same times
     expect(lastAction).toBe('toggle');
     expect(middlewareCallList[0]).toBe('callCounter');
     expect(middlewareCallList[1]).toBe('lastFunctionStorage');
