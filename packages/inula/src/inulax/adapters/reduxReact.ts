@@ -111,41 +111,36 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
 
   //this component should bear the type returned from mapping functions
   return (Component: OriginalComponent<MergedProps>): WrappedComponent<OwnProps> => {
-    const useStore = createStoreHook(options?.context || DefaultContext);
+    const useStore = createStoreHook(options.context || DefaultContext);
 
     //this component should mimic original type of component used
     const Wrapper: WrappedComponent<OwnProps> = (props: OwnProps) => {
-      const [f, forceReload] = useState(true);
+      const store = useStore() as ReduxStoreHandler;
+      const [state, setState] = useState(() => store.getState());
 
-      const store = useStore() as unknown as ReduxStoreHandler;
 
       useEffect(() => {
-        const unsubscribe = store.subscribe(() => forceReload(!f));
-        return () => {
-          unsubscribe();
-        };
+        const unsubscribe = store.subscribe(() => {
+          setState(store.getState());
+        });
+        return () => unsubscribe();
+      }, []);
+
+      const previous = useRef<{ state: { [key: string]: any }, mappedState: StateProps }>({
+        state: {},
+        mappedState: {} as StateProps,
       });
 
-      const previous = useRef({
-        state: {},
-        mappedState: {},
-      }) as {
-        current: {
-          state: { [key: string]: any };
-          mappedState: StateProps;
-        };
-      };
-
       let mappedState: StateProps;
-      if (options?.areStatesEqual) {
-        if (options.areStatesEqual(previous.current.state, store.getState())) {
+      if (options.areStatesEqual) {
+        if (options.areStatesEqual(previous.current.state, state)) {
           mappedState = previous.current.mappedState as StateProps;
         } else {
-          mappedState = mapStateToProps ? mapStateToProps(store.getState(), props) : ({} as StateProps);
+          mappedState = mapStateToProps ? mapStateToProps(state, props) : ({} as StateProps);
           previous.current.mappedState = mappedState;
         }
       } else {
-        mappedState = mapStateToProps ? mapStateToProps(store.getState(), props) : ({} as StateProps);
+        mappedState = mapStateToProps ? mapStateToProps(state, props) : ({} as StateProps);
         previous.current.mappedState = mappedState;
       }
       let mappedDispatch: DispatchProps = {} as DispatchProps;
@@ -154,6 +149,7 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
           Object.entries(mapDispatchToProps).forEach(([key, value]) => {
             mappedDispatch[key] = (...args: ReduxAction[]) => {
               store.dispatch(value(...args));
+              setState(store.getState());
             };
           });
         } else {
@@ -168,10 +164,9 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
         })
       )(mappedState, mappedDispatch, props);
 
-      previous.current.state = store.getState();
+      previous.current.state = state;
 
-      const node = createElement(Component, mergedProps);
-      return node;
+      return createElement(Component, mergedProps);
     };
 
     if (options.forwardRef) {
