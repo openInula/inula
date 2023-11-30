@@ -162,6 +162,7 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
           mappedDispatch = mapDispatchToProps(store.dispatch, props);
         }
       }
+      mappedDispatch = Object.assign({}, mappedDispatch, { dispatch: store.dispatch });
       const mergedProps = (
         mergeProps ||
         ((state, dispatch, originalProps) => {
