@@ -35,5 +35,5 @@ function createThunkMiddleware(extraArgument?: any): ReduxMiddleware {
 }
 
 export const thunk = createThunkMiddleware();
-// @ts-ignore
-thunk.withExtraArgument = createThunkMiddleware;
+
+export const withExtraArgument = createThunkMiddleware;

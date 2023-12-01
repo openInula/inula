@@ -1,0 +1,197 @@
+/*
+ * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
+ *
+ * openInula is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
+@import '../components/assets.less';
+
+.displayData {
+  background-color: rgb(241, 243, 244);
+}
+
+.app {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  font-size: @common-font-size;
+}
+
+div.wrapper {
+  margin: 15px;
+  position: relative;
+  width: calc(100% - 30px);
+  display: block;
+}
+
+div.table {
+  display: table;
+  vertical-align: top;
+  width: calc(100%);
+  background-color: white;
+  position: relative;
+}
+
+div.row {
+  display: table-row;
+
+  &:nth-child(2n + 1) {
+    background-color: rgb(241, 243, 244);
+    .default {
+      background-color: rgb(241, 243, 244);
+    }
+  }
+}
+
+div.cell {
+  display: table-cell;
+  cursor: pointer;
+  padding: 5px;
+}
+
+div.half {
+  width: calc(50% - 8px);
+  float: left;
+}
+
+div.header {
+  background-color: rgb(241, 243, 244);
+  font-weight: bold;
+}
+
+div.row.active {
+  background-color: #00a;
+  color: white;
+}
+
+button.tab {
+  border: 1px solid grey;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  &.active {
+    border-bottom: none;
+    color: black;
+    font-weight: bold;
+    background-color: white;
+  }
+}
+
+span.highlighted {
+  background-color: #ff0;
+}
+
+.grey {
+  color: grey;
+}
+
+.red {
+  color: #a00;
+}
+
+.blue {
+  color: #00a;
+}
+
+.purple {
+  color: #909;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.link {
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
+  color: #00a;
+}
+
+.compositeInput {
+  background-color: white;
+  border: 1px solid grey;
+  display: inline-block;
+  border-radius: 0;
+  padding: 5px;
+  &.left {
+    border-right: 0;
+    margin-right: 0;
+    padding-right: 0;
+  }
+
+  &.right {
+    border-left: 0;
+    margin-left: 0;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.filterButton {
+  background-color: transparent;
+  padding: 5px;
+  border-radius: 5px;
+  border: 0;
+  &.active {
+    background-color: #ddd;
+  }
+}
+
+.added {
+  background-color: #afa;
+  &::before {
+    font-weight: bold;
+    color: #0a0;
+  }
+}
+
+.deleted {
+  background-color: #faa;
+  text-decoration-line: line-through;
+  &::before {
+    font-weight: bold;
+    color: #a00;
+  }
+}
+
+.changed {
+  background-color: #ffa;
+  &::before {
+    font-weight: bold;
+    color: #ca0;
+  }
+}
+
+.default {
+  background-color: white;
+}
+
+.floatingButton {
+  right: 5px;
+  position: absolute;
+  height: 17px;
+  width: 17px;
+  font-size: 10px;
+  padding: 0;
+  cursor: pointer;
+}
+
+.scrollable {
+  max-height: calc(100vh - 65px);
+  overflow: auto;
+
+  div.row {
+    display: block;
+  }
+}
