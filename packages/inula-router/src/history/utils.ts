@@ -28,8 +28,8 @@ export function createPath(path: Partial<Path>): string {
 }
 
 export function parsePath(url: string): Partial<Path> {
+  let pathname = url || '/';
   const parsedPath: Partial<Path> = {
-    pathname: url || '/',
     search: '',
     hash: '',
   };
@@ -38,16 +38,16 @@ export function parsePath(url: string): Partial<Path> {
   if (hashIdx > -1) {
     const hash = url.substring(hashIdx);
     parsedPath.hash = hash === '#' ? '' : hash;
-    url = url.substring(0, hashIdx);
+    pathname = pathname.substring(0, hashIdx);
   }
 
   const searchIdx = url.indexOf('?');
   if (searchIdx > -1) {
     const search = url.substring(searchIdx);
     parsedPath.search = search === '?' ? '' : search;
-    url = url.substring(0, searchIdx);
+    pathname = pathname.substring(0, searchIdx);
   }
-  parsedPath.pathname = url;
+  parsedPath.pathname = pathname;
   return parsedPath;
 }
 
@@ -116,12 +116,12 @@ export function stripBasename(path: string, prefix: string): string {
 export function createMemoryRecord<T, S>(initVal: S, fn: (arg: S) => T) {
   let visitedRecord: T[] = [fn(initVal)];
 
-  function getDelta(to: S, form: S): number {
-    let toIdx = visitedRecord.lastIndexOf(fn(to));
+  function getDelta(toKey: S, formKey: S): number {
+    let toIdx = visitedRecord.lastIndexOf(fn(toKey));
     if (toIdx === -1) {
       toIdx = 0;
     }
-    let fromIdx = visitedRecord.lastIndexOf(fn(form));
+    let fromIdx = visitedRecord.lastIndexOf(fn(formKey));
     if (fromIdx === -1) {
       fromIdx = 0;
     }

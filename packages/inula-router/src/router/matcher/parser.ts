@@ -40,7 +40,7 @@ export type Matched<P = any> = {
 
 const defaultOption: Required<ParserOption> = {
   // url匹配时是否大小写敏感
-  caseSensitive: true,
+  caseSensitive: false,
   // 是否严格匹配url结尾的/
   strictMode: false,
   // 是否完全精确匹配

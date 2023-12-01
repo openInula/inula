@@ -24,27 +24,42 @@ import { parsePath } from '../history/utils';
 
 type NavLinkProps = {
   to: Partial<Location> | string | ((location: Location) => string | Partial<Location>);
-  isActive?: (match: Matched | null, location: Location) => boolean;
+  isActive?<P extends { [K in keyof P]?: string }>(match: Matched<P> | null, location: Location): boolean;
+  exact?: boolean;
+  strict?: boolean;
+  sensitive?: boolean;
+  className?: string | ((isActive: boolean) => string);
+  activeClassName?: string;
   [key: string]: any;
-} & LinkProps;
+} & Omit<LinkProps, 'className'>;
 
 type Page = 'page';
 
 function NavLink<P extends NavLinkProps>(props: P) {
-  const { to, isActive, ...rest } = props;
+  const { to, isActive, exact, strict, sensitive, className, activeClassName, ...rest } = props;
   const context = useContext(Context);
 
   const toLocation = typeof to === 'function' ? to(context.location) : to;
 
   const { pathname } = typeof toLocation === 'string' ? parsePath(toLocation) : toLocation;
 
-  const match = pathname ? matchPath(context.location.pathname, pathname) : null;
+  const match = pathname ? matchPath(context.location.pathname, pathname, {
+    exact: exact,
+    strictMode: strict,
+    caseSensitive: sensitive,
+  }) : null;
 
-  const isLinkActive = match && isActive ? isActive(match, context.location) : false;
+  const isLinkActive = !!(isActive ? isActive(match, context.location) : match);
+
+  let classNames = typeof className === 'function' ? className(isLinkActive) : className;
+  if (isLinkActive) {
+    classNames = [activeClassName, classNames].filter(Boolean).join('');
+  }
 
   const page: Page = 'page';
   const otherProps = {
-    'aria-current': isLinkActive ? page : false,
+    className: classNames,
+    'aria-current': isLinkActive ? page : undefined,
     ...rest,
   };
 
