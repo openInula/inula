@@ -21,7 +21,7 @@ import { setStateChange } from '../render/FunctionComponent';
 import { getHookStage, HookStage } from './HookStage';
 import type { VNode } from '../Types';
 import { getProcessingVNode } from '../GlobalVar';
-import { markUpdatedInRender } from "./HookMain";
+import { markUpdatedInRender } from './HookMain';
 
 // 构造新的Update数组
 function insertUpdate<S, A>(action: A, hook: Hook<S, A>): Update<S, A> {

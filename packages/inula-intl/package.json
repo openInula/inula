@@ -1,6 +1,6 @@
 {
   "name": "inula-intl",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "build/intl.umd.js",
   "type": "commonjs",
