@@ -244,17 +244,22 @@ export function calcStartUpdateVNode(treeRoot: VNode) {
 // 在局部更新时，从上到下恢复父节点的context和PortalStack
 function recoverTreeContext(vNode: VNode) {
   const contextProviders: VNode[] = [];
+  const portalRoots: VNode[] = [];
   let parent = vNode.parent;
   while (parent !== null) {
     if (parent.tag === ContextProvider) {
       contextProviders.unshift(parent);
+    } else if (parent.tag === DomPortal) {
+      portalRoots.unshift(parent);
     }
     if (parent.tag === DomPortal) {
       pushCurrentRoot(parent);
     }
     parent = parent.parent;
   }
-
+  portalRoots.forEach(node => {
+    pushCurrentRoot(node);
+  });
   contextProviders.forEach(node => {
     setContext(node, node.props.value);
   });
