@@ -16,6 +16,13 @@
 // 需要委托的inula事件和原生事件对应关系
 export const allDelegatedInulaEvents = new Map();
 
+/**
+ * Portal根节点默认绑定事件，解决常见事件无法冒泡到parent vnode的问题
+ * 例如：parent vNode节点绑定了mousedown事件，子节点为portal节点，子节点下元素未绑定mousedown事件
+ * 此时，点击portal下子元素，mousedown事件无法冒泡到parentNode
+ */
+export const portalDefaultDelegatedEvents = ['onMouseDown', 'onMouseUp', 'onKeyDown', 'onKeyUp', 'onFocus', 'onBlur', 'onClick'];
+
 // 模拟委托事件，不冒泡事件需要利用其他事件来触发冒泡过程
 export const simulatedDelegatedEvents = ['onMouseEnter', 'onMouseLeave'];
 // 所有委托的原生事件集合

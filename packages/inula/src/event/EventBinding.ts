@@ -16,7 +16,7 @@
 /**
  * 事件绑定实现，分为绑定委托事件和非委托事件
  */
-import { allDelegatedInulaEvents, simulatedDelegatedEvents } from './EventHub';
+import { allDelegatedInulaEvents, portalDefaultDelegatedEvents, simulatedDelegatedEvents } from './EventHub';
 import { isDocument } from '../dom/utils/Common';
 import { getNearestVNode, getNonDelegatedListenerMap } from '../dom/DOMInternalKeys';
 import { asyncUpdates, runDiscreteUpdates } from '../renderer/TreeBuilder';
@@ -86,6 +86,13 @@ export function lazyDelegateOnRoot(currentRoot: VNode, eventName: string) {
 export function listenSimulatedDelegatedEvents(root: VNode) {
   for (let i = 0; i < simulatedDelegatedEvents.length; i++) {
     lazyDelegateOnRoot(root, simulatedDelegatedEvents[i]);
+  }
+}
+
+// portal绑定默认事件
+export function listenPortalEvents(root: VNode) {
+  for (let i = 0; i < portalDefaultDelegatedEvents.length; i++) {
+    lazyDelegateOnRoot(root, portalDefaultDelegatedEvents[i]);
   }
 }
 
