@@ -157,10 +157,6 @@ openinula团队会关注所有Pull Request，我们会review以及合入你的�
 1. `npm run build` 同时构建openinula UMD的prod版本和dev版本
 2. `build-types` 单独构建openinula的类型提示@types目录
 
-#### 配套开发工具
-
-- [openinula-devtool](https://www.XXXX.com)： 可视化openinula项目页面的vDom树
-
 ## 开源许可协议
 
 请查阅 License 获取开源许可协议的更多信息.
