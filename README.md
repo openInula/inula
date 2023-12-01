@@ -10,7 +10,7 @@
 
 ### 核心能力
 
-#### 响应式API
+#### 响应式API(实验性功能，可在reactive分支查看代码或使用npm仓中experiment版本体验)
 
 * openInula 通过最小化重新渲染的范围，从而进行高效的UI渲染。这种方式避免了虚拟 DOM 的开销，使得 openInula 在性能方面表现出色。
 * openInula 通过比较变化前后的 JavaScript 对象以细粒度的依赖追踪机制来实现响应式更新，无需用户过度关注性能优化。
