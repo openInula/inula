@@ -41,4 +41,7 @@ export default {
       presets: ['@babel/preset-env']
     })
   ],
+  external:[
+    'openinula'
+  ],
 };
