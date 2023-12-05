@@ -15,7 +15,7 @@
 
 import type { VNode } from '../Types';
 import { FlagUtils } from '../vnode/VNodeFlags';
-import { TYPE_COMMON_ELEMENT, TYPE_FRAGMENT, TYPE_PORTAL } from '../../external/JSXElementType';
+import { TYPE_COMMON_ELEMENT, TYPE_FRAGMENT, TYPE_PORTAL, TYPE_STRICT_MODE } from '../../external/JSXElementType';
 import { DomText, DomPortal, Fragment, DomComponent } from '../vnode/VNodeTags';
 import {
   updateVNode,
@@ -35,9 +35,9 @@ enum DiffCategory {
   ARR_NODE = 'ARR_NODE',
 }
 
-// 检查是不是被 FRAGMENT 包裹
-function isNoKeyFragment(child: any) {
-  return child != null && child.type === TYPE_FRAGMENT && child.key === null;
+// 检查是不是被 FRAGMENT 或 StrictMode 包裹
+function isNoKeyFragmentOrStrictMode(child: any) {
+  return child != null && (child.type === TYPE_FRAGMENT || child.type === TYPE_STRICT_MODE) && child.key === null;
 }
 
 // 清除单个节点
@@ -631,7 +631,7 @@ export function createChildrenByDiff(
   newChild: any,
   isComparing: boolean
 ): VNode | null {
-  const isFragment = isNoKeyFragment(newChild);
+  const isFragment = isNoKeyFragmentOrStrictMode(newChild);
   newChild = isFragment ? newChild.props.children : newChild;
 
   // 1. 没有新节点，直接把vNode标记为删除
