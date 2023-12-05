@@ -15,6 +15,7 @@
 
 import { IrProgressEvent, IrRequestConfig, IrResponse } from '../types/interfaces';
 import IrError from '../core/IrError';
+import CancelError from '../cancel/CancelError';
 
 function processUploadProgress(
   onUploadProgress: (progressEvent: IrProgressEvent) => void | null,
@@ -95,7 +96,7 @@ function processUploadProgress(
           xhr.abort();
           const errorMsg = config.timeoutErrorMessage ?? `timeout of ${config.timeout}ms exceeded`;
           throw new IrError(errorMsg, '', config, xhr, undefined);
-        }
+        };
       }
 
       for (const header in config.headers) {
@@ -106,6 +107,21 @@ function processUploadProgress(
           xhr.setRequestHeader(header, config.headers[header]);
         }
       }
+
+      if (config.signal) {
+        const onCanceled = () => {
+          const irError = new CancelError('request canceled', config);
+          reject(irError);
+          xhr.abort();
+        };
+
+        if (config.signal.aborted) {
+          onCanceled();
+        } else {
+          config.signal.addEventListener('abort', onCanceled);
+        }
+      }
+
       xhr.send(data);
     };
 

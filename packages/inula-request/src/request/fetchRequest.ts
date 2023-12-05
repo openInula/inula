@@ -168,8 +168,14 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
               }
             })
             .catch((error: IrError) => {
-              const irError = new IrError(error.message, 'ERR_FETCH_FAILED', responseData.config, responseData.request, responseData);
-              reject(irError);
+              // fetch 在取消请求的极限场景会抛出 Failed to fetch 的 error，此时将其转为取消 error
+              if (signal?.aborted) {
+                const irError = new CancelError('request canceled', config);
+                reject(irError);
+              } else {
+                const irError = new IrError(error.message, 'ERR_FETCH_FAILED', responseData.config, responseData.request, responseData);
+                reject(irError);
+              }
             });
         })
         .catch((error: IrError) => {
