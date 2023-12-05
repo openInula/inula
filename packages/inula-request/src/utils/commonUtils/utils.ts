@@ -386,7 +386,18 @@ const convertToCamelCase = (str: string) => {
 
 function objectToQueryString(obj: Record<string, any>) {
   return Object.keys(obj)
-    .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]))
+    .map(key => {
+      // params 中 value 为数组时需特殊处理，如：{ key: [1, 2, 3] } -> key[]=1&key[]=2&key[]=3
+      if (Array.isArray(obj[key])) {
+        let urlPart = '';
+        obj[key].forEach((value: string) => {
+          urlPart = `${urlPart}${key}[]=${value}&`;
+          return urlPart;
+        });
+        return urlPart.slice(0, -1);
+      }
+      return encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]);
+    })
     .join('&');
 }
 
