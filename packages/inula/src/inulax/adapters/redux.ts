@@ -91,6 +91,10 @@ function mergeData(state, data) {
 }
 
 export function createStore(reducer: Reducer, preloadedState?: any, enhancers?: StoreEnhancer): ReduxStoreHandler {
+  if (typeof preloadedState === 'function' && typeof enhancers === 'undefined') {
+    enhancers = preloadedState;
+    preloadedState = undefined;
+  }
   const store = createStoreX({
     id: 'defaultStore',
     state: { stateWrapper: preloadedState },
@@ -107,6 +111,7 @@ export function createStore(reducer: Reducer, preloadedState?: any, enhancers?: 
           return;
         } // NOTE: reducer should never return undefined, in this case, do not change state
         state.stateWrapper = result;
+        return action;
       },
     },
     options: {

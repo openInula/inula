@@ -43,15 +43,19 @@ export type RouteProps<P extends Record<string, any> = {}, Path extends string =
 function Route<Path extends string, P extends Record<string, any> = GetURLParams<Path>>(props: RouteProps<P, Path>) {
   const context = useContext(RouterContext);
 
-  const { computed, location, path } = props;
-  let { children, component, render } = props;
+  const { computed, location, path, component, render, strict, sensitive, exact } = props;
+  let { children } = props;
   let match: Matched<P> | null;
 
   const routeLocation = location || context.location;
   if (computed) {
     match = computed;
   } else if (path) {
-    match = matchPath<P>(routeLocation.pathname, path);
+    match = matchPath<P>(routeLocation.pathname, path, {
+      strictMode: strict,
+      caseSensitive: sensitive,
+      exact: exact,
+    });
   } else {
     match = context.match;
   }
