@@ -68,7 +68,7 @@ export {
   isAxiosError,
 };
 
-export type { IrRequestConfig, IrResponse, IrInstance, CancelTokenSource, IrProgressEvent } from './src/types/interfaces';
-export type { Method, ResponseType } from './src/types/types';
+export { IrRequestConfig, IrResponse, IrInstance, CancelTokenSource, IrProgressEvent } from './src/types/interfaces';
+export { Method, ResponseType } from './src/types/types';
 
 export default inulaRequest;
