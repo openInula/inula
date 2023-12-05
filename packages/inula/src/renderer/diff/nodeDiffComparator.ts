@@ -159,7 +159,7 @@ function getNewNode(parentNode: VNode, newChild: any, oldNode: VNode | null) {
             const key = oldNode !== null ? oldNode.key : newChild.key;
             resultNode = createFragmentVNode(key, newChild.props.children);
           } else {
-            resultNode = updateVNode(oldNode, newChild);
+            resultNode = updateVNode(oldNode, newChild.props.children);
           }
           break;
         }
