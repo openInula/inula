@@ -18,7 +18,7 @@
  * 只有值发生变化时才会触发change事件。
  */
 
-const HANDLER_KEY = '_valueChangeHandler';
+import { HANDLER_KEY } from '../DOMInternalKeys';
 
 // 判断是否是 check 类型
 function isCheckType(dom: HTMLInputElement): boolean {
