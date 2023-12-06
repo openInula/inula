@@ -103,15 +103,11 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
     dispatchProps,
     ownProps
   ): MergedProps => ({ ...stateProps, ...dispatchProps, ...ownProps } as unknown as MergedProps),
-  options?: ConnectOption
+  options: ConnectOption = {},
 ): Connector<OwnProps, MergedProps> {
-  if (!options) {
-    options = {};
-  }
-
   //this component should bear the type returned from mapping functions
   return (Component: OriginalComponent<MergedProps>): WrappedComponent<OwnProps> => {
-    const useStore = createStoreHook(options?.context || DefaultContext);
+    const useStore = createStoreHook(options.context || DefaultContext);
 
     //this component should mimic original type of component used
     const Wrapper: WrappedComponent<OwnProps> = (props: OwnProps) => {
@@ -131,7 +127,7 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
       });
 
       let mappedState: StateProps;
-      if (options?.areStatesEqual) {
+      if (options.areStatesEqual) {
         if (options.areStatesEqual(previous.current.state, state)) {
           mappedState = previous.current.mappedState as StateProps;
         } else {
@@ -168,7 +164,7 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
       return createElement(Component, mergedProps);
     };
 
-    if (options?.forwardRef) {
+    if (options.forwardRef) {
       const forwarded = forwardRef((props, ref) => {
         return Wrapper({ ...props, ref: ref });
       });
