@@ -54,7 +54,7 @@ export default {
   IntlProvider: I18nProvider,
   injectIntl: injectIntl,
   RawIntlProvider: InjectProvider,
-}
+};
 
 // 用于定义文本
 export function defineMessages<K extends keyof any, T = MessageDescriptor, U = Record<K, T>>(msgs: U): U {

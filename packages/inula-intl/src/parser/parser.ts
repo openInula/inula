@@ -17,7 +17,7 @@ import { lexer } from './parseMappingRule';
 import { RawToken, Token } from '../types/types';
 import { DEFAULT_PLURAL_KEYS } from '../constants';
 import { Content, FunctionArg, PlainArg, Select, TokenContext } from '../types/interfaces';
-import Lexer from "./Lexer";
+import Lexer from './Lexer';
 
 const getContext = (lt: Record<string, any>): TokenContext => ({
   offset: lt.offset,
@@ -29,15 +29,14 @@ const getContext = (lt: Record<string, any>): TokenContext => ({
 
 export const checkSelectType = (value: string): boolean => {
   return value === 'plural' || value === 'select' || value === 'selectordinal';
-}
+};
 
 class Parser {
-  lexer: Lexer<RawToken>;
   cardinalKeys: string[] = DEFAULT_PLURAL_KEYS;
   ordinalKeys: string[] = DEFAULT_PLURAL_KEYS;
 
   constructor(message: string) {
-    this.lexer = lexer.reset(message);
+    lexer.reset(message);
   }
 
   isSelectKeyValid(token: RawToken, type: Select['type'], value: string) {
@@ -60,7 +59,7 @@ class Parser {
       isPlural = true;
     }
 
-    for (const token of this.lexer) {
+    for (const token of lexer) {
       switch (token.type) {
         case 'offset': {
           if (type === 'select') {
@@ -97,7 +96,7 @@ class Parser {
 
   parseToken(token: RawToken, isPlural: boolean): PlainArg | FunctionArg | Select {
     const context = getContext(token);
-    const nextToken = this.lexer.next();
+    const nextToken = lexer.next();
 
     if (!nextToken) {
       throw new Error('The message end position is invalid.');
@@ -111,7 +110,7 @@ class Parser {
         return { type: 'argument', arg: token.value, ctx: context };
       }
       case 'func-simple': {
-        const end = this.lexer.next();
+        const end = lexer.next();
         if (!end) {
           throw new Error('The message end position is invalid.');
         }
@@ -159,7 +158,7 @@ class Parser {
     const tokens: any[] = [];
     let content: string | Content | null = null;
 
-    for (const token of this.lexer) {
+    for (const token of lexer) {
       if (token.type === 'argument') {
         if (content) {
           content = null;
@@ -175,7 +174,7 @@ class Parser {
       } else if (token.type === 'doubleapos') {
         tokens.push(token.value);
       } else if (token.type === 'quoted') {
-        tokens.push(token.value)
+        tokens.push(token.value);
       } else if (token.type === 'content') {
         tokens.push(token.value);
       } else {

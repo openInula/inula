@@ -70,5 +70,5 @@ const select: Record<string, any> = {
 export const mappingRule: Record<string, any> = {
   body,
   arg,
-  select
+  select,
 };

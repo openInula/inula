@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-const {preset} = require("./jest.config");
+const { preset } = require('./jest.config');
 module.exports = {
   presets: [
     [
@@ -23,19 +23,15 @@ module.exports = {
           browsers: ['> 1%', 'last 2 versions', 'not ie <= 8'],
           node: 'current',
         },
-        useBuiltIns: 'usage',
-        corejs: 3,
       },
     ],
+    ['@babel/preset-typescript'],
     [
-      '@babel/preset-typescript',
-    ],
-    [
-      "@babel/preset-react",
+      '@babel/preset-react',
       {
-        "runtime": "automatic",
-        "importSource": "openinula"
-      }
-    ]
+        runtime: 'automatic',
+        importSource: 'openinula',
+      },
+    ],
   ],
 };

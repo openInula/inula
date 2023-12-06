@@ -31,6 +31,7 @@
     "declaration": true,
     "experimentalDecorators": true,
     "downlevelIteration": true,
+    "declarationDir": "./build/@types",
     // 赋值为空数组使@types/node不会起作用
     "lib": [
       "dom",
@@ -53,19 +54,22 @@
     }
   },
   "include": [
-    "./src/**/*",
-    "./src/format/**/*.ts",
-    "./example/**/*"
+    "./index.ts"
   ],
   "exclude": [
     "node_modules",
     "lib",
     "**/*.spec.ts",
-    "dev"
+    "dev",
+    "./example/**/*",
+    "./tsconfig.json"
   ],
   "types": [
     "node",
     "jest",
     "@testing-library/jest-dom"
+  ],
+  "files": [
+    "./index.ts"
   ]
 }
