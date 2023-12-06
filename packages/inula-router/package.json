@@ -1,6 +1,6 @@
 {
   "name": "inula-router",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "router for inula framework, a part of inula-ecosystem",
   "main": "./router/cjs/router.js",
   "module": "./router/esm/router.js",
@@ -67,7 +67,7 @@
     "typescript": "4.9.3"
   },
   "peerDependencies": {
-    "openinula": ">=0.0.10"
+    "openinula": ">=0.0.1"
   },
   "browserslist": {
     "production": [
