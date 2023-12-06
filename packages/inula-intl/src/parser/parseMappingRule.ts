@@ -16,16 +16,16 @@
 import Lexer from './Lexer';
 import { mappingRule } from './mappingRule';
 import ruleUtils from '../utils/parseRuleUtils';
-import { RawToken } from "../types/types";
+import { RawToken } from '../types/types';
 
 const defaultErrorRule = ruleUtils.getRuleOptions('error', { lineBreaks: true, shouldThrow: true });
 
 // 解析规则并生成词法分析器所需的数据结构，以便进行词法分析操作
 function parseRules(rules: Record<string, any>, hasStates: boolean): Record<string, any> {
   let errorRule: Record<string, any> | null = null;
-  const fast = {};
-  let enableFast = true;
-  let unicodeFlag = null;
+  const fast: object = {};
+  let enableFast: boolean = true;
+  let unicodeFlag: boolean | null = null;
   const groups: Record<string, any>[] = [];
   const parts: string[] = [];
 
@@ -108,11 +108,11 @@ export function checkStateGroup(group: Record<string, any>, name: string, map: R
 }
 
 // 将国际化解析规则注入分词器中
-function parseMappingRule(mappingRule: Record<string, any>, start?: string): Lexer<RawToken> {
+function parseMappingRule(mappingRule: Record<string, any>, startState?: string): Lexer<RawToken> {
   const keys = Object.getOwnPropertyNames(mappingRule);
 
-  if (!start) {
-    start = keys[0];
+  if (!startState) {
+    startState = keys[0];
   }
 
   // 将每个状态的规则解析为规则数组，并存储在 ruleMap 对象中
@@ -153,27 +153,27 @@ function parseMappingRule(mappingRule: Record<string, any>, start?: string): Lex
     }
   }
 
-  const map = {};
+  const mappingAllRules = {};
 
-  // 将规则映射为词法分析器数据结构，并存储在 map 对象中
+  // 将规则映射为词法分析器数据结构，并存储在 mappingAllRules 对象中
   keys.forEach(key => {
-    map[key] = parseRules(ruleMap[key], true);
+    mappingAllRules[key] = parseRules(ruleMap[key], true);
   });
 
   // 检查状态组中的规则是否正确引用了其他状态
   keys.forEach(name => {
-    const state = map[name];
+    const state = mappingAllRules[name];
     const groups = state.groups;
     groups.forEach(group => {
-      checkStateGroup(group, name, map);
+      checkStateGroup(group, name, mappingAllRules);
     });
     const fastKeys = Object.getOwnPropertyNames(state.fast);
     fastKeys.forEach(fastKey => {
-      checkStateGroup(state.fast[fastKey], name, map);
+      checkStateGroup(state.fast[fastKey], name, mappingAllRules);
     });
   });
 
-  return new Lexer(map, start);
+  return new Lexer(mappingAllRules, startState);
 }
 
 function processFast(match, fast: {}, options) {

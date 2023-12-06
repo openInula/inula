@@ -17,9 +17,7 @@ import App from './App'
 
 function render() {
     Inula.render(
-    <>
-      <App/>
-    </>,
+      <App/>,
     document.querySelector('#root') as any
   )
 }

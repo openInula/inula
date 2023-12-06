@@ -39,7 +39,7 @@ const App = () => {
       <div className='container'>
         <Example1/>
         <Example2/>
-        <Example3/>
+        <Example3 locale={locale} setLocale={setLocale}/>
       </div>
       <div className='container'>
         <Example4 locale={locale} messages={message}/>

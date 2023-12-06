@@ -14,51 +14,45 @@
  */
 
 import ruleUtils from '../utils/parseRuleUtils';
-import { LexerInterface } from "../types/interfaces";
-
-const getMatch = ruleUtils.checkSticky()
-  ? // 正则表达式具有 sticky 标志
-  (regexp, buffer) => regexp.exec(buffer)
-  : // 正则表达式具有 global 标志,匹配的字符串长度为 0，则表示匹配失败
-  (regexp, buffer) => (regexp.exec(buffer)[0].length === 0 ? null : regexp.exec(buffer));
+import { LexerInterface } from '../types/interfaces';
 
 class Lexer<T> implements LexerInterface<T> {
   readonly startState: string;
   readonly states: Record<string, any>;
   private buffer: string = '';
   private stack: string[] = [];
-  private index;
-  private line;
-  private col;
-  private queuedText;
-  private state;
-  private groups;
-  private error;
+  private index: number = 0;
+  private line: number = 1;
+  private col: number = 1;
+  private queuedText: string = '';
+  private state: string = '';
+  private groups: string[] = [];
+  private error: Record<string, any> | undefined;
   private regexp;
-  private fast;
-  private queuedGroup;
-  private value;
+  private fast: object = {};
+  private queuedGroup: string | null = '';
+  private value: string = '';
 
-  constructor(states, state) {
-    this.startState = state;
-    this.states = states;
+  constructor(unionReg: Record<string, any>, startState: string) {
+    this.startState = startState;
+    this.states = unionReg;
     this.buffer = '';
     this.stack = [];
     this.reset();
   }
 
-  public reset(data?, info?) {
+  public reset(data?: string) {
     this.buffer = data || '';
     this.index = 0;
-    this.line = info ? info.line : 1;
-    this.col = info ? info.col : 1;
-    this.queuedText = info ? info.queuedText : '';
-    this.setState(info ? info.state : this.startState);
-    this.stack = info && info.stack ? info.stack.slice() : [];
+    this.line = 1;
+    this.col = 1;
+    this.queuedText = '';
+    this.setState(this.startState);
+    this.stack = [];
     return this;
   }
 
-  private setState(state) {
+  private setState(state: string) {
     if (!state || this.state === state) {
       return;
     }
@@ -71,15 +65,15 @@ class Lexer<T> implements LexerInterface<T> {
   }
 
   private popState() {
-    this.setState(this.stack.pop());
+    this.setState(<string>this.stack.pop());
   }
 
-  private pushState(state) {
+  private pushState(state: string) {
     this.stack.push(this.state);
     this.setState(state);
   }
 
-  private getGroup(match) {
+  private getGroup(match: Record<string, any>) {
     const groupCount = this.groups.length;
     for (let i = 0; i < groupCount; i++) {
       if (match[i + 1] !== undefined) {
@@ -127,7 +121,7 @@ class Lexer<T> implements LexerInterface<T> {
     const group = this.getGroup(match);
     const text = match[0];
 
-    if (error.fallback && match.index !== index) {
+    if (error?.fallback && match.index !== index) {
       this.queuedGroup = group;
       this.queuedText = text;
       return this.getToken(error, buffer.slice(index, match.index), index);
@@ -136,7 +130,14 @@ class Lexer<T> implements LexerInterface<T> {
     return this.getToken(group, text, index);
   }
 
-  private getToken(group, text, offset) {
+  /**
+   *  獲取Token
+   * @param group 解析模板后獲得的屬性值
+   * @param text 文本屬性的信息
+   * @param offset 偏移量
+   * @private
+   */
+  private getToken(group: any, text: string, offset: number) {
     let lineNum = 0;
     let last = 1; // 最后一个换行符的索引位置
     if (group.lineBreaks) {
@@ -192,9 +193,14 @@ class Lexer<T> implements LexerInterface<T> {
       next: (): IteratorResult<T> => {
         const token = this.next();
         return { value: token, done: !token } as IteratorResult<T>;
-      }
-    }
+      },
+    };
   }
 }
 
+const getMatch = ruleUtils.checkSticky()
+  ? // 正则表达式具有 sticky 标志
+    (regexp, buffer) => regexp.exec(buffer)
+  : // 正则表达式具有 global 标志,匹配的字符串长度为 0，则表示匹配失败
+    (regexp, buffer) => (regexp.exec(buffer)[0].length === 0 ? null : regexp.exec(buffer));
 export default Lexer;
