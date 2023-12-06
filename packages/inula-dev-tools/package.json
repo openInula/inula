@@ -45,7 +45,7 @@
     "webpack-dev-server": "^4.7.4"
   },
   "dependencies": {
-    "openinula": "^0.0.1",
+    "openinula": "^0.1.1",
     "flatted-object": "^0.1.2",
     "json-decycle": "^2.0.1",
     "lodash": "^4.17.21",
