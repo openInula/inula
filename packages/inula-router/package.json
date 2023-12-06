@@ -67,7 +67,7 @@
     "typescript": "4.9.3"
   },
   "peerDependencies": {
-    "openinula": ">=0.0.1"
+    "openinula": ">=0.1.1"
   },
   "browserslist": {
     "production": [
