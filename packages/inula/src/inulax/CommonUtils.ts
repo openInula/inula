@@ -76,9 +76,10 @@ export function isSame(x: unknown, y: unknown): boolean {
   if (typeof x !== typeof y) {
     return false;
   }
-  // 如果两个对象都是null或undefined，直接返回true
+  // 此时x和y类型一致，若都为undefined或null返回true，但也有可能此时为一个对象和null，这种情况直接比较
+  // typeof null === 'object'
   if (x == null || y == null) {
-    return true;
+    return x === y;
   }
   // 如果两个对象都是基本类型，比较他们的值是否相等
   if (typeof x !== 'object') {
