@@ -6,7 +6,7 @@
 
 ## 技术架构
 
-![输入图片说明](https://gitee.com/openInula/inula-docs/raw/master/static/img/structure.png)
+![](./structure.png)
 
 ### 核心能力
 
