@@ -6,7 +6,7 @@
 
 ## 技术架构
 
-![](./structure.png)
+![](https://openinula-website.obs.ap-southeast-1.myhuaweicloud.com/misc/structure.png)
 
 ### 核心能力
 
