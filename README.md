@@ -80,8 +80,8 @@ openInula 主要遵循 [Mulan Permissive Software License v2](http://license.cos
 
 ## 联系方式
 
-[官方邮箱](team@inulajs.org)
+* 官方邮箱: [team@inulajs.org](mailto:team@inulajs.org)
 
-微信公众号
+* 微信公众号:
 
 ![](https://www.openinula.net/assets/qrcode.inula-02f99d58.jpg)
