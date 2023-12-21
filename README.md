@@ -67,7 +67,7 @@ create-inula 是一套用于创建 openInula 项目的脚手架工具。它预�
 
 基于 umijs 与 openInula 的开发框架，集成官方组件与UI、AIGC等功能，开箱即用。
 
-**[`voerkaiI18l`](https://github.com/zhangfisher/voerka-i18n/)**
+**[`VoerkaI18n`](https://github.com/zhangfisher/voerka-i18n/)**
 
 适用于多框架的 JavaScript 国际化解决方案，提供对 openInula 的适配。
 
