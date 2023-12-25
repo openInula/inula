@@ -1,6 +1,6 @@
 {
   "name": "inula-intl",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "",
   "main": "build/intl.umd.js",
   "type": "commonjs",
@@ -24,7 +24,7 @@
   "author": "",
   "license": "MulanPSL2",
   "peerDependencies": {
-    "openinula": "^0.1.1"
+    "openinula": ">=0.1.1"
   },
   "devDependencies": {
     "@babel/core": "7.21.3",
