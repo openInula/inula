@@ -55,13 +55,6 @@ describe('SuspenseComponent Test', () => {
   });
 
   it('suspense fallback can be updated', async () => {
-    // 用同步的代码来实现异步操作
-    class LazyComponent extends Inula.Component {
-      render() {
-        return <Text text={this.props.num} />;
-      }
-    }
-
     const Lazy = Inula.lazy(() => {
       // wait for 3s
       return new Promise(resolve => setTimeout(resolve({ default: LazyComponent }), 3000));
@@ -76,7 +69,7 @@ describe('SuspenseComponent Test', () => {
     const container = document.createElement('div');
     Inula.render(
       <Inula.Suspense fallback={<Fallback />}>
-        <Lazy num={5} />
+        <Lazy />
       </Inula.Suspense>,
       container
     );
