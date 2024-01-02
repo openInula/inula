@@ -128,7 +128,7 @@ function updateFallback(processing: VNode): Array<VNode> | VNode | null {
 
     if (children !== null) {
       // child不需要更新，跳过child处理fallback
-      return children[1];
+      return children.next;
     } else {
       return null;
     }
