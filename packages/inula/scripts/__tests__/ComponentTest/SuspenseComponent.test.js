@@ -57,7 +57,7 @@ describe('SuspenseComponent Test', () => {
   it('suspense fallback can be updated', async () => {
     const Lazy = Inula.lazy(() => {
       // wait for 3s
-      return new Promise(resolve => setTimeout(resolve({ default: LazyComponent }), 3000));
+      return new Promise(resolve => setTimeout(resolve({ default: 'text' }), 3000));
     });
 
     let updateFallback;
