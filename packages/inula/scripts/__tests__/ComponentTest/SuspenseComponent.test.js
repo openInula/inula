@@ -23,23 +23,6 @@ describe('SuspenseComponent Test', () => {
     return { default: component };
   });
 
-  // var EMPTY_OBJECT = {};
-  // const mockCreateResource = jest.fn((component) => {
-  //   let result = EMPTY_OBJECT;
-  //   return () =>{
-  //     component().then(res => {
-  //       LogUtils.log(res);
-  //       result = res;
-  //     }, reason => {
-  //       LogUtils.log(reason);
-  //     });
-  //     if(result === EMPTY_OBJECT){
-  //       throw component();
-  //     }
-  //     return result;
-  //   };
-  // });
-
   it('挂载lazy组件', async () => {
     // 用同步的代码来实现异步操作
     class LazyComponent extends Inula.Component {
@@ -69,5 +52,36 @@ describe('SuspenseComponent Test', () => {
     );
     expect(LogUtils.getAndClear()).toEqual([5]);
     expect(container.querySelector('p').innerHTML).toBe('5');
+  });
+
+  it('suspense fallback can be updated', async () => {
+    // 用同步的代码来实现异步操作
+    class LazyComponent extends Inula.Component {
+      render() {
+        return <Text text={this.props.num} />;
+      }
+    }
+
+    const Lazy = Inula.lazy(() => {
+      // wait for 3s
+      return new Promise(resolve => setTimeout(resolve({ default: LazyComponent }), 3000));
+    });
+
+    let updateFallback;
+    function Fallback() {
+      const [show, setShow] = Inula.useState(true);
+      updateFallback = () => setShow(!show);
+      return <h1>fallback:{show ? 'show' : 'hide'}</h1>;
+    }
+    const container = document.createElement('div');
+    Inula.render(
+      <Inula.Suspense fallback={<Fallback />}>
+        <Lazy num={5} />
+      </Inula.Suspense>,
+      container
+    );
+    expect(container.querySelector('h1').innerHTML).toBe('fallback:show');
+    updateFallback();
+    expect(container.querySelector('h1').innerHTML).toBe('fallback:hide');
   });
 });
