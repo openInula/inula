@@ -22,9 +22,12 @@ import type { Container, Props } from './DOMOperator';
 
 import { DomComponent, DomText, TreeRoot } from '../renderer/vnode/VNodeTags';
 
-const INTERNAL_VNODE = '_inula_VNode';
-const INTERNAL_PROPS = '_inula_Props';
-const INTERNAL_NONDELEGATEEVENTS = '_inula_NonDelegatedEvents';
+const randomKey = Math.random().toString(16).slice(2);
+const INTERNAL_VNODE = `_inula_VNode_${randomKey}`;
+const INTERNAL_PROPS = `_inula_Props_${randomKey}`;
+const INTERNAL_NONDELEGATEEVENTS = `_inula_nonDelegatedEvents_${randomKey}`;
+export const HANDLER_KEY = `_inula_valueChangeHandler_${randomKey}`;
+export const EVENT_KEY = `_inula_ev_${randomKey}`;
 
 // 通过 VNode 实例获取 DOM 节点
 export function getDom(vNode: VNode): Element | Text | null {

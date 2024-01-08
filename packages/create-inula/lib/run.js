@@ -62,7 +62,17 @@ const run = async config => {
   }
   process.emit('message', { type: 'prompt' });
 
-  let { type } = config;
+  let { type, name } = config;
+  if (!name) {
+    const answers = await inquirer.prompt([
+      {
+        name: 'projectName',
+        message: 'Project name',
+        type: 'input'      
+      },
+    ]);
+    config.name = answers.projectName; 
+  }
   if (!type) {
     const answers = await inquirer.prompt([
       {

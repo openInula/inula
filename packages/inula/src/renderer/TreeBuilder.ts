@@ -55,6 +55,9 @@ import { getPathArr } from './utils/vNodePath';
 import { injectUpdater } from '../external/devtools';
 import { popCurrentRoot, pushCurrentRoot } from './RootStack';
 
+// 使用 push 扩展语法合并数组场景下被合并数组元素的上限（经验值）
+const MAX_NUM_PUSH_MERGE_ARRAY = 1000;
+
 // 不可恢复错误
 let unrecoverableErrorDuringBuild: any = null;
 
@@ -81,7 +84,12 @@ function collectDirtyNodes(vNode: VNode, parent: VNode): void {
     if (parent.dirtyNodes === null) {
       parent.dirtyNodes = dirtyNodes;
     } else {
-      parent.dirtyNodes.push(...vNode.dirtyNodes!);
+      // 超过上限继续使用 push 方法合并数组将导致性能劣化/调用栈溢出
+      if (dirtyNodes.length > MAX_NUM_PUSH_MERGE_ARRAY) {
+        parent.dirtyNodes = parent.dirtyNodes.concat(dirtyNodes);
+      } else {
+        parent.dirtyNodes.push(...dirtyNodes);
+      }
       dirtyNodes.length = 0;
     }
     vNode.dirtyNodes = null;
@@ -236,17 +244,22 @@ export function calcStartUpdateVNode(treeRoot: VNode) {
 // 在局部更新时，从上到下恢复父节点的context和PortalStack
 function recoverTreeContext(vNode: VNode) {
   const contextProviders: VNode[] = [];
+  const portalRoots: VNode[] = [];
   let parent = vNode.parent;
   while (parent !== null) {
     if (parent.tag === ContextProvider) {
       contextProviders.unshift(parent);
+    } else if (parent.tag === DomPortal) {
+      portalRoots.unshift(parent);
     }
     if (parent.tag === DomPortal) {
       pushCurrentRoot(parent);
     }
     parent = parent.parent;
   }
-
+  portalRoots.forEach(node => {
+    pushCurrentRoot(node);
+  });
   contextProviders.forEach(node => {
     setContext(node, node.props.value);
   });

@@ -128,9 +128,9 @@ class BasicGenerator extends Generator {
         if (fs.existsSync(fullpath)) {
           this.traverseDirCapture(fullpath, dirCallback, fileCallback);
         }
-        continue;
+      } else {
+        fileCallback(fullpath);
       }
-      fileCallback(fullpath);
     }
   }
 
@@ -140,9 +140,10 @@ class BasicGenerator extends Generator {
       if (fs.lstatSync(fullpath).isDirectory()) {
         this.traverseDirBubble(fullpath, dirCallback, fileCallback);
         dirCallback(fullpath);
-        continue;
       }
-      fileCallback(fullpath);
+      else{
+        fileCallback(fullpath);
+      }
     }
   }
 

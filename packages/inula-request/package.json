@@ -1,6 +1,6 @@
 {
   "name": "inula-request",
-  "version": "0.0.5",
+  "version": "0.0.9",
   "description": "Inula-request brings you a convenient request experience!",
   "main": "./dist/inulaRequest.js",
   "scripts": {
@@ -62,7 +62,7 @@
     "webpack-dev-server": "^4.13.3"
   },
   "peerDependencies": {
-    "openinula": "^0.0.1"
+    "openinula": ">=0.1.1"
   },
   "exclude": [
     "node_modules"

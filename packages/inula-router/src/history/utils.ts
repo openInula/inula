@@ -28,31 +28,32 @@ export function createPath(path: Partial<Path>): string {
 }
 
 export function parsePath(url: string): Partial<Path> {
-  if (!url) {
-    return {};
-  }
-  let parsedPath: Partial<Path> = {};
+  let pathname = url || '/';
+  const parsedPath: Partial<Path> = {
+    search: '',
+    hash: '',
+  };
 
-  let hashIdx = url.indexOf('#');
+  const hashIdx = url.indexOf('#');
   if (hashIdx > -1) {
-    parsedPath.hash = url.substring(hashIdx);
-    url = url.substring(0, hashIdx);
+    const hash = url.substring(hashIdx);
+    parsedPath.hash = hash === '#' ? '' : hash;
+    pathname = pathname.substring(0, hashIdx);
   }
 
-  let searchIdx = url.indexOf('?');
+  const searchIdx = url.indexOf('?');
   if (searchIdx > -1) {
-    parsedPath.search = url.substring(searchIdx);
-    url = url.substring(0, searchIdx);
+    const search = url.substring(searchIdx);
+    parsedPath.search = search === '?' ? '' : search;
+    pathname = pathname.substring(0, searchIdx);
   }
-  if (url) {
-    parsedPath.pathname = url;
-  }
+  parsedPath.pathname = pathname;
   return parsedPath;
 }
 
 export function createLocation<S>(current: string | Location, to: To, state?: S, key?: string): Readonly<Location<S>> {
-  let pathname = typeof current === 'string' ? current : current.pathname;
-  let urlObj = typeof to === 'string' ? parsePath(to) : to;
+  const pathname = typeof current === 'string' ? current : current.pathname;
+  const urlObj = typeof to === 'string' ? parsePath(to) : to;
   // 随机key长度取6
   const getRandKey = genRandomKey(6);
   const location = {
@@ -64,7 +65,13 @@ export function createLocation<S>(current: string | Location, to: To, state?: S,
     ...urlObj,
   };
   if (!location.pathname) {
-    location.pathname = '/';
+    location.pathname = pathname ? pathname : '/';
+  }
+  if (location.search && location.search[0] !== '?') {
+    location.search = '?' + location.search;
+  }
+  if (location.hash && location.hash[0] !== '#') {
+    location.hash = '#' + location.hash;
   }
   return location;
 }
@@ -95,7 +102,7 @@ export function normalizeSlash(path: string): string {
   return tempPath;
 }
 
-export function hasBasename(path: string, prefix: string): Boolean {
+export function hasBasename(path: string, prefix: string): boolean {
   return (
     path.toLowerCase().indexOf(prefix.toLowerCase()) === 0 && ['/', '?', '#', ''].includes(path.charAt(prefix.length))
   );
@@ -109,12 +116,12 @@ export function stripBasename(path: string, prefix: string): string {
 export function createMemoryRecord<T, S>(initVal: S, fn: (arg: S) => T) {
   let visitedRecord: T[] = [fn(initVal)];
 
-  function getDelta(to: S, form: S): number {
-    let toIdx = visitedRecord.lastIndexOf(fn(to));
+  function getDelta(toKey: S, formKey: S): number {
+    let toIdx = visitedRecord.lastIndexOf(fn(toKey));
     if (toIdx === -1) {
       toIdx = 0;
     }
-    let fromIdx = visitedRecord.lastIndexOf(fn(form));
+    let fromIdx = visitedRecord.lastIndexOf(fn(formKey));
     if (fromIdx === -1) {
       fromIdx = 0;
     }

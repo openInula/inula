@@ -32,14 +32,14 @@ const App = () => {
   const message = locale === 'zh' ? zh : en
 
 
-    return (
+  return (
     <IntlProvider locale={locale} messages={locale === 'zh' ? zh : en}>
       <header>Inula-Intl API Test Demo</header>
 
       <div className='container'>
         <Example1/>
         <Example2/>
-        <Example3/>
+        <Example3 locale={locale} setLocale={setLocale}/>
       </div>
       <div className='container'>
         <Example4 locale={locale} messages={message}/>

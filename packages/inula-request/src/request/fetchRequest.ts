@@ -19,6 +19,7 @@ import { IrRequestConfig, IrResponse, Cancel } from '../types/interfaces';
 import { Method, ResponseType } from '../types/types';
 import processUploadProgress from './processUploadProgress';
 import processDownloadProgress from './processDownloadProgress';
+import CancelError from '../cancel/CancelError';
 
 export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
   return new Promise((resolve, reject) => {
@@ -47,8 +48,9 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
     // 处理请求取消
     if (cancelToken) {
       cancelToken.promise.then((reason: Cancel) => {
+        const cancelError = new CancelError(reason.message, config);
         controller.abort();
-        reject(reason);
+        reject(cancelError);
       });
     }
 
@@ -166,18 +168,23 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
               }
             })
             .catch((error: IrError) => {
-              if (error.name === 'AbortError') {
-                reject(error.message);
+              // fetch 在取消请求的极限场景会抛出 Failed to fetch 的 error，此时将其转为取消 error
+              if (signal?.aborted) {
+                const irError = new CancelError('request canceled', config);
+                reject(irError);
               } else {
-                reject(error);
+                const irError = new IrError(error.message, 'ERR_FETCH_FAILED', responseData.config, responseData.request, responseData);
+                reject(irError);
               }
             });
         })
         .catch((error: IrError) => {
           if (error.name === 'AbortError') {
-            reject(error.message);
+            const cancelError = new CancelError('request canceled', config);
+            reject(cancelError);
           } else {
-            reject(error);
+            const irError = new IrError(error.message, 'ERR_FETCH_FAILED');
+            reject(irError);
           }
         });
     }

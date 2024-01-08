@@ -16,7 +16,7 @@
 import Inula from 'openinula';
 import { useLayoutEffect, useRef, reduxAdapter, InulaNode } from 'openinula';
 import { connect, ReactReduxContext } from 'react-redux';
-import { Store } from 'redux';
+import type { Store } from 'redux';
 import { History, Location, Router } from '../router';
 import { Action, DefaultStateType, Navigation } from '../history/types';
 import { ActionMessage, onLocationChanged } from './actions';
@@ -130,9 +130,14 @@ function getConnectedRouter(type: StoreType) {
     );
   };
 
+  const ConnectedHRouterWithContext = (props: any) => {
+    const { store, ...rest } = props;
+    return <ConnectedRouter store={store} storeType={type} {...rest} />;
+  };
+
   // 针对不同的Store类型，使用对应的connect函数
   if (type === 'InulaXCompat') {
-    return hConnect(null as any, mapDispatchToProps)(ConnectedRouterWithContext as any);
+    return hConnect(null as any, mapDispatchToProps)(ConnectedHRouterWithContext as any);
   }
   if (type === 'Redux') {
     return connect(null, mapDispatchToProps)(ConnectedRouterWithContext);

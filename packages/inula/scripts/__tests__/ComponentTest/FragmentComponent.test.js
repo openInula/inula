@@ -473,4 +473,61 @@ describe('Fragment', () => {
     expect(LogUtils.getNotClear()).toEqual([]);
     expect(container.textContent).toBe('1');
   });
+
+  it('Fragment 设置相同的key不会重新渲染组件', () => {
+    const { useState, useRef, act, Fragment } = Inula;
+    let setFn;
+    const didMount = jest.fn();
+    const didUpdate = jest.fn();
+
+    const App = () => {
+      const [list, setList] = useState([
+        { text: 'Apple', id: 1 },
+        { text: 'Banana', id: 2 },
+      ]);
+
+      setFn = setList;
+
+      return (
+        <>
+          {list.map(item => {
+            return (
+              <Fragment key={item.id}>
+                <Child val={item.text} />
+              </Fragment>
+            );
+          })}
+        </>
+      );
+    };
+
+    const Child = ({ val }) => {
+      const mount = useRef(false);
+      useEffect(() => {
+        if (!mount.current) {
+          didMount();
+          mount.current = true;
+        } else {
+          didUpdate();
+        }
+      });
+
+      return <div>{val}</div>;
+    };
+
+    act(() => Inula.render(<App />, container));
+
+    expect(didMount).toHaveBeenCalledTimes(2);
+    act(() => {
+      setFn([
+        { text: 'Apple', id: 1 },
+        { text: 'Banana', id: 2 },
+        { text: 'Grape', id: 3 },
+      ]);
+    });
+
+    // 数组前两项Key不变子组件更新，第三个子组件会挂载
+    expect(didMount).toHaveBeenCalledTimes(3);
+    expect(didUpdate).toHaveBeenCalledTimes(2);
+  });
 });

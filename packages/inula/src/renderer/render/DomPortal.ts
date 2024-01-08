@@ -17,11 +17,12 @@ import type { VNode } from '../Types';
 import { resetNamespaceCtx, setNamespaceCtx } from '../ContextSaver';
 import { createChildrenByDiff } from '../diff/nodeDiffComparator';
 import { popCurrentRoot, pushCurrentRoot } from '../RootStack';
-import { listenSimulatedDelegatedEvents } from '../../event/EventBinding';
+import { listenPortalEvents, listenSimulatedDelegatedEvents } from '../../event/EventBinding';
 
 export function bubbleRender(processing: VNode) {
   resetNamespaceCtx(processing);
   listenSimulatedDelegatedEvents(processing);
+  listenPortalEvents(processing);
   popCurrentRoot();
 }
 

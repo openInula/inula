@@ -29,22 +29,27 @@ function Router<P extends RouterProps>(props: P) {
   const { history, children = null } = props;
   const [location, setLocation] = useState(props.history.location);
   const pendingLocation = useRef<Location | null>(null);
+  const unListen = useRef<null | (() => void)>(null);
+  const isMount = useRef<boolean>(false);
 
   // 在Router加载时就监听history地址变化，以保证在始渲染时重定向能正确触发
-  const unListen = useRef<null | (() => void)>(
-    history.listen(arg => {
+  if (unListen.current === null) {
+    unListen.current = history.listen(arg => {
       pendingLocation.current = arg.location;
-    }),
-  );
+    });
+  }
 
   // 模拟componentDidMount和componentWillUnmount
   useLayoutEffect(() => {
+    isMount.current = true;
     if (unListen.current) {
       unListen.current();
     }
     // 监听history中的位置变化
     unListen.current = history.listen(arg => {
-      setLocation(arg.location);
+      if (isMount.current) {
+        setLocation(arg.location);
+      }
     });
 
     if (pendingLocation.current) {
@@ -53,6 +58,7 @@ function Router<P extends RouterProps>(props: P) {
 
     return () => {
       if (unListen.current) {
+        isMount.current = false;
         unListen.current();
         unListen.current = null;
         pendingLocation.current = null;

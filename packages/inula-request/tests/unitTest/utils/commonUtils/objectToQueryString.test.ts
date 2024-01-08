@@ -53,7 +53,7 @@ describe('objectToQueryString function', () => {
       key5: { a: 'b' },
     };
     const expectedResult =
-      'key1=string&key2=42&key3=true&key4=1%2C2%2C3&key5=%5Bobject%20Object%5D';
+      'key1=string&key2=42&key3=true&key4[]=1&key4[]=2&key4[]=3&key5=%5Bobject%20Object%5D';
     const result = utils.objectToQueryString(input);
     expect(result).toBe(expectedResult);
   });

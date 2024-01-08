@@ -27,12 +27,12 @@ export {
   createDispatchHook,
 } from './reduxReact';
 
-export type ReduxStoreHandler = {
-  reducer: (state: any, action: { type: string }) => any;
-  dispatch: (action: { type: string }) => void;
-  getState: () => any;
-  subscribe: (listener: () => void) => () => void;
-  replaceReducer: (reducer: (state: any, action: { type: string }) => any) => void;
+export type ReduxStoreHandler<T = any> = {
+  reducer(state: T, action: { type: string }): any;
+  dispatch(action: { type: string }): void;
+  getState(): T;
+  subscribe(listener: () => void): () => void;
+  replaceReducer(reducer: (state: T, action: { type: string }) => any): void;
 };
 
 export type ReduxAction = {
@@ -52,6 +52,9 @@ export type ReduxMiddleware = (
 ) => ReduxStoreHandler;
 
 type Reducer = (state: any, action: ReduxAction) => any;
+
+type StoreCreator = (reducer: Reducer, preloadedState?: any) => ReduxStoreHandler;
+type StoreEnhancer = (next: StoreCreator) => StoreCreator;
 
 function mergeData(state, data) {
   if (!data) {
@@ -87,7 +90,11 @@ function mergeData(state, data) {
   state.stateWrapper = data;
 }
 
-export function createStore(reducer: Reducer, preloadedState?: any, enhancers?): ReduxStoreHandler {
+export function createStore(reducer: Reducer, preloadedState?: any, enhancers?: StoreEnhancer): ReduxStoreHandler {
+  if (typeof preloadedState === 'function' && typeof enhancers === 'undefined') {
+    enhancers = preloadedState;
+    preloadedState = undefined;
+  }
   const store = createStoreX({
     id: 'defaultStore',
     state: { stateWrapper: preloadedState },
@@ -104,6 +111,7 @@ export function createStore(reducer: Reducer, preloadedState?: any, enhancers?):
           return;
         } // NOTE: reducer should never return undefined, in this case, do not change state
         state.stateWrapper = result;
+        return action;
       },
     },
     options: {
@@ -130,11 +138,13 @@ export function createStore(reducer: Reducer, preloadedState?: any, enhancers?):
     dispatch: store.$a.dispatch,
   };
 
-  enhancers && enhancers(result);
-
   result.dispatch({ type: 'InulaX' });
 
   store.reduxHandler = result;
+
+  if (typeof enhancers === 'function') {
+    return enhancers(createStore)(reducer, preloadedState);
+  }
 
   return result as ReduxStoreHandler;
 }
@@ -150,19 +160,23 @@ export function combineReducers(reducers: { [key: string]: Reducer }): Reducer {
   };
 }
 
-function applyMiddlewares(store: ReduxStoreHandler, middlewares: ReduxMiddleware[]): void {
-  middlewares = middlewares.slice();
-  middlewares.reverse();
-  let dispatch = store.dispatch;
-  middlewares.forEach(middleware => {
-    dispatch = middleware(store)(dispatch);
-  });
-  store.dispatch = dispatch;
+function applyMiddlewares(createStore: StoreCreator, middlewares: ReduxMiddleware[]): StoreCreator {
+  return (reducer, preloadedState) => {
+    middlewares = middlewares.slice();
+    middlewares.reverse();
+    const storeObj = createStore(reducer, preloadedState);
+    let dispatch = storeObj.dispatch;
+    middlewares.forEach(middleware => {
+      dispatch = middleware(storeObj)(dispatch);
+    });
+    storeObj.dispatch = dispatch;
+    return storeObj;
+  };
 }
 
-export function applyMiddleware(...middlewares: ReduxMiddleware[]): (store: ReduxStoreHandler) => void {
-  return store => {
-    return applyMiddlewares(store, middlewares);
+export function applyMiddleware(...middlewares: ReduxMiddleware[]): (createStore: StoreCreator) => StoreCreator {
+  return createStore => {
+    return applyMiddlewares(createStore, middlewares);
   };
 }
 
@@ -170,7 +184,7 @@ type ActionCreator = (...params: any[]) => ReduxAction;
 type ActionCreators = { [key: string]: ActionCreator };
 export type BoundActionCreator = (...params: any[]) => void;
 type BoundActionCreators = { [key: string]: BoundActionCreator };
-type Dispatch = (action) => any;
+type Dispatch = (action: ReduxAction) => any;
 
 export function bindActionCreators(actionCreators: ActionCreators, dispatch: Dispatch): BoundActionCreators {
   const boundActionCreators = {};
@@ -183,12 +197,12 @@ export function bindActionCreators(actionCreators: ActionCreators, dispatch: Dis
   return boundActionCreators;
 }
 
-export function compose(...middlewares: ReduxMiddleware[]) {
-  return (store: ReduxStoreHandler, extraArgument: any) => {
-    let val;
-    middlewares.reverse().forEach((middleware: ReduxMiddleware, index) => {
+export function compose<T = StoreCreator>(...middlewares: ((...args: any[]) => any)[]): (...args: any[]) => T {
+  return (...args) => {
+    let val: any;
+    middlewares.reverse().forEach((middleware, index) => {
       if (!index) {
-        val = middleware(store, extraArgument);
+        val = middleware(...args);
         return;
       }
       val = middleware(val);

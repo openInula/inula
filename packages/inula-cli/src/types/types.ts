@@ -165,4 +165,3 @@ export interface Arguments {
   '--'?: Array<string | number>;
   [argName: string]: any;
 }
-

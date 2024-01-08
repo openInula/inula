@@ -2,23 +2,23 @@
 
 ## 一、安装使用
 
-### 安装Nodejs
+### 安装Node.js
 
-inula-cli的运行需要依赖Nodejs，使用前请确保您的电脑已安装Nodejs，并且版本在16以上。您可以通过在控制台执行以下命令来确认您的版本。
+inula-cli的运行需要依赖Node.js，使用前请确保您的电脑已安装Node.js，并且版本在16以上。您可以通过在控制台执行以下命令来确认您的版本。
 
-```
+```shell
 >node -v
 
 v16.4.0
 ```
 
-如果您没有安装Nodejs，或者Nodejs版本不满足条件，推荐使用nvm工具安装和管理Nodejs版本。
+如果您没有安装Node.js，或者Node.js版本不满足条件，推荐使用nvm工具安装和管理Node.js版本。
 
 nvm最新版本下载: [https://github.com/coreybutler/nvm-windows/releases](https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Fcoreybutler%2Fnvm-windows%2Freleases)
 
-安装nvm之后，可以通过如下命令安装Nodejs:
+安装nvm之后，可以通过如下命令安装Node.js:
 
-```
+```shell
 >node install 16
 
 >node use 16
@@ -28,15 +28,15 @@ nvm最新版本下载: [https://github.com/coreybutler/nvm-windows/releases](htt
 
 ### 安装inula-cli
 
-为了方便使用inula-cli的功能，推荐您全局安装inula-cli。Nodejs安装会自带npm工具用于管理模块，您可以直接运行如下命令：
+为了方便使用inula-cli的功能，推荐您全局安装inula-cli。Node.js安装会自带npm工具用于管理模块，您可以直接运行如下命令：
 
-```
+```shell
 >npm install -g inula-cli
 ```
 
 安装完成后，使用inula-cli version命令确认安装是否完成。
 
-```
+```shell
 >inula-cli version
 1.1.0
 ```
@@ -93,7 +93,7 @@ inula-cli支持用户通过项目根目录下的.inula.ts或者.inula.js文件�
 
 在配置文件中，您需要默认导出一个配置，以下为一个简单的配置文件示例：
 
-```
+```typescript
 // .inula.ts
 
 export default {
@@ -113,7 +113,7 @@ export default {
 
 对于TypeScript类型，我们也提供了类型定义以供开发时自动补全：
 
-```
+```typescript
 // .inula.ts
 
 import { defineConfig } from "inula-cli"
@@ -164,8 +164,8 @@ inula-cli的所有功能都围绕插件展开，插件可以很方便地让用�
 
 内置插件在inula-cli运行时会自动加载，用户可以直接调用这些内置命令，当前支持的内置插件功能如下：
 
-| 序号 | 插件功能                 | 触发命令            |
-| ---- | :----------------------- | ------------------- |
+| 序号 | 插件功能                 | 触发命令          |
+| ---- | :----------------------- | ----------------- |
 | 1、  | 本地开发构建             | inula-cli dev     |
 | 2、  | 生产构建                 | inula-cli build   |
 | 3、  | 接口mock能力             | inula-cli dev     |
@@ -180,13 +180,13 @@ inula-cli支持用户集成已发布在npm仓库的插件，用户可以按需�
 
 安装可以通过npm安装，这里以插件@inula/add为例：
 
-```
+```shell
 npm i --save-dev @inula/add
 ```
 
 如果需要运行插件，需要在配置文件中配置对应的插件路径
 
-```
+```typescript
 // .inula.ts
 
 export default {
@@ -205,7 +205,7 @@ export default {
 
 1、编写命令插件文件，这里我们自定义了一个conf命令用于展示当前项目的配置信息。
 
-```
+```typescript
 // conf.ts
 
 import { API } from "inula-cli";
@@ -224,7 +224,7 @@ export default (api: API) => {
 
 2、在配置文件中加入对插件的引用
 
-```
+```typescript
 // .inula.ts
 
 export default  {
@@ -232,9 +232,9 @@ export default  {
 }
 ```
 
-3、在项目根目录下执行inula-cli conf即可触发插件运行。
+3、在项目根目录下执行`inula-cli conf`即可触发插件运行。
 
-```
+```shell
 > inula-cli conf
 current user config is: {
   plugins: [ './conf', './showConf' ],
@@ -247,7 +247,7 @@ inula-cli提供了hook机制可以让开发者在执行命令时实现事件监�
 
 1、使用插件注册hook
 
-```
+```typescript
 // modifyConfig.ts
 
 import { API } from "inula-cli";
@@ -267,7 +267,7 @@ export default (api: API) => {
 
 2、在插件中触发hook
 
-```
+```typescript
 // conf.ts
 
 import { API } from "inula-cli";
@@ -287,7 +287,7 @@ export default (api: API) => {
 
 3、在配置文件中加入插件
 
-```
+```typescript
 // .inula.ts
 
 export default  {
@@ -297,7 +297,7 @@ export default  {
 
 4、触发命令
 
-```
+```shell
 > inula-cli conf
 current user config is: {
   plugins: [ './conf', './showConf' ],
@@ -327,7 +327,7 @@ current user config is: {
 
 registerCommand方法允许用户自定义inula-cli的执行命令，
 
-```
+```typescript
  api.registerCommand({
         name: string,
         description?: string,
@@ -343,7 +343,7 @@ registerCommand方法允许用户自定义inula-cli的执行命令，
 
 使用示例：
 
-```
+```typescript
 import { API } from "inula-cli";
 
 export default (api: API) => {
@@ -374,7 +374,7 @@ api.registerHook({
 
 使用示例：
 
-```
+```typescript
 import { API } from "inula-cli";
 
 export default (api: API) => {
@@ -403,7 +403,7 @@ applyHook(name: string, value?: any})
 
 使用示例：
 
-```
+```typescript
 import { API } from "inula-cli";
 
 export default (api: API) => {
@@ -427,7 +427,7 @@ export default (api: API) => {
 
 inula-cli默认集成生产构建能力，用户可以通过在.inula.ts中配置buildConfig字段启用功能。配置示例如下：
 
-```
+```typescript
 // .inula.ts
 
 // 使用webpack构建
@@ -460,7 +460,7 @@ export default {
 
 生产构建支持传入多个配置文件路径，使用webpack构建还支持配置文件以函数方式导出，inula-cli会将配置中的env和args作为参数传递到函数中执行以获取最后的构建配置。
 
-```
+```typescript
 // webpack.config.js
 
 module.exports = function (env, argv) {
@@ -497,7 +497,7 @@ export default {
 
 inula-cli默认也支持项目本地构建，用户可以通过在.inula.ts中配置devBuildConfig字段启用功能。配置示例如下：
 
-```
+```typescript
 // .inula.ts
 
 // 使用webpack构建
@@ -552,7 +552,7 @@ inula-cli自动将项目根路径里/Mock目录下所有文件视为mock文件�
 
 如果您想修改Mock目录位置，可以在配置文件中修改mockPath。如果不配置该参数，默认使用"./mock"。
 
-```
+```typescript
 // .inula.ts
 export default {
     ...
@@ -569,7 +569,7 @@ export default {
 
 Mock文件需要默认导出一个对象，key为"请求方式 接口名"，值为接口实现。示例如下：
 
-```
+```typescript
 export default {
     "GET /api/user": (req, res) => {
         res.status(200).json("admin")
@@ -579,7 +579,7 @@ export default {
 
 如果想要一次mock多个接口，可以在导出对象中设置多个key，例如：
 
-```
+```typescript
 export default {
     "GET /api/user": (req, res) => {
         res.status(200).json("admin");
@@ -597,7 +597,7 @@ export default {
 
 Mock文件默认导出一个数组，数组每一个成员示例如下：
 
-```
+```typescript
 export default [
   {
     url: '/api/get',
@@ -654,7 +654,7 @@ export default [
 
 在框架配置文件中，开发者需要配置远端服务器地址以及编写自定义的matcher函数提供给框架：
 
-```
+```typescript
 // .inula.ts
 
 const matcher = (pathname, request) => {
@@ -689,7 +689,7 @@ export default  {
 
 用户可以在.inula.ts中配置remoteProxy字段开启远端静态接口代理能力，完成配置后，使用后执行inula-cli proxy启动该功能。
 
-```
+```typescript
 // .inula.ts
 
 export default {
@@ -710,6 +710,3 @@ export default {
   }
 }
 ```
-
-
-

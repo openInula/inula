@@ -4,7 +4,7 @@
   "keywords": [
     "openinula"
   ],
-  "version": "0.0.1",
+  "version": "0.0.4",
   "homepage": "",
   "bugs": "",
   "license": "MulanPSL2",
@@ -23,6 +23,14 @@
     "test": "jest --config=jest.config.js",
     "watch-test": "yarn test --watch --dev"
   },
-  "files": ["build/@types", "build/cjs", "build/umd", "build/index.js", "build/jsx-dev-runtime.js", "build/jsx-runtime.js", "README.md"],
-  "types": "./build/@types/index.d.ts"
+  "files": ["build/**/*", "README.md"],
+  "types": "./build/@types/index.d.ts",
+  "exports": {
+    ".": {
+      "default": "./index.js"
+    },
+    "./package.json":"./package.json",
+    "./jsx-runtime": "./jsx-runtime.js",
+    "./jsx-dev-runtime": "./jsx-dev-runtime.js"
+  }
 }

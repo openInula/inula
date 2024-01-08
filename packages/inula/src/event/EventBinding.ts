@@ -16,9 +16,9 @@
 /**
  * 事件绑定实现，分为绑定委托事件和非委托事件
  */
-import { allDelegatedInulaEvents, simulatedDelegatedEvents } from './EventHub';
+import { allDelegatedInulaEvents, portalDefaultDelegatedEvents, simulatedDelegatedEvents } from './EventHub';
 import { isDocument } from '../dom/utils/Common';
-import { getNearestVNode, getNonDelegatedListenerMap } from '../dom/DOMInternalKeys';
+import { EVENT_KEY, getNearestVNode, getNonDelegatedListenerMap } from '../dom/DOMInternalKeys';
 import { asyncUpdates, runDiscreteUpdates } from '../renderer/TreeBuilder';
 import { handleEventMain } from './InulaEventMain';
 import { decorateNativeEvent } from './EventWrapper';
@@ -73,8 +73,8 @@ export function lazyDelegateOnRoot(currentRoot: VNode, eventName: string) {
     const nativeFullName = isCapture ? nativeEvent + 'capture' : nativeEvent;
 
     // 事件存储在DOM节点属性，避免多个VNode(root和portal)对应同一个DOM, 造成事件重复监听
-    currentRoot.realNode.$EV = currentRoot.realNode.$EV ?? {};
-    const events = currentRoot.realNode.$EV;
+    currentRoot.realNode[EVENT_KEY] = currentRoot.realNode[EVENT_KEY] ?? {};
+    const events = currentRoot.realNode[EVENT_KEY];
 
     if (!events[nativeFullName]) {
       events[nativeFullName] = listenToNativeEvent(nativeEvent, currentRoot.realNode, isCapture);
@@ -86,6 +86,13 @@ export function lazyDelegateOnRoot(currentRoot: VNode, eventName: string) {
 export function listenSimulatedDelegatedEvents(root: VNode) {
   for (let i = 0; i < simulatedDelegatedEvents.length; i++) {
     lazyDelegateOnRoot(root, simulatedDelegatedEvents[i]);
+  }
+}
+
+// portal绑定默认事件
+export function listenPortalEvents(root: VNode) {
+  for (let i = 0; i < portalDefaultDelegatedEvents.length; i++) {
+    lazyDelegateOnRoot(root, portalDefaultDelegatedEvents[i]);
   }
 }
 

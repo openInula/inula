@@ -286,4 +286,98 @@ describe('PortalComponent Test', () => {
     dispatchChangeEvent(inputRef.current, 'test');
     expect(fn).toHaveBeenCalledTimes(1);
   });
+
+   
+  it('portal场景下，portal下元素点击事件冒泡到父元素', () => {
+    class Dialog extends Inula.Component {
+      node;
+ 
+      constructor(props) {
+        super(props);
+        this.node = window.document.createElement('div');
+        window.document.body.appendChild(this.node);
+      }
+ 
+      render() {
+        return Inula.createPortal(this.props.children, this.node);
+      }
+    }
+ 
+    const fn = jest.fn();
+    const subRef = Inula.createRef();
+ 
+    function App() {
+      return (
+        <div onClick={fn}>
+          <Dialog>
+            <div ref={subRef}/>
+          </Dialog>
+        </div>
+      );
+    }
+ 
+    Inula.render(<App />, container);
+    Inula.act(() => {
+      subRef.current.dispatchEvent(new Event('click', { bubbles: true }));
+    });
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+ 
+  it('portal嵌套场景下事件委托', () => {
+    class Dialog extends Inula.Component {
+      node;
+ 
+      constructor(props) {
+        super(props);
+        this.node = window.document.createElement('div');
+        window.document.body.appendChild(this.node);
+      }
+ 
+      render() {
+        return Inula.createPortal(this.props.children, this.node);
+      }
+    }
+ 
+    const fn = jest.fn();
+    const inputRef = Inula.createRef();
+    let value = '';
+    const onChange = (evt) => {
+      value = evt.target.value;
+    }
+ 
+    let showSubPortal = () => {};
+ 
+    function App() {
+      return (
+        <div>
+          <Dialog>
+            <input onChange={fn}></input>
+            <Sub />
+          </Dialog>
+        </div>
+      );
+    }
+ 
+    function Sub() {
+      const [show, setShow] = Inula.useState(false);
+      showSubPortal = setShow;
+      return (
+        <div>
+          {
+            show &&
+              <Dialog>
+                <input ref={inputRef} onChange={onChange}></input>
+              </Dialog>
+          }
+        </div>
+      )
+    }
+ 
+    Inula.render(<App />, container);
+    Inula.act(() => {
+      showSubPortal(true);
+    });
+    dispatchChangeEvent(inputRef.current, 'test');
+    expect(value).toEqual('test');
+  });
 });

@@ -1,10 +1,13 @@
 {
   "name": "create-inula",
-  "version": "0.0.2",
+  "version": "0.0.8",
   "description": "",
   "main": "index.js",
   "bin": {
     "create-inula": "bin/cli.js"
+  },
+  "engines": {
+    "node": ">= 18.0.0"
   },
   "files": [
     "bin",

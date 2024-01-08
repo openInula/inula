@@ -17,6 +17,7 @@ import { useState, useContext, useEffect, useRef } from '../../renderer/hooks/Ho
 import { createContext } from '../../renderer/components/context/CreateContext';
 import { createElement } from '../../external/JSXElement';
 import type { ReduxStoreHandler, ReduxAction, BoundActionCreator } from './redux';
+import { forwardRef } from '../../renderer/components/ForwardRef';
 
 const DefaultContext = createContext(null);
 type Context = typeof DefaultContext;
@@ -40,29 +41,27 @@ export function createStoreHook(context: Context): () => ReduxStoreHandler {
   };
 }
 
-export function createSelectorHook(context: Context): (selector?: (any) => any) => any {
-  const store = createStoreHook(context)() as unknown as ReduxStoreHandler;
-  return function (selector = state => state) {
-    const [b, fr] = useState(false);
+export function createSelectorHook(context: Context): (selector?: ((state: unknown) => any) | undefined) => any {
+  const store = createStoreHook(context)();
+  return function useSelector(selector = state => state) {
+    const [state, setState] = useState(() => store.getState());
 
     useEffect(() => {
-      const unsubscribe = store.subscribe(() => fr(!b));
-      return () => {
-        unsubscribe();
-      };
-    });
+      const unsubscribe = store.subscribe(() => {
+        setState(store.getState());
+      });
+      return () => unsubscribe();
+    }, []);
 
-    return selector(store.getState());
+    return selector(state);
   };
 }
 
 export function createDispatchHook(context: Context): () => BoundActionCreator {
-  const store = createStoreHook(context)() as unknown as ReduxStoreHandler;
-  return function () {
-    return action => {
-      store.dispatch(action);
-    };
-  }.bind(store);
+  const store = createStoreHook(context)();
+  return function useDispatch() {
+    return store.dispatch;
+  };
 }
 
 export const useSelector = selector => {
@@ -90,6 +89,11 @@ type MergePropsP<StateProps, DispatchProps, OwnProps, MergedProps> = (
 type WrappedComponent<OwnProps> = (props: OwnProps) => ReturnType<typeof createElement>;
 type OriginalComponent<MergedProps> = (props: MergedProps) => ReturnType<typeof createElement>;
 type Connector<OwnProps, MergedProps> = (Component: OriginalComponent<MergedProps>) => WrappedComponent<OwnProps>;
+type ConnectOption<State = any> = {
+  areStatesEqual?: (oldState: State, newState: State) => boolean;
+  context?: Context;
+  forwardRef?: boolean;
+}
 
 export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
   mapStateToProps: MapStateToPropsP<StateProps, OwnProps> = () => ({} as StateProps),
@@ -99,52 +103,39 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
     dispatchProps,
     ownProps
   ): MergedProps => ({ ...stateProps, ...dispatchProps, ...ownProps } as unknown as MergedProps),
-  options?: {
-    areStatesEqual?: (oldState: any, newState: any) => boolean;
-    context?: Context;
-  }
+  options: ConnectOption = {},
 ): Connector<OwnProps, MergedProps> {
-  if (!options) {
-    options = {};
-  }
-
   //this component should bear the type returned from mapping functions
   return (Component: OriginalComponent<MergedProps>): WrappedComponent<OwnProps> => {
-    const useStore = createStoreHook(options?.context || DefaultContext);
+    const useStore = createStoreHook(options.context || DefaultContext);
 
     //this component should mimic original type of component used
     const Wrapper: WrappedComponent<OwnProps> = (props: OwnProps) => {
-      const [f, forceReload] = useState(true);
-
-      const store = useStore() as unknown as ReduxStoreHandler;
+      const store = useStore() as ReduxStoreHandler;
+      const [state, setState] = useState(() => store.getState());
 
       useEffect(() => {
-        const unsubscribe = store.subscribe(() => forceReload(!f));
-        return () => {
-          unsubscribe();
-        };
+        const unsubscribe = store.subscribe(() => {
+          setState(store.getState());
+        });
+        return () => unsubscribe();
+      }, []);
+
+      const previous = useRef<{ state: { [key: string]: any }; mappedState: StateProps }>({
+        state: {},
+        mappedState: {} as StateProps,
       });
 
-      const previous = useRef({
-        state: {},
-        mappedState: {},
-      }) as {
-        current: {
-          state: { [key: string]: any };
-          mappedState: StateProps;
-        };
-      };
-
       let mappedState: StateProps;
-      if (options?.areStatesEqual) {
-        if (options.areStatesEqual(previous.current.state, store.getState())) {
+      if (options.areStatesEqual) {
+        if (options.areStatesEqual(previous.current.state, state)) {
           mappedState = previous.current.mappedState as StateProps;
         } else {
-          mappedState = mapStateToProps ? mapStateToProps(store.getState(), props) : ({} as StateProps);
+          mappedState = mapStateToProps ? mapStateToProps(state, props) : ({} as StateProps);
           previous.current.mappedState = mappedState;
         }
       } else {
-        mappedState = mapStateToProps ? mapStateToProps(store.getState(), props) : ({} as StateProps);
+        mappedState = mapStateToProps ? mapStateToProps(state, props) : ({} as StateProps);
         previous.current.mappedState = mappedState;
       }
       let mappedDispatch: DispatchProps = {} as DispatchProps;
@@ -153,12 +144,14 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
           Object.entries(mapDispatchToProps).forEach(([key, value]) => {
             mappedDispatch[key] = (...args: ReduxAction[]) => {
               store.dispatch(value(...args));
+              setState(store.getState());
             };
           });
         } else {
           mappedDispatch = mapDispatchToProps(store.dispatch, props);
         }
       }
+      mappedDispatch = Object.assign({}, mappedDispatch, { dispatch: store.dispatch });
       const mergedProps = (
         mergeProps ||
         ((state, dispatch, originalProps) => {
@@ -166,11 +159,17 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
         })
       )(mappedState, mappedDispatch, props);
 
-      previous.current.state = store.getState();
+      previous.current.state = state;
 
-      const node = createElement(Component, mergedProps);
-      return node;
+      return createElement(Component, mergedProps);
     };
+
+    if (options.forwardRef) {
+      const forwarded = forwardRef((props, ref) => {
+        return Wrapper({ ...props, ref: ref });
+      });
+      return forwarded as WrappedComponent<OwnProps>;
+    }
 
     return Wrapper;
   };

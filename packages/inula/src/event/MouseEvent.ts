@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { getNearestVNode } from '../dom/DOMInternalKeys';
+import { getNearestVNode, getVNode } from '../dom/DOMInternalKeys';
 import { WrappedEvent } from './EventWrapper';
 import { VNode } from '../renderer/vnode/VNode';
 import { AnyNativeEvent, ListenerUnitList } from './Types';
@@ -87,12 +87,29 @@ function getEndpointVNode(
   return [fromVNode, toVNode];
 }
 
+function checkIsInulaNode(related: HTMLElement): boolean {
+  if (getVNode(related) || getNearestVNode(related)) {
+    return true;
+  }
+  return false;
+}
+
 export function getMouseEnterListeners(
   domEventName: string,
   targetInst: null | VNode,
-  nativeEvent: AnyNativeEvent,
+  nativeEvent: MouseEvent,
   nativeEventTarget: null | EventTarget
 ): ListenerUnitList {
+
+  if (domEventName === 'mouseover') {
+    // 如果 related 节点是 openInula 框架管理的，那么在 out 事件节点已经触发过 mouseEnter 或者 mouseLeave 事件了，不需要 over 事件再次触发
+    // IE 通过 fromElement 属性获取失去焦点的 DOM 节点
+    const related = nativeEvent.relatedTarget || (nativeEvent as any).fromElemnt;
+    if (related && checkIsInulaNode(related)) {
+      return [];
+    }
+  }
+
   // 获取起点和终点的VNode
   const [fromVNode, toVNode] = getEndpointVNode(domEventName, targetInst, nativeEvent);
   if (fromVNode === toVNode) {

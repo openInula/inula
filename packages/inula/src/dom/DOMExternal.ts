@@ -21,6 +21,7 @@ import { findDOMByClassInst } from '../renderer/vnode/VNodeUtils';
 import { listenSimulatedDelegatedEvents } from '../event/EventBinding';
 import { Callback } from '../renderer/Types';
 import { InulaNode } from '../types';
+import { EVENT_KEY } from './DOMInternalKeys';
 
 function createRoot(children: any, container: Container, callback?: Callback) {
   // 清空容器
@@ -89,7 +90,7 @@ function findDOMNode(domOrEle?: Element): null | Element | Text {
 
 // 情况根节点监听器
 function removeRootEventLister(container: Container) {
-  const events = (container._treeRoot as any).$EV;
+  const events = (container as any)[EVENT_KEY];
   if (events) {
     Object.keys(events).forEach(event => {
       const listener = events[event];
