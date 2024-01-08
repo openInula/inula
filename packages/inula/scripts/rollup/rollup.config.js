@@ -86,6 +86,11 @@ function genConfig(mode) {
         name: 'Inula',
         format: 'umd',
       },
+      {
+        file: outputResolve('esm', getOutputName(mode)),
+        sourcemap,
+        format: 'esm',
+      },
     ],
     plugins: [
       ...getBasicPlugins(mode),
@@ -104,10 +109,13 @@ function genConfig(mode) {
 function genJSXRuntimeConfig(mode) {
   return {
     input: path.resolve(libDir, 'src', 'jsx-runtime.ts'),
-    output: {
+    output: [{
       file: outputResolve('jsx-runtime.js'),
       format: 'cjs',
-    },
+    }, {
+      file: outputResolve('jsx-runtime.esm-browser.js'),
+      format: 'esm',
+    }],
     plugins: [...getBasicPlugins(mode)],
   };
 }
