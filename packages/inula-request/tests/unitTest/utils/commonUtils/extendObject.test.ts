@@ -30,7 +30,7 @@ describe('extendObject function', () => {
       sayHi() {
         return `Hi, ${this.name}!`;
       },
-      name: 'John'
+      name: 'John',
     };
     const thisArg = { name: 'Sarah' };
     const result = utils.extendObject(target, source, thisArg);
@@ -39,8 +39,8 @@ describe('extendObject function', () => {
 
   it('should include all properties of the source object if "includeAll" option is set to true', () => {
     const target = { a: 1 };
-    const source = { 'b': 2 };
+    const source = { b: 2 };
     const result = utils.extendObject(target, source, undefined, { includeAll: true });
-    expect(result).not.toEqual({ a: 1, 'b': 2 });
+    expect(result).not.toEqual({ a: 1, b: 2 });
   });
 });

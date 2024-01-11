@@ -17,7 +17,7 @@ import I18nProvider from '../../../src/core/components/I18nProvider';
 import { FormattedMessage } from '../../../index';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import {createI18nInstance} from "../../../src/core/I18n";
+import { createI18nInstance } from '../../../src/core/I18n';
 
 const dummyContext = React.createContext('');
 const { Provider: DummyProvider, Consumer: DummyConsumer } = dummyContext;

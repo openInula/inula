@@ -14,12 +14,12 @@
  */
 
 import EventDispatcher from '../utils/eventListener';
-import DateTimeFormatter from "../format/fomatters/DateTimeFormatter";
-import NumberFormatter from "../format/fomatters/NumberFormatter";
+import DateTimeFormatter from '../format/fomatters/DateTimeFormatter';
+import NumberFormatter from '../format/fomatters/NumberFormatter';
 import { getFormatMessage } from '../format/getFormatMessage';
-import {I18nCache, I18nProps, MessageDescriptor, MessageOptions} from '../types/interfaces';
+import { I18nCache, I18nProps, MessageDescriptor, MessageOptions } from '../types/interfaces';
 import { Locale, Locales, Messages, AllLocaleConfig, AllMessages, LocaleConfig, Error, Events } from '../types/types';
-import creatI18nCache from "../format/cache/cache";
+import creatI18nCache from '../format/cache/cache';
 
 export class I18n extends EventDispatcher<Events> {
   public locale: Locale;
@@ -101,7 +101,7 @@ export class I18n extends EventDispatcher<Events> {
     } else {
       // 加载多对locale-message信息
       localeOrMessages &&
-      Object.keys(localeOrMessages!).forEach(locale => this.setMessage(locale, localeOrMessages![locale]));
+        Object.keys(localeOrMessages!).forEach(locale => this.setMessage(locale, localeOrMessages![locale]));
     }
     this.emit('change');
   }
@@ -118,9 +118,9 @@ export class I18n extends EventDispatcher<Events> {
   formatMessage(
     id: MessageDescriptor | string,
     values: Object | undefined = {},
-    { message, context, formatOptions}: MessageOptions = {},
+    { message, context, formatOptions }: MessageOptions = {}
   ) {
-    return getFormatMessage(this, id, values, { message, context, formatOptions});
+    return getFormatMessage(this, id, values, { message, context, formatOptions });
   }
 
   formatDate(value: string | Date, formatOptions?: Intl.DateTimeFormatOptions): string {

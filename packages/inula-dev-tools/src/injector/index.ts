@@ -44,7 +44,7 @@ import {
   ClassComponent,
   IncompleteClassComponent,
   ForwardRef,
-  MemoComponent
+  MemoComponent,
 } from '../../../inula/src/renderer/vnode/VNodeTags';
 import { pickElement } from './pickElement';
 
@@ -101,11 +101,7 @@ function parseCompAttrs(id: number) {
 function calculateNextValue(editValue, value, attrPath) {
   let nextState;
   const editValueType = typeof editValue;
-  if (
-    editValueType === 'string' ||
-    editValueType === 'undefined' ||
-    editValueType === 'boolean'
-  ) {
+  if (editValueType === 'string' || editValueType === 'undefined' || editValueType === 'boolean') {
     nextState = value;
   } else if (editValueType === 'number') {
     const numValue = Number(value);
@@ -125,10 +121,7 @@ function calculateNextValue(editValue, value, attrPath) {
       nextState = newValue;
     }
   } else {
-    console.error(
-      'The dev tools tried to edit a non-editable value, this is a bug, please report.',
-      editValue
-    );
+    console.error('The dev tools tried to edit a non-editable value, this is a bug, please report.', editValue);
   }
   return nextState;
 }
@@ -153,10 +146,7 @@ function modifyVNodeAttrs(data) {
       const nextState = calculateNextValue(editValue, value, path.slice(1));
       helper.updateHooks(vNode, path[0], nextState);
     } else {
-      console.error(
-        'The dev tools tried to edit a non-editable hook, this is a bug, please report.',
-        hooks
-      );
+      console.error('The dev tools tried to edit a non-editable hook, this is a bug, please report.', hooks);
     }
   } else if (type === ModifyState) {
     const oldState = vNode.state || {};
@@ -190,11 +180,7 @@ function logComponentData(id: number) {
  * @param {Array<string | number>} path 路径
  * @param {string} attrsName 值的类型（props 或者 hooks）
  */
-const getValueByPath = (
-  vNode: VNode,
-  path: Array<string | number>,
-  attrsName: string
-) => {
+const getValueByPath = (vNode: VNode, path: Array<string | number>, attrsName: string) => {
   if (attrsName === 'Props') {
     return path.reduce((previousValue, currentValue) => {
       return previousValue[currentValue];
@@ -218,12 +204,7 @@ const getValueByPath = (
  * @param {Array<string | number>} path 值的路径
  * @param {string} attrsName 值的类型
  */
-function logDataWithPath(
-  id: number,
-  itemName: string,
-  path: Array<string | number>,
-  attrsName: string
-) {
+function logDataWithPath(id: number, itemName: string, path: Array<string | number>, attrsName: string) {
   const vNode = queryVNode(id);
   if (vNode === null) {
     console.warn(`Could not find vNode with id "${id}"`);
@@ -246,11 +227,7 @@ function logDataWithPath(
  * @param {Array<string |number>} path 值的路径
  * @param {string} attrsName 值的类型
  */
-function storeDataWithPath(
-  id: number,
-  path: Array<string | number>,
-  attrsName: string
-) {
+function storeDataWithPath(id: number, path: Array<string | number>, attrsName: string) {
   const vNode = queryVNode(id);
   if (vNode === null) {
     console.warn(`Could not find vNode with id "${id}"`);
@@ -284,9 +261,7 @@ export function getElement(travelVNodeTree, treeRoot: VNode) {
         }
       }
     },
-    (node: VNode) =>
-      node.realNode != null &&
-      (Object.keys(node.realNode).length > 0 || node.realNode.size > 0)
+    (node: VNode) => node.realNode != null && (Object.keys(node.realNode).length > 0 || node.realNode.size > 0)
   );
   return result;
 }

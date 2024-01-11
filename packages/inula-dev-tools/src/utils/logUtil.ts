@@ -18,10 +18,10 @@
  * 同时也无法在运行时打断点，需要适当的日志辅助开发和定位问题
  */
 interface LoggerType {
-  error: typeof console.error,
-  info: typeof console.info,
-  log: typeof console.log,
-  warn: typeof console.warn
+  error: typeof console.error;
+  info: typeof console.info;
+  log: typeof console.log;
+  warn: typeof console.warn;
 }
 
 export function createLogger(id: string): LoggerType {

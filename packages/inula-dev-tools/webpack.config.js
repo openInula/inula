@@ -26,28 +26,12 @@ function handleBuildDir() {
   if (!isBuildExist) {
     fs.mkdirSync(staticDir);
   }
+  fs.copyFileSync(path.join(__dirname, 'src', 'panel', 'panel.html'), path.join(staticDir, 'panel.html'));
+  fs.copyFileSync(path.join(__dirname, 'src', 'panelX', 'panel.html'), path.join(staticDir, 'panelX.html'));
+  fs.copyFileSync(path.join(__dirname, 'src', 'main', 'main.html'), path.join(staticDir, 'main.html'));
+  fs.copyFileSync(path.join(__dirname, 'src', 'manifest.json'), path.join(staticDir, 'manifest.json'));
   fs.copyFileSync(
-    path.join(__dirname, 'src', 'panel', 'panel.html'),
-    path.join(staticDir, 'panel.html')
-  );
-  fs.copyFileSync(
-    path.join(__dirname, 'src', 'panelX', 'panel.html'),
-    path.join(staticDir, 'panelX.html')
-  );
-  fs.copyFileSync(
-    path.join(__dirname, 'src', 'main', 'main.html'),
-    path.join(staticDir, 'main.html')
-  );
-  fs.copyFileSync(
-    path.join(__dirname, 'src', 'manifest.json'),
-    path.join(staticDir, 'manifest.json')
-  );
-  fs.copyFileSync(
-    path.join(
-      __dirname,
-      '../inula/build/umd',
-      'inula.development.js'
-    ),
+    path.join(__dirname, '../inula/build/umd', 'inula.development.js'),
     path.join(staticDir, 'inula.development.js')
   );
 }
@@ -65,7 +49,7 @@ const config = {
   },
   output: {
     path: path.resolve(__dirname, './build'),
-    filename: '[name].js'
+    filename: '[name].js',
   },
   mode: 'development',
   devtool: 'inline-source-map',

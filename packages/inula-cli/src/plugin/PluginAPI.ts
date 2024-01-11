@@ -59,7 +59,7 @@ export default class PluginAPI {
     this.manager.registerFunction.push(fn);
   }
 
-  async applyHook(name: string, args?: any ) {
+  async applyHook(name: string, args?: any) {
     const hooks: IHook[] = this.manager.hooks[name] || [];
     let config: any = undefined;
     for (const hook of hooks) {

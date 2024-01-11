@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import {createContext} from 'openinula';
+import { createContext } from 'openinula';
 
 const ViewSourceContext = createContext(null);
 ViewSourceContext.displayName = 'ViewSourceContext';

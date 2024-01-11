@@ -38,7 +38,7 @@ export default function Search(props: SearchProps) {
       onchange={handleChange}
       className={styles.search}
       value={value}
-      placeholder='Search Component'
+      placeholder="Search Component"
     />
   );
 }

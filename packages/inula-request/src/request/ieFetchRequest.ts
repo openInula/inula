@@ -88,7 +88,6 @@ export const ieFetchRequest = (config: IrRequestConfig): Promise<IrResponse> => 
 
     fetch(url, options as RequestInit)
       .then(response => {
-
         config.method = config.method!.toLowerCase() as Method;
 
         const responseData: IrResponse = {
@@ -98,7 +97,7 @@ export const ieFetchRequest = (config: IrRequestConfig): Promise<IrResponse> => 
           headers: response.headers,
           config,
           request: null,
-          responseURL: response.url
+          responseURL: response.url,
         };
 
         // 根据 responseType 选择相应的解析方法

@@ -15,7 +15,7 @@
 
 import utils from '../../utils/utils';
 import { Locale } from '../../types/types';
-import {I18nCache} from "../../types/interfaces";
+import { I18nCache } from '../../types/interfaces';
 
 /**
  * 规则选择器

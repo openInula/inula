@@ -31,15 +31,17 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env',
+            presets: [
+              '@babel/preset-env',
               [
-              '@babel/preset-react',
-              {
-                'runtime': 'automatic', // 新增
-                'importSource': 'openinula' // 新增
-              }
+                '@babel/preset-react',
+                {
+                  runtime: 'automatic', // 新增
+                  importSource: 'openinula', // 新增
+                },
+              ],
+              '@babel/preset-typescript',
             ],
-            '@babel/preset-typescript'],
           },
         },
       },

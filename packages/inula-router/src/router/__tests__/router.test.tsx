@@ -21,13 +21,12 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
 describe('Inula-router Test', () => {
-
   it('Render app and Jump use <Link>', async () => {
     const history = createBrowserHistory();
     render(
       <Router history={history}>
         <Test_Demo />
-      </Router>,
+      </Router>
     );
     const user = userEvent.setup();
     expect(locationHook.pathname).toEqual('/');
@@ -47,7 +46,7 @@ describe('Inula-router Test', () => {
     render(
       <Router history={history}>
         <Test_Demo />
-      </Router>,
+      </Router>
     );
 
     act(() => {
@@ -72,7 +71,6 @@ describe('Inula-router Test', () => {
     });
     expect(locationHook.pathname).toEqual('/test');
     expect(screen.getByText(/No match/i)).toBeInTheDocument();
-
   });
 
   it('Test Redirect', async () => {
@@ -80,7 +78,7 @@ describe('Inula-router Test', () => {
     render(
       <Router history={history}>
         <Test_Demo />
-      </Router>,
+      </Router>
     );
 
     act(() => {
@@ -101,7 +99,7 @@ describe('Inula-router Test', () => {
     render(
       <Router history={history}>
         <Test_Demo />
-      </Router>,
+      </Router>
     );
 
     act(() => {
@@ -110,7 +108,6 @@ describe('Inula-router Test', () => {
     expect(locationHook.pathname).toEqual('/profile/123');
 
     expect(screen.getByText(/Param is 123/i)).toBeInTheDocument();
-
   });
 
   it('Test WithRouter', async () => {
@@ -118,7 +115,7 @@ describe('Inula-router Test', () => {
     render(
       <Router history={history}>
         <Test_Demo />
-      </Router>,
+      </Router>
     );
 
     act(() => {
@@ -129,7 +126,6 @@ describe('Inula-router Test', () => {
 
     // 测试WithRouter是否正确注入Props
     expect(screen.getByText('withRoute Test, pathname--/testr')).toBeInTheDocument();
-
   });
 
   it('Test Prompt', async () => {
@@ -137,7 +133,7 @@ describe('Inula-router Test', () => {
     render(
       <Router history={history}>
         <Test_Demo2 />
-      </Router>,
+      </Router>
     );
 
     const user = userEvent.setup();
@@ -154,7 +150,7 @@ describe('Inula-router Test', () => {
     render(
       <Router history={history}>
         <Test_Demo3 />
-      </Router>,
+      </Router>
     );
     // 初次渲染重定向至User Index
     expect(screen.queryByText(/you are home/i)).toBeNull();
@@ -167,7 +163,7 @@ describe('Inula-router Test', () => {
     render(
       <Router history={history}>
         <Test_Demo4 />
-      </Router>,
+      </Router>
     );
     // 初次渲染重定向至User Index
     expect(screen.queryByText(/you are home/i)).toBeNull();

@@ -22,7 +22,7 @@ import {
 } from '../panelConnection';
 import { Table } from './Table';
 import { Tree } from './Tree';
-import {fullTextSearch, omit} from './utils';
+import { fullTextSearch, omit } from './utils';
 import styles from './PanelX.less';
 import { Checkbox } from '../utils/Checkbox';
 import { DiffTree } from './DiffTree';
@@ -57,9 +57,7 @@ function extractDataByType(message, search) {
       >
         <Tree
           data={{
-            Action: `${message.data.action.action}${
-              message.data.fromQueue ? ' (queued)' : ''
-            }`
+            Action: `${message.data.action.action}${message.data.fromQueue ? ' (queued)' : ''}`,
           }}
           expand={true}
           indent={-4}
@@ -92,7 +90,7 @@ function extractDataByType(message, search) {
     );
   }
 
-  return <span className={styles.grey}>N/A</span>
+  return <span className={styles.grey}>N/A</span>;
 }
 
 export default function EventLog({ setNextStore, setEventFilter, eventFilter }) {
@@ -204,26 +202,27 @@ export default function EventLog({ setNextStore, setEventFilter, eventFilter }) 
         timestamp: event.timestamp,
         type: event.message.type,
         time: `${date.toLocaleTimeString()} - ${date.toLocaleDateString()}`,
-        state: event.message.type === eventTypes.STATE_CHANGE ? (
-          <DiffTree
-            mutation={event.message.data.change.mutation}
-            expand={true}
-            forcedExpand={true}
-            indent={0}
-            search={eventFilter['fulltext']}
-            omitAttrs={['_inulaObserver']}
-            doNotDisplayIcon={true}
-          />
-        ) : (
-          <Tree
-            data={event.message.data.store.$s}
-            expand={true}
-            search={eventFilter['fulltext']}
-            forcedExpand={true}
-            indent={-4}
-            omitAttrs={['_inulaObserver']}
-          />
-        ),
+        state:
+          event.message.type === eventTypes.STATE_CHANGE ? (
+            <DiffTree
+              mutation={event.message.data.change.mutation}
+              expand={true}
+              forcedExpand={true}
+              indent={0}
+              search={eventFilter['fulltext']}
+              omitAttrs={['_inulaObserver']}
+              doNotDisplayIcon={true}
+            />
+          ) : (
+            <Tree
+              data={event.message.data.store.$s}
+              expand={true}
+              search={eventFilter['fulltext']}
+              forcedExpand={true}
+              indent={-4}
+              omitAttrs={['_inulaObserver']}
+            />
+          ),
         storeClick: (
           <span
             className={styles.link}
@@ -235,10 +234,7 @@ export default function EventLog({ setNextStore, setEventFilter, eventFilter }) 
             {event.message.data.store.id}
           </span>
         ),
-        additionalData: extractDataByType(
-          event.message,
-          eventFilter['fulltext']
-        ),
+        additionalData: extractDataByType(event.message, eventFilter['fulltext']),
         storeId: event.message.data.store.id,
         event,
       };
@@ -271,7 +267,7 @@ export default function EventLog({ setNextStore, setEventFilter, eventFilter }) 
         <span className={styles.grey}>{' | '}</span>
         <span
           style={{
-            cursor: 'pointer'
+            cursor: 'pointer',
           }}
           onClick={e => {
             e.stopPropagation();
@@ -342,18 +338,14 @@ export default function EventLog({ setNextStore, setEventFilter, eventFilter }) 
         {Object.values(eventTypes).map(eventType => {
           return (
             <button
-              className={`${styles.filterButton} ${
-                usedTypes[eventType] ? '' : styles.grey
-              } ${
+              className={`${styles.filterButton} ${usedTypes[eventType] ? '' : styles.grey} ${
                 eventFilter['message.type'] === eventType ? styles.active : ''
               }`}
               onClick={() => {
                 addFilter('message.type', eventType);
               }}
             >
-              {`${eventType.replace('inulax ', '')}(${
-                usedTypes[eventType] || 0
-              })`}
+              {`${eventType.replace('inulax ', '')}(${usedTypes[eventType] || 0})`}
             </button>
           );
         })}
@@ -374,20 +366,12 @@ export default function EventLog({ setNextStore, setEventFilter, eventFilter }) 
             type: data.type,
             store: {
               actions: Object.fromEntries(
-                Object.entries(message.data.store.$config.actions).map(
-                  ([id, action]) => {
-                    return [
-                      id,
-                      (action as string).replace(/\{.*}/gms, '{...}').replace('function ', ''),
-                    ];
-                  }
-                )
+                Object.entries(message.data.store.$config.actions).map(([id, action]) => {
+                  return [id, (action as string).replace(/\{.*}/gms, '{...}').replace('function ', '')];
+                })
               ),
               computed: Object.fromEntries(
-                Object.keys(message.data.store.$c).map(key => [
-                  key,
-                  message.data.store.expanded[key],
-                ])
+                Object.keys(message.data.store.$c).map(key => [key, message.data.store.expanded[key]])
               ),
               state: message.data.store.$s,
               id: message.data.store.id,

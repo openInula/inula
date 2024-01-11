@@ -13,12 +13,9 @@
  * See the Mulan PSL v2 for more details.
  */
 import * as Inula from 'openinula';
-import App from './App'
+import App from './App';
 
 function render() {
-    Inula.render(
-      <App/>,
-    document.querySelector('#root') as any
-  )
+  Inula.render(<App />, document.querySelector('#root') as any);
 }
 render();

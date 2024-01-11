@@ -28,9 +28,9 @@ describe('processValueByParser function', () => {
     const value = 'key1=value1; key2=value2; key3=value3';
     const result = processValueByParser(key, value, true);
     const expectedOutput = {
-      'key1': 'value1',
-      'key2': 'value2',
-      'key3': 'value3',
+      key1: 'value1',
+      key2: 'value2',
+      key3: 'value3',
     };
     expect(result).toEqual(expectedOutput);
   });

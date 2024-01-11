@@ -24,7 +24,7 @@ function processUploadProgress(
   resolve: (value: PromiseLike<IrResponse<any>> | IrResponse<any>) => void,
   method: string,
   url: string | undefined,
-  config: IrRequestConfig,
+  config: IrRequestConfig
 ) {
   if (onUploadProgress) {
     let totalBytesToUpload = 0; // 上传的总字节数
@@ -75,7 +75,7 @@ function processUploadProgress(
             statusText: xhr.statusText,
             headers: xhr.getAllResponseHeaders(),
             config: config,
-            request: xhr
+            request: xhr,
           };
 
           if (config.validateStatus!(xhr.status)) {
@@ -101,8 +101,8 @@ function processUploadProgress(
 
       for (const header in config.headers) {
         if (
-          !['Content-Length', 'Accept-Encoding', 'User-Agent'].includes(header) // 过滤不安全的请求头设置
-          && Object.prototype.hasOwnProperty.call(config.headers, header) // 不遍历请求头原型上的方法
+          !['Content-Length', 'Accept-Encoding', 'User-Agent'].includes(header) && // 过滤不安全的请求头设置
+          Object.prototype.hasOwnProperty.call(config.headers, header) // 不遍历请求头原型上的方法
         ) {
           xhr.setRequestHeader(header, config.headers[header]);
         }

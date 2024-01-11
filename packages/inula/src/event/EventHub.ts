@@ -21,7 +21,15 @@ export const allDelegatedInulaEvents = new Map();
  * 例如：parent vNode节点绑定了mousedown事件，子节点为portal节点，子节点下元素未绑定mousedown事件
  * 此时，点击portal下子元素，mousedown事件无法冒泡到parentNode
  */
-export const portalDefaultDelegatedEvents = ['onMouseDown', 'onMouseUp', 'onKeyDown', 'onKeyUp', 'onFocus', 'onBlur', 'onClick'];
+export const portalDefaultDelegatedEvents = [
+  'onMouseDown',
+  'onMouseUp',
+  'onKeyDown',
+  'onKeyUp',
+  'onFocus',
+  'onBlur',
+  'onClick',
+];
 
 // 模拟委托事件，不冒泡事件需要利用其他事件来触发冒泡过程
 export const simulatedDelegatedEvents = ['onMouseEnter', 'onMouseLeave'];

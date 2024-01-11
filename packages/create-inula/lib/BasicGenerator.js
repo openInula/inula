@@ -140,8 +140,7 @@ class BasicGenerator extends Generator {
       if (fs.lstatSync(fullpath).isDirectory()) {
         this.traverseDirBubble(fullpath, dirCallback, fileCallback);
         dirCallback(fullpath);
-      }
-      else{
+      } else {
         fileCallback(fullpath);
       }
     }

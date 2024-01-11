@@ -135,15 +135,11 @@ export default class Plugin {
     return new Proxy(pluginAPI, {
       get: (target: PluginAPI, prop: string) => {
         if (['userConfig', 'devBuildConfig', 'buildConfig', 'compileMode', 'packageJson', 'cwd'].includes(prop)) {
-          return typeof this.hub[prop] === 'function'
-            ? this.hub[prop].bind(this.hub)
-            : this.hub[prop];
+          return typeof this.hub[prop] === 'function' ? this.hub[prop].bind(this.hub) : this.hub[prop];
         }
 
         if (['setStore', 'logger', 'commands'].includes(prop)) {
-          return typeof this[prop] === 'function'
-            ? this[prop].bind(this)
-            : this[prop];
+          return typeof this[prop] === 'function' ? this[prop].bind(this) : this[prop];
         }
 
         return target[prop];

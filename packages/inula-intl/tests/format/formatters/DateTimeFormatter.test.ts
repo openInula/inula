@@ -14,7 +14,7 @@
  */
 
 import { DateTimeFormatter } from '../../../index';
-import creatI18nCache from "../../../src/format/cache/cache";
+import creatI18nCache from '../../../src/format/cache/cache';
 
 describe('DateTimeFormatter', () => {
   const date = new Date('2023-04-03T12:34:56Z');
@@ -92,7 +92,7 @@ describe('DateTimeFormatter', () => {
   });
 
   it('should format using memorized formatter when useMemorize is true', () => {
-    const formatter = new DateTimeFormatter('en-US',{"year":'numeric'}, creatI18nCache());
+    const formatter = new DateTimeFormatter('en-US', { year: 'numeric' }, creatI18nCache());
     const date = new Date(2023, 0, 1);
     const formatted1 = formatter.dateTimeFormat(date);
     const formatted2 = formatter.dateTimeFormat(date);

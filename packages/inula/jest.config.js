@@ -19,17 +19,17 @@ module.exports = {
 
   rootDir: process.cwd(),
 
-  setupFiles: [require.resolve('./scripts/__tests__/jest/jestEnvironment.js')],
+  setupFiles: [require.resolve('./__tests__/jest/jestEnvironment.js')],
 
-  setupFilesAfterEnv: [require.resolve('./scripts/__tests__/jest/jestSetting.js')],
+  setupFilesAfterEnv: [require.resolve('./__tests__/jest/jestSetting.js')],
 
   testEnvironment: 'jest-environment-jsdom-sixteen',
 
   testMatch: [
     // '<rootDir>/scripts/__tests__/InulaXTest/edgeCases/deepVariableObserver.test.tsx',
     // '<rootDir>/scripts/__tests__/InulaXTest/StateManager/StateMap.test.tsx',
-    '<rootDir>/scripts/__tests__/**/*.test.js',
-    '<rootDir>/scripts/__tests__/**/*.test.tsx',
+    '<rootDir>/__tests__/**/*.test.js',
+    '<rootDir>/__tests__/**/*.test.tsx',
   ],
 
   timers: 'fake',

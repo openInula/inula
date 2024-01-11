@@ -20,7 +20,11 @@ import { IrRequestConfig, QueryOptions } from '../../types/interfaces';
 // 全局初始化一个 IRClient 实例
 const irClient = new IRClient();
 
-const useIR = <T = unknown>(url: string, config?: IrRequestConfig, options?: QueryOptions): { data?: T; error?: any } => {
+const useIR = <T = unknown>(
+  url: string,
+  config?: IrRequestConfig,
+  options?: QueryOptions
+): { data?: T; error?: any } => {
   const [data, setData] = Inula.useState<T>(null as unknown as T);
   const [error, setError] = Inula.useState<any>(null);
 

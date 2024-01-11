@@ -84,7 +84,7 @@ export function createHashHistory<S = DefaultStateType>(option: HashHistoryOptio
   const { go, goBack, goForward, listen, block, getUpdateStateFunc } = getBaseHistory(
     transitionManager,
     setListener,
-    browserHistory,
+    browserHistory
   );
 
   const history: History<S> = {

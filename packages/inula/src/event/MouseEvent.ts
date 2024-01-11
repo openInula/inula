@@ -100,7 +100,6 @@ export function getMouseEnterListeners(
   nativeEvent: MouseEvent,
   nativeEventTarget: null | EventTarget
 ): ListenerUnitList {
-
   if (domEventName === 'mouseover') {
     // 如果 related 节点是 openInula 框架管理的，那么在 out 事件节点已经触发过 mouseEnter 或者 mouseLeave 事件了，不需要 over 事件再次触发
     // IE 通过 fromElement 属性获取失去焦点的 DOM 节点
