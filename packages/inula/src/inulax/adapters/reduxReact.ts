@@ -93,17 +93,17 @@ type ConnectOption<State = any> = {
   areStatesEqual?: (oldState: State, newState: State) => boolean;
   context?: Context;
   forwardRef?: boolean;
-}
+};
 
 export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
-  mapStateToProps: MapStateToPropsP<StateProps, OwnProps> = () => ({} as StateProps),
-  mapDispatchToProps: MapDispatchToPropsP<DispatchProps, OwnProps> = () => ({} as DispatchProps),
+  mapStateToProps: MapStateToPropsP<StateProps, OwnProps> = () => ({}) as StateProps,
+  mapDispatchToProps: MapDispatchToPropsP<DispatchProps, OwnProps> = () => ({}) as DispatchProps,
   mergeProps: MergePropsP<StateProps, DispatchProps, OwnProps, MergedProps> = (
     stateProps,
     dispatchProps,
     ownProps
-  ): MergedProps => ({ ...stateProps, ...dispatchProps, ...ownProps } as unknown as MergedProps),
-  options: ConnectOption = {},
+  ): MergedProps => ({ ...stateProps, ...dispatchProps, ...ownProps }) as unknown as MergedProps,
+  options: ConnectOption = {}
 ): Connector<OwnProps, MergedProps> {
   //this component should bear the type returned from mapping functions
   return (Component: OriginalComponent<MergedProps>): WrappedComponent<OwnProps> => {

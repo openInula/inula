@@ -13,10 +13,10 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Inula from "openinula";
-import { createIntl } from "../../index";
+import Inula from 'openinula';
+import { createIntl } from '../../index';
 
-const Example4 = (props) => {
+const Example4 = props => {
   // 受渲染时机影响，createIntl方式需控制时序，否则慢一拍
   const intl = createIntl({ ...props });
   const msg = intl.formatMessage({ id: 'text3' });

@@ -21,7 +21,7 @@ import {
   ForwardRef,
   FunctionComponent,
   MemoComponent,
-  SuspenseComponent
+  SuspenseComponent,
 } from '../../../inula/src/renderer/vnode/VNodeTags';
 
 export type NameObj = {
@@ -61,13 +61,7 @@ const componentType = [
   MemoComponent,
 ];
 
-const badgeNameArr: Array<string> = [
-  'withRouter(',
-  'SideEffect(',
-  'Connect(',
-  'injectIntl(',
-  'Pure(',
-];
+const badgeNameArr: Array<string> = ['withRouter(', 'SideEffect(', 'Connect(', 'injectIntl(', 'Pure('];
 
 export function isUserComponent(tag: string) {
   return componentType.includes(tag);

@@ -16,8 +16,8 @@
 import utils from '../../utils/utils';
 import NumberFormatter from './NumberFormatter';
 import { Locale, Locales } from '../../types/types';
-import {I18nCache} from "../../types/interfaces";
-import {createIntlCache} from "../../../index";
+import { I18nCache } from '../../types/interfaces';
+import { createIntlCache } from '../../../index';
 
 /**
  * 复数格式化

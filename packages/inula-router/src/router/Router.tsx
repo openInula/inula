@@ -72,7 +72,7 @@ function Router<P extends RouterProps>(props: P) {
       location: location,
       match: { isExact: location.pathname === '/', params: {}, path: '/', score: [], url: '/' },
     }),
-    [location],
+    [location]
   );
 
   return <RouterContext.Provider value={initContextValue} children={children} />;

@@ -74,10 +74,10 @@ function ConnectedRouterWithoutMemo<S>(props: ConnectedRouter<S>) {
             search: searchInStore,
             hash: hashInStore,
           },
-          stateInStore,
+          stateInStore
         );
       }
-    }),
+    })
   );
 
   const handleLocationChange = (args: Navigation<S>, isFirstRendering: boolean = false) => {

@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { EventCallback } from "../types/types";
+import { EventCallback } from '../types/types';
 
 /**
  * 定义一个时间触发器类，使用泛型实现动态时间的监听

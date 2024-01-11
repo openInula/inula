@@ -13,15 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import {
-  useState,
-  useEffect,
-  useRef,
-  memo,
-  useMemo,
-  useCallback,
-  useReducer,
-} from 'openinula';
+import { useState, useEffect, useRef, memo, useMemo, useCallback, useReducer } from 'openinula';
 import VTree, { IData } from '../components/VTree';
 import Search from '../components/Search';
 import ComponentInfo from '../components/ComponentInfo';
@@ -134,26 +126,20 @@ interface IIdToNodeMap {
  * @param {null | HTMLElement} resizeElement 要改变宽度的页面元素
  * @param {number} percentage 宽度占比
  */
-const setResizePCTForElement = (
-  resizeElement: null | HTMLElement,
-  percentage: number
-): void => {
+const setResizePCTForElement = (resizeElement: null | HTMLElement, percentage: number): void => {
   if (resizeElement !== null) {
-    resizeElement.style.setProperty(
-      '--horizontal-percentage',
-      `${percentage}`
-    );
+    resizeElement.style.setProperty('--horizontal-percentage', `${percentage}`);
   }
 };
 
 function resizeReducer(state: ResizeState, action: ResizeAction): ResizeState {
   switch (action.type) {
-    case "START_RESIZE":
+    case 'START_RESIZE':
       return {
         ...state,
         isResizing: action.payload,
       };
-    case "SET_HORIZONTAL_PERCENTAGE":
+    case 'SET_HORIZONTAL_PERCENTAGE':
       return {
         ...state,
         horizontalPercentage: action.payload,
@@ -183,11 +169,7 @@ function Panel({ viewSource, inspectVNode }) {
   const [isPicking, setPicking] = useState(false);
   const [source, setSource] = useState<Source>(null);
   const idToTreeNodeMapref = useRef<IIdToNodeMap>({});
-  const [state, dispatch] = useReducer(
-    resizeReducer,
-    null,
-    initResizeState
-  );
+  const [state, dispatch] = useReducer(resizeReducer, null, initResizeState);
   const pageRef = useRef<null | HTMLElement>(null);
   const treeRef = useRef<null | HTMLElement>(null);
 
@@ -214,16 +196,12 @@ function Panel({ viewSource, inspectVNode }) {
         // 对象数据只是记录了引用，内容可能在后续被修改，打印字符串可以获取当前真正内容，不被后续修改影响
         logger.info(JSON.stringify(payload));
         if (payload) {
-          const {type, data} = payload;
+          const { type, data } = payload;
           if (type === AllVNodeTreeInfos) {
             const idToTreeNodeMap = idToTreeNodeMapref.current;
             const nextIdToTreeNodeMap: IIdToNodeMap = {};
             const allTreeData = data.reduce((pre, current) => {
-              const parsedTreeData = parseVNodeData(
-                current,
-                idToTreeNodeMap,
-                nextIdToTreeNodeMap
-              );
+              const parsedTreeData = parseVNodeData(current, idToTreeNodeMap, nextIdToTreeNodeMap);
               return pre.concat(parsedTreeData);
             }, []);
             idToTreeNodeMapref.current = nextIdToTreeNodeMap;
@@ -284,10 +262,7 @@ function Panel({ viewSource, inspectVNode }) {
     setShowItems(info.visibleItems);
   };
 
-  const parents = useMemo(
-    () => getParents(selectComp, parsedVNodeData),
-    [selectComp, parsedVNodeData]
-  );
+  const parents = useMemo(() => getParents(selectComp, parsedVNodeData), [selectComp, parsedVNodeData]);
 
   const viewSourceFunction = useMemo(
     () => ({
@@ -338,7 +313,7 @@ function Panel({ viewSource, inspectVNode }) {
       const mouseAbscissa = event.clientX - left;
 
       const pageSizeMin = MINIMUM_SIZE;
-      const pageSizeMax = width-MINIMUM_SIZE;
+      const pageSizeMax = width - MINIMUM_SIZE;
 
       const isMouseInPage = mouseAbscissa > pageSizeMin && mouseAbscissa < pageSizeMax;
 
@@ -394,16 +369,10 @@ function Panel({ viewSource, inspectVNode }) {
                     {`${matchItems.indexOf(currentItem) + 1}/${matchItems.length}`}
                   </span>
                   <div className={styles.divider} />
-                  <button
-                    className={styles.searchAction}
-                    onClick={onSelectLast}
-                  >
+                  <button className={styles.searchAction} onClick={onSelectLast}>
                     <Arrow direction={'up'} />
                   </button>
-                  <button
-                    className={styles.searchAction}
-                    onClick={onSelectNext}
-                  >
+                  <button className={styles.searchAction} onClick={onSelectNext}>
                     <Arrow direction={'down'} />
                   </button>
                   <button className={styles.searchAction} onClick={onClear}>

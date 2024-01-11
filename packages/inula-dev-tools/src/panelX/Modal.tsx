@@ -73,7 +73,7 @@ export function Modal({
           <input
             ref={inputRef}
             type={'text'}
-            onKeyPress={({key}) => {
+            onKeyPress={({ key }) => {
               if (key === 'Enter') {
                 tryGatherData();
               }

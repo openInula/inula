@@ -53,6 +53,8 @@ describe('InjectIntl', () => {
     };
 
     const { getByTestId } = mountWithProvider(<Injected {...props} />);
-    expect(getByTestId('test')).toHaveTextContent('{"_events":{},"locale":"en","locales":["en"],"allMessages":{},"_localeData":{}}');
+    expect(getByTestId('test')).toHaveTextContent(
+      '{"_events":{},"locale":"en","locales":["en"],"allMessages":{},"_localeData":{}}'
+    );
   });
 });

@@ -18,7 +18,6 @@
  * 确保继续渲染项在新渲染数组中的位置和旧渲染数组中的位置不发生改变
  */
 export default class ItemMap<T> {
-
   // 不要用 indexOf 进行位置计算，它会遍历数组
   private lastRenderItemToIndexMap: Map<T | undefined, number>;
 
@@ -26,7 +25,7 @@ export default class ItemMap<T> {
     this.lastRenderItemToIndexMap = new Map();
   }
 
-  public calculateReSortedItems(nextItems: T[]): (T|undefined)[] {
+  public calculateReSortedItems(nextItems: T[]): (T | undefined)[] {
     if (this.lastRenderItemToIndexMap.size === 0) {
       nextItems.forEach((item, index) => {
         this.lastRenderItemToIndexMap.set(item, index);

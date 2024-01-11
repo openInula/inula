@@ -52,7 +52,7 @@ const buildConfig = async (fileName: string, format: 'esm' | 'cjs' = 'esm'): Pro
 
         return {
           loader: args.path.endsWith('.ts') ? 'ts' : 'js',
-          contents: contents
+          contents: contents,
         };
       });
     },

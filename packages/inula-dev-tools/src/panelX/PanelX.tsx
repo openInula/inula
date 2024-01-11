@@ -32,12 +32,7 @@ export default function PanelX() {
     {
       id: 'stores',
       title: 'Stores',
-      getComponent: () => (
-        <Stores
-          nextStoreId={nextStoreId}
-          showFilteredEvents={showFilterEvents}
-        />
-      ),
+      getComponent: () => <Stores nextStoreId={nextStoreId} showFilteredEvents={showFilterEvents} />,
     },
     {
       id: 'events',
@@ -60,10 +55,7 @@ export default function PanelX() {
       <div style={{ marginBottom: '10px' }}>
         {tabs.map(tab =>
           tab.id === active ? (
-            <button
-              className={`${styles.tab} ${styles.active}`}
-              disabled={true}
-            >
+            <button className={`${styles.tab} ${styles.active}`} disabled={true}>
               {tab.title}
             </button>
           ) : (

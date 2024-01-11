@@ -19,4 +19,4 @@ export default {
   text2: 'Welcome to the Inula-Intl component!',
   text3: 'Welcome to the Inula-Intl component!',
   text4: 'Welcome to the Inula-Intl component!',
-}
+};

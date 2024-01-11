@@ -41,6 +41,3 @@ describe('createI18n', () => {
     expect(onWarn).not.toHaveBeenCalled();
   });
 });
-
-
-

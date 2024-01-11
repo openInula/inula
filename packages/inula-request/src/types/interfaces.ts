@@ -305,8 +305,8 @@ export interface QueryOptions {
 }
 
 export interface Limitation {
-  minInterval: number,
-  maxInterval: number,
+  minInterval: number;
+  maxInterval: number;
 }
 
 // useIR 缓存

@@ -16,26 +16,26 @@
 export function Checkbox({ value }) {
   return (
     <div
-    style={{
-      border: '1px solid black',
-      borderRadius: '2px',
-      width: '0.75rem',
-      height: '0.75rem',
-      padding: '1px',
-      backgroundColor: 'white',
-      display: 'inline-block',
-      position: 'relative',
-      cursor: 'pointer',
-      verticalAlign: 'sub',
-      marginBottom: '0.1rem'
-    }}
+      style={{
+        border: '1px solid black',
+        borderRadius: '2px',
+        width: '0.75rem',
+        height: '0.75rem',
+        padding: '1px',
+        backgroundColor: 'white',
+        display: 'inline-block',
+        position: 'relative',
+        cursor: 'pointer',
+        verticalAlign: 'sub',
+        marginBottom: '0.1rem',
+      }}
     >
       <div
         style={{
           width: '100%',
           height: '100%',
-          backgroundColor: value? 'black' : 'white',
-          position: 'relative'
+          backgroundColor: value ? 'black' : 'white',
+          position: 'relative',
         }}
       ></div>
     </div>

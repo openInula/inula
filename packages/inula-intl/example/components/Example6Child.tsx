@@ -13,11 +13,10 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { useIntl } from "../../index";
+import { useIntl } from '../../index';
 
 const Example6Child = (props: any) => {
-
-  const {formatMessage} = useIntl();
+  const { formatMessage } = useIntl();
 
   return (
     <div className="card">
@@ -25,6 +24,6 @@ const Example6Child = (props: any) => {
       <pre>{formatMessage({ id: 'text4' })}</pre>
     </div>
   );
-}
+};
 
 export default Example6Child;

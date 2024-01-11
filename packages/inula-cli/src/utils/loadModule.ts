@@ -27,7 +27,6 @@ export async function loadModule<T>(filePath: string): Promise<T | undefined> {
   const isTsFile: boolean = filePath.endsWith('ts');
   const isJsFile: boolean = filePath.endsWith('js');
 
-
   let content: T | undefined;
 
   // js文件，可以直接通过import引用

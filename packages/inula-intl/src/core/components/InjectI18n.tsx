@@ -12,14 +12,14 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import Inula , { createContext, forwardRef } from 'openinula';
+import Inula, { createContext, forwardRef } from 'openinula';
 import { isVariantI18n } from '../../utils/utils';
 import copyStaticProps from '../../utils/copyStaticProps';
 import { InjectOptions } from '../../types/interfaces';
-import I18n from "../I18n";
+import I18n from '../I18n';
 
 // 创建国际化组件对象上下文
-export const I18nContext : any = createContext<I18n>(null as any);
+export const I18nContext: any = createContext<I18n>(null as any);
 const { Consumer, Provider } = I18nContext;
 export const InjectProvider = Provider;
 
@@ -54,9 +54,7 @@ function injectI18n(Component, options?: InjectOptions): any {
 
   // 通过copyStatics方法，复制组件中的静态属性
   return copyStaticProps(
-    isUsingForwardRef ?
-        forwardRef((props, ref) => <WrappedI18n {...props} forwardedRef={ref} />) :
-        WrappedI18n,
+    isUsingForwardRef ? forwardRef((props, ref) => <WrappedI18n {...props} forwardedRef={ref} />) : WrappedI18n,
     Component
   );
 }

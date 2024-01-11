@@ -152,7 +152,7 @@ function Item(props: IItem) {
   return (
     <div {...itemAttr}>
       <div
-        style={{marginLeft: indentation * indentationLength}}
+        style={{ marginLeft: indentation * indentationLength }}
         className={styles.treeIcon}
         onclick={handleClickCollapse}
       >
@@ -182,15 +182,7 @@ function VTree(props: {
   selectItem: IData;
   onSelectItem: (item: IData) => void;
 }) {
-  const {
-    data,
-    maxDeep,
-    highlightValue,
-    scrollToItem,
-    onRendered,
-    onCollapseNode,
-    onSelectItem
-  } = props;
+  const { data, maxDeep, highlightValue, scrollToItem, onRendered, onCollapseNode, onSelectItem } = props;
   const [collapseNode, setCollapseNode] = useState(props.collapsedNodes || []);
   const [selectItem, setSelectItem] = useState(props.selectItem);
   const [childItems, setChildItems] = useState<Array<IData>>([]);
@@ -251,12 +243,9 @@ function VTree(props: {
     [onSelectItem]
   );
 
-  const handleMouseEnterItem = useCallback(
-    item => {
-      postMessageToBackground(Highlight, item);
-    },
-    null
-  );
+  const handleMouseEnterItem = useCallback(item => {
+    postMessageToBackground(Highlight, item);
+  }, null);
 
   const handleMouseLeaveItem = () => {
     postMessageToBackground(RemoveHighlight);

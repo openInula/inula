@@ -46,7 +46,7 @@ export default async function run() {
   initializeEnv();
 
   if (command === 'version' || command === 'help') {
-    process.env.INNER_COMMAND = "true"
+    process.env.INNER_COMMAND = 'true';
   }
 
   switch (command) {
@@ -63,7 +63,7 @@ export default async function run() {
 
   let enableDebug: boolean = false;
 
-  if (process.env.DEBUG === "true") {
+  if (process.env.DEBUG === 'true') {
     enableDebug = true;
   }
 

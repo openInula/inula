@@ -17,7 +17,7 @@ import * as React from 'react';
 import { act, render } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { IntlProvider } from '../../../index';
-import {createI18nInstance} from "../../../src/core/I18n";
+import { createI18nInstance } from '../../../src/core/I18n';
 
 describe('I18nProvider', () => {
   afterEach(() => {
@@ -61,11 +61,7 @@ describe('I18nProvider', () => {
     i18n.on = jest.fn(() => jest.fn());
     expect(i18n.on).not.toBeCalled();
     render(
-      <IntlProvider
-        key={locale}
-        locale={locale}
-        messages={{}}
-      >
+      <IntlProvider key={locale} locale={locale} messages={{}}>
         <p />
       </IntlProvider>
     );
@@ -78,9 +74,9 @@ describe('I18nProvider', () => {
     i18n.on = jest.fn(() => jest.fn());
     expect(i18n.on).not.toBeCalled();
     render(
-        <IntlProvider i18n={i18n}>
-          <p />
-        </IntlProvider>
+      <IntlProvider i18n={i18n}>
+        <p />
+      </IntlProvider>
     );
     setTimeout(() => {
       expect(i18n.on).toBeCalledWith('change', expect.anything());

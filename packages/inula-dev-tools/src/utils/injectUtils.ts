@@ -31,11 +31,7 @@ export function injectSrc(src) {
     script.remove();
   };
 
-  ifNullThrows(
-    document.head
-    || document.getElementsByName('head')[0]
-    || document.documentElement
-  ).appendChild(script);
+  ifNullThrows(document.head || document.getElementsByName('head')[0] || document.documentElement).appendChild(script);
 }
 
 export function injectCode(code) {

@@ -19,8 +19,8 @@
 
 let isMessageLoopRunning = false;
 let browserCallback = null;
-let port1: MessagePort |null = null;
-let port2: MessagePort |null = null;
+let port1: MessagePort | null = null;
+let port2: MessagePort | null = null;
 let isTestRuntime = false;
 
 export function isOverTime() {

@@ -14,7 +14,7 @@
  */
 
 import { useState } from 'openinula';
-import {Tree} from './Tree';
+import { Tree } from './Tree';
 import styles from './PanelX.less';
 
 type displayKeysType = [string, string][];
@@ -84,14 +84,10 @@ export function Table({
             <span></span>
             {data.map(row => (
               <div
-                className={`${styles.row} ${
-                  keyToDisplay === row[dataKey] ? styles.active : ''
-                }`}
+                className={`${styles.row} ${keyToDisplay === row[dataKey] ? styles.active : ''}`}
                 onClick={() => {
                   setManualOverride(true);
-                  setKeyToDisplay(
-                    keyToDisplay === row[dataKey] ? null : row[dataKey]
-                  );
+                  setKeyToDisplay(keyToDisplay === row[dataKey] ? null : row[dataKey]);
                 }}
               >
                 <div className={styles.cell}>{row?.[attr] || ''}</div>
@@ -119,11 +115,7 @@ export function Table({
             <div className={styles.row}>
               <div className={styles.cell}>
                 <Tree
-                  data={
-                  displayDataProcessor
-                    ? displayDataProcessor(displayRow)
-                    : displayRow
-                  }
+                  data={displayDataProcessor ? displayDataProcessor(displayRow) : displayRow}
                   indent={displayRow[displayKeys[0][0]]}
                   expand={true}
                   search={search}
@@ -142,7 +134,7 @@ export function Table({
           <div className={`${styles.row} ${styles.header}`}>
             {displayKeys.map(([key, title]) => (
               <div className={styles.cell}>{title}</div>
-              ))}
+            ))}
           </div>
           {data.map(item => (
             <div

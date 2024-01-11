@@ -20,7 +20,7 @@ describe('convertRawHeaders', () => {
     const rawHeaders = 'Content-Type: application/json\nAuthorization: Bearer token';
     const expectedHeaders = {
       'content-type': 'application/json',
-      'authorization': 'Bearer token',
+      authorization: 'Bearer token',
     };
     const result = convertRawHeaders(rawHeaders);
     expect(result).toEqual(expectedHeaders);
@@ -46,7 +46,7 @@ describe('convertRawHeaders', () => {
     const rawHeaders = '  Content-Type: application/json\nAuthorization: Bearer token  ';
     const expectedHeaders = {
       'content-type': 'application/json',
-      'authorization': 'Bearer token',
+      authorization: 'Bearer token',
     };
     const result = convertRawHeaders(rawHeaders);
     expect(result).toEqual(expectedHeaders);

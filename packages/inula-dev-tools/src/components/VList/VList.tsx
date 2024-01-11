@@ -36,13 +36,13 @@ interface IProps<T extends { id: number | string }> {
 
 export type RenderInfoType<T> = {
   visibleItems: T[];
-}
+};
 
 function parseTranslate<T>(data: T[], itemHeight: number) {
   const map = new Map<T, number>();
   data.forEach((item, index) => {
     map.set(item, index * itemHeight);
-  })
+  });
   return map;
 }
 
@@ -121,7 +121,7 @@ export function VList<T extends { id: number | string }>(props: IProps<T>) {
         className={styles.item}
         style={{ transform: `translateY(${itemToTranslateYMap.get(item)}px)` }}
       >
-        {children(item,indentationLength)}
+        {children(item, indentationLength)}
       </div>
     );
   });

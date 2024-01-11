@@ -15,13 +15,13 @@
 
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const {resolve} = require('path');
+const { resolve } = require('path');
 
 module.exports = {
   entry: './examples/useIR/index.jsx', // 入口文件
   output: {
     path: path.resolve(__dirname, 'dist'), // 输出目录
-    filename: 'bundle.js' // 输出文件名
+    filename: 'bundle.js', // 输出文件名
   },
   module: {
     rules: [
@@ -35,16 +35,16 @@ module.exports = {
               [
                 '@babel/preset-react',
                 {
-                  'runtime': 'automatic',
-                  'importSource': 'openinula'
-                }
+                  runtime: 'automatic',
+                  importSource: 'openinula',
+                },
               ],
-              '@babel/preset-typescript'
+              '@babel/preset-typescript',
             ],
           },
         },
-      }
-    ]
+      },
+    ],
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -60,5 +60,5 @@ module.exports = {
     port: '8888',
     open: true,
     hot: true,
-  }
+  },
 };

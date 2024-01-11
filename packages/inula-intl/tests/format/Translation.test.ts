@@ -14,7 +14,7 @@
  */
 
 import Translation from '../../src/format/Translation';
-import {createIntlCache} from "../../index";
+import { createIntlCache } from '../../index';
 
 describe('Translation', () => {
   let translation;

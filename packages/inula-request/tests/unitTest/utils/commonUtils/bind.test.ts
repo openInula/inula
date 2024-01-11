@@ -17,8 +17,7 @@ import utils from '../../../../src/utils/commonUtils/utils';
 
 describe('bind function', () => {
   it('should return a new function', () => {
-    const fn = () => {
-    };
+    const fn = () => {};
     const boundFn = utils.bind(fn, {});
     expect(boundFn).toBeInstanceOf(Function);
     expect(boundFn).not.toBe(fn);
@@ -27,7 +26,7 @@ describe('bind function', () => {
   it('should call original function with correct this value', () => {
     const thisArg = { name: 'Alice' };
     const fn = function (this: any) {
-      return this["name"];
+      return this['name'];
     };
     const boundFn = utils.bind(fn, thisArg);
     const result = boundFn();

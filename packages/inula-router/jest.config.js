@@ -19,5 +19,5 @@ export default {
   globals: {
     __DEV__: true,
   },
-  testEnvironment: 'jsdom'
+  testEnvironment: 'jsdom',
 };

@@ -60,4 +60,4 @@ const stateReader = (storeType: string) => {
   };
 };
 
-export default stateReader
+export default stateReader;

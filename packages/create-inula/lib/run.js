@@ -68,10 +68,10 @@ const run = async config => {
       {
         name: 'projectName',
         message: 'Project name',
-        type: 'input'      
+        type: 'input',
       },
     ]);
-    config.name = answers.projectName; 
+    config.name = answers.projectName;
   }
   if (!type) {
     const answers = await inquirer.prompt([
