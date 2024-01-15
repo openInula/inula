@@ -145,10 +145,10 @@ export type VNode = {
 
   belongClassVNode: VNode | null, // 记录JSXElement所属class vNode，处理ref的时候使用
 
-  // 状态管理器HorizonX使用
+  // 状态管理器InulaX使用
   isStoreChange: boolean,
   observers: Set<any> | null, // 记录这个函数组件/类组件依赖哪些Observer
-  classComponentWillUnmount: Function | null, // HorizonX会在classComponentWillUnmount中清除对VNode的引入用
+  classComponentWillUnmount: Function | null, // InulaX会在classComponentWillUnmount中清除对VNode的引入用
   src: Source | null, // 节点所在代码位置
 
   // reactive

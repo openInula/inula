@@ -16,7 +16,7 @@
 import type { VNode } from '../Types';
 import { FlagUtils } from '../vnode/VNodeFlags';
 import { TYPE_COMMON_ELEMENT, TYPE_FRAGMENT, TYPE_PORTAL } from '../../external/JSXElementType';
-import { DomText, DomPortal, Fragment, DomComponent } from '../vnode/VNodeTags';
+import { ReactiveComponent, DomText, DomPortal, Fragment, DomComponent } from '../vnode/VNodeTags';
 import {
   updateVNode,
   createVNodeFromElement,

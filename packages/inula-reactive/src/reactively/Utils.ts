@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
  *
- * openInula is licensed under Mulan PSL v2.
+ * openGauss is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *
@@ -13,8 +13,13 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { watch } from '../../inulax/proxy/watch';
+import { RNode } from './RNode';
 
-export function useWatchImpl(fn: () => void) {
-  watch(fn);
+export function isReactively(obj: any) {
+  return obj instanceof RNode;
+}
+
+export function isObject(obj: unknown): boolean {
+  const type = typeof obj;
+  return obj != null && (type === 'object' || type === 'function');
 }

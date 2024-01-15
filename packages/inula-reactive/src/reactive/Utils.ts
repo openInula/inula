@@ -17,6 +17,7 @@ import {Atom} from './Atom';
 import {getRNodeVal, nodeSymbol} from './RNode';
 import {AtomNode, AtomNodeFn, ProxyRNode, ProxyRNodeFn, Reactive, ReactiveProxy, RNode} from './types';
 import {GET_R_NODE} from './proxy/RProxyHandler';
+import {isReactively} from '../reactively/utils';
 
 export function isAtom(val: unknown): val is Atom {
   return val instanceof Atom;
@@ -31,7 +32,7 @@ export function isReactiveProxy(val: unknown): val is RNode {
 }
 
 export function isReactiveObj(val: unknown): val is ProxyRNodeFn<any> | AtomNodeFn<any> {
-  return isAtom(val) || isReactiveProxy(val);
+  return isAtom(val) || isReactiveProxy(val) || isReactively(val);
 }
 
 export function isObject(obj: unknown): boolean {

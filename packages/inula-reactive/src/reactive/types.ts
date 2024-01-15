@@ -27,7 +27,7 @@ export interface Root<T> {
   $?: T;
 
   /**
-   * 下面属性computed使用
+   * computed使用
    * @param {readOnly} 标识computed 是否处于写入状态
    */
   readOnly?: boolean;

@@ -30,7 +30,7 @@ import {
   DomText,
   DomPortal,
   SuspenseComponent,
-  MemoComponent,
+  MemoComponent, ReactiveComponent,
 } from '../vnode/VNodeTags';
 import { FlagUtils, ResetText, Clear, Update, DirectAddition } from '../vnode/VNodeFlags';
 import { mergeDefaultProps } from '../render/LazyComponent';
@@ -224,7 +224,7 @@ function unmountDomComponents(vNode: VNode): void {
       currentParentIsValid = true;
     }
 
-    if (node.tag === DomComponent || node.tag === DomText) {
+    if (node.tag === DomComponent || node.tag === DomText || node.tag === ReactiveComponent) {
       let nd = node;
 
       // 卸载vNode，递归遍历子vNode

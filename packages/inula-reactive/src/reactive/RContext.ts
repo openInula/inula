@@ -20,7 +20,7 @@ import { ArrayState, RContextCallback, RContextParam, Reactive, RNode } from './
 import { getOrCreateChildNode } from './RNode';
 import {addToBatch, startBatch, endBatch, BatchItem} from './Batch';
 
-export let currentDependent: RContext | null = null;
+export let currentRContext: RContext | null = null;
 
 const reactiveContextStack: RContext[] = [];
 export type RContextSet = Set<RContext>;
@@ -48,7 +48,7 @@ export class RContext {
 
   start() {
     cleanupRContext(this);
-    currentDependent = this;
+    currentRContext = this;
     reactiveContextStack.push(this);
 
     return endEffect;
@@ -57,7 +57,11 @@ export class RContext {
 
 function endEffect() {
   reactiveContextStack.pop();
-  currentDependent = reactiveContextStack[reactiveContextStack.length - 1] ?? null;
+  currentRContext = reactiveContextStack[reactiveContextStack.length - 1] ?? null;
+}
+
+export function setRContext(val: RContext | null) {
+  currentRContext = val;
 }
 
 // 清除 RContext和响应式数据的绑定，双向清除
@@ -99,6 +103,7 @@ export function triggerRContexts(reactive: Reactive, prevValue: any, value: any,
   callRContexts(reactive);
 
   // 触发父数据的RContext，不希望触发组件刷新（只触发computed和watch）
+  // TODO 暂时删除, 跑no-vnode方式的js-framework-benchmark用例
   triggerParents(reactive.parent);
 
   endBatch();

@@ -24,6 +24,8 @@ import { updateInputValue } from '../dom/valueHandler/InputValueHandler';
 import { updateTextareaValue } from '../dom/valueHandler/TextareaValueHandler';
 import { setDomProps } from '../dom/DOMPropertiesHandler/DOMPropertiesHandler';
 import { getRNodeFromProxy, isAtom, isReactiveProxy } from './Utils';
+import { isReactively } from '../reactively/utils';
+import { reactively } from '../reactively/Reactively';
 
 const vNodeEffectMap = new WeakMap<VNode, RContext>();
 
@@ -117,10 +119,52 @@ function subscribeAttr(dom: Element, propName: string, propVal: Reactive, styleN
   saveAttrRContexts(vNode, attrRContext);
 }
 
+/**
+ * 订阅DOM的属性（props或children），创建一个专门更新该属性的上下文，当响应式数据变化就触发该上下文的callback
+ * @param dom DOM元素
+ * @param propName 属性名字
+ * @param propVal 属性值，是响应式数据
+ * @param styleName style里面的某个属性
+ */
+function subscribeAttrForReactively(dom: Element, propName: string, propVal, styleName?: string) {
+  const attrRContext = reactively.watch(
+    () => {
+      let changeList;
+      if (propName === 'style' && styleName) {
+        changeList = {
+          style: {
+            [styleName]: propVal.get(),
+          },
+        };
+      } else {
+        changeList = {
+          [propName]: propVal.get(),
+        };
+      }
+
+      const type = getVNode(dom)?.type;
+      if (type === 'input' && propName === 'value') {
+        updateInputValue(dom as HTMLInputElement, changeList);
+      } else if (type === 'textarea' && propName === 'value') {
+        updateTextareaValue(dom as HTMLTextAreaElement, changeList);
+      } else {
+        setDomProps(dom, changeList, true, false);
+      }
+    },
+  );
+
+  // bindReactiveWithContext(propVal, attrRContext);
+  //
+  // // vNode保存RContext，用于cleanup
+  // const vNode = getVNode(dom);
+  // saveAttrRContexts(vNode, attrRContext);
+}
+
 export function handleReactiveProp(dom: Element, propName: string, propVal: any, styleName?: string): any {
   let rawVal = propVal;
   const isA = isAtom(propVal);
   const isProxy = isReactiveProxy(propVal);
+  const isRy = isReactively(propVal);
 
   if (isA || isProxy) {
     let reactive = propVal;
@@ -129,6 +173,11 @@ export function handleReactiveProp(dom: Element, propName: string, propVal: any,
     }
     rawVal = getRNodeVal(reactive as Reactive);
     subscribeAttr(dom, propName, reactive, styleName);
+  }
+
+  if (isRy) {
+    subscribeAttrForReactively(dom, propName, propVal, styleName);
+    rawVal = propVal.get();
   }
 
   return rawVal;

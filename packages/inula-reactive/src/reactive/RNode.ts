@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { bindReactiveWithContext, currentDependent, triggerRContexts } from './RContext';
+import { bindReactiveWithContext, currentRContext, setRContext, triggerRContexts } from './RContext';
 import { isAtom, isFunction, isRNode, isPrimitive } from './Utils';
 import { createProxy } from './proxy/RProxyHandler';
 import { Atom } from './Atom';
@@ -104,10 +104,25 @@ export function getOrCreateChildProxy(value: unknown, parent: RNode, key: string
   // }
 }
 
-// 最终响应式数据的使用
+// 追踪响应式数据的使用
 export function trackReactiveData(reactive: Reactive) {
-  if (currentDependent !== null) {
-    bindReactiveWithContext(reactive, currentDependent);
+  if (currentRContext !== null) {
+    bindReactiveWithContext(reactive, currentRContext);
+  }
+}
+
+// 不进行响应式数据的使用追踪
+export function untrack(fn) {
+  if (currentRContext === null) {
+    return fn();
+  }
+
+  const preRContext = currentRContext;
+  setRContext(null);
+  try {
+    return fn();
+  } finally {
+    setRContext(preRContext);
   }
 }
 
