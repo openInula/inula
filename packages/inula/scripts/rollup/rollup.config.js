@@ -100,7 +100,7 @@ function genConfig(mode) {
         {
           from: path.join(libDir, '/npm/index.js'),
           to: path.join(outDir, 'index.js'),
-        }
+        },
       ]),
     ],
   };

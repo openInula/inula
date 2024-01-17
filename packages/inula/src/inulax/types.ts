@@ -75,8 +75,8 @@ export type PlannedAction<S extends object, F extends ActionFunction<S>> = {
 type RemoveFirstFromTuple<T extends any[]> = T['length'] extends 0
   ? []
   : ((...b: T) => void) extends (a, ...b: infer I) => void
-  ? I
-  : [];
+    ? I
+    : [];
 
 export type UserComputedValues<S extends object> = {
   [K: string]: ComputedFunction<S>;

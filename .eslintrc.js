@@ -22,7 +22,7 @@ module.exports = {
   ],
   root: true,
 
-  plugins: ['jest', 'no-for-of-loops', 'no-function-declare-after-return', 'react', '@typescript-eslint'],
+  plugins: ['jest', 'no-function-declare-after-return', 'react', '@typescript-eslint'],
 
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -56,7 +56,6 @@ module.exports = {
     'comma-dangle': ['error', 'only-multiline'],
 
     'no-constant-condition': 'off',
-    'no-for-of-loops/no-for-of-loops': 'error',
     'no-function-declare-after-return/no-function-declare-after-return': 'error',
   },
   globals: {

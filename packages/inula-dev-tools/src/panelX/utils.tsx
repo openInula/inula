@@ -25,7 +25,7 @@ export function highlight(source, search) {
   const parts = source.split(search);
   const result = [];
 
-  for (let i= 0; i < parts.length * 2 - 1; i++) {
+  for (let i = 0; i < parts.length * 2 - 1; i++) {
     if (i % 2) {
       result.push(<span className={styles.highlighted}>{search}</span>);
     } else {
@@ -38,11 +38,7 @@ export function highlight(source, search) {
 
 export function displayValue(val: any, search = '') {
   if (typeof val === 'boolean') {
-    return (
-      <span>
-        {highlight(val ? 'true' : 'false', search)}
-      </span>
-    );
+    return <span>{highlight(val ? 'true' : 'false', search)}</span>;
   }
 
   if (val === '') {
@@ -62,10 +58,7 @@ export function displayValue(val: any, search = '') {
       return (
         <span>
           <i>ƒ</i>
-          {highlight(
-            val.match(/^function\s?\([\w,]*\)/g)[0].replace(/^function\s?/, ''),
-            search
-          )}
+          {highlight(val.match(/^function\s?\([\w,]*\)/g)[0].replace(/^function\s?/, ''), search)}
         </span>
       );
     }
@@ -75,7 +68,10 @@ export function displayValue(val: any, search = '') {
     return <span className={styles.blue}>{highlight('' + val, search)}</span>;
   }
   if (typeof val === 'function') {
-    const args = val.toString().match(/^function\s?\([\w,]*\)/g)[0].replace(/^function\s?/, '');
+    const args = val
+      .toString()
+      .match(/^function\s?\([\w,]*\)/g)[0]
+      .replace(/^function\s?/, '');
     return (
       <span>
         <i>ƒ</i>
@@ -108,9 +104,7 @@ export function fullTextSearch(value, search) {
       return value.values.some(val => fullTextSearch(val, search));
     }
     if (value?._type === 'Map') {
-      return value.entries.some(
-        (key, val) => fullTextSearch(key, search) || fullTextSearch(val, search)
-      );
+      return value.entries.some((key, val) => fullTextSearch(key, search) || fullTextSearch(val, search));
     }
     return Object.values(value).some(val => fullTextSearch(val, search));
   }
@@ -165,8 +159,7 @@ export function stringify(data) {
       if (Array.isArray(value)) {
         return (
           <span>
-            <span className={styles.purple}>{key}</span>:{' '}
-            {`Array(${value.length})`}
+            <span className={styles.purple}>{key}</span>: {`Array(${value.length})`}
           </span>
         );
       }
@@ -188,16 +181,14 @@ export function stringify(data) {
         if ((value as any)?._type === 'Set') {
           return (
             <span>
-              <span className={styles.purple}>{key}</span>:{' '}
-              {`Set(${(value as Set<any>).size})`}
+              <span className={styles.purple}>{key}</span>: {`Set(${(value as Set<any>).size})`}
             </span>
           );
         }
         if ((value as any)?._type === 'Map') {
           return (
             <span>
-              <span className={styles.purple}>{key}</span>:{' '}
-              {`Map(${(value as Map<any, any>).size})`}
+              <span className={styles.purple}>{key}</span>: {`Map(${(value as Map<any, any>).size})`}
             </span>
           );
         }

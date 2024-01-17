@@ -27,16 +27,18 @@ class App extends Inula.Component {
         </div>
         <div className="content">
           <div className="card animate__animated animate__zoomIn">
-            <ReactiveComponent/>
+            <ReactiveComponent />
           </div>
         </div>
         <div class="content">
           <div class="card animate__animated animate__zoomIn">
             <h2>了解更多</h2>
-          <p>
-            要了解 Inula，查看{' '}
-            <a href="https://openinula.org" target="_blank">Inula 官网</a>
-          </p>
+            <p>
+              要了解 Inula，查看{' '}
+              <a href="https://openinula.org" target="_blank">
+                Inula 官网
+              </a>
+            </p>
           </div>
         </div>
       </div>

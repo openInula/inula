@@ -51,11 +51,7 @@ export function initBackgroundConnection(type) {
 }
 
 let reconnectionTimes = 0;
-export function postMessageToBackground(
-  type: string,
-  data?: any,
-  inulaX?: boolean
-) {
+export function postMessageToBackground(type: string, data?: any, inulaX?: boolean) {
   try {
     const payload = data
       ? { type, tabId: chrome.devtools.inspectedWindow.tabId, data }

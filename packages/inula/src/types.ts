@@ -26,7 +26,7 @@ export type Key = string | number;
 
 export interface InulaElement<
   P = any,
-  T extends string | JSXElementConstructor<any> = string | JSXElementConstructor<any>
+  T extends string | JSXElementConstructor<any> = string | JSXElementConstructor<any>,
 > {
   type: T;
   props: P;
@@ -49,15 +49,7 @@ export type InulaFragment = Iterable<InulaNode>;
 
 export type ComponentState = any;
 
-export type InulaNode =
-  | string
-  | number
-  | null
-  | boolean
-  | undefined
-  | InulaElement
-  | InulaFragment
-  | InulaPortal;
+export type InulaNode = string | number | null | boolean | undefined | InulaElement | InulaFragment | InulaPortal;
 
 export interface ExoticComponent<P = KVObject> {
   (props: P): InulaElement | null;

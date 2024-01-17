@@ -15,7 +15,7 @@
 
 import chokidar from 'chokidar';
 import bodyParser from 'body-parser';
-import {globSync} from 'glob';
+import { globSync } from 'glob';
 import { join } from 'path';
 
 import { createRequire } from 'module';
@@ -93,8 +93,8 @@ function generateRoutes(app: any) {
           respond instanceof Function
             ? respond
             : (_req: any, res: { send: (arg0: any) => void }) => {
-              res.send(respond);
-            }
+                res.send(respond);
+              }
         );
       } catch (error) {
         console.error(error);

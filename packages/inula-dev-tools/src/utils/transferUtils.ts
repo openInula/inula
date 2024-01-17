@@ -34,7 +34,7 @@ export function packagePayload(payload: PayloadType, from: string, inulaX?: bool
   return {
     type: devTools,
     payload,
-    from
+    from,
   };
 }
 

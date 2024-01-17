@@ -41,10 +41,8 @@ export default {
     terser(),
     babel({
       babelHelpers: 'bundled',
-      presets: ['@babel/preset-env']
-    })
+      presets: ['@babel/preset-env'],
+    }),
   ],
-  external:[
-    'openinula'
-  ]
+  external: ['openinula'],
 };

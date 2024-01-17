@@ -26,7 +26,7 @@ function App() {
       </div>
       <div className="content">
         <div className="card animate__animated animate__zoomIn">
-          <ReactiveComponent/>
+          <ReactiveComponent />
         </div>
       </div>
       <div class="content">
@@ -34,7 +34,9 @@ function App() {
           <h2>了解更多</h2>
           <p>
             要了解 Inula，查看{' '}
-            <a href="https://openinula.com/" target="_blank">Inula 官网</a>
+            <a href="https://openinula.com/" target="_blank">
+              Inula 官网
+            </a>
           </p>
         </div>
       </div>

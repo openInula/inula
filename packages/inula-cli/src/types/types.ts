@@ -19,11 +19,8 @@ import { Logger } from '../utils/logger.js';
 import type * as http from 'http';
 import type * as express from 'express';
 
-
-interface Request extends express.Request {
-}
-interface Response extends express.Response {
-}
+interface Request extends express.Request {}
+interface Response extends express.Response {}
 
 export interface IDep {
   [name: string]: string;
@@ -98,7 +95,7 @@ export interface API {
   };
   registerMethod: {
     (method: Function): void;
-  }
+  };
   applyHook: {
     (opts: applyHookConfig): void;
   };
@@ -143,7 +140,7 @@ export interface DevBuildConfig {
 
 export interface DevProxy {
   target: string;
-  matcher: ((pathname: string, req: Request) => boolean);
+  matcher: (pathname: string, req: Request) => boolean;
   onProxyRes: (proxyRes: http.IncomingMessage, req: Request, res: Response) => void;
 }
 

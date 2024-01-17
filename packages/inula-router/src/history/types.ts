@@ -102,6 +102,6 @@ export interface TManager<S> {
     location: Location<S>,
     action: Action,
     userConfirmationFunc: ConfirmationFunc,
-    callBack: CallBackFunc,
+    callBack: CallBackFunc
   ): void;
 }

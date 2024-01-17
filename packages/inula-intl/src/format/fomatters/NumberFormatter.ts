@@ -16,7 +16,7 @@
 import creatI18nCache from '../cache/cache';
 import { Locales } from '../../types/types';
 import utils from '../../utils/utils';
-import {I18nCache} from "../../types/interfaces";
+import { I18nCache } from '../../types/interfaces';
 
 /**
  * 数字格式化

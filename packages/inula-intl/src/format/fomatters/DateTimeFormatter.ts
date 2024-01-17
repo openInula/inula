@@ -16,7 +16,7 @@
 import creatI18nCache from '../cache/cache';
 import utils from '../../utils/utils';
 import { DatePool, Locales } from '../../types/types';
-import {I18nCache} from "../../types/interfaces";
+import { I18nCache } from '../../types/interfaces';
 
 /**
  * 时间格式化

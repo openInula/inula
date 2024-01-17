@@ -20,7 +20,7 @@ export function SizeObserver(props) {
   const { children, ...rest } = props;
   const containerRef = useRef<HTMLDivElement>();
   const [size, setSize] = useState<{ width: number; height: number }>();
-  const notifyChild = (element) => {
+  const notifyChild = element => {
     setSize({
       width: element.offsetWidth,
       height: element.offsetHeight,

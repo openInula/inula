@@ -19,7 +19,6 @@
     "build:watch": "rollup --watch --config ./scripts/rollup/rollup.config.js",
     "debug-test": "yarn test --debug",
     "lint": "eslint . --ext .ts --fix",
-    "prettier": "prettier -w libs/**/*.ts",
     "test": "jest --config=jest.config.js",
     "watch-test": "yarn test --watch --dev"
   },

@@ -13,12 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 import { isMemo, ForwardRef } from 'openinula';
-import {
-  INULA_FORWARD_REF_STATICS,
-  INULA_MEMO_STATICS,
-  INULA_STATICS,
-  NATIVE_STATICS,
-} from '../constants';
+import { INULA_FORWARD_REF_STATICS, INULA_MEMO_STATICS, INULA_STATICS, NATIVE_STATICS } from '../constants';
 
 const staticsMap = new Map();
 staticsMap.set(ForwardRef, INULA_FORWARD_REF_STATICS);
@@ -29,7 +24,7 @@ function getStatics(component) {
     return INULA_MEMO_STATICS;
   }
 
- if (staticsMap.has(component['vtype'])) {
+  if (staticsMap.has(component['vtype'])) {
     return staticsMap.get(component['vtype']) || INULA_STATICS;
   }
 }
@@ -83,6 +78,6 @@ function copyStaticProps<T, U>(targetComponent: T, sourceComponent: U): T {
   });
 
   return targetComponent;
-};
+}
 
 export default copyStaticProps;

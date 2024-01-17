@@ -24,7 +24,7 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, './dist'),
-    filename: '[name].js'
+    filename: '[name].js',
   },
   mode: 'development',
   devtool: 'source-map',
@@ -73,5 +73,5 @@ module.exports = {
     open: 'panel.html',
     port: 9000,
     magicHtml: true,
-  }
+  },
 };

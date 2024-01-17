@@ -45,7 +45,7 @@ export function createBrowserHistory<S = DefaultStateType>(options: BrowserHisto
   const { go, goBack, goForward, listen, block, getUpdateStateFunc } = getBaseHistory<S>(
     transitionManager,
     setListener,
-    browserHistory,
+    browserHistory
   );
 
   const history: History<S> = {

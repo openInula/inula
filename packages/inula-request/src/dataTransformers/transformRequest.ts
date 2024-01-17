@@ -35,7 +35,6 @@ const strategies: Record<string, Strategy> = {
     return data.toString();
   },
   MultipartFormData: (data, headers, isFileList: boolean) => {
-
     return getFormData(isFileList ? { 'files[]': data } : data);
   },
   JSONData: (data, headers) => {
