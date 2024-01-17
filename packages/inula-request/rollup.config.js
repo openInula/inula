@@ -21,13 +21,16 @@ import { babel } from '@rollup/plugin-babel';
 
 export default {
   input: './index.ts',
-  output: {
+  output: [{
     file: 'dist/inulaRequest.js',
     format: 'umd',
     exports: 'named',
     name: 'inulaRequest',
     sourcemap: false,
-  },
+  }, {
+    file: 'dist/inulaRequest.esm-browser.js',
+    format: 'esm',
+  }],
   plugins: [
     resolve(),
     commonjs(),

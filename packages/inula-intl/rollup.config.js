@@ -37,6 +37,10 @@ export default {
       name: 'InulaI18n',
       format: 'umd',
     },
+    {
+      file: path.resolve(output, 'intl.esm-browser.js'),
+      format: 'esm',
+    }
   ],
   plugins: [
     nodeResolve({
