@@ -101,7 +101,7 @@ function get(rNode: RNode, key: string | symbol): any {
           const value = rawObj.slice();
           const ret = value[key](...args);
           // 调用了数组的修改方法，默认值有变化
-          // setRNodeVal(rNode, value, true, true);
+          rNode.setByArrayModified(value);
 
           return ret;
         };
@@ -137,7 +137,7 @@ function getFn(node: RNode) {
 }
 
 function readFn(node: RNode) {
-  return getRNodeVal(node);
+  return node.read();
 }
 
 // delete()调用的处理

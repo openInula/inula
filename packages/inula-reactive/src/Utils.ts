@@ -15,7 +15,7 @@
 
 import { RNode } from './RNode';
 
-export function isReactively(obj: any) {
+export function isReactiveObj(obj: any) {
   return obj instanceof RNode;
 }
 

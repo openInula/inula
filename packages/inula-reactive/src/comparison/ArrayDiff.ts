@@ -18,9 +18,6 @@ export enum Operation {
   Nop = 0,
   Insert = 1,
   Delete = 2,
-  // 数组长度相同
-  Update = 3,
-  Exchange = 4,
 }
 
 export interface Diff {
@@ -68,7 +65,7 @@ function isArrayEqual<T>(str1: T[], str2: T[], start: number, end: number): bool
  * @param target 目标数组
  * @returns 返回一个 Diff 数组，表示从原始数组转换为目标数组需要进行的操作
  */
-export function arrayDiff<T>(origin: T[], target: T[]): DiffOperator {
+export function diffArray<T>(origin: T[], target: T[]): DiffOperator {
   // 使用二分查找计算共同前缀与后缀
   const prefixLen = longestCommonPrefix(origin, target);
   const suffixLen = longestCommonPrefix([...origin].reverse(), [...target].reverse());
@@ -178,4 +175,3 @@ export function arrayDiff<T>(origin: T[], target: T[]): DiffOperator {
     opts: diffs,
   };
 }
-
