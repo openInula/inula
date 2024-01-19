@@ -1,22 +1,24 @@
-import {reactive as r} from '../src/Reactive';
+import { reactive, computed, watch } from '../index';
 
 describe('test reactive', () => {
   it('two signals, one computed', () => {
-    const a = r.reactive(7);
-    const b = r.reactive(1);
+    const a = reactive(7);
+    const b = reactive(1);
     let callCount = 0;
 
-    const c = r.computed(() => {
+    const c = computed(() => {
       callCount++;
       return a.get() * b.get();
     });
 
-    r.watch(() => {
+    watch(() => {
       console.log(a.get());
     });
 
+    expect(a.read()).toBe(7);
+
     a.set(2);
-    expect(c.get()).toBe(2);
+    expect(c.read()).toBe(2);
 
     b.set(3);
     expect(c.get()).toBe(6);
@@ -27,13 +29,13 @@ describe('test reactive', () => {
   });
 
   it('reactive is a obj', () => {
-    const rObj = r.reactive({count: 1});
+    const rObj = reactive({ count: 1 });
 
-    const double = r.computed(() => {
+    const double = computed(() => {
       return 2 * rObj.count.get();
     });
 
-    r.watch(() => {
+    watch(() => {
       console.log('count: ', rObj.count.get(), 'double: ', double.get());
     });
 
@@ -46,20 +48,20 @@ describe('test reactive', () => {
   });
 
   it('reactive is a array', () => {
-    const rObj = r.reactive({
+    const rObj = reactive({
       items: [
-        {name: 'p1', id: 1},
-        {name: 'p2', id: 2},
+        { name: 'p1', id: 1 },
+        { name: 'p2', id: 2 },
       ],
     });
 
-    const doubleId = r.computed(() => {
+    const doubleId = computed(() => {
       return 2 * rObj.items[0].id.get();
     });
 
     expect(doubleId.get()).toBe(2);
 
-    rObj.items.set([{name: 'p11', id: 11}]);
+    rObj.items.set([{ name: 'p11', id: 11 }]);
 
     expect(doubleId.get()).toBe(22);
   });

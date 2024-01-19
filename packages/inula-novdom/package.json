@@ -1,8 +1,8 @@
 {
-  "name": "inula-reactive",
+  "name": "inula-novdom",
   "version": "0.0.1",
-  "description": "reactive core",
-  "main": "index.ts",
+  "description": "no vdom runtime",
+  "main": "index.js",
   "scripts": {
     "test": "jest --config=jest.config.js"
   },

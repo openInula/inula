@@ -14,23 +14,22 @@
  */
 
 import { createProxy } from './proxy/RProxyHandler';
-import { getRNodeVal, preciseCompare, setRNodeVal } from './RNodeAccessor';
+import { getRNodeVal, setRNodeVal } from './RNodeAccessor';
+import { preciseCompare } from './comparison/InDepthComparison';
 import { isObject } from './Utils';
 
-/** current capture context for identifying @reactive sources (other reactive elements) and cleanups
- * - active while evaluating a reactive function body  */
-let CurrentReaction: RNode<any> | undefined = undefined;
-let CurrentGets: RNode<any>[] | null = null;
-let CurrentGetsIndex = 0;
 
-/** A list of non-clean 'effect' nodes that will be updated when stabilize() is called */
-const EffectQueue: RNode<any>[] = [];
+let runningRNode: RNode<any> | undefined = undefined; // 当前正执行的RNode
+let calledGets: RNode<any>[] | null = null;
+let sameGetsIndex = 0; // 记录前后两次运行RNode时，调用get顺序没有变化的节点
 
-export const CacheClean = 0; // reactive value is valid, no need to recompute
-export const CacheCheck = 1; // reactive value might be stale, check parent nodes to decide whether to recompute
-export const CacheDirty = 2; // reactive value is invalid, parents have changed, valueneeds to be recomputed
-export type CacheState = typeof CacheClean | typeof CacheCheck | typeof CacheDirty;
-type CacheNonClean = typeof CacheCheck | typeof CacheDirty;
+const Effects: RNode<any>[] = [];
+
+export const Fresh = 0; // 新数据不用更新
+export const Check = 1; // 需要向上遍历检查，可能parents是dirty
+export const Dirty = 2; // 数据是脏的，需要重复运行fn函数
+export type State = typeof Fresh | typeof Check | typeof Dirty;
+type NonClean = typeof Check | typeof Dirty;
 
 export interface RNodeOptions {
   root?: Root<any> | null;
@@ -57,19 +56,20 @@ export class RNode<T = any> {
   private _value: T;
   private fn?: () => T;
 
+  // 维护数据结构
   root: Root<T> | null;
-
   parent: RNode | null = null;
   key: KEY | null;
   children: Map<KEY, RNode> | null = null;
 
   proxy: any = null;
 
+  extend: any; // 用于扩展，放一些自定义属性
+
   private observers: RNode[] | null = null; // 被谁用
   private sources: RNode[] | null = null; // 使用谁
 
-  private state: CacheState;
-  private isSignal = false;
+  private state: State;
   private isEffect = false;
   private isComputed = false;
   private isProxy = false;
@@ -78,7 +78,6 @@ export class RNode<T = any> {
   equals = defaultEquality;
 
   constructor(fnOrValue: (() => T) | T, options?: RNodeOptions) {
-    this.isSignal = options?.isSignal || false;
     this.isEffect = options?.isEffect || false;
     this.isProxy = options?.isProxy || false;
     this.isComputed = options?.isComputed || false;
@@ -86,15 +85,15 @@ export class RNode<T = any> {
     if (typeof fnOrValue === 'function') {
       this.fn = fnOrValue as () => T;
       this._value = undefined as any;
-      this.state = CacheDirty;
+      this.state = Dirty;
 
       if (this.isEffect) {
-        EffectQueue.push(this);
+        Effects.push(this);
       }
     } else {
       this.fn = undefined;
       this._value = fnOrValue;
-      this.state = CacheClean;
+      this.state = Fresh;
     }
 
     // large object scene
@@ -120,18 +119,23 @@ export class RNode<T = any> {
   }
 
   get(): T {
-    if (CurrentReaction) {
-      if (!CurrentGets && CurrentReaction.sources && CurrentReaction.sources[CurrentGetsIndex] == this) {
-        CurrentGetsIndex++;
+    if (runningRNode) {
+      // 前后两次运行RNode，从左到右对比，如果调用get的RNode相同就calledGetsIndex加1
+      if (!calledGets && runningRNode.sources && runningRNode.sources[sameGetsIndex] == this) {
+        sameGetsIndex++;
       } else {
-        if (!CurrentGets) {
-          CurrentGets = [this];
+        if (!calledGets) {
+          calledGets = [this];
         } else {
-          CurrentGets.push(this);
+          calledGets.push(this);
         }
       }
     }
 
+    return this.read();
+  }
+
+  read(): T {
     if (this.fn) {
       this.updateIfNecessary();
     }
@@ -139,39 +143,47 @@ export class RNode<T = any> {
     return this.getValue();
   }
 
-  set(fnOrValue: T | (() => T)): void {
-    if (typeof fnOrValue === 'function') {
-      const fn = fnOrValue as () => T;
-      if (fn !== this.fn) {
-        this.stale(CacheDirty);
-      }
-      this.fn = fn;
+  set(fnOrValue: T | ((prev: T) => T)): void {
+    if (this.fn) {
+      this.removeParentObservers(0);
+      this.sources = null;
+      this.fn = undefined;
+    }
+
+    const prevValue = this.getValue();
+
+    const value = typeof fnOrValue === 'function' ? fnOrValue(prevValue) : fnOrValue;
+
+    const isObj = isObject(value);
+    const isPrevObj = isObject(prevValue);
+
+    // 新旧数据都是 对象或数组
+    if (isObj && isPrevObj) {
+      preciseCompare(this, value, prevValue, false);
+
+      this.setDirty();
+
+      this.setValue(value);
     } else {
-      if (this.fn) {
-        this.removeParentObservers(0);
-        this.sources = null;
-        this.fn = undefined;
-      }
-
-      const value = fnOrValue as T;
-      const prevValue = this.getValue();
-
-      const isObj = isObject(value);
-      const isPrevObj = isObject(prevValue);
-
-      // 新旧数据都是 对象或数组
-      if (isObj && isPrevObj) {
-        preciseCompare(this, value, prevValue, false);
+      if (!this.equals(prevValue, value)) {
+        this.setDirty();
 
         this.setValue(value);
-      } else {
-        if (!this.equals(prevValue, value)) {
-          this.setDirty();
-
-          this.setValue(value);
-        }
       }
     }
+
+    // 运行EffectQueue
+    runEffects();
+  }
+
+  setByArrayModified(value: T) {
+    const prevValue = this.getValue();
+
+    preciseCompare(this, value, prevValue, true);
+
+    this.setDirty();
+
+    this.setValue(value);
 
     // 运行EffectQueue
     runEffects();
@@ -181,22 +193,23 @@ export class RNode<T = any> {
     if (this.observers) {
       for (let i = 0; i < this.observers.length; i++) {
         const observer = this.observers[i];
-        observer.stale(CacheDirty);
+        observer.stale(Dirty);
       }
     }
   }
 
-  private stale(state: CacheNonClean): void {
-    if (this.state < state) {
-      // If we were previously clean, then we know that we may need to update to get the new value
-      if (this.state === CacheClean && this.isEffect) {
-        EffectQueue.push(this);
+  private stale(state: NonClean): void {
+    if (state > this.state) {
+      if (this.state === Fresh && this.isEffect) {
+        Effects.push(this);
       }
 
       this.state = state;
+
+      // 孩子设置为Check
       if (this.observers) {
         for (let i = 0; i < this.observers.length; i++) {
-          this.observers[i].stale(CacheCheck);
+          this.observers[i].stale(Check);
         }
       }
     }
@@ -205,14 +218,13 @@ export class RNode<T = any> {
   private update(): void {
     const prevValue = this.getValue();
 
-    /* Evalute the reactive function body, dynamically capturing any other reactives used */
-    const prevReaction = CurrentReaction;
-    const prevGets = CurrentGets;
-    const prevIndex = CurrentGetsIndex;
+    const prevReaction = runningRNode;
+    const prevGets = calledGets;
+    const prevGetsIndex = sameGetsIndex;
 
-    CurrentReaction = this;
-    CurrentGets = null as any; // prevent TS from thinking CurrentGets is null below
-    CurrentGetsIndex = 0;
+    runningRNode = this;
+    calledGets = null as any;
+    sameGetsIndex = 0;
 
     try {
       if (this.cleanups.length) {
@@ -220,27 +232,28 @@ export class RNode<T = any> {
         this.cleanups = [];
       }
 
+      // 执行 reactive 函数
       if (this.isComputed) {
         this.root = { $: this.fn!() };
       } else {
         this._value = this.fn!();
       }
 
-      // if the sources have changed, update source & observer links
-      if (CurrentGets) {
+      if (calledGets) {
         // remove all old sources' .observers links to us
-        this.removeParentObservers(CurrentGetsIndex);
+        this.removeParentObservers(sameGetsIndex);
+
         // update source up links
-        if (this.sources && CurrentGetsIndex > 0) {
-          this.sources.length = CurrentGetsIndex + CurrentGets.length;
-          for (let i = 0; i < CurrentGets.length; i++) {
-            this.sources[CurrentGetsIndex + i] = CurrentGets[i];
+        if (this.sources && sameGetsIndex > 0) {
+          this.sources.length = sameGetsIndex + calledGets.length;
+          for (let i = 0; i < calledGets.length; i++) {
+            this.sources[sameGetsIndex + i] = calledGets[i];
           }
         } else {
-          this.sources = CurrentGets;
+          this.sources = calledGets;
         }
 
-        for (let i = CurrentGetsIndex; i < this.sources.length; i++) {
+        for (let i = sameGetsIndex; i < this.sources.length; i++) {
           // Add ourselves to the end of the parent .observers array
           const source = this.sources[i];
           if (!source.observers) {
@@ -249,37 +262,40 @@ export class RNode<T = any> {
             source.observers.push(this);
           }
         }
-      } else if (this.sources && CurrentGetsIndex < this.sources.length) {
+      } else if (this.sources && sameGetsIndex < this.sources.length) {
         // remove all old sources' .observers links to us
-        this.removeParentObservers(CurrentGetsIndex);
-        this.sources.length = CurrentGetsIndex;
+        this.removeParentObservers(sameGetsIndex);
+        this.sources.length = sameGetsIndex;
       }
     } finally {
-      CurrentGets = prevGets;
-      CurrentReaction = prevReaction;
-      CurrentGetsIndex = prevIndex;
+      calledGets = prevGets;
+      runningRNode = prevReaction;
+      sameGetsIndex = prevGetsIndex;
     }
 
-    // handles diamond depenendencies if we're the parent of a diamond.
+    // 处理“钻石”问题
     if (!this.equals(prevValue, this.getValue()) && this.observers) {
-      // We've changed value, so mark our children as dirty so they'll reevaluate
+      // 设置孩子为dirty
       for (let i = 0; i < this.observers.length; i++) {
         const observer = this.observers[i];
-        observer.state = CacheDirty;
+        observer.state = Dirty;
       }
     }
 
-    // We've rerun with the latest values from all of our sources.
-    // This means that we no longer need to update until a signal changes
-    this.state = CacheClean;
+    this.state = Fresh;
   }
 
-  /** update() if dirty, or a parent turns out to be dirty. */
+
+  /**
+   * 1、如果this是check，就去找dirty的parent
+   * 2、执行dirty的parent后，会
+   * @private
+   */
   private updateIfNecessary(): void {
-    if (this.state === CacheCheck) {
+    if (this.state === Check) {
       for (const source of this.sources!) {
         source.updateIfNecessary(); // updateIfNecessary() can change this.state
-        if ((this.state as CacheState) === CacheDirty) {
+        if ((this.state as State) === Dirty) {
           // Stop the loop here so we won't trigger updates on other parents unnecessarily
           // If our computation changes to no longer use some sources, we don't
           // want to update() a source we used last time, but now don't use.
@@ -288,21 +304,19 @@ export class RNode<T = any> {
       }
     }
 
-    // If we were already dirty or marked dirty by the step above, update.
-    if (this.state === CacheDirty) {
+    if (this.state === Dirty) {
       this.update();
     }
 
-    // By now, we're clean
-    this.state = CacheClean;
+    this.state = Fresh;
   }
 
   private removeParentObservers(index: number): void {
     if (!this.sources) return;
     for (let i = index; i < this.sources.length; i++) {
-      const source: RNode<any> = this.sources[i]; // We don't actually delete sources here because we're replacing the entire array soon
-      const swap = source.observers!.findIndex(v => v === this);
-      source.observers![swap] = source.observers![source.observers!.length - 1];
+      const source: RNode<any> = this.sources[i];
+      const idx = source.observers!.findIndex(v => v === this);
+      source.observers![idx] = source.observers![source.observers!.length - 1];
       source.observers!.pop();
     }
   }
@@ -314,11 +328,15 @@ export class RNode<T = any> {
   private setValue(value: any) {
     this.isProxy ? setRNodeVal(this, value) : (this._value = value);
   }
+
+  private qupdate() {
+
+  }
 }
 
 export function onCleanup<T = any>(fn: (oldValue: T) => void): void {
-  if (CurrentReaction) {
-    CurrentReaction.cleanups.push(fn);
+  if (runningRNode) {
+    runningRNode.cleanups.push(fn);
   } else {
     console.error('onCleanup must be called from within a @reactive function');
   }
@@ -326,8 +344,23 @@ export function onCleanup<T = any>(fn: (oldValue: T) => void): void {
 
 /** run all non-clean effect nodes */
 export function runEffects(): void {
-  for (let i = 0; i < EffectQueue.length; i++) {
-    EffectQueue[i].get();
+  for (let i = 0; i < Effects.length; i++) {
+    Effects[i].get();
   }
-  EffectQueue.length = 0;
+  Effects.length = 0;
+}
+
+// 不进行响应式数据的使用追踪
+export function untrack(fn) {
+  if (runningRNode === null) {
+    return fn();
+  }
+
+  const preRContext = runningRNode;
+  runningRNode = null;
+  try {
+    return fn();
+  } finally {
+    runningRNode = preRContext;
+  }
 }

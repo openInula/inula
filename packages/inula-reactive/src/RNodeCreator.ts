@@ -15,6 +15,7 @@
 
 import { isPrimitive } from './Utils';
 import { RNode } from './RNode';
+import { ProxyRNode } from './Types';
 
 export type Reactive<T = any> = RNode<T> | Atom<T>;
 
@@ -43,11 +44,7 @@ export function createWatch<T>(fn: T) {
   rNode.get();
 }
 
-export function getOrCreateChildProxy(
-  value: unknown,
-  parent: RNode<any>,
-  key: string | symbol
-): Atom | ProxyRNode<any> {
+export function getOrCreateChildProxy(value: unknown, parent: RNode<any>, key: string | symbol): ProxyRNode<any> {
   const child = getOrCreateChildRNode(parent, key);
 
   return child.proxy;
