@@ -8,7 +8,7 @@ describe('test reactive', () => {
 
     const c = computed(() => {
       callCount++;
-      return a.get() * b.get();
+      return { a: a.get() * b.get() };
     });
 
     watch(() => {
@@ -18,14 +18,14 @@ describe('test reactive', () => {
     expect(a.read()).toBe(7);
 
     a.set(2);
-    expect(c.read()).toBe(2);
+    expect(c.a.read()).toBe(2);
 
     b.set(3);
-    expect(c.get()).toBe(6);
+    expect(c.a.get()).toBe(6);
 
-    expect(callCount).toBe(2);
+    expect(callCount).toBe(3);
     c.read();
-    expect(callCount).toBe(2);
+    expect(callCount).toBe(3);
   });
 
   it('reactive is a obj', () => {
@@ -64,5 +64,39 @@ describe('test reactive', () => {
     rObj.items.set([{ name: 'p11', id: 11 }]);
 
     expect(doubleId.get()).toBe(22);
+  });
+
+  it('return obj computed', () => {
+    const a = reactive(7);
+
+    const c = computed(() => {
+      return { a: a.get() };
+    });
+
+    a.set(2);
+    expect(c.a.read()).toBe(2);
+
+  });
+
+  it('reactive is a array, watch', () => {
+    const rObj = reactive({
+      items: [
+        { name: 'p1', id: 1 },
+        { name: 'p2', id: 2 },
+      ],
+    });
+
+    watch(() => {
+      console.log(rObj.items[0].id.get());
+    });
+
+    rObj.items.set([
+      { name: 'p1', id: 1 },
+      { name: 'p2', id: 2 },
+    ]);
+
+    rObj.items.set([{ name: 'p11', id: 11 }]);
+
+    rObj.items[0].id.set(111);
   });
 });

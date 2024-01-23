@@ -13,11 +13,10 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { RNode } from './RNode';
 import { isFunction } from './Utils';
+import { RProxyNode } from './RProxyNode';
 
-
-export function getRNodeVal(node: RNode<any>): any {
+export function getRNodeVal(node: RProxyNode<any>): any {
   let currentNode = node;
   const keys: (string | symbol)[] = [];
   while (currentNode.key !== null && currentNode.parent !== null) {
@@ -35,7 +34,7 @@ export function getRNodeVal(node: RNode<any>): any {
   return rawObj;
 }
 
-export function setRNodeVal(rNode: RNode<any>, value: unknown): void {
+export function setRNodeVal(rNode: RProxyNode<any>, value: unknown): void {
   const parent = rNode.parent;
   const key = rNode.key!;
   const isRoot = parent === null;
@@ -54,12 +53,22 @@ export function setRNodeVal(rNode: RNode<any>, value: unknown): void {
   }
 }
 
-export function setExtendProp(rNode: RNode, key: string, value: any) {
+export function getRootRNode(node: RProxyNode<any>): RProxyNode {
+  let currentNode = node;
+  const keys: (string | symbol)[] = [];
+  while (currentNode.parent !== null) {
+    currentNode = currentNode.parent;
+  }
+
+  return currentNode;
+}
+
+export function setExtendProp(rNode: RProxyNode, key: string, value: any) {
   rNode.extend = rNode.extend || {};
   rNode.extend[key] = value;
 }
 
-export function getExtendProp(rNode: RNode, key: string, defaultValue: any) {
+export function getExtendProp(rNode: RProxyNode, key: string, defaultValue: any) {
   rNode.extend = rNode.extend || {};
   if (key in rNode.extend) {
     return rNode.extend[key];

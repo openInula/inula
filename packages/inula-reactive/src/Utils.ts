@@ -14,9 +14,10 @@
  */
 
 import { RNode } from './RNode';
+import { RProxyNode } from './RProxyNode';
 
 export function isReactiveObj(obj: any) {
-  return obj instanceof RNode;
+  return obj instanceof RNode || obj instanceof RProxyNode;
 }
 
 export function isObject(obj: unknown): boolean {

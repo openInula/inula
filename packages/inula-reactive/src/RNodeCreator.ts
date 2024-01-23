@@ -16,6 +16,8 @@
 import { isPrimitive } from './Utils';
 import { RNode } from './RNode';
 import { ProxyRNode } from './Types';
+import { RProxyNode } from './RProxyNode';
+import {getRNodeVal, getRootRNode} from "./RNodeAccessor";
 
 export type Reactive<T = any> = RNode<T> | Atom<T>;
 
@@ -23,8 +25,7 @@ export function createReactive<T extends any>(raw?: T): ReactiveProxy<T> {
   if (isPrimitive(raw) || raw === null || raw === undefined) {
     return new RNode(raw, { isSignal: true });
   } else {
-    const node = new RNode(null, {
-      isProxy: true,
+    const node = new RProxyNode(null, {
       root: { $: raw },
     });
     return node.proxy as ReactiveProxy<T>;
@@ -32,7 +33,7 @@ export function createReactive<T extends any>(raw?: T): ReactiveProxy<T> {
 }
 
 export function createComputed<T>(fn: T) {
-  const rNode = new RNode(fn, { isProxy: true, isComputed: true });
+  const rNode = new RProxyNode(fn, { isComputed: true });
   return rNode.proxy;
 }
 
@@ -44,23 +45,37 @@ export function createWatch<T>(fn: T) {
   rNode.get();
 }
 
-export function getOrCreateChildProxy(value: unknown, parent: RNode<any>, key: string | symbol): ProxyRNode<any> {
+export function getOrCreateChildProxy(value: unknown, parent: RProxyNode<any>, key: string | symbol): ProxyRNode<any> {
   const child = getOrCreateChildRNode(parent, key);
 
   return child.proxy;
 }
 
-export function getOrCreateChildRNode(node: RNode<any>, key: string | symbol): RNode<any> {
+export function getOrCreateChildRNode(node: RProxyNode<any>, key: string | symbol): RProxyNode<any> {
   let child = node.children?.get(key);
 
   if (!child) {
-    child = new RNode(null, {
-      isProxy: true,
+    // child = new RProxyNode(null, {
+    //   parent: node,
+    //   key: key,
+    //   root: node.root,
+    // });
+
+    child = new RProxyNode(() => {
+      const rootRNode = getRootRNode(node);
+      // 依赖根
+      rootRNode.get();
+
+      return getRNodeVal(node)[key];
+    }, {
+      isComputed: true,
       parent: node,
       key: key,
       root: node.root,
     });
   }
+
+  child.track();
 
   return child;
 }

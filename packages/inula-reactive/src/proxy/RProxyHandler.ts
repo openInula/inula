@@ -17,6 +17,7 @@ import { getOrCreateChildProxy } from '../RNodeCreator';
 import { getRNodeVal } from '../RNodeAccessor';
 import { isArray } from '../Utils';
 import { RNode } from '../RNode';
+import {RProxyNode} from "../RProxyNode";
 
 const GET = 'get';
 const SET = 'set';
@@ -57,7 +58,7 @@ const FNS: Record<typeof GET | typeof READ | typeof DELETE | typeof ONCHANGE, (a
   [ONCHANGE]: onChangeFn,
 };
 
-function get(rNode: RNode, key: string | symbol): any {
+function get(rNode: RProxyNode, key: string | symbol): any {
   // 处理 get, read, delete, onchange 方法
   const fn = FNS[key];
   if (fn) {

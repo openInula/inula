@@ -13,12 +13,6 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { createProxy } from './proxy/RProxyHandler';
-import { getRNodeVal, setRNodeVal } from './RNodeAccessor';
-import { preciseCompare } from './comparison/InDepthComparison';
-import { isObject } from './Utils';
-
-
 let runningRNode: RNode<any> | undefined = undefined; // 当前正执行的RNode
 let calledGets: RNode<any>[] | null = null;
 let sameGetsIndex = 0; // 记录前后两次运行RNode时，调用get顺序没有变化的节点
@@ -53,34 +47,21 @@ function defaultEquality(a: any, b: any) {
 }
 
 export class RNode<T = any> {
-  private _value: T;
-  private fn?: () => T;
-
-  // 维护数据结构
-  root: Root<T> | null;
-  parent: RNode | null = null;
-  key: KEY | null;
-  children: Map<KEY, RNode> | null = null;
-
-  proxy: any = null;
-
-  extend: any; // 用于扩展，放一些自定义属性
+  _value: T;
+  fn?: () => T;
 
   private observers: RNode[] | null = null; // 被谁用
   private sources: RNode[] | null = null; // 使用谁
 
   private state: State;
   private isEffect = false;
-  private isComputed = false;
-  private isProxy = false;
+
 
   cleanups: ((oldValue: T) => void)[] = [];
   equals = defaultEquality;
 
   constructor(fnOrValue: (() => T) | T, options?: RNodeOptions) {
     this.isEffect = options?.isEffect || false;
-    this.isProxy = options?.isProxy || false;
-    this.isComputed = options?.isComputed || false;
 
     if (typeof fnOrValue === 'function') {
       this.fn = fnOrValue as () => T;
@@ -95,19 +76,6 @@ export class RNode<T = any> {
       this._value = fnOrValue;
       this.state = Fresh;
     }
-
-    // large object scene
-    if (this.isProxy) {
-      this.proxy = createProxy(this);
-      this.parent = options?.parent || null;
-      this.key = options?.key as KEY;
-      this.root = options?.root || null;
-
-      if (this.parent && !this.parent.children) {
-        this.parent.children = new Map();
-        this.parent.children.set(this.key, this);
-      }
-    }
   }
 
   get value(): T {
@@ -119,6 +87,12 @@ export class RNode<T = any> {
   }
 
   get(): T {
+    this.track();
+
+    return this.read();
+  }
+
+  track() {
     if (runningRNode) {
       // 前后两次运行RNode，从左到右对比，如果调用get的RNode相同就calledGetsIndex加1
       if (!calledGets && runningRNode.sources && runningRNode.sources[sameGetsIndex] == this) {
@@ -131,8 +105,6 @@ export class RNode<T = any> {
         }
       }
     }
-
-    return this.read();
   }
 
   read(): T {
@@ -154,39 +126,18 @@ export class RNode<T = any> {
 
     const value = typeof fnOrValue === 'function' ? fnOrValue(prevValue) : fnOrValue;
 
-    const isObj = isObject(value);
-    const isPrevObj = isObject(prevValue);
-
-    // 新旧数据都是 对象或数组
-    if (isObj && isPrevObj) {
-      preciseCompare(this, value, prevValue, false);
-
-      this.setDirty();
-
-      this.setValue(value);
-    } else {
-      if (!this.equals(prevValue, value)) {
-        this.setDirty();
-
-        this.setValue(value);
-      }
-    }
+    this.compare(prevValue, value);
 
     // 运行EffectQueue
     runEffects();
   }
 
-  setByArrayModified(value: T) {
-    const prevValue = this.getValue();
+  compare(prevValue: T, value: T) {
+    if (!this.equals(prevValue, value)) {
+      this.setDirty();
 
-    preciseCompare(this, value, prevValue, true);
-
-    this.setDirty();
-
-    this.setValue(value);
-
-    // 运行EffectQueue
-    runEffects();
+      this.setValue(value);
+    }
   }
 
   setDirty() {
@@ -215,7 +166,7 @@ export class RNode<T = any> {
     }
   }
 
-  private update(): void {
+  update(): void {
     const prevValue = this.getValue();
 
     const prevReaction = runningRNode;
@@ -233,11 +184,7 @@ export class RNode<T = any> {
       }
 
       // 执行 reactive 函数
-      if (this.isComputed) {
-        this.root = { $: this.fn!() };
-      } else {
-        this._value = this.fn!();
-      }
+      this.execute();
 
       if (calledGets) {
         // remove all old sources' .observers links to us
@@ -285,6 +232,10 @@ export class RNode<T = any> {
     this.state = Fresh;
   }
 
+  execute() {
+    // 执行 reactive 函数
+    this._value = this.fn!();
+  }
 
   /**
    * 1、如果this是check，就去找dirty的parent
@@ -321,17 +272,14 @@ export class RNode<T = any> {
     }
   }
 
-  private getValue() {
-    return this.isProxy ? getRNodeVal(this) : this._value;
+  getValue() {
+    return this._value;
   }
 
-  private setValue(value: any) {
-    this.isProxy ? setRNodeVal(this, value) : (this._value = value);
+  setValue(value: any) {
+    this._value = value;
   }
 
-  private qupdate() {
-
-  }
 }
 
 export function onCleanup<T = any>(fn: (oldValue: T) => void): void {
