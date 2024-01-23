@@ -19,9 +19,10 @@ import { ArrayState } from '../Types';
 import { getOrCreateChildRNode } from '../RNodeCreator';
 import { RNode } from '../RNode';
 import {getExtendProp, setExtendProp} from "../RNodeAccessor";
+import {RProxyNode} from "../RProxyNode";
 
 // 递归触发依赖这reactive数据的所有RContext
-export function preciseCompare(rNode: RNode<any>, value: any, prevValue: any, isFromArrModify?: boolean) {
+export function preciseCompare(rNode: RProxyNode<any>, value: any, prevValue: any, isFromArrModify?: boolean) {
   preciseCompareChildren(rNode, value, prevValue, isFromArrModify);
 
   // 触发父数据的RContext，不希望触发组件刷新（只触发computed和watch）
@@ -30,7 +31,7 @@ export function preciseCompare(rNode: RNode<any>, value: any, prevValue: any, is
 }
 
 // 当value和prevValue都是对象或数组时，才触发
-function preciseCompareChildren(rNode: RNode, value: any, prevValue: any, isFromArrModify?: boolean): boolean {
+function preciseCompareChildren(rNode: RProxyNode, value: any, prevValue: any, isFromArrModify?: boolean): boolean {
   // 可以精准更新
   let canPreciseUpdate = true;
 
