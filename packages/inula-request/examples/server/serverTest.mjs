@@ -17,7 +17,7 @@ import express from "express";
 import * as fs from "fs";
 import bodyParser from "body-parser";
 import cors from "cors";
-import path from "path";
+import * as path from "path";
 
 const app = express();
 const port = 3001;
@@ -53,7 +53,7 @@ app.get('/data', (req, res) => {
 });
 
 app.get('/download', (req, res) => {
-  const filePath = path.resolve('./examples/request/downloadTest.html');
+  const filePath = path.resolve(__dirname, '../request/downloadTest.html');
   const fileName = 'downloadTest.html';
   const fileSize = fs.statSync(filePath).size;
 
