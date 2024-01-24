@@ -432,7 +432,7 @@ function getObjectByArray(arr: any[]): Record<string, any> {
 
 function filterUndefinedValues(obj: Record<any, any>) {
   return Object.keys(obj).reduce((result, key) => {
-    if (obj[key] !== undefined) {
+    if (obj[key] !== undefined && obj[key] !== null) {
       result[key] = obj[key];
     }
     return result;

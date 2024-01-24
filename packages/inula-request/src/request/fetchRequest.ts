@@ -62,7 +62,9 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
     // 处理请求参数
     if (params) {
       const queryString = utils.objectToQueryString(utils.filterUndefinedValues(params));
-      url = `${url}${url!.includes('?') ? '&' : '?'}${queryString}`; // 支持用户将部分请求参数写在 url 中
+      if (queryString) {
+        url = `${url}${url!.includes('?') ? '&' : '?'}${queryString}`; // 支持用户将部分请求参数写在 url 中
+      }
     }
 
     // GET HEAD 方法不允许设置 body

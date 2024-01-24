@@ -53,7 +53,7 @@ app.get('/data', (req, res) => {
 });
 
 app.get('/download', (req, res) => {
-  const filePath = path.resolve('./examples/request/downloadTest.html');
+  const filePath = path.resolve(__dirname, '../request/downloadTest.html');
   const fileName = 'downloadTest.html';
   const fileSize = fs.statSync(filePath).size;
 
