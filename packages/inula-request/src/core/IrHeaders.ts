@@ -45,7 +45,7 @@ class IrHeaders {
     if (!key || this[key] === undefined) {
       this[key || _header] = utils.getNormalizedValue(_value);
     }
-  };
+  }
 
   private _setHeaders(headers: Record<string, string | string[]> | IrHeaders | string) {
     return utils.forEach(headers, (_value: string | string[], _header: string) => {

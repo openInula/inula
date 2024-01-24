@@ -53,24 +53,24 @@ export const Test_Demo = () => {
 
   return (
     <div>
-      <Link to='/'>Home</Link>
+      <Link to="/">Home</Link>
 
-      <Link to='/about'>About</Link>
+      <Link to="/about">About</Link>
 
-      <Link to='/user'>User</Link>
+      <Link to="/user">User</Link>
 
       <Switch>
-        <Redirect to='/redirect' from='/test2' />
+        <Redirect to="/redirect" from="/test2" />
 
-        <Route exact path='/' component={Home} />
+        <Route exact path="/" component={Home} />
 
-        <Route path='/about' component={About} />
+        <Route path="/about" component={About} />
 
-        <Route path='/user' component={User} />
+        <Route path="/user" component={User} />
 
-        <Route path='/testr' component={comp} />
+        <Route path="/testr" component={comp} />
 
-        <Route path='/profile/:id' component={Profile} />
+        <Route path="/profile/:id" component={Profile} />
 
         <Route component={() => <div>No match</div>} />
       </Switch>
@@ -82,11 +82,11 @@ export const Test_Demo = () => {
 export const Test_Demo2 = () => {
   return (
     <div>
-      <Link to='/'>Home</Link>
+      <Link to="/">Home</Link>
 
-      <Link to='/about'>About</Link>
+      <Link to="/about">About</Link>
 
-      <Link to='/user'>User</Link>
+      <Link to="/user">User</Link>
 
       <Prompt
         when={true}
@@ -97,11 +97,11 @@ export const Test_Demo2 = () => {
       />
 
       <Switch>
-        <Route exact path='/' component={Home} />
+        <Route exact path="/" component={Home} />
 
-        <Route path='/about' component={About} />
+        <Route path="/about" component={About} />
 
-        <Route path='/user' component={User} />
+        <Route path="/user" component={User} />
       </Switch>
     </div>
   );
@@ -112,9 +112,9 @@ export const Test_Demo3 = () => {
   return (
     <div>
       <Switch>
-        <Route path='/about' component={About} />
-        <Route path='/user' component={User} />
-        <Redirect to='/user' path='/' />
+        <Route path="/about" component={About} />
+        <Route path="/user" component={User} />
+        <Redirect to="/user" path="/" />
       </Switch>
     </div>
   );
@@ -125,9 +125,9 @@ export const Test_Demo4 = () => {
   return (
     <div>
       <Switch>
-        <Route path='/about' component={About} />
-        <Route path='/user' component={User} />
-        <Redirect to='/user' path='*' />
+        <Route path="/about" component={About} />
+        <Route path="/user" component={User} />
+        <Redirect to="/user" path="*" />
       </Switch>
     </div>
   );

@@ -20,7 +20,7 @@ import transitionManager from './transitionManager';
 export function getBaseHistory<S>(
   transitionManager: transitionManager<S>,
   setListener: (delta: number) => void,
-  browserHistory: History,
+  browserHistory: History
 ) {
   function go(step: number) {
     browserHistory.go(step);

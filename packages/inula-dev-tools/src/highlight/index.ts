@@ -20,7 +20,7 @@ const overlayStyles = {
   background: 'rgba(120, 170, 210, 0.7)',
   padding: 'rgba(77, 200, 0, 0.3)',
   margin: 'rgba(255, 155, 0, 0.3)',
-  border: 'rgba(255, 200, 50, 0.3)'
+  border: 'rgba(255, 200, 50, 0.3)',
 };
 
 type Rect = {
@@ -58,7 +58,7 @@ function getOwnerIframe(node: Element): Element | null {
 
 function getElementStyle(domElement: Element) {
   const style = window.getComputedStyle(domElement);
-  return{
+  return {
     marginLeft: parseInt(style.marginLeft, 10),
     marginRight: parseInt(style.marginRight, 10),
     marginTop: parseInt(style.marginTop, 10),
@@ -70,7 +70,7 @@ function getElementStyle(domElement: Element) {
     paddingLeft: parseInt(style.paddingLeft, 10),
     paddingRight: parseInt(style.paddingRight, 10),
     paddingTop: parseInt(style.paddingTop, 10),
-    paddingBottom: parseInt(style.paddingBottom, 10)
+    paddingBottom: parseInt(style.paddingBottom, 10),
   };
 }
 
@@ -86,7 +86,7 @@ function mergeRectOffsets(rects: Array<Rect>): Rect {
       width: previousRect.width + rect.width,
       height: previousRect.height + rect.height,
       bottom: previousRect.bottom + rect.bottom,
-      right: previousRect.right + rect.right
+      right: previousRect.right + rect.right,
     };
   });
 }
@@ -99,18 +99,15 @@ function getBoundingClientRectWithBorderOffset(node: Element) {
       top: dimensions.borderTop,
       left: dimensions.borderLeft,
       bottom: dimensions.borderBottom,
-      right:dimensions.borderRight,
+      right: dimensions.borderRight,
       // 高度和宽度不会被使用
       width: 0,
-      height: 0
-    }
+      height: 0,
+    },
   ]);
 }
 
-function getNestedBoundingClientRect(
-  node: HTMLElement,
-  boundaryWindow
-): Rect {
+function getNestedBoundingClientRect(node: HTMLElement, boundaryWindow): Rect {
   const ownerIframe = getOwnerIframe(node);
   if (ownerIframe && ownerIframe !== boundaryWindow) {
     const rects = [node.getBoundingClientRect()] as Rect[];
@@ -125,7 +122,7 @@ function getNestedBoundingClientRect(
         break;
       }
 
-      if (currentIframe &&getOwnerWindow(currentIframe) === boundaryWindow) {
+      if (currentIframe && getOwnerWindow(currentIframe) === boundaryWindow) {
         onlyOneMore = true;
       }
     }
@@ -156,7 +153,7 @@ class OverlayRect {
     assign(this.node.style, {
       borderColor: overlayStyles.margin,
       pointerEvents: 'none',
-      position: 'fixed'
+      position: 'fixed',
     });
 
     this.node.style.zIndex = '10000000';
@@ -179,13 +176,25 @@ class OverlayRect {
     setBoxStyle(eleStyle, 'padding', this.padding);
 
     assign(this.content.style, {
-      height: boxRect.height - eleStyle.borderTop - eleStyle.borderBottom - eleStyle.paddingTop - eleStyle.paddingBottom + 'px',
-      width: boxRect.width - eleStyle.borderLeft - eleStyle.borderRight - eleStyle.paddingLeft - eleStyle.paddingRight + 'px'
+      height:
+        boxRect.height -
+        eleStyle.borderTop -
+        eleStyle.borderBottom -
+        eleStyle.paddingTop -
+        eleStyle.paddingBottom +
+        'px',
+      width:
+        boxRect.width -
+        eleStyle.borderLeft -
+        eleStyle.borderRight -
+        eleStyle.paddingLeft -
+        eleStyle.paddingRight +
+        'px',
     });
 
     assign(this.node.style, {
       top: boxRect.top - eleStyle.marginTop + 'px',
-      left: boxRect.left - eleStyle.marginLeft + 'px'
+      left: boxRect.left - eleStyle.marginLeft + 'px',
     });
   }
 }
@@ -235,7 +244,7 @@ class ElementOverlay {
       top: Number.POSITIVE_INFINITY,
       right: Number.NEGATIVE_INFINITY,
       bottom: Number.NEGATIVE_INFINITY,
-      left: Number.POSITIVE_INFINITY
+      left: Number.POSITIVE_INFINITY,
     };
 
     elements.forEach((element, index) => {

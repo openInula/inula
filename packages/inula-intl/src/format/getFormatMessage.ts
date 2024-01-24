@@ -18,7 +18,7 @@ import Translation from './Translation';
 import I18n from '../core/I18n';
 import { MessageDescriptor, MessageOptions } from '../types/interfaces';
 import { CompiledMessage } from '../types/types';
-import creatI18nCache from "./cache/cache";
+import creatI18nCache from './cache/cache';
 
 export function getFormatMessage(
   i18n: I18n,

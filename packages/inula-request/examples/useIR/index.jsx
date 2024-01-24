@@ -14,11 +14,11 @@
  */
 
 import Inula from 'openinula';
-import App from "./App ";
+import App from './App ';
 
 Inula.render(
   <Inula.Fragment>
-    <App/>
+    <App />
   </Inula.Fragment>,
   document.querySelector('#root')
-)
+);

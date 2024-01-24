@@ -116,11 +116,11 @@ export function createPathParser<P = unknown>(pathname: string, option: ParserOp
         if (nextToken) {
           switch (nextToken.type) {
             case TokenType.LBracket:
-          // 跳过当前Token和左括号
-          tokenIdx += 2;
-          while (tokens[tokenIdx].type !== TokenType.RBracket) {
-            paramRegexp += tokens[tokenIdx].value;
-            tokenIdx++;
+              // 跳过当前Token和左括号
+              tokenIdx += 2;
+              while (tokens[tokenIdx].type !== TokenType.RBracket) {
+                paramRegexp += tokens[tokenIdx].value;
+                tokenIdx++;
               }
               paramRegexp = `(${paramRegexp})`;
               break;
@@ -183,7 +183,7 @@ export function createPathParser<P = unknown>(pathname: string, option: ParserOp
         parseScore.splice(
           scores.indexOf(MatchScore.placeholder),
           1,
-          ...new Array(value.length).fill(MatchScore.wildcard),
+          ...new Array(value.length).fill(MatchScore.wildcard)
         );
       } else {
         params[key] = param ? param : undefined;
@@ -245,7 +245,7 @@ export function createPathParser<P = unknown>(pathname: string, option: ParserOp
 export function matchPath<P = any>(
   pathname: string,
   pattern: string | string[],
-  option?: ParserOption,
+  option?: ParserOption
 ): Matched<P> | null {
   const patterns = Array.isArray(pattern) ? [...pattern] : [pattern];
   const matchedResults: Matched<P>[] = [];

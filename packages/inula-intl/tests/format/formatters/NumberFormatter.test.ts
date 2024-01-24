@@ -14,7 +14,7 @@
  */
 
 import { NumberFormatter } from '../../../index';
-import creatI18nCache from "../../../src/format/cache/cache";
+import creatI18nCache from '../../../src/format/cache/cache';
 
 describe('NumberFormatter', () => {
   it('number formatter is memoized', async () => {
@@ -58,7 +58,6 @@ describe('NumberFormatter', () => {
     const format1 = new NumberFormatter('en-US', { style: 'currency', currency: 'USD' });
     const format2 = new NumberFormatter('fr-FR', { style: 'currency', currency: 'EUR' });
     expect(format1.numberFormat(1000)).toBe('$1,000.00');
-
   });
   it('should format a positive number correctly', () => {
     const formatter = new NumberFormatter('en-US');

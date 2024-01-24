@@ -56,46 +56,33 @@ const inspectVNode = () => {
 
 let currentPanel = null;
 
-chrome.devtools.inspectedWindow.eval(
-  'window.__INULA_DEV_HOOK__',
-  function (isInula, error) {
-    if (!isInula || panelCreated) {
-      return;
-    }
-
-    panelCreated = true;
-    chrome.devtools.panels.create(
-      'Inula',
-      '',
-      'panel.html',
-      (extensionPanel) => {
-        extensionPanel.onShown.addListener((panel) => {
-          if (currentPanel === panel) {
-            return;
-          }
-          currentPanel = panel;
-          const container = panel.document.getElementById('root');
-          const element = createElement(Panel, { viewSource, inspectVNode });
-          render(element, container);
-        });
-      }
-    );
-
-    chrome.devtools.panels.create(
-      'InulaX',
-      '',
-      'panelX.html',
-      (extensionPanel) => {
-        extensionPanel.onShown.addListener((panel) => {
-          if (currentPanel === panel) {
-            return;
-          }
-          currentPanel = panel;
-          const container = panel.document.getElementById('root');
-          const element = createElement(PanelX, {});
-          render(element, container);
-        });
-      }
-    );
+chrome.devtools.inspectedWindow.eval('window.__INULA_DEV_HOOK__', function (isInula, error) {
+  if (!isInula || panelCreated) {
+    return;
   }
-);
+
+  panelCreated = true;
+  chrome.devtools.panels.create('Inula', '', 'panel.html', extensionPanel => {
+    extensionPanel.onShown.addListener(panel => {
+      if (currentPanel === panel) {
+        return;
+      }
+      currentPanel = panel;
+      const container = panel.document.getElementById('root');
+      const element = createElement(Panel, { viewSource, inspectVNode });
+      render(element, container);
+    });
+  });
+
+  chrome.devtools.panels.create('InulaX', '', 'panelX.html', extensionPanel => {
+    extensionPanel.onShown.addListener(panel => {
+      if (currentPanel === panel) {
+        return;
+      }
+      currentPanel = panel;
+      const container = panel.document.getElementById('root');
+      const element = createElement(PanelX, {});
+      render(element, container);
+    });
+  });
+});

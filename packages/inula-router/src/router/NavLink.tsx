@@ -43,11 +43,13 @@ function NavLink<P extends NavLinkProps>(props: P) {
 
   const { pathname } = typeof toLocation === 'string' ? parsePath(toLocation) : toLocation;
 
-  const match = pathname ? matchPath(context.location.pathname, pathname, {
-    exact: exact,
-    strictMode: strict,
-    caseSensitive: sensitive,
-  }) : null;
+  const match = pathname
+    ? matchPath(context.location.pathname, pathname, {
+        exact: exact,
+        strictMode: strict,
+        caseSensitive: sensitive,
+      })
+    : null;
 
   const isLinkActive = !!(isActive ? isActive(match, context.location) : match);
 

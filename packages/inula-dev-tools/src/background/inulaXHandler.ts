@@ -47,7 +47,7 @@ function requestObservedComponents(tabId) {
       packagePayload(
         {
           type: 'inulax request observed components',
-          data: {}
+          data: {},
         },
         'dev tool background'
       )
@@ -65,7 +65,7 @@ function executeAction(tabId, storeId, action, params) {
           action,
           storeId,
           params,
-        }
+        },
       },
       'dev tool background'
     )
@@ -82,7 +82,7 @@ function queueAction(tabId, storeId, action, params) {
           action,
           storeId,
           params,
-        }
+        },
       },
       'sev tool background'
     )
@@ -167,12 +167,13 @@ chrome.runtime.onMessage.addListener(function (message, sender) {
           type: 'INULA_DEV_TOOLS',
           payload: {
             type: 'inulax stores',
-            stores: storesPerTab[tabId]?.map(store => {
-              // 连接被监测的组件
-              requestObservedComponents(tabId);
-              const observedComponents = getObservedComponents(store, tabId);
-              return { ...store, observedComponents };
-            }) || [],
+            stores:
+              storesPerTab[tabId]?.map(store => {
+                // 连接被监测的组件
+                requestObservedComponents(tabId);
+                const observedComponents = getObservedComponents(store, tabId);
+                return { ...store, observedComponents };
+              }) || [],
             newStore: message.payload.data.store.id,
           },
           from: DevToolBackground,
@@ -184,11 +185,12 @@ chrome.runtime.onMessage.addListener(function (message, sender) {
         type: 'INULA_DEV_TOOLS',
         payload: {
           type: 'inulax stores',
-          stores: storesPerTab[sender.tab.id]?.map(store => {
-            // 连接被监测的组件
-            const observedComponents = getObservedComponents(store, sender.tab?.id);
-            return { ...store, observedComponents };
-          }) || [],
+          stores:
+            storesPerTab[sender.tab.id]?.map(store => {
+              // 连接被监测的组件
+              const observedComponents = getObservedComponents(store, sender.tab?.id);
+              return { ...store, observedComponents };
+            }) || [],
           updated: message.payload.data.store.id,
         },
         from: DevToolBackground,
@@ -200,30 +202,17 @@ chrome.runtime.onMessage.addListener(function (message, sender) {
     if (message.from === DevToolPanel) {
       // panel -> inulaXHandler
       if (message.payload.type === 'inulax run action') {
-        executeAction(
-          message.payload.tabId,
-          message.payload.storeId,
-          message.payload.action,
-          message.payload.args
-        );
+        executeAction(message.payload.tabId, message.payload.storeId, message.payload.action, message.payload.args);
         return;
       }
 
       if (message.payload.type === 'inulax change state') {
-        chrome.tabs.sendMessage(
-          message.payload.tabId,
-          packagePayload(message.payload, 'dev tool background')
-        );
+        chrome.tabs.sendMessage(message.payload.tabId, packagePayload(message.payload, 'dev tool background'));
         return;
       }
 
       if (message.payload.type === 'inulax queue action') {
-        queueAction(
-          message.payload.tabId,
-          message.payload.storeId,
-          message.payload.action,
-          message.payload.args
-        );
+        queueAction(message.payload.tabId, message.payload.storeId, message.payload.action, message.payload.args);
         return;
       }
 
@@ -240,7 +229,7 @@ chrome.runtime.onMessage.addListener(function (message, sender) {
         return;
       }
 
-      if (message.payload.type === 'inula setPersistent'){
+      if (message.payload.type === 'inula setPersistent') {
         const { tabId, persistent } = message.payload;
         eventPersistencePerTab[tabId] = persistent;
         return;
@@ -278,14 +267,12 @@ chrome.runtime.onMessage.addListener(function (message, sender) {
           type: 'INULA_DEV_TOOLS',
           payload: {
             type: 'inulax stores',
-            stores: storesPerTab[message.payload.tabId]?.map(store => {
-              requestObservedComponents(message.payload.tabId);
-              const observedComponents = getObservedComponents(
-                store.id,
-                message.payload.tabId
-              );
-              return { ...store, observedComponents };
-            }) || [],
+            stores:
+              storesPerTab[message.payload.tabId]?.map(store => {
+                requestObservedComponents(message.payload.tabId);
+                const observedComponents = getObservedComponents(store.id, message.payload.tabId);
+                return { ...store, observedComponents };
+              }) || [],
           },
           from: DevToolBackground,
         });

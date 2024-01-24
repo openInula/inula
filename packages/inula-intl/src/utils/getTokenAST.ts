@@ -25,11 +25,14 @@ enum TokenType {
 const processToken = token => {
   if (typeof token === 'string') {
     return token;
-  } else if (TokenType[token.type] === 'OCTOTHORPE') {  // token为符号
+  } else if (TokenType[token.type] === 'OCTOTHORPE') {
+    // token为符号
     return '#';
-  } else if (TokenType[token.type] === 'ARGUMENT') { // token为变量
+  } else if (TokenType[token.type] === 'ARGUMENT') {
+    // token为变量
     return [token.arg];
-  } else if (TokenType[token.type] === 'FUNCTION') { // token为函数方法
+  } else if (TokenType[token.type] === 'FUNCTION') {
+    // token为函数方法
     const _param = token.param && token.param.tokens[0];
     const param = typeof _param === 'string' ? _param.trim() : _param;
     return [token.arg, token.key, param].filter(Boolean);

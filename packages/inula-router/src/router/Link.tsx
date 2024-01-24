@@ -36,7 +36,6 @@ const checkTarget = (target?: any) => {
   return !target || target === '_self';
 };
 
-
 function Link<P extends LinkProps>(props: P) {
   const { to, replace, component, onClick, target, ...other } = props;
 

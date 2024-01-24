@@ -98,7 +98,6 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
     } else {
       fetch(url, options as RequestInit)
         .then(response => {
-
           // 将 Headers 对象转换为普通 JavaScript 对象，可以使用 [] 访问具体响应头
           const headersObj = {};
           response.headers.forEach((value, name) => {
@@ -114,7 +113,7 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
             headers: headersObj,
             config,
             request: null,
-            responseURL: response.url
+            responseURL: response.url,
           };
 
           const responseBody = onDownloadProgress
@@ -165,7 +164,13 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
               if (responseData.config.validateStatus!(responseData.status)) {
                 resolve(responseData);
               } else {
-                const error = new IrError(responseData.statusText, '', responseData.config, responseData.request, responseData);
+                const error = new IrError(
+                  responseData.statusText,
+                  '',
+                  responseData.config,
+                  responseData.request,
+                  responseData
+                );
                 reject(error);
               }
             })
@@ -175,7 +180,13 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
                 const irError = new CancelError('request canceled', config);
                 reject(irError);
               } else {
-                const irError = new IrError(error.message, 'ERR_FETCH_FAILED', responseData.config, responseData.request, responseData);
+                const irError = new IrError(
+                  error.message,
+                  'ERR_FETCH_FAILED',
+                  responseData.config,
+                  responseData.request,
+                  responseData
+                );
                 reject(irError);
               }
             });

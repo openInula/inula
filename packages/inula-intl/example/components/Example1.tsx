@@ -13,8 +13,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Inula from "openinula";
-import { useIntl } from "../../index";
+import Inula from 'openinula';
+import { useIntl } from '../../index';
 
 const Example1 = () => {
   const { i18n } = useIntl();

@@ -13,16 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import {
-  AllLocaleConfig,
-  AllMessages,
-  Locale,
-  Locales,
-  Error,
-  DatePool,
-  SelectPool,
-  RawToken,
-} from './types';
+import { AllLocaleConfig, AllMessages, Locale, Locales, Error, DatePool, SelectPool, RawToken } from './types';
 import I18n from '../core/I18n';
 import Lexer from '../parser/Lexer';
 
@@ -94,24 +85,24 @@ export interface configProps {
 
 export interface IntlMessageFormat extends configProps, MessageOptions {
   plural: (
-      value: number,
-      {
-        offset,
-        ...rules
-      }: {
-        [x: string]: any;
-        offset?: number | undefined;
-      }
+    value: number,
+    {
+      offset,
+      ...rules
+    }: {
+      [x: string]: any;
+      offset?: number | undefined;
+    }
   ) => (ctx: any) => any[];
   selectordinal: (
-      value: number,
-      {
-        offset,
-        ...rules
-      }: {
-        [x: string]: any;
-        offset?: number | undefined;
-      }
+    value: number,
+    {
+      offset,
+      ...rules
+    }: {
+      [x: string]: any;
+      offset?: number | undefined;
+    }
   ) => (ctx: any) => any[];
   select: (value: SelectPool, formatRules: any) => any;
   numberFormat: (value: number, formatOption: any) => string;
@@ -200,7 +191,6 @@ export interface Select {
 }
 
 export interface InjectedIntl {
-
   // 日期格式化
   formatDate(value: DatePool, options?: Intl.DateTimeFormatOptions): string;
 

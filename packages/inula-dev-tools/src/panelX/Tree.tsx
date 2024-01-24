@@ -15,7 +15,7 @@
 
 import { useState } from 'openinula';
 import styles from './PanelX.less';
-import {Modal} from './Modal';
+import { Modal } from './Modal';
 import { displayValue, omit } from './utils';
 
 export function Tree({
@@ -36,7 +36,7 @@ export function Tree({
   expand?: boolean;
   search?: string;
   forcedExpand?: boolean;
-  className?: string | undefined
+  className?: string | undefined;
   omitAttrs?: string[];
   onEdit?: (path: any[], value: any) => void | null;
   forcedLabel?: string | number | null;
@@ -71,11 +71,7 @@ export function Tree({
         }}
       >
         {new Array(Math.max(indent, 0)).fill(<span>&nbsp;</span>)}
-        {forcedExpand || isVNode ? null : expanded ? (
-          <span>▼</span>
-        ) : (
-          <span>▶</span>
-        )}
+        {forcedExpand || isVNode ? null : expanded ? <span>▼</span> : <span>▶</span>}
         {index === 0 || index ? (
           <>
             <b className={styles.purple}>{displayValue(index, search)}: </b>
@@ -84,28 +80,28 @@ export function Tree({
           ''
         )}
         {forcedLabel
-        ? forcedLabel
-        : expanded
-        ? isVNode
-          ? null
-          : Array.isArray(data)
-          ? `Array(${data.length})`
-          : isMap
-          ? `Map(${data.entries.length})`
-          : isSet
-          ? `Set(${data.values.length})`
-          : '{ ... }'
-        : isWeakMap
-        ? 'WeakMap()'
-        : isWeakSet
-        ? 'WeakSet()'
-        : isMap
-        ? `Map(${data.entries.length})`
-        : isSet
-        ? `Set(${data.values.length})`
-        : Array.isArray(data)
-        ? `Array(${data.length})`
-        : '{ ... }'}
+          ? forcedLabel
+          : expanded
+            ? isVNode
+              ? null
+              : Array.isArray(data)
+                ? `Array(${data.length})`
+                : isMap
+                  ? `Map(${data.entries.length})`
+                  : isSet
+                    ? `Set(${data.values.length})`
+                    : '{ ... }'
+            : isWeakMap
+              ? 'WeakMap()'
+              : isWeakSet
+                ? 'WeakSet()'
+                : isMap
+                  ? `Map(${data.entries.length})`
+                  : isSet
+                    ? `Set(${data.values.length})`
+                    : Array.isArray(data)
+                      ? `Array(${data.length})`
+                      : '{ ... }'}
       </span>
       {expanded || isVNode ? (
         isArray ? (
@@ -122,8 +118,8 @@ export function Tree({
                     onEdit={
                       onEdit
                         ? (path, val) => {
-                          onEdit(path.concat([index]), val);
-                        }
+                            onEdit(path.concat([index]), val);
+                          }
                         : null
                     }
                   />
@@ -138,7 +134,7 @@ export function Tree({
             {data.entries.map(([key, value]) => {
               return (
                 <Tree
-                  data={{key, value}}
+                  data={{ key, value }}
                   indent={indent + 4}
                   search={search}
                   className={className}
@@ -174,8 +170,8 @@ export function Tree({
                   onEdit={
                     onEdit
                       ? (path, val) => {
-                        onEdit(path.concat([key]), val);
-                      }
+                          onEdit(path.concat([key]), val);
+                        }
                       : null
                   }
                 />

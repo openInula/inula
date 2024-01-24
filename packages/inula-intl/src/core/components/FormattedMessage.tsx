@@ -23,7 +23,17 @@ import useI18n from '../hook/useI18n';
  */
 function FormattedMessage(props: FormattedMessageProps) {
   const { i18n } = useI18n();
-  const { id, values, messages, formatOptions, context, tagName: TagName = Fragment, children, comment, useMemorize }: any = props;
+  const {
+    id,
+    values,
+    messages,
+    formatOptions,
+    context,
+    tagName: TagName = Fragment,
+    children,
+    comment,
+    useMemorize,
+  }: any = props;
 
   const formatMessageOptions = {
     comment,
@@ -41,14 +51,10 @@ function FormattedMessage(props: FormattedMessageProps) {
   }
 
   if (TagName) {
-    return (
-        <TagName>{Children.toArray(formattedMessage)}</TagName>
-    );
+    return <TagName>{Children.toArray(formattedMessage)}</TagName>;
   }
 
-  return (
-      <>{formattedMessage}</>
-  );
+  return <>{formattedMessage}</>;
 }
 
 export default FormattedMessage;

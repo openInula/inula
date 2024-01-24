@@ -15,8 +15,8 @@
 
 import { CompiledMessage, Locale, LocaleConfig, Locales } from '../types/types';
 import generateFormatters from './generateFormatters';
-import {FormatOptions, I18nCache} from '../types/interfaces';
-import {createIntlCache} from "../../index";
+import { FormatOptions, I18nCache } from '../types/interfaces';
+import { createIntlCache } from '../../index';
 
 /**
  * 获取翻译结果
@@ -46,7 +46,7 @@ class Translation {
       locales: Locales,
       values: object,
       formatOptions: FormatOptions,
-      localeConfig: LocaleConfig,
+      localeConfig: LocaleConfig
     ) => {
       const textFormatter = (name: string, type: string, format: any) => {
         const formatters = generateFormatters(locale, locales, localeConfig, formatOptions, this.cache);
@@ -66,13 +66,7 @@ class Translation {
       return textFormatter;
     };
 
-    let textFormatter = createTextFormatter(
-      this.locale,
-      this.locales,
-      values,
-      formatOptions,
-      this.localeConfig,
-    );
+    let textFormatter = createTextFormatter(this.locale, this.locales, values, formatOptions, this.localeConfig);
     // 通过递归方法formatCore进行格式化处理
     const result = this.formatMessage(this.compiledMessage, textFormatter);
     return result; // 返回要格式化的结果
@@ -83,28 +77,29 @@ class Translation {
       return compiledMessage;
     }
 
-    return compiledMessage.map(token => {
-      if (typeof token === 'string') {
-        return token;
-      }
+    return compiledMessage
+      .map(token => {
+        if (typeof token === 'string') {
+          return token;
+        }
 
-      const [name, type, format] = token;
+        const [name, type, format] = token;
 
+        let replaceValueFormat = format;
 
-      let replaceValueFormat = format;
-
-      // 如果 format 是对象，函数将递归地对它的每个值调用 formatMessage 后保存，否则直接保存
-      if (format && typeof format !== 'string') {
-        replaceValueFormat = Object.keys(replaceValueFormat).reduce((text, key) => {
-          text[key] = this.formatMessage(format[key], textFormatter);
-          return text;
-        }, {});
-      }
-      //调用 getContent 函数来获取给定 name、type 和 interpolateFormat 的值
-      const value = textFormatter(name, type, replaceValueFormat);
-      return value ?? `{${name}}`;
-    }).join('');
-  };
+        // 如果 format 是对象，函数将递归地对它的每个值调用 formatMessage 后保存，否则直接保存
+        if (format && typeof format !== 'string') {
+          replaceValueFormat = Object.keys(replaceValueFormat).reduce((text, key) => {
+            text[key] = this.formatMessage(format[key], textFormatter);
+            return text;
+          }, {});
+        }
+        //调用 getContent 函数来获取给定 name、type 和 interpolateFormat 的值
+        const value = textFormatter(name, type, replaceValueFormat);
+        return value ?? `{${name}}`;
+      })
+      .join('');
+  }
 }
 
 export default Translation;

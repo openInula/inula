@@ -12,12 +12,10 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import { CompiledMessage } from "../types/types";
-import parse from "../parser/parser";
-import getTokenAST from "./getTokenAST";
-import I18n from "../core/I18n";
-
-
+import { CompiledMessage } from '../types/types';
+import parse from '../parser/parser';
+import getTokenAST from './getTokenAST';
+import I18n from '../core/I18n';
 
 export function isVariantI18n(i18n?: I18n) {
   if (!i18n) {
@@ -43,6 +41,6 @@ const utils = {
   isVariantI18n,
   generateKey,
   compile,
-}
+};
 
 export default utils;

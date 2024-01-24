@@ -12,16 +12,15 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import Inula from "openinula";
-import { FormattedMessage } from "../../index";
+import Inula from 'openinula';
+import { FormattedMessage } from '../../index';
 
-const Example2= () => {
-
+const Example2 = () => {
   return (
     <div className="card">
       <h2>FormattedMessage方式测试Demo</h2>
       <pre>
-          <FormattedMessage id='text2'/>
+        <FormattedMessage id="text2" />
       </pre>
     </div>
   );

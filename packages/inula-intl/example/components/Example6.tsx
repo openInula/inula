@@ -13,25 +13,21 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Inula from "openinula";
-import { createIntl, createIntlCache, RawIntlProvider } from "../../index";
-import Example6Child from "./Example6Child";
+import Inula from 'openinula';
+import { createIntl, createIntlCache, RawIntlProvider } from '../../index';
+import Example6Child from './Example6Child';
 
 const Example6 = (props: any) => {
-
   const { locale, messages } = props;
 
   const cache = createIntlCache();
-  let i18n = createIntl(
-        { locale: locale, messages: messages },
-        cache
-    );
+  let i18n = createIntl({ locale: locale, messages: messages }, cache);
 
   return (
     <RawIntlProvider value={i18n}>
-      <Example6Child/>
+      <Example6Child />
     </RawIntlProvider>
   );
-}
+};
 
 export default Example6;

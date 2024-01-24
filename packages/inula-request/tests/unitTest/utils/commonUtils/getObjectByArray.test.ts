@@ -21,7 +21,7 @@ describe('getObjectByArray function', () => {
     const expected = {
       '0': 'a',
       '1': 'b',
-      '2': 'c'
+      '2': 'c',
     };
     const result = utils.getObjectByArray(arr);
     expect(result).toEqual(expected);
@@ -39,7 +39,7 @@ describe('getObjectByArray function', () => {
     const expected = {
       '0': 1,
       '1': true,
-      '2': { key: 'value' }
+      '2': { key: 'value' },
     };
     const result = utils.getObjectByArray(arr);
     expect(result).toEqual(expected);

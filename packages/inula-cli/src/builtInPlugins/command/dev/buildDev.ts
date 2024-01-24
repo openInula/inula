@@ -19,7 +19,6 @@ import { createServer } from 'vite';
 import { API } from '../../../types/types';
 import setupProxy from '../../../utils/setupProxy.js';
 
-
 export default (api: API) => {
   api.registerCommand({
     name: 'dev',
@@ -46,7 +45,7 @@ export default (api: API) => {
             if (api.userConfig.devBuildConfig.devProxy) {
               devServerOptions.onBeforeSetupMiddleware = (devServer: WebpackDevServer) => {
                 setupProxy(devServer.app, api);
-              }
+              };
             }
 
             api.applyHook({
@@ -58,7 +57,7 @@ export default (api: API) => {
               api.applyHook({ name: 'afterStartDevServer' });
             });
           } else {
-            api.logger.error('Can\'t find config');
+            api.logger.error("Can't find config");
           }
           break;
         case 'vite':
@@ -71,7 +70,7 @@ export default (api: API) => {
                 server.printUrls();
               });
           } else {
-            api.logger.error('Can\'t find config');
+            api.logger.error("Can't find config");
           }
           break;
         default:

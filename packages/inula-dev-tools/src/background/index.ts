@@ -13,9 +13,9 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { checkMessage, packagePayload, changeSource } from "../utils/transferUtils";
-import { RequestAllVNodeTreeInfos, InitDevToolPageConnection, DevToolBackground } from "../utils/constants";
-import { DevToolPanel, DevToolContentScript } from "../utils/constants";
+import { checkMessage, packagePayload, changeSource } from '../utils/transferUtils';
+import { RequestAllVNodeTreeInfos, InitDevToolPageConnection, DevToolBackground } from '../utils/constants';
+import { DevToolPanel, DevToolContentScript } from '../utils/constants';
 
 // 多个页面 tab 页共享一个 background，需要建立连接池，给每个 tab 建立连接
 export const connections = {};

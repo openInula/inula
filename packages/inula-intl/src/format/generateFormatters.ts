@@ -18,8 +18,8 @@ import NumberFormatter from './fomatters/NumberFormatter';
 import { DatePool, Locale, Locales, SelectPool } from '../types/types';
 import PluralFormatter from './fomatters/PluralFormatter';
 import SelectFormatter from './fomatters/SelectFormatter';
-import {FormatOptions, I18nCache, IntlMessageFormat} from '../types/interfaces';
-import cache from "./cache/cache";
+import { FormatOptions, I18nCache, IntlMessageFormat } from '../types/interfaces';
+import cache from './cache/cache';
 
 /**
  * 默认格式化接口
@@ -86,10 +86,7 @@ const generateFormatters = (
      * @param useMemorize
      */
     dateTimeFormat: (value: DatePool, formatOption) => {
-      return new DateTimeFormatter(locales, getStyleOption(formatOption), cache).dateTimeFormat(
-        value,
-        formatOption
-      );
+      return new DateTimeFormatter(locales, getStyleOption(formatOption), cache).dateTimeFormat(value, formatOption);
     },
 
     // 用于处理未定义的值，接受一个值并直接返回它。

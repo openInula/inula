@@ -14,7 +14,7 @@
  */
 
 interface IArrow {
-  direction: 'up' | 'down'
+  direction: 'up' | 'down';
 }
 
 export default function Arrow({ direction: director }: IArrow) {
@@ -26,8 +26,8 @@ export default function Arrow({ direction: director }: IArrow) {
   }
 
   return (
-    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' width='1rem' height='1rem'>
-      <path d={d} fill='currentColor' />
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="1rem" height="1rem">
+      <path d={d} fill="currentColor" />
     </svg>
   );
 }

@@ -17,9 +17,7 @@ module.exports = api => {
   const isTest = api.env('test');
   console.log('isTest', isTest);
 
-  const plugins = [
-    ['@babel/plugin-proposal-class-properties', { loose: false }],
-  ];
+  const plugins = [['@babel/plugin-proposal-class-properties', { loose: false }]];
 
   if (process.env.NODE_ENV !== 'production') {
     plugins.push(['@babel/plugin-transform-react-jsx-source']);
@@ -30,11 +28,13 @@ module.exports = api => {
       '@babel/preset-env',
       '@babel/preset-typescript',
       [
-        '@babel/preset-react', {
-        runtime: 'classic',
-        'pragma': 'Inula.createElement',
-        'pragmaFrag': 'Inula.Fragment',
-      }]
+        '@babel/preset-react',
+        {
+          runtime: 'classic',
+          pragma: 'Inula.createElement',
+          pragmaFrag: 'Inula.Fragment',
+        },
+      ],
     ],
     plugins,
   };

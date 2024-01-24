@@ -50,14 +50,14 @@ export type IAttr = {
   hIndex?: number; // 用于记录 hook 的 hIndex 值
 } & (
   | {
-  type: ShowAsStringType;
-  value: string;
-}
+      type: ShowAsStringType;
+      value: string;
+    }
   | {
-  type: 'boolean';
-  value: boolean;
-}
-  );
+      type: 'boolean';
+      value: boolean;
+    }
+);
 
 type ShowType = ShowAsStringType | 'boolean';
 
@@ -79,10 +79,7 @@ const getObjectKeys = (attr: Record<string, any>): Array<string | number | symbo
   let current = attr;
   try {
     while (current != null) {
-      const currentKeys = [
-        ...Object.keys(current),
-        ...Object.getOwnPropertySymbols(current)
-      ];
+      const currentKeys = [...Object.keys(current), ...Object.getOwnPropertySymbols(current)];
       const descriptors = Object.getOwnPropertyDescriptors(current);
       currentKeys.forEach(key => {
         // @ts-ignore key 可以为 symbol 类型
@@ -99,10 +96,7 @@ const getObjectKeys = (attr: Record<string, any>): Array<string | number | symbo
 };
 
 // 用于比较两个 key 值的顺序
-export function sortKeys(
-  firstKey: string | number | symbol,
-  secondKey: string | number | symbol
-): number {
+export function sortKeys(firstKey: string | number | symbol, secondKey: string | number | symbol): number {
   if (firstKey.toString() > secondKey.toString()) {
     return 1;
   } else if (secondKey.toString() > firstKey.toString()) {
@@ -137,11 +131,7 @@ const parseSubTitle = <T>(attr: T) => {
   } else if (AttrType === 'function') {
     const funcName = attr['name'];
     return `ƒ ${funcName}() {}`;
-  } else if (
-    AttrType === 'boolean' ||
-    AttrType === 'number' ||
-    AttrType === 'undefined'
-  ) {
+  } else if (AttrType === 'boolean' || AttrType === 'number' || AttrType === 'undefined') {
     return `${attr}`;
   } else if (AttrType === 'object') {
     if (attr === null) {
@@ -179,24 +169,13 @@ const parseSubTitle = <T>(attr: T) => {
   }
 };
 
-const parseSubAttr = (
-  attr: any,
-  parentIndentation: number,
-  attrName: string,
-  result: IAttr[],
-  hIndex?: number
-) => {
+const parseSubAttr = (attr: any, parentIndentation: number, attrName: string, result: IAttr[], hIndex?: number) => {
   const AttrType = typeof attr;
   let value: any;
   let showType: any;
   let addSubState;
 
-  if (
-    AttrType === 'boolean' ||
-    AttrType === 'number' ||
-    AttrType === 'undefined' ||
-    AttrType === 'string'
-  ) {
+  if (AttrType === 'boolean' || AttrType === 'number' || AttrType === 'undefined' || AttrType === 'string') {
     value = attr;
     showType = AttrType;
   } else if (AttrType === 'function') {
@@ -308,11 +287,7 @@ export function parseAttr(rootAttr: any) {
   return result;
 }
 
-export function parseHooks(
-  hooks: Hook<any, any>[] | null,
-  depContexts: Array<ContextType<any>> | null,
-  getHookInfo
-) {
+export function parseHooks(hooks: Hook<any, any>[] | null, depContexts: Array<ContextType<any>> | null, getHookInfo) {
   const result: IAttr[] = [];
   const indentation = 0;
   if (depContexts !== null && depContexts?.length > 0) {
@@ -343,7 +318,7 @@ export function parseVNodeAttrs(vNode: VNode, getHookInfo) {
       src,
     };
   } else if (propsAndHooksTag.includes(tag)) {
-    const {  props, hooks, depContexts, src } = vNode;
+    const { props, hooks, depContexts, src } = vNode;
     const parsedProps = parseAttr(props);
     const parsedHooks = parseHooks(hooks, depContexts, getHookInfo);
     return {

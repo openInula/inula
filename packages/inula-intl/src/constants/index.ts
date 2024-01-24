@@ -64,7 +64,7 @@ export const REACT_FORWARD_REF_STATICS = {
   propTypes: true, // type: type,
 };
 
-export const FORWARD_REF_STATICS = {...INULA_FORWARD_REF_STATICS, ...REACT_FORWARD_REF_STATICS};
+export const FORWARD_REF_STATICS = { ...INULA_FORWARD_REF_STATICS, ...REACT_FORWARD_REF_STATICS };
 
 // Inula Memo 组件的静态属性需要被保留
 export const INULA_MEMO_STATICS = {
@@ -76,4 +76,3 @@ export const INULA_MEMO_STATICS = {
 
 // 默认复数规则
 export const DEFAULT_PLURAL_KEYS = ['zero', 'one', 'two', 'few', 'many', 'other'];
-

@@ -23,13 +23,7 @@ import handleAsyncInterceptor from '../interceptor/handleAsyncInterceptor';
 import handleSyncInterceptor from '../interceptor/handleSyncInterceptor';
 import defaultConfig from '../config/defaultConfig';
 import { Method } from '../types/types';
-import {
-  IrRequestConfig,
-  IrResponse,
-  IrInterface,
-  IrInstance,
-  Interceptors,
-} from '../types/interfaces';
+import { IrRequestConfig, IrResponse, IrInterface, IrInstance, Interceptors } from '../types/interfaces';
 
 class InulaRequest implements IrInterface {
   defaultConfig: IrRequestConfig;
@@ -80,12 +74,7 @@ class InulaRequest implements IrInterface {
     }
 
     // 全都是同步拦截器处理
-    return handleSyncInterceptor(
-      this.processRequest,
-      mergedConfig,
-      requestInterceptorChain,
-      responseInterceptorChain
-    );
+    return handleSyncInterceptor(this.processRequest, mergedConfig, requestInterceptorChain, responseInterceptorChain);
   }
 
   private preprocessing(requestParam: string | Record<string, any>, config?: IrRequestConfig) {

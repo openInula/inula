@@ -46,7 +46,7 @@ export default class Hub {
   userConfig: UserConfig = {};
   packageJson: PackageJSON;
   stage: ServiceStage = ServiceStage.uninitialized;
-  buildConfig: {name:string, config: object}[] = [];
+  buildConfig: { name: string; config: object }[] = [];
   pluginManager: Plugin;
   buildConfigPath: BuildConfig[] = [];
   devBuildConfig: object = {};
@@ -95,7 +95,7 @@ export default class Hub {
     this.userConfig = await this.configManager.getUserConfig();
 
     // 设置编译模式
-    this.setCompileMode()
+    this.setCompileMode();
 
     // 获取编译配置
     await this.analyzeBuildConfig();
@@ -135,8 +135,8 @@ export default class Hub {
         : this.pluginManager.commands[command];
 
     if (commands === undefined) {
-      this.logger.error(`Invalid command ${command}`)
-      return
+      this.logger.error(`Invalid command ${command}`);
+      return;
     }
     const { fn } = commands as ICommand;
 
@@ -164,7 +164,7 @@ export default class Hub {
 
       let finalBc = {};
       if (typeof bc === 'function') {
-        finalBc = bc(env)
+        finalBc = bc(env);
         this.devBuildConfig = finalBc;
         return;
       }
@@ -175,55 +175,53 @@ export default class Hub {
       }
     }
 
-
-
     if (!this.userConfig.buildConfig) {
       switch (this.compileMode) {
         case 'webpack':
-          this.buildConfigPath.push({name:'default', path:'./webpack.config.js'})
+          this.buildConfigPath.push({ name: 'default', path: './webpack.config.js' });
           break;
         case 'vite':
-          this.buildConfigPath.push({name:'default', path:'./vite.config.js'})
+          this.buildConfigPath.push({ name: 'default', path: './vite.config.js' });
           break;
         default:
           this.logger.warn(`Unknown compile mode ${this.compileMode}`);
           break;
       }
     } else {
-      this.userConfig.buildConfig.forEach((userBuildConfig) => {
+      this.userConfig.buildConfig.forEach(userBuildConfig => {
         if (typeof userBuildConfig === 'object') {
           this.buildConfigPath.push(userBuildConfig);
         }
-      })
+      });
     }
 
-    this.buildConfigPath.forEach(async (config) => {
-      let {name, path} = config;
+    this.buildConfigPath.forEach(async config => {
+      let { name, path } = config;
       path = isAbsolute(path) ? path : join(process.cwd(), path);
       if (!existsSync(path)) {
         this.logger.debug(`Cant't find build config. Path is ${path}`);
         return;
       }
       this.logger.debug(`Find build config. Path is ${path}`);
-      let bc = await loadModule<object | Function >(path);
+      let bc = await loadModule<object | Function>(path);
       if (bc == undefined) {
         return;
       }
 
       let finalBc = {};
       if (typeof bc === 'function') {
-        finalBc = bc(config.env)
-        this.buildConfig.push({name: name, config: finalBc});
+        finalBc = bc(config.env);
+        this.buildConfig.push({ name: name, config: finalBc });
         return;
       }
-      this.buildConfig.push({name: name, config: bc});
-    })
+      this.buildConfig.push({ name: name, config: bc });
+    });
   }
 
   getConfigName(name: string): string {
     name = name.replace('webpack.', '');
     name = name.replace('.js', '');
     name = name.replace('.ts', '');
-    return name
+    return name;
   }
 }

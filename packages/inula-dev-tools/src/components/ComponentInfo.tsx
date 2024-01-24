@@ -47,7 +47,7 @@ const ComponentAttr = memo(function ComponentAttr({
   attrs,
   id,
   dropdownRef,
-  }: {
+}: {
   attrsName: string;
   attrsType: string;
   attrs: IAttr[];
@@ -421,7 +421,12 @@ function ComponentInfo({ name, attrs, parents, id, source, onClickParent }: ICom
               <b>Copy value to console</b>
             </li>
             <li
-              onClick={() => storeVariable((dropdownRef.current as any).attrInfo.attrsName, (dropdownRef.current as any).attrInfo.path)}
+              onClick={() =>
+                storeVariable(
+                  (dropdownRef.current as any).attrInfo.attrsName,
+                  (dropdownRef.current as any).attrInfo.path
+                )
+              }
             >
               <b>Store as global variable</b>
             </li>

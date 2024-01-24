@@ -18,7 +18,6 @@ import { useContext, ComponentType } from 'openinula';
 import RouterContext from './context';
 
 function withRouter<C extends ComponentType>(Component: C) {
-
   function ComponentWithRouterProp(props: any) {
     const { wrappedComponentRef, ...rest } = props;
     const { history, location, match } = useContext(RouterContext);

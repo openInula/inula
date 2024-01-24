@@ -125,9 +125,7 @@ function forEach<T>(
       func.call(null, value, index, array);
     });
   } else {
-    const keys = includeAll
-      ? getAllPropertyNames(input as Record<string, T>)
-      : Object.keys(input as Record<string, T>);
+    const keys = includeAll ? getAllPropertyNames(input as Record<string, T>) : Object.keys(input as Record<string, T>);
     keys.forEach(key => {
       func.call(null, (input as Record<string, T>)[key], key, input!);
     });
@@ -172,14 +170,18 @@ function extendObject(
 ) {
   const { includeAll = false } = options || {};
 
-  forEach(source, (val: any, key: any) => {
-    if (thisArg && checkFunction(val)) {
-      target[key as number] = bind(val, thisArg);
-    } else {
-      target[key as number] = val;
-    }
-    // @ts-ignore
-  }, { includeAll: includeAll });
+  forEach(
+    source,
+    (val: any, key: any) => {
+      if (thisArg && checkFunction(val)) {
+        target[key as number] = bind(val, thisArg);
+      } else {
+        target[key as number] = val;
+      }
+      // @ts-ignore
+    },
+    { includeAll: includeAll }
+  );
 
   return target;
 }
@@ -408,11 +410,7 @@ function spread<T>(callback: Callback<T>): (arr: any[]) => T {
 }
 
 function getNormalizedValue(value: string | any[] | boolean | null | number): string | any[] | boolean | null {
-  if (
-    value === false
-    || value === null
-    || value === undefined
-  ) {
+  if (value === false || value === null || value === undefined) {
     return value;
   }
 

@@ -16,7 +16,7 @@
 import { useState } from 'openinula';
 import styles from './PanelX.less';
 import { Tree } from './Tree';
-import {displayValue, omit} from './utils';
+import { displayValue, omit } from './utils';
 
 type Mutation = {
   mutation: boolean;
@@ -118,11 +118,7 @@ export function DiffTree({
         fontFamily: 'monospace',
       }}
       className={`${
-        expanded
-          ? 'expanded'
-          : `not-expanded ${
-            mutated && !isPrimitive && !expanded ? styles.changed : ''
-          }`
+        expanded ? 'expanded' : `not-expanded ${mutated && !isPrimitive && !expanded ? styles.changed : ''}`
       }`}
       onClick={e => {
         e.stopPropagation();
@@ -165,11 +161,7 @@ export function DiffTree({
           // 如果至少有一个是复杂变量，则需要展开按钮
           <>
             {forcedExpand ? '' : expanded ? <span>▼</span> : <span>▶</span>}
-            {index === 0 || index ? (
-              <b className={styles.purple}>{displayValue(index, search)}: </b>
-            ) : (
-              ''
-            )}
+            {index === 0 || index ? <b className={styles.purple}>{displayValue(index, search)}: </b> : ''}
             {isArray ? (
               // 如果都是数组进行比较
               expanded ? (
@@ -210,17 +202,10 @@ export function DiffTree({
             ) : isSet ? (
               expanded ? (
                 <div>
-                  <div>
-                    {forcedLabel || `Set(${mutation.to?.values.length})`}
-                  </div>
-                  {Array(
-                    Math.max(
-                      mutation.from?.values.length,
-                      mutation.to?.values.length
-                    )
-                  )
+                  <div>{forcedLabel || `Set(${mutation.to?.values.length})`}</div>
+                  {Array(Math.max(mutation.from?.values.length, mutation.to?.values.length))
                     .fill(true)
-                    .map((i ,index) => (
+                    .map((i, index) => (
                       <div>
                         {mutation.values[index].mutation ? (
                           <DiffTree
@@ -244,22 +229,13 @@ export function DiffTree({
                     ))}
                 </div>
               ) : (
-                <span>
-                  {forcedLabel || `Set(${mutation.to?.values.length})`}
-                </span>
+                <span>{forcedLabel || `Set(${mutation.to?.values.length})`}</span>
               )
             ) : isMap ? (
               expanded ? (
                 <>
-                  <span>
-                    {forcedLabel || `Map(${mutation.to?.entries.length})`}
-                  </span>
-                  {Array(
-                    Math.max(
-                      mutation.from?.entries.length,
-                      mutation.to?.entries.length
-                    )
-                  )
+                  <span>{forcedLabel || `Map(${mutation.to?.entries.length})`}</span>
+                  {Array(Math.max(mutation.from?.entries.length, mutation.to?.entries.length))
                     .fill(true)
                     .map((i, index) =>
                       mutation.entries[index].mutation ? (
@@ -289,9 +265,7 @@ export function DiffTree({
                     )}
                 </>
               ) : (
-                <span>
-                  {forcedLabel || `Map(${mutation.to?.entries.length})`}
-                </span>
+                <span>{forcedLabel || `Map(${mutation.to?.entries.length})`}</span>
               )
             ) : expanded ? (
               // 如果都是 object 进行比较

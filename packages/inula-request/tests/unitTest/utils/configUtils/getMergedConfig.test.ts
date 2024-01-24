@@ -26,7 +26,7 @@ describe('getMergedConfig function', () => {
     const config2 = {
       method: 'POST',
       data: { name: 'John', age: 25 },
-      headers: { 'Authorization': 'Bearer token' },
+      headers: { Authorization: 'Bearer token' },
       responseType: 'json',
     };
 
@@ -36,7 +36,7 @@ describe('getMergedConfig function', () => {
       baseURL: 'https://example.com/api',
       method: 'POST',
       data: { name: 'John', age: 25 },
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer token' },
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer token' },
       timeout: 5000,
       responseType: 'json',
     });
