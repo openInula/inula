@@ -56,7 +56,7 @@ type ParseParam<Param extends string> = Param extends `:${infer R}`
   ? {
       [K in R]: string;
     }
-  : {};
+  : Record<string, unknown>;
 
 type MergeParams<OneParam extends Record<string, any>, OtherParam extends Record<string, any>> = {
   readonly [Key in keyof OneParam | keyof OtherParam]?: string;

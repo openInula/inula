@@ -311,7 +311,7 @@ export function createStore<S extends Record<string, any>, A extends UserActions
 }
 
 // 函数组件中使用的hook
-export function useStore<S extends object, A extends UserActions<S>, C extends UserComputedValues<S>>(
+export function useStore<S extends Record<string, unknown>, A extends UserActions<S>, C extends UserComputedValues<S>>(
   id: string
 ): StoreObj<S, A, C> {
   const storeObj = storeMap.get(id);

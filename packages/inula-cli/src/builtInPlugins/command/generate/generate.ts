@@ -33,15 +33,17 @@ export default (api: API) => {
         args._.shift();
       }
       if (args._.length === 0) {
-        api.logger.warn("Can't find any generate options.");
+        api.logger.warn('Can\'t find any generate options.');
         return;
       }
 
       switch (args._[0]) {
         case 'jest':
-          args._.shift();
-          const isESM = api.packageJson['type'] === 'module';
-          await generateJest(args, api.cwd, isESM);
+          {
+            args._.shift();
+            const isESM = api.packageJson['type'] === 'module';
+            await generateJest(args, api.cwd, isESM);
+          }
           break;
         default:
       }
@@ -50,7 +52,7 @@ export default (api: API) => {
 };
 
 const generateJest = async (args: yargsParser.Arguments, cwd: string, isESM: boolean) => {
-  let isTs: boolean = false;
+  let isTs = false;
   if (args['ts']) {
     isTs = true;
   } else {

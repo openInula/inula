@@ -19,19 +19,19 @@ import { LexerInterface } from '../types/interfaces';
 class Lexer<T> implements LexerInterface<T> {
   readonly startState: string;
   readonly states: Record<string, any>;
-  private buffer: string = '';
+  private buffer = '';
   private stack: string[] = [];
-  private index: number = 0;
-  private line: number = 1;
-  private col: number = 1;
-  private queuedText: string = '';
-  private state: string = '';
+  private index = 0;
+  private line = 1;
+  private col = 1;
+  private queuedText = '';
+  private state = '';
   private groups: string[] = [];
   private error: Record<string, any> | undefined;
   private regexp;
-  private fast: object = {};
+  private fast: Record<string, unknown> = {};
   private queuedGroup: string | null = '';
-  private value: string = '';
+  private value = '';
 
   constructor(unionReg: Record<string, any>, startState: string) {
     this.startState = startState;

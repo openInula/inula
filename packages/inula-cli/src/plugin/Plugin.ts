@@ -36,7 +36,7 @@ export interface IPlugin {
   id: string;
   key: string;
   path: string;
-  apply: Function;
+  apply: (...args: any[]) => any;
 }
 
 export default class Plugin {
@@ -57,7 +57,7 @@ export default class Plugin {
   } = {};
   hub: Hub;
   logger: Logger;
-  registerFunction: Function[] = [];
+  registerFunction: ((...args: any[]) => any)[] = [];
   // 解决调用this[props]时ts提示属性未知
   [key: string]: any;
 
@@ -110,7 +110,7 @@ export default class Plugin {
     });
 
     for (const obj of objs) {
-      const module: Function | undefined = await loadModule(obj.path);
+      const module: ((...args: any[]) => any) | undefined = await loadModule(obj.path);
       if (module) {
         try {
           module(obj.api);

@@ -38,9 +38,9 @@ describe('path lexer Test', () => {
     expect(tokens).toStrictEqual([{ type: 'delimiter', value: '/' }]);
   });
 
-  it(`don't start with a slash`, () => {
+  it('don\'t start with a slash', () => {
     const func = () => lexer('abc.com');
-    expect(func).toThrow(Error(`Url must start with "/".`));
+    expect(func).toThrow(Error('Url must start with "/".'));
   });
 
   it('dynamic params test', () => {

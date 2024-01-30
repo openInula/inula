@@ -29,7 +29,7 @@ function useLocation() {
   return useContext(RouterContext).location;
 }
 
-function useParams<P>(): Params<P> | {};
+function useParams<P>(): Params<P> | Record<string, unknown>;
 function useParams() {
   const match = useContext(RouterContext).match;
   return match ? match.params : {};

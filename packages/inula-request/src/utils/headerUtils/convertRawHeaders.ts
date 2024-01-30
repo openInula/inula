@@ -20,9 +20,9 @@ function convertRawHeaders(rawHeaders: string): HeaderMap {
 
   if (rawHeaders) {
     rawHeaders.split('\n').forEach((item: string) => {
-      let i = item.indexOf(':');
-      let key = item.substring(0, i).trim().toLowerCase();
-      let val = item.substring(i + 1).trim();
+      const i = item.indexOf(':');
+      const key = item.substring(0, i).trim().toLowerCase();
+      const val = item.substring(i + 1).trim();
 
       if (!key || (convertedHeaders[key] && key !== 'set-cookie')) {
         return;

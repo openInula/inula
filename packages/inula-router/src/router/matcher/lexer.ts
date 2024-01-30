@@ -26,9 +26,9 @@ export function lexer(path: string): Token[] {
     return tokens;
   }
 
-  let urlPath = cleanPath(path);
+  const urlPath = cleanPath(path);
   if (urlPath !== '*' && !urlPath.startsWith('/')) {
-    throw new Error(`Url must start with "/".`);
+    throw new Error('Url must start with "/".');
   }
 
   const getLiteral = () => {

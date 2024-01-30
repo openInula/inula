@@ -25,7 +25,7 @@ export default (api: any) => {
     initialState: api.userConfig.remoteProxy,
     fn: async function (args: any, state: any) {
       if (!state) {
-        api.logger.error(`Invalid proxy config!`);
+        api.logger.error('Invalid proxy config!');
         return;
       }
       const app = express();

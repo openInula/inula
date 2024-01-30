@@ -23,8 +23,8 @@ const defaultErrorRule = ruleUtils.getRuleOptions('error', { lineBreaks: true, s
 // 解析规则并生成词法分析器所需的数据结构，以便进行词法分析操作
 function parseRules(rules: Record<string, any>, hasStates: boolean): Record<string, any> {
   let errorRule: Record<string, any> | null = null;
-  const fast: object = {};
-  let enableFast: boolean = true;
+  const fast: Record<string, unknown> = {};
+  let enableFast = true;
   let unicodeFlag: boolean | null = null;
   const groups: Record<string, any>[] = [];
   const parts: string[] = [];
@@ -148,6 +148,7 @@ function parseMappingRule(mappingRule: Record<string, any>, startState?: string)
           }
         });
       }
+      // eslint-disable-next-line
       rules.splice.apply(rules, splice);
       j--;
     }
@@ -176,7 +177,7 @@ function parseMappingRule(mappingRule: Record<string, any>, startState?: string)
   return new Lexer(mappingAllRules, startState);
 }
 
-function processFast(match, fast: {}, options) {
+function processFast(match, fast: Record<string, unknown>, options) {
   while (match.length && typeof match[0] === 'string' && match[0].length === 1) {
     const word = match.shift();
     fast[word.charCodeAt(0)] = options;

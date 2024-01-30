@@ -21,7 +21,7 @@ import { Method, ResponseType } from '../types/types';
 
 export const ieFetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
   return new Promise((resolve, reject) => {
-    let {
+    const {
       method = 'get',
       baseURL,
       url,

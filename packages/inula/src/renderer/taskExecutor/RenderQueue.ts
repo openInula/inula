@@ -40,8 +40,6 @@ function callRenderQueue() {
       }
 
       renderQueue = null;
-    } catch (error) {
-      throw error;
     } finally {
       isCallingRenderQueue = false;
     }

@@ -23,7 +23,7 @@ import CancelError from '../cancel/CancelError';
 
 export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
   return new Promise((resolve, reject) => {
-    let {
+    const {
       method = 'GET',
       baseURL,
       url,
@@ -40,7 +40,7 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
       signal,
     } = config;
 
-    let controller = new AbortController();
+    const controller = new AbortController();
     if (!signal) {
       signal = controller.signal;
     }

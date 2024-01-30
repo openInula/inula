@@ -55,7 +55,7 @@ export default class PluginAPI {
     this.register(hook);
   }
 
-  registerMethod(fn: Function) {
+  registerMethod(fn: (...args: any[]) => any) {
     this.manager.registerFunction.push(fn);
   }
 

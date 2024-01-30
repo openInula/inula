@@ -89,7 +89,7 @@ export default class Config {
 
   getConfigFile(): string | null {
     const configFileList: string[] = DEFAULT_CONFIG_FILES.map(f => join(this.cwd, f));
-    for (let configFile of configFileList) {
+    for (const configFile of configFileList) {
       if (existsSync(configFile)) {
         return configFile;
       }

@@ -105,25 +105,27 @@ export function handleRenderThrowError(sourceVNode: VNode, error: any) {
         return;
       }
       case ClassComponent:
-        const ctor = vNode.type;
-        const instance = vNode.realNode;
-        if (
-          (vNode.flags & DidCapture) === InitFlag &&
-          (typeof ctor.getDerivedStateFromError === 'function' ||
-            (instance !== null && typeof instance.componentDidCatch === 'function'))
-        ) {
-          FlagUtils.markShouldCapture(vNode);
+        {
+          const ctor = vNode.type;
+          const instance = vNode.realNode;
+          if (
+            (vNode.flags & DidCapture) === InitFlag &&
+            (typeof ctor.getDerivedStateFromError === 'function' ||
+              (instance !== null && typeof instance.componentDidCatch === 'function'))
+          ) {
+            FlagUtils.markShouldCapture(vNode);
 
-          // Class捕捉到异常，触发一次刷新
-          const update = createClassErrorUpdate(vNode, error);
-          pushUpdate(vNode, update);
+            // Class捕捉到异常，触发一次刷新
+            const update = createClassErrorUpdate(vNode, error);
+            pushUpdate(vNode, update);
 
-          launchUpdateFromVNode(vNode);
+            launchUpdateFromVNode(vNode);
 
-          // 有异常处理类，把抛出异常的节点的Interrupted标志去掉，继续走正常的绘制流程
-          FlagUtils.removeFlag(sourceVNode, Interrupted);
+            // 有异常处理类，把抛出异常的节点的Interrupted标志去掉，继续走正常的绘制流程
+            FlagUtils.removeFlag(sourceVNode, Interrupted);
 
-          return;
+            return;
+          }
         }
         break;
       default:

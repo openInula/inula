@@ -38,13 +38,15 @@ function getMocksFile() {
   const mockFiles = globSync('**/*.js', {
     cwd: mockDir,
   });
-  let ret = mockFiles.reduce((mocks: any, mockFile: string) => {
+  const ret = mockFiles.reduce((mocks: any, mockFile: string) => {
     if (!mockFile.startsWith('_')) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const file = require(join(mockDir, mockFile));
       mocks = {
         ...mocks,
-        ...require(join(mockDir, mockFile)),
+        ...file,
       };
-      console.log('mockFile', require(join(mockDir, mockFile)));
+      console.log('mockFile', file);
     }
 
     return mocks;
@@ -54,8 +56,8 @@ function getMocksFile() {
 }
 
 function generateRoutes(app: any) {
-  let mockStartIndex = app._router.stack.length,
-    mocks: Mock = {};
+  const mockStartIndex = app._router.stack.length;
+  let mocks: Mock = {};
 
   try {
     mocks = getMocksFile();
