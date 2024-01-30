@@ -70,6 +70,7 @@
     "jest": "^25.5.4",
     "jest-environment-jsdom-sixteen": "^1.0.3",
     "lint-staged": "^15.2.0",
+    "openinula": "workspace:*",
     "prettier": "^3.1.1",
     "rollup": "^2.75.5",
     "rollup-plugin-execute": "^1.1.1",

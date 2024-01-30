@@ -26,9 +26,7 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
     const {
       method = 'GET',
       baseURL,
-      url,
       params = null,
-      data = null,
       headers = {},
       responseType,
       timeout = 0,
@@ -37,8 +35,8 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
       withCredentials = false,
       onUploadProgress = null,
       onDownloadProgress = null,
-      signal,
     } = config;
+    let { data = null, url, signal } = config;
 
     const controller = new AbortController();
     if (!signal) {
