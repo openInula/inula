@@ -46,11 +46,11 @@ export default class Hub {
   userConfig: UserConfig = {};
   packageJson: PackageJSON;
   stage: ServiceStage = ServiceStage.uninitialized;
-  buildConfig: { name: string; config: object }[] = [];
+  buildConfig: { name: string; config: Record<string, unknown> }[] = [];
   pluginManager: Plugin;
   buildConfigPath: BuildConfig[] = [];
-  devBuildConfig: object = {};
-  compileMode: string = '';
+  devBuildConfig: Record<string, unknown> = {};
+  compileMode = '';
   builtInPlugins: string[] = [];
   pluginPaths: string[] = [];
   devProxy: DevProxy | null = null;
@@ -150,14 +150,15 @@ export default class Hub {
 
   async analyzeBuildConfig() {
     if (this.userConfig.devBuildConfig) {
-      let { name, path, env } = this.userConfig.devBuildConfig;
+      let { path } = this.userConfig.devBuildConfig;
+      const { env } = this.userConfig.devBuildConfig;
       path = isAbsolute(path) ? path : join(process.cwd(), path);
       if (!existsSync(path)) {
         this.logger.warn(`Cant't find dev build config. Path is ${path}`);
         return;
       }
       this.logger.debug(`Find dev build config. Path is ${path}`);
-      let bc = await loadModule<object | Function>(path);
+      const bc = await loadModule<Record<string, unknown> | ((...args: any[]) => any)>(path);
       if (bc == undefined) {
         return;
       }
@@ -196,14 +197,15 @@ export default class Hub {
     }
 
     this.buildConfigPath.forEach(async config => {
-      let { name, path } = config;
+      let { path } = config;
+      const { name } = config;
       path = isAbsolute(path) ? path : join(process.cwd(), path);
       if (!existsSync(path)) {
         this.logger.debug(`Cant't find build config. Path is ${path}`);
         return;
       }
       this.logger.debug(`Find build config. Path is ${path}`);
-      let bc = await loadModule<object | Function>(path);
+      const bc = await loadModule<Record<string, unknown> | ((...args: any[]) => any)>(path);
       if (bc == undefined) {
         return;
       }

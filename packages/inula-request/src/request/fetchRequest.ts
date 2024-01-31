@@ -23,12 +23,10 @@ import CancelError from '../cancel/CancelError';
 
 export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
   return new Promise((resolve, reject) => {
-    let {
+    const {
       method = 'GET',
       baseURL,
-      url,
       params = null,
-      data = null,
       headers = {},
       responseType,
       timeout = 0,
@@ -37,10 +35,10 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
       withCredentials = false,
       onUploadProgress = null,
       onDownloadProgress = null,
-      signal,
     } = config;
+    let { data = null, url, signal } = config;
 
-    let controller = new AbortController();
+    const controller = new AbortController();
     if (!signal) {
       signal = controller.signal;
     }

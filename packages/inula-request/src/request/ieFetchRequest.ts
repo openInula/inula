@@ -21,10 +21,9 @@ import { Method, ResponseType } from '../types/types';
 
 export const ieFetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
   return new Promise((resolve, reject) => {
-    let {
+    const {
       method = 'get',
       baseURL,
-      url,
       params = null,
       data = null,
       headers = {},
@@ -34,7 +33,7 @@ export const ieFetchRequest = (config: IrRequestConfig): Promise<IrResponse> => 
       cancelToken = null,
       withCredentials = false,
     } = config;
-
+    let { url } = config;
     let controller: any;
     let signal;
 

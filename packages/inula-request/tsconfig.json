@@ -11,7 +11,10 @@
     "declaration": true,
     "moduleResolution": "node",
     "sourceMap": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "paths": {
+      "openinula": ["../packages/inula"],
+    }
   },
   "include": [
     "./src/**/*",

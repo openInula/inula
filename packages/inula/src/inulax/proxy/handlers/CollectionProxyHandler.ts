@@ -20,10 +20,10 @@ import { createWeakMapProxy } from './WeakMapProxy';
 import { createMapProxy } from './MapProxy';
 
 export function createCollectionProxy(
-  rawObj: Object,
+  rawObj: Record<string, unknown>,
   listener: { current: (...args) => any },
   hookObserver = true
-): Object {
+): ProxyHandler<Record<string, unknown>> {
   if (isWeakSet(rawObj)) {
     return createWeakSetProxy(rawObj, listener, hookObserver);
   }

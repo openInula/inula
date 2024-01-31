@@ -16,7 +16,6 @@
 import { dirname } from 'path';
 import { readFileSync, writeFileSync } from 'fs';
 import resolve from 'resolve';
-// @ts-ignore
 import crequire from 'crequire';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

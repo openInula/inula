@@ -60,10 +60,11 @@ function newVirtualNode(tag: VNodeTag, key?: null | string, vNodeProps?: any, re
   return new VNode(tag, vNodeProps, key as null | string, realNode);
 }
 
-function isClassComponent(comp: Function) {
+function isClassComponent(comp: (...arg: any) => any) {
   // 如果使用 getPrototypeOf 方法获取构造函数，不能兼容业务组组件继承组件的使用方式，会误认为是函数组件
   // 如果使用静态属性，部分函数高阶组件会将类组件的静态属性复制到自身，导致误判为类组件
   // 既然已经兼容使用了该标识符，那么继续使用
+  // @ts-ignore
   return comp.prototype?.isReactComponent === true;
 }
 

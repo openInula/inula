@@ -32,7 +32,7 @@ export type Locale = string;
 
 export type Locales = Locale | Locale[];
 
-export type LocaleConfig = { plurals?: Function };
+export type LocaleConfig = { plurals?: (...arg: any) => any };
 
 export type AllLocaleConfig = Record<Locale, LocaleConfig>;
 
@@ -59,7 +59,7 @@ export type Token = Content | PlainArg | FunctionArg | Select | Octothorpe;
 
 export type DatePool = Date | string;
 
-export type SelectPool = string | object;
+export type SelectPool = string | Record<string, unknown>;
 
 export type RawToken = {
   type: string;
@@ -76,9 +76,9 @@ export type I18nProviderProps = I18nContextProps & configProps;
 
 export type IntlType = {
   i18n: I18n;
-  formatMessage: Function;
-  formatNumber: Function;
-  formatDate: Function;
+  formatMessage: (...args: any[]) => any;
+  formatNumber: (...args: any[]) => any;
+  formatDate: (...args: any[]) => any;
 };
 
 export interface InjectedIntlProps {

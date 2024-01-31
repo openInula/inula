@@ -48,7 +48,7 @@ class InterceptorManager<V> implements IrInterceptorManager<V> {
     this.handlers = [];
   }
 
-  forEach(func: Function) {
+  forEach(func: (...arg: any) => any) {
     utils.forEach(this.handlers, function forEachHandler(h: any) {
       if (h !== null) {
         func(h);

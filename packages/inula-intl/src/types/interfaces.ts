@@ -19,7 +19,7 @@ import Lexer from '../parser/Lexer';
 
 // FormattedMessage的参数定义
 export interface FormattedMessageProps extends MessageDescriptor {
-  values?: object;
+  values?: Record<string, unknown>;
   tagName?: string;
 
   children?(nodes: any[]): any;
@@ -203,7 +203,7 @@ export interface InjectedIntl {
   // 信息格式化
   formatMessage(
     messageDescriptor: MessageDescriptor,
-    values?: object,
+    values?: Record<string, unknown>,
     options?: MessageOptions,
     useMemorize?: boolean
   ): string;

@@ -61,7 +61,7 @@ export default async function run() {
       break;
   }
 
-  let enableDebug: boolean = false;
+  let enableDebug = false;
 
   if (process.env.DEBUG === 'true') {
     enableDebug = true;

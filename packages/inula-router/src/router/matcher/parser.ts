@@ -84,7 +84,7 @@ export function createPathParser<P = unknown>(pathname: string, option: ParserOp
    * @param currentIdx
    */
   const lookToNextDelimiter = (currentIdx: number): boolean => {
-    let hasOptionalParam: boolean = false;
+    let hasOptionalParam = false;
     while (currentIdx < tokens.length && tokens[currentIdx].type !== TokenType.Delimiter) {
       if (tokens[currentIdx].value === '?' || tokens[currentIdx].value === '*') {
         hasOptionalParam = true;
@@ -98,8 +98,10 @@ export function createPathParser<P = unknown>(pathname: string, option: ParserOp
     const nextToken = tokens[tokenIdx + 1];
     switch (token.type) {
       case TokenType.Delimiter:
-        const hasOptional = lookToNextDelimiter(tokenIdx + 1);
-        pattern += `/${hasOptional ? '?' : ''}`;
+        {
+          const hasOptional = lookToNextDelimiter(tokenIdx + 1);
+          pattern += `/${hasOptional ? '?' : ''}`;
+        }
         break;
       case TokenType.Static:
         pattern += token.value.replace(REGEX_CHARS_RE, '\\$&');
@@ -111,28 +113,30 @@ export function createPathParser<P = unknown>(pathname: string, option: ParserOp
         scores.push(MatchScore.static);
         break;
       case TokenType.Param:
-        // 动态参数支持形如/:param、/:param*、/:param?、/:param(\\d+)的形式
-        let paramRegexp = '';
-        if (nextToken) {
-          switch (nextToken.type) {
-            case TokenType.LBracket:
-              // 跳过当前Token和左括号
-              tokenIdx += 2;
-              while (tokens[tokenIdx].type !== TokenType.RBracket) {
-                paramRegexp += tokens[tokenIdx].value;
+        {
+          // 动态参数支持形如/:param、/:param*、/:param?、/:param(\\d+)的形式
+          let paramRegexp = '';
+          if (nextToken) {
+            switch (nextToken.type) {
+              case TokenType.LBracket:
+                // 跳过当前Token和左括号
+                tokenIdx += 2;
+                while (tokens[tokenIdx].type !== TokenType.RBracket) {
+                  paramRegexp += tokens[tokenIdx].value;
+                  tokenIdx++;
+                }
+                paramRegexp = `(${paramRegexp})`;
+                break;
+              case TokenType.Pattern:
                 tokenIdx++;
-              }
-              paramRegexp = `(${paramRegexp})`;
-              break;
-            case TokenType.Pattern:
-              tokenIdx++;
-              paramRegexp += `(${nextToken.value === '*' ? '.*' : BASE_PARAM_PATTERN})${nextToken.value}`;
-              break;
+                paramRegexp += `(${nextToken.value === '*' ? '.*' : BASE_PARAM_PATTERN})${nextToken.value}`;
+                break;
+            }
           }
+          pattern += paramRegexp ? `(?:${paramRegexp})` : `(${BASE_PARAM_PATTERN})`;
+          keys.push(token.value);
+          scores.push(MatchScore.param);
         }
-        pattern += paramRegexp ? `(?:${paramRegexp})` : `(${BASE_PARAM_PATTERN})`;
-        keys.push(token.value);
-        scores.push(MatchScore.param);
         break;
       case TokenType.WildCard:
         keys.push(token.value);
@@ -167,13 +171,13 @@ export function createPathParser<P = unknown>(pathname: string, option: ParserOp
       return null;
     }
     const matchedPath = reMatch[0];
-    let params: Params<P> = {};
-    let parseScore: number[] = Array.from(scores);
+    const params: Params<P> = {};
+    const parseScore: number[] = Array.from(scores);
     for (let i = 1; i < reMatch.length; i++) {
-      let param = reMatch[i];
-      let key = keys[i - 1];
+      const param = reMatch[i];
+      const key = keys[i - 1];
       if (key === '*' && param) {
-        let value = param.split('/');
+        const value = param.split('/');
         if (!Array.isArray(params['*'])) {
           params['*'] = value;
         } else {
@@ -212,11 +216,13 @@ export function createPathParser<P = unknown>(pathname: string, option: ParserOp
           path += params[token.value];
           break;
         case TokenType.WildCard:
-          let wildCard = params['*'];
-          if (wildCard instanceof Array) {
-            path += wildCard.join('/');
-          } else {
-            path += wildCard;
+          {
+            const wildCard = params['*'];
+            if (wildCard instanceof Array) {
+              path += wildCard.join('/');
+            } else {
+              path += wildCard;
+            }
           }
           break;
         case TokenType.Delimiter:
@@ -250,7 +256,7 @@ export function matchPath<P = any>(
   const patterns = Array.isArray(pattern) ? [...pattern] : [pattern];
   const matchedResults: Matched<P>[] = [];
   for (const item of patterns) {
-    const parser = createPathParser(item, option);
+    const parser = createPathParser<P>(item, option);
     const matched = parser.parse(pathname);
     if (matched) {
       matchedResults.push(matched);

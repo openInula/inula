@@ -57,6 +57,7 @@ module.exports = {
 
     'no-constant-condition': 'off',
     'no-function-declare-after-return/no-function-declare-after-return': 'error',
+    '@typescript-eslint/ban-ts-comment': 'warn'
   },
   globals: {
     isDev: true,

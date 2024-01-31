@@ -32,12 +32,14 @@ const checkSticky = () => typeof new RegExp('')?.sticky === 'boolean';
 
 // 转义正则表达式中的特殊字符
 function transferReg(s: string): string {
+  // eslint-disable-next-line
   return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
 
 // 计算正则表达式中捕获组的数量
 function getRegGroups(s: string): number {
   const re = new RegExp('|' + s);
+  // eslint-disable-next-line
   return re.exec('')?.length! - 1;
 }
 

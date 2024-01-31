@@ -231,7 +231,7 @@ export interface IrInterceptorManager<T> {
   clear(): void;
 
   // 过滤跳过迭代器
-  forEach(func: Function): void;
+  forEach(func: (...arg: any) => any): void;
 }
 
 export interface IrErrorInterface {

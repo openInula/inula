@@ -39,7 +39,7 @@ export type IrTransformer = (data: any, headers?: IrHeaders) => any;
 
 // Headers
 export type HeaderMap = Record<string, string | string[]>;
-export type HeaderMatcher = boolean | RegExp | Function;
+export type HeaderMatcher = boolean | RegExp | ((...args: any[]) => any);
 
 // Promise 成功和拒绝类型
 export type FulfilledFn<T> = (value: T) => T | Promise<T>; // 泛型确保了拦截器链中各个环节之间的一致性，避免数据类型不匹配引发的错误

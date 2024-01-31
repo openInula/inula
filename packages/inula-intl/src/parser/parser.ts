@@ -42,7 +42,7 @@ class Parser {
   isSelectKeyValid(token: RawToken, type: Select['type'], value: string) {
     if (value[0] === '=') {
       if (type === 'select') {
-        throw new Error(`The key value of the select type is invalid.`);
+        throw new Error('The key value of the select type is invalid.');
       }
     } else if (type !== 'select') {
       const values = type === 'plural' ? this.cardinalKeys : this.ordinalKeys;
@@ -132,7 +132,7 @@ class Parser {
         if (checkSelectType(nextToken.value.toLowerCase())) {
           throw new Error(`Invalid parameter type: ${nextToken.value}`);
         }
-        let param = this.parse(isPlural);
+        const param = this.parse(isPlural);
 
         return {
           type: 'function',

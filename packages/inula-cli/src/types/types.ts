@@ -19,8 +19,8 @@ import { Logger } from '../utils/logger.js';
 import type * as http from 'http';
 import type * as express from 'express';
 
-interface Request extends express.Request {}
-interface Response extends express.Response {}
+type Request = express.Request;
+type Response = express.Response;
 
 export interface IDep {
   [name: string]: string;
@@ -37,7 +37,7 @@ export interface IPlugin {
   id: string;
   key: string;
   path: string;
-  apply: Function;
+  apply: (...args: any[]) => any;
 
   config?: IPluginConfig;
   isPreset?: boolean;
@@ -45,7 +45,7 @@ export interface IPlugin {
 
 export interface IPluginConfig {
   default?: any;
-  onChange?: string | Function;
+  onChange?: string | ((...args: any[]) => any);
 }
 
 export interface IHook {
@@ -94,7 +94,7 @@ export interface API {
     (hook: IHook): void;
   };
   registerMethod: {
-    (method: Function): void;
+    (method: (...args: any[]) => any): void;
   };
   applyHook: {
     (opts: applyHookConfig): void;
@@ -133,8 +133,8 @@ export interface MockConfig {
 export interface DevBuildConfig {
   name: string;
   path: string;
-  args?: object;
-  env?: object;
+  args?: Record<string, unknown>;
+  env?: Record<string, unknown>;
   devProxy?: DevProxy;
 }
 
@@ -147,8 +147,8 @@ export interface DevProxy {
 export interface BuildConfig {
   name: string;
   path: string;
-  args?: object;
-  env?: object;
+  args?: Record<string, unknown>;
+  env?: Record<string, unknown>;
 }
 
 export type ExportUserConfig = UserConfig | Promise<UserConfig>;

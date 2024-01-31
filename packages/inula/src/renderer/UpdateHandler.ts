@@ -53,19 +53,25 @@ export function pushUpdate(vNode: VNode, update: Update) {
 // 根据update获取新的state
 function calcState(vNode: VNode, update: Update, inst: any, oldState: any, props: any): any {
   switch (update.type) {
-    case UpdateState.Override:
+    case UpdateState.Override: {
       const content = update.content;
       return typeof content === 'function' ? content.call(inst, oldState, props) : content;
+    }
     case UpdateState.ForceUpdate:
       vNode.isForceUpdate = true;
       return oldState;
-    case UpdateState.Error:
+    case UpdateState.Error: {
       FlagUtils.removeFlag(vNode, ShouldCapture);
       FlagUtils.markDidCapture(vNode);
-    case UpdateState.Update:
       const updateContent = update.content;
       const newState = typeof updateContent === 'function' ? updateContent.call(inst, oldState, props) : updateContent;
       return newState === null || newState === undefined ? oldState : { ...oldState, ...newState };
+    }
+    case UpdateState.Update: {
+      const updateContent = update.content;
+      const newState = typeof updateContent === 'function' ? updateContent.call(inst, oldState, props) : updateContent;
+      return newState === null || newState === undefined ? oldState : { ...oldState, ...newState };
+    }
     default:
       return oldState;
   }

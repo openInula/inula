@@ -38,7 +38,7 @@ const useIR = <T = unknown>(
   Inula.useEffect(() => {
     const fetchData = async () => {
       try {
-        let result = await irClient.query(url, config, options);
+        const result = await irClient.query(url, config, options);
         document.addEventListener('request', handleRequest(result));
 
         setData(result); // 未设置轮询查询时展示一次

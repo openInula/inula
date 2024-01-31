@@ -38,7 +38,7 @@ function processValueByParser(key: string, value: any, parser?: HeaderMatcher): 
     return parseKeyValuePairs(value);
   }
   if (utils.checkFunction(parser)) {
-    return (parser as Function)(value, key);
+    return (parser as (value: any, key: string) => any)(value, key);
   }
   if (utils.checkRegExp(parser)) {
     return (parser as RegExp).exec(value)?.filter(item => item !== undefined);

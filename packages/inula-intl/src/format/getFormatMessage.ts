@@ -23,10 +23,11 @@ import creatI18nCache from './cache/cache';
 export function getFormatMessage(
   i18n: I18n,
   id: MessageDescriptor | string,
-  values: Object | undefined = {},
+  values: Record<string, unknown> | undefined = {},
   options: MessageOptions = {}
 ) {
-  let { message, context, formatOptions } = options;
+  let { message, context } = options;
+  const { formatOptions } = options;
   const cache = i18n.cache ?? creatI18nCache();
   if (typeof id !== 'string') {
     values = values || id.defaultValues;

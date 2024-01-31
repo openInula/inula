@@ -40,11 +40,11 @@ class Translation {
    * @param values 需要替换文本占位符的值
    * @param formatOptions 需要格式化选项
    */
-  translate(values: object, formatOptions: FormatOptions = {}): string {
+  translate(values: Record<string, unknown>, formatOptions: FormatOptions = {}): string {
     const createTextFormatter = (
       locale: Locale,
       locales: Locales,
-      values: object,
+      values: Record<string, unknown>,
       formatOptions: FormatOptions,
       localeConfig: LocaleConfig
     ) => {
@@ -66,13 +66,13 @@ class Translation {
       return textFormatter;
     };
 
-    let textFormatter = createTextFormatter(this.locale, this.locales, values, formatOptions, this.localeConfig);
+    const textFormatter = createTextFormatter(this.locale, this.locales, values, formatOptions, this.localeConfig);
     // 通过递归方法formatCore进行格式化处理
     const result = this.formatMessage(this.compiledMessage, textFormatter);
     return result; // 返回要格式化的结果
   }
 
-  formatMessage(compiledMessage: CompiledMessage, textFormatter: Function) {
+  formatMessage(compiledMessage: CompiledMessage, textFormatter: (...args: any[]) => any) {
     if (!Array.isArray(compiledMessage)) {
       return compiledMessage;
     }

@@ -117,7 +117,7 @@ export class I18n extends EventDispatcher<Events> {
 
   formatMessage(
     id: MessageDescriptor | string,
-    values: Object | undefined = {},
+    values: Record<string, unknown> | undefined = {},
     { message, context, formatOptions }: MessageOptions = {}
   ) {
     return getFormatMessage(this, id, values, { message, context, formatOptions });

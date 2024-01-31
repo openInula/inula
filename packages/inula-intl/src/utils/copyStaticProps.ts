@@ -73,7 +73,9 @@ function copyStaticProps<T, U>(targetComponent: T, sourceComponent: U): T {
       try {
         // 在一个已有的targetComponent对象上增加sourceComponent的属性
         Object.defineProperty(targetComponent, key, Object.getOwnPropertyDescriptor(sourceComponent, key)!);
-      } catch (e) {}
+      } catch (e) {
+        console.log('Error occurred while copying static props:', e);
+      }
     }
   });
 

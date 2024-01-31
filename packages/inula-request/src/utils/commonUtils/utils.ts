@@ -23,7 +23,7 @@ import { Callback, FilterFunc, PropFilterFunc } from '../../types/types';
  *
  * @returns {any} 新的函数，当这个新的函数被调用时，它会调用 func 函数，并使用 apply() 方法将 thisArg 作为上下文对象，将传递的参数作为 func 函数的参数传递给它
  */
-function bind(func: Function, thisArg: any): (...args: any[]) => any {
+function bind(func: (...args: any[]) => any, thisArg: any): (...args: any[]) => any {
   return (...args: any[]) => func.apply(thisArg, args);
 }
 
@@ -107,7 +107,7 @@ const checkHTMLForm = createTypeChecker('HTMLFormElement');
  */
 function forEach<T>(
   input: T | T[] | Record<string, T> | null | undefined,
-  func: Function,
+  func: (...args: any[]) => any,
   options: { includeAll?: boolean } = {}
 ): void {
   if (input === null || input === undefined) {
@@ -194,7 +194,7 @@ function extendObject(
  * @returns {string[]} 所有属性名数组
  */
 function getAllPropertyNames(obj: Record<string, any>): string[] {
-  let result: string[] = [];
+  const result: string[] = [];
   let currentObj = obj;
   while (currentObj) {
     const propNames = Object.getOwnPropertyNames(currentObj);
@@ -406,6 +406,7 @@ function objectToQueryString(obj: Record<string, any>) {
 const all = <T>(promises: Array<Promise<T>>): Promise<T[]> => Promise.all(promises);
 
 function spread<T>(callback: Callback<T>): (arr: any[]) => T {
+  // eslint-disable-next-line
   return (arr: any[]): T => callback.apply(null, arr);
 }
 
