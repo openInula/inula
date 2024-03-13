@@ -1,0 +1,21 @@
+{
+  "name": "@inula/pinia-adapter",
+  "version": "0.0.1",
+  "description": "pinia adapter",
+  "main": "./src/index.ts",
+  "scripts": {
+    "test": "vitest --ui"
+  },
+  "dependencies": {
+    "@babel/cli": "^7.23.9",
+    "@babel/core": "^7.23.9",
+    "@babel/plugin-syntax-typescript": "^7.23.3",
+    "@cloudsop/horizon": "workspace:*"
+  },
+  "devDependencies": {
+    "@testing-library/user-event": "^12.1.10",
+    "@vitest/ui": "^0.34.5",
+    "jsdom": "^24.0.0",
+    "vitest": "^0.34.5"
+  }
+}
