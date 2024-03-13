@@ -23,7 +23,7 @@ module.exports = {
 
   setupFilesAfterEnv: [require.resolve('./__tests__/jest/jestSetting.js')],
 
-  testEnvironment: 'jest-environment-jsdom-sixteen',
+  testEnvironment: 'jest-environment-jsdom',
 
   testMatch: [
     // '<rootDir>/scripts/__tests__/InulaXTest/edgeCases/deepVariableObserver.test.tsx',
@@ -32,5 +32,5 @@ module.exports = {
     '<rootDir>/__tests__/**/*.test.tsx',
   ],
 
-  timers: 'fake',
+  fakeTimers: { enableGlobally: true },
 };

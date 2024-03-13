@@ -282,7 +282,7 @@ describe('PortalComponent Test', () => {
 
     Inula.render(<App />, container);
     showPortalInput(true);
-    jest.advanceTimersToNextTimer();
+    jest.useFakeTimers();
     dispatchChangeEvent(inputRef.current, 'test');
     expect(fn).toHaveBeenCalledTimes(1);
   });
