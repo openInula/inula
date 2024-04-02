@@ -17,6 +17,25 @@ import { getPropDetails, PROPERTY_TYPE, PropDetails } from './PropertiesData';
 
 const INVALID_EVENT_NAME_REGEX = /^on[^A-Z]/;
 
+const voidTagElements = [
+  'area',
+  'base',
+  'br',
+  'col',
+  'embed',
+  'hr',
+  'img',
+  'input',
+  'keygen',
+  'link',
+  'meta',
+  'param',
+  'source',
+  'track',
+  'wbr',
+  'menuitem',
+];
+
 // 是内置元素
 export function isNativeElement(tagName: string, props: Record<string, any>) {
   return !tagName.includes('-') && props.is === undefined;
@@ -106,6 +125,18 @@ export function validateProps(type, props) {
   // style属性必须是对象
   if (props.style !== null && props.style !== undefined && typeof props.style !== 'object') {
     throw new Error('style should be a object.');
+  }
+
+  // 对于没有children的元素，设置dangerouslySetInnerHTML不生效
+  if (voidTagElements.includes(type)) {
+    if (props.dangerouslySetInnerHTML != null) {
+      delete props.dangerouslySetInnerHTML;
+    }
+  }
+
+  // dangerouslySetInnerHTML和children同时设置，只渲染children
+  if (props.dangerouslySetInnerHTML != null && props.children != null) {
+    delete props.dangerouslySetInnerHTML;
   }
 
   if (isDev) {

@@ -95,4 +95,16 @@ describe('Dom Attribute', () => {
       Inula.render(<div {...emptyStringProps} />, container);
     }).not.toThrow();
   });
+
+  it('dangerouslySetInnerHTML和children同时设置，只渲染children', () => {
+    Inula.act(() => {
+      Inula.render(
+        <div className="root" dangerouslySetInnerHTML={{ __html: '1234' }}>
+          123
+        </div>,
+        container
+      );
+    });
+    expect(container.innerHTML).toBe('<div class="root">123</div>');
+  });
 });
