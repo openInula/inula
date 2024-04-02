@@ -145,7 +145,12 @@ export function captureRender(processing: VNode): VNode | null {
     processUpdates(processing, inst, nextProps);
 
     // 如果 props, state, context 都没有变化且 isForceUpdate 为 false则不需要更新
-    shouldUpdate = oldProps !== processing.props || inst.state !== processing.state || processing.isForceUpdate;
+    shouldUpdate =
+      oldProps !== processing.props ||
+      inst.state !== processing.state ||
+      processing.isForceUpdate ||
+      // 响应式状态管理器中的值变化，需要更新
+      processing.isStoreChange;
 
     if (shouldUpdate) {
       // derivedStateFromProps会修改nextState，因此需要调用
@@ -167,7 +172,7 @@ export function captureRender(processing: VNode): VNode | null {
   }
   // 如果捕获了 error，必须更新
   const isCatchError = (processing.flags & DidCapture) === DidCapture;
-  shouldUpdate = isCatchError || shouldUpdate || processing.isStoreChange;
+  shouldUpdate = isCatchError || shouldUpdate;
 
   // 更新ref
   markRef(processing);

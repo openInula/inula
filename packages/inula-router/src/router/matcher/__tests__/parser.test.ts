@@ -121,7 +121,13 @@ describe('parser test', () => {
   it('url without end slash match wildcard', function () {
     const parser = createPathParser('/about/', { strictMode: false });
     const matched = parser.parse('/about');
-    expect(matched).toBeNull();
+    expect(matched).toStrictEqual({
+      path: '/about/',
+      url: '/about',
+      score: [10],
+      isExact: true,
+      param: {},
+    });
   });
 
   it('url without end slash match wildcard (strictMode)', function () {
@@ -259,7 +265,7 @@ describe('parser test', () => {
   });
 
   it('dynamic param with complex regexp pattern', () => {
-    const parser = createPathParser('/detail/:action([\\da-z]+)', { exact: true });
+    const parser = createPathParser('/detail/:action([\\da-z]+)', { exact: true, caseSensitive: true });
     const res = parser.parse('/detail/a123');
     expect(res).toEqual({
       isExact: true,

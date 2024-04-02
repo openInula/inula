@@ -66,7 +66,9 @@ export function getBaseHistory<S>(
         Object.assign(historyProps, nextState);
       }
       historyProps.length = browserHistory.length;
-      const args = { location: historyProps.location, action: historyProps.action };
+      // 避免location饮用相同时setState不触发
+      const location = Object.assign({}, historyProps.location);
+      const args = { location: location, action: historyProps.action };
       transitionManager.notifyListeners(args);
     };
   }
