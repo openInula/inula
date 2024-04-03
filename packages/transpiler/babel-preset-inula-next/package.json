@@ -1,0 +1,54 @@
+{
+  "name": "babel-preset-inula-next",
+  "version": "0.0.1",
+  "author": {
+    "name": "IanDx",
+    "email": "iandxssxx@gmail.com"
+  },
+  "keywords": [
+    "dlight.js",
+    "babel-preset"
+  ],
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup --sourcemap",
+    "test": "vitest --ui"
+  },
+  "devDependencies": {
+    "@types/babel__core": "^7.20.5",
+    "@types/node": "^20.10.5",
+    "tsup": "^6.7.0",
+    "typescript": "^5.3.2"
+  },
+  "dependencies": {
+    "@babel/plugin-syntax-decorators": "^7.23.3",
+    "@babel/core": "^7.23.3",
+    "@babel/plugin-syntax-jsx": "7.16.7",
+    "@babel/plugin-syntax-typescript": "^7.23.3",
+    "@inula/reactivity-parser": "workspace:*",
+    "@inula/view-generator": "workspace:*",
+    "@inula/view-parser": "workspace:*",
+    "@inula/class-transformer": "workspace:*",
+    "jsx-view-parser": "workspace:*",
+    "minimatch": "^9.0.3",
+    "vitest": "^1.4.0"
+  },
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "format": [
+      "cjs",
+      "esm"
+    ],
+    "clean": true,
+    "dts": true
+  }
+}
