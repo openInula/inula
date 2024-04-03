@@ -31,7 +31,11 @@ export interface IObserver {
   clearByVNode: (vNode: any) => void;
 }
 
-export type StoreConfig<S extends Record<string, unknown>, A extends UserActions<S>, C extends UserComputedValues<S>> = {
+export type StoreConfig<
+  S extends Record<string, unknown>,
+  A extends UserActions<S>,
+  C extends UserComputedValues<S>,
+> = {
   id?: string;
   state?: S;
   actions?: A;
@@ -45,7 +49,11 @@ export type UserActions<S extends Record<string, unknown>> = {
   [K: string]: ActionFunction<S>;
 };
 
-export type ActionFunction<S extends Record<string, unknown>> = (this: StoreObj<S, any, any>, state: S, ...args: any[]) => any;
+export type ActionFunction<S extends Record<string, unknown>> = (
+  this: StoreObj<S, any, any>,
+  state: S,
+  ...args: any[]
+) => any;
 
 export type StoreActions<S extends Record<string, unknown>, A extends UserActions<S>> = {
   [K in keyof A]: Action<A[K], S>;

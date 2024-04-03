@@ -14,11 +14,11 @@
  */
 
 const body: Record<string, any> = {
-  doubleapos: { match: '\'\'', value: () => '\'' },
+  doubleapos: { match: "''", value: () => "'" },
   quoted: {
     lineBreaks: true,
     match: /'[{}#](?:[^]*?[^'])?'(?!')/u,
-    value: src => src.slice(1, -1).replace(/''/g, '\''),
+    value: src => src.slice(1, -1).replace(/''/g, "'"),
   },
   argument: {
     lineBreaks: true,

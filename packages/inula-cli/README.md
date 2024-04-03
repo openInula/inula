@@ -54,7 +54,7 @@ inula-cli的推荐目录结构如下：
 │       └── inula-cli
 │           ├── lib
 ├── mock // mock目录
-│   └── mock.ts
+│   └── transform.ts
 ├── src // 项目源码目录
 │   ├── pages
 │   │   ├── index.less

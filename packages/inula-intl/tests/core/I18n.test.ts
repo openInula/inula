@@ -90,19 +90,19 @@ describe('I18n', () => {
   });
   it('._ allow escaping syntax characters', () => {
     const messages = {
-      'My \'\'name\'\' is \'{name}\'': 'Mi \'\'nombre\'\' es \'{name}\'',
+      "My ''name'' is '{name}'": "Mi ''nombre'' es '{name}'",
     };
     const i18n = new I18n({
       locale: 'es',
       messages: { es: messages },
     });
-    expect(i18n.formatMessage('My \'\'name\'\' is \'{name}\'')).toEqual('Mi \'nombre\' es {name}');
+    expect(i18n.formatMessage("My ''name'' is '{name}'")).toEqual("Mi 'nombre' es {name}");
   });
 
   it('._ should format message from catalog', function () {
     const messages = {
       Hello: 'Salut',
-      id: 'Je m\'appelle {name}',
+      id: "Je m'appelle {name}",
     };
     const i18n = new I18n({
       locale: 'fr',
@@ -110,7 +110,7 @@ describe('I18n', () => {
     });
     expect(i18n.locale).toEqual('fr');
     expect(i18n.formatMessage('Hello')).toEqual('Salut');
-    expect(i18n.formatMessage('id', { name: 'Fred' })).toEqual('Je m\'appelle Fred');
+    expect(i18n.formatMessage('id', { name: 'Fred' })).toEqual("Je m'appelle Fred");
   });
 
   it('should return the formatted date and time', () => {

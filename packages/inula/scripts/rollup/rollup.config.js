@@ -109,13 +109,16 @@ function genConfig(mode) {
 function genJSXRuntimeConfig(mode) {
   return {
     input: path.resolve(libDir, 'src', 'jsx-runtime.ts'),
-    output: [{
-      file: outputResolve('jsx-runtime.js'),
-      format: 'cjs',
-    }, {
-      file: outputResolve('jsx-runtime.esm-browser.js'),
-      format: 'esm',
-    }],
+    output: [
+      {
+        file: outputResolve('jsx-runtime.js'),
+        format: 'cjs',
+      },
+      {
+        file: outputResolve('jsx-runtime.esm-browser.js'),
+        format: 'esm',
+      },
+    ],
     plugins: [...getBasicPlugins(mode)],
   };
 }

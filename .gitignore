@@ -1,10 +1,10 @@
-/node_modules
+node_modules
 .idea
 .vscode
 package-lock.json
 pnpm-lock.yaml
-/packages/**/node_modules
 /packages/inula-cli/lib
 build
 /packages/inula-router/connectRouter
 /packages/inula-router/router
+dist
