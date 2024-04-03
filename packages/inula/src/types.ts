@@ -103,7 +103,7 @@ export interface ChildrenType {
   toArray(children: InulaNode | InulaNode[]): Array<Exclude<InulaNode, boolean | null | undefined>>;
 }
 
-type ForwardRef<T> = ((inst: T | null) => void) | MutableRef<T | null> | null;
+export type ForwardRef<T> = ((inst: T | null) => void) | MutableRef<T | null> | null;
 
 export interface ForwardRefRenderFunc<T, P = KVObject> {
   (props: P, ref: ForwardRef<T>): InulaElement | null;

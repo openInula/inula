@@ -184,7 +184,7 @@ type ActionCreator = (...params: any[]) => ReduxAction;
 type ActionCreators = { [key: string]: ActionCreator };
 export type BoundActionCreator = (...params: any[]) => void;
 type BoundActionCreators = { [key: string]: BoundActionCreator };
-type Dispatch = (action: ReduxAction) => any;
+export type Dispatch = (action: ReduxAction) => any;
 
 export function bindActionCreators(actionCreators: ActionCreators, dispatch: Dispatch): BoundActionCreators {
   const boundActionCreators = {};
