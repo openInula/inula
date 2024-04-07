@@ -375,4 +375,93 @@ describe('Redux/React binding adapter', () => {
     expect(getE(BUTTON).innerHTML).toBe('1');
     expect(getE(BUTTON2).innerHTML).toBe('true');
   });
+
+  it('Nested use of connect', () => {
+    const updateInfo = [];
+    let dispatchMethod;
+    const ChildComponent = ({ childData, dispatch }) => {
+      const isMount = Inula.useRef(false);
+
+      Inula.useEffect(() => {
+        if (!isMount.current) {
+          isMount.current = true;
+        } else {
+          updateInfo.push('ChildComponent Updated');
+        }
+      });
+      dispatchMethod = dispatch;
+
+      return (
+        <div>
+          <h2>Child Component</h2>
+          <p id="child">{childData}</p>
+        </div>
+      );
+    };
+
+    const mapStateToPropsChild = state => ({ childData: state.childData });
+
+    const Child = connect(mapStateToPropsChild)(ChildComponent);
+
+    // Parent Component
+    const ParentComponent = ({ parentData }) => {
+      const isMount = Inula.useRef(false);
+
+      Inula.useEffect(() => {
+        if (!isMount.current) {
+          isMount.current = true;
+        } else {
+          updateInfo.push('ParentComponent Updated');
+        }
+      });
+
+      return (
+        <div>
+          <h1>Parent Component</h1>
+          <p id="parent">{parentData}</p>
+          <Child />
+        </div>
+      );
+    };
+    const mapStateToPropsParent = state => ({
+      parentData: state.parentData,
+    });
+
+    const Parent = connect(mapStateToPropsParent)(ParentComponent);
+
+    const initialState = {
+      parentData: 0,
+      childData: 0,
+    };
+
+    const reducer = (state = initialState, action) => {
+      switch (action.type) {
+        case 'INCREMENT_PARENT':
+          return { ...state, parentData: state.parentData + 1 };
+        case 'INCREMENT_CHILD':
+          return { ...state, childData: state.childData + 1 };
+        default:
+          return state;
+      }
+    };
+
+    const store = createStore(reducer);
+
+    Inula.render(
+      <Provider store={store}>
+        <Parent />
+      </Provider>,
+      getE(CONTAINER)
+    );
+    expect(getE('child').innerHTML).toBe('0');
+    expect(getE('parent').innerHTML).toBe('0');
+
+    Inula.act(() => {
+      dispatchMethod({ type: 'INCREMENT_CHILD' });
+    });
+    expect(updateInfo).toStrictEqual(['ChildComponent Updated']);
+
+    expect(getE('child').innerHTML).toBe('1');
+    expect(getE('parent').innerHTML).toBe('0');
+  });
 });
