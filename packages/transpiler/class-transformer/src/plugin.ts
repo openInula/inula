@@ -17,15 +17,18 @@ import { PluginObj } from '@babel/core';
 import { Option } from './types';
 import * as babel from '@babel/core';
 import { PluginProvider } from './pluginProvider';
+import { ThisPatcher } from './thisPatcher';
 
 export default function (api: typeof babel, options: Option): PluginObj {
   const pluginProvider = new PluginProvider(api, options);
-
+  const thisPatcher = new ThisPatcher(api);
   return {
     name: 'zouyu-2',
     visitor: {
       FunctionDeclaration(path) {
         pluginProvider.functionDeclarationVisitor(path);
+
+        thisPatcher.patch(path);
       },
     },
   };
