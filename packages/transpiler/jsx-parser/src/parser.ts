@@ -536,6 +536,49 @@ export class ViewParser {
   }
 
   private pareFor(node: t.JSXElement) {
-    // TODO
+    // ---- Get array
+    const arrayContainer = this.findProp(node, "array")
+    if (!arrayContainer) throw new Error("Missing [array] prop in for loop")
+    if (!this.t.isJSXExpressionContainer(arrayContainer.value)) throw new Error("Expected expression container for [array] prop")
+    const array = arrayContainer.value.expression
+    if (this.t.isJSXEmptyExpression(array)) throw new Error("Expected [array] expression not empty")
+
+    // ---- Get key
+    const keyProp = this.findProp(node, "key")
+    let key: t.Expression = this.t.nullLiteral()
+    if (keyProp) {
+      if (!(
+        this.t.isJSXExpressionContainer(keyProp.value) &&
+        this.t.isFunction(keyProp.value.expression)
+      )) throw new Error("Expected expression container")
+      key = keyProp.value.expression
+    }
+
+    // ---- Get Item
+    const itemProp = this.findProp(node, "item")
+    if (!itemProp) throw new Error("Missing [item] prop in for loop")
+    if (!this.t.isJSXExpressionContainer(itemProp.value)) throw new Error("Expected expression container for [item] prop")
+    const item = itemProp.value.expression
+    if (this.t.isJSXEmptyExpression(item)) throw new Error("Expected [item] expression not empty")
+    // ---- ObjectExpression to ObjectPattern / ArrayExpression to ArrayPattern
+    this.traverse(this.wrapWithFile(item), {
+      ObjectExpression: (path) => {
+        path.type = "ObjectPattern" as any
+      },
+      ArrayExpression: (path) => {
+        path.type = "ArrayPattern" as any
+      }
+    })
+
+    // ---- Get children
+    const children = this.t.jsxFragment(this.t.jsxOpeningFragment(), this.t.jsxClosingFragment(), node.children)
+
+    this.viewUnits.push({
+      type: "for",
+      key,
+      item: item as t.LVal,
+      array,
+      children: this.parseView(children)
+    })
   }
 }
