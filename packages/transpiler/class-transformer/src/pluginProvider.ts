@@ -89,25 +89,8 @@ class ClassComponentTransformer {
   private readonly t: typeof t;
   private readonly functionScope: Scope;
 
-  valueWrapper(node) {
-    return this.t.file(this.t.program([this.t.isStatement(node) ? node : this.t.expressionStatement(node)]));
-  }
-
   addProperty(prop: t.ClassProperty | t.ClassMethod, name?: string) {
     this.properties.push(prop);
-    if (name) {
-      // replace the variable in scope to process the variable in class scope
-      // e.g. replace () => count++ to () => this.count++
-      // TODO: search for better solution
-      this.functionScope.rename(name, `this.${name}`);
-      this.functionScope.path.traverse({
-        Identifier: path => {
-          if (path.node.name === `this.${name}`) {
-            path.replaceWith(this.t.memberExpression(this.t.thisExpression(), this.t.identifier(name)));
-          }
-        },
-      });
-    }
   }
 
   constructor(babelApi: typeof babel, fnNode: NodePath<t.FunctionDeclaration>) {
