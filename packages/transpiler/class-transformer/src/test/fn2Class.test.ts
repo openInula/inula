@@ -204,15 +204,9 @@ describe('fn2Class', () => {
       transform(`
         export default function CountComp() {
           let count = 0;
-          let countDown;
-          let color
           for (let i = 0; i < count; i++) {
             console.log(\`The count change to: \${i}\`);
           }
-          for (let i = 0; i < dbCount; i++) {
-            console.log('color changed:', getColor());
-          }
-          function ()
           return <>
             <button onClick={() => count++}>Add</button>
             <div>{count}</div>
