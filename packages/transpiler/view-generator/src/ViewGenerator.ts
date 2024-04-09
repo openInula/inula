@@ -1,5 +1,5 @@
 import { type types as t } from '@babel/core';
-import { type ViewParticle } from '@inula/reactivity-parser';
+import { type ViewParticle } from '@openinula/reactivity-parser';
 import { type ViewGeneratorConfig } from './types';
 import BaseGenerator, { prefixMap } from './HelperGenerators/BaseGenerator';
 import CompGenerator from './NodeGenerators/CompGenerator';

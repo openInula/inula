@@ -1,11 +1,11 @@
-import { createErrorHandler } from '@inula/error-handler';
+import { createErrorHandler } from '@openinula/error-handler';
 
 export const DLError = createErrorHandler(
   'ViewParser',
   {
-    1: "Invalid syntax in DLight's View, only accepts dot chain call expression",
+    1: 'Invalid syntax in DLight\'s View, only accepts dot chain call expression',
     2: 'First argument of $0() must be an expression',
-    3: "Invalid syntax in DLight's View, only accepts expression as props",
+    3: 'Invalid syntax in DLight\'s View, only accepts expression as props',
     4: 'Invalid Snippet calling, only accepts static snippet calling like `this.Snippet()`',
   },
   {

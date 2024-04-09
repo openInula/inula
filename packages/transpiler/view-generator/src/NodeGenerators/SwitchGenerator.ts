@@ -1,5 +1,5 @@
 import { type types as t } from '@babel/core';
-import { SwitchBranch, SwitchParticle } from '@inula/reactivity-parser';
+import { SwitchBranch, SwitchParticle } from '@openinula/reactivity-parser';
 import CondGenerator from '../HelperGenerators/CondGenerator';
 
 export default class SwitchGenerator extends CondGenerator {

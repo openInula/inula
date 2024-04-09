@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@babel/standalone": "^7.22.4",
-    "@inula/next": "workspace:*",
+    "@openinula/next": "workspace:*",
     "@iandx/easy-css": "^0.10.14",
     "babel-preset-inula-next": "workspace:*"
   },

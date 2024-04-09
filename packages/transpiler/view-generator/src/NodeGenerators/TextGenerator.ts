@@ -1,5 +1,5 @@
 import { type types as t } from '@babel/core';
-import { type TextParticle } from '@inula/reactivity-parser';
+import { type TextParticle } from '@openinula/reactivity-parser';
 import BaseGenerator from '../HelperGenerators/BaseGenerator';
 
 export default class TextGenerator extends BaseGenerator {

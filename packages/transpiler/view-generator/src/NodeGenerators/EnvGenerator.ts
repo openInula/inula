@@ -1,5 +1,5 @@
 import { type types as t } from '@babel/core';
-import { type ViewParticle, type DependencyProp, type EnvParticle } from '@inula/reactivity-parser';
+import { type ViewParticle, type DependencyProp, type EnvParticle } from '@openinula/reactivity-parser';
 import PropViewGenerator from '../HelperGenerators/PropViewGenerator';
 
 export default class EnvGenerator extends PropViewGenerator {

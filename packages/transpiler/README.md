@@ -27,7 +27,16 @@ This is a experimental package to implement [API2.0](https://gitee.com/openInula
   - [x] fragment
   - [ ] ref (to validate)
   - [ ] snippet
-  - [ ] for
+  - [x] for
+
+# 4.8 TODO
+@YH
+* Benchmark(result + comparison)
+* Playground(@HQ publish) deploy
+* PPT
+* DEMO
+* api2.1 compiled code
+
 
 # function component syntax
 

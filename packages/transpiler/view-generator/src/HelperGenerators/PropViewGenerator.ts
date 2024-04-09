@@ -1,5 +1,5 @@
 import { type types as t } from '@babel/core';
-import { type DependencyProp, type ViewParticle } from '@inula/reactivity-parser';
+import { type DependencyProp, type ViewParticle } from '@openinula/reactivity-parser';
 import LifecycleGenerator from './LifecycleGenerator';
 
 export default class PropViewGenerator extends LifecycleGenerator {

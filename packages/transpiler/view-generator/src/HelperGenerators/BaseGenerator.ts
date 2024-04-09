@@ -1,5 +1,5 @@
 import { type types as t, type traverse } from '@babel/core';
-import { type ViewParticle } from '@inula/reactivity-parser';
+import { type ViewParticle } from '@openinula/reactivity-parser';
 import { type SnippetPropMap, type ViewGeneratorConfig } from '../types';
 import ViewGenerator from '../ViewGenerator';
 

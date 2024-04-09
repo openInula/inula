@@ -19,7 +19,7 @@ export class ThisPatcher {
         (def): def is Exclude<t.ClassBody['body'][number], t.TSIndexSignature | t.StaticBlock> =>
           !this.t.isTSIndexSignature(def) && !this.t.isStaticBlock(def)
       )
-      .map(def => ('name' in def.key ? def.key.name : null));
+      .map(def => (def?.key?.name ? def.key.name : null));
 
     for (const memberOrMethod of classBodyNode.body) {
       classPath.scope.traverse(memberOrMethod, {

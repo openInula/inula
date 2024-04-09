@@ -1,6 +1,6 @@
 import { type types as t } from '@babel/core';
 import BaseGenerator from '../HelperGenerators/BaseGenerator';
-import { TryParticle, type ViewParticle } from '@inula/reactivity-parser';
+import { TryParticle, type ViewParticle } from '@openinula/reactivity-parser';
 
 export default class TryGenerator extends BaseGenerator {
   run() {

@@ -1,4 +1,4 @@
-import { type DependencyProp, type SnippetParticle } from '@inula/reactivity-parser';
+import { type DependencyProp, type SnippetParticle } from '@openinula/reactivity-parser';
 import type { types as t } from '@babel/core';
 import PropViewGenerator from '../HelperGenerators/PropViewGenerator';
 

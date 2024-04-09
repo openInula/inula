@@ -1,5 +1,5 @@
 import { type types as t } from '@babel/core';
-import { type IfParticle, type IfBranch } from '@inula/reactivity-parser';
+import { type IfParticle, type IfBranch } from '@openinula/reactivity-parser';
 import CondGenerator from '../HelperGenerators/CondGenerator';
 
 export default class IfGenerator extends CondGenerator {

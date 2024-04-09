@@ -2,10 +2,10 @@ import type babel from '@babel/core';
 import { type types as t, type NodePath } from '@babel/core';
 import { type PropertyContainer, type HTMLTags, type SnippetPropSubDepMap } from './types';
 import { minimatch } from 'minimatch';
-import { parseView, ViewUnit } from '@inula/view-parser';
+import { parseView, ViewUnit } from '@openinula/view-parser';
 import { parseView as parseJSX } from 'jsx-view-parser';
-import { parseReactivity } from '@inula/reactivity-parser';
-import { generateSnippet, generateView } from '@inula/view-generator';
+import { parseReactivity } from '@openinula/reactivity-parser';
+import { generateSnippet, generateView } from '@openinula/view-generator';
 import {
   alterAttributeMap,
   availableDecoNames,
