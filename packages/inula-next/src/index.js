@@ -22,7 +22,7 @@ function initStore() {
   DLStore.global.DidUnmountStore = [];
 }
 
-export function render(idOrEl, DL) {
+export function render(DL, idOrEl) {
   let el = idOrEl;
   if (typeof idOrEl === 'string') {
     const elFound = DLStore.document.getElementById(idOrEl);

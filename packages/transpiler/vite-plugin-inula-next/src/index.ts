@@ -2,6 +2,7 @@ import { transform } from '@babel/core';
 import dlight, { type DLightOption } from 'babel-preset-inula-next';
 import { minimatch } from 'minimatch';
 import { Plugin, TransformResult } from 'vite';
+
 export default function (options: DLightOption = {}): Plugin {
   const {
     files: preFiles = '**/*.{js,jsx,ts,tsx}',
@@ -28,13 +29,18 @@ export default function (options: DLightOption = {}): Plugin {
         }
       }
       if (!enter) return;
-      return transform(code, {
-        babelrc: false,
-        configFile: false,
-        presets: [[dlight, options]],
-        sourceMaps: true,
-        filename: id,
-      }) as TransformResult;
+      try {
+        return transform(code, {
+          babelrc: false,
+          configFile: false,
+          presets: [[dlight, options]],
+          sourceMaps: true,
+          filename: id,
+        }) as TransformResult;
+      } catch (err) {
+        console.error('Error:', err);
+      }
+      return '';
     },
   };
 }

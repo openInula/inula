@@ -132,22 +132,32 @@ describe('component-composition', () => {
     //language=JSX
     expect(
       transform(`
-        function Card({ children: content }) {
+        function Card({children: content,  foo: bar = 1, val = 1}) {
           return (
             <div className="card">
-              {children}
+              {content}
             </div>
           );
-        }`),
-      `
-        class Card {
-          @Children content
-
-          Body() {
-            div(\`card\`, this.children)
-          }
+        }`)
+    ).toMatchInlineSnapshot(`
+      "class Card extends View {
+        @Children
+        content;
+        bar;
+        @Prop
+        foo = 1;
+        @Prop
+        val = 1;
+        Body() {
+          return <div className=\\"card\\">
+                    {this.content}
+                  </div>;
         }
-      `
-    );
+        @Watch
+        $$bindNestDestructuring() {
+          this.bar = this.foo;
+        }
+      }"
+    `);
   });
 });
