@@ -3,10 +3,6 @@ import * as babel from '@babel/core';
 import { Option } from './types';
 import type { Scope } from '@babel/traverse';
 
-const DECORATOR_PROPS = 'Prop';
-const DECORATOR_CHILDREN = 'Children';
-const DECORATOR_WATCH = 'Watch';
-
 function replaceFnWithClass(path: NodePath<t.FunctionDeclaration>, classTransformer: ClassComponentTransformer) {
   const originalName = path.node.id.name;
   const tempName = path.node.id.name + 'Temp';
@@ -208,7 +204,7 @@ class ClassComponentTransformer {
   /**
    * transform node to watch label to watch decorator
    * e.g.
-   * 
+   *
    * watch: console.log(state)
    * // transform into
    * @Watch
