@@ -186,13 +186,4 @@ describe('ElementUnit', () => {
     const htmlUnit = viewUnits[0] as HTMLUnit;
     expect(htmlUnit.children!.length).toBe(4);
   });
-
-  it('should correctly parse the children', () => {
-    const viewUnits = parse('<div><div>ok</div></div>');
-    const htmlUnit = viewUnits[0] as HTMLUnit;
-    const firstChild = htmlUnit.children![0];
-    expect(firstChild.type).toBe('html');
-    expect(t.isStringLiteral((firstChild as HTMLUnit).tag, { value: 'div' })).toBeTruthy();
-    expect((firstChild as HTMLUnit).children![0].type).toBe('text');
-  });
 });

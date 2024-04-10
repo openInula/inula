@@ -1,5 +1,5 @@
 import { transform } from '@babel/core';
-import dlight, { type DLightOption } from '../../babel-preset-inula-next';
+import dlight, { type DLightOption } from 'babel-preset-inula-next';
 import { minimatch } from 'minimatch';
 import { Plugin, TransformResult } from 'vite';
 export default function (options: DLightOption = {}): Plugin {

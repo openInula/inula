@@ -30,7 +30,7 @@ import {
   type SnippetUnit,
   SwitchUnit,
   TryUnit,
-} from '@inula/view-parser';
+} from '@openinula/view-parser';
 import { DLError } from './error';
 
 export class ReactivityParser {

@@ -1,4 +1,4 @@
-import { type ViewUnit } from '@inula/view-parser';
+import { type ViewUnit } from '@openinula/view-parser';
 import { ReactivityParser } from './parser';
 import { type ViewParticle, type ReactivityParserConfig } from './types';
 

@@ -1,5 +1,5 @@
 {
-  "name": "@inula/reactivity-parser",
+  "name": "@openinula/reactivity-parser",
   "version": "0.0.1",
   "author": {
     "name": "IanDx",
@@ -29,8 +29,8 @@
     "vitest": "^0.34.5"
   },
   "dependencies": {
-    "@inula/error-handler": "workspace:*",
-    "@inula/view-parser": "workspace:*"
+    "@openinula/error-handler": "workspace:*",
+    "@openinula/view-parser": "workspace:*"
   },
   "tsup": {
     "entry": [

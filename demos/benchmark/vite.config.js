@@ -9,5 +9,5 @@ export default defineConfig({
   optimizeDeps: {
     disabled: true,
   },
-  plugins: [inula({ files: '**/*.{ts,js,tsx,jsx}' })],
+  plugins: [inula({ files: '**/*.{tsx,jsx}' })],
 });

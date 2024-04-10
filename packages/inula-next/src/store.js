@@ -1,4 +1,4 @@
-import { Store } from '@inula/store';
+import { Store } from '@openinula/store';
 
 // ---- Using external Store to store global and document
 //      Because Store is a singleton, it is safe to use it as a global variable

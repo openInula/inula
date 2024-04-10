@@ -1,6 +1,6 @@
 import babelApi, { parseSync, type types as t } from '@babel/core';
 import { type ReactivityParserConfig } from '../types';
-import { parseView as pV, type ViewParserConfig } from '@inula/view-parser';
+import { parseView as pV, type ViewParserConfig } from '@openinula/view-parser';
 import { parseReactivity as pR } from '../index';
 
 const htmlTags = [

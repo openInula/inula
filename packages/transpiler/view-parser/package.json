@@ -1,5 +1,5 @@
 {
-  "name": "@inula/view-parser",
+  "name": "@openinula/view-parser",
   "version": "0.0.1",
   "author": {
     "name": "IanDx",
@@ -29,7 +29,7 @@
     "vitest": "^0.34.5"
   },
   "dependencies": {
-    "@inula/error-handler": "workspace:*"
+    "@openinula/error-handler": "workspace:*"
   },
   "tsup": {
     "entry": [

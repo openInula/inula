@@ -1,5 +1,5 @@
 import { type types as t } from '@babel/core';
-import { type ExpParticle } from '@inula/reactivity-parser';
+import { type ExpParticle } from '@openinula/reactivity-parser';
 import ElementGenerator from '../HelperGenerators/ElementGenerator';
 import { DLError } from '../error';
 
