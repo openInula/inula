@@ -39,7 +39,6 @@
       "esm"
     ],
     "clean": true,
-    "dts": true,
-    "minify": true
+    "dts": true
   }
 }

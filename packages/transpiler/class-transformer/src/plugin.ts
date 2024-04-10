@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { PluginObj } from '@babel/core';
+import { NodePath, PluginObj } from '@babel/core';
 import { Option } from './types';
 import * as babel from '@babel/core';
 import { PluginProvider } from './pluginProvider';
@@ -28,7 +28,7 @@ export default function (api: typeof babel, options: Option): PluginObj {
       FunctionDeclaration(path) {
         pluginProvider.functionDeclarationVisitor(path);
 
-        thisPatcher.patch(path);
+        thisPatcher.patch(path as unknown as NodePath<babel.types.Class>);
       },
     },
   };

@@ -99,3 +99,34 @@ class FetchModel {}
   }
   // <H1/>
 ```
+- [ ] Render text and variable, Got Error
+```jsx
+  // Uncaught DOMException: Failed to execute 'appendChild' on 'Node': This node type does not support this method.
+<button>Add, Now is {count}</button>
+```
+
+
+# Watch
+
+自动将Statement包裹Watch的反例：
+```jsx
+  // 前置操作: 场景为Table组件，需要响应column变化，先置空column，再计算新的columnByKey
+  let columnByKey;
+  watch: {
+    columnByKey = {};
+    columns.forEach(col => {
+      columnByKey[col.key] = col;
+    });
+  }
+  // 临时变量: 场景为操作前的计算部分临时变量
+  watch: {
+    let col = columnByKey[sortBy];
+    if (
+      col !== undefined &&
+      col.sortable === true &&
+      typeof col.value === "function"
+    ) {
+      sortFunction = r => col.value(r);
+    }
+  }
+```
