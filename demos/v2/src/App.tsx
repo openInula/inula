@@ -1,20 +1,4 @@
-// @ts-nocheck
-import {
-  Children,
-  Content,
-  Main,
-  Model,
-  Prop,
-  View,
-  Watch,
-  button,
-  div,
-  input,
-  insertChildren,
-  use,
-  render,
-} from '@openinula/next';
-
+import { View, render } from '@openinula/next';
 
 function MyComp() {
   let count = 0;
@@ -30,6 +14,4 @@ function MyComp() {
     </>
   );
 }
-
-
 render('main', MyComp);
