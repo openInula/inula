@@ -1,5 +1,5 @@
 import { type types as t } from '@babel/core';
-import { type HTMLParticle, type TemplateParticle } from '@inula/reactivity-parser';
+import { type HTMLParticle, type TemplateParticle } from '@openinula/reactivity-parser';
 import HTMLPropGenerator from '../HelperGenerators/HTMLPropGenerator';
 
 export default class TemplateGenerator extends HTMLPropGenerator {

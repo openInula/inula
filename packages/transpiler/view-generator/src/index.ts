@@ -1,4 +1,4 @@
-import { type ViewParticle } from '@inula/reactivity-parser';
+import { type ViewParticle } from '@openinula/reactivity-parser';
 import { type ViewGeneratorConfig } from './types';
 import { type types as t } from '@babel/core';
 import MainViewGenerator from './MainViewGenerator';

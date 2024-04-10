@@ -81,5 +81,9 @@
   "engines": {
     "node": ">=10.x",
     "npm": ">=7.x"
+  },
+  "dependencies": {
+    "@changesets/cli": "^2.27.1",
+    "changeset": "^0.2.6"
   }
 }

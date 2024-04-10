@@ -59,6 +59,7 @@ export interface IfUnit {
 export interface ExpUnit {
   type: 'exp';
   content: UnitProp;
+  props: Record<string, UnitProp>;
 }
 
 export interface EnvUnit {

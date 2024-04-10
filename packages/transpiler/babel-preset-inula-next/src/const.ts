@@ -227,7 +227,7 @@ export const defaultHTMLTags = [
 ];
 
 export const availableDecoNames = ['Static', 'Prop', 'Env', 'Content', 'Children'];
-export const dlightDefaultPackageName = '@inula/next';
+export const dlightDefaultPackageName = '@openinula/next';
 
 export const importMap = Object.fromEntries(
   [

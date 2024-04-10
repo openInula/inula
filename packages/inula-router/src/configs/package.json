@@ -1,4 +1,5 @@
 {
+  "name": "inula-router-config",
   "module": "./esm/connectRouter.js",
   "main": "./cjs/connectRouter.js",
   "types": "./@types/index.d.ts",

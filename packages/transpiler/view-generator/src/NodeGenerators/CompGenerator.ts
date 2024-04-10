@@ -1,5 +1,5 @@
 import { type types as t } from '@babel/core';
-import { type DependencyProp, type CompParticle, type ViewParticle } from '@inula/reactivity-parser';
+import { type DependencyProp, type CompParticle, type ViewParticle } from '@openinula/reactivity-parser';
 import ForwardPropGenerator from '../HelperGenerators/ForwardPropGenerator';
 
 export default class CompGenerator extends ForwardPropGenerator {

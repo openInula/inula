@@ -1,4 +1,4 @@
-import { createErrorHandler } from '@inula/error-handler';
+import { createErrorHandler } from '@openinula/error-handler';
 
 export const DLError = createErrorHandler(
   'ViewGenerator',

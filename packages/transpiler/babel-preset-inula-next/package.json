@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-inula-next",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": {
     "name": "IanDx",
     "email": "iandxssxx@gmail.com"
@@ -32,10 +32,10 @@
     "@babel/core": "^7.23.3",
     "@babel/plugin-syntax-jsx": "7.16.7",
     "@babel/plugin-syntax-typescript": "^7.23.3",
-    "@inula/reactivity-parser": "workspace:*",
-    "@inula/view-generator": "workspace:*",
-    "@inula/view-parser": "workspace:*",
-    "@inula/class-transformer": "workspace:*",
+    "@openinula/reactivity-parser": "workspace:*",
+    "@openinula/view-generator": "workspace:*",
+    "@openinula/view-parser": "workspace:*",
+    "@openinula/class-transformer": "workspace:*",
     "jsx-view-parser": "workspace:*",
     "minimatch": "^9.0.3",
     "vitest": "^1.4.0"
