@@ -7,5 +7,5 @@
   "access": "public",
   "baseBranch": "master",
   "updateInternalDependencies": "patch",
-  "ignore": []
+  "ignore": ["create-inula", "openinula", "inula-cli", "inula-dev-tools", "inula-intl", "inula-request", "inula-router", "inula-vite-app", "inula-webpack-app"]
 }
