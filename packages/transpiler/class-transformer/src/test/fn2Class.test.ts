@@ -178,7 +178,7 @@ describe('fn2Class', () => {
       transform(`
         export default function CountComp() {
           let count = 0;
-          console.log(count);
+          watch: console.log(count);
 
           return <div>{count}</div>;
         }
@@ -204,7 +204,7 @@ describe('fn2Class', () => {
       transform(`
         export default function CountComp() {
           let count = 0;
-          for (let i = 0; i < count; i++) {
+          watch: for (let i = 0; i < count; i++) {
             console.log(\`The count change to: \${i}\`);
           }
           return <>
@@ -242,7 +242,7 @@ describe('fn2Class', () => {
       transform(`
         export default function CountComp() {
           let count = 0;
-          if (count > 0) {
+          watch: if (count > 0) {
             console.log(\`The count is greater than 0\`);
           }
 
