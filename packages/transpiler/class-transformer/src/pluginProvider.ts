@@ -54,7 +54,7 @@ export class PluginProvider {
       }
 
       // handle watch
-      if (this.t.isStatement(node)) {
+      if (this.t.isLabeledStatement(node) && node.label.name === 'watch') {
         // transform the watch statement to watch method
         classTransformer.transformWatch(node);
         return;
@@ -113,7 +113,7 @@ class ClassComponentTransformer {
   // transform function component to class component extends View
   genClassComponent(name: string) {
     // generate ctor and push this.initExpressions to ctor
-    let nestedDestructuringBindingsMethod: t.ClassMethod;
+    let nestedDestructuringBindingsMethod: t.ClassMethod | null = null;
     if (this.nestedDestructuringBindings.length) {
       nestedDestructuringBindingsMethod = this.t.classMethod(
         'method',
@@ -205,10 +205,20 @@ class ClassComponentTransformer {
     throw new Error('Unsupported props type, please use object destructuring or identifier.');
   }
 
-  // transform node to method with watch decorator
-  transformWatch(node: ToWatchNode) {
+  /**
+   * transform node to watch label to watch decorator
+   * e.g.
+   * 
+   * watch: console.log(state)
+   * // transform into
+   * @Watch
+   * _watch() {
+   *   console.log(state)
+   * }
+   */
+  transformWatch(node: t.LabeledStatement) {
     const id = this.functionScope.generateUidIdentifier(DECORATOR_WATCH.toLowerCase());
-    const method = this.t.classMethod('method', id, [], this.t.blockStatement([node]), false, false);
+    const method = this.t.classMethod('method', id, [], this.t.blockStatement([node.body]), false, false);
     method.decorators = [this.t.decorator(this.t.identifier(DECORATOR_WATCH))];
     this.addProperty(method);
   }
@@ -250,7 +260,7 @@ class ClassComponentTransformer {
         let key = prop.key;
         let defaultVal: t.Expression;
         if (this.t.isIdentifier(key)) {
-          let alias: t.Identifier;
+          let alias: t.Identifier | null = null;
           if (this.t.isAssignmentPattern(prop.value)) {
             const propName = prop.value.left;
             defaultVal = prop.value.right;
@@ -320,7 +330,7 @@ class ClassComponentTransformer {
   }
 
   // add prop to class, like @prop name = '';
-  private addClassProperty(key: t.Identifier, decorator: string, defaultValue?: t.Expression) {
+  private addClassProperty(key: t.Identifier, decorator: string | null, defaultValue?: t.Expression) {
     // clone the key to avoid reference issue
     const id = this.t.cloneNode(key);
     this.addProperty(
