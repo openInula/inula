@@ -3,6 +3,10 @@ import * as babel from '@babel/core';
 import { Option } from './types';
 import type { Scope } from '@babel/traverse';
 
+const DECORATOR_PROPS = 'Prop';
+const DECORATOR_CHILDREN = 'Children';
+const DECORATOR_WATCH = 'Watch';
+
 function replaceFnWithClass(path: NodePath<t.FunctionDeclaration>, classTransformer: ClassComponentTransformer) {
   const originalName = path.node.id.name;
   const tempName = path.node.id.name + 'Temp';
@@ -49,8 +53,17 @@ export class PluginProvider {
         return;
       }
 
+      // ---- handle lifecycles
+      const lifecycles = ['willMount', 'didMount', 'willUnmount', 'didUnmount'];
+      if (this.t.isLabeledStatement(node) && lifecycles.includes(node.label.name)) {
+        // transform the lifecycle statement to lifecycle method
+        classTransformer.transformLifeCycle(node);
+        return;
+      }
+
+
       // handle watch
-      if (classTransformer.shouldTransformWatch(node)) {
+      if (this.t.isLabeledStatement(node) && node.label.name === 'watch') {
         // transform the watch statement to watch method
         classTransformer.transformWatch(node);
         return;
@@ -85,9 +98,15 @@ type ToWatchNode =
 
 class ClassComponentTransformer {
   properties: (t.ClassProperty | t.ClassMethod)[] = [];
+  // The expression to bind the nested destructuring props with prop
+  nestedDestructuringBindings: t.Expression[] = [];
   private readonly babelApi: typeof babel;
   private readonly t: typeof t;
   private readonly functionScope: Scope;
+
+  valueWrapper(node) {
+    return this.t.file(this.t.program([this.t.isStatement(node) ? node : this.t.expressionStatement(node)]));
+  }
 
   addProperty(prop: t.ClassProperty | t.ClassMethod, name?: string) {
     this.properties.push(prop);
@@ -102,10 +121,23 @@ class ClassComponentTransformer {
 
   // transform function component to class component extends View
   genClassComponent(name: string) {
+    // generate ctor and push this.initExpressions to ctor
+    let nestedDestructuringBindingsMethod: t.ClassMethod | null = null;
+    if (this.nestedDestructuringBindings.length) {
+      nestedDestructuringBindingsMethod = this.t.classMethod(
+        'method',
+        this.t.identifier('$$bindNestDestructuring'),
+        [],
+        this.t.blockStatement([...this.nestedDestructuringBindings.map(exp => this.t.expressionStatement(exp))])
+      );
+      nestedDestructuringBindingsMethod.decorators = [this.t.decorator(this.t.identifier(DECORATOR_WATCH))];
+    }
     return this.t.classDeclaration(
       this.t.identifier(name),
       this.t.identifier('View'),
-      this.t.classBody(this.properties),
+      this.t.classBody(
+        nestedDestructuringBindingsMethod ? [...this.properties, nestedDestructuringBindingsMethod] : this.properties
+      ),
       []
     );
   }
@@ -149,7 +181,19 @@ class ClassComponentTransformer {
     this.addProperty(body, 'Body');
   }
 
-  transformLifeCycle() {}
+  transformLifeCycle(node: t.LabeledStatement) {
+    // transform the lifecycle statement to lifecycle method
+    const methodName = node.label.name;
+    const method = this.t.classMethod(
+      'method',
+      this.t.identifier(methodName),
+      [],
+      this.t.blockStatement(node.body.body),
+      false,
+      false
+    );
+    this.addProperty(method, methodName);
+  }
 
   transformComputed() {}
 
@@ -182,11 +226,21 @@ class ClassComponentTransformer {
     throw new Error('Unsupported props type, please use object destructuring or identifier.');
   }
 
-  // transform node to method with watch decorator
-  transformWatch(node: ToWatchNode) {
-    const id = this.functionScope.generateUidIdentifier('watch');
-    const method = this.t.classMethod('method', id, [], this.t.blockStatement([node]), false, false);
-    method.decorators = [this.t.decorator(this.t.identifier('Watch'))];
+  /**
+   * transform node to watch label to watch decorator
+   * e.g.
+   * 
+   * watch: console.log(state)
+   * // transform into
+   * @Watch
+   * _watch() {
+   *   console.log(state)
+   * }
+   */
+  transformWatch(node: t.LabeledStatement) {
+    const id = this.functionScope.generateUidIdentifier(DECORATOR_WATCH.toLowerCase());
+    const method = this.t.classMethod('method', id, [], this.t.blockStatement([node.body]), false, false);
+    method.decorators = [this.t.decorator(this.t.identifier(DECORATOR_WATCH))];
     this.addProperty(method);
   }
 
@@ -194,36 +248,85 @@ class ClassComponentTransformer {
     return this.t.isObjectPattern(param);
   }
 
+  /**
+   *  how to handle default value
+   *  ```js
+   *  // 1. No alias
+   *  function({name = 'defaultName'}) {}
+   *  class A extends View {
+   *    @Prop name = 'defaultName';
+   *
+   *  // 2. Alias
+   *  function({name: aliasName = 'defaultName'}) {}
+   *  class A extends View {
+   *   @Prop name = 'defaultName';
+   *   aliasName
+   *   @Watch
+   *   bindAliasName() {
+   *     this.aliasName = this.name;
+   *   }
+   *  }
+   *
+   *  // 3. Children with default value and alias
+   *  function({children: aliasName = 'defaultName'}) {}
+   *  class A extends View {
+   *    @Children aliasName = 'defaultName';
+   *  }
+   * ```
+   */
   private transformPropsDestructuring(param: t.ObjectPattern) {
     const propNames: t.Identifier[] = [];
     param.properties.forEach(prop => {
       if (this.t.isObjectProperty(prop)) {
-        const key = prop.key;
+        let key = prop.key;
+        let defaultVal: t.Expression;
         if (this.t.isIdentifier(key)) {
+          let alias: t.Identifier | null = null;
           if (this.t.isAssignmentPattern(prop.value)) {
-            // handle default value
-            const defaultValue = prop.value.right;
-            this.addProp(key, defaultValue);
-            propNames.push(key);
-            return;
+            const propName = prop.value.left;
+            defaultVal = prop.value.right;
+            if (this.t.isIdentifier(propName)) {
+              // handle alias
+              if (propName.name !== key.name) {
+                alias = propName;
+              }
+            } else {
+              throw Error(`Unsupported assignment type in object destructuring: ${propName.type}`);
+            }
           } else if (this.t.isIdentifier(prop.value)) {
-            // handle simple destructuring
-            this.addProp(key, undefined, prop.value.name === 'children');
-            propNames.push(key);
-            return;
+            // handle alias
+            if (key.name !== prop.value.name) {
+              alias = prop.value;
+            }
           } else if (this.t.isObjectPattern(prop.value)) {
             // TODO: handle nested destructuring
             this.transformPropsDestructuring(prop.value);
-            return;
           }
+
+          const isChildren = key.name === 'children';
+          if (alias) {
+            if (isChildren) {
+              key = alias;
+            } else {
+              this.addClassPropertyForPropAlias(alias, key);
+            }
+          }
+          this.addClassProperty(key, isChildren ? DECORATOR_CHILDREN : DECORATOR_PROPS, defaultVal);
+          propNames.push(key);
           return;
         }
+
         // handle default value
         if (this.t.isAssignmentPattern(prop.value)) {
           const defaultValue = prop.value.right;
           const propName = prop.value.left;
+          //handle alias
+          if (this.t.isIdentifier(propName) && propName.name !== prop.key.name) {
+            this.addClassProperty(propName, null, undefined);
+          }
+
           if (this.t.isIdentifier(propName)) {
-            this.addProp(propName, defaultValue);
+            this.addClassProperty(propName, DECORATOR_PROPS, defaultValue);
             propNames.push(propName);
           }
           // TODO: handle nested destructuring
@@ -238,8 +341,17 @@ class ClassComponentTransformer {
     return propNames;
   }
 
+  private addClassPropertyForPropAlias(propName: t.Identifier, key: t.Identifier) {
+    // handle alias, like class A { foo: bar = 'default' }
+    this.addClassProperty(propName, null, undefined);
+    // push alias assignment in Watch , like this.bar = this.foo
+    this.nestedDestructuringBindings.push(
+      this.t.assignmentExpression('=', this.t.identifier(propName.name), this.t.identifier(key.name))
+    );
+  }
+
   // add prop to class, like @prop name = '';
-  private addProp(key: t.Identifier, defaultValue?: t.Expression, isChildren = false) {
+  private addClassProperty(key: t.Identifier, decorator: string | null, defaultValue?: t.Expression) {
     // clone the key to avoid reference issue
     const id = this.t.cloneNode(key);
     this.addProperty(
@@ -248,7 +360,7 @@ class ClassComponentTransformer {
         defaultValue ?? undefined,
         undefined,
         // use prop decorator
-        [this.t.decorator(this.t.identifier(isChildren ? 'Children' : 'Prop'))],
+        decorator ? [this.t.decorator(this.t.identifier(decorator))] : undefined,
         undefined,
         false
       ),
