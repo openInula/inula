@@ -1,18 +1,19 @@
 import { it, describe, expect } from 'vitest';
 import { transform } from './transform';
 
-describe('fn2Class', () => {
-  it('should transform state assignment', () => {
-    expect(
-      //language=JSX
-      transform(`
-        export default function Name() {
-          let name = 'John';
+describe('reactivity', () => {
+  describe('state', () => {
+    it('should transform state assignment', () => {
+      expect(
+        //language=JSX
+        transform(`
+          export default function Name() {
+            let name = 'John';
 
-          return <h1>{name}</h1>;
-        }
-      `)
-    ).toMatchInlineSnapshot(`
+            return <h1>{name}</h1>;
+          }
+        `)
+      ).toMatchInlineSnapshot(`
       "class Name extends View {
         name = 'John';
         Body() {
@@ -21,17 +22,17 @@ describe('fn2Class', () => {
       }
       export { Name as default };"
     `);
-  });
+    });
 
-  it('should transform state modification ', () => {
-    expect(
-      transform(`
+    it('should transform state modification ', () => {
+      expect(
+        transform(`
       function MyApp() {
         let count = 0;
         return <div onClick={() => count++}>{count}</div>
       }
     `)
-    ).toMatchInlineSnapshot(`
+      ).toMatchInlineSnapshot(`
       "class MyApp extends View {
         count = 0;
         Body() {
@@ -39,18 +40,18 @@ describe('fn2Class', () => {
         }
       }"
     `);
-  });
+    });
 
-  it('should not transform variable out of scope', () => {
-    expect(
-      //language=JSX
-      transform(`
-        const name = "John";
-        export default function Name() {
-          return <h1>{name}</h1>;
-        }
-      `)
-    ).toMatchInlineSnapshot(`
+    it('should not transform variable out of scope', () => {
+      expect(
+        //language=JSX
+        transform(`
+          const name = "John";
+          export default function Name() {
+            return <h1>{name}</h1>;
+          }
+        `)
+      ).toMatchInlineSnapshot(`
       "const name = \\"John\\";
       class Name extends View {
         Body() {
@@ -59,6 +60,7 @@ describe('fn2Class', () => {
       }
       export { Name as default };"
     `);
+    });
   });
 
   it('should transform function declaration', () => {
@@ -127,26 +129,6 @@ describe('fn2Class', () => {
     `);
   });
 
-  it('should not transform constant data', () => {
-    expect(
-      //language=JSX
-      transform(`
-        const name = "John";
-        export default function Name() {
-          return <h1>{name}</h1>;
-        }
-      `)
-    ).toMatchInlineSnapshot(`
-      "const name = \\"John\\";
-      class Name extends View {
-        Body() {
-          return <h1>{name}</h1>;
-        }
-      }
-      export { Name as default };"
-    `);
-  });
-
   it('should transform derived assignment', () => {
     expect(
       //language=JSX
@@ -172,18 +154,19 @@ describe('fn2Class', () => {
     `);
   });
 
-  it('should transform watch from  call expression', () => {
-    expect(
-      //language=JSX
-      transform(`
-        export default function CountComp() {
-          let count = 0;
-          watch: console.log(count);
+  describe('watch', () => {
+    it('should transform watch from  call expression', () => {
+      expect(
+        //language=JSX
+        transform(`
+          export default function CountComp() {
+            let count = 0;
+            watch: console.log(count);
 
-          return <div>{count}</div>;
-        }
-      `)
-    ).toMatchInlineSnapshot(`
+            return <div>{count}</div>;
+          }
+        `)
+      ).toMatchInlineSnapshot(`
       "class CountComp extends View {
         count = 0;
         @Watch
@@ -196,60 +179,60 @@ describe('fn2Class', () => {
       }
       export { CountComp as default };"
     `);
-  });
+    });
 
-  it('should transform watch from block statement', () => {
-    expect(
-      //language=JSX
-      transform(`
-        export default function CountComp() {
-          let count = 0;
-          watch: for (let i = 0; i < count; i++) {
-            console.log(\`The count change to: \${i}\`);
+    it('should transform watch from block statement', () => {
+      expect(
+        //language=JSX
+        transform(`
+          export default function CountComp() {
+            let count = 0;
+            watch: for (let i = 0; i < count; i++) {
+              console.log(\`The count change to: \${i}\`);
+            }
+            return <>
+              <button onClick={() => count++}>Add</button>
+              <div>{count}</div>
+            </>;
+          };
+        `)
+      ).toMatchInlineSnapshot(
+        `
+        "class CountComp extends View {
+          count = 0;
+          @Watch
+          _watch() {
+            for (let i = 0; i < this.count; i++) {
+              console.log(\`The count change to: \${i}\`);
+            }
           }
-          return <>
-            <button onClick={() => count++}>Add</button>
-            <div>{count}</div>
-          </>;
-        };
-      `)
-    ).toMatchInlineSnapshot(
+          Body() {
+            return <>
+                      <button onClick={() => this.count++}>Add</button>
+                      <div>{this.count}</div>
+                    </>;
+          }
+        }
+        export { CountComp as default };
+        ;"
       `
-      "class CountComp extends View {
-        count = 0;
-        @Watch
-        _watch() {
-          for (let i = 0; i < this.count; i++) {
-            console.log(\`The count change to: \${i}\`);
-          }
-        }
-        Body() {
-          return <>
-                  <button onClick={() => this.count++}>Add</button>
-                  <div>{this.count}</div>
-                </>;
-        }
-      }
-      export { CountComp as default };
-      ;"
-    `
-    );
-  });
+      );
+    });
 
-  it('should transform watch from if statement', () => {
-    expect(
-      //language=JSX
-      transform(`
-        export default function CountComp() {
-          let count = 0;
-          watch: if (count > 0) {
-            console.log(\`The count is greater than 0\`);
-          }
+    it('should transform watch from if statement', () => {
+      expect(
+        //language=JSX
+        transform(`
+          export default function CountComp() {
+            let count = 0;
+            watch: if (count > 0) {
+              console.log(\`The count is greater than 0\`);
+            }
 
-          return <div>{count}</div>;
-        }
-      `)
-    ).toMatchInlineSnapshot(`
+            return <div>{count}</div>;
+          }
+        `)
+      ).toMatchInlineSnapshot(`
       "class CountComp extends View {
         count = 0;
         @Watch
@@ -264,30 +247,31 @@ describe('fn2Class', () => {
       }
       export { CountComp as default };"
     `);
+    });
   });
 
   it('should transform function component reactively', () => {
     expect(
       transform(`
       function MyComp() {
-  let count = 0
-  return <>
-    <h1 count='123'>Hello dlight fn, {count}</h1>
-    <button onClick={() => count +=1}>Add</button>
-    <Button />
-  </>
-}`)
+        let count = 0
+        return <>
+          <h1 count='123'>Hello dlight fn, {count}</h1>
+          <button onClick={() => count +=1}>Add</button>
+          <Button />
+        </>
+      }`)
     ).toMatchInlineSnapshot(`
-  "class MyComp extends View {
-    count = 0;
-    Body() {
-      return <>
-      <h1 count='123'>Hello dlight fn, {this.count}</h1>
-      <button onClick={() => this.count += 1}>Add</button>
-      <Button />
-    </>;
-    }
-  }"
-`);
+      "class MyComp extends View {
+        count = 0;
+        Body() {
+          return <>
+                <h1 count='123'>Hello dlight fn, {this.count}</h1>
+                <button onClick={() => this.count += 1}>Add</button>
+                <Button />
+              </>;
+        }
+      }"
+    `);
   });
 });
