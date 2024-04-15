@@ -19,6 +19,7 @@ export class DLNode {
   /**
    * @brief Constructor
    * @param nodeType
+   * @return {void}
    */
   constructor(nodeType) {
     this._$dlNodeType = nodeType;

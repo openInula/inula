@@ -145,4 +145,4 @@ function App() {
   );
 }
 
-render('main', App);
+render(App, 'main');

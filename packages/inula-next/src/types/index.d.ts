@@ -22,7 +22,7 @@ export const App: any;
 export const Mount: (idOrEl: string | HTMLElement) => any;
 
 // ---- With actual value
-export function render(idOrEl: string | HTMLElement, DL: any): void;
+export function render(DL: any, idOrEl: string | HTMLElement): void;
 export function manual<T>(callback: () => T, _deps?: any[]): T;
 export function escape<T>(arg: T): T;
 export function setGlobal(globalObj: any): void;
