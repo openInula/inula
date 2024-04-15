@@ -53,6 +53,14 @@ export class PluginProvider {
         return;
       }
 
+      // ---- handle lifecycles
+      const lifecycles = ['willMount', 'didMount', 'willUnmount', 'didUnmount'];
+      if (this.t.isLabeledStatement(node) && lifecycles.includes(node.label.name)) {
+        // transform the lifecycle statement to lifecycle method
+        classTransformer.transformLifeCycle(node);
+        return;
+      }
+
       // handle watch
       if (this.t.isLabeledStatement(node) && node.label.name === 'watch') {
         // transform the watch statement to watch method
@@ -172,7 +180,19 @@ class ClassComponentTransformer {
     this.addProperty(body, 'Body');
   }
 
-  transformLifeCycle() {}
+  transformLifeCycle(node: t.LabeledStatement) {
+    // transform the lifecycle statement to lifecycle method
+    const methodName = node.label.name;
+    const method = this.t.classMethod(
+      'method',
+      this.t.identifier(methodName),
+      [],
+      this.t.blockStatement(node.body.body),
+      false,
+      false
+    );
+    this.addProperty(method, methodName);
+  }
 
   transformComputed() {}
 
@@ -218,7 +238,7 @@ class ClassComponentTransformer {
    */
   transformWatch(node: t.LabeledStatement) {
     const id = this.functionScope.generateUidIdentifier(DECORATOR_WATCH.toLowerCase());
-    const method = this.t.classMethod('method', id, [], this.t.blockStatement([node]), false, false);
+    const method = this.t.classMethod('method', id, [], this.t.blockStatement([node.body]), false, false);
     method.decorators = [this.t.decorator(this.t.identifier(DECORATOR_WATCH))];
     this.addProperty(method);
   }

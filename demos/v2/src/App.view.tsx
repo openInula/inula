@@ -16,9 +16,7 @@ import {
 } from '@openinula/next';
 
 // @ts-ignore
-function Button({ children: content, onClick }) {
-  console.log(content);
-
+function Button({ children, onClick }) {
   return (
     <button
       onClick={onClick}
@@ -31,10 +29,11 @@ function Button({ children: content, onClick }) {
         borderRadius: '4px',
       }}
     >
-      {content}
+      {children}
     </button>
   );
 }
+
 function ArrayModification() {
   const arr = [];
   willMount(() => {});
@@ -47,9 +46,69 @@ function ArrayModification() {
   );
 }
 
+function Counter() {
+  let count = 0;
+  const doubleCount = count * 2; // 当count变化时，doubleCount自动更新
+
+  // 当count变化时，watch会自动执行
+  watch(() => {
+    uploadToServer(count);
+    console.log(`count has changed: ${count}`);
+  });
+
+  // 只有在init的时候执行一次
+  console.log(`Counter willMount with count ${count}`);
+  // 在elements被挂载到DOM之后执行
+  didMount(() => {
+    console.log(`Counter didMount with count ${count}`);
+  });
+
+  return (
+    <section>
+      count: {count}, double is: {doubleCount}
+      <button onClick={() => count++}>Add</button>
+    </section>
+  );
+}
+
+function Counter() {
+  let count = 0;
+  const doubleCount = count * 2; // 当count变化时，doubleCount自动更新
+
+  uploadToServer(count); // 当count变化时，uploadToServer会自动执行
+  console.log(`count has changed: ${count}`); // 当count变化时，console.log会自动执行
+
+  // 只有在init的时候执行一次
+  willMount(() => {
+    console.log(`Counter willMount with count ${count}`);
+  });
+  // 在elements被挂载到DOM之后执行
+  didMount(() => {
+    console.log(`Counter didMount with count ${count}`);
+  });
+
+  return (
+    <section>
+      count: {count}, double is: {doubleCount}
+      <button onClick={() => count++}>Add</button>
+    </section>
+  );
+}
+
 function MyComp() {
   let count = 0;
-  const db = count * 2;
+
+  {
+    console.log(count);
+    const i = count * 2;
+    console.log(i);
+  }
+
+  console.log(count);
+  const i = count * 2;
+  console.log(i);
+
+  const XX = () => {};
 
   return (
     <>
@@ -58,7 +117,7 @@ function MyComp() {
         count: {count}, double is: {db}
         <button onClick={() => (count += 1)}>Add</button>
       </section>
-      <Button onClick={() => alert(count)}>{count}</Button>
+      <Button onClick={() => alert(count)}>Alter count</Button>
       <ConditionalRendering count={count} />
       <ArrayModification />
     </>
