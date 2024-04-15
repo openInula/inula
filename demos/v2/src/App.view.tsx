@@ -76,4 +76,4 @@ function ConditionalRendering({ count }) {
   );
 }
 
-render('main', MyComp);
+render(MyComp, 'main');

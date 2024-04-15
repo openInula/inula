@@ -1,7 +1,12 @@
 import { DLNode, DLNodeType } from './DLNode';
 import { forwardHTMLProp } from './HTMLNode';
 import { DLStore, cached } from './store';
+import { schedule } from './scheduler';
 
+/**
+ * @class
+ * @extends import('./DLNode').DLNode
+ */
 export class CompNode extends DLNode {
   /**
    * @brief Constructor, Comp type
@@ -278,7 +283,7 @@ export class CompNode extends DLNode {
     } else {
       this._$depNumsToUpdate = [depNum];
       // ---- Update in the next microtask
-      Promise.resolve().then(() => {
+      schedule(() => {
         // ---- Abort if unmounted
         if (this._$unmounted) return;
         const depNums = this._$depNumsToUpdate;
@@ -302,6 +307,7 @@ export class CompNode extends DLNode {
       delete this._$depNumsToUpdate;
     });
   }
+
   /**
    * @brief Update all props and content of the model
    */

@@ -13,6 +13,7 @@ export * from './MutableNode/CondNode';
 export * from './MutableNode/TryNode';
 
 import { DLStore } from './store';
+
 export { setGlobal, setDocument } from './store';
 
 function initStore() {
@@ -22,7 +23,12 @@ function initStore() {
   DLStore.global.DidUnmountStore = [];
 }
 
-export function render(DL, idOrEl) {
+/**
+ * @brief Render the DL class to the element
+ * @param {typeof import('./CompNode').CompNode} Comp
+ * @param {HTMLElement | string} idOrEl
+ */
+export function render(Comp, idOrEl) {
   let el = idOrEl;
   if (typeof idOrEl === 'string') {
     const elFound = DLStore.document.getElementById(idOrEl);
@@ -33,7 +39,7 @@ export function render(DL, idOrEl) {
   }
   initStore();
   el.innerHTML = '';
-  const dlNode = new DL();
+  const dlNode = new Comp();
   dlNode._$init();
   insertNode(el, dlNode, 0);
   DLNode.runDidMount();
