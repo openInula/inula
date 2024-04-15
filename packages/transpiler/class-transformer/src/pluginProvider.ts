@@ -6,6 +6,7 @@ import type { Scope } from '@babel/traverse';
 const DECORATOR_PROPS = 'Prop';
 const DECORATOR_CHILDREN = 'Children';
 const DECORATOR_WATCH = 'Watch';
+const DECORATOR_ENV = 'Env';
 
 function replaceFnWithClass(path: NodePath<t.FunctionDeclaration>, classTransformer: ClassComponentTransformer) {
   const originalName = path.node.id.name;
@@ -38,8 +39,14 @@ export class PluginProvider {
     const classTransformer = new ClassComponentTransformer(this.babelApi, path);
     // transform the parameters to props
     const params = path.node.params;
+    // ---
     const props = params[0];
     classTransformer.transformProps(props);
+
+    // --- env
+    const env = params[1];
+    classTransformer.transformEnv(env);
+
     // iterate the function body orderly
     const body = path.node.body.body;
     body.forEach((node, idx) => {
@@ -367,46 +374,50 @@ class ClassComponentTransformer {
     );
   }
 
-  /**
-   * Check if the node should be transformed to watch method, including:
-   * 1. call expression.
-   * 2. for loop
-   * 3. while loop
-   * 4. if statement
-   * 5. switch statement
-   * 6. assignment expression
-   * 7. try statement
-   * 8. ++/-- expression
-   * @param node
-   */
-  shouldTransformWatch(node: t.Node): node is ToWatchNode {
-    if (this.t.isExpressionStatement(node)) {
-      if (this.t.isCallExpression(node.expression)) {
-        return true;
-      }
-      if (this.t.isAssignmentExpression(node.expression)) {
-        return true;
-      }
-      if (this.t.isUpdateExpression(node.expression)) {
-        return true;
-      }
+  // TODO: need refactor, maybe merge with props?
+  transformEnv(env: t.Identifier | t.Pattern | t.RestElement) {
+    if (!env) {
+      return;
     }
-    if (this.t.isForStatement(node)) {
-      return true;
+    if (!this.t.isObjectPattern(env)) {
+      throw Error('Unsupported env type, please use object destructuring.');
     }
-    if (this.t.isWhileStatement(node)) {
-      return true;
-    }
-    if (this.t.isIfStatement(node)) {
-      return true;
-    }
-    if (this.t.isSwitchStatement(node)) {
-      return true;
-    }
-    if (this.t.isTryStatement(node)) {
-      return true;
-    }
+    env.properties.forEach(property => {
+      if (this.t.isObjectProperty(property)) {
+        const key = property.key;
+        let defaultVal: t.Expression;
+        if (this.t.isIdentifier(key)) {
+          let alias: t.Identifier | null = null;
+          if (this.t.isAssignmentPattern(property.value)) {
+            const propName = property.value.left;
+            defaultVal = property.value.right;
+            if (this.t.isIdentifier(propName)) {
+              // handle alias
+              if (propName.name !== key.name) {
+                alias = propName;
+              }
+            } else {
+              throw Error(`Unsupported assignment type in object destructuring: ${propName.type}`);
+            }
+          } else if (this.t.isIdentifier(property.value)) {
+            // handle alias
+            if (key.name !== property.value.name) {
+              alias = property.value;
+            }
+          } else if (this.t.isObjectPattern(property.value)) {
+            throw Error('Unsupported nested env destructuring');
+          }
 
-    return false;
+          if (alias) {
+            this.addClassPropertyForPropAlias(alias, key);
+          }
+          this.addClassProperty(key, DECORATOR_ENV, defaultVal);
+          return;
+        }
+        throw new Error('Unsupported props destructuring, please use simple object destructuring.');
+      } else {
+        throw new Error('Unsupported env destructuring, please use plain object destructuring.');
+      }
+    });
   }
 }

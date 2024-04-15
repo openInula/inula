@@ -59,21 +59,21 @@ describe('component-composition', () => {
       //language=JSX
       expect(
         transform(`
-      function UserProfile({
-       name = '',
-       age = null,
-       favouriteColors : [{r,g,b}, color2],
-       isAvailable = false,
-     }) {
-        return (
-          <>
-            <p>My name is {name}!</p >
-            <p>My age is {age}!</p >
-            <p>My favourite colors are {favouriteColors.join(', ')}!</p >
-            <p>I am {isAvailable ? 'available' : 'not available'}</p >
-          </>
-        );
-      }`),
+          function UserProfile({
+                                 name = '',
+                                 age = null,
+                                 favouriteColors: [{r, g, b}, color2],
+                                 isAvailable = false,
+                               }) {
+            return (
+              <>
+                <p>My name is {name}!</p>
+                <p>My age is {age}!</p>
+                <p>My favourite colors are {favouriteColors.join(', ')}!</p>
+                <p>I am {isAvailable ? 'available' : 'not available'}</p>
+              </>
+            );
+          }`),
         `
           class UserProfile {
             @Prop name = '';
@@ -86,7 +86,7 @@ describe('component-composition', () => {
             g;
             b;
             xx = (() => {
-              const [{r, g, b},color2] = this.favouriteColors;
+              const [{r, g, b}, color2] = this.favouriteColors;
               this.r = r
               this.g = g
               this.b = b
@@ -108,31 +108,64 @@ describe('component-composition', () => {
       //language=JSX
       expect(
         transform(`
-            function Card({ children }) {
-              return (
-                <div className="card">
-                  {children}
-                </div>
-              );
-            }`),
+          function Card({children}) {
+            return (
+              <div className="card">
+                {children}
+              </div>
+            );
+          }`),
         `
-            class Card {
-              @Children children
+          class Card {
+            @Children children
 
-              Body() {
-                div(\`card\`, this.children)
-              }
+            Body() {
+              div(\`card\`, this.children)
             }
-          `
+          }
+        `
       );
     });
   });
 
+  describe('env', () => {
+    it('should support env', () => {
+      expect(
+        transform(`
+      function App () {
+        return <Env theme="dark">
+          <Child name="child"/>
+        </Env>;
+      }
+      function Child({ name },{ theme }){
+        return <div>{theme}</div>
+      }
+    `)
+      ).toMatchInlineSnapshot(`
+        "class App extends View {
+          Body() {
+            return <env theme=\\"dark\\">
+                  <Child name=\\"child\\" />
+                </env>;
+          }
+        }
+        class Child extends View {
+          @Prop
+          name;
+          @Env
+          theme;
+          Body() {
+            return <div>{this.theme}</div>;
+          }
+        }"
+      `);
+    });
+  });
   it('should support children prop with alias', () => {
     //language=JSX
     expect(
       transform(`
-        function Card({children: content,  foo: bar = 1, val = 1}) {
+        function Card({children: content, foo: bar = 1, val = 1}) {
           return (
             <div className="card">
               {content}
@@ -141,23 +174,30 @@ describe('component-composition', () => {
         }`)
     ).toMatchInlineSnapshot(`
       "class Card extends View {
-        @Children
-        content;
-        bar;
-        @Prop
-        foo = 1;
-        @Prop
-        val = 1;
-        Body() {
-          return <div className=\\"card\\">
-                    {this.content}
-                  </div>;
+      @Children
+      content;
+      bar;
+      @Prop
+      foo = 1;
+      @Prop
+      val = 1;
+      Body()
+      {
+        return <div className=\\
+        "card\\">
+        {
+          this.content
         }
-        @Watch
-        $$bindNestDestructuring() {
-          this.bar = this.foo;
-        }
-      }"
+      </div>
+        ;
+      }
+      @Watch
+      $$bindNestDestructuring()
+      {
+        this.bar = this.foo;
+      }
+      }
+      "
     `);
   });
 });

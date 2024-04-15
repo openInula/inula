@@ -1,8 +1,4 @@
-# delight-transformer
-
-This is a experimental package to implement [API2.0](https://gitee.com/openInula/rfcs/blob/master/src/002-zouyu-API2.0.md) to [dlight](https://github.com/dlight-js/dlight) class.
-
-## Todo-list
+# Todo-list
 
 - [ ] function 2 class.
   - [x] assignment 2 property
@@ -13,29 +9,21 @@ This is a experimental package to implement [API2.0](https://gitee.com/openInula
     - [ ] partial object destructuring
     - [ ] nested object destructuring
     - [ ] nested array destructuring
-    - [ ] alias
+    - [x] alias
   - [x] add `this` @HQ
-  - [ ] for (jsx-parser) -> playground + benchmark @YH
-  - [ ] lifecycle @HQ
-  - [ ] ref @HQ (to validate)
-  - [ ] env @HQ (to validate)
+  - [x] for (jsx-parser) -> playground + benchmark @YH
+  - [x] lifecycle @HQ
+  - [x] ref @HQ (to validate)
+  - [x] env @HQ (to validate)
   - [ ] Sub component
   - [ ] Early Return
   - [ ] custom hook -> Model @YH
 - [ ] JSX
   - [x] style
   - [x] fragment
-  - [ ] ref (to validate)
+  - [x] ref (to validate)
   - [ ] snippet
   - [x] for
-
-# 4.8 TODO
-@YH
-* Benchmark(result + comparison)
-* Playground(@HQ publish) deploy
-* PPT
-* DEMO
-* api2.1 compiled code
 
 
 # function component syntax
@@ -60,10 +48,7 @@ This is a experimental package to implement [API2.0](https://gitee.com/openInula
 - [ ] early return
 
 
-# custom hook syntax
-TODO
-
-# issues
+# Issues
 - [ ] partial props destructuring -> support this.$props @YH
 ```jsx
 function Input({onClick, xxx, ...props}) {
@@ -105,8 +90,8 @@ class FetchModel {}
 <button>Add, Now is {count}</button>
 ```
 
-
-# Watch
+# Proposal
+## Watch
 
 自动将Statement包裹Watch的反例：
 ```jsx

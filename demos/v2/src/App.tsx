@@ -14,4 +14,4 @@ function MyComp() {
     </>
   );
 }
-render('main', MyComp);
+render(MyComp, 'main');
