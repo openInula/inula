@@ -14,7 +14,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { genCode, mockAnalyze } from './mock';
+import { genCode, mockAnalyze } from '../mock';
 import generate from '@babel/generator';
 
 describe('propertiesAnalyze', () => {

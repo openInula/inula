@@ -1,12 +1,12 @@
 import type babel from '@babel/core';
 import { type PluginObj } from '@babel/core';
-import { PluginProviderClass } from './pluginProvider';
 import { type DLightOption } from './types';
 import { defaultAttributeMap } from './const';
 import { analyze } from './analyze';
 import { NodePath, type types as t } from '@babel/core';
 import { COMPONENT } from './constants';
 import { extractFnFromMacro } from './utils';
+import { register } from './babelTypes';
 
 export default function (api: typeof babel, options: DLightOption): PluginObj {
   const { types } = api;
@@ -18,23 +18,16 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
     attributeMap = defaultAttributeMap,
   } = options;
 
-  const pluginProvider = new PluginProviderClass(
-    api,
-    types,
-    Array.isArray(files) ? files : [files],
-    Array.isArray(excludeFiles) ? excludeFiles : [excludeFiles],
-    enableDevTools,
-    htmlTags,
-    attributeMap
-  );
-
+  register(types);
   return {
     visitor: {
       Program: {
         enter(path, { filename }) {
-          return pluginProvider.programEnterVisitor(path, filename);
+          // return pluginProvider.programEnterVisitor(path, filename);
         },
-        exit: pluginProvider.programExitVisitor.bind(pluginProvider),
+        exit(path, { filename }) {
+          // pluginProvider.programExitVisitor.bind(pluginProvider);
+        },
       },
       CallExpression(path: NodePath<t.CallExpression>) {
         // find the component, like: Component(() => {})
@@ -52,7 +45,7 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
               console.error('Component macro must be assigned to a variable');
             }
           }
-          const root = analyze(name, componentNode);
+          const root = analyze(types, name, componentNode);
           // The sub path has been visited, so we just skip
           path.skip();
         }

@@ -14,14 +14,14 @@
  */
 
 import { NodePath, type types as t } from '@babel/core';
-import { createComponentNode, createCondNode, createJSXNode } from './nodeFactory';
-import { AnalyzeContext, Branch, Visitor } from './types';
-import { isValidPath } from './utils';
+import { createComponentNode, createCondNode, createJSXNode } from '../analyze/nodeFactory';
+import { AnalyzeContext, Branch, Visitor } from '../analyze/types';
+import { isValidPath } from '../analyze/utils';
 
-export function earlyReturnAnalyze(): Visitor {
+export function earlyReturnPlugin(): Visitor {
   return {
     ReturnStatement(path: NodePath<t.ReturnStatement>, context: AnalyzeContext) {
-      const currentComp = context.currentComponent;
+      const currentComp = context.current;
 
       const argument = path.get('argument');
       if (argument.isJSXElement()) {
@@ -32,7 +32,7 @@ export function earlyReturnAnalyze(): Visitor {
       if (!hasEarlyReturn(ifStmt)) {
         return;
       }
-      const currentComp = context.currentComponent;
+      const currentComp = context.current;
 
       const branches: Branch[] = [];
       let next: NodePath<t.Statement> | null = ifStmt;

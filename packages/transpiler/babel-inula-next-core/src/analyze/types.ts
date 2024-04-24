@@ -13,9 +13,9 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { NodePath, types as t } from '@babel/core';
+import { type NodePath, types as t } from '@babel/core';
 import { Node } from '@babel/traverse';
-import { ON_MOUNT, ON_UNMOUNT, WILL_MOUNT, WILL_UNMOUNT } from '../constants';
+import { ON_MOUNT, ON_UNMOUNT, PropType, WILL_MOUNT, WILL_UNMOUNT } from '../constants';
 
 // --- Node shape ---
 export type InulaNode = ComponentNode | CondNode | JSXNode;
@@ -23,35 +23,54 @@ export type JSX = t.JSXElement | t.JSXFragment;
 export type LifeCycle = typeof WILL_MOUNT | typeof ON_MOUNT | typeof WILL_UNMOUNT | typeof ON_UNMOUNT;
 type defaultVal = any | null;
 type Bitmap = number;
-interface Reactive {
+interface Property {
   name: string;
   value: t.Expression | null;
   // indicate the value is a state or computed or watch
-  listeners: string[];
-  bitmap: Bitmap;
+  listeners?: string[];
+  bitmap?: Bitmap;
   // need a flag for computed to gen a getter
   // watch is a static computed
   isComputed: boolean;
+  isMethod: boolean;
 }
-
+interface Prop {
+  name: string;
+  type: PropType;
+  alias: string | null;
+  default: t.Expression | null;
+  nestedProps: string[] | null;
+  nestedRelationship: t.ObjectPattern | t.ArrayPattern | null;
+}
 export interface ComponentNode {
   type: 'comp';
   name: string;
-  props: Record<string, defaultVal>;
-  // A valuable could be a state or computed
-  valuable: Reactive;
-  methods: NodePath<t.FunctionDeclaration>[];
+  props: Prop[];
+  // A properties could be a state or computed
+  properties: Property[];
+  availableProperties: string[];
+  /**
+   * The map to find the dependencies
+   */
+  dependencyMap: {
+    [key: string]: string[];
+  };
   child?: InulaNode;
-  subComponents: ComponentNode[];
+  subComponents?: ComponentNode[];
   parent?: ComponentNode;
   /**
    * The function body of the fn component code
    */
-  // fnBody: NodePath<t.Statement>[];
-  // a map to find the state
+  fnBody: NodePath<t.Statement>[];
+  /**
+   * The map to find the state
+   */
   reactiveMap: Record<string, Bitmap>;
-  level: number;
-  lifecycle: Record<LifeCycle, NodePath<t.Statement>[][]>;
+  lifecycle: Partial<Record<LifeCycle, NodePath<t.Statement>[]>>;
+  watch?: {
+    deps: NodePath<t.ArrayExpression> | null;
+    callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>;
+  }[];
 }
 
 export interface SubCompNode {
@@ -84,19 +103,15 @@ export interface Branch {
 
 export interface AnalyzeContext {
   level: number;
-  index: number;
-  currentComponent: ComponentNode;
-  restStmt: NodePath<t.Statement>[];
-  // --- flow control ---
-  /**
-   * ignore the rest of the statements
-   */
-  skipRest: () => void;
+  t: typeof t;
+  current: ComponentNode;
   traverse: (p: NodePath<t.Statement>, ctx: AnalyzeContext) => void;
 }
 
 export type Visitor<S = AnalyzeContext> = {
   [Type in Node['type']]?: (path: NodePath<Extract<Node, { type: Type }>>, state: S) => void;
+} & {
+  Prop?: (path: NodePath<t.ObjectProperty | t.RestElement>, state: S) => void;
 };
 export type Analyzer = () => Visitor;
 

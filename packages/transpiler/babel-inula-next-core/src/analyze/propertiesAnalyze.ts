@@ -13,40 +13,13 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { NodePath } from '@babel/core';
+import { AnalyzeContext, Visitor } from './types';
+import { addLifecycle, addMethod, addProperty } from './nodeFactory';
+import { isValidPath } from './utils';
+import { type types as t, type NodePath } from '@babel/core';
+import { reactivityFuncNames } from '../const';
+import { types } from '../babelTypes';
 
-import { Visitor } from './types';
-import { addMethod, addState } from './nodeFactory';
-import { hasJSX, isValidComponentName, isValidPath } from './utils';
-import { jsxSlicesAnalyze } from './jsxSliceAnalyze';
-import * as t from '@babel/types';
-
-// Analyze the JSX slice in the function component, including:
-// 1. VariableDeclaration, like `const a = <div />`
-// 2. SubComponent, like `function Sub() { return <div /> }`
-function handleFn(fnName: string, fnBody: NodePath<t.BlockStatement>) {
-  if (isValidComponentName(fnName)) {
-    // This is a subcomponent, treat it as a normal component
-  } else {
-    //   This is jsx creation function
-    //   function jsxFunc() {
-    //     // This is a function that returns JSX
-    //     // because the function name is smallCamelCased
-    //     return <div>{count}</div>
-    //   }
-    //   =>
-    //   function jsxFunc() {
-    //     function Comp_$id4$() {
-    //       return <div>{count}</div>
-    //     }
-    //     // This is a function that returns JSX
-    //     // because the function name is smallCamelCased
-    //     return <Comp_$id4$/>
-    //   }
-  }
-}
-
-// 3. jsx creation function, like `function create() { return <div /> }`
 export function propertiesAnalyze(): Visitor {
   return {
     VariableDeclaration(path: NodePath<t.VariableDeclaration>, ctx) {
@@ -61,43 +34,121 @@ export function propertiesAnalyze(): Visitor {
           // TODO: handle array destructuring
           throw new Error('Array destructuring is not supported yet');
         } else if (id.isIdentifier()) {
+          // --- properties: the state / computed / plain properties / methods---
           const init = declaration.get('init');
-          if (isValidPath(init) && hasJSX(init)) {
-            if (init.isArrowFunctionExpression()) {
-              const fnName = id.node.name;
-              const fnBody = init.get('body');
-
-              // handle case like `const jsxFunc = () => <div />`
-              if (fnBody.isExpression()) {
-                // turn expression into block statement for consistency
-                fnBody.replaceWith(t.blockStatement([t.returnStatement(fnBody.node)]));
-              }
-
-              // We switched to the block statement above, so we can safely call handleFn
-              handleFn(fnName, fnBody as NodePath<t.BlockStatement>);
+          let deps: string[] | null = null;
+          if (isValidPath(init)) {
+            if (init.isArrowFunctionExpression() || init.isFunctionExpression()) {
+              addMethod(ctx.current, id.node.name, init.node);
+              return;
             }
-            // handle jsx slice
-            ctx.traverse(path, ctx);
+            deps = getDependenciesFromNode(id.node.name, init, ctx);
           }
-          addState(ctx.currentComponent, id.node.name, declaration.node.init || null);
+          addProperty(ctx.current, id.node.name, init.node || null, !!deps?.length);
         }
       });
     },
-    FunctionDeclaration(path: NodePath<t.FunctionDeclaration>, ctx) {
+    FunctionDeclaration(path: NodePath<t.FunctionDeclaration>, { current }) {
       const fnId = path.node.id;
       if (!fnId) {
-        // This is an anonymous function, collect into lifecycle
-        //TODO
-        return;
+        throw new Error('Function declaration must have an id');
       }
 
-      if (!hasJSX(path)) {
-        // This is a normal function, collect into methods
-        addMethod(ctx.currentComponent, path);
-        return;
-      }
-
-      handleFn(fnId.name, path.get('body'));
+      const functionExpression = types.functionExpression(
+        path.node.id,
+        path.node.params,
+        path.node.body,
+        path.node.generator,
+        path.node.async
+      );
+      addMethod(current, fnId.name, functionExpression);
     },
   };
+}
+
+/**
+ * @brief Get all valid dependencies of a babel path
+ * @param propertyKey
+ * @param path
+ * @param ctx
+ * @returns
+ */
+function getDependenciesFromNode(
+  propertyKey: string,
+  path: NodePath<t.Expression | t.ClassDeclaration>,
+  { current }: AnalyzeContext
+) {
+  // ---- Deps: console.log(this.count)
+  const deps = new Set<string>();
+  // ---- Assign deps: this.count = 1 / this.count++
+  const assignDeps = new Set<string>();
+  const visitor = (innerPath: NodePath<t.Identifier>) => {
+    const propertyKey = innerPath.node.name;
+    if (isAssignmentExpressionLeft(innerPath) || isAssignmentFunction(innerPath)) {
+      assignDeps.add(propertyKey);
+    } else if (current.availableProperties.includes(propertyKey)) {
+      deps.add(propertyKey);
+    }
+  };
+  if (path.isIdentifier()) {
+    visitor(path);
+  }
+  path.traverse({
+    Identifier: visitor,
+  });
+
+  // ---- Eliminate deps that are assigned in the same method
+  //      e.g. { console.log(this.count); this.count = 1 }
+  //      this will cause infinite loop
+  //      so we eliminate "count" from deps
+  assignDeps.forEach(dep => {
+    deps.delete(dep);
+  });
+
+  const depArr = [...deps];
+  if (deps.size > 0) {
+    current.dependencyMap[propertyKey] = depArr;
+  }
+
+  return depArr;
+}
+
+/**
+ * @brief Check if it's the left side of an assignment expression, e.g. count = 1
+ * @param innerPath
+ * @returns assignment expression
+ */
+function isAssignmentExpressionLeft(innerPath: NodePath): NodePath | null {
+  let parentPath = innerPath.parentPath;
+  while (parentPath && !parentPath.isStatement()) {
+    if (parentPath.isAssignmentExpression()) {
+      if (parentPath.node.left === innerPath.node) return parentPath;
+      const leftPath = parentPath.get('left') as NodePath;
+      if (innerPath.isDescendant(leftPath)) return parentPath;
+    } else if (parentPath.isUpdateExpression()) {
+      return parentPath;
+    }
+    parentPath = parentPath.parentPath;
+  }
+
+  return null;
+}
+
+/**
+ * @brief Check if it's a reactivity function, e.g. arr.push
+ * @param innerPath
+ * @returns
+ */
+function isAssignmentFunction(innerPath: NodePath): boolean {
+  let parentPath = innerPath.parentPath;
+
+  while (parentPath && parentPath.isMemberExpression()) {
+    parentPath = parentPath.parentPath;
+  }
+  if (!parentPath) return false;
+  return (
+    parentPath.isCallExpression() &&
+    parentPath.get('callee').isIdentifier() &&
+    reactivityFuncNames.includes((parentPath.get('callee').node as t.Identifier).name)
+  );
 }

@@ -13,26 +13,34 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { ComponentNode, InulaNode } from '../src/analyze/types';
+import { Analyzer, ComponentNode, InulaNode } from '../src/analyze/types';
 import babel, { type PluginObj, transform as transformWithBabel } from '@babel/core';
 import syntaxJSX from '@babel/plugin-syntax-jsx';
 import { analyze } from '../src/analyze';
 import generate from '@babel/generator';
 import * as t from '@babel/types';
+import { register } from '../src/babelTypes';
 
-export function mockAnalyze(code: string): ComponentNode {
+export function mockAnalyze(code: string, analyzers?: Analyzer[]): ComponentNode {
   let root: ComponentNode | null = null;
   transformWithBabel(code, {
     plugins: [
       syntaxJSX.default ?? syntaxJSX,
-      function (api: typeof babel): PluginObj {
-        const { types } = api;
+      function (api): PluginObj {
+        register(api.types);
         return {
           visitor: {
-            FunctionDeclaration: {
-              enter: path => {
-                root = analyze(path);
-              },
+            FunctionExpression: path => {
+              root = analyze(api.types, 'test', path, analyzers);
+              if (root) {
+                path.skip();
+              }
+            },
+            ArrowFunctionExpression: path => {
+              root = analyze(api.types, 'test', path, analyzers);
+              if (root) {
+                path.skip();
+              }
             },
           },
         };
