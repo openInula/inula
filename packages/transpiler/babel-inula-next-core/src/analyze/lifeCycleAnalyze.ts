@@ -32,13 +32,16 @@ function isLifeCycleName(name: string): name is LifeCycle {
  */
 export function lifeCycleAnalyze(): Visitor {
   return {
-    CallExpression(path: NodePath<t.CallExpression>, ctx) {
-      const callee = path.get('callee');
-      if (callee.isIdentifier(path)) {
-        const lifeCycleName = callee.node.name;
-        if (isLifeCycleName(lifeCycleName)) {
-          const fnNode = extractFnFromMacro(path, lifeCycleName);
-          addLifecycle(ctx.currentComponent, lifeCycleName, getFnBody(fnNode));
+    ExpressionStatement(path: NodePath<t.ExpressionStatement>, ctx) {
+      const expression = path.get('expression');
+      if (expression.isCallExpression()) {
+        const callee = expression.get('callee');
+        if (callee.isIdentifier()) {
+          const lifeCycleName = callee.node.name;
+          if (isLifeCycleName(lifeCycleName)) {
+            const fnNode = extractFnFromMacro(expression, lifeCycleName);
+            addLifecycle(ctx.current, lifeCycleName, getFnBody(fnNode));
+          }
         }
       }
     },

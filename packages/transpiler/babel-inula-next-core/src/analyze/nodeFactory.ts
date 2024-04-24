@@ -15,44 +15,87 @@
 
 import { NodePath, type types as t } from '@babel/core';
 import { Branch, ComponentNode, CondNode, InulaNode, JSX, JSXNode, LifeCycle, SubCompNode } from './types';
-import { iterateFCBody } from './index';
+import { PropType } from '../constants';
 
 export function createComponentNode(
   name: string,
-  fnBody: NodePath<t.Statement>[],
+  fnNode: NodePath<t.FunctionExpression | t.ArrowFunctionExpression>,
   parent?: ComponentNode
 ): ComponentNode {
   const comp: ComponentNode = {
     type: 'comp',
     name,
-    props: {},
+    props: [],
     child: undefined,
     subComponents: [],
-    methods: [],
-    state: [],
+    properties: [],
+    dependencyMap: {},
+    reactiveMap: {},
+    lifecycle: {},
     parent,
-    fnBody,
+    // fnBody,
+    get availableProperties() {
+      return comp.properties
+        .filter(({ isMethod }) => !isMethod)
+        .map(({ name }) => name)
+        .concat(
+          comp.props
+            .map(({ name, nestedProps, alias }) => {
+              const nested = nestedProps ? nestedProps.map(name => name) : [];
+              return [alias ? alias : name, ...nested];
+            })
+            .flat()
+        );
+    },
   };
-
-  iterateFCBody(fnBody, comp);
 
   return comp;
 }
 
-export function addState(comp: ComponentNode, name: string, value: t.Expression | null) {
-  comp.state.push({ name, value });
+export function addProperty(
+  comp: ComponentNode,
+  name: string,
+  value: t.Expression | null,
+  isComputed: boolean,
+  isMethod = false
+) {
+  comp.properties.push({ name, value, isComputed, isMethod });
 }
 
-export function addMethod(comp: ComponentNode, method: NodePath<t.FunctionDeclaration>) {
-  comp.methods.push(method);
+export function addMethod(comp: ComponentNode, name: string, value: t.Expression | null) {
+  comp.properties.push({ name, value, isComputed: false, isMethod: true });
 }
 
-export function addLifecycle(comp: ComponentNode, lifeCycle: LifeCycle, stmts: NodePath<t.Statement>[]) {
+export function addProp(
+  comp: ComponentNode,
+  type: PropType,
+  key: string,
+  defaultVal: t.Expression | null = null,
+  alias: string | null = null,
+  nestedProps: string[] | null = null,
+  nestedRelationship: t.ObjectPattern | t.ArrayPattern | null = null
+) {
+  comp.props.push({ name: key, type, default: defaultVal, alias, nestedProps, nestedRelationship });
+}
+
+export function addLifecycle(comp: ComponentNode, lifeCycle: LifeCycle, block: NodePath<t.BlockStatement>) {
   const compLifecycle = comp.lifecycle;
   if (!compLifecycle[lifeCycle]) {
     compLifecycle[lifeCycle] = [];
   }
-  compLifecycle[lifeCycle].push(stmts);
+  compLifecycle[lifeCycle]!.push(block);
+}
+
+export function addWatch(
+  comp: ComponentNode,
+  callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>,
+  deps: NodePath<t.ArrayExpression> | null
+) {
+  // if watch not exist, create a new one
+  if (!comp.watch) {
+    comp.watch = [];
+  }
+  comp.watch.push({ callback, deps });
 }
 
 export function createJSXNode(parent: ComponentNode, content: NodePath<JSX>): JSXNode {

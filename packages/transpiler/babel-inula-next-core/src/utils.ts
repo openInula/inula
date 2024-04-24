@@ -18,5 +18,6 @@ export function getFnBody(path: NodePath<t.FunctionExpression | t.ArrowFunctionE
     // turn expression into block statement for consistency
     fnBody.replaceWith(t.blockStatement([t.returnStatement(fnBody.node)]));
   }
-  return (fnBody as NodePath<t.BlockStatement>).get('body');
+
+  return fnBody as unknown as NodePath<t.BlockStatement>;
 }

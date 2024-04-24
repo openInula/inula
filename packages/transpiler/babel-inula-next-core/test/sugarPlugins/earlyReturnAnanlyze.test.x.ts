@@ -14,8 +14,8 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { isCondNode } from '../src/analyze';
-import { mockAnalyze } from './mock';
+import { isCondNode } from '../../src/analyze';
+import { mockAnalyze } from '../mock';
 
 describe('analyze early return', () => {
   it('should work', () => {

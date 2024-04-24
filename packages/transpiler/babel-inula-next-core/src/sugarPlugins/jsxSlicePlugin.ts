@@ -14,12 +14,12 @@
  */
 
 import { NodePath } from '@babel/core';
-import { AnalyzeContext, Visitor } from './types';
-import { createSubCompNode } from './nodeFactory';
+import { AnalyzeContext, Visitor } from '../analyze/types';
+import { createSubCompNode } from '../analyze/nodeFactory';
 import * as t from '@babel/types';
 
 function genName(tagName: string, ctx: AnalyzeContext) {
-  return `$$${tagName}-Sub${ctx.currentComponent.subComponents.length}`;
+  return `$$${tagName}-Sub${ctx.current.subComponents.length}`;
 }
 
 function genNameFromJSX(path: NodePath<t.JSXElement>, ctx: AnalyzeContext) {
@@ -33,8 +33,8 @@ function genNameFromJSX(path: NodePath<t.JSXElement>, ctx: AnalyzeContext) {
 
 function replaceJSXSliceWithSubComp(name: string, ctx: AnalyzeContext, path: NodePath<t.JSXElement | t.JSXFragment>) {
   // create a subComponent node and add it to the current component
-  const subComp = createSubCompNode(name, ctx.currentComponent, path.node);
-  ctx.currentComponent.subComponents.push(subComp);
+  const subComp = createSubCompNode(name, ctx.current, path.node);
+  ctx.current.subComponents.push(subComp);
 
   // replace with the subComp jsxElement
   const subCompJSX = t.jsxElement(
@@ -72,4 +72,29 @@ export function jsxSlicesAnalyze(): Visitor {
       replaceJSXSliceWithSubComp('frag', ctx, path);
     },
   };
+}
+
+// Analyze the JSX slice in the function component, including:
+// 1. VariableDeclaration, like `const a = <div />`
+// 2. SubComponent, like `function Sub() { return <div /> }`
+function handleFn(fnName: string, fnBody: NodePath<types.BlockStatement>) {
+  if (isValidComponentName(fnName)) {
+    // This is a subcomponent, treat it as a normal component
+  } else {
+    //   This is jsx creation function
+    //   function jsxFunc() {
+    //     // This is a function that returns JSX
+    //     // because the function name is smallCamelCased
+    //     return <div>{count}</div>
+    //   }
+    //   =>
+    //   function jsxFunc() {
+    //     function Comp_$id4$() {
+    //       return <div>{count}</div>
+    //     }
+    //     // This is a function that returns JSX
+    //     // because the function name is smallCamelCased
+    //     return <Comp_$id4$/>
+    //   }
+  }
 }
