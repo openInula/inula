@@ -27,43 +27,41 @@ export function createComponentNode(
     name,
     props: [],
     child: undefined,
-    subComponents: [],
     properties: [],
     dependencyMap: {},
     reactiveMap: {},
     lifecycle: {},
     parent,
     // fnBody,
+    get availableProps() {
+      return comp.props
+        .map(({ name, nestedProps, alias }) => {
+          const nested = nestedProps ? nestedProps.map(name => name) : [];
+          return [alias ? alias : name, ...nested];
+        })
+        .flat();
+    },
+    get ownAvailableProperties() {
+      return [...comp.properties.filter(p => !p.isMethod).map(({ name }) => name), ...comp.availableProps];
+    },
     get availableProperties() {
-      return comp.properties
-        .filter(({ isMethod }) => !isMethod)
-        .map(({ name }) => name)
-        .concat(
-          comp.props
-            .map(({ name, nestedProps, alias }) => {
-              const nested = nestedProps ? nestedProps.map(name => name) : [];
-              return [alias ? alias : name, ...nested];
-            })
-            .flat()
-        );
+      return [...comp.ownAvailableProperties, ...(comp.parent ? comp.parent.availableProperties : [])];
     },
   };
 
   return comp;
 }
 
-export function addProperty(
-  comp: ComponentNode,
-  name: string,
-  value: t.Expression | null,
-  isComputed: boolean,
-  isMethod = false
-) {
-  comp.properties.push({ name, value, isComputed, isMethod });
+export function addProperty(comp: ComponentNode, name: string, value: t.Expression | null, isComputed: boolean) {
+  comp.properties.push({ name, value, isComputed, isMethod: false });
 }
 
 export function addMethod(comp: ComponentNode, name: string, value: t.Expression | null) {
   comp.properties.push({ name, value, isComputed: false, isMethod: true });
+}
+
+export function addSubComponent(comp: ComponentNode, subComp: ComponentNode, isComputed: boolean) {
+  comp.properties.push({ name: subComp.name, value: subComp, isSubComp: true, isComputed, isMethod: false });
 }
 
 export function addProp(

@@ -23,16 +23,21 @@ export type JSX = t.JSXElement | t.JSXFragment;
 export type LifeCycle = typeof WILL_MOUNT | typeof ON_MOUNT | typeof WILL_UNMOUNT | typeof ON_UNMOUNT;
 type defaultVal = any | null;
 type Bitmap = number;
-interface Property {
+interface BaseProperty<V> {
   name: string;
-  value: t.Expression | null;
-  // indicate the value is a state or computed or watch
-  listeners?: string[];
-  bitmap?: Bitmap;
+  value: V;
   // need a flag for computed to gen a getter
   // watch is a static computed
   isComputed: boolean;
   isMethod: boolean;
+}
+interface Property extends BaseProperty<t.Expression | null> {
+  // indicate the value is a state or computed or watch
+  listeners?: string[];
+  bitmap?: Bitmap;
+}
+interface SubCompProperty extends BaseProperty<ComponentNode> {
+  isSubComp: true;
 }
 interface Prop {
   name: string;
@@ -47,7 +52,15 @@ export interface ComponentNode {
   name: string;
   props: Prop[];
   // A properties could be a state or computed
-  properties: Property[];
+  properties: (Property | SubCompProperty)[];
+  /**
+   * The available props for the component, including the nested props
+   */
+  availableProps: string[];
+  /**
+   * The available properties for the component
+   */
+  ownAvailableProperties: string[];
   availableProperties: string[];
   /**
    * The map to find the dependencies
@@ -56,7 +69,6 @@ export interface ComponentNode {
     [key: string]: string[];
   };
   child?: InulaNode;
-  subComponents?: ComponentNode[];
   parent?: ComponentNode;
   /**
    * The function body of the fn component code
@@ -103,8 +115,9 @@ export interface Branch {
 
 export interface AnalyzeContext {
   level: number;
-  t: typeof t;
   current: ComponentNode;
+  analyzers: Analyzer[];
+  htmlTags: string[];
   traverse: (p: NodePath<t.Statement>, ctx: AnalyzeContext) => void;
 }
 
