@@ -5,9 +5,7 @@ import { createComponentNode } from './nodeFactory';
 import { propertiesAnalyze } from './propertiesAnalyze';
 import { lifeCycleAnalyze } from './lifeCycleAnalyze';
 import { getFnBody } from '../utils';
-
 const builtinAnalyzers = [propsAnalyze, propertiesAnalyze, lifeCycleAnalyze];
-let analyzers: Analyzer[] = builtinAnalyzers;
 
 export function isCondNode(node: any): node is CondNode {
   return node && node.type === 'cond';
@@ -36,16 +34,17 @@ function mergeVisitor(...visitors: Analyzer[]): Visitor {
 
 // walk through the function component body
 export function analyzeFnComp(
-  types: typeof t,
   fnNode: NodePath<t.FunctionExpression | t.ArrowFunctionExpression>,
   componentNode: ComponentNode,
+  { htmlTags, analyzers }: { analyzers: Analyzer[]; htmlTags: string[] },
   level = 0
 ) {
   const visitor = mergeVisitor(...analyzers);
   const context: AnalyzeContext = {
     level,
-    t: types,
     current: componentNode,
+    htmlTags,
+    analyzers,
     traverse: (path: NodePath<t.Statement>, ctx: AnalyzeContext) => {
       path.traverse(visitor, ctx);
     },
@@ -94,17 +93,14 @@ export function analyzeFnComp(
  * @param customAnalyzers
  */
 export function analyze(
-  types: typeof t,
   fnName: string,
   path: NodePath<t.FunctionExpression | t.ArrowFunctionExpression>,
-  customAnalyzers?: Analyzer[]
+  options: { customAnalyzers?: Analyzer[]; htmlTags: string[] }
 ) {
-  if (customAnalyzers) {
-    analyzers = customAnalyzers;
-  }
+  const analyzers = options?.customAnalyzers ? options.customAnalyzers : builtinAnalyzers;
 
   const root = createComponentNode(fnName, path);
-  analyzeFnComp(types, path, root);
+  analyzeFnComp(path, root, { analyzers, htmlTags: options.htmlTags });
 
   return root;
 }

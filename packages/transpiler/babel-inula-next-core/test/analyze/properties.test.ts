@@ -17,6 +17,7 @@ import { describe, expect, it } from 'vitest';
 import { genCode, mockAnalyze } from '../mock';
 import { propertiesAnalyze } from '../../src/analyze/propertiesAnalyze';
 import { propsAnalyze } from '../../src/analyze/propsAnalyze';
+import { ComponentNode } from '../../src/analyze/types';
 
 const analyze = (code: string) => mockAnalyze(code, [propsAnalyze, propertiesAnalyze]);
 
@@ -101,6 +102,28 @@ describe('analyze properties', () => {
     });
   });
 
+  describe('subComponent', () => {
+    it('should analyze dependency from subComponent', () => {
+      const root = analyze(`
+        Component(() => {
+          let foo = 1;
+          const Sub = Component(() => {
+            let bar = foo;
+          });
+        })
+      `);
+      expect(root.properties.length).toBe(2);
+      expect(root.dependencyMap).toEqual({ Sub: ['foo'] });
+      expect((root.properties[1].value as ComponentNode).dependencyMap).toMatchInlineSnapshot(`
+        {
+          "bar": [
+            "foo",
+          ],
+        }
+      `);
+    });
+  });
+
   it('should collect method', () => {
     const root = analyze(`
       Component(() => {
@@ -115,6 +138,6 @@ describe('analyze properties', () => {
     expect(root.properties.map(p => p.name)).toEqual(['foo', 'onClick', 'onHover', 'onInput']);
     expect(root.properties[1].isMethod).toBe(true);
     expect(root.properties[2].isMethod).toBe(true);
-    expect(root.dependencyMap).toMatchInlineSnapshot(`{}`);
+    expect(root.dependencyMap).toMatchInlineSnapshot('{}');
   });
 });

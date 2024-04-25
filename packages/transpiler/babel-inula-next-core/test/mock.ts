@@ -14,12 +14,13 @@
  */
 
 import { Analyzer, ComponentNode, InulaNode } from '../src/analyze/types';
-import babel, { type PluginObj, transform as transformWithBabel } from '@babel/core';
+import { type PluginObj, transform as transformWithBabel } from '@babel/core';
 import syntaxJSX from '@babel/plugin-syntax-jsx';
 import { analyze } from '../src/analyze';
 import generate from '@babel/generator';
 import * as t from '@babel/types';
 import { register } from '../src/babelTypes';
+import { defaultHTMLTags } from '../src/const';
 
 export function mockAnalyze(code: string, analyzers?: Analyzer[]): ComponentNode {
   let root: ComponentNode | null = null;
@@ -27,17 +28,17 @@ export function mockAnalyze(code: string, analyzers?: Analyzer[]): ComponentNode
     plugins: [
       syntaxJSX.default ?? syntaxJSX,
       function (api): PluginObj {
-        register(api.types);
+        register(api);
         return {
           visitor: {
             FunctionExpression: path => {
-              root = analyze(api.types, 'test', path, analyzers);
+              root = analyze('test', path, { customAnalyzers: analyzers, htmlTags: defaultHTMLTags });
               if (root) {
                 path.skip();
               }
             },
             ArrowFunctionExpression: path => {
-              root = analyze(api.types, 'test', path, analyzers);
+              root = analyze('test', path, { customAnalyzers: analyzers, htmlTags: defaultHTMLTags });
               if (root) {
                 path.skip();
               }

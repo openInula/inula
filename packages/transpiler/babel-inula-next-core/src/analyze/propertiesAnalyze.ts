@@ -14,12 +14,19 @@
  */
 
 import { AnalyzeContext, Visitor } from './types';
-import { addLifecycle, addMethod, addProperty } from './nodeFactory';
+import { addMethod, addProperty, createComponentNode } from './nodeFactory';
 import { isValidPath } from './utils';
 import { type types as t, type NodePath } from '@babel/core';
 import { reactivityFuncNames } from '../const';
 import { types } from '../babelTypes';
+import { COMPONENT } from '../constants';
+import { analyzeFnComp } from '.';
 
+/**
+ * collect all properties and methods from the node
+ * and analyze the dependencies of the properties
+ * @returns
+ */
 export function propertiesAnalyze(): Visitor {
   return {
     VariableDeclaration(path: NodePath<t.VariableDeclaration>, ctx) {
@@ -38,8 +45,26 @@ export function propertiesAnalyze(): Visitor {
           const init = declaration.get('init');
           let deps: string[] | null = null;
           if (isValidPath(init)) {
+            // the property is a method
             if (init.isArrowFunctionExpression() || init.isFunctionExpression()) {
               addMethod(ctx.current, id.node.name, init.node);
+              return;
+            }
+            // Should like Component(() => {})
+            if (
+              init.isCallExpression() &&
+              init.get('callee').isIdentifier() &&
+              (init.get('callee').node as t.Identifier).name === COMPONENT &&
+              (init.get('arguments')[0].isFunctionExpression() || init.get('arguments')[0].isArrowFunctionExpression())
+            ) {
+              const fnNode = init.get('arguments')[0] as
+                | NodePath<t.ArrowFunctionExpression>
+                | NodePath<t.FunctionExpression>;
+              const subComponent = createComponentNode(id.node.name, fnNode, ctx.current);
+
+              analyzeFnComp(fnNode, subComponent, ctx);
+              deps = getDependenciesFromNode(id.node.name, init, ctx);
+              addProperty(ctx.current, id.node.name, subComponent, !!deps?.length);
               return;
             }
             deps = getDependenciesFromNode(id.node.name, init, ctx);

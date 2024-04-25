@@ -3,64 +3,6 @@ import { AnalyzeContext, Visitor } from './types';
 import { addProp } from './nodeFactory';
 import { PropType } from '../constants';
 import { types } from '../babelTypes';
-function analyzeSingleProp(
-  value: t.ObjectProperty['value'],
-  key: string,
-  path: NodePath<t.ObjectProperty>,
-  { t, current }: AnalyzeContext
-) {
-  let defaultVal: t.Expression | null = null;
-  let alias: string | null = null;
-  const nestedProps: string[] | null = [];
-  let nestedRelationship: t.ObjectPattern | t.ArrayPattern | null = null;
-  if (t.isIdentifier(value)) {
-    // 1. handle alias without default value
-    // handle alias without default value
-    if (key !== value.name) {
-      alias = value.name;
-    }
-  } else if (t.isAssignmentPattern(value)) {
-    // 2. handle default value case
-    const assignedName = value.left;
-    defaultVal = value.right;
-    if (t.isIdentifier(assignedName)) {
-      if (assignedName.name !== key) {
-        // handle alias in default value case
-        alias = assignedName.name;
-      }
-    } else {
-      throw Error(`Unsupported assignment type in object destructuring: ${assignedName.type}`);
-    }
-  } else if (t.isObjectPattern(value) || t.isArrayPattern(value)) {
-    // 3. nested destructuring
-    // we should collect the identifier that can be used in the function body as the prop
-    // e.g. function ({prop1, prop2: [p20X, {p211, p212: p212X}]}
-    // we should collect prop1, p20X, p211, p212X
-    path.get('value').traverse({
-      Identifier(path) {
-        // judge if the identifier is a prop
-        // 1. is the key of the object property and doesn't have alias
-        // 2. is the item of the array pattern and doesn't have alias
-        // 3. is alias of the object property
-        const parentPath = path.parentPath;
-        if (parentPath.isObjectProperty() && path.parentKey === 'value') {
-          // collect alias of the object property
-          nestedProps.push(path.node.name);
-        } else if (
-          parentPath.isArrayPattern() ||
-          parentPath.isObjectPattern() ||
-          parentPath.isRestElement() ||
-          (parentPath.isAssignmentPattern() && path.key === 'left')
-        ) {
-          // collect the key of the object property or the item of the array pattern
-          nestedProps.push(path.node.name);
-        }
-      },
-    });
-    nestedRelationship = value;
-  }
-  addProp(current, PropType.SINGLE, key, defaultVal, alias, nestedProps, nestedRelationship);
-}
 
 /**
  * Analyze the props deconstructing in the function component
@@ -103,4 +45,63 @@ export function propsAnalyze(): Visitor {
       }
     },
   };
+}
+
+function analyzeSingleProp(
+  value: t.ObjectProperty['value'],
+  key: string,
+  path: NodePath<t.ObjectProperty>,
+  { current }: AnalyzeContext
+) {
+  let defaultVal: t.Expression | null = null;
+  let alias: string | null = null;
+  const nestedProps: string[] | null = [];
+  let nestedRelationship: t.ObjectPattern | t.ArrayPattern | null = null;
+  if (types.isIdentifier(value)) {
+    // 1. handle alias without default value
+    // handle alias without default value
+    if (key !== value.name) {
+      alias = value.name;
+    }
+  } else if (types.isAssignmentPattern(value)) {
+    // 2. handle default value case
+    const assignedName = value.left;
+    defaultVal = value.right;
+    if (types.isIdentifier(assignedName)) {
+      if (assignedName.name !== key) {
+        // handle alias in default value case
+        alias = assignedName.name;
+      }
+    } else {
+      throw Error(`Unsupported assignment type in object destructuring: ${assignedName.type}`);
+    }
+  } else if (types.isObjectPattern(value) || types.isArrayPattern(value)) {
+    // 3. nested destructuring
+    // we should collect the identifier that can be used in the function body as the prop
+    // e.g. function ({prop1, prop2: [p20X, {p211, p212: p212X}]}
+    // we should collect prop1, p20X, p211, p212X
+    path.get('value').traverse({
+      Identifier(path) {
+        // judge if the identifier is a prop
+        // 1. is the key of the object property and doesn't have alias
+        // 2. is the item of the array pattern and doesn't have alias
+        // 3. is alias of the object property
+        const parentPath = path.parentPath;
+        if (parentPath.isObjectProperty() && path.parentKey === 'value') {
+          // collect alias of the object property
+          nestedProps.push(path.node.name);
+        } else if (
+          parentPath.isArrayPattern() ||
+          parentPath.isObjectPattern() ||
+          parentPath.isRestElement() ||
+          (parentPath.isAssignmentPattern() && path.key === 'left')
+        ) {
+          // collect the key of the object property or the item of the array pattern
+          nestedProps.push(path.node.name);
+        }
+      },
+    });
+    nestedRelationship = value;
+  }
+  addProp(current, PropType.SINGLE, key, defaultVal, alias, nestedProps, nestedRelationship);
 }

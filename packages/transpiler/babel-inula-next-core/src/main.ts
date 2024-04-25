@@ -1,7 +1,7 @@
 import type babel from '@babel/core';
 import { type PluginObj } from '@babel/core';
 import { type DLightOption } from './types';
-import { defaultAttributeMap } from './const';
+import { defaultAttributeMap, defaultHTMLTags } from './const';
 import { analyze } from './analyze';
 import { NodePath, type types as t } from '@babel/core';
 import { COMPONENT } from './constants';
@@ -14,11 +14,18 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
     files = '**/*.{js,ts,jsx,tsx}',
     excludeFiles = '**/{dist,node_modules,lib}/*',
     enableDevTools = false,
-    htmlTags = defaultHtmlTags => defaultHtmlTags,
+    customHtmlTags = defaultHtmlTags => defaultHtmlTags,
     attributeMap = defaultAttributeMap,
   } = options;
 
-  register(types);
+  const htmlTags =
+    typeof customHtmlTags === 'function'
+      ? customHtmlTags(defaultHTMLTags)
+      : customHtmlTags.includes('*')
+        ? [...new Set([...defaultHTMLTags, ...customHtmlTags])].filter(tag => tag !== '*')
+        : customHtmlTags;
+
+  register(api);
   return {
     visitor: {
       Program: {
@@ -45,7 +52,9 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
               console.error('Component macro must be assigned to a variable');
             }
           }
-          const root = analyze(types, name, componentNode);
+          const root = analyze(name, componentNode, {
+            htmlTags,
+          });
           // The sub path has been visited, so we just skip
           path.skip();
         }
