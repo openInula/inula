@@ -14,12 +14,13 @@
  */
 
 import { NodePath, type types as t } from '@babel/core';
-import { Branch, ComponentNode, CondNode, InulaNode, JSX, JSXNode, LifeCycle, SubCompNode } from './types';
+import { ComponentNode, FunctionalExpression, LifeCycle, ViewNode } from './types';
 import { PropType } from '../constants';
+import { ViewParticle } from '@openinula/reactivity-parser';
 
 export function createComponentNode(
   name: string,
-  fnNode: NodePath<t.FunctionExpression | t.ArrowFunctionExpression>,
+  fnNode: NodePath<FunctionalExpression>,
   parent?: ComponentNode
 ): ComponentNode {
   const comp: ComponentNode = {
@@ -27,12 +28,12 @@ export function createComponentNode(
     name,
     props: [],
     child: undefined,
-    properties: [],
+    variables: [],
     dependencyMap: {},
     reactiveMap: {},
     lifecycle: {},
     parent,
-    // fnBody,
+    fnNode,
     get availableProps() {
       return comp.props
         .map(({ name, nestedProps, alias }) => {
@@ -41,11 +42,11 @@ export function createComponentNode(
         })
         .flat();
     },
-    get ownAvailableProperties() {
-      return [...comp.properties.filter(p => !p.isMethod).map(({ name }) => name), ...comp.availableProps];
+    get ownAvailableVariables() {
+      return [...comp.variables.filter(p => p.type === 'reactive').map(({ name }) => name), ...comp.availableProps];
     },
-    get availableProperties() {
-      return [...comp.ownAvailableProperties, ...(comp.parent ? comp.parent.availableProperties : [])];
+    get availableVariables() {
+      return [...comp.ownAvailableVariables, ...(comp.parent ? comp.parent.availableVariables : [])];
     },
   };
 
@@ -53,15 +54,15 @@ export function createComponentNode(
 }
 
 export function addProperty(comp: ComponentNode, name: string, value: t.Expression | null, isComputed: boolean) {
-  comp.properties.push({ name, value, isComputed, isMethod: false });
+  comp.variables.push({ name, value, isComputed, type: 'reactive' });
 }
 
-export function addMethod(comp: ComponentNode, name: string, value: t.Expression | null) {
-  comp.properties.push({ name, value, isComputed: false, isMethod: true });
+export function addMethod(comp: ComponentNode, name: string, value: FunctionalExpression) {
+  comp.variables.push({ name, value, type: 'method' });
 }
 
-export function addSubComponent(comp: ComponentNode, subComp: ComponentNode, isComputed: boolean) {
-  comp.properties.push({ name: subComp.name, value: subComp, isSubComp: true, isComputed, isMethod: false });
+export function addSubComponent(comp: ComponentNode, subComp: ComponentNode) {
+  comp.variables.push({ name: subComp.name, value: subComp, type: 'subComp' });
 }
 
 export function addProp(
@@ -76,7 +77,7 @@ export function addProp(
   comp.props.push({ name: key, type, default: defaultVal, alias, nestedProps, nestedRelationship });
 }
 
-export function addLifecycle(comp: ComponentNode, lifeCycle: LifeCycle, block: NodePath<t.BlockStatement>) {
+export function addLifecycle(comp: ComponentNode, lifeCycle: LifeCycle, block: t.BlockStatement) {
   const compLifecycle = comp.lifecycle;
   if (!compLifecycle[lifeCycle]) {
     compLifecycle[lifeCycle] = [];
@@ -96,28 +97,10 @@ export function addWatch(
   comp.watch.push({ callback, deps });
 }
 
-export function createJSXNode(parent: ComponentNode, content: NodePath<JSX>): JSXNode {
-  return {
-    type: 'jsx',
-    parent,
-    child: content,
+export function setViewChild(comp: ComponentNode, view: ViewParticle[], usedPropertySet: Set<string>) {
+  const viewNode: ViewNode = {
+    content: view,
+    usedPropertySet,
   };
-}
-
-export function createCondNode(parent: ComponentNode, child: InulaNode, branches: Branch[]): CondNode {
-  return {
-    type: 'cond',
-    branches,
-    child,
-    parent,
-  };
-}
-
-export function createSubCompNode(name: string, parent: ComponentNode, child: JSX): SubCompNode {
-  return {
-    type: 'subComp',
-    name,
-    parent,
-    child,
-  };
+  comp.child = viewNode;
 }

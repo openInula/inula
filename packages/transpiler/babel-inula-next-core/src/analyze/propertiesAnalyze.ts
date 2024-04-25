@@ -14,7 +14,7 @@
  */
 
 import { AnalyzeContext, Visitor } from './types';
-import { addMethod, addProperty, createComponentNode } from './nodeFactory';
+import { addMethod, addProperty, addSubComponent, createComponentNode } from './nodeFactory';
 import { isValidPath } from './utils';
 import { type types as t, type NodePath } from '@babel/core';
 import { reactivityFuncNames } from '../const';
@@ -45,11 +45,12 @@ export function propertiesAnalyze(): Visitor {
           const init = declaration.get('init');
           let deps: string[] | null = null;
           if (isValidPath(init)) {
-            // the property is a method
+            // handle the method
             if (init.isArrowFunctionExpression() || init.isFunctionExpression()) {
               addMethod(ctx.current, id.node.name, init.node);
               return;
             }
+            // handle the sub component
             // Should like Component(() => {})
             if (
               init.isCallExpression() &&
@@ -64,9 +65,10 @@ export function propertiesAnalyze(): Visitor {
 
               analyzeFnComp(fnNode, subComponent, ctx);
               deps = getDependenciesFromNode(id.node.name, init, ctx);
-              addProperty(ctx.current, id.node.name, subComponent, !!deps?.length);
+              addSubComponent(ctx.current, subComponent);
               return;
             }
+
             deps = getDependenciesFromNode(id.node.name, init, ctx);
           }
           addProperty(ctx.current, id.node.name, init.node || null, !!deps?.length);
@@ -111,7 +113,7 @@ function getDependenciesFromNode(
     const propertyKey = innerPath.node.name;
     if (isAssignmentExpressionLeft(innerPath) || isAssignmentFunction(innerPath)) {
       assignDeps.add(propertyKey);
-    } else if (current.availableProperties.includes(propertyKey)) {
+    } else if (current.availableVariables.includes(propertyKey)) {
       deps.add(propertyKey);
     }
   };

@@ -14,32 +14,36 @@
  */
 
 import { type NodePath, types as t } from '@babel/core';
-import { Node } from '@babel/traverse';
 import { ON_MOUNT, ON_UNMOUNT, PropType, WILL_MOUNT, WILL_UNMOUNT } from '../constants';
+import { ViewParticle } from '@openinula/reactivity-parser';
 
-// --- Node shape ---
-export type InulaNode = ComponentNode | CondNode | JSXNode;
-export type JSX = t.JSXElement | t.JSXFragment;
 export type LifeCycle = typeof WILL_MOUNT | typeof ON_MOUNT | typeof WILL_UNMOUNT | typeof ON_UNMOUNT;
-type defaultVal = any | null;
 type Bitmap = number;
-interface BaseProperty<V> {
+
+export type FunctionalExpression = t.FunctionExpression | t.ArrowFunctionExpression;
+interface BaseVariable<V> {
   name: string;
   value: V;
-  // need a flag for computed to gen a getter
-  // watch is a static computed
-  isComputed: boolean;
-  isMethod: boolean;
 }
-interface Property extends BaseProperty<t.Expression | null> {
+export interface ReactiveVariable extends BaseVariable<t.Expression | null> {
+  type: 'reactive';
   // indicate the value is a state or computed or watch
   listeners?: string[];
   bitmap?: Bitmap;
+  // need a flag for computed to gen a getter
+  // watch is a static computed
+  isComputed: boolean;
 }
-interface SubCompProperty extends BaseProperty<ComponentNode> {
-  isSubComp: true;
+
+export interface MethodVariable extends BaseVariable<FunctionalExpression> {
+  type: 'method';
 }
-interface Prop {
+export interface SubCompVariable extends BaseVariable<ComponentNode> {
+  type: 'subComp';
+}
+
+export type Variable = ReactiveVariable | MethodVariable | SubCompVariable;
+export interface Prop {
   name: string;
   type: PropType;
   alias: string | null;
@@ -51,66 +55,45 @@ export interface ComponentNode {
   type: 'comp';
   name: string;
   props: Prop[];
-  // A properties could be a state or computed
-  properties: (Property | SubCompProperty)[];
+  // The variables defined in the component
+  variables: Variable[];
   /**
    * The available props for the component, including the nested props
    */
   availableProps: string[];
   /**
-   * The available properties for the component
+   * The available variables and props owned by the component
    */
-  ownAvailableProperties: string[];
-  availableProperties: string[];
+  ownAvailableVariables: string[];
+  /**
+   * The available variables and props for the component and its parent
+   */
+  availableVariables: string[];
   /**
    * The map to find the dependencies
    */
   dependencyMap: {
     [key: string]: string[];
   };
-  child?: InulaNode;
+  child?: ComponentNode | ViewNode;
   parent?: ComponentNode;
   /**
    * The function body of the fn component code
    */
-  fnBody: NodePath<t.Statement>[];
+  fnNode: NodePath<FunctionalExpression>;
   /**
    * The map to find the state
    */
   reactiveMap: Record<string, Bitmap>;
-  lifecycle: Partial<Record<LifeCycle, NodePath<t.Statement>[]>>;
+  lifecycle: Partial<Record<LifeCycle, t.Statement[]>>;
   watch?: {
     deps: NodePath<t.ArrayExpression> | null;
     callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>;
   }[];
 }
-
-export interface SubCompNode {
-  type: 'subComp';
-  name: string;
-  parent: ComponentNode;
-  child: JSX;
-}
-
-export interface JSXNode {
-  type: 'jsx';
-  parent: ComponentNode;
-  child: NodePath<JSX>;
-}
-
-export interface CondNode {
-  type: 'cond';
-  branches: Branch[];
-  parent: ComponentNode;
-  /**
-   * The default branch
-   */
-  child: InulaNode;
-}
-
-export interface Branch {
-  conditions: NodePath<t.Expression>[];
-  content: InulaNode;
+export interface ViewNode {
+  content: ViewParticle[];
+  usedPropertySet: Set<string>;
 }
 
 export interface AnalyzeContext {
@@ -119,10 +102,11 @@ export interface AnalyzeContext {
   analyzers: Analyzer[];
   htmlTags: string[];
   traverse: (p: NodePath<t.Statement>, ctx: AnalyzeContext) => void;
+  unhandledNode: t.Statement[];
 }
 
 export type Visitor<S = AnalyzeContext> = {
-  [Type in Node['type']]?: (path: NodePath<Extract<Node, { type: Type }>>, state: S) => void;
+  [Type in t.Statement['type']]?: (path: NodePath<Extract<t.Statement, { type: Type }>>, state: S) => void;
 } & {
   Prop?: (path: NodePath<t.ObjectProperty | t.RestElement>, state: S) => void;
 };

@@ -19,6 +19,7 @@ import { parseView as parseJSX } from 'jsx-view-parser';
 import { getBabelApi } from '../babelTypes';
 import { parseReactivity } from '@openinula/reactivity-parser';
 import { reactivityFuncNames } from '../const';
+import { setViewChild } from './nodeFactory';
 
 /**
  * Analyze the watch in the function component
@@ -35,10 +36,12 @@ export function viewAnalyze(): Visitor {
         });
         const [viewParticles, usedPropertySet] = parseReactivity(viewUnits, {
           babelApi: getBabelApi(),
-          availableProperties: current.availableProperties,
+          availableProperties: current.availableVariables,
           dependencyMap: current.dependencyMap,
           reactivityFuncNames,
         });
+
+        setViewChild(current, viewParticles, usedPropertySet);
       }
     },
   };

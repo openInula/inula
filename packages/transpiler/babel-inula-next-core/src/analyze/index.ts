@@ -1,11 +1,14 @@
 import { type types as t, type NodePath } from '@babel/core';
 import { propsAnalyze } from './propsAnalyze';
 import { AnalyzeContext, Analyzer, ComponentNode, CondNode, Visitor } from './types';
-import { createComponentNode } from './nodeFactory';
+import { addLifecycle, createComponentNode } from './nodeFactory';
 import { propertiesAnalyze } from './propertiesAnalyze';
-import { lifeCycleAnalyze } from './lifeCycleAnalyze';
+import { functionalMacroAnalyze } from './functionalMacroAnalyze';
 import { getFnBody } from '../utils';
-const builtinAnalyzers = [propsAnalyze, propertiesAnalyze, lifeCycleAnalyze];
+import { viewAnalyze } from './viewAnalyze';
+import { WILL_MOUNT } from '../constants';
+import { types } from '../babelTypes';
+const builtinAnalyzers = [propsAnalyze, propertiesAnalyze, functionalMacroAnalyze, viewAnalyze];
 
 export function isCondNode(node: any): node is CondNode {
   return node && node.type === 'cond';
@@ -13,22 +16,7 @@ export function isCondNode(node: any): node is CondNode {
 
 function mergeVisitor(...visitors: Analyzer[]): Visitor {
   return visitors.reduce<Visitor<AnalyzeContext>>((acc, cur) => {
-    const visitor = cur();
-    const visitorKeys = Object.keys(visitor) as (keyof Visitor)[];
-    for (const key of visitorKeys) {
-      if (acc[key]) {
-        // if already exist, merge the visitor function
-        const original = acc[key]!;
-        acc[key] = (path: any, ctx) => {
-          original(path, ctx);
-          visitor[key]?.(path, ctx);
-        };
-      } else {
-        // @ts-expect-error key is a valid key, no idea why it's not working
-        acc[key] = visitor[key];
-      }
-    }
-    return acc;
+    return { ...acc, ...cur() };
   }, {});
 }
 
@@ -45,6 +33,7 @@ export function analyzeFnComp(
     current: componentNode,
     htmlTags,
     analyzers,
+    unhandledNode: [],
     traverse: (path: NodePath<t.Statement>, ctx: AnalyzeContext) => {
       path.traverse(visitor, ctx);
     },
@@ -71,13 +60,22 @@ export function analyzeFnComp(
 
     const type = p.node.type;
 
-    // TODO: More type safe way to handle this
-    visitor[type]?.(p as unknown as any, context);
+    const visit = visitor[type];
+    if (visit) {
+      // TODO: More type safe way to handle this
+      visit(p as unknown as any, context);
+    } else {
+      context.unhandledNode.push(p.node);
+    }
 
     if (p.isReturnStatement()) {
       visitor.ReturnStatement?.(p, context);
       break;
     }
+  }
+
+  if (context.unhandledNode.length) {
+    addLifecycle(componentNode, WILL_MOUNT, types.blockStatement(context.unhandledNode));
   }
 }
 /**

@@ -1,9 +1,8 @@
-import { propsAnalyze } from '../../src/analyze/propsAnalyze';
-import { watchAnalyze } from '../../src/analyze/watchAnalyze';
+import { functionalMacroAnalyze } from '../../src/analyze/functionalMacroAnalyze';
 import { genCode, mockAnalyze } from '../mock';
 import { describe, expect, it } from 'vitest';
 
-const analyze = (code: string) => mockAnalyze(code, [watchAnalyze]);
+const analyze = (code: string) => mockAnalyze(code, [functionalMacroAnalyze]);
 
 describe('watchAnalyze', () => {
   it('should analyze watch expressions', () => {
