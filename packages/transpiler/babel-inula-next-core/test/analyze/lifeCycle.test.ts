@@ -15,12 +15,12 @@
 
 import { describe, expect, it } from 'vitest';
 import { genCode, mockAnalyze } from '../mock';
-import { lifeCycleAnalyze } from '../../src/analyze/lifeCycleAnalyze';
+import { functionalMacroAnalyze } from '../../src/analyze/functionalMacroAnalyze';
 import { types } from '../../src/babelTypes';
 import { type NodePath, type types as t } from '@babel/core';
 
-const analyze = (code: string) => mockAnalyze(code, [lifeCycleAnalyze]);
-const combine = (body: NodePath<t.Statement>[]) => types.program(body.map(path => path.node));
+const analyze = (code: string) => mockAnalyze(code, [functionalMacroAnalyze]);
+const combine = (body: t.Statement[]) => types.program(body);
 
 describe('analyze lifeCycle', () => {
   it('should collect will mount', () => {

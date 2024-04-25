@@ -29,7 +29,7 @@ describe('analyze properties', () => {
         let bar = 1;
       })
     `);
-    expect(root.properties.length).toBe(2);
+    expect(root.variables.length).toBe(2);
   });
 
   describe('state dependency', () => {
@@ -40,11 +40,11 @@ describe('analyze properties', () => {
           let bar = foo;
         })
       `);
-      expect(root.properties.length).toBe(2);
-      expect(root.properties[0].isComputed).toBe(false);
-      expect(genCode(root.properties[0].value)).toBe('1');
-      expect(root.properties[1].isComputed).toBe(true);
-      expect(genCode(root.properties[1].value)).toBe('foo');
+      expect(root.variables.length).toBe(2);
+      expect(root.variables[0].isComputed).toBe(false);
+      expect(genCode(root.variables[0].value)).toBe('1');
+      expect(root.variables[1].isComputed).toBe(true);
+      expect(genCode(root.variables[1].value)).toBe('foo');
       expect(root.dependencyMap).toEqual({ bar: ['foo'] });
     });
 
@@ -57,9 +57,9 @@ describe('analyze properties', () => {
           let bar = { foo: foo ? a : b };
         })
       `);
-      expect(root.properties.length).toBe(4);
-      expect(root.properties[3].isComputed).toBe(true);
-      expect(genCode(root.properties[3].value)).toMatchInlineSnapshot(`
+      expect(root.variables.length).toBe(4);
+      expect(root.variables[3].isComputed).toBe(true);
+      expect(genCode(root.variables[3].value)).toMatchInlineSnapshot(`
         "{
           foo: foo ? a : b
         }"
@@ -73,8 +73,8 @@ describe('analyze properties', () => {
           let bar = foo;
         })
       `);
-      expect(root.properties.length).toBe(1);
-      expect(root.properties[0].isComputed).toBe(true);
+      expect(root.variables.length).toBe(1);
+      expect(root.variables[0].isComputed).toBe(true);
       expect(root.dependencyMap).toEqual({ bar: ['foo'] });
     });
 
@@ -84,8 +84,8 @@ describe('analyze properties', () => {
           let bar = [foo1, first, last];
         })
       `);
-      expect(root.properties.length).toBe(1);
-      expect(root.properties[0].isComputed).toBe(true);
+      expect(root.variables.length).toBe(1);
+      expect(root.variables[0].isComputed).toBe(true);
       expect(root.dependencyMap).toEqual({ bar: ['foo1', 'first', 'last'] });
     });
 
@@ -96,8 +96,8 @@ describe('analyze properties', () => {
           let bar = cond ? count : window.innerWidth;
         })
       `);
-      expect(root.properties.length).toBe(1);
-      expect(root.properties[0].isComputed).toBe(false);
+      expect(root.variables.length).toBe(1);
+      expect(root.variables[0].isComputed).toBe(false);
       expect(root.dependencyMap).toEqual({});
     });
   });
@@ -112,9 +112,9 @@ describe('analyze properties', () => {
           });
         })
       `);
-      expect(root.properties.length).toBe(2);
+      expect(root.variables.length).toBe(2);
       expect(root.dependencyMap).toEqual({ Sub: ['foo'] });
-      expect((root.properties[1].value as ComponentNode).dependencyMap).toMatchInlineSnapshot(`
+      expect((root.variables[1].value as ComponentNode).dependencyMap).toMatchInlineSnapshot(`
         {
           "bar": [
             "foo",
@@ -135,9 +135,9 @@ describe('analyze properties', () => {
         function onInput() {}
       })
     `);
-    expect(root.properties.map(p => p.name)).toEqual(['foo', 'onClick', 'onHover', 'onInput']);
-    expect(root.properties[1].isMethod).toBe(true);
-    expect(root.properties[2].isMethod).toBe(true);
+    expect(root.variables.map(p => p.name)).toEqual(['foo', 'onClick', 'onHover', 'onInput']);
+    expect(root.variables[1].type).toBe('method');
+    expect(root.variables[2].type).toBe('method');
     expect(root.dependencyMap).toMatchInlineSnapshot('{}');
   });
 });
