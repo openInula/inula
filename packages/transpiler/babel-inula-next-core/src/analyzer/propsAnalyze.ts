@@ -1,8 +1,17 @@
-import { type types as t, type NodePath } from '@babel/core';
+import { type NodePath } from '@babel/core';
 import { AnalyzeContext, Visitor } from './types';
 import { addProp } from './nodeFactory';
 import { PropType } from '../constants';
-import { types } from '../babelTypes';
+import { types as t } from '@openinula/babel-api';
+
+export interface Prop {
+  name: string;
+  type: PropType;
+  alias: string | null;
+  default: t.Expression | null;
+  nestedProps: string[] | null;
+  nestedRelationship: t.ObjectPattern | t.ArrayPattern | null;
+}
 
 /**
  * Analyze the props deconstructing in the function component
@@ -29,8 +38,8 @@ export function propsAnalyze(): Visitor {
         // --- normal property ---
         const key = path.node.key;
         const value = path.node.value;
-        if (types.isIdentifier(key) || types.isStringLiteral(key)) {
-          const name = types.isIdentifier(key) ? key.name : key.value;
+        if (t.isIdentifier(key) || t.isStringLiteral(key)) {
+          const name = t.isIdentifier(key) ? key.name : key.value;
           analyzeSingleProp(value, name, path, ctx);
           return;
         }
@@ -57,17 +66,17 @@ function analyzeSingleProp(
   let alias: string | null = null;
   const nestedProps: string[] | null = [];
   let nestedRelationship: t.ObjectPattern | t.ArrayPattern | null = null;
-  if (types.isIdentifier(value)) {
+  if (t.isIdentifier(value)) {
     // 1. handle alias without default value
     // handle alias without default value
     if (key !== value.name) {
       alias = value.name;
     }
-  } else if (types.isAssignmentPattern(value)) {
+  } else if (t.isAssignmentPattern(value)) {
     // 2. handle default value case
     const assignedName = value.left;
     defaultVal = value.right;
-    if (types.isIdentifier(assignedName)) {
+    if (t.isIdentifier(assignedName)) {
       if (assignedName.name !== key) {
         // handle alias in default value case
         alias = assignedName.name;
@@ -75,7 +84,7 @@ function analyzeSingleProp(
     } else {
       throw Error(`Unsupported assignment type in object destructuring: ${assignedName.type}`);
     }
-  } else if (types.isObjectPattern(value) || types.isArrayPattern(value)) {
+  } else if (t.isObjectPattern(value) || t.isArrayPattern(value)) {
     // 3. nested destructuring
     // we should collect the identifier that can be used in the function body as the prop
     // e.g. function ({prop1, prop2: [p20X, {p211, p212: p212X}]}

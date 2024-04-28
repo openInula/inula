@@ -14,9 +14,9 @@
  */
 
 import { NodePath, type types as t } from '@babel/core';
-import { ComponentNode, FunctionalExpression, LifeCycle, ViewNode } from './types';
+import { ComponentNode, FunctionalExpression, LifeCycle, ReactiveVariable } from './types';
 import { PropType } from '../constants';
-import { ViewParticle } from '@openinula/reactivity-parser';
+import { ViewParticle, PrevMap } from '@openinula/reactivity-parser';
 
 export function createComponentNode(
   name: string,
@@ -25,36 +25,32 @@ export function createComponentNode(
 ): ComponentNode {
   const comp: ComponentNode = {
     type: 'comp',
+    level: parent ? parent.level + 1 : 0,
     name,
-    props: [],
-    child: undefined,
+    children: undefined,
     variables: [],
-    dependencyMap: {},
-    reactiveMap: {},
+    dependencyMap: parent ? { [PrevMap]: parent.dependencyMap } : {},
     lifecycle: {},
     parent,
     fnNode,
-    get availableProps() {
-      return comp.props
-        .map(({ name, nestedProps, alias }) => {
-          const nested = nestedProps ? nestedProps.map(name => name) : [];
-          return [alias ? alias : name, ...nested];
-        })
-        .flat();
-    },
     get ownAvailableVariables() {
-      return [...comp.variables.filter(p => p.type === 'reactive').map(({ name }) => name), ...comp.availableProps];
+      return [...comp.variables.filter((p): p is ReactiveVariable => p.type === 'reactive')];
     },
     get availableVariables() {
-      return [...comp.ownAvailableVariables, ...(comp.parent ? comp.parent.availableVariables : [])];
+      // Here is critical for the dependency analysis, must put parent's availableVariables first
+      // so the subcomponent can react to the parent's variables change
+      return [...(comp.parent ? comp.parent.availableVariables : []), ...comp.ownAvailableVariables];
     },
   };
 
   return comp;
 }
 
-export function addProperty(comp: ComponentNode, name: string, value: t.Expression | null, isComputed: boolean) {
-  comp.variables.push({ name, value, isComputed, type: 'reactive' });
+export function addProperty(comp: ComponentNode, name: string, value: t.Expression | null, deps: string[] | null) {
+  comp.variables.push({ name, value, isComputed: !!deps?.length, type: 'reactive', deps });
+  if (comp.dependencyMap[name] === undefined) {
+    comp.dependencyMap[name] = null;
+  }
 }
 
 export function addMethod(comp: ComponentNode, name: string, value: FunctionalExpression) {
@@ -98,9 +94,7 @@ export function addWatch(
 }
 
 export function setViewChild(comp: ComponentNode, view: ViewParticle[], usedPropertySet: Set<string>) {
-  const viewNode: ViewNode = {
-    content: view,
-    usedPropertySet,
-  };
-  comp.child = viewNode;
+  // TODO: Maybe we should merge
+  comp.usedPropertySet = usedPropertySet;
+  comp.children = view;
 }

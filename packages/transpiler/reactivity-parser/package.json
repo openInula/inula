@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@openinula/error-handler": "workspace:*",
+    "@openinula/jsx-view-parser": "workspace:*",
     "@openinula/view-parser": "workspace:*"
   },
   "tsup": {

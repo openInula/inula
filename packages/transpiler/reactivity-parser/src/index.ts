@@ -1,4 +1,4 @@
-import { type ViewUnit } from '@openinula/view-parser';
+import { type ViewUnit } from '@openinula/jsx-view-parser';
 import { ReactivityParser } from './parser';
 import { type ViewParticle, type ReactivityParserConfig } from './types';
 
@@ -6,7 +6,6 @@ import { type ViewParticle, type ReactivityParserConfig } from './types';
  * @brief Parse view units to get used properties and view particles with reactivity
  * @param viewUnits
  * @param config
- * @param options
  * @returns [viewParticles, usedProperties]
  */
 export function parseReactivity(viewUnits: ViewUnit[], config: ReactivityParserConfig): [ViewParticle[], Set<string>] {
@@ -21,5 +20,9 @@ export function parseReactivity(viewUnits: ViewUnit[], config: ReactivityParserC
   });
   return [dlParticles, usedProperties];
 }
+/**
+ *  The key to get the previous map in DependencyMap Chain
+ */
+export const PrevMap = Symbol('prevMap');
 
 export type * from './types';

@@ -6,7 +6,7 @@ import { type types as t } from '@babel/core';
 describe('MutableTagParticle', () => {
   // ---- HTML
   it('should parse an HTMLUnit with dynamic tag as an HTMLParticle', () => {
-    const viewParticles = parse('tag(this.div)()');
+    const viewParticles = parse('tag(div)()');
     expect(viewParticles.length).toBe(1);
     expect(viewParticles[0].type).toBe('html');
   });
@@ -18,7 +18,7 @@ describe('MutableTagParticle', () => {
   });
 
   it('should parse an HTMLUnit with non-static-html children as an HTMLParticle', () => {
-    const viewParticles = parse('div(); { Comp(); tag(this.div)(); }');
+    const viewParticles = parse('div(); { Comp(); tag(div)(); }');
     expect(viewParticles.length).toBe(1);
     expect(viewParticles[0].type).toBe('html');
   });
@@ -30,7 +30,7 @@ describe('MutableTagParticle', () => {
   });
 
   it('should parse an HTMLUnit with dynamic tag with dependencies as an ExpParticle', () => {
-    const viewParticles = parse('tag(this.flag)()');
+    const viewParticles = parse('tag(flag)()');
     expect(viewParticles.length).toBe(1);
     expect(viewParticles[0].type).toBe('exp');
     const content = (viewParticles[0] as ExpParticle).content;
@@ -48,7 +48,7 @@ describe('MutableTagParticle', () => {
   });
 
   it('should parse a CompUnit with dynamic tag with dependencies as an ExpParticle', () => {
-    const viewParticles = parse('comp(CompList[this.flag])()');
+    const viewParticles = parse('comp(CompList[flag])()');
     expect(viewParticles.length).toBe(1);
     expect(viewParticles[0].type).toBe('exp');
     const content = (viewParticles[0] as ExpParticle).content;
@@ -61,7 +61,7 @@ describe('MutableTagParticle', () => {
 
   // ---- Snippet
   it('should parse a SnippetUnit as an HTMLParticle', () => {
-    const viewParticles = parse('this.MySnippet()');
+    const viewParticles = parse('MySnippet()');
     expect(viewParticles.length).toBe(1);
     expect(viewParticles[0].type).toBe('snippet');
   });

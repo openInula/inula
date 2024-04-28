@@ -1,13 +1,20 @@
-import { type types as t } from '@babel/core';
-import type babel from '@babel/core';
-let _t: null | typeof types = null;
-let babelApi: typeof babel | null = null;
-export const register = (api: typeof babel) => {
+/** @type {null | typeof import('@babel/core').types} */
+let _t = null;
+/** @type {null | typeof import('@babel/core')} */
+let babelApi = null;
+
+/**
+ * @param {import('@babel/core')} api
+ */
+export const register = api => {
   babelApi = api;
   _t = api.types;
 };
 
-export const getBabelApi = (): typeof babel => {
+/**
+ * @returns {typeof import('@babel/core')}
+ */
+export const getBabelApi = () => {
   if (!babelApi) {
     throw new Error('Please call register() before using the babel api');
   }
@@ -28,4 +35,4 @@ export const types = new Proxy(
       return undefined;
     },
   }
-) as typeof t;
+);

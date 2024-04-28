@@ -14,7 +14,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { isCondNode } from '../../src/analyze';
+import { isCondNode } from '../../src/analyzer';
 import { mockAnalyze } from '../mock';
 
 describe('analyze early return', () => {
@@ -30,7 +30,7 @@ describe('analyze early return', () => {
         </div>;
       }
     `);
-    const branchNode = root?.child;
+    const branchNode = root?.children;
     if (!isCondNode(branchNode)) {
       throw new Error('Should be branch node');
     }
@@ -49,7 +49,7 @@ describe('analyze early return', () => {
         return <div></div>;
       }
     `);
-    const branchNode = root?.child;
+    const branchNode = root?.children;
     if (!isCondNode(branchNode)) {
       throw new Error('Should be branch node');
     }
@@ -73,7 +73,7 @@ describe('analyze early return', () => {
         return <div></div>;
       }
     `);
-    const branchNode = root?.child;
+    const branchNode = root?.children;
     if (!isCondNode(branchNode)) {
       throw new Error('Should be branch node');
     }

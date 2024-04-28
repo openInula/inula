@@ -16,7 +16,7 @@
 import { describe, expect, it } from 'vitest';
 import { genCode, mockAnalyze } from '../mock';
 import { PropType } from '../../src/constants';
-import { propsAnalyze } from '../../src/analyze/propsAnalyze';
+import { propsAnalyze } from '../../src/analyzer/propsAnalyze';
 
 const analyze = (code: string) => mockAnalyze(code, [propsAnalyze]);
 

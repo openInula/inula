@@ -15,12 +15,11 @@
 
 import { describe, expect, it } from 'vitest';
 import { genCode, mockAnalyze } from '../mock';
-import { functionalMacroAnalyze } from '../../src/analyze/functionalMacroAnalyze';
-import { types } from '../../src/babelTypes';
-import { type NodePath, type types as t } from '@babel/core';
+import { functionalMacroAnalyze } from '../../src/analyzer/functionalMacroAnalyze';
+import { types as t } from '@openinula/babel-api';
 
 const analyze = (code: string) => mockAnalyze(code, [functionalMacroAnalyze]);
-const combine = (body: t.Statement[]) => types.program(body);
+const combine = (body: t.Statement[]) => t.program(body);
 
 describe('analyze lifeCycle', () => {
   it('should collect will mount', () => {

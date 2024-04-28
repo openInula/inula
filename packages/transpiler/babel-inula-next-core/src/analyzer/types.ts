@@ -15,20 +15,21 @@
 
 import { type NodePath, types as t } from '@babel/core';
 import { ON_MOUNT, ON_UNMOUNT, PropType, WILL_MOUNT, WILL_UNMOUNT } from '../constants';
-import { ViewParticle } from '@openinula/reactivity-parser';
+import { ViewParticle, PrevMap } from '@openinula/reactivity-parser';
 
 export type LifeCycle = typeof WILL_MOUNT | typeof ON_MOUNT | typeof WILL_UNMOUNT | typeof ON_UNMOUNT;
 type Bitmap = number;
 
 export type FunctionalExpression = t.FunctionExpression | t.ArrowFunctionExpression;
+
 interface BaseVariable<V> {
   name: string;
   value: V;
 }
+
 export interface ReactiveVariable extends BaseVariable<t.Expression | null> {
   type: 'reactive';
-  // indicate the value is a state or computed or watch
-  listeners?: string[];
+  level: number;
   bitmap?: Bitmap;
   // need a flag for computed to gen a getter
   // watch is a static computed
@@ -38,11 +39,13 @@ export interface ReactiveVariable extends BaseVariable<t.Expression | null> {
 export interface MethodVariable extends BaseVariable<FunctionalExpression> {
   type: 'method';
 }
+
 export interface SubCompVariable extends BaseVariable<ComponentNode> {
   type: 'subComp';
 }
 
 export type Variable = ReactiveVariable | MethodVariable | SubCompVariable;
+
 export interface Prop {
   name: string;
   type: PropType;
@@ -51,12 +54,17 @@ export interface Prop {
   nestedProps: string[] | null;
   nestedRelationship: t.ObjectPattern | t.ArrayPattern | null;
 }
+
 export interface ComponentNode {
   type: 'comp';
   name: string;
-  props: Prop[];
+  level: number;
   // The variables defined in the component
   variables: Variable[];
+  /**
+   * The used properties in the component
+   */
+  usedPropertySet?: Set<string>;
   /**
    * The available props for the component, including the nested props
    */
@@ -64,36 +72,26 @@ export interface ComponentNode {
   /**
    * The available variables and props owned by the component
    */
-  ownAvailableVariables: string[];
+  ownAvailableVariables: ReactiveVariable[];
   /**
    * The available variables and props for the component and its parent
    */
-  availableVariables: string[];
-  /**
-   * The map to find the dependencies
-   */
-  dependencyMap: {
-    [key: string]: string[];
-  };
-  child?: ComponentNode | ViewNode;
+  availableVariables: ReactiveVariable[];
+  children?: (ComponentNode | ViewParticle)[];
   parent?: ComponentNode;
   /**
    * The function body of the fn component code
    */
   fnNode: NodePath<FunctionalExpression>;
-  /**
-   * The map to find the state
-   */
-  reactiveMap: Record<string, Bitmap>;
   lifecycle: Partial<Record<LifeCycle, t.Statement[]>>;
+  /**
+   * The watch fn in the component
+   */
   watch?: {
+    bit: Bitmap;
     deps: NodePath<t.ArrayExpression> | null;
     callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>;
   }[];
-}
-export interface ViewNode {
-  content: ViewParticle[];
-  usedPropertySet: Set<string>;
 }
 
 export interface AnalyzeContext {

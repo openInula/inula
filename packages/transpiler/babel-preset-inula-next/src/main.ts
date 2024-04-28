@@ -3,7 +3,7 @@ import { type PluginObj } from '@babel/core';
 import { PluginProviderClass } from './pluginProvider';
 import { type DLightOption } from './types';
 import { defaultAttributeMap } from './const';
-import { analyze } from './analyze';
+import { analyze } from './analyzer';
 
 export default function (api: typeof babel, options: DLightOption): PluginObj {
   const { types } = api;
