@@ -14,7 +14,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { transform } from './presets';
+import { transform } from '../presets';
 
 describe('condition', () => {
   it('should transform jsx', () => {

@@ -44,7 +44,8 @@
     "@types/babel__generator": "^7.6.8",
     "@types/babel__parser": "^7.1.1",
     "@types/babel__traverse": "^7.6.8",
-    "jsx-view-parser": "workspace:*",
+    "@openinula/jsx-view-parser": "workspace:*",
+    "@openinula/babel-api": "workspace:*",
     "minimatch": "^9.0.3",
     "vitest": "^1.4.0"
   },

@@ -16,7 +16,7 @@
 import { NodePath } from '@babel/core';
 import { LifeCycle, Visitor } from './types';
 import { addLifecycle, addWatch } from './nodeFactory';
-import * as t from '@babel/types';
+import { types as t } from '@openinula/babel-api';
 import { ON_MOUNT, ON_UNMOUNT, WATCH, WILL_MOUNT, WILL_UNMOUNT } from '../constants';
 import { extractFnFromMacro, getFnBody } from '../utils';
 
@@ -51,6 +51,9 @@ export function functionalMacroAnalyze(): Visitor {
           if (calleeName === WATCH) {
             const fnNode = extractFnFromMacro(expression, WATCH);
             const deps = getWatchDeps(expression);
+            if (!deps) {
+              // we auto collect the deps from the function body
+            }
             addWatch(ctx.current, fnNode, deps);
             return;
           }

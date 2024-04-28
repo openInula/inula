@@ -1,10 +1,11 @@
 import { type types as t } from '@babel/core';
 import type Babel from '@babel/core';
+import { PrevMap } from '.';
 
 export interface DependencyValue<T> {
   value: T;
-  dynamic: boolean;
-  dependencyIndexArr: number[];
+  dynamic: boolean; // to removed
+  dependencyIndexArr: number[]; // -> bit
   dependenciesNode: t.ArrayExpression;
 }
 
@@ -127,9 +128,25 @@ export interface ReactivityParserConfig {
   babelApi: typeof Babel;
   availableProperties: string[];
   availableIdentifiers?: string[];
-  dependencyMap: Record<string, string[]>;
+  dependencyMap: Record<string, string[] | null>;
   identifierDepMap?: Record<string, string[]>;
   dependencyParseType?: 'property' | 'identifier';
   parseTemplate?: boolean;
   reactivityFuncNames?: string[];
+}
+
+export interface DependencyMap {
+  /**
+   * key is the variable name, value is the dependencies
+   * i.e. {
+   *   count: ['flag'],
+   *   state1: ['count', 'flag'],
+   *   state2: ['count', 'flag', 'state1'],
+   *   state3: ['count', 'flag', 'state1', 'state2'],
+   *   state4: ['count', 'flag', 'state1', 'state2', 'state3'],
+   * }
+   */
+  [key: string]: string[] | null;
+
+  [PrevMap]?: DependencyMap;
 }

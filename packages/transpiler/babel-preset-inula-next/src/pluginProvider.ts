@@ -3,7 +3,7 @@ import { type types as t, type NodePath } from '@babel/core';
 import { type PropertyContainer, type HTMLTags, type SnippetPropSubDepMap } from './types';
 import { minimatch } from 'minimatch';
 import { parseView, ViewUnit } from '@openinula/view-parser';
-import { parseView as parseJSX } from 'jsx-view-parser';
+import { parseView as parseJSX } from '@openinula/jsx-view-parser';
 import { parseReactivity } from '@openinula/reactivity-parser';
 import { generateSnippet, generateView } from '@openinula/view-generator';
 import {

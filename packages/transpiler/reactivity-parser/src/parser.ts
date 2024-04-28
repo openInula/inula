@@ -12,9 +12,7 @@ import {
   type ForParticle,
   type IfParticle,
   type EnvParticle,
-  type SnippetParticle,
-  SwitchParticle,
-  TryParticle,
+  DependencyMap,
 } from './types';
 import { type NodePath, type types as t, type traverse } from '@babel/core';
 import {
@@ -22,16 +20,14 @@ import {
   type HTMLUnit,
   type ViewUnit,
   type CompUnit,
-  type ViewProp,
+  type UnitProp,
   type ForUnit,
   type IfUnit,
   type EnvUnit,
   type ExpUnit,
-  type SnippetUnit,
-  SwitchUnit,
-  TryUnit,
-} from '@openinula/view-parser';
+} from '@openinula/jsx-view-parser';
 import { DLError } from './error';
+import { PrevMap } from '.';
 
 export class ReactivityParser {
   private readonly config: ReactivityParserConfig;
@@ -40,7 +36,7 @@ export class ReactivityParser {
   private readonly traverse: typeof traverse;
   private readonly availableProperties: string[];
   private readonly availableIdentifiers?: string[];
-  private readonly dependencyMap: Record<string, string[]>;
+  private readonly dependencyMap: DependencyMap;
   private readonly identifierDepMap: Record<string, string[]>;
   private readonly dependencyParseType;
   private readonly reactivityFuncNames;
@@ -99,12 +95,9 @@ export class ReactivityParser {
     if (viewUnit.type === 'html') return this.parseHTML(viewUnit);
     if (viewUnit.type === 'comp') return this.parseComp(viewUnit);
     if (viewUnit.type === 'for') return this.parseFor(viewUnit);
-    if (viewUnit.type === 'try') return this.parseTry(viewUnit);
     if (viewUnit.type === 'if') return this.parseIf(viewUnit);
     if (viewUnit.type === 'env') return this.parseEnv(viewUnit);
     if (viewUnit.type === 'exp') return this.parseExp(viewUnit);
-    if (viewUnit.type === 'switch') return this.parseSwitch(viewUnit);
-    if (viewUnit.type === 'snippet') return this.parseSnippet(viewUnit);
     return DLError.throw1();
   }
 
@@ -420,45 +413,6 @@ export class ReactivityParser {
     };
   }
 
-  // ---- @Switch ----
-  /**
-   * @brief Parse a SwitchUnit into an SwitchParticle with dependencies
-   * @param switchUnit
-   * @returns SwitchParticle
-   */
-  private parseSwitch(switchUnit: SwitchUnit): SwitchParticle {
-    return {
-      type: 'switch',
-      discriminant: {
-        value: switchUnit.discriminant,
-        ...this.getDependencies(switchUnit.discriminant),
-      },
-      branches: switchUnit.branches.map(branch => ({
-        case: {
-          value: branch.case,
-          ...this.getDependencies(branch.case),
-        },
-        children: branch.children.map(this.parseViewParticle.bind(this)),
-        break: branch.break,
-      })),
-    };
-  }
-
-  // ---- @Try ----
-  /**
-   * @brief Parse a TryUnit into an TryParticle with dependencies
-   * @param tryUnit
-   * @returns TryParticle
-   */
-  private parseTry(tryUnit: TryUnit): TryParticle {
-    return {
-      type: 'try',
-      children: tryUnit.children.map(this.parseViewParticle.bind(this)),
-      exception: tryUnit.exception,
-      catchChildren: tryUnit.catchChildren.map(this.parseViewParticle.bind(this)),
-    };
-  }
-
   // ---- @Env ----
   /**
    * @brief Parse an EnvUnit into an EnvParticle with dependencies
@@ -492,38 +446,13 @@ export class ReactivityParser {
     return expParticle;
   }
 
-  // ---- @Snippet ----
-  /**
-   * @brief Parse a SnippetUnit into a SnippetParticle with dependencies
-   * @param snippetUnit
-   * @returns SnippetParticle
-   */
-  private parseSnippet(snippetUnit: SnippetUnit): SnippetParticle {
-    const snippetParticle: SnippetParticle = {
-      type: 'snippet',
-      tag: snippetUnit.tag,
-      props: {},
-      children: [],
-    };
-    if (snippetUnit.props) {
-      snippetParticle.props = Object.fromEntries(
-        Object.entries(snippetUnit.props).map(([key, prop]) => [key, this.generateDependencyProp(prop)])
-      );
-    }
-    if (snippetUnit.children) {
-      snippetParticle.children = snippetUnit.children.map(this.parseViewParticle.bind(this));
-    }
-
-    return snippetParticle;
-  }
-
   // ---- Dependencies ----
   /**
    * @brief Generate a dependency prop with dependencies
    * @param prop
    * @returns DependencyProp
    */
-  private generateDependencyProp(prop: ViewProp): DependencyProp {
+  private generateDependencyProp(prop: UnitProp): DependencyProp {
     const dependencyProp: DependencyProp = {
       value: prop.value,
       ...this.getDependencies(prop.value),
@@ -559,13 +488,12 @@ export class ReactivityParser {
     // ---- Both id and prop deps need to be calculated because
     //      id is for snippet update, prop is normal update
     //      in a snippet, the depsNode should be both id and prop
-    const [directIdentifierDeps, identifierDepNodes] = this.getIdentifierDependencies(node);
     const [directPropertyDeps, propertyDepNodes] = this.getPropertyDependencies(node);
-    const directDependencies = this.dependencyParseType === 'identifier' ? directIdentifierDeps : directPropertyDeps;
+    const directDependencies = directPropertyDeps;
     const identifierMapDependencies = this.getIdentifierMapDependencies(node);
     const deps = [...new Set([...directDependencies, ...identifierMapDependencies])];
 
-    const depNodes = [...identifierDepNodes, ...propertyDepNodes] as t.Expression[];
+    const depNodes = [...propertyDepNodes] as t.Expression[];
 
     return {
       dynamic: depNodes.length > 0 || deps.length > 0,
@@ -625,7 +553,7 @@ export class ReactivityParser {
     });
 
     deps.forEach(this.usedProperties.add.bind(this.usedProperties));
-    return [[...deps].map(dep => this.availableProperties.indexOf(dep)), dependencyNodes];
+    return [[...deps].map(dep => this.availableProperties.lastIndexOf(dep)), dependencyNodes];
   }
 
   /**
@@ -646,9 +574,9 @@ export class ReactivityParser {
 
     const wrappedNode = this.valueWrapper(node);
     this.traverse(wrappedNode, {
-      MemberExpression: innerPath => {
-        if (!this.t.isIdentifier(innerPath.node.property) || !this.t.isThisExpression(innerPath.node.object)) return;
-        const propertyKey = innerPath.node.property.name;
+      Identifier: innerPath => {
+        const propertyKey = innerPath.node.name;
+
         if (this.isAssignmentExpressionLeft(innerPath) || this.isAssignmentFunction(innerPath)) {
           assignDeps.add(propertyKey);
         } else if (
@@ -657,13 +585,12 @@ export class ReactivityParser {
           !this.isMemberInManualFunction(innerPath)
         ) {
           deps.add(propertyKey);
-          this.dependencyMap[propertyKey]?.forEach(deps.add.bind(deps));
           if (!depNodes[propertyKey]) depNodes[propertyKey] = [];
           depNodes[propertyKey].push(this.geneDependencyNode(innerPath));
         }
       },
     });
-
+    const dependencyIdxArr = deduplicate([...deps].map(this.calDependencyIndexArr).flat());
     assignDeps.forEach(dep => {
       deps.delete(dep);
       delete depNodes[dep];
@@ -676,7 +603,36 @@ export class ReactivityParser {
     });
 
     deps.forEach(this.usedProperties.add.bind(this.usedProperties));
-    return [[...deps].map(dep => this.availableProperties.indexOf(dep)), dependencyNodes];
+    return [dependencyIdxArr, dependencyNodes];
+  }
+
+  private calDependencyIndexArr = (directDepKey: string) => {
+    // iterate the availableProperties reversely to find the index of the property
+    // cause the availableProperties is in the order of the code
+    const chainedDepKeys = this.findDependency(directDepKey);
+    const depKeyQueue = chainedDepKeys ? [directDepKey, ...chainedDepKeys] : [directDepKey];
+    depKeyQueue.forEach(this.usedProperties.add.bind(this.usedProperties));
+
+    let dep = depKeyQueue.shift();
+    const result: number[] = [];
+    for (let i = this.availableProperties.length - 1; i >= 0; i--) {
+      if (this.availableProperties[i] === dep) {
+        result.push(i);
+        dep = depKeyQueue.shift();
+      }
+    }
+    return result;
+  };
+
+  private findDependency(propertyKey: string) {
+    let currentMap: DependencyMap | undefined = this.dependencyMap;
+    do {
+      if (currentMap[propertyKey] !== undefined) {
+        return currentMap[propertyKey];
+      }
+      currentMap = currentMap[PrevMap];
+    } while (currentMap);
+    return null;
   }
 
   /**
@@ -738,7 +694,7 @@ export class ReactivityParser {
     });
 
     deps.forEach(this.usedProperties.add.bind(this.usedProperties));
-    return [...deps].map(dep => this.availableProperties.indexOf(dep));
+    return [...deps].map(dep => this.availableProperties.lastIndexOf(dep));
   }
 
   // ---- Utils ----
@@ -781,7 +737,7 @@ export class ReactivityParser {
    * @param prop
    * @returns is a static prop
    */
-  private isStaticProp(prop: ViewProp): boolean {
+  private isStaticProp(prop: UnitProp): boolean {
     const { value, viewPropMap } = prop;
     return (
       (!viewPropMap || Object.keys(viewPropMap).length === 0) &&
@@ -950,10 +906,9 @@ export class ReactivityParser {
     }
     if (!parentPath) return false;
     return (
-      this.t.isCallExpression(parentPath.node) &&
-      this.t.isMemberExpression(parentPath.node.callee) &&
-      this.t.isIdentifier(parentPath.node.callee.property) &&
-      this.reactivityFuncNames.includes(parentPath.node.callee.property.name)
+      parentPath.isCallExpression() &&
+      parentPath.get('callee').isIdentifier() &&
+      this.reactivityFuncNames.includes((parentPath.get('callee').node as t.Identifier).name)
     );
   }
 
@@ -1020,4 +975,8 @@ export class ReactivityParser {
   private uid(): string {
     return Math.random().toString(36).slice(2);
   }
+}
+
+function deduplicate<T>(arr: T[]): T[] {
+  return [...new Set(arr)];
 }

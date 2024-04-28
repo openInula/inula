@@ -8,7 +8,6 @@ export enum PropType {
   REST = 'rest',
   SINGLE = 'single',
 }
-
 export const reactivityFuncNames = [
   // ---- Array
   'push',

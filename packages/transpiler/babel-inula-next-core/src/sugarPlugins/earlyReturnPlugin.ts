@@ -25,7 +25,7 @@ export function earlyReturnPlugin(): Visitor {
 
       const argument = path.get('argument');
       if (argument.isJSXElement()) {
-        currentComp.child = createJSXNode(currentComp, argument);
+        currentComp.children = createJSXNode(currentComp, argument);
       }
     },
     IfStatement(ifStmt: NodePath<t.IfStatement>, context: AnalyzeContext) {
@@ -63,7 +63,7 @@ export function earlyReturnPlugin(): Visitor {
       );
       context.skipRest();
 
-      currentComp.child = createCondNode(currentComp, defaultComponent, branches);
+      currentComp.children = createCondNode(currentComp, defaultComponent, branches);
     },
   };
 }

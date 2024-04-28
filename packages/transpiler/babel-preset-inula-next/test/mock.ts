@@ -16,7 +16,7 @@
 import { ComponentNode, InulaNode } from '../src/analyze/types';
 import babel, { type PluginObj, transform as transformWithBabel } from '@babel/core';
 import syntaxJSX from '@babel/plugin-syntax-jsx';
-import { analyze } from '../src/analyze';
+import { analyze } from '../src/analyzer';
 import generate from '@babel/generator';
 import * as t from '@babel/types';
 

@@ -15,11 +15,11 @@
 
 import { describe, expect, it } from 'vitest';
 import { genCode, mockAnalyze } from '../mock';
-import { propertiesAnalyze } from '../../src/analyze/propertiesAnalyze';
-import { propsAnalyze } from '../../src/analyze/propsAnalyze';
-import { ComponentNode } from '../../src/analyze/types';
+import { variablesAnalyze } from '../../src/analyzer/variablesAnalyze';
+import { propsAnalyze } from '../../src/analyzer/propsAnalyze';
+import { ComponentNode, ReactiveVariable } from '../../src/analyzer/types';
 
-const analyze = (code: string) => mockAnalyze(code, [propsAnalyze, propertiesAnalyze]);
+const analyze = (code: string) => mockAnalyze(code, [propsAnalyze, variablesAnalyze]);
 
 describe('analyze properties', () => {
   it('should work', () => {
@@ -41,11 +41,14 @@ describe('analyze properties', () => {
         })
       `);
       expect(root.variables.length).toBe(2);
-      expect(root.variables[0].isComputed).toBe(false);
-      expect(genCode(root.variables[0].value)).toBe('1');
-      expect(root.variables[1].isComputed).toBe(true);
-      expect(genCode(root.variables[1].value)).toBe('foo');
-      expect(root.dependencyMap).toEqual({ bar: ['foo'] });
+      const fooVar = root.variables[0] as ReactiveVariable;
+      expect(fooVar.isComputed).toBe(false);
+      expect(genCode(fooVar.value)).toBe('1');
+
+      const barVar = root.variables[1] as ReactiveVariable;
+      expect(barVar.isComputed).toBe(true);
+      expect(genCode(barVar.value)).toBe('foo');
+      expect(root.dependencyMap).toEqual({ bar: ['foo'], foo: null });
     });
 
     it('should analyze dependency from state in different shape', () => {
@@ -58,13 +61,15 @@ describe('analyze properties', () => {
         })
       `);
       expect(root.variables.length).toBe(4);
-      expect(root.variables[3].isComputed).toBe(true);
-      expect(genCode(root.variables[3].value)).toMatchInlineSnapshot(`
+
+      const barVar = root.variables[3] as ReactiveVariable;
+      expect(barVar.isComputed).toBe(true);
+      expect(genCode(barVar.value)).toMatchInlineSnapshot(`
         "{
           foo: foo ? a : b
         }"
       `);
-      expect(root.dependencyMap).toEqual({ bar: ['foo', 'a', 'b'] });
+      expect(root.dependencyMap).toEqual({ bar: ['foo', 'a', 'b'], foo: null, a: null, b: null });
     });
 
     it('should analyze dependency from props', () => {
@@ -74,7 +79,9 @@ describe('analyze properties', () => {
         })
       `);
       expect(root.variables.length).toBe(1);
-      expect(root.variables[0].isComputed).toBe(true);
+
+      const barVar = root.variables[0] as ReactiveVariable;
+      expect(barVar.isComputed).toBe(true);
       expect(root.dependencyMap).toEqual({ bar: ['foo'] });
     });
 
@@ -85,7 +92,8 @@ describe('analyze properties', () => {
         })
       `);
       expect(root.variables.length).toBe(1);
-      expect(root.variables[0].isComputed).toBe(true);
+      const barVar = root.variables[0] as ReactiveVariable;
+      expect(barVar.isComputed).toBe(true);
       expect(root.dependencyMap).toEqual({ bar: ['foo1', 'first', 'last'] });
     });
 
@@ -97,8 +105,9 @@ describe('analyze properties', () => {
         })
       `);
       expect(root.variables.length).toBe(1);
-      expect(root.variables[0].isComputed).toBe(false);
-      expect(root.dependencyMap).toEqual({});
+      const barVar = root.variables[0] as ReactiveVariable;
+      expect(barVar.isComputed).toBe(false);
+      expect(root.dependencyMap).toEqual({ bar: null });
     });
   });
 
@@ -113,15 +122,90 @@ describe('analyze properties', () => {
         })
       `);
       expect(root.variables.length).toBe(2);
-      expect(root.dependencyMap).toEqual({ Sub: ['foo'] });
+      expect(root.dependencyMap).toEqual({ foo: null });
       expect((root.variables[1].value as ComponentNode).dependencyMap).toMatchInlineSnapshot(`
         {
           "bar": [
             "foo",
           ],
+          Symbol(prevMap): {
+            "foo": null,
+          },
         }
       `);
     });
+
+    it('should analyze dependency in parent', () => {
+      const root = analyze(`
+        Component(({lastName}) => {
+          let parentFirstName = 'sheldon';
+          const parentName = parentFirstName + lastName;
+          const Son = Component(() => {
+            let middleName = parentName
+            const name = 'shelly'+ middleName + lastName;
+            const GrandSon = Component(() => {
+              let grandSonName = 'bar' + lastName;
+            });
+          });
+        })
+      `);
+      const sonNode = root.variables[2].value as ComponentNode;
+      expect(sonNode.dependencyMap).toMatchInlineSnapshot(`
+        {
+          "middleName": [
+            "parentName",
+            "parentFirstName",
+            "lastName",
+          ],
+          "name": [
+            "middleName",
+            "parentName",
+            "parentFirstName",
+            "lastName",
+          ],
+          Symbol(prevMap): {
+            "parentFirstName": null,
+            "parentName": [
+              "parentFirstName",
+              "lastName",
+            ],
+          },
+        }
+      `);
+      const grandSonNode = sonNode.variables[2].value as ComponentNode;
+      expect(grandSonNode.dependencyMap).toMatchInlineSnapshot(`
+        {
+          "grandSonName": [
+            "lastName",
+          ],
+          Symbol(prevMap): {
+            "middleName": [
+              "parentName",
+              "parentFirstName",
+              "lastName",
+            ],
+            "name": [
+              "middleName",
+              "parentName",
+              "parentFirstName",
+              "lastName",
+            ],
+            Symbol(prevMap): {
+              "parentFirstName": null,
+              "parentName": [
+                "parentFirstName",
+                "lastName",
+              ],
+            },
+          },
+        }
+      `);
+    });
+    // SubscriptionTree
+    // const SubscriptionTree = {
+    //   lastName: ['parentName','son:middleName','son:name','son,grandSon:grandSonName'],
+    //
+    // }
   });
 
   it('should collect method', () => {
@@ -138,6 +222,10 @@ describe('analyze properties', () => {
     expect(root.variables.map(p => p.name)).toEqual(['foo', 'onClick', 'onHover', 'onInput']);
     expect(root.variables[1].type).toBe('method');
     expect(root.variables[2].type).toBe('method');
-    expect(root.dependencyMap).toMatchInlineSnapshot('{}');
+    expect(root.dependencyMap).toMatchInlineSnapshot(`
+      {
+        "foo": null,
+      }
+    `);
   });
 });

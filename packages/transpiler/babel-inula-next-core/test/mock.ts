@@ -13,13 +13,13 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { Analyzer, ComponentNode, InulaNode } from '../src/analyze/types';
+import { Analyzer, ComponentNode } from '../src/analyzer/types';
 import { type PluginObj, transform as transformWithBabel } from '@babel/core';
 import syntaxJSX from '@babel/plugin-syntax-jsx';
-import { analyze } from '../src/analyze';
+import { analyze } from '../src/analyzer';
 import generate from '@babel/generator';
 import * as t from '@babel/types';
-import { register } from '../src/babelTypes';
+import { register } from '@openinula/babel-api';
 import { defaultHTMLTags } from '../src/const';
 
 export function mockAnalyze(code: string, analyzers?: Analyzer[]): ComponentNode {
@@ -62,27 +62,4 @@ export function genCode(ast: t.Node | null) {
     throw new Error('ast is null');
   }
   return generate(ast).code;
-}
-
-export function printTree(node: InulaNode | undefined): any {
-  if (!node) {
-    return 'empty';
-  }
-  if (node.type === 'cond') {
-    return {
-      type: node.type,
-      branch: node.branches.map(b => printTree(b.content)),
-      children: printTree(node.child),
-    };
-  } else if (node.type === 'comp') {
-    return {
-      type: node.type,
-      children: printTree(node.child),
-    };
-  } else if (node.type === 'jsx') {
-    return {
-      type: node.type,
-    };
-  }
-  return 'unknown';
 }

@@ -14,9 +14,9 @@
  */
 
 import { Visitor } from './types';
-import { type types as t, type NodePath } from '@babel/core';
-import { parseView as parseJSX } from 'jsx-view-parser';
-import { getBabelApi } from '../babelTypes';
+import { type NodePath } from '@babel/core';
+import { parseView as parseJSX } from '@openinula/jsx-view-parser';
+import { types as t, getBabelApi } from '@openinula/babel-api';
 import { parseReactivity } from '@openinula/reactivity-parser';
 import { reactivityFuncNames } from '../const';
 import { setViewChild } from './nodeFactory';

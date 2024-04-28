@@ -1,4 +1,4 @@
-import { functionalMacroAnalyze } from '../../src/analyze/functionalMacroAnalyze';
+import { functionalMacroAnalyze } from '../../src/analyzer/functionalMacroAnalyze';
 import { genCode, mockAnalyze } from '../mock';
 import { describe, expect, it } from 'vitest';
 

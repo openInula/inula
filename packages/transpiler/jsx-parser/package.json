@@ -1,5 +1,5 @@
 {
-  "name": "jsx-view-parser",
+  "name": "@openinula/jsx-view-parser",
   "version": "0.0.1",
   "description": "Inula jsx parser",
   "author": {

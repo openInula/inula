@@ -1,18 +1,14 @@
-import { type types as t, type NodePath } from '@babel/core';
+import { type NodePath } from '@babel/core';
 import { propsAnalyze } from './propsAnalyze';
-import { AnalyzeContext, Analyzer, ComponentNode, CondNode, Visitor } from './types';
+import { AnalyzeContext, Analyzer, ComponentNode, Visitor } from './types';
 import { addLifecycle, createComponentNode } from './nodeFactory';
-import { propertiesAnalyze } from './propertiesAnalyze';
+import { variablesAnalyze } from './variablesAnalyze';
 import { functionalMacroAnalyze } from './functionalMacroAnalyze';
 import { getFnBody } from '../utils';
 import { viewAnalyze } from './viewAnalyze';
 import { WILL_MOUNT } from '../constants';
-import { types } from '../babelTypes';
-const builtinAnalyzers = [propsAnalyze, propertiesAnalyze, functionalMacroAnalyze, viewAnalyze];
-
-export function isCondNode(node: any): node is CondNode {
-  return node && node.type === 'cond';
-}
+import { types as t } from '@openinula/babel-api';
+const builtinAnalyzers = [propsAnalyze, variablesAnalyze, functionalMacroAnalyze, viewAnalyze];
 
 function mergeVisitor(...visitors: Analyzer[]): Visitor {
   return visitors.reduce<Visitor<AnalyzeContext>>((acc, cur) => {
@@ -75,7 +71,7 @@ export function analyzeFnComp(
   }
 
   if (context.unhandledNode.length) {
-    addLifecycle(componentNode, WILL_MOUNT, types.blockStatement(context.unhandledNode));
+    addLifecycle(componentNode, WILL_MOUNT, t.blockStatement(context.unhandledNode));
   }
 }
 /**
@@ -85,10 +81,9 @@ export function analyzeFnComp(
  * 2. identify the component's props, including children, alias, and default value
  * 3. analyze the early return of the component, build into the branch
  *
- * @param types
  * @param fnName
  * @param path
- * @param customAnalyzers
+ * @param options
  */
 export function analyze(
   fnName: string,
