@@ -12,7 +12,7 @@ import {
   type ForParticle,
   type IfParticle,
   type EnvParticle,
-  DependencyMap,
+  ReactiveBitMap,
 } from './types';
 import { type NodePath, type types as t, type traverse } from '@babel/core';
 import {
@@ -36,7 +36,7 @@ export class ReactivityParser {
   private readonly traverse: typeof traverse;
   private readonly availableProperties: string[];
   private readonly availableIdentifiers?: string[];
-  private readonly dependencyMap: DependencyMap;
+  private readonly reactiveBitMap: ReactiveBitMap;
   private readonly identifierDepMap: Record<string, string[]>;
   private readonly dependencyParseType;
   private readonly reactivityFuncNames;
@@ -70,7 +70,7 @@ export class ReactivityParser {
     this.traverse = config.babelApi.traverse;
     this.availableProperties = config.availableProperties;
     this.availableIdentifiers = config.availableIdentifiers;
-    this.dependencyMap = config.dependencyMap;
+    this.reactiveBitMap = config.reactiveBitMap;
     this.identifierDepMap = config.identifierDepMap ?? {};
     this.dependencyParseType = config.dependencyParseType ?? 'property';
     this.reactivityFuncNames = config.reactivityFuncNames ?? [];
@@ -123,8 +123,8 @@ export class ReactivityParser {
    * @brief Generate a template
    *  There'll be a situation where the tag is dynamic, e.g. tag(this.htmlTag),
    *  which we can't generate a template string for it, so we'll wrap it in an ExpParticle in parseHTML() section
-   * @param htmlUnit
    * @returns template string
+   * @param unit
    */
   private generateTemplate(unit: HTMLUnit): HTMLParticle {
     const staticProps = this.filterTemplateProps(
@@ -240,7 +240,7 @@ export class ReactivityParser {
               key: 'value',
               path: [...path, idx],
               value: child.content,
-              dependencyIndexArr: [],
+              depsBit: [],
               dependenciesNode: this.t.arrayExpression([]),
               dynamic: false,
             });
@@ -280,7 +280,7 @@ export class ReactivityParser {
    * @returns ExpParticle | HTMLParticle
    */
   private parseHTML(htmlUnit: HTMLUnit): ExpParticle | HTMLParticle {
-    const { dependencyIndexArr, dependenciesNode, dynamic } = this.getDependencies(htmlUnit.tag);
+    const { depsBit, dependenciesNode } = this.getDependencies(htmlUnit.tag);
 
     const innerHTMLParticle: HTMLParticle = {
       type: 'html',
@@ -295,9 +295,6 @@ export class ReactivityParser {
 
     innerHTMLParticle.children = htmlUnit.children.map(this.parseViewParticle.bind(this));
 
-    // ---- Not a dynamic tag
-    if (!dynamic) return innerHTMLParticle;
-
     // ---- Dynamic tag, wrap it in an ExpParticle to make the tag reactive
     const id = this.uid();
     return {
@@ -307,9 +304,8 @@ export class ReactivityParser {
         viewPropMap: {
           [id]: [innerHTMLParticle],
         },
-        dependencyIndexArr,
+        depsBit,
         dependenciesNode,
-        dynamic,
       },
       props: {},
     };
@@ -324,7 +320,7 @@ export class ReactivityParser {
    * @returns CompParticle | ExpParticle
    */
   private parseComp(compUnit: CompUnit): CompParticle | ExpParticle {
-    const { dependencyIndexArr, dependenciesNode, dynamic } = this.getDependencies(compUnit.tag);
+    const { depsBit, dependenciesNode } = this.getDependencies(compUnit.tag);
 
     const compParticle: CompParticle = {
       type: 'comp',
@@ -348,7 +344,7 @@ export class ReactivityParser {
         viewPropMap: {
           [id]: [compParticle],
         },
-        dependencyIndexArr,
+        depsBit,
         dependenciesNode,
         dynamic,
       },
@@ -364,7 +360,7 @@ export class ReactivityParser {
    * @returns ForParticle
    */
   private parseFor(forUnit: ForUnit): ForParticle {
-    const { dependencyIndexArr, dependenciesNode, dynamic } = this.getDependencies(forUnit.array);
+    const { depsBit, dependenciesNode } = this.getDependencies(forUnit.array);
     const prevIdentifierDepMap = this.config.identifierDepMap;
     // ---- Find all the identifiers in the key and remove them from the identifierDepMap
     //      because once the key is changed, that identifier related dependencies will be changed too,
@@ -375,7 +371,7 @@ export class ReactivityParser {
     this.config.identifierDepMap = Object.fromEntries(
       this.getIdentifiers(this.t.assignmentExpression('=', forUnit.item, this.t.objectExpression([])))
         .filter(id => !keyDep || id !== keyDep)
-        .map(id => [id, dependencyIndexArr.map(n => this.availableProperties[n])])
+        .map(id => [id, depsBit.map(n => this.availableProperties[n])])
     );
 
     const forParticle: ForParticle = {
@@ -384,7 +380,7 @@ export class ReactivityParser {
       array: {
         value: forUnit.array,
         dynamic,
-        dependencyIndexArr,
+        depsBit,
         dependenciesNode,
       },
       children: forUnit.children.map(this.parseViewParticle.bind(this)),
@@ -474,30 +470,24 @@ export class ReactivityParser {
    * @returns dependency index array
    */
   private getDependencies(node: t.Expression | t.Statement): {
-    dynamic: boolean;
-    dependencyIndexArr: number[];
+    depsBit: number;
     dependenciesNode: t.ArrayExpression;
   } {
     if (this.t.isFunctionExpression(node) || this.t.isArrowFunctionExpression(node)) {
       return {
-        dynamic: false,
-        dependencyIndexArr: [],
+        depsBit: 0,
         dependenciesNode: this.t.arrayExpression([]),
       };
     }
     // ---- Both id and prop deps need to be calculated because
     //      id is for snippet update, prop is normal update
     //      in a snippet, the depsNode should be both id and prop
-    const [directPropertyDeps, propertyDepNodes] = this.getPropertyDependencies(node);
-    const directDependencies = directPropertyDeps;
-    const identifierMapDependencies = this.getIdentifierMapDependencies(node);
-    const deps = [...new Set([...directDependencies, ...identifierMapDependencies])];
+    const [deps, propertyDepNodes] = this.getPropertyDependencies(node);
 
     const depNodes = [...propertyDepNodes] as t.Expression[];
 
     return {
-      dynamic: depNodes.length > 0 || deps.length > 0,
-      dependencyIndexArr: deps,
+      depsBit: deps,
       dependenciesNode: this.t.arrayExpression(depNodes),
     };
   }
@@ -534,7 +524,7 @@ export class ReactivityParser {
           !this.isMemberInManualFunction(innerPath)
         ) {
           deps.add(idName);
-          this.dependencyMap[idName]?.forEach(deps.add.bind(deps));
+          this.reactiveBitMap[idName]?.forEach(deps.add.bind(deps));
           if (!depNodes[idName]) depNodes[idName] = [];
           depNodes[idName].push(this.geneDependencyNode(innerPath));
         }
@@ -567,34 +557,39 @@ export class ReactivityParser {
    * @param node
    * @returns dependency index array
    */
-  private getPropertyDependencies(node: t.Expression | t.Statement): [number[], t.Node[]] {
-    const deps = new Set<string>();
-    const assignDeps = new Set<string>();
+  private getPropertyDependencies(node: t.Expression | t.Statement): [number, t.Node[]] {
+    // ---- Deps: console.log(count)
+    let depsBit = 0;
+    // ---- Assign deps: count = 1 or count++
+    let assignDepBit = 0;
     const depNodes: Record<string, t.Node[]> = {};
 
     const wrappedNode = this.valueWrapper(node);
     this.traverse(wrappedNode, {
       Identifier: innerPath => {
         const propertyKey = innerPath.node.name;
+        const reactiveBitmap = this.reactiveBitMap.get(propertyKey);
 
-        if (this.isAssignmentExpressionLeft(innerPath) || this.isAssignmentFunction(innerPath)) {
-          assignDeps.add(propertyKey);
-        } else if (
-          this.availableProperties.includes(propertyKey) &&
-          !this.isMemberInEscapeFunction(innerPath) &&
-          !this.isMemberInManualFunction(innerPath)
-        ) {
-          deps.add(propertyKey);
-          if (!depNodes[propertyKey]) depNodes[propertyKey] = [];
-          depNodes[propertyKey].push(this.geneDependencyNode(innerPath));
+        if (reactiveBitmap !== undefined) {
+          if (this.isAssignmentExpressionLeft(innerPath) || this.isAssignmentFunction(innerPath)) {
+            assignDepBit |= reactiveBitmap;
+          } else {
+            depsBit |= reactiveBitmap;
+            if (!depNodes[propertyKey]) depNodes[propertyKey] = [];
+            depNodes[propertyKey].push(this.t.cloneNode(innerPath.node));
+          }
         }
       },
     });
-    const dependencyIdxArr = deduplicate([...deps].map(this.calDependencyIndexArr).flat());
-    assignDeps.forEach(dep => {
-      deps.delete(dep);
-      delete depNodes[dep];
-    });
+
+    // ---- Eliminate deps that are assigned in the same method
+    //      e.g. { console.log(count); count = 1 }
+    //      this will cause infinite loop
+    //      so we eliminate "count" from deps
+    if (assignDepBit & depsBit) {
+      // TODO: I think we should throw an error here to indicate the user that there is a loop
+    }
+
     let dependencyNodes = Object.values(depNodes).flat();
     // ---- deduplicate the dependency nodes
     dependencyNodes = dependencyNodes.filter((n, i) => {
@@ -602,8 +597,8 @@ export class ReactivityParser {
       return idx === i;
     });
 
-    deps.forEach(this.usedProperties.add.bind(this.usedProperties));
-    return [dependencyIdxArr, dependencyNodes];
+    // deps.forEach(this.usedProperties.add.bind(this.usedProperties));
+    return [depsBit, dependencyNodes];
   }
 
   private calDependencyIndexArr = (directDepKey: string) => {
@@ -625,7 +620,7 @@ export class ReactivityParser {
   };
 
   private findDependency(propertyKey: string) {
-    let currentMap: DependencyMap | undefined = this.dependencyMap;
+    let currentMap: ReactiveBitMap | undefined = this.reactiveBitMap;
     do {
       if (currentMap[propertyKey] !== undefined) {
         return currentMap[propertyKey];

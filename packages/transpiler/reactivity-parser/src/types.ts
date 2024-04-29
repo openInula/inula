@@ -1,19 +1,17 @@
 import { type types as t } from '@babel/core';
 import type Babel from '@babel/core';
-import { PrevMap } from '.';
 
 export interface DependencyValue<T> {
   value: T;
   dynamic: boolean; // to removed
-  dependencyIndexArr: number[]; // -> bit
+  depsBit: number; // -> bit
   dependenciesNode: t.ArrayExpression;
 }
 
 export interface DependencyProp {
   value: t.Expression;
   viewPropMap: Record<string, ViewParticle[]>;
-  dynamic: boolean;
-  dependencyIndexArr: number[];
+  depsBit: number;
   dependenciesNode: t.ArrayExpression;
 }
 
@@ -23,7 +21,7 @@ export interface TemplateProp {
   path: number[];
   value: t.Expression;
   dynamic: boolean;
-  dependencyIndexArr: number[];
+  depsBit: number;
   dependenciesNode: t.ArrayExpression;
 }
 
@@ -128,25 +126,13 @@ export interface ReactivityParserConfig {
   babelApi: typeof Babel;
   availableProperties: string[];
   availableIdentifiers?: string[];
-  dependencyMap: Record<string, string[] | null>;
+  reactiveBitMap: ReactiveBitMap;
   identifierDepMap?: Record<string, string[]>;
   dependencyParseType?: 'property' | 'identifier';
   parseTemplate?: boolean;
   reactivityFuncNames?: string[];
 }
 
-export interface DependencyMap {
-  /**
-   * key is the variable name, value is the dependencies
-   * i.e. {
-   *   count: ['flag'],
-   *   state1: ['count', 'flag'],
-   *   state2: ['count', 'flag', 'state1'],
-   *   state3: ['count', 'flag', 'state1', 'state2'],
-   *   state4: ['count', 'flag', 'state1', 'state2', 'state3'],
-   * }
-   */
-  [key: string]: string[] | null;
-
-  [PrevMap]?: DependencyMap;
-}
+// TODO: unify with the types in babel-inula-next-core
+type Bitmap = number;
+export type ReactiveBitMap = Map<string, Bitmap>;

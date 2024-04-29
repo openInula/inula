@@ -14,10 +14,9 @@
  */
 
 import type { NodePath } from '@babel/core';
-import { AnalyzeContext, DependencyMap } from '../types';
+import { AnalyzeContext } from '../types';
 import { types as t } from '@openinula/babel-api';
 import { reactivityFuncNames } from '../../const';
-import { PrevMap } from '@openinula/reactivity-parser';
 
 /**
  * @brief Get all valid dependencies of a babel path
@@ -32,20 +31,23 @@ export function getDependenciesFromNode(
   { current }: AnalyzeContext
 ) {
   // ---- Deps: console.log(count)
-  const deps = new Set<string>();
+  let depsBit = 0;
   // ---- Assign deps: count = 1 or count++
-  const assignDeps = new Set<string>();
+  let assignDepBit = 0;
   const depNodes: Record<string, t.Expression[]> = {};
 
   const visitor = (innerPath: NodePath<t.Identifier>) => {
     const propertyKey = innerPath.node.name;
-    if (isAssignmentExpressionLeft(innerPath) || isAssignmentFunction(innerPath)) {
-      assignDeps.add(propertyKey);
-    } else if (current.availableVariables.includes(propertyKey)) {
-      deps.add(propertyKey);
-      findDependency(current.dependencyMap, propertyKey)?.forEach(deps.add.bind(deps));
-      if (!depNodes[propertyKey]) depNodes[propertyKey] = [];
-      depNodes[propertyKey].push(t.cloneNode(innerPath.node));
+    const reactiveBitmap = current._reactiveBitMap.get(propertyKey);
+
+    if (reactiveBitmap !== undefined) {
+      if (isAssignmentExpressionLeft(innerPath) || isAssignmentFunction(innerPath)) {
+        assignDepBit |= reactiveBitmap;
+      } else {
+        depsBit |= reactiveBitmap;
+        if (!depNodes[propertyKey]) depNodes[propertyKey] = [];
+        depNodes[propertyKey].push(t.cloneNode(innerPath.node));
+      }
     }
   };
   if (path.isIdentifier()) {
@@ -59,16 +61,11 @@ export function getDependenciesFromNode(
   //      e.g. { console.log(count); count = 1 }
   //      this will cause infinite loop
   //      so we eliminate "count" from deps
-  assignDeps.forEach(dep => {
-    deps.delete(dep);
-  });
-
-  const depArr = [...deps];
-  if (deps.size > 0) {
-    current.dependencyMap[propertyKey] = depArr;
+  if (assignDepBit & depsBit) {
+    // TODO: I think we should throw an error here to indicate the user that there is a loop
   }
 
-  return depArr;
+  return depsBit;
 }
 
 /**
@@ -109,16 +106,4 @@ function isAssignmentFunction(innerPath: NodePath): boolean {
     parentPath.get('callee').isIdentifier() &&
     reactivityFuncNames.includes((parentPath.get('callee').node as t.Identifier).name)
   );
-}
-
-function findDependency(dependencyMap: DependencyMap, propertyKey: string) {
-  let currentMap: DependencyMap | undefined = dependencyMap;
-  do {
-    if (currentMap[propertyKey] !== undefined) {
-      return currentMap[propertyKey];
-    }
-    // trace back to the previous map
-    currentMap = currentMap[PrevMap];
-  } while (currentMap);
-  return null;
 }

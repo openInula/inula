@@ -16,7 +16,7 @@
 import { NodePath, type types as t } from '@babel/core';
 import { ComponentNode, FunctionalExpression, LifeCycle, ReactiveVariable } from './types';
 import { PropType } from '../constants';
-import { ViewParticle, PrevMap } from '@openinula/reactivity-parser';
+import { ViewParticle } from '@openinula/reactivity-parser';
 
 export function createComponentNode(
   name: string,
@@ -29,7 +29,7 @@ export function createComponentNode(
     name,
     children: undefined,
     variables: [],
-    dependencyMap: parent ? { [PrevMap]: parent.dependencyMap } : {},
+    _reactiveBitMap: parent ? new Map<string, number>(parent._reactiveBitMap) : new Map<string, number>(),
     lifecycle: {},
     parent,
     fnNode,
@@ -46,11 +46,14 @@ export function createComponentNode(
   return comp;
 }
 
-export function addProperty(comp: ComponentNode, name: string, value: t.Expression | null, deps: string[] | null) {
-  comp.variables.push({ name, value, isComputed: !!deps?.length, type: 'reactive', deps });
-  if (comp.dependencyMap[name] === undefined) {
-    comp.dependencyMap[name] = null;
-  }
+export function addProperty(comp: ComponentNode, name: string, value: t.Expression | null, depBits: number) {
+  // The index of the variable in the availableVariables
+  const idx = comp.availableVariables.length;
+  const bit = 1 << idx;
+  const bitmap = depBits ? depBits | bit : bit;
+
+  comp._reactiveBitMap.set(name, bitmap);
+  comp.variables.push({ name, value, isComputed: !!depBits, type: 'reactive', bitmap, level: comp.level });
 }
 
 export function addMethod(comp: ComponentNode, name: string, value: FunctionalExpression) {
@@ -58,7 +61,7 @@ export function addMethod(comp: ComponentNode, name: string, value: FunctionalEx
 }
 
 export function addSubComponent(comp: ComponentNode, subComp: ComponentNode) {
-  comp.variables.push({ name: subComp.name, value: subComp, type: 'subComp' });
+  comp.variables.push({ ...subComp, type: 'subComp' });
 }
 
 export function addProp(

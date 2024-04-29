@@ -30,7 +30,14 @@ interface BaseVariable<V> {
 export interface ReactiveVariable extends BaseVariable<t.Expression | null> {
   type: 'reactive';
   level: number;
-  bitmap?: Bitmap;
+  /**
+   * indicate the dependency of the variable | the index of the reactive variable
+   * i.e.
+   * let name = 'John';  // name's bitmap is 0x0001
+   * let age = 18;       // age's bitmap is 0x0010
+   * let greeting = `Hello, ${name}`; // greeting's bitmap is 0x0101
+   */
+  bitmap: Bitmap;
   // need a flag for computed to gen a getter
   // watch is a static computed
   isComputed: boolean;
@@ -40,9 +47,7 @@ export interface MethodVariable extends BaseVariable<FunctionalExpression> {
   type: 'method';
 }
 
-export interface SubCompVariable extends BaseVariable<ComponentNode> {
-  type: 'subComp';
-}
+export type SubCompVariable = ComponentNode<'subComp'>;
 
 export type Variable = ReactiveVariable | MethodVariable | SubCompVariable;
 
@@ -55,8 +60,8 @@ export interface Prop {
   nestedRelationship: t.ObjectPattern | t.ArrayPattern | null;
 }
 
-export interface ComponentNode {
-  type: 'comp';
+export interface ComponentNode<Type = 'comp'> {
+  type: Type;
   name: string;
   level: number;
   // The variables defined in the component
@@ -66,9 +71,9 @@ export interface ComponentNode {
    */
   usedPropertySet?: Set<string>;
   /**
-   * The available props for the component, including the nested props
+   * The map to find the reactive bitmap by name
    */
-  availableProps: string[];
+  _reactiveBitMap: Map<string, Bitmap>;
   /**
    * The available variables and props owned by the component
    */
