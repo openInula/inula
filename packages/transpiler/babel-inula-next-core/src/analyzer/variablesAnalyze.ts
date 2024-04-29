@@ -43,7 +43,7 @@ export function variablesAnalyze(): Visitor {
         } else if (id.isIdentifier()) {
           // --- properties: the state / computed / plain properties / methods ---
           const init = declaration.get('init');
-          let deps: string[] | null = null;
+          let depBits = 0;
           if (isValidPath(init)) {
             // handle the method
             if (init.isArrowFunctionExpression() || init.isFunctionExpression()) {
@@ -68,9 +68,9 @@ export function variablesAnalyze(): Visitor {
               return;
             }
 
-            deps = getDependenciesFromNode(id.node.name, init, ctx);
+            depBits = getDependenciesFromNode(id.node.name, init, ctx);
           }
-          addProperty(ctx.current, id.node.name, init.node || null, deps);
+          addProperty(ctx.current, id.node.name, init.node || null, depBits);
         }
       });
     },

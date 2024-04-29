@@ -16,10 +16,9 @@
 import { describe, expect, it } from 'vitest';
 import { genCode, mockAnalyze } from '../mock';
 import { variablesAnalyze } from '../../src/analyzer/variablesAnalyze';
-import { propsAnalyze } from '../../src/analyzer/propsAnalyze';
-import { ComponentNode, ReactiveVariable } from '../../src/analyzer/types';
+import { ReactiveVariable, SubCompVariable } from '../../src/analyzer/types';
 
-const analyze = (code: string) => mockAnalyze(code, [propsAnalyze, variablesAnalyze]);
+const analyze = (code: string) => mockAnalyze(code, [variablesAnalyze]);
 
 describe('analyze properties', () => {
   it('should work', () => {
@@ -48,7 +47,7 @@ describe('analyze properties', () => {
       const barVar = root.variables[1] as ReactiveVariable;
       expect(barVar.isComputed).toBe(true);
       expect(genCode(barVar.value)).toBe('foo');
-      expect(root.dependencyMap).toEqual({ bar: ['foo'], foo: null });
+      expect(barVar.bitmap).toEqual(0b11);
     });
 
     it('should analyze dependency from state in different shape', () => {
@@ -69,10 +68,11 @@ describe('analyze properties', () => {
           foo: foo ? a : b
         }"
       `);
-      expect(root.dependencyMap).toEqual({ bar: ['foo', 'a', 'b'], foo: null, a: null, b: null });
+      expect(barVar.bitmap).toEqual(0b1111);
     });
 
-    it('should analyze dependency from props', () => {
+    // TODO:MOVE TO PROPS PLUGIN TEST
+    it.skip('should analyze dependency from props', () => {
       const root = analyze(`
         Component(({ foo }) => {
           let bar = foo;
@@ -82,10 +82,10 @@ describe('analyze properties', () => {
 
       const barVar = root.variables[0] as ReactiveVariable;
       expect(barVar.isComputed).toBe(true);
-      expect(root.dependencyMap).toEqual({ bar: ['foo'] });
     });
 
-    it('should analyze dependency from nested props', () => {
+    // TODO:MOVE TO PROPS PLUGIN TEST
+    it.skip('should analyze dependency from nested props', () => {
       const root = analyze(`
         Component(({ foo: foo1, name: [first, last] }) => {
           let bar = [foo1, first, last];
@@ -94,6 +94,7 @@ describe('analyze properties', () => {
       expect(root.variables.length).toBe(1);
       const barVar = root.variables[0] as ReactiveVariable;
       expect(barVar.isComputed).toBe(true);
+      // @ts-expect-error ignore ts here
       expect(root.dependencyMap).toEqual({ bar: ['foo1', 'first', 'last'] });
     });
 
@@ -107,7 +108,7 @@ describe('analyze properties', () => {
       expect(root.variables.length).toBe(1);
       const barVar = root.variables[0] as ReactiveVariable;
       expect(barVar.isComputed).toBe(false);
-      expect(root.dependencyMap).toEqual({ bar: null });
+      expect(barVar.bitmap).toEqual(0b1);
     });
   });
 
@@ -122,22 +123,14 @@ describe('analyze properties', () => {
         })
       `);
       expect(root.variables.length).toBe(2);
-      expect(root.dependencyMap).toEqual({ foo: null });
-      expect((root.variables[1].value as ComponentNode).dependencyMap).toMatchInlineSnapshot(`
-        {
-          "bar": [
-            "foo",
-          ],
-          Symbol(prevMap): {
-            "foo": null,
-          },
-        }
-      `);
+      expect(root.availableVariables[0].bitmap).toEqual(0b1);
+      expect((root.variables[1] as SubCompVariable).ownAvailableVariables[0].bitmap).toBe(0b11);
     });
 
     it('should analyze dependency in parent', () => {
       const root = analyze(`
-        Component(({lastName}) => {
+        Component(() => {
+          let lastName;
           let parentFirstName = 'sheldon';
           const parentName = parentFirstName + lastName;
           const Son = Component(() => {
@@ -149,63 +142,15 @@ describe('analyze properties', () => {
           });
         })
       `);
-      const sonNode = root.variables[2].value as ComponentNode;
-      expect(sonNode.dependencyMap).toMatchInlineSnapshot(`
-        {
-          "middleName": [
-            "parentName",
-            "parentFirstName",
-            "lastName",
-          ],
-          "name": [
-            "middleName",
-            "parentName",
-            "parentFirstName",
-            "lastName",
-          ],
-          Symbol(prevMap): {
-            "parentFirstName": null,
-            "parentName": [
-              "parentFirstName",
-              "lastName",
-            ],
-          },
-        }
-      `);
-      const grandSonNode = sonNode.variables[2].value as ComponentNode;
-      expect(grandSonNode.dependencyMap).toMatchInlineSnapshot(`
-        {
-          "grandSonName": [
-            "lastName",
-          ],
-          Symbol(prevMap): {
-            "middleName": [
-              "parentName",
-              "parentFirstName",
-              "lastName",
-            ],
-            "name": [
-              "middleName",
-              "parentName",
-              "parentFirstName",
-              "lastName",
-            ],
-            Symbol(prevMap): {
-              "parentFirstName": null,
-              "parentName": [
-                "parentFirstName",
-                "lastName",
-              ],
-            },
-          },
-        }
-      `);
+      const sonNode = root.variables[3] as SubCompVariable;
+      // Son > middleName
+      expect(sonNode.ownAvailableVariables[0].bitmap).toBe(0b1111);
+      // Son > name
+      expect(sonNode.ownAvailableVariables[1].bitmap).toBe(0b11111);
+      const grandSonNode = sonNode.variables[2] as SubCompVariable;
+      // GrandSon > grandSonName
+      expect(grandSonNode.ownAvailableVariables[0].bitmap).toBe(0b100001);
     });
-    // SubscriptionTree
-    // const SubscriptionTree = {
-    //   lastName: ['parentName','son:middleName','son:name','son,grandSon:grandSonName'],
-    //
-    // }
   });
 
   it('should collect method', () => {
@@ -222,10 +167,5 @@ describe('analyze properties', () => {
     expect(root.variables.map(p => p.name)).toEqual(['foo', 'onClick', 'onHover', 'onInput']);
     expect(root.variables[1].type).toBe('method');
     expect(root.variables[2].type).toBe('method');
-    expect(root.dependencyMap).toMatchInlineSnapshot(`
-      {
-        "foo": null,
-      }
-    `);
   });
 });

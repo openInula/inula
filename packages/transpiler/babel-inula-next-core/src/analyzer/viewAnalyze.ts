@@ -34,10 +34,11 @@ export function viewAnalyze(): Visitor {
           htmlTags,
           parseTemplate: false,
         });
+        // @ts-expect-error TODO: FIX TYPE
         const [viewParticles, usedPropertySet] = parseReactivity(viewUnits, {
           babelApi: getBabelApi(),
           availableProperties: current.availableVariables,
-          dependencyMap: current.dependencyMap,
+          reactiveBitMap: current._reactiveBitMap,
           reactivityFuncNames,
         });
 

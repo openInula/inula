@@ -5,27 +5,18 @@ import { viewAnalyze } from '../../src/analyzer/viewAnalyze';
 import { genCode, mockAnalyze } from '../mock';
 import { describe, expect, it } from 'vitest';
 
-const analyze = (code: string) => mockAnalyze(code, [propsAnalyze, variablesAnalyze, viewAnalyze]);
+const analyze = (code: string) => mockAnalyze(code, [variablesAnalyze, viewAnalyze]);
 describe('viewAnalyze', () => {
   it('should analyze view', () => {
     const root = analyze(/*js*/ `
-      Component(({name ,className}) => {
+      Component(({}) => {
+        let name;
+        let className;
         let count = name; // 1
         let doubleCount = count* 2; // 2
         let doubleCount2 = doubleCount* 2; // 4
         const Input =  Component(() => {
           let count = 1;
-          watch(() => {
-            if (doubleCount2 > 10) {
-              count++;
-            }
-            console.log(doubleCount2);
-          });
-          const update = changed => {
-            if (changed & 0x1011) {
-              node1.update(_$this0.count, _$this0.doubleCount);
-            }
-          };
           return <input>{count}{doubleCount}</input>;
         });
         return <div className={className + count}>{doubleCount2}</div>;
