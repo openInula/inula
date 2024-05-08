@@ -26,14 +26,13 @@ import { reactivityFuncNames } from '../../const';
  * @returns
  */
 export function getDependenciesFromNode(
-  propertyKey: string,
   path: NodePath<t.Expression | t.ClassDeclaration>,
   { current }: AnalyzeContext
 ) {
   // ---- Deps: console.log(count)
-  let depsBit = 0;
+  let depMask = 0;
   // ---- Assign deps: count = 1 or count++
-  let assignDepBit = 0;
+  let assignDepMask = 0;
   const depNodes: Record<string, t.Expression[]> = {};
 
   const visitor = (innerPath: NodePath<t.Identifier>) => {
@@ -42,9 +41,9 @@ export function getDependenciesFromNode(
 
     if (reactiveBitmap !== undefined) {
       if (isAssignmentExpressionLeft(innerPath) || isAssignmentFunction(innerPath)) {
-        assignDepBit |= reactiveBitmap;
+        assignDepMask |= reactiveBitmap;
       } else {
-        depsBit |= reactiveBitmap;
+        depMask |= reactiveBitmap;
         if (!depNodes[propertyKey]) depNodes[propertyKey] = [];
         depNodes[propertyKey].push(t.cloneNode(innerPath.node));
       }
@@ -61,11 +60,11 @@ export function getDependenciesFromNode(
   //      e.g. { console.log(count); count = 1 }
   //      this will cause infinite loop
   //      so we eliminate "count" from deps
-  if (assignDepBit & depsBit) {
+  if (assignDepMask & depMask) {
     // TODO: I think we should throw an error here to indicate the user that there is a loop
   }
 
-  return depsBit;
+  return depMask;
 }
 
 /**
