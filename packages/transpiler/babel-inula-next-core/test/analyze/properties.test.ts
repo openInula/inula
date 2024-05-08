@@ -47,7 +47,7 @@ describe('analyze properties', () => {
       const barVar = root.variables[1] as ReactiveVariable;
       expect(barVar.isComputed).toBe(true);
       expect(genCode(barVar.value)).toBe('foo');
-      expect(barVar.bitmap).toEqual(0b11);
+      expect(barVar.depMask).toEqual(0b11);
     });
 
     it('should analyze dependency from state in different shape', () => {
@@ -68,7 +68,7 @@ describe('analyze properties', () => {
           foo: foo ? a : b
         }"
       `);
-      expect(barVar.bitmap).toEqual(0b1111);
+      expect(barVar.depMask).toEqual(0b1111);
     });
 
     // TODO:MOVE TO PROPS PLUGIN TEST
@@ -108,7 +108,7 @@ describe('analyze properties', () => {
       expect(root.variables.length).toBe(1);
       const barVar = root.variables[0] as ReactiveVariable;
       expect(barVar.isComputed).toBe(false);
-      expect(barVar.bitmap).toEqual(0b1);
+      expect(barVar.depMask).toEqual(0b1);
     });
   });
 
@@ -123,8 +123,8 @@ describe('analyze properties', () => {
         })
       `);
       expect(root.variables.length).toBe(2);
-      expect(root.availableVariables[0].bitmap).toEqual(0b1);
-      expect((root.variables[1] as SubCompVariable).ownAvailableVariables[0].bitmap).toBe(0b11);
+      expect(root.availableVariables[0].depMask).toEqual(0b1);
+      expect((root.variables[1] as SubCompVariable).ownAvailableVariables[0].depMask).toBe(0b11);
     });
 
     it('should analyze dependency in parent', () => {
@@ -144,12 +144,12 @@ describe('analyze properties', () => {
       `);
       const sonNode = root.variables[3] as SubCompVariable;
       // Son > middleName
-      expect(sonNode.ownAvailableVariables[0].bitmap).toBe(0b1111);
+      expect(sonNode.ownAvailableVariables[0].depMask).toBe(0b1111);
       // Son > name
-      expect(sonNode.ownAvailableVariables[1].bitmap).toBe(0b11111);
+      expect(sonNode.ownAvailableVariables[1].depMask).toBe(0b11111);
       const grandSonNode = sonNode.variables[2] as SubCompVariable;
       // GrandSon > grandSonName
-      expect(grandSonNode.ownAvailableVariables[0].bitmap).toBe(0b100001);
+      expect(grandSonNode.ownAvailableVariables[0].depMask).toBe(0b100001);
     });
   });
 

@@ -240,7 +240,7 @@ export class ReactivityParser {
               key: 'value',
               path: [...path, idx],
               value: child.content,
-              depsBit: [],
+              depMask: 0,
               dependenciesNode: this.t.arrayExpression([]),
               dynamic: false,
             });
@@ -280,7 +280,7 @@ export class ReactivityParser {
    * @returns ExpParticle | HTMLParticle
    */
   private parseHTML(htmlUnit: HTMLUnit): ExpParticle | HTMLParticle {
-    const { depsBit, dependenciesNode } = this.getDependencies(htmlUnit.tag);
+    const { depMask, dependenciesNode, dynamic } = this.getDependencies(htmlUnit.tag);
 
     const innerHTMLParticle: HTMLParticle = {
       type: 'html',
@@ -295,6 +295,9 @@ export class ReactivityParser {
 
     innerHTMLParticle.children = htmlUnit.children.map(this.parseViewParticle.bind(this));
 
+    // ---- Not a dynamic tag
+    if (!dynamic) return innerHTMLParticle;
+
     // ---- Dynamic tag, wrap it in an ExpParticle to make the tag reactive
     const id = this.uid();
     return {
@@ -304,7 +307,7 @@ export class ReactivityParser {
         viewPropMap: {
           [id]: [innerHTMLParticle],
         },
-        depsBit,
+        depMask: depMask,
         dependenciesNode,
       },
       props: {},
@@ -320,7 +323,7 @@ export class ReactivityParser {
    * @returns CompParticle | ExpParticle
    */
   private parseComp(compUnit: CompUnit): CompParticle | ExpParticle {
-    const { depsBit, dependenciesNode } = this.getDependencies(compUnit.tag);
+    const { depMask, dependenciesNode, dynamic } = this.getDependencies(compUnit.tag);
 
     const compParticle: CompParticle = {
       type: 'comp',
@@ -344,7 +347,7 @@ export class ReactivityParser {
         viewPropMap: {
           [id]: [compParticle],
         },
-        depsBit,
+        depMask: depMask,
         dependenciesNode,
         dynamic,
       },
@@ -360,7 +363,7 @@ export class ReactivityParser {
    * @returns ForParticle
    */
   private parseFor(forUnit: ForUnit): ForParticle {
-    const { depsBit, dependenciesNode } = this.getDependencies(forUnit.array);
+    const { depMask, dependenciesNode } = this.getDependencies(forUnit.array);
     const prevIdentifierDepMap = this.config.identifierDepMap;
     // ---- Find all the identifiers in the key and remove them from the identifierDepMap
     //      because once the key is changed, that identifier related dependencies will be changed too,
@@ -371,7 +374,7 @@ export class ReactivityParser {
     this.config.identifierDepMap = Object.fromEntries(
       this.getIdentifiers(this.t.assignmentExpression('=', forUnit.item, this.t.objectExpression([])))
         .filter(id => !keyDep || id !== keyDep)
-        .map(id => [id, depsBit.map(n => this.availableProperties[n])])
+        .map(id => [id, depMask.map(n => this.availableProperties[n])])
     );
 
     const forParticle: ForParticle = {
@@ -380,7 +383,7 @@ export class ReactivityParser {
       array: {
         value: forUnit.array,
         dynamic,
-        depsBit,
+        depMask: depMask,
         dependenciesNode,
       },
       children: forUnit.children.map(this.parseViewParticle.bind(this)),
@@ -470,12 +473,14 @@ export class ReactivityParser {
    * @returns dependency index array
    */
   private getDependencies(node: t.Expression | t.Statement): {
-    depsBit: number;
+    dynamic: boolean;
+    depMask: number;
     dependenciesNode: t.ArrayExpression;
   } {
     if (this.t.isFunctionExpression(node) || this.t.isArrowFunctionExpression(node)) {
       return {
-        depsBit: 0,
+        dynamic: false,
+        depMask: 0,
         dependenciesNode: this.t.arrayExpression([]),
       };
     }
@@ -487,7 +492,8 @@ export class ReactivityParser {
     const depNodes = [...propertyDepNodes] as t.Expression[];
 
     return {
-      depsBit: deps,
+      dynamic: depNodes.length > 0 || !!deps,
+      depMask: deps,
       dependenciesNode: this.t.arrayExpression(depNodes),
     };
   }
@@ -559,10 +565,11 @@ export class ReactivityParser {
    */
   private getPropertyDependencies(node: t.Expression | t.Statement): [number, t.Node[]] {
     // ---- Deps: console.log(count)
-    let depsBit = 0;
+    let depMask = 0;
     // ---- Assign deps: count = 1 or count++
     let assignDepBit = 0;
     const depNodes: Record<string, t.Node[]> = {};
+    const deps = new Set<string>();
 
     const wrappedNode = this.valueWrapper(node);
     this.traverse(wrappedNode, {
@@ -574,7 +581,9 @@ export class ReactivityParser {
           if (this.isAssignmentExpressionLeft(innerPath) || this.isAssignmentFunction(innerPath)) {
             assignDepBit |= reactiveBitmap;
           } else {
-            depsBit |= reactiveBitmap;
+            depMask |= reactiveBitmap;
+            deps.add(propertyKey);
+
             if (!depNodes[propertyKey]) depNodes[propertyKey] = [];
             depNodes[propertyKey].push(this.t.cloneNode(innerPath.node));
           }
@@ -586,7 +595,7 @@ export class ReactivityParser {
     //      e.g. { console.log(count); count = 1 }
     //      this will cause infinite loop
     //      so we eliminate "count" from deps
-    if (assignDepBit & depsBit) {
+    if (assignDepBit & depMask) {
       // TODO: I think we should throw an error here to indicate the user that there is a loop
     }
 
@@ -597,37 +606,8 @@ export class ReactivityParser {
       return idx === i;
     });
 
-    // deps.forEach(this.usedProperties.add.bind(this.usedProperties));
-    return [depsBit, dependencyNodes];
-  }
-
-  private calDependencyIndexArr = (directDepKey: string) => {
-    // iterate the availableProperties reversely to find the index of the property
-    // cause the availableProperties is in the order of the code
-    const chainedDepKeys = this.findDependency(directDepKey);
-    const depKeyQueue = chainedDepKeys ? [directDepKey, ...chainedDepKeys] : [directDepKey];
-    depKeyQueue.forEach(this.usedProperties.add.bind(this.usedProperties));
-
-    let dep = depKeyQueue.shift();
-    const result: number[] = [];
-    for (let i = this.availableProperties.length - 1; i >= 0; i--) {
-      if (this.availableProperties[i] === dep) {
-        result.push(i);
-        dep = depKeyQueue.shift();
-      }
-    }
-    return result;
-  };
-
-  private findDependency(propertyKey: string) {
-    let currentMap: ReactiveBitMap | undefined = this.reactiveBitMap;
-    do {
-      if (currentMap[propertyKey] !== undefined) {
-        return currentMap[propertyKey];
-      }
-      currentMap = currentMap[PrevMap];
-    } while (currentMap);
-    return null;
+    deps.forEach(this.usedProperties.add.bind(this.usedProperties));
+    return [depMask, dependencyNodes];
   }
 
   /**

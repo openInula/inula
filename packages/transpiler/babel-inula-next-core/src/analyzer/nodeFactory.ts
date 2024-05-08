@@ -14,7 +14,7 @@
  */
 
 import { NodePath, type types as t } from '@babel/core';
-import { ComponentNode, FunctionalExpression, LifeCycle, ReactiveVariable } from './types';
+import type { ComponentNode, FunctionalExpression, LifeCycle, ReactiveVariable, Bitmap } from './types';
 import { PropType } from '../constants';
 import { ViewParticle } from '@openinula/reactivity-parser';
 
@@ -53,7 +53,7 @@ export function addProperty(comp: ComponentNode, name: string, value: t.Expressi
   const bitmap = depBits ? depBits | bit : bit;
 
   comp._reactiveBitMap.set(name, bitmap);
-  comp.variables.push({ name, value, isComputed: !!depBits, type: 'reactive', bitmap, level: comp.level });
+  comp.variables.push({ name, value, isComputed: !!depBits, type: 'reactive', depMask: bitmap, level: comp.level });
 }
 
 export function addMethod(comp: ComponentNode, name: string, value: FunctionalExpression) {
@@ -87,13 +87,13 @@ export function addLifecycle(comp: ComponentNode, lifeCycle: LifeCycle, block: t
 export function addWatch(
   comp: ComponentNode,
   callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>,
-  deps: NodePath<t.ArrayExpression> | null
+  depMask: Bitmap
 ) {
   // if watch not exist, create a new one
   if (!comp.watch) {
     comp.watch = [];
   }
-  comp.watch.push({ callback, deps });
+  comp.watch.push({ callback, depMask });
 }
 
 export function setViewChild(comp: ComponentNode, view: ViewParticle[], usedPropertySet: Set<string>) {

@@ -22,9 +22,9 @@ describe('watchAnalyze', () => {
         // watch expression
       }"
     `);
-    if (!root.watch[0].deps) {
+    if (!root.watch[0].depMask) {
       throw new Error('watch deps not found');
     }
-    expect(genCode(root.watch[0].deps.node)).toMatchInlineSnapshot('"[a, b]"');
+    expect(genCode(root.watch[0].depMask)).toMatchInlineSnapshot('"[a, b]"');
   });
 });

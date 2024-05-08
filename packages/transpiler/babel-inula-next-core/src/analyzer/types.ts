@@ -15,10 +15,10 @@
 
 import { type NodePath, types as t } from '@babel/core';
 import { ON_MOUNT, ON_UNMOUNT, PropType, WILL_MOUNT, WILL_UNMOUNT } from '../constants';
-import { ViewParticle, PrevMap } from '@openinula/reactivity-parser';
+import { ViewParticle } from '@openinula/reactivity-parser';
 
 export type LifeCycle = typeof WILL_MOUNT | typeof ON_MOUNT | typeof WILL_UNMOUNT | typeof ON_UNMOUNT;
-type Bitmap = number;
+export type Bitmap = number;
 
 export type FunctionalExpression = t.FunctionExpression | t.ArrowFunctionExpression;
 
@@ -37,7 +37,7 @@ export interface ReactiveVariable extends BaseVariable<t.Expression | null> {
    * let age = 18;       // age's bitmap is 0x0010
    * let greeting = `Hello, ${name}`; // greeting's bitmap is 0x0101
    */
-  bitmap: Bitmap;
+  depMask: Bitmap;
   // need a flag for computed to gen a getter
   // watch is a static computed
   isComputed: boolean;
@@ -93,8 +93,7 @@ export interface ComponentNode<Type = 'comp'> {
    * The watch fn in the component
    */
   watch?: {
-    bit: Bitmap;
-    deps: NodePath<t.ArrayExpression> | null;
+    depMask: Bitmap;
     callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>;
   }[];
 }

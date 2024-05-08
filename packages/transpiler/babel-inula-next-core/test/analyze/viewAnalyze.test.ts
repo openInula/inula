@@ -1,5 +1,4 @@
 import { variablesAnalyze } from '../../src/analyzer/variablesAnalyze';
-import { propsAnalyze } from '../../src/analyzer/propsAnalyze';
 import { ComponentNode } from '../../src/analyzer/types';
 import { viewAnalyze } from '../../src/analyzer/viewAnalyze';
 import { genCode, mockAnalyze } from '../mock';
@@ -23,51 +22,27 @@ describe('viewAnalyze', () => {
       });
     `);
     const div = root.children![0] as any;
-    expect(div.children[0].content.dependencyIndexArr).toMatchInlineSnapshot(`
-      [
-        4,
-        3,
-        2,
-        0,
-      ]
-    `);
+    expect(div.children[0].content.depMask).toEqual(0b11101);
     expect(genCode(div.children[0].content.dependenciesNode)).toMatchInlineSnapshot('"[doubleCount2]"');
-    expect(div.props.className.dependencyIndexArr).toMatchInlineSnapshot(`
-      [
-        1,
-        2,
-        0,
-      ]
-    `);
+    expect(div.props.className.depMask).toEqual(0b111);
     expect(genCode(div.props.className.value)).toMatchInlineSnapshot('"className + count"');
 
     // @ts-expect-error ignore ts here
-    const InputCompNode = (root.variables[3] as ComponentNode).value;
+    const InputCompNode = root.variables[5] as ComponentNode;
     expect(InputCompNode.usedPropertySet).toMatchInlineSnapshot(`
       Set {
         "count",
         "doubleCount",
-        "name",
       }
     `);
     // it's the {count}
-    const inputFirstExp = InputCompNode.children[0].children[0];
-    expect(inputFirstExp.content.dependencyIndexArr).toMatchInlineSnapshot(`
-      [
-        5,
-      ]
-    `);
+    const inputFirstExp = InputCompNode.children![0].children[0];
+    expect(inputFirstExp.content.depMask).toEqual(0b100000);
     expect(genCode(inputFirstExp.content.dependenciesNode)).toMatchInlineSnapshot('"[count]"');
 
     // it's the {doubleCount}
     const inputSecondExp = InputCompNode.children[0].children[1];
-    expect(inputSecondExp.content.dependencyIndexArr).toMatchInlineSnapshot(`
-      [
-        3,
-        2,
-        0,
-      ]
-    `);
+    expect(inputSecondExp.content.depMask).toEqual(0b1101);
     expect(genCode(inputSecondExp.content.dependenciesNode)).toMatchInlineSnapshot('"[doubleCount]"');
   });
 });

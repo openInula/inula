@@ -4,14 +4,14 @@ import type Babel from '@babel/core';
 export interface DependencyValue<T> {
   value: T;
   dynamic: boolean; // to removed
-  depsBit: number; // -> bit
+  depMask: number; // -> bit
   dependenciesNode: t.ArrayExpression;
 }
 
 export interface DependencyProp {
   value: t.Expression;
   viewPropMap: Record<string, ViewParticle[]>;
-  depsBit: number;
+  depMask: number;
   dependenciesNode: t.ArrayExpression;
 }
 
@@ -21,7 +21,7 @@ export interface TemplateProp {
   path: number[];
   value: t.Expression;
   dynamic: boolean;
-  depsBit: number;
+  depMask: number;
   dependenciesNode: t.ArrayExpression;
 }
 
