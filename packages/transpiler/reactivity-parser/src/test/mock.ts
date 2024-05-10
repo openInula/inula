@@ -207,15 +207,18 @@ const htmlTags = [
 const snippetNames = ['MySnippet', 'InnerButton'];
 
 export const availableProperties = ['flag', 'count', 'doubleCount', 'array', 'state1', 'state2', 'state3', 'state4'];
-const dependencyMap = {
-  count: ['flag'],
-  doubleCount: ['count', 'flag'],
-  array: ['count', 'flag'],
-  state1: ['count', 'flag'],
-  state2: ['count', 'flag', 'state1'],
-  state3: ['count', 'flag', 'state1', 'state2'],
-  state4: ['count', 'flag', 'state1', 'state2', 'state3'],
-};
+const depMaskMap = new Map(
+  Object.entries({
+    flag: 0b1,
+    count: 0b11,
+    doubleCount: 0b111,
+    array: 0b1011,
+    state1: 0b10011,
+    state2: 0b110011,
+    state3: 0b1110011,
+    state4: 0b11110011,
+  })
+);
 
 const viewConfig: ViewParserConfig = {
   babelApi,
@@ -226,7 +229,7 @@ const viewConfig: ViewParserConfig = {
 export const reactivityConfig: ReactivityParserConfig = {
   babelApi,
   availableProperties,
-  dependencyMap,
+  depMaskMap,
 };
 
 export function parseCode(code: string) {
@@ -241,10 +244,7 @@ export function parseView(code: string) {
   return parseViewFromStatement(parseCode(code));
 }
 
-export function parseReactivity(statement: t.BlockStatement) {
-  return pR(parseViewFromStatement(statement), reactivityConfig)[0];
-}
-
 export function parse(code: string) {
+  // @ts-expect-error TODO: switch unit test to jsx-parser
   return pR(parseView(code), reactivityConfig)[0];
 }

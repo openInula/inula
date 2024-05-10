@@ -64,18 +64,6 @@ export function addSubComponent(comp: ComponentNode, subComp: ComponentNode) {
   comp.variables.push({ ...subComp, type: 'subComp' });
 }
 
-export function addProp(
-  comp: ComponentNode,
-  type: PropType,
-  key: string,
-  defaultVal: t.Expression | null = null,
-  alias: string | null = null,
-  nestedProps: string[] | null = null,
-  nestedRelationship: t.ObjectPattern | t.ArrayPattern | null = null
-) {
-  comp.props.push({ name: key, type, default: defaultVal, alias, nestedProps, nestedRelationship });
-}
-
 export function addLifecycle(comp: ComponentNode, lifeCycle: LifeCycle, block: t.BlockStatement) {
   const compLifecycle = comp.lifecycle;
   if (!compLifecycle[lifeCycle]) {
