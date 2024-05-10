@@ -1,6 +1,5 @@
 import { type NodePath } from '@babel/core';
 import { AnalyzeContext, Visitor } from './types';
-import { addProp } from './nodeFactory';
 import { PropType } from '../constants';
 import { types as t } from '@openinula/babel-api';
 

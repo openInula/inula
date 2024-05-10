@@ -16,12 +16,6 @@ describe('OtherParticle', () => {
     expect(viewParticles[0].type).toBe('if');
   });
 
-  it('should parse an IfUnit as an SwitchParticle', () => {
-    const viewParticles = parse('switch(this.flag) {  }');
-    expect(viewParticles.length).toBe(1);
-    expect(viewParticles[0].type).toBe('switch');
-  });
-
   it('should parse a ForUnit as a ForParticle', () => {
     const viewParticles = parse('for(const item of this.items) { div() }');
     expect(viewParticles.length).toBe(1);
@@ -34,11 +28,9 @@ describe('OtherParticle', () => {
     expect(viewParticles.length).toBe(1);
     expect(viewParticles[0].type).toBe('for');
 
-    const divParticle = (viewParticles[0] as ForParticle).children[0] as HTMLParticle;
-    const divDependency = divParticle.props?.textContent?.dependencyIndexArr;
-    expect(divDependency).toContain(0);
-    expect(divDependency).toContain(1);
-    expect(divDependency).toContain(3);
+    const divParticle = (viewParticles[0] as unknown as ForParticle).children[0] as unknown as HTMLParticle;
+    const divDependency = divParticle.props?.textContent?.depMask;
+    expect(divDependency).toEqual(0b1011);
   });
 
   it("should correctly parse ForUnit's deconstruct item dependencies from array", () => {
@@ -46,11 +38,9 @@ describe('OtherParticle', () => {
     expect(viewParticles.length).toBe(1);
     expect(viewParticles[0].type).toBe('for');
 
-    const divParticle = (viewParticles[0] as ForParticle).children[0] as HTMLParticle;
-    const divDependency = divParticle.props?.textContent?.dependencyIndexArr;
-    expect(divDependency).toContain(0);
-    expect(divDependency).toContain(1);
-    expect(divDependency).toContain(3);
+    const divParticle = (viewParticles[0] as unknown as ForParticle).children[0] as unknown as HTMLParticle;
+    const divDependency = divParticle.props?.textContent?.depMask;
+    expect(divDependency).toEqual(0b1011);
   });
 
   it('should parse a EnvUnit as a EnvParticle', () => {
@@ -63,11 +53,5 @@ describe('OtherParticle', () => {
     const viewParticles = parse('this.flag');
     expect(viewParticles.length).toBe(1);
     expect(viewParticles[0].type).toBe('exp');
-  });
-
-  it('should parse a TryUnit as a TryParticle', () => {
-    const viewParticles = parse('try { div() } catch(e) { div() }');
-    expect(viewParticles.length).toBe(1);
-    expect(viewParticles[0].type).toBe('try');
   });
 });

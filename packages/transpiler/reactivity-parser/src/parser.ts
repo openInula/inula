@@ -12,7 +12,7 @@ import {
   type ForParticle,
   type IfParticle,
   type EnvParticle,
-  ReactiveBitMap,
+  DepMaskMap,
 } from './types';
 import { type NodePath, type types as t, type traverse } from '@babel/core';
 import {
@@ -27,7 +27,6 @@ import {
   type ExpUnit,
 } from '@openinula/jsx-view-parser';
 import { DLError } from './error';
-import { PrevMap } from '.';
 
 export class ReactivityParser {
   private readonly config: ReactivityParserConfig;
@@ -35,10 +34,8 @@ export class ReactivityParser {
   private readonly t: typeof t;
   private readonly traverse: typeof traverse;
   private readonly availableProperties: string[];
-  private readonly availableIdentifiers?: string[];
-  private readonly reactiveBitMap: ReactiveBitMap;
+  private readonly depMaskMap: DepMaskMap;
   private readonly identifierDepMap: Record<string, string[]>;
-  private readonly dependencyParseType;
   private readonly reactivityFuncNames;
 
   private readonly escapeNamings = ['escape', '$'];
@@ -69,10 +66,7 @@ export class ReactivityParser {
     this.t = config.babelApi.types;
     this.traverse = config.babelApi.traverse;
     this.availableProperties = config.availableProperties;
-    this.availableIdentifiers = config.availableIdentifiers;
-    this.reactiveBitMap = config.reactiveBitMap;
-    this.identifierDepMap = config.identifierDepMap ?? {};
-    this.dependencyParseType = config.dependencyParseType ?? 'property';
+    this.depMaskMap = config.depMaskMap;
     this.reactivityFuncNames = config.reactivityFuncNames ?? [];
   }
 
@@ -139,9 +133,7 @@ export class ReactivityParser {
       key,
       {
         ...prop,
-        dependencyIndexArr: [],
         dependenciesNode: this.t.arrayExpression([]),
-        dynamic: false,
       },
     ]);
 
@@ -242,7 +234,6 @@ export class ReactivityParser {
               value: child.content,
               depMask: 0,
               dependenciesNode: this.t.arrayExpression([]),
-              dynamic: false,
             });
           }
         });
@@ -280,8 +271,6 @@ export class ReactivityParser {
    * @returns ExpParticle | HTMLParticle
    */
   private parseHTML(htmlUnit: HTMLUnit): ExpParticle | HTMLParticle {
-    const { depMask, dependenciesNode, dynamic } = this.getDependencies(htmlUnit.tag);
-
     const innerHTMLParticle: HTMLParticle = {
       type: 'html',
       tag: htmlUnit.tag,
@@ -296,22 +285,7 @@ export class ReactivityParser {
     innerHTMLParticle.children = htmlUnit.children.map(this.parseViewParticle.bind(this));
 
     // ---- Not a dynamic tag
-    if (!dynamic) return innerHTMLParticle;
-
-    // ---- Dynamic tag, wrap it in an ExpParticle to make the tag reactive
-    const id = this.uid();
-    return {
-      type: 'exp',
-      content: {
-        value: this.t.stringLiteral(id),
-        viewPropMap: {
-          [id]: [innerHTMLParticle],
-        },
-        depMask: depMask,
-        dependenciesNode,
-      },
-      props: {},
-    };
+    return innerHTMLParticle;
   }
 
   // ---- @Comp ----
@@ -322,9 +296,7 @@ export class ReactivityParser {
    * @param compUnit
    * @returns CompParticle | ExpParticle
    */
-  private parseComp(compUnit: CompUnit): CompParticle | ExpParticle {
-    const { depMask, dependenciesNode, dynamic } = this.getDependencies(compUnit.tag);
-
+  private parseComp(compUnit: CompUnit): CompParticle {
     const compParticle: CompParticle = {
       type: 'comp',
       tag: compUnit.tag,
@@ -337,22 +309,7 @@ export class ReactivityParser {
     );
     compParticle.children = compUnit.children.map(this.parseViewParticle.bind(this));
 
-    if (!dynamic) return compParticle;
-
-    const id = this.uid();
-    return {
-      type: 'exp',
-      content: {
-        value: this.t.stringLiteral(id),
-        viewPropMap: {
-          [id]: [compParticle],
-        },
-        depMask: depMask,
-        dependenciesNode,
-        dynamic,
-      },
-      props: {},
-    };
+    return compParticle;
   }
 
   // ---- @For ----
@@ -364,25 +321,25 @@ export class ReactivityParser {
    */
   private parseFor(forUnit: ForUnit): ForParticle {
     const { depMask, dependenciesNode } = this.getDependencies(forUnit.array);
-    const prevIdentifierDepMap = this.config.identifierDepMap;
+    const prevIdentifierDepMap = this.config.depMaskMap;
     // ---- Find all the identifiers in the key and remove them from the identifierDepMap
     //      because once the key is changed, that identifier related dependencies will be changed too,
     //      so no need to update them
     const keyDep = this.t.isIdentifier(forUnit.key) && forUnit.key.name;
     // ---- Generate an identifierDepMap to track identifiers in item and make them reactive
     //      based on the dependencies from the array
-    this.config.identifierDepMap = Object.fromEntries(
-      this.getIdentifiers(this.t.assignmentExpression('=', forUnit.item, this.t.objectExpression([])))
+    this.config.depMaskMap = new Map([
+      ...this.config.depMaskMap,
+      ...this.getIdentifiers(this.t.assignmentExpression('=', forUnit.item, this.t.objectExpression([])))
         .filter(id => !keyDep || id !== keyDep)
-        .map(id => [id, depMask.map(n => this.availableProperties[n])])
-    );
+        .map(id => [id, depMask]),
+    ]);
 
     const forParticle: ForParticle = {
       type: 'for',
       item: forUnit.item,
       array: {
         value: forUnit.array,
-        dynamic,
         depMask: depMask,
         dependenciesNode,
       },
@@ -473,13 +430,11 @@ export class ReactivityParser {
    * @returns dependency index array
    */
   private getDependencies(node: t.Expression | t.Statement): {
-    dynamic: boolean;
     depMask: number;
     dependenciesNode: t.ArrayExpression;
   } {
     if (this.t.isFunctionExpression(node) || this.t.isArrowFunctionExpression(node)) {
       return {
-        dynamic: false,
         depMask: 0,
         dependenciesNode: this.t.arrayExpression([]),
       };
@@ -492,64 +447,9 @@ export class ReactivityParser {
     const depNodes = [...propertyDepNodes] as t.Expression[];
 
     return {
-      dynamic: depNodes.length > 0 || !!deps,
       depMask: deps,
       dependenciesNode: this.t.arrayExpression(depNodes),
     };
-  }
-
-  /**
-   * @brief Get all the dependencies of a node if a property is a valid dependency as
-   *  1. the identifier is in the availableProperties
-   *  2. the identifier is a stand alone identifier
-   *  3. the identifier is not in an escape function
-   *  4. the identifier is not in a manual function
-   *  5. the identifier is not the left side of an assignment expression, which is an assignment expression
-   *  6. the identifier is not the right side of an assignment expression, which is an update expression
-   * @param node
-   * @returns dependency index array
-   */
-  private getIdentifierDependencies(node: t.Expression | t.Statement): [number[], t.Node[]] {
-    const availableIdentifiers = this.availableIdentifiers ?? this.availableProperties;
-
-    const deps = new Set<string>();
-    const assignDeps = new Set<string>();
-    const depNodes: Record<string, t.Node[]> = {};
-
-    const wrappedNode = this.valueWrapper(node);
-    this.traverse(wrappedNode, {
-      Identifier: innerPath => {
-        const identifier = innerPath.node;
-        const idName = identifier.name;
-        if (!availableIdentifiers.includes(idName)) return;
-        if (this.isAssignmentExpressionLeft(innerPath) || this.isAssignmentFunction(innerPath)) {
-          assignDeps.add(idName);
-        } else if (
-          this.isStandAloneIdentifier(innerPath) &&
-          !this.isMemberInEscapeFunction(innerPath) &&
-          !this.isMemberInManualFunction(innerPath)
-        ) {
-          deps.add(idName);
-          this.reactiveBitMap[idName]?.forEach(deps.add.bind(deps));
-          if (!depNodes[idName]) depNodes[idName] = [];
-          depNodes[idName].push(this.geneDependencyNode(innerPath));
-        }
-      },
-    });
-
-    assignDeps.forEach(dep => {
-      deps.delete(dep);
-      delete depNodes[dep];
-    });
-    let dependencyNodes = Object.values(depNodes).flat();
-    // ---- deduplicate the dependency nodes
-    dependencyNodes = dependencyNodes.filter((n, i) => {
-      const idx = dependencyNodes.findIndex(m => this.t.isNodesEquivalent(m, n));
-      return idx === i;
-    });
-
-    deps.forEach(this.usedProperties.add.bind(this.usedProperties));
-    return [[...deps].map(dep => this.availableProperties.lastIndexOf(dep)), dependencyNodes];
   }
 
   /**
@@ -575,7 +475,7 @@ export class ReactivityParser {
     this.traverse(wrappedNode, {
       Identifier: innerPath => {
         const propertyKey = innerPath.node.name;
-        const reactiveBitmap = this.reactiveBitMap.get(propertyKey);
+        const reactiveBitmap = this.depMaskMap.get(propertyKey);
 
         if (reactiveBitmap !== undefined) {
           if (this.isAssignmentExpressionLeft(innerPath) || this.isAssignmentFunction(innerPath)) {
@@ -585,7 +485,7 @@ export class ReactivityParser {
             deps.add(propertyKey);
 
             if (!depNodes[propertyKey]) depNodes[propertyKey] = [];
-            depNodes[propertyKey].push(this.t.cloneNode(innerPath.node));
+            depNodes[propertyKey].push(this.geneDependencyNode(innerPath));
           }
         }
       },

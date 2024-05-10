@@ -53,9 +53,9 @@ export function functionalMacroAnalyze(): Visitor {
             const fnNode = extractFnFromMacro(expression, WATCH);
             const deps = getWatchDeps(expression);
 
-            const depBits = getDependenciesFromNode(deps ?? fnNode, ctx);
+            const depMask = getDependenciesFromNode(deps ?? fnNode, ctx);
 
-            addWatch(ctx.current, fnNode, deps);
+            addWatch(ctx.current, fnNode, depMask);
             return;
           }
         }

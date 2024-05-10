@@ -45,4 +45,19 @@ describe('viewAnalyze', () => {
     expect(inputSecondExp.content.depMask).toEqual(0b1101);
     expect(genCode(inputSecondExp.content.dependenciesNode)).toMatchInlineSnapshot('"[doubleCount]"');
   });
+
+  it('should analyze object state', () => {
+    const root = analyze(/*js*/ `
+      Component(({}) => {
+        const info = {
+          firstName: 'John',
+          lastName: 'Doe'
+        }
+        return <h1>{info.firstName}</h1>;
+      });
+    `);
+    const div = root.children![0] as any;
+    expect(div.children[0].content.depMask).toEqual(0b1);
+    expect(genCode(div.children[0].content.dependenciesNode)).toMatchInlineSnapshot(`"[info?.firstName]"`);
+  });
 });

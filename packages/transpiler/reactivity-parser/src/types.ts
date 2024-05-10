@@ -3,7 +3,6 @@ import type Babel from '@babel/core';
 
 export interface DependencyValue<T> {
   value: T;
-  dynamic: boolean; // to removed
   depMask: number; // -> bit
   dependenciesNode: t.ArrayExpression;
 }
@@ -20,7 +19,6 @@ export interface TemplateProp {
   key: string;
   path: number[];
   value: t.Expression;
-  dynamic: boolean;
   depMask: number;
   dependenciesNode: t.ArrayExpression;
 }
@@ -71,25 +69,6 @@ export interface IfParticle {
   branches: IfBranch[];
 }
 
-export interface SwitchBranch {
-  case: DependencyValue<t.Expression>;
-  children: ViewParticle[];
-  break: boolean;
-}
-
-export interface SwitchParticle {
-  type: 'switch';
-  discriminant: DependencyValue<t.Expression>;
-  branches: SwitchBranch[];
-}
-
-export interface TryParticle {
-  type: 'try';
-  children: ViewParticle[];
-  exception: t.Identifier | t.ArrayPattern | t.ObjectPattern | null;
-  catchChildren: ViewParticle[];
-}
-
 export interface EnvParticle {
   type: 'env';
   props: Record<string, DependencyProp>;
@@ -102,13 +81,6 @@ export interface ExpParticle {
   props: Record<string, DependencyProp>;
 }
 
-export interface SnippetParticle {
-  type: 'snippet';
-  tag: string;
-  props: Record<string, DependencyProp>;
-  children: ViewParticle[];
-}
-
 export type ViewParticle =
   | TemplateParticle
   | TextParticle
@@ -117,17 +89,14 @@ export type ViewParticle =
   | ForParticle
   | IfParticle
   | EnvParticle
-  | ExpParticle
-  | SwitchParticle
-  | SnippetParticle
-  | TryParticle;
+  | ExpParticle;
 
 export interface ReactivityParserConfig {
   babelApi: typeof Babel;
   availableProperties: string[];
   availableIdentifiers?: string[];
-  reactiveBitMap: ReactiveBitMap;
-  identifierDepMap?: Record<string, string[]>;
+  depMaskMap: DepMaskMap;
+  identifierDepMap?: Record<string, Bitmap>;
   dependencyParseType?: 'property' | 'identifier';
   parseTemplate?: boolean;
   reactivityFuncNames?: string[];
@@ -135,4 +104,4 @@ export interface ReactivityParserConfig {
 
 // TODO: unify with the types in babel-inula-next-core
 type Bitmap = number;
-export type ReactiveBitMap = Map<string, Bitmap>;
+export type DepMaskMap = Map<string, Bitmap>;

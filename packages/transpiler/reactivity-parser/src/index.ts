@@ -20,9 +20,5 @@ export function parseReactivity(viewUnits: ViewUnit[], config: ReactivityParserC
   });
   return [dlParticles, usedProperties];
 }
-/**
- *  The key to get the previous map in DependencyMap Chain
- */
-export const PrevMap = Symbol('prevMap');
 
 export type * from './types';
