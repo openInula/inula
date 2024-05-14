@@ -1,11 +1,10 @@
 import type babel from '@babel/core';
-import { type PluginObj } from '@babel/core';
+import { NodePath, type PluginObj, type types as t } from '@babel/core';
 import { type DLightOption } from './types';
 import { defaultAttributeMap, defaultHTMLTags } from './const';
 import { analyze } from './analyzer';
-import { NodePath, type types as t } from '@babel/core';
 import { COMPONENT } from './constants';
-import { extractFnFromMacro } from './utils';
+import { extractFnFromMacro, isCompPath } from './utils';
 import { register } from '@openinula/babel-api';
 
 export default function (api: typeof babel, options: DLightOption): PluginObj {
@@ -37,10 +36,7 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
         },
       },
       CallExpression(path: NodePath<t.CallExpression>) {
-        // find the component, like: Component(() => {})
-        const callee = path.get('callee');
-
-        if (callee.isIdentifier() && callee.node.name === COMPONENT) {
+        if (isCompPath(path)) {
           const componentNode = extractFnFromMacro(path, COMPONENT);
           let name = '';
           // try to get the component name, when parent is a variable declarator

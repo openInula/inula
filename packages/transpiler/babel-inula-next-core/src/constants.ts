@@ -1,4 +1,5 @@
 export const COMPONENT = 'Component';
+export const Hook = 'Hook';
 export const WILL_MOUNT = 'willMount';
 export const ON_MOUNT = 'onMount';
 export const WILL_UNMOUNT = 'willUnmount';

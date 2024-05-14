@@ -13,8 +13,10 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { NodePath, type types as t } from '@babel/core';
+import { types as t } from '@openinula/babel-api';
+import { NodePath } from '@babel/core';
 import { FnComponentDeclaration } from './types';
+import { ArrowFunctionWithBlock } from '../utils';
 
 export function isValidPath<T>(path: NodePath<T>): path is NodePath<Exclude<T, undefined | null>> {
   return !!path.node;

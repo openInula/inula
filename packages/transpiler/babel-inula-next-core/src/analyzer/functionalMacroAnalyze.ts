@@ -18,7 +18,7 @@ import { LifeCycle, Visitor } from './types';
 import { addLifecycle, addWatch } from './nodeFactory';
 import { types as t } from '@openinula/babel-api';
 import { ON_MOUNT, ON_UNMOUNT, WATCH, WILL_MOUNT, WILL_UNMOUNT } from '../constants';
-import { extractFnFromMacro, getFnBody } from '../utils';
+import { extractFnFromMacro, getFnBodyPath } from '../utils';
 import { getDependenciesFromNode } from './reactive/getDependencies';
 
 function isLifeCycleName(name: string): name is LifeCycle {
@@ -44,7 +44,7 @@ export function functionalMacroAnalyze(): Visitor {
           // lifecycle
           if (isLifeCycleName(calleeName)) {
             const fnNode = extractFnFromMacro(expression, calleeName);
-            addLifecycle(ctx.current, calleeName, getFnBody(fnNode).node);
+            addLifecycle(ctx.current, calleeName, getFnBodyPath(fnNode).node);
             return;
           }
 
