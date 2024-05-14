@@ -1,14 +1,13 @@
 import { type NodePath } from '@babel/core';
-import { propsAnalyze } from './propsAnalyze';
 import { AnalyzeContext, Analyzer, ComponentNode, Visitor } from './types';
 import { addLifecycle, createComponentNode } from './nodeFactory';
 import { variablesAnalyze } from './variablesAnalyze';
 import { functionalMacroAnalyze } from './functionalMacroAnalyze';
-import { getFnBody } from '../utils';
+import { getFnBodyPath } from '../utils';
 import { viewAnalyze } from './viewAnalyze';
 import { WILL_MOUNT } from '../constants';
 import { types as t } from '@openinula/babel-api';
-const builtinAnalyzers = [propsAnalyze, variablesAnalyze, functionalMacroAnalyze, viewAnalyze];
+const builtinAnalyzers = [variablesAnalyze, functionalMacroAnalyze, viewAnalyze];
 
 function mergeVisitor(...visitors: Analyzer[]): Visitor {
   return visitors.reduce<Visitor<AnalyzeContext>>((acc, cur) => {
@@ -50,7 +49,7 @@ export function analyzeFnComp(
   }
 
   // --- analyze the function body ---
-  const bodyStatements = getFnBody(fnNode).get('body');
+  const bodyStatements = getFnBodyPath(fnNode).get('body');
   for (let i = 0; i < bodyStatements.length; i++) {
     const p = bodyStatements[i];
 

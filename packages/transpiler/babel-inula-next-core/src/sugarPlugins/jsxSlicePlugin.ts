@@ -13,37 +13,81 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { NodePath } from '@babel/core';
-import { AnalyzeContext, Visitor } from '../analyze/types';
-import { createSubCompNode } from '../analyze/nodeFactory';
+import babel, { NodePath, PluginObj } from '@babel/core';
 import * as t from '@babel/types';
+import type { DLightOption } from '../types';
+import { register } from '@openinula/babel-api';
 
-function genName(tagName: string, ctx: AnalyzeContext) {
-  return `$$${tagName}-Sub${ctx.current.subComponents.length}`;
-}
+function transformJSXSlice(path: NodePath<t.JSXElement> | NodePath<t.JSXFragment>) {
+  path.skip();
 
-function genNameFromJSX(path: NodePath<t.JSXElement>, ctx: AnalyzeContext) {
-  const tagId = path.get('openingElement').get('name');
-  if (tagId.isJSXIdentifier()) {
-    const jsxName = tagId.node.name;
-    return genName(jsxName, ctx);
+  // don't handle the jsx in return statement or in the arrow function return
+  if (path.parentPath.isReturnStatement() || path.parentPath.isArrowFunctionExpression()) {
+    // skip the children
+    return;
   }
-  throw new Error('JSXMemberExpression is not supported yet');
+
+  const sliceCompNode = t.callExpression(t.identifier('Component'), [t.arrowFunctionExpression([], path.node)]);
+  // handle the jsx in assignment, like `const a = <div></div>`
+  // transform it into:
+  // ```jsx
+  //   const a = Component(() => {
+  //     return <div></div>
+  //   })
+  // ```
+  if (path.parentPath.isVariableDeclarator()) {
+    path.replaceWith(sliceCompNode);
+  } else {
+    // extract the jsx slice into a subcomponent, like const a = type? <div></div> : <span></span>
+    // transform it into:
+    // ```jsx
+    //   const Div$$ = (() => {
+    //     return <div></div>
+    //   });
+    //   const Span$$ = Component(() => {
+    //     return <span></span>
+    //   });
+    //   const a = type? <Div$$/> : <Span$$/>;
+    // ```
+    const sliceId = path.scope.generateUidIdentifier(genName(path.node));
+    sliceId.name = 'JSX' + sliceId.name;
+
+    // insert the subcomponent
+    const sliceComp = t.variableDeclaration('const', [t.variableDeclarator(sliceId, sliceCompNode)]);
+    // insert into the previous statement
+    const stmt = path.getStatementParent();
+    if (!stmt) {
+      throw new Error('Cannot find the statement parent');
+    }
+    stmt.insertBefore(sliceComp);
+    // replace the jsx slice with the subcomponent
+    const sliceJsxId = t.jSXIdentifier(sliceId.name);
+    path.replaceWith(t.jsxElement(t.jsxOpeningElement(sliceJsxId, [], true), null, [], true));
+  }
 }
 
-function replaceJSXSliceWithSubComp(name: string, ctx: AnalyzeContext, path: NodePath<t.JSXElement | t.JSXFragment>) {
-  // create a subComponent node and add it to the current component
-  const subComp = createSubCompNode(name, ctx.current, path.node);
-  ctx.current.subComponents.push(subComp);
+function genName(node: t.JSXElement | t.JSXFragment) {
+  if (t.isJSXFragment(node)) {
+    return 'Fragment';
+  }
 
-  // replace with the subComp jsxElement
-  const subCompJSX = t.jsxElement(
-    t.jsxOpeningElement(t.jsxIdentifier(name), [], true),
-    t.jsxClosingElement(t.jsxIdentifier(name)),
-    [],
-    true
-  );
-  path.replaceWith(subCompJSX);
+  const jsxName = node.openingElement.name;
+  if (t.isJSXIdentifier(jsxName)) {
+    return jsxName.name;
+  } else if (t.isJSXMemberExpression(jsxName)) {
+    // connect all parts with _
+    let result = jsxName.property.name;
+    let current: t.JSXMemberExpression | t.JSXIdentifier = jsxName.object;
+    while (t.isJSXMemberExpression(current)) {
+      result = current.property.name + '_' + result;
+      current = current.object;
+    }
+    result = current.name + '_' + result;
+    return result;
+  } else {
+    // JSXNamespacedName
+    return jsxName.name.name;
+  }
 }
 
 /**
@@ -61,40 +105,16 @@ function replaceJSXSliceWithSubComp(name: string, ctx: AnalyzeContext, path: Nod
  *   let jsxSlice = <Comp_$id$/>
  * ```
  */
-export function jsxSlicesAnalyze(): Visitor {
+export default function (api: typeof babel, options: DLightOption): PluginObj {
+  register(api);
   return {
-    JSXElement(path: NodePath<t.JSXElement>, ctx) {
-      const name = genNameFromJSX(path, ctx);
-      replaceJSXSliceWithSubComp(name, ctx, path);
-      path.skip();
-    },
-    JSXFragment(path: NodePath<t.JSXFragment>, ctx) {
-      replaceJSXSliceWithSubComp('frag', ctx, path);
+    visitor: {
+      JSXElement(path: NodePath<t.JSXElement>) {
+        transformJSXSlice(path);
+      },
+      JSXFragment(path: NodePath<t.JSXFragment>) {
+        transformJSXSlice(path);
+      },
     },
   };
-}
-
-// Analyze the JSX slice in the function component, including:
-// 1. VariableDeclaration, like `const a = <div />`
-// 2. SubComponent, like `function Sub() { return <div /> }`
-function handleFn(fnName: string, fnBody: NodePath<types.BlockStatement>) {
-  if (isValidComponentName(fnName)) {
-    // This is a subcomponent, treat it as a normal component
-  } else {
-    //   This is jsx creation function
-    //   function jsxFunc() {
-    //     // This is a function that returns JSX
-    //     // because the function name is smallCamelCased
-    //     return <div>{count}</div>
-    //   }
-    //   =>
-    //   function jsxFunc() {
-    //     function Comp_$id4$() {
-    //       return <div>{count}</div>
-    //     }
-    //     // This is a function that returns JSX
-    //     // because the function name is smallCamelCased
-    //     return <Comp_$id4$/>
-    //   }
-  }
 }
