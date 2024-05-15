@@ -38,7 +38,7 @@ export function viewAnalyze(): Visitor {
         const [viewParticles, usedPropertySet] = parseReactivity(viewUnits, {
           babelApi: getBabelApi(),
           availableProperties: current.availableVariables,
-          reactiveBitMap: current._reactiveBitMap,
+          depMaskMap: current._reactiveBitMap,
           reactivityFuncNames,
         });
 
