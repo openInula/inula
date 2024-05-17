@@ -1,5 +1,5 @@
 import { type NodePath } from '@babel/core';
-import { AnalyzeContext, Analyzer, ComponentNode, Visitor } from './types';
+import { AnalyzeContext, Analyzer, Bitmap, ComponentNode, Visitor } from './types';
 import { addLifecycle, createComponentNode } from './nodeFactory';
 import { variablesAnalyze } from './variablesAnalyze';
 import { functionalMacroAnalyze } from './functionalMacroAnalyze';
@@ -7,6 +7,9 @@ import { getFnBodyPath } from '../utils';
 import { viewAnalyze } from './viewAnalyze';
 import { WILL_MOUNT } from '../constants';
 import { types as t } from '@openinula/babel-api';
+import { ViewParticle } from '@openinula/reactivity-parser';
+import { pruneComponentUnusedBit } from './pruneComponentUnusedBit';
+
 const builtinAnalyzers = [variablesAnalyze, functionalMacroAnalyze, viewAnalyze];
 
 function mergeVisitor(...visitors: Analyzer[]): Visitor {
@@ -73,6 +76,7 @@ export function analyzeFnComp(
     addLifecycle(componentNode, WILL_MOUNT, t.blockStatement(context.unhandledNode));
   }
 }
+
 /**
  * The process of analyzing the component
  * 1. identify the component
@@ -93,6 +97,8 @@ export function analyze(
 
   const root = createComponentNode(fnName, path);
   analyzeFnComp(path, root, { analyzers, htmlTags: options.htmlTags });
+
+  pruneComponentUnusedBit(root);
 
   return root;
 }

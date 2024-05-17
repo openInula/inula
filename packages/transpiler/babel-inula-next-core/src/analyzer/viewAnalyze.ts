@@ -35,14 +35,14 @@ export function viewAnalyze(): Visitor {
           parseTemplate: false,
         });
         // @ts-expect-error TODO: FIX TYPE
-        const [viewParticles, usedPropertySet] = parseReactivity(viewUnits, {
+        const [viewParticles, usedPropertySet, usedBit] = parseReactivity(viewUnits, {
           babelApi: getBabelApi(),
           availableProperties: current.availableVariables,
           depMaskMap: current._reactiveBitMap,
           reactivityFuncNames,
         });
 
-        setViewChild(current, viewParticles, usedPropertySet);
+        setViewChild(current, viewParticles, usedPropertySet, usedBit);
       }
     },
   };

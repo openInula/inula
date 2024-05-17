@@ -68,7 +68,7 @@ export function variablesAnalyze(): Visitor {
               return;
             }
 
-            depBits = getDependenciesFromNode(init, ctx);
+            depBits = getDependenciesFromNode(init, ctx)[1];
           }
           addProperty(ctx.current, id.node.name, init.node || null, depBits);
         }

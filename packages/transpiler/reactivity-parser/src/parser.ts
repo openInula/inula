@@ -54,6 +54,7 @@ export class ReactivityParser {
   ];
 
   readonly usedProperties = new Set<string>();
+  usedBit = 0;
 
   /**
    * @brief Constructor
@@ -328,12 +329,12 @@ export class ReactivityParser {
     const keyDep = this.t.isIdentifier(forUnit.key) && forUnit.key.name;
     // ---- Generate an identifierDepMap to track identifiers in item and make them reactive
     //      based on the dependencies from the array
-    this.config.depMaskMap = new Map([
-      ...this.config.depMaskMap,
-      ...this.getIdentifiers(this.t.assignmentExpression('=', forUnit.item, this.t.objectExpression([])))
-        .filter(id => !keyDep || id !== keyDep)
-        .map(id => [id, depMask]),
-    ]);
+    // this.config.depMaskMap = new Map([
+    //   ...this.config.depMaskMap,
+    //   ...this.getIdentifiers(this.t.assignmentExpression('=', forUnit.item, this.t.objectExpression([])))
+    //     .filter(id => !keyDep || id !== keyDep)
+    //     .map(id => [id, depMask]),
+    // ]);
 
     const forParticle: ForParticle = {
       type: 'for',
@@ -346,7 +347,7 @@ export class ReactivityParser {
       children: forUnit.children.map(this.parseViewParticle.bind(this)),
       key: forUnit.key,
     };
-    this.config.identifierDepMap = prevIdentifierDepMap;
+    // this.config.identifierDepMap = prevIdentifierDepMap;
     return forParticle;
   }
 
@@ -507,12 +508,14 @@ export class ReactivityParser {
     });
 
     deps.forEach(this.usedProperties.add.bind(this.usedProperties));
+    this.usedBit |= depMask;
     return [depMask, dependencyNodes];
   }
 
   /**
    * @brief Generate a dependency node from a dependency identifier,
    *  loop until the parent node is not a binary expression or a member expression
+   *  And turn the member expression into an optional member expression, like info.name -> info?.name
    * @param path
    * @returns
    */
@@ -583,6 +586,7 @@ export class ReactivityParser {
     const parsedUnit = parser.parse(viewUnit);
     // ---- Collect used properties
     parser.usedProperties.forEach(this.usedProperties.add.bind(this.usedProperties));
+    this.usedBit |= parser.usedBit;
     return parsedUnit;
   }
 

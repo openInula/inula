@@ -12,8 +12,8 @@ describe('viewAnalyze', () => {
         let name;
         let className;
         let count = name; // 1
-        let doubleCount = count* 2; // 2
-        let doubleCount2 = doubleCount* 2; // 4
+        let doubleCount = count * 2; // 2
+        let doubleCount2 = doubleCount * 2; // 4
         const Input =  Component(() => {
           let count = 1;
           return <input>{count}{doubleCount}</input>;

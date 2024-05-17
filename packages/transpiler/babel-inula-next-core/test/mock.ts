@@ -29,16 +29,25 @@ export function mockAnalyze(code: string, analyzers?: Analyzer[]): ComponentNode
       syntaxJSX.default ?? syntaxJSX,
       function (api): PluginObj {
         register(api);
+        const seen = new Set();
         return {
           visitor: {
             FunctionExpression: path => {
+              if (seen.has(path)) {
+                return;
+              }
               root = analyze('test', path, { customAnalyzers: analyzers, htmlTags: defaultHTMLTags });
+              seen.add(path);
               if (root) {
                 path.skip();
               }
             },
             ArrowFunctionExpression: path => {
+              if (seen.has(path)) {
+                return;
+              }
               root = analyze('test', path, { customAnalyzers: analyzers, htmlTags: defaultHTMLTags });
+              seen.add(path);
               if (root) {
                 path.skip();
               }
