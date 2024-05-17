@@ -30,6 +30,7 @@ interface BaseVariable<V> {
 export interface ReactiveVariable extends BaseVariable<t.Expression | null> {
   type: 'reactive';
   level: number;
+  bit?: Bitmap;
   /**
    * indicate the dependency of the variable | the index of the reactive variable
    * i.e.
@@ -69,7 +70,8 @@ export interface ComponentNode<Type = 'comp'> {
   /**
    * The used properties in the component
    */
-  usedPropertySet?: Set<string>;
+  usedPropertySet: Set<string>;
+  usedBit: Bitmap;
   /**
    * The map to find the reactive bitmap by name
    */
@@ -93,7 +95,7 @@ export interface ComponentNode<Type = 'comp'> {
    * The watch fn in the component
    */
   watch?: {
-    depMask: Bitmap;
+    depMask?: Bitmap;
     callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>;
   }[];
 }

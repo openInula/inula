@@ -29,6 +29,8 @@ export function createComponentNode(
     name,
     children: undefined,
     variables: [],
+    usedBit: 0,
+    usedPropertySet: parent ? new Set(parent.usedPropertySet) : new Set<string>(),
     _reactiveBitMap: parent ? new Map<string, number>(parent._reactiveBitMap) : new Map<string, number>(),
     lifecycle: {},
     parent,
@@ -52,6 +54,9 @@ export function addProperty(comp: ComponentNode, name: string, value: t.Expressi
   const bit = 1 << idx;
   const bitmap = depBits ? depBits | bit : bit;
 
+  if (depBits) {
+    comp.usedBit |= depBits;
+  }
   comp._reactiveBitMap.set(name, bitmap);
   comp.variables.push({ name, value, isComputed: !!depBits, type: 'reactive', depMask: bitmap, level: comp.level });
 }
@@ -61,6 +66,7 @@ export function addMethod(comp: ComponentNode, name: string, value: FunctionalEx
 }
 
 export function addSubComponent(comp: ComponentNode, subComp: ComponentNode) {
+  comp.usedBit |= subComp.usedBit;
   comp.variables.push({ ...subComp, type: 'subComp' });
 }
 
@@ -75,17 +81,21 @@ export function addLifecycle(comp: ComponentNode, lifeCycle: LifeCycle, block: t
 export function addWatch(
   comp: ComponentNode,
   callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>,
-  depMask: Bitmap
+  deps: Set<string>,
+  usedBit: Bitmap
 ) {
   // if watch not exist, create a new one
   if (!comp.watch) {
     comp.watch = [];
   }
-  comp.watch.push({ callback, depMask });
+  comp.usedPropertySet = new Set([...comp.usedPropertySet, ...deps]);
+  comp.usedBit |= usedBit;
+  comp.watch.push({ callback });
 }
 
-export function setViewChild(comp: ComponentNode, view: ViewParticle[], usedPropertySet: Set<string>) {
+export function setViewChild(comp: ComponentNode, view: ViewParticle[], usedPropertySet: Set<string>, usedBit: Bitmap) {
   // TODO: Maybe we should merge
   comp.usedPropertySet = usedPropertySet;
+  comp.usedBit |= usedBit;
   comp.children = view;
 }

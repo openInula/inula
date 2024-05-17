@@ -34,6 +34,7 @@ export function getDependenciesFromNode(
   // ---- Assign deps: count = 1 or count++
   let assignDepMask = 0;
   const depNodes: Record<string, t.Expression[]> = {};
+  const deps = new Set<string>();
 
   const visitor = (innerPath: NodePath<t.Identifier>) => {
     const propertyKey = innerPath.node.name;
@@ -44,6 +45,8 @@ export function getDependenciesFromNode(
         assignDepMask |= reactiveBitmap;
       } else {
         depMask |= reactiveBitmap;
+        deps.add(propertyKey);
+
         if (!depNodes[propertyKey]) depNodes[propertyKey] = [];
         depNodes[propertyKey].push(t.cloneNode(innerPath.node));
       }
@@ -64,7 +67,7 @@ export function getDependenciesFromNode(
     // TODO: I think we should throw an error here to indicate the user that there is a loop
   }
 
-  return depMask;
+  return [deps, depMask] as const;
 }
 
 /**

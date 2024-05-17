@@ -51,11 +51,11 @@ export function functionalMacroAnalyze(): Visitor {
           // watch
           if (calleeName === WATCH) {
             const fnNode = extractFnFromMacro(expression, WATCH);
-            const deps = getWatchDeps(expression);
+            const depsPath = getWatchDeps(expression);
 
-            const depMask = getDependenciesFromNode(deps ?? fnNode, ctx);
+            const [deps, depMask] = getDependenciesFromNode(depsPath ?? fnNode, ctx);
 
-            addWatch(ctx.current, fnNode, depMask);
+            addWatch(ctx.current, fnNode, deps, depMask);
             return;
           }
         }
