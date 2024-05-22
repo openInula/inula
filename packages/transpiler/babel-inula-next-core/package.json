@@ -19,6 +19,7 @@
   "typings": "dist/index.d.ts",
   "scripts": {
     "build": "tsup --sourcemap",
+    "type-check": "tsc --noEmit",
     "test": "vitest"
   },
   "devDependencies": {
@@ -36,9 +37,7 @@
     "@babel/plugin-syntax-typescript": "^7.23.3",
     "@babel/traverse": "^7.24.1",
     "@babel/types": "^7.24.0",
-    "@openinula/class-transformer": "workspace:*",
     "@openinula/reactivity-parser": "workspace:*",
-    "@openinula/view-generator": "workspace:*",
     "@openinula/view-parser": "workspace:*",
     "@types/babel-types": "^7.0.15",
     "@types/babel__generator": "^7.6.8",
