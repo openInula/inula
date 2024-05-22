@@ -1,7 +1,7 @@
-import { functionalMacroAnalyze } from '../../src/analyzer/functionalMacroAnalyze';
+import { functionalMacroAnalyze } from '../../src/analyze/Analyzers/functionalMacroAnalyze';
 import { genCode, mockAnalyze } from '../mock';
 import { describe, expect, it } from 'vitest';
-import { variablesAnalyze } from '../../src/analyzer/variablesAnalyze';
+import { variablesAnalyze } from '../../src/analyze/Analyzers/variablesAnalyze';
 
 const analyze = (code: string) => mockAnalyze(code, [functionalMacroAnalyze, variablesAnalyze]);
 
@@ -25,10 +25,10 @@ describe('watchAnalyze', () => {
         console.log(a, b);
       }"
     `);
-    if (!root.watch[0].depMask) {
+    if (!root.watch[0].dependency) {
       throw new Error('watch deps not found');
     }
-    expect(root.watch[0].depMask).toBe(0b11);
+    expect(root.watch[0].dependency.depMask).toBe(0b11);
   });
 
   it('should analyze watch expressions with dependency array', () => {
@@ -50,9 +50,9 @@ describe('watchAnalyze', () => {
         // watch expression
       }"
     `);
-    if (!root.watch[0].depMask) {
+    if (!root.watch[0].dependency) {
       throw new Error('watch deps not found');
     }
-    expect(root.watch[0].depMask).toBe(0b11);
+    expect(root.watch[0].dependency.depMask).toBe(0b11);
   });
 });

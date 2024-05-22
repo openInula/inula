@@ -15,8 +15,9 @@
 
 import { describe, expect, it } from 'vitest';
 import { genCode, mockAnalyze } from '../mock';
-import { variablesAnalyze } from '../../src/analyzer/variablesAnalyze';
-import { ReactiveVariable, SubCompVariable } from '../../src/analyzer/types';
+import { variablesAnalyze } from '../../src/analyze/Analyzers/variablesAnalyze';
+import { ReactiveVariable, SubCompVariable } from '../../src/analyze/types';
+import { findReactiveVarByName } from './utils';
 
 const analyze = (code: string) => mockAnalyze(code, [variablesAnalyze]);
 
@@ -37,17 +38,18 @@ describe('analyze properties', () => {
         Component(() => {
           let foo = 1;
           let bar = foo;
+          let _ = bar; // use bar to avoid pruning
         })
       `);
-      expect(root.variables.length).toBe(2);
-      const fooVar = root.variables[0] as ReactiveVariable;
-      expect(fooVar.isComputed).toBe(false);
+      const fooVar = findReactiveVarByName(root, 'foo');
+      expect(!!fooVar.dependency).toBe(false);
       expect(genCode(fooVar.value)).toBe('1');
 
-      const barVar = root.variables[1] as ReactiveVariable;
-      expect(barVar.isComputed).toBe(true);
+      const barVar = findReactiveVarByName(root, 'bar');
+      expect(!!barVar.dependency).toBe(true);
       expect(genCode(barVar.value)).toBe('foo');
-      expect(barVar.depMask).toEqual(0b11);
+      expect(barVar.bit).toEqual(0b10);
+      expect(barVar.dependency!.depMask).toEqual(0b01);
     });
 
     it('should analyze dependency from state in different shape', () => {
@@ -57,18 +59,18 @@ describe('analyze properties', () => {
           let a = 1;
           let b = 0;
           let bar = { foo: foo ? a : b };
+          let _ = bar; // use bar to avoid pruning
         })
       `);
-      expect(root.variables.length).toBe(4);
 
       const barVar = root.variables[3] as ReactiveVariable;
-      expect(barVar.isComputed).toBe(true);
+      expect(!!barVar.dependency).toBe(true);
       expect(genCode(barVar.value)).toMatchInlineSnapshot(`
         "{
           foo: foo ? a : b
         }"
       `);
-      expect(barVar.depMask).toEqual(0b1111);
+      expect(barVar.dependency!.depMask).toEqual(0b0111);
     });
 
     // TODO:MOVE TO PROPS PLUGIN TEST
@@ -81,7 +83,7 @@ describe('analyze properties', () => {
       expect(root.variables.length).toBe(1);
 
       const barVar = root.variables[0] as ReactiveVariable;
-      expect(barVar.isComputed).toBe(true);
+      expect(!!barVar.dependency).toBe(true);
     });
 
     // TODO:MOVE TO PROPS PLUGIN TEST
@@ -93,7 +95,7 @@ describe('analyze properties', () => {
       `);
       expect(root.variables.length).toBe(1);
       const barVar = root.variables[0] as ReactiveVariable;
-      expect(barVar.isComputed).toBe(true);
+      expect(!!barVar.dependency).toBe(true);
       // @ts-expect-error ignore ts here
       expect(root.dependencyMap).toEqual({ bar: ['foo1', 'first', 'last'] });
     });
@@ -103,12 +105,12 @@ describe('analyze properties', () => {
         const cond = true
         Component(() => {
           let bar = cond ? count : window.innerWidth;
+          let _ = bar; // use bar to avoid pruning
         })
       `);
-      expect(root.variables.length).toBe(1);
       const barVar = root.variables[0] as ReactiveVariable;
-      expect(barVar.isComputed).toBe(false);
-      expect(barVar.depMask).toEqual(0b1);
+      expect(!!barVar.dependency).toBe(false);
+      expect(barVar.bit).toEqual(0b1);
     });
   });
 
@@ -119,16 +121,15 @@ describe('analyze properties', () => {
           let foo = 1;
           const Sub = Component(() => {
             let bar = foo;
+            let _ = bar; // use bar to avoid pruning
           });
         })
       `);
-      expect(root.variables.length).toBe(2);
-      expect(root.availableVariables[0].depMask).toEqual(0b1);
-      expect((root.variables[1] as SubCompVariable).ownAvailableVariables[0].depMask).toBe(0b11);
+      expect((root.variables[1] as SubCompVariable).ownAvailableVariables[0].dependency!.depMask).toBe(0b1);
     });
 
     it('should analyze dependency in parent', () => {
-      const root = analyze(`
+      const root = analyze(/*jsx*/ `
         Component(() => {
           let lastName;
           let parentFirstName = 'sheldon';
@@ -137,19 +138,20 @@ describe('analyze properties', () => {
             let middleName = parentName
             const name = 'shelly'+ middleName + lastName;
             const GrandSon = Component(() => {
-              let grandSonName = 'bar' + lastName;
+              let grandSonName = name + lastName;
+              const _ = grandSonName; // use name to avoid pruning
             });
           });
         })
       `);
       const sonNode = root.variables[3] as SubCompVariable;
       // Son > middleName
-      expect(sonNode.ownAvailableVariables[0].depMask).toBe(0b1111);
+      expect(findReactiveVarByName(sonNode, 'middleName').dependency!.depMask).toBe(0b100);
       // Son > name
-      expect(sonNode.ownAvailableVariables[1].depMask).toBe(0b11111);
+      expect(findReactiveVarByName(sonNode, 'name').dependency!.depMask).toBe(0b1001);
       const grandSonNode = sonNode.variables[2] as SubCompVariable;
       // GrandSon > grandSonName
-      expect(grandSonNode.ownAvailableVariables[0].depMask).toBe(0b100001);
+      expect(grandSonNode.ownAvailableVariables[0].dependency!.depMask).toBe(0b10001);
     });
   });
 

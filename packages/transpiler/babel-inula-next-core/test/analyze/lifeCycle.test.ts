@@ -15,7 +15,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { genCode, mockAnalyze } from '../mock';
-import { functionalMacroAnalyze } from '../../src/analyzer/functionalMacroAnalyze';
+import { functionalMacroAnalyze } from '../../src/analyze/Analyzers/functionalMacroAnalyze';
 import { types as t } from '@openinula/babel-api';
 
 const analyze = (code: string) => mockAnalyze(code, [functionalMacroAnalyze]);

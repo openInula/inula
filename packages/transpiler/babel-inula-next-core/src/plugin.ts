@@ -2,7 +2,7 @@ import type babel from '@babel/core';
 import { NodePath, type PluginObj, type types as t } from '@babel/core';
 import { type DLightOption } from './types';
 import { defaultAttributeMap, defaultHTMLTags } from './const';
-import { analyze } from './analyzer';
+import { analyze } from './analyze';
 import { COMPONENT } from './constants';
 import { extractFnFromMacro, isCompPath } from './utils';
 import { register } from '@openinula/babel-api';

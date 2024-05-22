@@ -13,10 +13,10 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { Analyzer, ComponentNode } from '../src/analyzer/types';
+import { Analyzer, ComponentNode } from '../src/analyze/types';
 import { type PluginObj, transform as transformWithBabel } from '@babel/core';
 import syntaxJSX from '@babel/plugin-syntax-jsx';
-import { analyze } from '../src/analyzer';
+import { analyze } from '../src/analyze';
 import generate from '@babel/generator';
 import * as t from '@babel/types';
 import { register } from '@openinula/babel-api';

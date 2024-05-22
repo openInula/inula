@@ -13,42 +13,52 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { variablesAnalyze } from '../../src/analyzer/variablesAnalyze';
-import { ComponentNode } from '../../src/analyzer/types';
-import { viewAnalyze } from '../../src/analyzer/viewAnalyze';
-import { functionalMacroAnalyze } from '../../src/analyzer/functionalMacroAnalyze';
-import { genCode, mockAnalyze } from '../mock';
+import { variablesAnalyze } from '../../src/analyze/Analyzers/variablesAnalyze';
+import { viewAnalyze } from '../../src/analyze/Analyzers/viewAnalyze';
+import { functionalMacroAnalyze } from '../../src/analyze/Analyzers/functionalMacroAnalyze';
+import { mockAnalyze } from '../mock';
 import { describe, expect, it } from 'vitest';
+import { findReactiveVarByName, findSubCompByName } from './utils';
 
 const analyze = (code: string) => mockAnalyze(code, [variablesAnalyze, viewAnalyze, functionalMacroAnalyze]);
 describe('prune unused bit', () => {
   it('should work', () => {
     const root = analyze(/*js*/ `
       Component(({}) => {
-        let name;
-        let className; // unused
-        let className1; // unused
-        let className2; // unused
-        let count = name; // 1
-        let doubleCount = count * 2; // 2
+        let unused0;
+        let name; // 0b1
+        let unused;
+        let unused1;
+        let unused2;
+        let count = name; // 0b10
+        let doubleCount = count * 2; // 0b100
         const Input =  Component(() => {
           let count3 = 1;
           let count2 = 1;
-          let count = 1;
-          return <input>{count}{doubleCount}</input>;
+          let count = 1; // 0b1000
+          const db = count * 2; // 0b10000
+          return <input>{count}{db * count}</input>;
         });
         return <div className={count}>{doubleCount}</div>;
       });
     `);
-    const div = root.children![0] as any;
-    expect(div.children[0].content.depMask).toEqual(0b111);
-    expect(div.props.className.depMask).toEqual(0b11);
+    // test computed
+    const countVar = findReactiveVarByName(root, 'count');
+    expect(countVar.bit).toEqual(0b10);
+    expect(countVar.dependency!.depMask).toEqual(0b1);
 
-    // @ts-expect-error ignore ts here
-    const InputCompNode = root.variables[4] as ComponentNode;
-    // it's the {count}
-    expect(inputFirstExp.content.depMask).toEqual(0b10000);
-    // it's the {doubleCount}
-    expect(inputSecondExp.content.depMask).toEqual(0b1101);
+    // test view
+    const div = root.children![0] as any;
+    expect(div.children[0].content.depMask).toEqual(0b100);
+    expect(div.props.className.depMask).toEqual(0b10);
+
+    // test sub component
+    const InputCompNode = findSubCompByName(root, 'Input');
+    // @ts-expect-error it's the {count}
+    const inputFirstExp = InputCompNode.children![0].children[0];
+    expect(inputFirstExp.content.depMask).toEqual(0b1000);
+    // @ts-expect-error it's the {doubleCount}
+    const inputSecondExp = InputCompNode.children![0].children![1];
+    expect(inputSecondExp.content.depMask).toEqual(0b11000);
   });
 });

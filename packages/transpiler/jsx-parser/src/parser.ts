@@ -388,7 +388,7 @@ export class ViewParser {
   /**
    * @brief Collect all the mutable nodes in a static HTMLUnit
    *  We use this function to collect mutable nodes' path and props,
-   *  so that in the generator, we know which position to insert the mutable nodes
+   *  so that in the generate, we know which position to insert the mutable nodes
    * @param htmlUnit
    * @returns mutable particles
    */
@@ -435,7 +435,7 @@ export class ViewParser {
     const templateProps: TemplateProp[] = [];
     const generateVariableProp = (unit: HTMLUnit, path: number[]) => {
       // ---- Generate all non-static(string/number/boolean) props for current HTMLUnit
-      //      to be inserted further in the generator
+      //      to be inserted further in the generate
       unit.props &&
         Object.entries(unit.props)
           .filter(([, prop]) => !this.isStaticProp(prop))
@@ -489,7 +489,7 @@ export class ViewParser {
 
   /**
    * @brief Filter out some props that are not needed in the template,
-   *  these are all special props to be parsed differently in the generator
+   *  these are all special props to be parsed differently in the generate
    * @param props
    * @returns filtered props
    */
@@ -539,7 +539,8 @@ export class ViewParser {
     // ---- Get array
     const arrayContainer = this.findProp(node, 'array');
     if (!arrayContainer) throw new Error('Missing [array] prop in for loop');
-    if (!this.t.isJSXExpressionContainer(arrayContainer.value)) throw new Error('Expected expression container for [array] prop');
+    if (!this.t.isJSXExpressionContainer(arrayContainer.value))
+      throw new Error('Expected expression container for [array] prop');
     const array = arrayContainer.value.expression;
     if (this.t.isJSXEmptyExpression(array)) throw new Error('Expected [array] expression not empty');
 
@@ -555,17 +556,18 @@ export class ViewParser {
     // ---- Get Item
     const itemProp = this.findProp(node, 'item');
     if (!itemProp) throw new Error('Missing [item] prop in for loop');
-    if (!this.t.isJSXExpressionContainer(itemProp.value)) throw new Error('Expected expression container for [item] prop');
+    if (!this.t.isJSXExpressionContainer(itemProp.value))
+      throw new Error('Expected expression container for [item] prop');
     const item = itemProp.value.expression;
     if (this.t.isJSXEmptyExpression(item)) throw new Error('Expected [item] expression not empty');
     // ---- ObjectExpression to ObjectPattern / ArrayExpression to ArrayPattern
     this.traverse(this.wrapWithFile(item), {
-      ObjectExpression: (path) => {
+      ObjectExpression: path => {
         path.node.type = 'ObjectPattern' as any;
       },
-      ArrayExpression: (path) => {
+      ArrayExpression: path => {
         path.node.type = 'ArrayPattern' as any;
-      }
+      },
     });
 
     // ---- Get children
@@ -576,7 +578,7 @@ export class ViewParser {
       key,
       item: item as t.LVal,
       array,
-      children: this.parseView(children)
+      children: this.parseView(children),
     });
   }
 }
