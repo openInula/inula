@@ -537,8 +537,8 @@ export class ViewParser {
 
   private pareFor(node: t.JSXElement) {
     // ---- Get array
-    const arrayContainer = this.findProp(node, 'array');
-    if (!arrayContainer) throw new Error('Missing [array] prop in for loop');
+    const arrayContainer = this.findProp(node, 'each');
+    if (!arrayContainer) throw new Error('Missing [each] prop in for loop');
     if (!this.t.isJSXExpressionContainer(arrayContainer.value))
       throw new Error('Expected expression container for [array] prop');
     const array = arrayContainer.value.expression;
@@ -554,24 +554,31 @@ export class ViewParser {
     }
 
     // ---- Get Item
-    const itemProp = this.findProp(node, 'item');
-    if (!itemProp) throw new Error('Missing [item] prop in for loop');
-    if (!this.t.isJSXExpressionContainer(itemProp.value))
-      throw new Error('Expected expression container for [item] prop');
-    const item = itemProp.value.expression;
-    if (this.t.isJSXEmptyExpression(item)) throw new Error('Expected [item] expression not empty');
-    // ---- ObjectExpression to ObjectPattern / ArrayExpression to ArrayPattern
-    this.traverse(this.wrapWithFile(item), {
-      ObjectExpression: path => {
-        path.node.type = 'ObjectPattern' as any;
-      },
-      ArrayExpression: path => {
-        path.node.type = 'ArrayPattern' as any;
-      },
-    });
+    // <for each={data}>
+    //   {(item, idx)=>（<Comp_$id1$item={item}idx={idx}/>)}
+    // </for>
+    const jsxChildren = node.children;
+    if (jsxChildren.length !== 1) throw new Error('Expected 1 child');
+    if (jsxChildren[0].type !== 'JSXExpressionContainer') throw new Error('Expected expression container');
+    const itemFnNode = jsxChildren[0].expression;
+    if (this.t.isJSXEmptyExpression(itemFnNode)) throw new Error('Expected expression not empty');
 
-    // ---- Get children
-    const children = this.t.jsxFragment(this.t.jsxOpeningFragment(), this.t.jsxClosingFragment(), node.children);
+    let children;
+    if (!this.t.isFunctionExpression(itemFnNode) && !this.t.isArrowFunctionExpression(itemFnNode)) {
+      throw new Error('For: Expected function expression');
+    }
+    // get the return value
+    if (this.t.isBlockStatement(itemFnNode.body)) {
+      if (itemFnNode.body.body.length !== 1) throw new Error('For: Expected 1 statement in block statement');
+      if (!this.t.isReturnStatement(itemFnNode.body.body[0]))
+        throw new Error('For: Expected return statement in block statement');
+      children = itemFnNode.body.body[0].argument;
+    } else {
+      children = itemFnNode.body;
+    }
+
+    const item = itemFnNode.params[0];
+    if (!this.t.isJSXElement(children)) throw new Error('For: Expected jsx element in return statement');
 
     this.viewUnits.push({
       type: 'for',

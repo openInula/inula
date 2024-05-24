@@ -40,7 +40,7 @@ export type Dependency = {
  */
 export function getDependenciesFromNode(
   node: t.Expression | t.Statement,
-  reactiveMap: Map<string, number>,
+  reactiveMap: Map<string, Bitmap | Bitmap[]>,
   reactivityFuncNames: string[]
 ): Dependency {
   // ---- Deps: console.log(count)
@@ -57,9 +57,15 @@ export function getDependenciesFromNode(
 
       if (reactiveBitmap !== undefined) {
         if (isAssignmentExpressionLeft(innerPath) || isAssignmentFunction(innerPath, reactivityFuncNames)) {
-          assignDepMask |= reactiveBitmap;
+          assignDepMask |= Array.isArray(reactiveBitmap)
+            ? reactiveBitmap.reduce((acc, cur) => acc | cur, 0)
+            : reactiveBitmap;
         } else {
-          depBitmaps.push(reactiveBitmap);
+          if (Array.isArray(reactiveBitmap)) {
+            depBitmaps.push(...reactiveBitmap);
+          } else {
+            depBitmaps.push(reactiveBitmap);
+          }
 
           if (!depNodes[propertyKey]) depNodes[propertyKey] = [];
           depNodes[propertyKey].push(geneDependencyNode(innerPath));

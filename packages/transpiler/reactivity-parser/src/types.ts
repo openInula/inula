@@ -104,4 +104,4 @@ export interface ReactivityParserConfig {
 
 // TODO: unify with the types in babel-inula-next-core
 export type Bitmap = number;
-export type DepMaskMap = Map<string, Bitmap>;
+export type DepMaskMap = Map<string, Bitmap | Bitmap[]>;

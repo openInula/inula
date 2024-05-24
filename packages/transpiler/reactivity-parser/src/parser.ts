@@ -319,34 +319,31 @@ export class ReactivityParser {
    * @returns ForParticle
    */
   private parseFor(forUnit: ForUnit): ForParticle {
-    const { depMask, dependenciesNode } = this.getDependencies(forUnit.array);
-    const prevIdentifierDepMap = this.config.depMaskMap;
-    // ---- Find all the identifiers in the key and remove them from the identifierDepMap
-    //      because once the key is changed, that identifier related dependencies will be changed too,
-    //      so no need to update them
-    const keyDep = this.t.isIdentifier(forUnit.key) && forUnit.key.name;
+    const { fullDepMask, dependenciesNode, depBitmaps } = this.getDependencies(forUnit.array);
+    const prevMap = this.config.depMaskMap;
+
     // ---- Generate an identifierDepMap to track identifiers in item and make them reactive
     //      based on the dependencies from the array
-    // this.config.depMaskMap = new Map([
-    //   ...this.config.depMaskMap,
-    //   ...this.getIdentifiers(this.t.assignmentExpression('=', forUnit.item, this.t.objectExpression([])))
-    //     .filter(id => !keyDep || id !== keyDep)
-    //     .map(id => [id, depMask]),
-    // ]);
+    // Just wrap the item in an assignment expression to get all the identifiers
+    const itemWrapper = this.t.assignmentExpression('=', forUnit.item, this.t.objectExpression([]));
+    this.config.depMaskMap = new Map([
+      ...this.config.depMaskMap,
+      ...this.getIdentifiers(itemWrapper).map(id => [id, depBitmaps] as const),
+    ]);
 
     const forParticle: ForParticle = {
       type: 'for',
       item: forUnit.item,
       array: {
         value: forUnit.array,
-        depBitmaps: [],
-        depMask: depMask,
+        depBitmaps,
+        depMask: fullDepMask,
         dependenciesNode,
       },
       children: forUnit.children.map(this.parseViewParticle.bind(this)),
       key: forUnit.key,
     };
-    // this.config.identifierDepMap = prevIdentifierDepMap;
+    this.config.depMaskMap = prevMap;
     return forParticle;
   }
 
@@ -427,7 +424,7 @@ export class ReactivityParser {
   private getDependencies(node: t.Expression | t.Statement) {
     if (this.t.isFunctionExpression(node) || this.t.isArrowFunctionExpression(node)) {
       return {
-        depMask: 0,
+        fullDepMask: 0,
         depBitmaps: [],
         dependenciesNode: this.t.arrayExpression([]),
       };

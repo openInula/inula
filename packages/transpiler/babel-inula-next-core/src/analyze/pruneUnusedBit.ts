@@ -31,10 +31,8 @@ export function pruneUnusedBit(
   index = 1,
   bitPositionToRemoveInParent: number[] = []
 ) {
-  // dfs the component tree
-  // To store the bitmap of the properties
-  const bitMap = new Map<string, number>();
   const bitPositionToRemove: number[] = [...bitPositionToRemoveInParent];
+  // dfs the component tree
   comp.variables.forEach(v => {
     if (v.type === 'reactive') {
       // get the origin bit, computed should keep the highest bit, etc. 0b0111 -> 0b0100
@@ -42,9 +40,7 @@ export function pruneUnusedBit(
 
       if (comp.usedBit & originBit) {
         v.bit = 1 << (index - bitPositionToRemove.length - 1);
-        bitMap.set(v.name, v.bit);
         if (v.dependency) {
-          // 去掉最高位
           v.dependency.depMask = getDepMask(v.dependency.depBitmaps, bitPositionToRemove);
         }
       } else {
@@ -91,11 +87,19 @@ function pruneBitmap(depMask: Bitmap, bitPositionToRemove: number[]) {
   return parseInt(result, 2);
 }
 
+/**
+ * Get the depMask by pruning the bitPositionToRemove
+ * The reason why we need to get the depMask from depBitmaps instead of fullDepMask is that
+ * the fullDepMask contains the bit of used variables, which is not the direct dependency
+ *
+ * @param depBitmaps
+ * @param bitPositionToRemove
+ */
 function getDepMask(depBitmaps: Bitmap[], bitPositionToRemove: number[]) {
   // prune each dependency bitmap and combine them
   return depBitmaps.reduce((acc, cur) => {
-    const a = pruneBitmap(cur, bitPositionToRemove);
-    return keepHighestBit(a) | acc;
+    // computed should keep the highest bit, others should be pruned
+    return keepHighestBit(pruneBitmap(cur, bitPositionToRemove)) | acc;
   }, 0);
 }
 
