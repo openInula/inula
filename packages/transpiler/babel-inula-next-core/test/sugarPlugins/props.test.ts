@@ -24,14 +24,17 @@ describe('analyze props', () => {
     it('should work', () => {
       expect(
         mock(`
-      Component(({foo, bar}) => {})
+      Component(({foo, bar}) => {
+        const v = foo + bar;
+      })
     `)
       ).toMatchInlineSnapshot(`
-      "Component(() => {
-        let foo_$$prop;
-        let bar_$$prop;
-      });"
-    `);
+        "Component(() => {
+          let foo_$$prop;
+          let bar_$$prop;
+          const v = foo_$$prop + bar_$$prop;
+        });"
+      `);
     });
 
     it('should support default value', () => {

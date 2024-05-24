@@ -23,5 +23,5 @@ graph TD
 see `types.ts` in `packages/transpiler/babel-inula-next-core/src/analyze/types.ts`
 
 ## TODO LIST
-- [ ] for analyze the local variable, we need to consider the scope of the variable
+- [x] for analyze the local variable, we need to consider the scope of the variable
 - [ ] hook analyze
