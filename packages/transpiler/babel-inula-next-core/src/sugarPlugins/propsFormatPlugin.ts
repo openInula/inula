@@ -4,6 +4,7 @@ import { register } from '@openinula/babel-api';
 import { COMPONENT } from '../constants';
 import { ArrowFunctionWithBlock, extractFnFromMacro, isCompPath, wrapArrowFunctionWithBlock } from '../utils';
 import { types as t } from '@openinula/babel-api';
+import { type Scope } from '@babel/traverse';
 
 export enum PropType {
   REST = 'rest',
@@ -27,10 +28,9 @@ interface Prop {
 //   let p20
 //   let p21
 // }
-function createPropAssignment(prop: Prop) {
-  const decalrations = [
-    t.variableDeclaration('let', [t.variableDeclarator(t.identifier(`${prop.name}_$$prop`), prop.defaultVal)]),
-  ];
+function createPropAssignment(prop: Prop, scope: Scope) {
+  const newName = `${prop.name}_$$prop`;
+  const decalrations = [t.variableDeclaration('let', [t.variableDeclarator(t.identifier(newName), prop.defaultVal)])];
   if (prop.alias) {
     decalrations.push(
       t.variableDeclaration('let', [
@@ -44,10 +44,22 @@ function createPropAssignment(prop: Prop) {
     );
   }
 
+  if (!prop.nestedRelationship || !prop.alias) {
+    // this means the prop can be used directly in the function body
+    // need rename the prop
+    scope.rename(prop.name, newName);
+  }
   return decalrations;
 }
 
-function extractPropsDestructing(
+/**
+ * Find the props destructuring in the function body, like:
+ * const { prop1, prop2 } = props;
+ * To extract the props
+ * @param fnPath
+ * @param propsName
+ */
+function extractPropsDestructingInFnBody(
   fnPath: NodePath<t.FunctionExpression> | NodePath<ArrowFunctionWithBlock>,
   propsName: string
 ) {
@@ -62,9 +74,9 @@ function extractPropsDestructing(
         const id = declaration.get('id');
         if (init.isIdentifier() && init.node.name === propsName) {
           if (id.isObjectPattern()) {
-            props = id.get('properties').map(prop => parseSingleProp(prop));
+            props = id.get('properties').map(prop => parseProperty(prop));
           } else if (id.isIdentifier()) {
-            props = extractPropsDestructing(fnPath, id.node.name);
+            props = extractPropsDestructingInFnBody(fnPath, id.node.name);
           }
           // delete the declaration
           if (props.length > 0) {
@@ -113,13 +125,14 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
           if (propsPath) {
             if (propsPath.isObjectPattern()) {
               // --- object destructuring ---
-              props = propsPath.get('properties').map(prop => parseSingleProp(prop));
+              props = propsPath.get('properties').map(prop => parseProperty(prop));
             } else if (propsPath.isIdentifier()) {
-              props = extractPropsDestructing(fnPath, propsPath.node.name);
+              // --- identifier destructuring ---
+              props = extractPropsDestructingInFnBody(fnPath, propsPath.node.name);
             }
           }
 
-          fnPath.node.body.body.unshift(...props.flatMap(prop => createPropAssignment(prop)));
+          fnPath.node.body.body.unshift(...props.flatMap(prop => createPropAssignment(prop, fnPath.scope)));
 
           // --- clear the props ---
           fnPath.node.params = [];
@@ -129,14 +142,14 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
   };
 }
 
-function parseSingleProp(path: NodePath<t.ObjectProperty | t.RestElement>): Prop {
+function parseProperty(path: NodePath<t.ObjectProperty | t.RestElement>): Prop {
   if (path.isObjectProperty()) {
     // --- normal property ---
     const key = path.node.key;
     const value = path.node.value;
     if (t.isIdentifier(key) || t.isStringLiteral(key)) {
       const name = t.isIdentifier(key) ? key.name : key.value;
-      return analyzeNestedProp(value, name, path);
+      return analyzeNestedProp(value, name);
     }
 
     throw Error(`Unsupported key type in object destructuring: ${key.type}`);
@@ -153,7 +166,7 @@ function parseSingleProp(path: NodePath<t.ObjectProperty | t.RestElement>): Prop
   }
 }
 
-function analyzeNestedProp(value: t.ObjectProperty['value'], name: string, path: NodePath<t.ObjectProperty>): Prop {
+function analyzeNestedProp(value: t.ObjectProperty['value'], name: string): Prop {
   let defaultVal: t.Expression | null = null;
   let alias: string | null = null;
   const nestedProps: string[] | null = [];
