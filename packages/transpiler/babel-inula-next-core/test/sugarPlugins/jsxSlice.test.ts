@@ -83,4 +83,15 @@ describe('jsx slice', () => {
       }"
     `);
   });
+
+  // TODO: Fix this test
+  it.skip('should work with jsx slice in function', () => {
+    // function App() {
+    //   const fn = ([x, y, z]) => {
+    //     return <div>{x}, {y}, {z}</div>
+    //   }
+    //
+    //   return <div>{fn([1, 2, 3])}</div>
+    // }
+  });
 });
