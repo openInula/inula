@@ -17,7 +17,7 @@ import { describe, expect, it } from 'vitest';
 import { genCode, mockAnalyze } from '../mock';
 import { variablesAnalyze } from '../../src/analyze/Analyzers/variablesAnalyze';
 import { ReactiveVariable, SubCompVariable } from '../../src/analyze/types';
-import { findReactiveVarByName } from './utils';
+import { findVarByName } from './utils';
 import { viewAnalyze } from '../../src/analyze/Analyzers/viewAnalyze';
 
 const analyze = (code: string) => mockAnalyze(code, [variablesAnalyze, viewAnalyze]);
@@ -27,12 +27,14 @@ describe('analyze properties', () => {
     const root = analyze(`
       Component(() => {
         let foo = 1;
-        let bar = 1;
+        const bar = 1;
 
         return <div>{foo}{bar}</div>;
       })
     `);
     expect(root.variables.length).toBe(2);
+    expect(findVarByName(root, 'foo').kind).toBe('let');
+    expect(findVarByName(root, 'bar').kind).toBe('const');
   });
 
   describe('state dependency', () => {
@@ -44,11 +46,11 @@ describe('analyze properties', () => {
           let _ = bar; // use bar to avoid pruning
         })
       `);
-      const fooVar = findReactiveVarByName(root, 'foo');
+      const fooVar = findVarByName(root, 'foo');
       expect(!!fooVar.dependency).toBe(false);
       expect(genCode(fooVar.value)).toBe('1');
 
-      const barVar = findReactiveVarByName(root, 'bar');
+      const barVar = findVarByName(root, 'bar');
       expect(!!barVar.dependency).toBe(true);
       expect(genCode(barVar.value)).toBe('foo');
       expect(barVar.bit).toEqual(0b10);
@@ -149,9 +151,9 @@ describe('analyze properties', () => {
       `);
       const sonNode = root.variables[3] as SubCompVariable;
       // Son > middleName
-      expect(findReactiveVarByName(sonNode, 'middleName').dependency!.depMask).toBe(0b100);
+      expect(findVarByName(sonNode, 'middleName').dependency!.depMask).toBe(0b100);
       // Son > name
-      expect(findReactiveVarByName(sonNode, 'name').dependency!.depMask).toBe(0b1001);
+      expect(findVarByName(sonNode, 'name').dependency!.depMask).toBe(0b1001);
       const grandSonNode = sonNode.variables[2] as SubCompVariable;
       // GrandSon > grandSonName
       expect(grandSonNode.ownAvailableVariables[0].dependency!.depMask).toBe(0b10001);

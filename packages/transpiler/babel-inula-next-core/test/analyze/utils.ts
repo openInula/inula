@@ -15,8 +15,8 @@
 
 import { ComponentNode, ReactiveVariable, SubCompVariable } from '../../src/analyze/types';
 
-export function findReactiveVarByName(comp: ComponentNode | SubCompVariable, name: string): ReactiveVariable {
-  const result = comp.variables.find(v => v.name === name && v.type === 'reactive');
+export function findVarByName(comp: ComponentNode | SubCompVariable, name: string): ReactiveVariable {
+  const result = comp.variables.find(v => v.name === name);
   if (!result) {
     throw new Error(`Can't find reactive variable ${name}`);
   }

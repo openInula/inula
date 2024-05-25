@@ -33,9 +33,10 @@ export type Dependency = {
 };
 export type FunctionalExpression = t.FunctionExpression | t.ArrowFunctionExpression;
 
-interface BaseVariable<V> {
+export interface BaseVariable<V> {
   name: string;
   value: V;
+  kind: t.VariableDeclaration['kind'];
 }
 
 export interface ReactiveVariable extends BaseVariable<t.Expression | null> {
@@ -63,7 +64,7 @@ export interface PlainVariable extends BaseVariable<t.Expression | null> {
   type: 'plain';
 }
 
-export interface MethodVariable extends BaseVariable<FunctionalExpression> {
+export interface MethodVariable extends BaseVariable<FunctionalExpression | t.FunctionDeclaration> {
   type: 'method';
 }
 

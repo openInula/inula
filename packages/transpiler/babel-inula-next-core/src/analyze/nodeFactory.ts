@@ -14,7 +14,15 @@
  */
 
 import { NodePath, type types as t } from '@babel/core';
-import type { ComponentNode, FunctionalExpression, LifeCycle, ReactiveVariable, Dependency } from './types';
+import {
+  ComponentNode,
+  FunctionalExpression,
+  LifeCycle,
+  ReactiveVariable,
+  Dependency,
+  BaseVariable,
+  MethodVariable,
+} from './types';
 import { Bitmap, ViewParticle } from '@openinula/reactivity-parser';
 
 export function createComponentNode(
@@ -46,10 +54,9 @@ export function createComponentNode(
   return comp;
 }
 
-export function addProperty(
+export function addVariable(
   comp: ComponentNode,
-  name: string,
-  value: t.Expression | null,
+  varInfo: BaseVariable<t.Expression | null>,
   dependency: Dependency | null
 ) {
   // The index of the variable in the availableVariables
@@ -61,10 +68,9 @@ export function addProperty(
   if (fullDepBits) {
     comp.usedBit |= fullDepBits;
   }
-  comp._reactiveBitMap.set(name, bitmap);
+  comp._reactiveBitMap.set(varInfo.name, bitmap);
   comp.variables.push({
-    name,
-    value,
+    ...varInfo,
     type: 'reactive',
     _fullBits: bitmap,
     level: comp.level,
@@ -72,8 +78,8 @@ export function addProperty(
   });
 }
 
-export function addMethod(comp: ComponentNode, name: string, value: FunctionalExpression) {
-  comp.variables.push({ name, value, type: 'method' });
+export function addMethod(comp: ComponentNode, methodInfo: BaseVariable<MethodVariable['value']>) {
+  comp.variables.push({ ...methodInfo, type: 'method' });
 }
 
 export function addSubComponent(comp: ComponentNode, subComp: ComponentNode) {
