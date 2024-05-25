@@ -18,7 +18,7 @@ import { viewAnalyze } from '../../src/analyze/Analyzers/viewAnalyze';
 import { functionalMacroAnalyze } from '../../src/analyze/Analyzers/functionalMacroAnalyze';
 import { mockAnalyze } from '../mock';
 import { describe, expect, it } from 'vitest';
-import { findReactiveVarByName, findSubCompByName } from './utils';
+import { findVarByName, findSubCompByName } from './utils';
 
 const analyze = (code: string) => mockAnalyze(code, [variablesAnalyze, viewAnalyze, functionalMacroAnalyze]);
 describe('prune unused bit', () => {
@@ -42,8 +42,11 @@ describe('prune unused bit', () => {
         return <div className={count}>{doubleCount}</div>;
       });
     `);
+    // test plain var
+    const unusedVar = findVarByName(root, 'unused');
+    expect(unusedVar.type).toEqual('plain');
     // test computed
-    const countVar = findReactiveVarByName(root, 'count');
+    const countVar = findVarByName(root, 'count');
     expect(countVar.bit).toEqual(0b10);
     expect(countVar.dependency!.depMask).toEqual(0b1);
 

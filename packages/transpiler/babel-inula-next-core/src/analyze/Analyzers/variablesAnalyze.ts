@@ -14,7 +14,7 @@
  */
 
 import { Visitor } from '../types';
-import { addMethod, addProperty, addSubComponent, createComponentNode } from '../nodeFactory';
+import { addMethod, addVariable, addSubComponent, createComponentNode } from '../nodeFactory';
 import { isValidPath } from '../utils';
 import { type NodePath } from '@babel/core';
 import { COMPONENT } from '../../constants';
@@ -48,7 +48,11 @@ export function variablesAnalyze(): Visitor {
           if (isValidPath(init)) {
             // handle the method
             if (init.isArrowFunctionExpression() || init.isFunctionExpression()) {
-              addMethod(ctx.current, id.node.name, init.node);
+              addMethod(ctx.current, {
+                name: id.node.name,
+                value: init.node,
+                kind: path.node.kind,
+              });
               return;
             }
             // handle the subcomponent
@@ -71,7 +75,15 @@ export function variablesAnalyze(): Visitor {
 
             dependency = getDependenciesFromNode(init.node, ctx.current._reactiveBitMap, reactivityFuncNames);
           }
-          addProperty(ctx.current, id.node.name, init.node || null, dependency || null);
+          addVariable(
+            ctx.current,
+            {
+              name: id.node.name,
+              value: init.node || null,
+              kind: path.node.kind,
+            },
+            dependency || null
+          );
         }
       });
     },
@@ -81,14 +93,11 @@ export function variablesAnalyze(): Visitor {
         throw new Error('Function declaration must have an id');
       }
 
-      const functionExpression = t.functionExpression(
-        path.node.id,
-        path.node.params,
-        path.node.body,
-        path.node.generator,
-        path.node.async
-      );
-      addMethod(current, fnId.name, functionExpression);
+      addMethod(current, {
+        name: fnId.name,
+        value: path.node,
+        kind: 'const',
+      });
     },
   };
 }
