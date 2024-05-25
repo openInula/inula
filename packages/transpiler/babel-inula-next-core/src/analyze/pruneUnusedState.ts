@@ -13,12 +13,15 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { ComponentNode } from './types';
+import { ComponentNode, PlainVariable, ReactiveVariable } from './types';
 import { Bitmap, ViewParticle } from '@openinula/reactivity-parser';
 
 /**
  * To prune the bitmap of unused properties
- * Here the depMask will be defined by prune the unused bit in fullDepMask
+ * Here are serveral things to be done in this phase:
+ * 1. The unused reactive variables will turn to plain variables
+ * 2. And the bit of the variable should be pruned
+ * 3. The depMask of the view, computed and watch will be pruned
  * etc.:
  * ```js
  * let a = 1; // 0b001
@@ -26,30 +29,36 @@ import { Bitmap, ViewParticle } from '@openinula/reactivity-parser';
  * let c = 3; // 0b100 -> 0b010(cause bit of b is pruned)
  * ```
  */
-export function pruneUnusedBit(
+export function pruneUnusedState(
   comp: ComponentNode<'comp'> | ComponentNode<'subComp'>,
   index = 1,
   bitPositionToRemoveInParent: number[] = []
 ) {
   const bitPositionToRemove: number[] = [...bitPositionToRemoveInParent];
   // dfs the component tree
-  comp.variables.forEach(v => {
+  comp.variables = comp.variables.map(v => {
     if (v.type === 'reactive') {
       // get the origin bit, computed should keep the highest bit, etc. 0b0111 -> 0b0100
       const originBit = keepHighestBit(v._fullBits);
 
       if (comp.usedBit & originBit) {
-        v.bit = 1 << (index - bitPositionToRemove.length - 1);
+        // assign the final bit to the variable, pruning the unused bit
+        v.bit = 1 << (index++ - bitPositionToRemove.length - 1);
+        // If computed, prune the depMask
         if (v.dependency) {
           v.dependency.depMask = getDepMask(v.dependency.depBitmaps, bitPositionToRemove);
         }
       } else {
-        bitPositionToRemove.push(index);
+        bitPositionToRemove.push(index++);
+        // turn the unused reactive variable to plain variable
+        return turnReactiveVarToPlainVar(v);
       }
-      index++;
     } else if (v.type === 'subComp') {
-      pruneUnusedBit(v, index, bitPositionToRemove);
+      // Recursively prune the subcomponent, keep the index for the next variable
+      pruneUnusedState(v, index, bitPositionToRemove);
     }
+
+    return v;
   });
 
   comp.watch?.forEach(watch => {
@@ -64,12 +73,24 @@ export function pruneUnusedBit(
   if (comp.children) {
     comp.children.forEach(child => {
       if (child.type === 'comp') {
-        pruneUnusedBit(child as ComponentNode<'comp'>, index, bitPositionToRemove);
+        pruneUnusedState(child as ComponentNode<'comp'>, index, bitPositionToRemove);
       } else {
         pruneViewParticleUnusedBit(child as ViewParticle, bitPositionToRemove);
       }
     });
   }
+}
+
+/**
+ * Turn the reactive variable to plain variable
+ * @param reactiveVar
+ */
+function turnReactiveVarToPlainVar(reactiveVar: ReactiveVariable): PlainVariable {
+  return {
+    type: 'plain',
+    name: reactiveVar.name,
+    value: reactiveVar.value,
+  };
 }
 
 function pruneBitmap(depMask: Bitmap, bitPositionToRemove: number[]) {

@@ -18,8 +18,9 @@ import { genCode, mockAnalyze } from '../mock';
 import { variablesAnalyze } from '../../src/analyze/Analyzers/variablesAnalyze';
 import { ReactiveVariable, SubCompVariable } from '../../src/analyze/types';
 import { findReactiveVarByName } from './utils';
+import { viewAnalyze } from '../../src/analyze/Analyzers/viewAnalyze';
 
-const analyze = (code: string) => mockAnalyze(code, [variablesAnalyze]);
+const analyze = (code: string) => mockAnalyze(code, [variablesAnalyze, viewAnalyze]);
 
 describe('analyze properties', () => {
   it('should work', () => {
@@ -27,6 +28,8 @@ describe('analyze properties', () => {
       Component(() => {
         let foo = 1;
         let bar = 1;
+
+        return <div>{foo}{bar}</div>;
       })
     `);
     expect(root.variables.length).toBe(2);
