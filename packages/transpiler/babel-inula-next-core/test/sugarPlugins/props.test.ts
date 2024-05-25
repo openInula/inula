@@ -29,10 +29,13 @@ describe('analyze props', () => {
       })
     `)
       ).toMatchInlineSnapshot(`
-        "Component(() => {
-          let foo_$$prop;
-          let bar_$$prop;
-          const v = foo_$$prop + bar_$$prop;
+        "Component(({
+          foo,
+          bar
+        }) => {
+          let foo_$p$ = foo;
+          let bar_$p$ = bar;
+          const v = foo_$p$ + bar_$p$;
         });"
       `);
     });
@@ -43,11 +46,14 @@ describe('analyze props', () => {
       Component(({foo = 'default', bar = 123}) => {})
     `)
       ).toMatchInlineSnapshot(`
-      "Component(() => {
-        let foo_$$prop = 'default';
-        let bar_$$prop = 123;
-      });"
-    `);
+        "Component(({
+          foo = 'default',
+          bar = 123
+        }) => {
+          let foo_$p$ = foo;
+          let bar_$p$ = bar;
+        });"
+      `);
     });
 
     it('should support alias', () => {
@@ -56,13 +62,16 @@ describe('analyze props', () => {
       Component(({'foo': renamed, bar: anotherName}) => {})
     `)
       ).toMatchInlineSnapshot(`
-      "Component(() => {
-        let foo_$$prop;
-        let renamed = foo_$$prop;
-        let bar_$$prop;
-        let anotherName = bar_$$prop;
-      });"
-    `);
+        "Component(({
+          foo,
+          bar
+        }) => {
+          let foo_$p$ = foo;
+          let renamed = foo_$p$;
+          let bar_$p$ = bar;
+          let anotherName = bar_$p$;
+        });"
+      `);
     });
 
     it('should support nested props', () => {
@@ -71,15 +80,22 @@ describe('analyze props', () => {
       Component(({foo: {nested1, nested2}, bar}) => {})
     `)
       ).toMatchInlineSnapshot(`
-      "Component(() => {
-        let foo_$$prop;
-        let {
-          nested1,
-          nested2
-        } = foo_$$prop;
-        let bar_$$prop;
-      });"
-    `);
+        "Component(({
+          foo,
+          bar
+        }) => {
+          let foo_$p$ = foo;
+          let nested1;
+          let nested2;
+          watch(() => {
+            ({
+              nested1,
+              nested2
+            } = foo_$p$);
+          });
+          let bar_$p$ = bar;
+        });"
+      `);
     });
     //
     it('should support complex nested props', () => {
@@ -97,18 +113,29 @@ describe('analyze props', () => {
           });
         `)
       ).toMatchInlineSnapshot(`
-      "Component(function () {
-        let prop1_$$prop;
-        let prop2_$$prop;
-        let {
-          p2: [p20X = defaultVal, {
-            p211,
-            p212: p212X = defaultVal
-          }, ...restArr],
-          p3,
-          ...restObj
-        } = prop2_$$prop;
-      });"
+        "Component(function ({
+          prop1,
+          prop2
+        }) {
+          let prop1_$p$ = prop1;
+          let prop2_$p$ = prop2;
+          let p20X;
+          let p211;
+          let p212X;
+          let restArr;
+          let p3;
+          let restObj;
+          watch(() => {
+            ({
+              p2: [p20X = defaultVal, {
+                p211,
+                p212: p212X = defaultVal
+              }, ...restArr],
+              p3,
+              ...restObj
+            } = prop2_$p$);
+          });
+        });"
       `);
     });
 
@@ -118,11 +145,14 @@ describe('analyze props', () => {
       Component(({foo, ...rest}) => {})
     `)
       ).toMatchInlineSnapshot(`
-      "Component(() => {
-        let foo_$$prop;
-        let rest_$$prop;
-      });"
-    `);
+        "Component(({
+          foo,
+          rest
+        }) => {
+          let foo_$p$ = foo;
+          let rest_$p$ = rest;
+        });"
+      `);
     });
 
     it('should support empty props', () => {
@@ -143,9 +173,12 @@ describe('analyze props', () => {
       })
     `)
       ).toMatchInlineSnapshot(`
-        "Component(() => {
-          let foo_$$prop;
-          let bar_$$prop;
+        "Component(({
+          foo,
+          bar
+        }) => {
+          let foo_$p$ = foo;
+          let bar_$p$ = bar;
         });"
       `);
     });
@@ -159,10 +192,13 @@ describe('analyze props', () => {
         })
       `)
       ).toMatchInlineSnapshot(`
-        "Component(() => {
-          let foo_$$prop;
-          let renamed = foo_$$prop;
-          let bar_$$prop;
+        "Component(({
+          foo,
+          bar
+        }) => {
+          let foo_$p$ = foo;
+          let renamed = foo_$p$;
+          let bar_$p$ = bar;
         });"
       `);
     });
