@@ -1,11 +1,11 @@
 import babel, { NodePath, PluginObj } from '@babel/core';
 import type { DLightOption } from '../types';
 import { register } from '@openinula/babel-api';
-import { COMPONENT } from '../constants';
+import { COMPONENT, WATCH } from '../constants';
 import { ArrowFunctionWithBlock, extractFnFromMacro, isCompPath, wrapArrowFunctionWithBlock } from '../utils';
 import { types as t } from '@openinula/babel-api';
 import { type Scope } from '@babel/traverse';
-
+export const PROP_SUFFIX = '_$p$';
 export enum PropType {
   REST = 'rest',
   SINGLE = 'single',
@@ -23,24 +23,43 @@ interface Prop {
 // e.g. function({ prop1, prop2: [p20, p21] }) {}
 // transform into
 // function(prop1, prop2: [p20, p21]) {
-//   let prop1_$$prop
-//   let prop2_$$prop
+//   let prop1_$p$ = prop1
+//   let prop2_$p$ = prop2
 //   let p20
 //   let p21
+//   watch(() => {
+//     [p20, p21] = prop2
+//   })
 // }
 function createPropAssignment(prop: Prop, scope: Scope) {
-  const newName = `${prop.name}_$$prop`;
-  const decalrations = [t.variableDeclaration('let', [t.variableDeclarator(t.identifier(newName), prop.defaultVal)])];
+  const newName = `${prop.name}${PROP_SUFFIX}`;
+  const declarations: t.Statement[] = [
+    t.variableDeclaration('let', [t.variableDeclarator(t.identifier(newName), t.identifier(prop.name))]),
+  ];
   if (prop.alias) {
-    decalrations.push(
-      t.variableDeclaration('let', [
-        t.variableDeclarator(t.identifier(`${prop.alias}`), t.identifier(`${prop.name}_$$prop`)),
-      ])
+    declarations.push(
+      t.variableDeclaration('let', [t.variableDeclarator(t.identifier(`${prop.alias}`), t.identifier(newName))])
     );
   }
   if (prop.nestedRelationship) {
-    decalrations.push(
-      t.variableDeclaration('let', [t.variableDeclarator(prop.nestedRelationship, t.identifier(`${prop.name}_$$prop`))])
+    // need to declare each the nested props
+    console.log(prop.nestedProps);
+    declarations.push(
+      ...prop.nestedProps!.map(nestedProp =>
+        t.variableDeclaration('let', [t.variableDeclarator(t.identifier(nestedProp))])
+      )
+    );
+    declarations.push(
+      t.expressionStatement(
+        t.callExpression(t.identifier(WATCH), [
+          t.arrowFunctionExpression(
+            [],
+            t.blockStatement([
+              t.expressionStatement(t.assignmentExpression('=', prop.nestedRelationship!, t.identifier(newName))),
+            ])
+          ),
+        ])
+      )
     );
   }
 
@@ -49,7 +68,7 @@ function createPropAssignment(prop: Prop, scope: Scope) {
     // need rename the prop
     scope.rename(prop.name, newName);
   }
-  return decalrations;
+  return declarations;
 }
 
 /**
@@ -134,8 +153,22 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
 
           fnPath.node.body.body.unshift(...props.flatMap(prop => createPropAssignment(prop, fnPath.scope)));
 
-          // --- clear the props ---
-          fnPath.node.params = [];
+          // --- only keep the first level props---
+          // e.g. function({ prop1, prop2 }) {}
+          fnPath.node.params = [
+            t.objectPattern(
+              props.map(prop =>
+                t.objectProperty(
+                  t.identifier(prop.name),
+                  prop.defaultVal
+                    ? t.assignmentPattern(t.identifier(prop.name), prop.defaultVal)
+                    : t.identifier(prop.name),
+                  false,
+                  true
+                )
+              )
+            ),
+          ];
         }
       },
     },
@@ -146,10 +179,9 @@ function parseProperty(path: NodePath<t.ObjectProperty | t.RestElement>): Prop {
   if (path.isObjectProperty()) {
     // --- normal property ---
     const key = path.node.key;
-    const value = path.node.value;
     if (t.isIdentifier(key) || t.isStringLiteral(key)) {
       const name = t.isIdentifier(key) ? key.name : key.value;
-      return analyzeNestedProp(value, name);
+      return analyzeNestedProp(path.get('value'), name);
     }
 
     throw Error(`Unsupported key type in object destructuring: ${key.type}`);
@@ -166,7 +198,8 @@ function parseProperty(path: NodePath<t.ObjectProperty | t.RestElement>): Prop {
   }
 }
 
-function analyzeNestedProp(value: t.ObjectProperty['value'], name: string): Prop {
+function analyzeNestedProp(valuePath: NodePath<t.ObjectProperty['value']>, name: string): Prop {
+  const value = valuePath.node;
   let defaultVal: t.Expression | null = null;
   let alias: string | null = null;
   const nestedProps: string[] | null = [];
@@ -190,6 +223,27 @@ function analyzeNestedProp(value: t.ObjectProperty['value'], name: string): Prop
       throw Error(`Unsupported assignment type in object destructuring: ${assignedName.type}`);
     }
   } else if (t.isObjectPattern(value) || t.isArrayPattern(value)) {
+    valuePath.traverse({
+      Identifier(path) {
+        // judge if the identifier is a prop
+        // 1. is the key of the object property and doesn't have alias
+        // 2. is the item of the array pattern and doesn't have alias
+        // 3. is alias of the object property
+        const parentPath = path.parentPath;
+        if (parentPath.isObjectProperty() && path.parentKey === 'value') {
+          // collect alias of the object property
+          nestedProps.push(path.node.name);
+        } else if (
+          parentPath.isArrayPattern() ||
+          parentPath.isObjectPattern() ||
+          parentPath.isRestElement() ||
+          (parentPath.isAssignmentPattern() && path.key === 'left')
+        ) {
+          // collect the key of the object property or the item of the array pattern
+          nestedProps.push(path.node.name);
+        }
+      },
+    });
     nestedRelationship = value;
   }
 
