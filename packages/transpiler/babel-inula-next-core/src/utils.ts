@@ -1,5 +1,5 @@
 import { NodePath } from '@babel/core';
-import * as t from '@babel/types';
+import {types as t} from '@openinula/babel-api';
 import { COMPONENT } from './constants';
 
 export function extractFnFromMacro(

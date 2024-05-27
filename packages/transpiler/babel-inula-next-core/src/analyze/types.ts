@@ -61,6 +61,11 @@ export type SubCompVariable = ComponentNode<'subComp'>;
 
 export type Variable = ReactiveVariable | MethodVariable | SubCompVariable;
 
+export type WatchFunc = {
+  dependency: Dependency | null;
+  callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>;
+};
+
 export interface Prop {
   name: string;
   type: PropType;
@@ -99,10 +104,7 @@ export interface ComponentNode<Type = 'comp'> {
   /**
    * The watch fn in the component
    */
-  watch?: {
-    dependency: Dependency | null;
-    callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>;
-  }[];
+  watch?: WatchFunc[];
 }
 
 export interface AnalyzeContext {
