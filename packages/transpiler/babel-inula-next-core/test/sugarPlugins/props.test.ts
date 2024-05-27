@@ -85,14 +85,10 @@ describe('analyze props', () => {
           bar
         }) => {
           let foo_$p$ = foo;
-          let nested1;
-          let nested2;
-          watch(() => {
-            ({
-              nested1,
-              nested2
-            } = foo_$p$);
-          });
+          let {
+            nested1,
+            nested2
+          } = foofoo_$p$;
           let bar_$p$ = bar;
         });"
       `);
@@ -145,12 +141,20 @@ describe('analyze props', () => {
       Component(({foo, ...rest}) => {})
     `)
       ).toMatchInlineSnapshot(`
-        "Component(({
-          foo,
-          rest
-        }) => {
-          let foo_$p$ = foo;
-          let rest_$p$ = rest;
+        "Component(function ({
+          prop1,
+          prop2
+        }) {
+          let prop1_$p$ = prop1;
+          let prop2_$p$ = prop2;
+          let {
+            p2: [p20X = defaultVal, {
+              p211,
+              p212: p212X = defaultVal
+            }, ...restArr],
+            p3,
+            ...restObj
+          } = prop2prop2_$p$;
         });"
       `);
     });

@@ -15,7 +15,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { compile } from './mock';
-import stateDeconstructingPlugin from '../../src/sugarPlugins/stateDeconstructingPlugin';
+import stateDeconstructingPlugin from '../../src/sugarPlugins/stateDestructuringPlugin';
 
 const mock = (code: string) => compile([stateDeconstructingPlugin], code);
 
