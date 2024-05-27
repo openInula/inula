@@ -17,7 +17,7 @@ import babel, { NodePath, PluginObj } from '@babel/core';
 import type { DLightOption } from '../types';
 import { register } from '@openinula/babel-api';
 import { COMPONENT } from '../constants';
-import { ArrowFunctionWithBlock, extractFnFromMacro, isCompPath, wrapArrowFunctionWithBlock } from '../utils';
+import { ArrowFunctionWithBlock, extractFnFromMacro, isCompPath } from '../utils';
 import { types as t } from '@openinula/babel-api';
 
 /**

@@ -7,7 +7,7 @@ import { getFnBodyPath } from '../utils';
 import { viewAnalyze } from './Analyzers/viewAnalyze';
 import { WILL_MOUNT } from '../constants';
 import { types as t } from '@openinula/babel-api';
-import { pruneUnusedBit } from './pruneUnusedBit';
+import { pruneUnusedState } from './pruneUnusedState';
 
 const builtinAnalyzers = [variablesAnalyze, functionalMacroAnalyze, viewAnalyze];
 
@@ -97,7 +97,7 @@ export function analyze(
   const root = createComponentNode(fnName, path);
   analyzeFnComp(path, root, { analyzers, htmlTags: options.htmlTags });
 
-  pruneUnusedBit(root);
+  pruneUnusedState(root);
 
   return root;
 }

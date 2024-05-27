@@ -6,6 +6,8 @@ import { ArrowFunctionWithBlock, extractFnFromMacro, isCompPath, wrapArrowFuncti
 import { types as t } from '@openinula/babel-api';
 import { type Scope } from '@babel/traverse';
 
+export const PROP_SUFFIX = '_$p$';
+
 export enum PropType {
   REST = 'rest',
   SINGLE = 'single',
@@ -16,31 +18,31 @@ interface Prop {
   type: PropType;
   alias?: string | null;
   defaultVal?: t.Expression | null;
-  nestedProps?: string[] | null;
   nestedRelationship?: t.ObjectPattern | t.ArrayPattern | null;
 }
 
 // e.g. function({ prop1, prop2: [p20, p21] }) {}
 // transform into
 // function(prop1, prop2: [p20, p21]) {
-//   let prop1_$$prop
-//   let prop2_$$prop
-//   let p20
-//   let p21
+//   let prop1_$p$ = prop1
+//   let prop2_$p$ = prop2
+//   let [p20, p21] = prop2 // Attention: destructuring will be handled in state destructuring plugin.
 // }
 function createPropAssignment(prop: Prop, scope: Scope) {
-  const newName = `${prop.name}_$$prop`;
-  const decalrations = [t.variableDeclaration('let', [t.variableDeclarator(t.identifier(newName), prop.defaultVal)])];
+  const newName = `${prop.name}${PROP_SUFFIX}`;
+  const declarations: t.Statement[] = [
+    t.variableDeclaration('let', [t.variableDeclarator(t.identifier(newName), t.identifier(prop.name))]),
+  ];
   if (prop.alias) {
-    decalrations.push(
-      t.variableDeclaration('let', [
-        t.variableDeclarator(t.identifier(`${prop.alias}`), t.identifier(`${prop.name}_$$prop`)),
-      ])
+    declarations.push(
+      t.variableDeclaration('let', [t.variableDeclarator(t.identifier(`${prop.alias}`), t.identifier(newName))])
     );
   }
   if (prop.nestedRelationship) {
-    decalrations.push(
-      t.variableDeclaration('let', [t.variableDeclarator(prop.nestedRelationship, t.identifier(`${prop.name}_$$prop`))])
+    declarations.push(
+      t.variableDeclaration('let', [
+        t.variableDeclarator(prop.nestedRelationship, t.identifier(`${prop.name}${newName}`)),
+      ])
     );
   }
 
@@ -49,7 +51,7 @@ function createPropAssignment(prop: Prop, scope: Scope) {
     // need rename the prop
     scope.rename(prop.name, newName);
   }
-  return decalrations;
+  return declarations;
 }
 
 /**
@@ -134,8 +136,22 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
 
           fnPath.node.body.body.unshift(...props.flatMap(prop => createPropAssignment(prop, fnPath.scope)));
 
-          // --- clear the props ---
-          fnPath.node.params = [];
+          // --- only keep the first level props---
+          // e.g. function({ prop1, prop2 }) {}
+          fnPath.node.params = [
+            t.objectPattern(
+              props.map(prop =>
+                t.objectProperty(
+                  t.identifier(prop.name),
+                  prop.defaultVal
+                    ? t.assignmentPattern(t.identifier(prop.name), prop.defaultVal)
+                    : t.identifier(prop.name),
+                  false,
+                  true
+                )
+              )
+            ),
+          ];
         }
       },
     },
@@ -146,10 +162,9 @@ function parseProperty(path: NodePath<t.ObjectProperty | t.RestElement>): Prop {
   if (path.isObjectProperty()) {
     // --- normal property ---
     const key = path.node.key;
-    const value = path.node.value;
     if (t.isIdentifier(key) || t.isStringLiteral(key)) {
       const name = t.isIdentifier(key) ? key.name : key.value;
-      return analyzeNestedProp(value, name);
+      return analyzeNestedProp(path.get('value'), name);
     }
 
     throw Error(`Unsupported key type in object destructuring: ${key.type}`);
@@ -166,10 +181,10 @@ function parseProperty(path: NodePath<t.ObjectProperty | t.RestElement>): Prop {
   }
 }
 
-function analyzeNestedProp(value: t.ObjectProperty['value'], name: string): Prop {
+function analyzeNestedProp(valuePath: NodePath<t.ObjectProperty['value']>, name: string): Prop {
+  const value = valuePath.node;
   let defaultVal: t.Expression | null = null;
   let alias: string | null = null;
-  const nestedProps: string[] | null = [];
   let nestedRelationship: t.ObjectPattern | t.ArrayPattern | null = null;
   if (t.isIdentifier(value)) {
     // 1. handle alias without default value
@@ -193,5 +208,5 @@ function analyzeNestedProp(value: t.ObjectProperty['value'], name: string): Prop
     nestedRelationship = value;
   }
 
-  return { type: PropType.SINGLE, name, defaultVal, alias, nestedProps, nestedRelationship };
+  return { type: PropType.SINGLE, name, defaultVal, alias, nestedRelationship };
 }

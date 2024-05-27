@@ -33,14 +33,18 @@ export type Dependency = {
 };
 export type FunctionalExpression = t.FunctionExpression | t.ArrowFunctionExpression;
 
-interface BaseVariable<V> {
+export interface BaseVariable<V> {
   name: string;
   value: V;
+  kind: t.VariableDeclaration['kind'];
 }
 
 export interface ReactiveVariable extends BaseVariable<t.Expression | null> {
   type: 'reactive';
   level: number;
+  /**
+   * The bitmap of the variable that should be used in the codegen
+   */
   bit?: Bitmap;
   /**
    * Contains the bit of all dependencies graph
@@ -53,13 +57,20 @@ export interface ReactiveVariable extends BaseVariable<t.Expression | null> {
   dependency: Dependency | null;
 }
 
-export interface MethodVariable extends BaseVariable<FunctionalExpression> {
+/**
+ * A variable that is not reactive, it comes from the reactive variable after the unused variable pruning.
+ */
+export interface PlainVariable extends BaseVariable<t.Expression | null> {
+  type: 'plain';
+}
+
+export interface MethodVariable extends BaseVariable<FunctionalExpression | t.FunctionDeclaration> {
   type: 'method';
 }
 
 export type SubCompVariable = ComponentNode<'subComp'>;
 
-export type Variable = ReactiveVariable | MethodVariable | SubCompVariable;
+export type Variable = ReactiveVariable | MethodVariable | SubCompVariable | PlainVariable;
 
 export type WatchFunc = {
   dependency: Dependency | null;
