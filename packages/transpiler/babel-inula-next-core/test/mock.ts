@@ -18,7 +18,7 @@ import { type PluginObj, transform as transformWithBabel } from '@babel/core';
 import syntaxJSX from '@babel/plugin-syntax-jsx';
 import { analyze } from '../src/analyze';
 import generate from '@babel/generator';
-import * as t from '@babel/types';
+import {types as t} from '@openinula/babel-api';
 import { register } from '@openinula/babel-api';
 import { defaultHTMLTags } from '../src/const';
 

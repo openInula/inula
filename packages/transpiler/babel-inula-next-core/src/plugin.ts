@@ -6,6 +6,19 @@ import { analyze } from './analyze';
 import { COMPONENT } from './constants';
 import { extractFnFromMacro, isCompPath } from './utils';
 import { register } from '@openinula/babel-api';
+import { generate } from './generator';
+import { ComponentNode } from './analyze/types';
+
+function replaceWithComponent(path: NodePath<t.CallExpression>, root: ComponentNode) {
+  const variableDeclarationPath = path.parentPath.parentPath;
+  const randomName = Math.random().toString(36).substring(7);
+  const compNode = generate(root);
+  const realFuncName = compNode.id.name;
+  compNode.id.name = randomName;
+  variableDeclarationPath.replaceWith(compNode);
+  compNode.id.name = realFuncName;
+}
+
 
 export default function (api: typeof babel, options: DLightOption): PluginObj {
   const { types } = api;
@@ -51,6 +64,10 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
           const root = analyze(name, componentNode, {
             htmlTags,
           });
+          console.log(root);
+          
+          replaceWithComponent(path, root);
+
           // The sub path has been visited, so we just skip
           path.skip();
         }

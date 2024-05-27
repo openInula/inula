@@ -14,7 +14,7 @@
  */
 
 import babel, { NodePath, PluginObj } from '@babel/core';
-import * as t from '@babel/types';
+import {types as t} from '@openinula/babel-api';
 import type { DLightOption } from '../types';
 import { register } from '@openinula/babel-api';
 
