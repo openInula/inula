@@ -36,7 +36,7 @@ describe('generate', () => {
         let count = 1
 
         console.log(count)
-        onMount(() => {
+        didMount(() => {
           console.log('mounted')
         })
 

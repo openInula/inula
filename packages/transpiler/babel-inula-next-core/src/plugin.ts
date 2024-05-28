@@ -19,7 +19,6 @@ function replaceWithComponent(path: NodePath<t.CallExpression>, root: ComponentN
   compNode.id.name = realFuncName;
 }
 
-
 export default function (api: typeof babel, options: DLightOption): PluginObj {
   const { types } = api;
   const {
@@ -64,8 +63,7 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
           const root = analyze(name, componentNode, {
             htmlTags,
           });
-          console.log(root);
-          
+
           replaceWithComponent(path, root);
 
           // The sub path has been visited, so we just skip
