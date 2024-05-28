@@ -2,22 +2,22 @@ import { describe, expect, it, beforeEach, afterEach } from 'vitest';
 import Babel from '@babel/core';
 import Preset from '../../src';
 
-const transform = (code: string) => Babel.transform(code, {
-  presets: [Preset]
-})!.code;
-
+const transform = (code: string) =>
+  Babel.transform(code, {
+    presets: [Preset],
+  })!.code;
 
 describe('generate', () => {
   it('should generate createComponent', () => {
     const code = transform(/*js*/ `
       const Comp = Component(({jj,aa}) => {
         let count = 1
-      
+
         return <></>
       })
     `);
 
-      expect(code).toMatchInlineSnapshot(`
+    expect(code).toMatchInlineSnapshot(`
         "function Comp() {
           let self;
           let count = 1;
@@ -30,21 +30,20 @@ describe('generate', () => {
       `);
   });
 
-
   it('should collect lifecycle', () => {
     const code = transform(/*js*/ `
       const Comp = Component(({jj,aa}) => {
         let count = 1
-      
+
         console.log(count)
         onMount(() => {
           console.log('mounted')
         })
-      
+
         willUnmount(() => {
           console.log('unmounted')
         })
-      
+
         return <></>
       })
     `);
@@ -77,13 +76,12 @@ describe('generate', () => {
     `);
   });
 
-
   it('should generate updateState', () => {
     const code = transform(/*js*/ `
       const Comp = Component(({jj,aa}) => {
         let count = 1
         let doubleCount = count * 2
-      
+
         return <></>
       })
     `);
@@ -108,7 +106,6 @@ describe('generate', () => {
     `);
   });
 
-
   it('should generate updateState with multiple states', () => {
     const code = transform(/*js*/ `
       const Comp = Component(() => {
@@ -117,7 +114,7 @@ describe('generate', () => {
         let ff = count * 2
         let nn = []
         let kk = count * doubleCount + 100 + nn[1]
-      
+
         watch(() => {
           let nono = 1
           console.log(count)
@@ -127,9 +124,9 @@ describe('generate', () => {
           console.log(count)
         })
         nn.push("jj")
-      
+
         ;[count, doubleCount] = (() => {nn.push("nn")})
-      
+
         return <></>
       })
     `);
@@ -178,7 +175,6 @@ describe('generate', () => {
       }"
     `);
   });
-
 
   it('should generate updateProp', () => {
     const code = transform(/*js*/ `
@@ -234,9 +230,7 @@ describe('generate', () => {
         return self;
       }"
     `);
-
   });
-
 
   it('should generate updateProp with updateDerived', () => {
     const code = transform(/*js*/ `
