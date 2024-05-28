@@ -14,10 +14,10 @@
  */
 
 import { type NodePath, types as t } from '@babel/core';
-import { ON_MOUNT, ON_UNMOUNT, PropType, WILL_MOUNT, WILL_UNMOUNT } from '../constants';
+import { DID_MOUNT, DID_UNMOUNT, PropType, WILL_MOUNT, WILL_UNMOUNT } from '../constants';
 import { Bitmap, ViewParticle } from '@openinula/reactivity-parser';
 
-export type LifeCycle = typeof WILL_MOUNT | typeof ON_MOUNT | typeof WILL_UNMOUNT | typeof ON_UNMOUNT;
+export type LifeCycle = typeof WILL_MOUNT | typeof DID_MOUNT | typeof WILL_UNMOUNT | typeof DID_UNMOUNT;
 export type Dependency = {
   dependenciesNode: t.ArrayExpression;
   /**

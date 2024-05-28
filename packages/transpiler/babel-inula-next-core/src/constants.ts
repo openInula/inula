@@ -1,9 +1,10 @@
 export const COMPONENT = 'Component';
 export const Hook = 'Hook';
 export const WILL_MOUNT = 'willMount';
-export const ON_MOUNT = 'onMount';
+export const DID_MOUNT = 'didMount';
 export const WILL_UNMOUNT = 'willUnmount';
-export const ON_UNMOUNT = 'onUnmount';
+export const DID_UNMOUNT = 'didUnmount';
+
 export const WATCH = 'watch';
 export enum PropType {
   REST = 'rest',
