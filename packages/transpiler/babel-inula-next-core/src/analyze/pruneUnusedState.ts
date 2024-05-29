@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { ComponentNode, PlainVariable, ReactiveVariable } from './types';
+import { ComponentNode } from './types';
 import { Bitmap, ViewParticle } from '@openinula/reactivity-parser';
 
 /**
@@ -38,20 +38,20 @@ export function pruneUnusedState(
   // dfs the component tree
   comp.variables = comp.variables.map(v => {
     if (v.type === 'reactive') {
-      // get the origin bit, computed should keep the highest bit, etc. 0b0111 -> 0b0100
-      const originBit = keepHighestBit(v._fullBits);
+      // get the index bit, computed should keep the highest bit, etc. 0b0111 -> 0b0100
+      const shouldBeReactive = comp.usedBit & keepHighestBit(v._fullBits);
 
-      if (comp.usedBit & originBit) {
+      if (shouldBeReactive) {
         // assign the final bit to the variable, pruning the unused bit
         v.bit = 1 << (index++ - bitPositionToRemove.length - 1);
-        // If computed, prune the depMask
-        if (v.dependency) {
-          v.dependency.depMask = getDepMask(v.dependency.depBitmaps, bitPositionToRemove);
-        }
       } else {
         bitPositionToRemove.push(index++);
-        // turn the unused reactive variable to plain variable
-        return turnReactiveVarToPlainVar(v);
+        v.bit = 0;
+      }
+
+      // If computed, prune the depMask
+      if (v.dependency) {
+        v.dependency.depMask = getDepMask(v.dependency._depBitmaps, bitPositionToRemove);
       }
     } else if (v.type === 'subComp') {
       // Recursively prune the subcomponent, keep the index for the next variable
@@ -66,7 +66,7 @@ export function pruneUnusedState(
     if (!dependency) {
       return;
     }
-    dependency.depMask = getDepMask(dependency.depBitmaps, bitPositionToRemove);
+    dependency.depMask = getDepMask(dependency._depBitmaps, bitPositionToRemove);
   });
 
   // handle children
@@ -79,18 +79,6 @@ export function pruneUnusedState(
       }
     });
   }
-}
-
-/**
- * Turn the reactive variable to plain variable
- * @param reactiveVar
- */
-function turnReactiveVarToPlainVar(reactiveVar: ReactiveVariable): PlainVariable {
-  return {
-    type: 'plain',
-    name: reactiveVar.name,
-    value: reactiveVar.value,
-  };
 }
 
 function pruneBitmap(depMask: Bitmap, bitPositionToRemove: number[]) {
@@ -131,31 +119,31 @@ function pruneViewParticleUnusedBit(particle: ViewParticle, bitPositionToRemove:
     const node = stack.pop()! as ViewParticle;
     if (node.type === 'template') {
       node.props.forEach(prop => {
-        prop.depMask = getDepMask(prop.depBitmaps, bitPositionToRemove);
+        prop.depMask = getDepMask(prop._depBitmaps, bitPositionToRemove);
       });
       stack.push(node.template);
     } else if (node.type === 'html') {
       for (const key in node.props) {
-        node.props[key].depMask = getDepMask(node.props[key].depBitmaps, bitPositionToRemove);
+        node.props[key].depMask = getDepMask(node.props[key]._depBitmaps, bitPositionToRemove);
       }
       stack.push(...node.children);
     } else if (node.type === 'text') {
-      node.content.depMask = getDepMask(node.content.depBitmaps, bitPositionToRemove);
+      node.content.depMask = getDepMask(node.content._depBitmaps, bitPositionToRemove);
     } else if (node.type === 'for') {
-      node.array.depMask = getDepMask(node.array.depBitmaps, bitPositionToRemove);
+      node.array.depMask = getDepMask(node.array._depBitmaps, bitPositionToRemove);
       stack.push(...node.children);
     } else if (node.type === 'if') {
       node.branches.forEach(branch => {
-        branch.condition.depMask = getDepMask(branch.condition.depBitmaps, bitPositionToRemove);
+        branch.condition.depMask = getDepMask(branch.condition._depBitmaps, bitPositionToRemove);
         stack.push(...branch.children);
       });
     } else if (node.type === 'env') {
       for (const key in node.props) {
-        node.props[key].depMask = getDepMask(node.props[key].depBitmaps, bitPositionToRemove);
+        node.props[key].depMask = getDepMask(node.props[key]._depBitmaps, bitPositionToRemove);
       }
       stack.push(...node.children);
     } else if (node.type === 'exp') {
-      node.content.depMask = getDepMask(node.content.depBitmaps, bitPositionToRemove);
+      node.content.depMask = getDepMask(node.content._depBitmaps, bitPositionToRemove);
     }
   }
 }

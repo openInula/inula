@@ -163,7 +163,7 @@ describe('generate', () => {
                 }
               }
             }
-            if (changed & 11) {
+            if (changed & 7) {
               if (Inula.notCached(self, "random_str", [count, doubleCount, nn])) {
                 kk = count * doubleCount + 100 + nn[1];
               }
@@ -179,7 +179,7 @@ describe('generate', () => {
   it('should generate updateProp', () => {
     const code = transform(/*js*/ `
       const Comp = Component(() => {
-        const prop1_$p$_ = 1
+        let prop1_$p$_ = 1
 
         return <></>
       })
@@ -205,8 +205,8 @@ describe('generate', () => {
   it('should generate updateProp with multiple props', () => {
     const code = transform(/*js*/ `
       const Comp = Component(() => {
-        const prop1_$p$_ = 1
-        const prop2_$p$_ = 1
+        let prop1_$p$_ = 1
+        let prop2_$p$_ = 1
 
         return <></>
       })
@@ -235,8 +235,8 @@ describe('generate', () => {
   it('should generate updateProp with updateDerived', () => {
     const code = transform(/*js*/ `
       const Comp = Component(() => {
-        const prop1_$p$_ = 1
-        const derived = prop1_$p$_ * 2
+        let prop1_$p$_ = 1
+        let derived = prop1_$p$_ * 2
         watch(() => {
           console.log(prop1_$p$_)
         })

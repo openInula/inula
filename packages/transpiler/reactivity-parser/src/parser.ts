@@ -232,7 +232,7 @@ export class ReactivityParser {
               value: child.content,
               depMask: 0,
               dependenciesNode: this.t.arrayExpression([]),
-              depBitmaps: [],
+              _depBitmaps: [],
             });
           }
         });
@@ -319,7 +319,7 @@ export class ReactivityParser {
    * @returns ForParticle
    */
   private parseFor(forUnit: ForUnit): ForParticle {
-    const { fullDepMask, dependenciesNode, depBitmaps } = this.getDependencies(forUnit.array);
+    const { _fullDepMask, dependenciesNode, _depBitmaps } = this.getDependencies(forUnit.array);
     const prevMap = this.config.depMaskMap;
 
     // ---- Generate an identifierDepMap to track identifiers in item and make them reactive
@@ -328,7 +328,7 @@ export class ReactivityParser {
     const itemWrapper = this.t.assignmentExpression('=', forUnit.item, this.t.objectExpression([]));
     this.config.depMaskMap = new Map([
       ...this.config.depMaskMap,
-      ...this.getIdentifiers(itemWrapper).map(id => [id, depBitmaps] as const),
+      ...this.getIdentifiers(itemWrapper).map(id => [id, _depBitmaps] as const),
     ]);
 
     const forParticle: ForParticle = {
@@ -336,8 +336,8 @@ export class ReactivityParser {
       item: forUnit.item,
       array: {
         value: forUnit.array,
-        depBitmaps,
-        depMask: fullDepMask,
+        _depBitmaps: _depBitmaps,
+        depMask: _fullDepMask,
         dependenciesNode,
       },
       children: forUnit.children.map(this.parseViewParticle.bind(this)),
@@ -424,8 +424,8 @@ export class ReactivityParser {
   private getDependencies(node: t.Expression | t.Statement) {
     if (this.t.isFunctionExpression(node) || this.t.isArrowFunctionExpression(node)) {
       return {
-        fullDepMask: 0,
-        depBitmaps: [],
+        _fullDepMask: 0,
+        _depBitmaps: [],
         dependenciesNode: this.t.arrayExpression([]),
       };
     }
@@ -433,7 +433,7 @@ export class ReactivityParser {
     //      id is for snippet update, prop is normal update
     //      in a snippet, the depsNode should be both id and prop
     const dependency = getDependenciesFromNode(node, this.depMaskMap, this.reactivityFuncNames);
-    this.usedBit |= dependency.fullDepMask;
+    this.usedBit |= dependency._fullDepMask;
     return dependency;
   }
 

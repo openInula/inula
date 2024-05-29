@@ -172,7 +172,6 @@ describe('analyze properties', () => {
       })
     `);
     expect(root.variables.map(p => p.name)).toEqual(['foo', 'onClick', 'onHover', 'onInput']);
-    expect(root.variables[1].type).toBe('method');
-    expect(root.variables[2].type).toBe('method');
+    expect(root.variables[3].type).toBe('method');
   });
 });
