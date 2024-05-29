@@ -44,7 +44,7 @@ describe('prune unused bit', () => {
     `);
     // test plain var
     const unusedVar = findVarByName(root, 'unused');
-    expect(unusedVar.type).toEqual('plain');
+    expect(unusedVar.bit).toEqual(0);
     // test computed
     const countVar = findVarByName(root, 'count');
     expect(countVar.bit).toEqual(0b10);

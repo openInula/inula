@@ -3,7 +3,6 @@ import { Bitmap } from '@openinula/reactivity-parser';
 import { ComponentNode, Variable, WatchFunc } from '../analyze/types';
 import { getStates, wrapCheckCache, wrapUpdate } from './utils';
 
-
 export function generateUpdateState(root: ComponentNode) {
   const states = getStates(root);
   const blockNode = t.blockStatement([]);
@@ -24,19 +23,14 @@ export function generateUpdateState(root: ComponentNode) {
 
   const variableAddUpdate = (variable: Variable) => {
     if (variable.type !== 'reactive') return;
-    const depBits = variable.dependency?.depBitmaps;
-    if (!depBits) return;
-    const bitMap = depBits.reduce((acc, cur) => acc | cur, 0);
+    const bitMap = variable.dependency?.depMask;
+    if (!bitMap) return;
     /**
      * @View
      * variable = ${value}
      */
     const updateNode = t.expressionStatement(
-      t.assignmentExpression(
-        '=',
-        t.identifier(variable.name),
-        variable.value ?? t.nullLiteral()
-      )
+      t.assignmentExpression('=', t.identifier(variable.name), variable.value ?? t.nullLiteral())
     );
     wrapUpdate(updateNode, states);
 
@@ -52,7 +46,7 @@ export function generateUpdateState(root: ComponentNode) {
   // ---- Add watch
   const addWatch = (watch: WatchFunc) => {
     if (!watch.dependency) return;
-    const bitMap = watch.dependency.depBitmaps.reduce((acc, cur) => acc | cur, 0);
+    const bitMap = watch.dependency.depMask!;
     let updateNode: t.Statement | t.Expression = watch.callback.node.body;
     if (t.isExpression(updateNode)) updateNode = t.expressionStatement(updateNode);
     wrapUpdate(updateNode, states);
@@ -63,7 +57,7 @@ export function generateUpdateState(root: ComponentNode) {
     }
 
     getDepStatements(bitMap, depsNode).push(updateNode);
-  }; 
+  };
 
   root.watch?.forEach(addWatch);
 
@@ -76,16 +70,11 @@ export function generateUpdateState(root: ComponentNode) {
   const addUpdate = (bit: Bitmap, statements: t.Statement[]) => {
     blockNode.body.push(
       t.ifStatement(
-        t.binaryExpression(
-          '&',
-          t.identifier('changed'),
-          t.numericLiteral(bit)
-        ),
+        t.binaryExpression('&', t.identifier('changed'), t.numericLiteral(bit)),
         t.blockStatement(statements)
       )
     );
   };
-
 
   for (const [bit, cacheMap] of Object.entries(updates)) {
     for (const [depsNode, statements] of cacheMap) {
@@ -93,9 +82,5 @@ export function generateUpdateState(root: ComponentNode) {
     }
   }
 
-  return t.arrowFunctionExpression(
-    [t.identifier('changed')],
-    blockNode
-  );
+  return t.arrowFunctionExpression([t.identifier('changed')], blockNode);
 }
-

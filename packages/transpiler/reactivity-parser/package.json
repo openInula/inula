@@ -44,6 +44,7 @@
     ],
     "clean": true,
     "dts": true,
-    "minify": true
+    "minify": true,
+    "sourcemap": true
   }
 }

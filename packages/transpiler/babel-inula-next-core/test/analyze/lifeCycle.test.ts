@@ -41,13 +41,13 @@ describe('analyze lifeCycle', () => {
   it('should collect on mount', () => {
     const root = analyze(/*js*/ `
       Component(() => {
-        onMount(() => {
+        didMount(() => {
           console.log('test');
         })
       })
     `);
 
-    expect(genCode(combine(root.lifecycle.onMount!))).toMatchInlineSnapshot(`
+    expect(genCode(combine(root.lifecycle.didMount!))).toMatchInlineSnapshot(`
       "{
         console.log('test');
       }"
@@ -70,16 +70,16 @@ describe('analyze lifeCycle', () => {
     `);
   });
 
-  it('should collect onUnmount', () => {
+  it('should collect didUnmount', () => {
     const root = analyze(/*js*/ `
       Component(() => {
-        onUnmount(() => {
+        didUnmount(() => {
           console.log('test');
         })
       })
     `);
 
-    expect(genCode(combine(root.lifecycle.onUnmount!))).toMatchInlineSnapshot(`
+    expect(genCode(combine(root.lifecycle.didUnmount!))).toMatchInlineSnapshot(`
       "{
         console.log('test');
       }"
@@ -92,14 +92,14 @@ describe('analyze lifeCycle', () => {
         willMount(() => {
           console.log('willMount');
         })
-        onMount(() => {
-          console.log('onMount');
+        didMount(() => {
+          console.log('didMount');
         })
         willUnmount(() => {
           console.log('willUnmount');
         })
-        onUnmount(() => {
-          console.log('onUnmount');
+        didUnmount(() => {
+          console.log('didUnmount');
         })
       })
     `);
@@ -109,9 +109,9 @@ describe('analyze lifeCycle', () => {
         console.log('willMount');
       }"
     `);
-    expect(genCode(combine(root.lifecycle.onMount!))).toMatchInlineSnapshot(`
+    expect(genCode(combine(root.lifecycle.didMount!))).toMatchInlineSnapshot(`
       "{
-        console.log('onMount');
+        console.log('didMount');
       }"
     `);
     expect(genCode(combine(root.lifecycle.willUnmount!))).toMatchInlineSnapshot(`
@@ -119,9 +119,9 @@ describe('analyze lifeCycle', () => {
         console.log('willUnmount');
       }"
     `);
-    expect(genCode(combine(root.lifecycle.onUnmount!))).toMatchInlineSnapshot(`
+    expect(genCode(combine(root.lifecycle.didUnmount!))).toMatchInlineSnapshot(`
       "{
-        console.log('onUnmount');
+        console.log('didUnmount');
       }"
     `);
   });

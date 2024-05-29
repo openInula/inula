@@ -28,8 +28,8 @@ export type Dependency = {
   /**
    * The bitmap of each dependency
    */
-  depBitmaps: Bitmap[];
-  fullDepMask: Bitmap;
+  _depBitmaps: Bitmap[];
+  _fullDepMask: Bitmap;
 };
 export type FunctionalExpression = t.FunctionExpression | t.ArrowFunctionExpression;
 
@@ -57,20 +57,13 @@ export interface ReactiveVariable extends BaseVariable<t.Expression | null> {
   dependency: Dependency | null;
 }
 
-/**
- * A variable that is not reactive, it comes from the reactive variable after the unused variable pruning.
- */
-export interface PlainVariable extends BaseVariable<t.Expression | null> {
-  type: 'plain';
-}
-
-export interface MethodVariable extends BaseVariable<FunctionalExpression | t.FunctionDeclaration> {
+export interface MethodVariable extends BaseVariable<t.FunctionDeclaration> {
   type: 'method';
 }
 
 export type SubCompVariable = ComponentNode<'subComp'>;
 
-export type Variable = ReactiveVariable | MethodVariable | SubCompVariable | PlainVariable;
+export type Variable = ReactiveVariable | MethodVariable | SubCompVariable;
 
 export type WatchFunc = {
   dependency: Dependency | null;

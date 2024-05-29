@@ -44,37 +44,41 @@ export function variablesAnalyze(): Visitor {
         } else if (id.isIdentifier()) {
           // --- properties: the state / computed / plain properties / methods ---
           const init = declaration.get('init');
-          let dependency;
-          if (isValidPath(init)) {
-            // handle the method
-            if (init.isArrowFunctionExpression() || init.isFunctionExpression()) {
-              addMethod(ctx.current, {
+          if (!isValidPath(init)) {
+            addVariable(
+              ctx.current,
+              {
                 name: id.node.name,
-                value: init.node,
+                value: null,
                 kind: path.node.kind,
-              });
-              return;
-            }
-            // handle the subcomponent
-            // Should like Component(() => {})
-            if (
-              init.isCallExpression() &&
-              init.get('callee').isIdentifier() &&
-              (init.get('callee').node as t.Identifier).name === COMPONENT &&
-              (init.get('arguments')[0].isFunctionExpression() || init.get('arguments')[0].isArrowFunctionExpression())
-            ) {
-              const fnNode = init.get('arguments')[0] as
-                | NodePath<t.ArrowFunctionExpression>
-                | NodePath<t.FunctionExpression>;
-              const subComponent = createComponentNode(id.node.name, fnNode, ctx.current);
-
-              analyzeFnComp(fnNode, subComponent, ctx);
-              addSubComponent(ctx.current, subComponent);
-              return;
-            }
-
-            dependency = getDependenciesFromNode(init.node, ctx.current._reactiveBitMap, reactivityFuncNames);
+              },
+              null
+            );
+            return;
           }
+          // handle the subcomponent
+          // Should like Component(() => {})
+          if (
+            init.isCallExpression() &&
+            init.get('callee').isIdentifier() &&
+            (init.get('callee').node as t.Identifier).name === COMPONENT &&
+            (init.get('arguments')[0].isFunctionExpression() || init.get('arguments')[0].isArrowFunctionExpression())
+          ) {
+            const fnNode = init.get('arguments')[0] as
+              | NodePath<t.ArrowFunctionExpression>
+              | NodePath<t.FunctionExpression>;
+            const subComponent = createComponentNode(id.node.name, fnNode, ctx.current);
+
+            analyzeFnComp(fnNode, subComponent, ctx);
+            addSubComponent(ctx.current, subComponent);
+            return;
+          }
+
+          const dependency =
+            init.isArrowFunctionExpression() || init.isFunctionExpression()
+              ? null
+              : getDependenciesFromNode(init.node, ctx.current._reactiveBitMap, reactivityFuncNames);
+
           addVariable(
             ctx.current,
             {

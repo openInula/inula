@@ -62,7 +62,7 @@ export function addVariable(
   // The index of the variable in the availableVariables
   const idx = comp.availableVariables.length;
   const bit = 1 << idx;
-  const fullDepBits = dependency?.fullDepMask;
+  const fullDepBits = dependency?._fullDepMask;
   const bitmap = fullDepBits ? fullDepBits | bit : bit;
 
   if (fullDepBits) {
@@ -74,7 +74,7 @@ export function addVariable(
     type: 'reactive',
     _fullBits: bitmap,
     level: comp.level,
-    dependency: dependency?.fullDepMask ? dependency : null,
+    dependency: dependency?._fullDepMask ? dependency : null,
   });
 }
 
@@ -104,10 +104,10 @@ export function addWatch(
   if (!comp.watch) {
     comp.watch = [];
   }
-  comp.usedBit |= dependency.fullDepMask;
+  comp.usedBit |= dependency._fullDepMask;
   comp.watch.push({
     callback,
-    dependency: dependency.fullDepMask ? dependency : null,
+    dependency: dependency._fullDepMask ? dependency : null,
   });
 }
 

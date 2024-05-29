@@ -30,9 +30,9 @@ function isLifeCycleName(name: string): name is LifeCycle {
  * Analyze the functional macro in the function component
  * 1. lifecycle
  *   1. willMount
- *   2. onMount
+ *   2. didMount
  *   3. willUnMount
- *   4. onUnmount
+ *   4. didUnmount
  * 2. watch
  */
 export function functionalMacroAnalyze(): Visitor {
