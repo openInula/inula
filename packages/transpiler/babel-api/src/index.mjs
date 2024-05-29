@@ -21,6 +21,10 @@ export const getBabelApi = () => {
   return babelApi;
 };
 
+export function traverse(node, visitor) {
+  getBabelApi().traverse(node, visitor);
+}
+
 export const types = new Proxy(
   {},
   {

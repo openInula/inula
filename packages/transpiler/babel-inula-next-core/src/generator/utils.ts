@@ -1,9 +1,7 @@
 import type { NodePath } from '@babel/core';
-import { types as t, getBabelApi } from '@openinula/babel-api';
+import { types as t, traverse } from '@openinula/babel-api';
 import { ComponentNode, ReactiveVariable } from '../analyze/types';
 import { reactivityFuncNames } from '../const';
-
-const traverse = (...args: any[]) => getBabelApi().traverse(...args);
 
 export function uid() {
   // ---- Or mock for testing
@@ -11,27 +9,26 @@ export function uid() {
   return 'random_str';
 }
 
-
 /**
  * @View
  * if (Inula.notCached(self, ${uid}, depNode)) {${blockStatement}}
  */
 export function wrapCheckCache(cacheNode: t.ArrayExpression, statements: t.Statement[]) {
   return t.ifStatement(
-    t.callExpression(
-      t.memberExpression(t.identifier('Inula'), t.identifier('notCached')),
-      [t.identifier('self'), t.stringLiteral(uid()), cacheNode]
-    ),
+    t.callExpression(t.memberExpression(t.identifier('Inula'), t.identifier('notCached')), [
+      t.identifier('self'),
+      t.stringLiteral(uid()),
+      cacheNode,
+    ]),
     t.blockStatement(statements)
   );
 }
 
-
 /**
-   * @brief Check if it's the left side of an assignment expression, e.g. count = 1
-   * @param path
-   * @returns assignment expression
-   */
+ * @brief Check if it's the left side of an assignment expression, e.g. count = 1
+ * @param path
+ * @returns assignment expression
+ */
 export function isAssignmentExpression(path: NodePath<t.Node>) {
   let parentPath = path.parentPath;
   while (parentPath && !t.isStatement(parentPath.node)) {
@@ -55,14 +52,14 @@ export function isAssignmentExpression(path: NodePath<t.Node>) {
 export function wrapUpdate(node: t.Statement | t.Expression | null, states: ReactiveVariable[]) {
   if (!node) return;
   const addUpdateDerived = (node: t.Node, bit: number) => {
-    return t.callExpression(
-      t.memberExpression(t.identifier('self'), t.identifier('updateDerived')),
-      [node, t.numericLiteral(bit)]
-    );
+    return t.callExpression(t.memberExpression(t.identifier('self'), t.identifier('updateDerived')), [
+      node,
+      t.numericLiteral(bit),
+    ]);
   };
   traverse(nodeWrapFile(node), {
     Identifier: (path: NodePath<t.Identifier>) => {
-      const variable = states.find((v) => v.name === path.node.name);
+      const variable = states.find(v => v.name === path.node.name);
       if (!variable) return;
       const assignmentPath = isAssignmentExpression(path);
       if (!assignmentPath) return;
@@ -72,8 +69,8 @@ export function wrapUpdate(node: t.Statement | t.Expression | null, states: Reac
       const variables: ReactiveVariable[] = [];
       traverse(nodeWrapFile(leftNode), {
         Identifier: (path: NodePath<t.Identifier>) => {
-          const variable = states.find((v) => v.name === path.node.name);
-          if (variable && !variables.find((v) => v.name === variable.name)) {
+          const variable = states.find(v => v.name === path.node.name);
+          if (variable && !variables.find(v => v.name === variable.name)) {
             variables.push(variable);
           }
         },
@@ -95,7 +92,7 @@ export function wrapUpdate(node: t.Statement | t.Expression | null, states: Reac
 
       const key = callee.node.name;
 
-      const variable = states.find((v) => v.name === key);
+      const variable = states.find(v => v.name === key);
       if (!variable) return;
       path.replaceWith(addUpdateDerived(path.node, variable.bit!));
       path.skip();
@@ -104,13 +101,9 @@ export function wrapUpdate(node: t.Statement | t.Expression | null, states: Reac
 }
 
 export function getStates(root: ComponentNode) {
-  return root.variables.filter((v) => v.type === 'reactive' && v.bit) as ReactiveVariable[];
+  return root.variables.filter(v => v.type === 'reactive' && v.bit) as ReactiveVariable[];
 }
 
 export function nodeWrapFile(node: t.Expression | t.Statement): t.File {
-  return t.file(
-    t.program([
-      t.isStatement(node) ? node : t.expressionStatement(node),
-    ])
-  );
+  return t.file(t.program([t.isStatement(node) ? node : t.expressionStatement(node)]));
 }
