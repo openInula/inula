@@ -4,4 +4,7 @@ import type babel from '@babel/core';
 export * as types from '@babel/types';
 
 export declare function register(api: typeof babel): void;
+
 export declare function getBabelApi(): typeof babel;
+
+export { traverse } from '@babel/core';
