@@ -38,7 +38,7 @@ export function generate(root: ComponentNode): t.FunctionDeclaration {
   addStatement(...root.variables.map(reconstructVariable));
 
   // ---- Add comp
-  addStatement(generateComp(root));
+  addStatement(...generateComp(root));
 
   // ---- Add return self
   addStatement(t.returnStatement(t.identifier('self')));

@@ -17,10 +17,9 @@ import { NodePath } from '@babel/core';
 import { LifeCycle, Visitor } from '../types';
 import { addLifecycle, addWatch } from '../nodeFactory';
 import { types as t } from '@openinula/babel-api';
-import { DID_MOUNT, DID_UNMOUNT, WATCH, WILL_MOUNT, WILL_UNMOUNT } from '../../constants';
+import { DID_MOUNT, DID_UNMOUNT, WATCH, WILL_MOUNT, WILL_UNMOUNT, reactivityFuncNames } from '../../constants';
 import { extractFnFromMacro, getFnBodyPath } from '../../utils';
 import { getDependenciesFromNode } from '@openinula/reactivity-parser';
-import { reactivityFuncNames } from '../../const';
 
 function isLifeCycleName(name: string): name is LifeCycle {
   return [WILL_MOUNT, DID_MOUNT, WILL_UNMOUNT, DID_UNMOUNT].includes(name);

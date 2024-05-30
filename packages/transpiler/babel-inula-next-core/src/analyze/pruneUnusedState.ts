@@ -72,11 +72,7 @@ export function pruneUnusedState(
   // handle children
   if (comp.children) {
     comp.children.forEach(child => {
-      if (child.type === 'comp') {
-        pruneUnusedState(child as ComponentNode<'comp'>, index, bitPositionToRemove);
-      } else {
-        pruneViewParticleUnusedBit(child as ViewParticle, bitPositionToRemove);
-      }
+      pruneViewParticleUnusedBit(child as ViewParticle, bitPositionToRemove);
     });
   }
 }
@@ -121,6 +117,7 @@ function pruneViewParticleUnusedBit(particle: ViewParticle, bitPositionToRemove:
       node.props.forEach(prop => {
         prop.depMask = getDepMask(prop._depBitmaps, bitPositionToRemove);
       });
+      stack.push(...node.mutableParticles);
       stack.push(node.template);
     } else if (node.type === 'html') {
       for (const key in node.props) {

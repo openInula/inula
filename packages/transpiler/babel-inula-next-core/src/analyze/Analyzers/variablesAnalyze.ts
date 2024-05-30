@@ -17,11 +17,10 @@ import { Visitor } from '../types';
 import { addMethod, addVariable, addSubComponent, createComponentNode } from '../nodeFactory';
 import { isValidPath } from '../utils';
 import { type NodePath } from '@babel/core';
-import { COMPONENT } from '../../constants';
+import { COMPONENT, reactivityFuncNames } from '../../constants';
 import { analyzeFnComp } from '../index';
 import { getDependenciesFromNode } from '@openinula/reactivity-parser';
 import { types as t } from '@openinula/babel-api';
-import { reactivityFuncNames } from '../../const';
 
 /**
  * collect all properties and methods from the node

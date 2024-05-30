@@ -42,6 +42,7 @@
     "@openinula/jsx-view-parser": "workspace:*",
     "@openinula/reactivity-parser": "workspace:*",
     "@openinula/view-parser": "workspace:*",
+    "@openinula/view-generator": "workspace:*",
     "@types/babel-types": "^7.0.15",
     "@types/babel__generator": "^7.6.8",
     "@types/babel__parser": "^7.1.1",
