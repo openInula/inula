@@ -18,7 +18,7 @@ import { type NodePath } from '@babel/core';
 import { parseView as parseJSX } from '@openinula/jsx-view-parser';
 import { types as t, getBabelApi } from '@openinula/babel-api';
 import { parseReactivity } from '@openinula/reactivity-parser';
-import { reactivityFuncNames } from '../../const';
+import { reactivityFuncNames } from '../../constants';
 import { setViewChild } from '../nodeFactory';
 
 /**

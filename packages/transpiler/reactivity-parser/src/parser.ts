@@ -131,6 +131,7 @@ export class ReactivityParser {
       key,
       {
         ...prop,
+        depMask: 0,
         dependenciesNode: this.t.arrayExpression([]),
       },
     ]);

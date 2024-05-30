@@ -98,7 +98,7 @@ export interface ComponentNode<Type = 'comp'> {
    * The available variables and props for the component and its parent
    */
   availableVariables: ReactiveVariable[];
-  children?: (ComponentNode | ViewParticle)[];
+  children?: ViewParticle[];
   parent?: ComponentNode;
   /**
    * The function body of the fn component code

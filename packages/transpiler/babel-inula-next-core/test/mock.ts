@@ -18,9 +18,9 @@ import { type PluginObj, transform as transformWithBabel } from '@babel/core';
 import syntaxJSX from '@babel/plugin-syntax-jsx';
 import { analyze } from '../src/analyze';
 import generate from '@babel/generator';
-import {types as t} from '@openinula/babel-api';
+import { types as t } from '@openinula/babel-api';
 import { register } from '@openinula/babel-api';
-import { defaultHTMLTags } from '../src/const';
+import { defaultHTMLTags } from '../src/constants';
 
 export function mockAnalyze(code: string, analyzers?: Analyzer[]): ComponentNode {
   let root: ComponentNode | null = null;

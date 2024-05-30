@@ -1,7 +1,7 @@
 import type { NodePath } from '@babel/core';
 import { types as t, traverse } from '@openinula/babel-api';
 import { ComponentNode, ReactiveVariable } from '../analyze/types';
-import { reactivityFuncNames } from '../const';
+import { reactivityFuncNames } from '../constants';
 
 export function uid() {
   // ---- Or mock for testing
