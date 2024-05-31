@@ -42,7 +42,7 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
       Program: {
         enter(path, { filename }) {
           // return pluginProvider.programEnterVisitor(path, filename);
-          if (fileAllowed(filename, toArray(files), toArray(excludeFiles))) {
+          if (!fileAllowed(filename, toArray(files), toArray(excludeFiles))) {
             path.skip();
           }
 
