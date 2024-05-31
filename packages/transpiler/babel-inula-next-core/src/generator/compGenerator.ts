@@ -12,7 +12,6 @@ import {
   WILL_MOUNT,
   WILL_UNMOUNT,
 } from '../constants';
-import { generateUpdateViews } from './updateViewGenerator';
 import { generateView } from '@openinula/view-generator/src';
 
 function generateLifecycle(root: ComponentNode, lifecycleType: LifeCycle) {

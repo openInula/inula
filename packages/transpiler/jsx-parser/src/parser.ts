@@ -557,10 +557,9 @@ export class ViewParser {
     // <for each={data}>
     //   {(item, idx)=>（<Comp_$id1$item={item}idx={idx}/>)}
     // </for>
-    const jsxChildren = node.children;
-    if (jsxChildren.length !== 1) throw new Error('Expected 1 child');
-    if (jsxChildren[0].type !== 'JSXExpressionContainer') throw new Error('Expected expression container');
-    const itemFnNode = jsxChildren[0].expression;
+    const jsxChildren = node.children.find(child => this.t.isJSXExpressionContainer(child)) as t.JSXExpressionContainer;
+    if (!jsxChildren) throw new Error('Expected expression container');
+    const itemFnNode = jsxChildren.expression;
     if (this.t.isJSXEmptyExpression(itemFnNode)) throw new Error('Expected expression not empty');
 
     let children;

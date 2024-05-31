@@ -3,7 +3,7 @@ import type { ViewUnit, ViewParserConfig, AllowedJSXNode } from './types';
 
 /**
  * @brief Generate view units from a babel ast
- * @param statement
+ * @param node
  * @param config
  * @returns ViewUnit[]
  */

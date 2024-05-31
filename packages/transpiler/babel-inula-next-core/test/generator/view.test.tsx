@@ -153,6 +153,46 @@ describe('view generation', () => {
     `);
   });
 
+  it('should support fragment', () => {
+    const code = transform(/*js*/ `
+      const Comp = Component(() => {
+        let text = 'hello world';
+        return (
+          <>
+            <div>{text}</div>
+            <div>{text}</div>
+          </>
+        )
+      })
+    `);
+    expect(code).toMatchInlineSnapshot(`
+      "function Comp() {
+        let self;
+        let text = 'hello world';
+        let $node0, $node1, $node2, $node3;
+        $node0 = $$createElement("div");
+        $node1 = new $$ExpNode(text, [text]);
+        $$insertNode($node0, $node1, 0);
+        $node0._$nodes = [$node1];
+        $node2 = $$createElement("div");
+        $node3 = new $$ExpNode(text, [text]);
+        $$insertNode($node2, $node3, 0);
+        $node2._$nodes = [$node3];
+        self = Inula.createComponent({
+          updateState: changed => {},
+          updateProp: (propName, newValue) => {},
+          updateViews: $changed => {
+            if ($changed & 1) {
+              $node1 && $node1.update(() => text, [text]);
+              $node3 && $node3.update(() => text, [text]);
+            }
+            return [$node0, $node2];
+          }
+        });
+        return self;
+      }"
+    `);
+  });
   it('should generate conditional html', () => {
     const code = transform(/*js*/ `
       const Comp = Component(() => {
@@ -217,6 +257,58 @@ describe('view generation', () => {
           updateViews: $changed => {
             if ($changed & 2) {
               $node1 && $node1.updateCond();
+            }
+            $node1 && $node1.update($changed);
+            return [$node0];
+          }
+        });
+        return self;
+      }"
+    `);
+  });
+
+  it('should generate loop html', () => {
+    const code = transform(/*js*/ `
+      const Comp = Component(() => {
+        let list = ['hello', 'world'];
+        return (
+          <div>
+            <for each={list}>
+              {(item, index) => <div key={index}>{item}</div>})}
+            </for>
+          </div>
+        );
+      });
+    `);
+    expect(code).toMatchInlineSnapshot(`
+      "function Comp() {
+        let self;
+        let list = ['hello', 'world'];
+        let $node0, $node1;
+        $node0 = $$createElement("div");
+        $node1 = new $$ForNode(list, 1, null, (item, $updateArr, $idx) => {
+          let $node0, $node1;
+          $updateArr[$idx] = ($changed, $item) => {
+            item = $item;
+            if ($changed & 1) {
+              $node1 && $node1.update(() => item, [item]);
+            }
+          };
+          $node0 = $$createElement("div");
+          $node0.setAttribute("key", index);
+          $node1 = new $$ExpNode(item, [item]);
+          $$insertNode($node0, $node1, 0);
+          $node0._$nodes = [$node1];
+          return [$node0];
+        });
+        $$insertNode($node0, $node1, 0);
+        $node0._$nodes = [$node1];
+        self = Inula.createComponent({
+          updateState: changed => {},
+          updateProp: (propName, newValue) => {},
+          updateViews: $changed => {
+            if ($changed & 1) {
+              $node1 && $node1.updateArray(list, null);
             }
             $node1 && $node1.update($changed);
             return [$node0];
