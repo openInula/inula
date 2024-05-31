@@ -1,9 +1,9 @@
 import type babel from '@babel/core';
 import { NodePath, type PluginObj, type types as t } from '@babel/core';
 import { type DLightOption } from './types';
-import { defaultAttributeMap, defaultHTMLTags, COMPONENT } from './constants';
+import { defaultAttributeMap, defaultHTMLTags, COMPONENT, importMap } from './constants';
 import { analyze } from './analyze';
-import { extractFnFromMacro, isCompPath } from './utils';
+import { addImport, extractFnFromMacro, fileAllowed, isCompPath, toArray } from './utils';
 import { register } from '@openinula/babel-api';
 import { generate } from './generator';
 import { ComponentNode } from './analyze/types';
@@ -23,6 +23,7 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
   const {
     files = '**/*.{js,ts,jsx,tsx}',
     excludeFiles = '**/{dist,node_modules,lib}/*',
+    packageName = '@openinula/next',
     enableDevTools = false,
     htmlTags: customHtmlTags = defaultHtmlTags => defaultHtmlTags,
     attributeMap = defaultAttributeMap,
@@ -41,6 +42,13 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
       Program: {
         enter(path, { filename }) {
           // return pluginProvider.programEnterVisitor(path, filename);
+          if (fileAllowed(filename, toArray(files), toArray(excludeFiles))) {
+            path.skip();
+          }
+
+          if (!options.skipImport) {
+            addImport(path.node, importMap, packageName);
+          }
         },
         exit(path, { filename }) {
           // pluginProvider.programExitVisitor.bind(pluginProvider);

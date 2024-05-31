@@ -31,6 +31,14 @@ export interface DLightOption {
    * e.g. { alt: ["area", "img", "input"] }
    */
   attributeMap?: Record<string, string[]>;
+  /**
+   * The runtime package name that will be imported from
+   */
+  packageName: string;
+  /**
+   * Skip importing the runtime package
+   */
+  skipImport: boolean;
 }
 
 export type PropertyContainer = Record<
