@@ -13,7 +13,7 @@
     "dist"
   ],
   "type": "module",
-  "main": "src/index.ts",
+  "main": "dist/index.cjs",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {
