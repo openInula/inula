@@ -14,14 +14,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import Babel from '@babel/core';
-import Preset from '../../src';
-
-const transform = (code: string) =>
-  Babel.transform(code, {
-    presets: [Preset],
-  })!.code;
-
+import { transform } from './mock';
 describe('view generation', () => {
   it('should generation single html', () => {
     const code = transform(/*js*/ `

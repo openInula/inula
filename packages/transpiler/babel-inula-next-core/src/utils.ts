@@ -1,6 +1,27 @@
 import { NodePath } from '@babel/core';
-import {types as t} from '@openinula/babel-api';
+import { types as t } from '@openinula/babel-api';
 import { COMPONENT } from './constants';
+import { minimatch } from 'minimatch';
+
+export function fileAllowed(fileName: string | undefined, includes: string[], excludes: string[]): boolean {
+  if (includes.includes('*')) return true;
+  if (!fileName) return false;
+  if (excludes.some(pattern => minimatch(fileName, pattern))) return false;
+  return includes.some(pattern => minimatch(fileName, pattern));
+}
+
+export function addImport(programNode: t.Program, importMap: Record<string, string>, packageName: string) {
+  programNode!.body.unshift(
+    t.importDeclaration(
+      Object.entries(importMap).map(([key, value]) => t.importSpecifier(t.identifier(value), t.identifier(key))),
+      t.stringLiteral(packageName)
+    )
+  );
+}
+
+export function toArray<T>(val: T | T[]): T[] {
+  return Array.isArray(val) ? val : [val];
+}
 
 export function extractFnFromMacro(
   path: NodePath<t.CallExpression>,

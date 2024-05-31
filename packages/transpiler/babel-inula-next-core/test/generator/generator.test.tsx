@@ -1,11 +1,5 @@
-import { describe, expect, it, beforeEach, afterEach } from 'vitest';
-import Babel from '@babel/core';
-import Preset from '../../src';
-
-const transform = (code: string) =>
-  Babel.transform(code, {
-    presets: [Preset],
-  })!.code;
+import { describe, expect, it } from 'vitest';
+import { transform } from './mock';
 
 describe('generate', () => {
   it('should generate createComponent', () => {
