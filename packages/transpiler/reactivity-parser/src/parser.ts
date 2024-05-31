@@ -132,6 +132,7 @@ export class ReactivityParser {
       {
         ...prop,
         depMask: 0,
+        _depBitmaps: [],
         dependenciesNode: this.t.arrayExpression([]),
       },
     ]);

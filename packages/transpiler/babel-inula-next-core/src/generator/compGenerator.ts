@@ -12,7 +12,7 @@ import {
   WILL_MOUNT,
   WILL_UNMOUNT,
 } from '../constants';
-import { generateView } from '@openinula/view-generator/src';
+import { generateView } from '@openinula/view-generator';
 
 function generateLifecycle(root: ComponentNode, lifecycleType: LifeCycle) {
   root.lifecycle[lifecycleType]!.forEach(node => wrapUpdate(node, getStates(root)));
