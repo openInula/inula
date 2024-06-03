@@ -39,9 +39,7 @@ export function generateComp(root: ComponentNode) {
     t.assignmentExpression(
       '=',
       t.identifier('self'),
-      t.callExpression(t.memberExpression(t.identifier('Inula'), t.identifier('createComponent')), [
-        compInitializerNode,
-      ])
+      t.callExpression(t.identifier(importMap.createComponent), [compInitializerNode])
     )
   );
 

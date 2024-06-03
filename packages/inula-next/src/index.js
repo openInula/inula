@@ -60,3 +60,7 @@ export function use() {
     'DLight: use() is not supported be called directly. You can only assign `use(model)` to a dlight class property. Any other expressions are not allowed.'
   );
 }
+
+export function createComponent(fn) {
+  return fn();
+}

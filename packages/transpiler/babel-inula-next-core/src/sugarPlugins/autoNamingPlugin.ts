@@ -3,6 +3,8 @@ import { register, types as t } from '@openinula/babel-api';
 import { isFnExp, createMacroNode, getFnBodyNode } from '../utils';
 import { COMPONENT, Hook } from '../constants';
 
+const ALREADY_COMPILED: WeakSet<NodePath> | Set<NodePath> = new (WeakSet ?? Set)();
+
 /**
  * Auto Naming for Component and Hook
  * Find the CamelCase name and transform it into Component marco
@@ -19,13 +21,19 @@ export default function (api: typeof babel): PluginObj {
   return {
     visitor: {
       FunctionDeclaration(path: NodePath<t.FunctionDeclaration>) {
+        if (ALREADY_COMPILED.has(path)) return;
+
         const { id } = path.node;
         const macroNode = getMacroNode(id, path.node.body);
         if (macroNode) {
           path.replaceWith(macroNode);
         }
+
+        ALREADY_COMPILED.add(path);
       },
       VariableDeclaration(path: NodePath<t.VariableDeclaration>) {
+        if (ALREADY_COMPILED.has(path)) return;
+
         if (path.node.declarations.length === 1) {
           const { id, init } = path.node.declarations[0];
           if (t.isIdentifier(id) && isFnExp(init)) {
@@ -36,6 +44,8 @@ export default function (api: typeof babel): PluginObj {
             }
           }
         }
+
+        ALREADY_COMPILED.add(path);
       },
     },
   };

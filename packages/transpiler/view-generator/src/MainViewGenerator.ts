@@ -27,7 +27,11 @@ export default class MainViewGenerator extends ViewGenerator {
       topLevelNodes.push(nodeName);
     });
 
-    const allDeclarations = [...this.declareNodes(), ...allInitStatements, ...allVariables];
+    // Sequence of statements in the view:
+    // 1. Declare all nodes(the variables that hold the dom nodes)
+    // 2. Declare all variables(temporary variables)
+    // 3. Declare all init statements(to create dom nodes)
+    const allDeclarations = [...this.declareNodes(), ...allVariables, ...allInitStatements];
     return [this.geneUpdate(allUpdateStatements, topLevelNodes), allDeclarations, this.templateIdx];
   }
 
