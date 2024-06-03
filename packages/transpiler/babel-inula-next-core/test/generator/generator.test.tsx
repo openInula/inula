@@ -12,16 +12,16 @@ describe('generate', () => {
     `);
 
     expect(code).toMatchInlineSnapshot(`
-        "function Comp() {
-          let self;
-          let count = 1;
-          self = Inula.createComponent({
-            updateState: changed => {},
-            updateProp: (propName, newValue) => {}
-          });
-          return self;
-        }"
-      `);
+      "function Comp() {
+        let self;
+        let count = 1;
+        self = $$createComponent({
+          updateState: changed => {},
+          updateProp: (propName, newValue) => {}
+        });
+        return self;
+      }"
+    `);
   });
 
   it('should collect lifecycle', () => {
@@ -46,7 +46,7 @@ describe('generate', () => {
       "function Comp() {
         let self;
         let count = 1;
-        self = Inula.createComponent({
+        self = $$createComponent({
           willMount: () => {
             {
               console.log(count);
@@ -85,7 +85,7 @@ describe('generate', () => {
         let self;
         let count = 1;
         let doubleCount = count * 2;
-        self = Inula.createComponent({
+        self = $$createComponent({
           updateState: changed => {
             if (changed & 1) {
               if (Inula.notCached(self, "random_str", [count])) {
@@ -133,7 +133,7 @@ describe('generate', () => {
         let ff = count * 2;
         let nn = [];
         let kk = count * doubleCount + 100 + nn[1];
-        self = Inula.createComponent({
+        self = $$createComponent({
           willMount: () => {
             {
               self.updateDerived(nn.push("jj"), 4);
@@ -183,7 +183,7 @@ describe('generate', () => {
       "function Comp() {
         let self;
         let prop1_$p$_ = 1;
-        self = Inula.createComponent({
+        self = $$createComponent({
           updateState: changed => {},
           updateProp: (propName, newValue) => {
             if (propName === "prop1") {
@@ -211,7 +211,7 @@ describe('generate', () => {
         let self;
         let prop1_$p$_ = 1;
         let prop2_$p$_ = 1;
-        self = Inula.createComponent({
+        self = $$createComponent({
           updateState: changed => {},
           updateProp: (propName, newValue) => {
             if (propName === "prop2") {
@@ -244,7 +244,7 @@ describe('generate', () => {
         let self;
         let prop1_$p$_ = 1;
         let derived = prop1_$p$_ * 2;
-        self = Inula.createComponent({
+        self = $$createComponent({
           updateState: changed => {
             if (changed & 1) {
               if (Inula.notCached(self, "random_str", [prop1_$p$_])) {

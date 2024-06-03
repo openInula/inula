@@ -33,7 +33,7 @@ describe('view generation', () => {
         $node1 = new $$ExpNode(text, [text]);
         $$insertNode($node0, $node1, 0);
         $node0._$nodes = [$node1];
-        self = Inula.createComponent({
+        self = $$createComponent({
           updateState: changed => {},
           updateProp: (propName, newValue) => {},
           updateViews: $changed => {
@@ -74,7 +74,7 @@ describe('view generation', () => {
         $node1 = new $$ExpNode(text, [text]);
         $$insertNode($node0, $node1, 0);
         $node0._$nodes = [$node1];
-        self = Inula.createComponent({
+        self = $$createComponent({
           updateState: changed => {},
           updateProp: (propName, newValue) => {},
           updateViews: $changed => {
@@ -114,13 +114,6 @@ describe('view generation', () => {
         let self;
         let text = 'hello world';
         let $node0, $node1, $node2, $node3, $node4;
-        $node0 = $t0.cloneNode(true);
-        $node1 = $node0.firstChild;
-        $node2 = $node1.nextSibling;
-        $node3 = new $$ExpNode(text, [text]);
-        $$insertNode($node1, $node3, 0);
-        $node4 = new $$ExpNode(text, [text]);
-        $$insertNode($node2, $node4, 0);
         const $t0 = (() => {
           let $node0, $node1, $node2;
           $node0 = $$createElement("div");
@@ -130,7 +123,14 @@ describe('view generation', () => {
           $node0.appendChild($node2);
           return $node0;
         })();
-        self = Inula.createComponent({
+        $node0 = $t0.cloneNode(true);
+        $node1 = $node0.firstChild;
+        $node2 = $node1.nextSibling;
+        $node3 = new $$ExpNode(text, [text]);
+        $$insertNode($node1, $node3, 0);
+        $node4 = new $$ExpNode(text, [text]);
+        $$insertNode($node2, $node4, 0);
+        self = $$createComponent({
           updateState: changed => {},
           updateProp: (propName, newValue) => {},
           updateViews: $changed => {
@@ -171,7 +171,7 @@ describe('view generation', () => {
         $node3 = new $$ExpNode(text, [text]);
         $$insertNode($node2, $node3, 0);
         $node2._$nodes = [$node3];
-        self = Inula.createComponent({
+        self = $$createComponent({
           updateState: changed => {},
           updateProp: (propName, newValue) => {},
           updateViews: $changed => {
@@ -244,7 +244,7 @@ describe('view generation', () => {
         });
         $$insertNode($node0, $node1, 0);
         $node0._$nodes = [$node1];
-        self = Inula.createComponent({
+        self = $$createComponent({
           updateState: changed => {},
           updateProp: (propName, newValue) => {},
           updateViews: $changed => {
@@ -296,7 +296,7 @@ describe('view generation', () => {
         });
         $$insertNode($node0, $node1, 0);
         $node0._$nodes = [$node1];
-        self = Inula.createComponent({
+        self = $$createComponent({
           updateState: changed => {},
           updateProp: (propName, newValue) => {},
           updateViews: $changed => {
