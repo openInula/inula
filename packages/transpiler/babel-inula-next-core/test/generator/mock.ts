@@ -14,14 +14,17 @@
  */
 
 import Babel from '@babel/core';
-import Preset from '../../src';
+import Plugin from '../../src/plugin';
+import syntaxJSX from '@babel/plugin-syntax-jsx';
 
 export const transform = (code: string) =>
   Babel.transform(code, {
-    presets: [
+    plugins: [
+      syntaxJSX.default ?? syntaxJSX,
       [
-        Preset,
+        Plugin,
         {
+          files: '*',
           skipImport: true,
         },
       ],

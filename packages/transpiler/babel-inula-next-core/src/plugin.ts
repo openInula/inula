@@ -21,7 +21,6 @@ function replaceWithComponent(path: NodePath<t.CallExpression>, root: ComponentN
 }
 
 export default function (api: typeof babel, options: DLightOption): PluginObj {
-  const { types } = api;
   const {
     files = '**/*.{js,ts,jsx,tsx}',
     excludeFiles = '**/{dist,node_modules,lib}/*',
