@@ -8,6 +8,8 @@ import { register } from '@openinula/babel-api';
 import { generate } from './generator';
 import { ComponentNode } from './analyze/types';
 
+const ALREADY_COMPILED: WeakSet<NodePath> | Set<NodePath> = new (WeakSet ?? Set)();
+
 function replaceWithComponent(path: NodePath<t.CallExpression>, root: ComponentNode) {
   const variableDeclarationPath = path.parentPath.parentPath;
   const randomName = Math.random().toString(36).substring(7);
@@ -55,6 +57,8 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
         },
       },
       CallExpression(path: NodePath<t.CallExpression>) {
+        if (ALREADY_COMPILED.has(path)) return;
+
         if (isCompPath(path)) {
           const componentNode = extractFnFromMacro(path, COMPONENT);
           let name = '';
@@ -76,6 +80,8 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
           // The sub path has been visited, so we just skip
           path.skip();
         }
+
+        ALREADY_COMPILED.add(path);
       },
     },
   };

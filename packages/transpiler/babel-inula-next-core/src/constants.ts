@@ -34,6 +34,7 @@ export const reactivityFuncNames = [
 export const importMap = Object.fromEntries(
   [
     'createElement',
+    'createComponent',
     'setStyle',
     'setDataset',
     'setEvent',

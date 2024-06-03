@@ -5,7 +5,9 @@ import { getStates, wrapUpdate } from './utils';
 
 function reconstructVariable(variable: Variable) {
   if (variable.type === 'reactive') {
-    return t.variableDeclaration(variable.kind, [t.variableDeclarator(t.identifier(variable.name), variable.value)]);
+    // ---- If it is a dependency, it is a let, then we can modify it in `updateState`
+    const kind = variable.dependency ? 'let' : 'const';
+    return t.variableDeclaration(kind, [t.variableDeclarator(t.identifier(variable.name), variable.value)]);
   }
 
   if (variable.type === 'method') {
