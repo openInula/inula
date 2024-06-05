@@ -4,7 +4,7 @@ import { transform } from './mock';
 describe('generate', () => {
   it('should generate createComponent', () => {
     const code = transform(/*js*/ `
-      const Comp = Component(({jj,aa}) => {
+      const Comp = Component(() => {
         let count = 1
 
         return <></>
@@ -26,7 +26,7 @@ describe('generate', () => {
 
   it('should collect lifecycle', () => {
     const code = transform(/*js*/ `
-      const Comp = Component(({jj,aa}) => {
+      const Comp = Component(() => {
         let count = 1
 
         console.log(count)
@@ -72,7 +72,7 @@ describe('generate', () => {
 
   it('should generate updateState', () => {
     const code = transform(/*js*/ `
-      const Comp = Component(({jj,aa}) => {
+      const Comp = Component(() => {
         let count = 1
         let doubleCount = count * 2
 

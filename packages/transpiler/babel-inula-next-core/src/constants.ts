@@ -479,3 +479,4 @@ export const defaultHTMLTags = [
   'use',
   'view',
 ];
+export const PROP_SUFFIX = '_$p$_';

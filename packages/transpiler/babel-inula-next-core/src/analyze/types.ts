@@ -83,6 +83,7 @@ export interface ComponentNode<Type = 'comp'> {
   type: Type;
   name: string;
   level: number;
+  params: t.FunctionExpression['params'];
   // The variables defined in the component
   variables: Variable[];
   usedBit: Bitmap;

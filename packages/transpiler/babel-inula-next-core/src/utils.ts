@@ -80,8 +80,12 @@ export function wrapArrowFunctionWithBlock(path: NodePath<t.ArrowFunctionExpress
   return node as ArrowFunctionWithBlock;
 }
 
-export function createMacroNode(fnBody: t.BlockStatement, macroName: string) {
-  return t.callExpression(t.identifier(macroName), [t.arrowFunctionExpression([], fnBody)]);
+export function createMacroNode(
+  fnBody: t.BlockStatement,
+  macroName: string,
+  params: t.FunctionExpression['params'] = []
+) {
+  return t.callExpression(t.identifier(macroName), [t.arrowFunctionExpression(params, fnBody)]);
 }
 
 export function isValidPath<T>(path: NodePath<T>): path is NodePath<Exclude<T, undefined | null>> {

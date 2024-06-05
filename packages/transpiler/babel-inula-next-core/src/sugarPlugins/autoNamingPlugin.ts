@@ -24,7 +24,7 @@ export default function (api: typeof babel): PluginObj {
         if (ALREADY_COMPILED.has(path)) return;
 
         const { id } = path.node;
-        const macroNode = getMacroNode(id, path.node.body);
+        const macroNode = getMacroNode(id, path.node.body, path.node.params);
         if (macroNode) {
           path.replaceWith(macroNode);
         }
@@ -37,7 +37,7 @@ export default function (api: typeof babel): PluginObj {
         if (path.node.declarations.length === 1) {
           const { id, init } = path.node.declarations[0];
           if (t.isIdentifier(id) && isFnExp(init)) {
-            const macroNode = getMacroNode(id, getFnBodyNode(init));
+            const macroNode = getMacroNode(id, getFnBodyNode(init), init.params);
 
             if (macroNode) {
               path.replaceWith(macroNode);
@@ -51,10 +51,14 @@ export default function (api: typeof babel): PluginObj {
   };
 }
 
-function getMacroNode(id: babel.types.Identifier | null | undefined, body: t.BlockStatement) {
+function getMacroNode(
+  id: babel.types.Identifier | null | undefined,
+  body: t.BlockStatement,
+  params: t.FunctionExpression['params'] = []
+) {
   const macroName = getMacroName(id?.name);
   if (macroName) {
-    return t.variableDeclaration('const', [t.variableDeclarator(id!, createMacroNode(body, macroName))]);
+    return t.variableDeclaration('const', [t.variableDeclarator(id!, createMacroNode(body, macroName, params))]);
   }
 }
 

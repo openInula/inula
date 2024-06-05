@@ -32,6 +32,7 @@ export function createComponentNode(
 ): ComponentNode {
   const comp: ComponentNode = {
     type: 'comp',
+    params: fnNode.node.params,
     level: parent ? parent.level + 1 : 0,
     name,
     children: undefined,
