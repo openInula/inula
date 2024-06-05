@@ -16,12 +16,12 @@ export default function (_: ConfigAPI, options: DLightOption): TransformOptions 
       syntaxJSX.default ?? syntaxJSX,
       [syntaxTypescript.default ?? syntaxTypescript, { isTSX: true }],
       [syntaxDecorators.default ?? syntaxDecorators, { legacy: true }],
-      [inulaNext, options],
-      [jsxSlicePlugin, options],
+      [autoNamingPlugin, options],
       [propsFormatPlugin, options],
       [stateDestructuringPlugin, options],
+      [jsxSlicePlugin, options],
       [earlyReturnPlugin, options],
-      [autoNamingPlugin, options],
+      [inulaNext, options],
     ],
   };
 }

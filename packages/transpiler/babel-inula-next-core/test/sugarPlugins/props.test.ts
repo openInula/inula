@@ -33,9 +33,9 @@ describe('analyze props', () => {
           foo,
           bar
         }) => {
-          let foo_$p$ = foo;
-          let bar_$p$ = bar;
-          const v = foo_$p$ + bar_$p$;
+          let foo_$p$_ = foo;
+          let bar_$p$_ = bar;
+          const v = foo_$p$_ + bar_$p$_;
         });"
       `);
     });
@@ -50,8 +50,8 @@ describe('analyze props', () => {
           foo = 'default',
           bar = 123
         }) => {
-          let foo_$p$ = foo;
-          let bar_$p$ = bar;
+          let foo_$p$_ = foo;
+          let bar_$p$_ = bar;
         });"
       `);
     });
@@ -66,10 +66,10 @@ describe('analyze props', () => {
           foo,
           bar
         }) => {
-          let foo_$p$ = foo;
-          let renamed = foo_$p$;
-          let bar_$p$ = bar;
-          let anotherName = bar_$p$;
+          let foo_$p$_ = foo;
+          let renamed = foo_$p$_;
+          let bar_$p$_ = bar;
+          let anotherName = bar_$p$_;
         });"
       `);
     });
@@ -84,12 +84,12 @@ describe('analyze props', () => {
           foo,
           bar
         }) => {
-          let foo_$p$ = foo;
+          let foo_$p$_ = foo;
           let {
             nested1,
             nested2
-          } = foofoo_$p$;
-          let bar_$p$ = bar;
+          } = foo_$p$_;
+          let bar_$p$_ = bar;
         });"
       `);
     });
@@ -113,24 +113,16 @@ describe('analyze props', () => {
           prop1,
           prop2
         }) {
-          let prop1_$p$ = prop1;
-          let prop2_$p$ = prop2;
-          let p20X;
-          let p211;
-          let p212X;
-          let restArr;
-          let p3;
-          let restObj;
-          watch(() => {
-            ({
-              p2: [p20X = defaultVal, {
-                p211,
-                p212: p212X = defaultVal
-              }, ...restArr],
-              p3,
-              ...restObj
-            } = prop2_$p$);
-          });
+          let prop1_$p$_ = prop1;
+          let prop2_$p$_ = prop2;
+          let {
+            p2: [p20X = defaultVal, {
+              p211,
+              p212: p212X = defaultVal
+            }, ...restArr],
+            p3,
+            ...restObj
+          } = prop2_$p$_;
         });"
       `);
     });
@@ -141,20 +133,12 @@ describe('analyze props', () => {
       Component(({foo, ...rest}) => {})
     `)
       ).toMatchInlineSnapshot(`
-        "Component(function ({
-          prop1,
-          prop2
-        }) {
-          let prop1_$p$ = prop1;
-          let prop2_$p$ = prop2;
-          let {
-            p2: [p20X = defaultVal, {
-              p211,
-              p212: p212X = defaultVal
-            }, ...restArr],
-            p3,
-            ...restObj
-          } = prop2prop2_$p$;
+        "Component(({
+          foo,
+          ...rest
+        }) => {
+          let foo_$p$_ = foo;
+          let rest_$p$_ = rest;
         });"
       `);
     });
@@ -181,8 +165,8 @@ describe('analyze props', () => {
           foo,
           bar
         }) => {
-          let foo_$p$ = foo;
-          let bar_$p$ = bar;
+          let foo_$p$_ = foo;
+          let bar_$p$_ = bar;
         });"
       `);
     });
@@ -200,9 +184,9 @@ describe('analyze props', () => {
           foo,
           bar
         }) => {
-          let foo_$p$ = foo;
-          let renamed = foo_$p$;
-          let bar_$p$ = bar;
+          let foo_$p$_ = foo;
+          let renamed = foo_$p$_;
+          let bar_$p$_ = bar;
         });"
       `);
     });

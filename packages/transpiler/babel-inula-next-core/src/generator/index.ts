@@ -6,7 +6,7 @@ import { getStates, wrapUpdate } from './utils';
 function reconstructVariable(variable: Variable) {
   if (variable.type === 'reactive') {
     // ---- If it is a dependency, it is a let, then we can modify it in `updateState`
-    const kind = variable.dependency ? 'let' : 'const';
+    const kind = variable.dependency ? 'let' : variable.kind;
     return t.variableDeclaration(kind, [t.variableDeclarator(t.identifier(variable.name), variable.value)]);
   }
 
@@ -27,7 +27,7 @@ export function generate(root: ComponentNode): t.FunctionDeclaration {
     wrapUpdate(variable.value, states);
   });
 
-  const compNode = t.functionDeclaration(t.identifier(root.name), [], t.blockStatement([]));
+  const compNode = t.functionDeclaration(t.identifier(root.name), root.params, t.blockStatement([]));
 
   const addStatement = (...statements: t.Statement[]) => {
     compNode.body.body.push(...statements);

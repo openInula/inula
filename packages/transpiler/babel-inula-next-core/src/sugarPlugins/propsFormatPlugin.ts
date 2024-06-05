@@ -1,12 +1,9 @@
 import babel, { NodePath, PluginObj } from '@babel/core';
 import type { DLightOption } from '../types';
-import { register } from '@openinula/babel-api';
-import { COMPONENT } from '../constants';
+import { register, types as t } from '@openinula/babel-api';
+import { COMPONENT, PROP_SUFFIX } from '../constants';
 import { ArrowFunctionWithBlock, extractFnFromMacro, isCompPath, wrapArrowFunctionWithBlock } from '../utils';
-import { types as t } from '@openinula/babel-api';
 import { type Scope } from '@babel/traverse';
-
-export const PROP_SUFFIX = '_$p$';
 
 export enum PropType {
   REST = 'rest',
@@ -40,9 +37,7 @@ function createPropAssignment(prop: Prop, scope: Scope) {
   }
   if (prop.nestedRelationship) {
     declarations.push(
-      t.variableDeclaration('let', [
-        t.variableDeclarator(prop.nestedRelationship, t.identifier(`${prop.name}${newName}`)),
-      ])
+      t.variableDeclaration('let', [t.variableDeclarator(prop.nestedRelationship, t.identifier(newName))])
     );
   }
 
@@ -141,14 +136,7 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
           fnPath.node.params = [
             t.objectPattern(
               props.map(prop =>
-                t.objectProperty(
-                  t.identifier(prop.name),
-                  prop.defaultVal
-                    ? t.assignmentPattern(t.identifier(prop.name), prop.defaultVal)
-                    : t.identifier(prop.name),
-                  false,
-                  true
-                )
+                prop.type === PropType.REST ? t.restElement(t.identifier(prop.name)) : createProperty(prop)
               )
             ),
           ];
@@ -158,6 +146,14 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
   };
 }
 
+function createProperty(prop: Prop) {
+  return t.objectProperty(
+    t.identifier(prop.name),
+    prop.defaultVal ? t.assignmentPattern(t.identifier(prop.name), prop.defaultVal) : t.identifier(prop.name),
+    false,
+    true
+  );
+}
 function parseProperty(path: NodePath<t.ObjectProperty | t.RestElement>): Prop {
   if (path.isObjectProperty()) {
     // --- normal property ---
