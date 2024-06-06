@@ -13,62 +13,21 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { Analyzer, ComponentNode } from '../src/analyze/types';
-import { type PluginObj, transform as transformWithBabel } from '@babel/core';
-import syntaxJSX from '@babel/plugin-syntax-jsx';
-import { analyze } from '../src/analyze';
+import { transform as transformWithBabel } from '@babel/core';
 import generate from '@babel/generator';
 import { types as t } from '@openinula/babel-api';
-import { register } from '@openinula/babel-api';
-import { defaultHTMLTags } from '../src/constants';
-
-export function mockAnalyze(code: string, analyzers?: Analyzer[]): ComponentNode {
-  let root: ComponentNode | null = null;
-  transformWithBabel(code, {
-    plugins: [
-      syntaxJSX.default ?? syntaxJSX,
-      function (api): PluginObj {
-        register(api);
-        const seen = new Set();
-        return {
-          visitor: {
-            FunctionExpression: path => {
-              if (seen.has(path)) {
-                return;
-              }
-              root = analyze('test', path, { customAnalyzers: analyzers, htmlTags: defaultHTMLTags });
-              seen.add(path);
-              if (root) {
-                path.skip();
-              }
-            },
-            ArrowFunctionExpression: path => {
-              if (seen.has(path)) {
-                return;
-              }
-              root = analyze('test', path, { customAnalyzers: analyzers, htmlTags: defaultHTMLTags });
-              seen.add(path);
-              if (root) {
-                path.skip();
-              }
-            },
-          },
-        };
-      },
-    ],
-    filename: 'test.tsx',
-  });
-
-  if (!root) {
-    throw new Error('root is null');
-  }
-
-  return root;
-}
+import plugin from '../dist';
 
 export function genCode(ast: t.Node | null) {
   if (!ast) {
     throw new Error('ast is null');
   }
   return generate(ast).code;
+}
+
+export function transform(code: string) {
+  return transformWithBabel(code, {
+    presets: [plugin],
+    filename: 'test.tsx',
+  })?.code;
 }

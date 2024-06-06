@@ -14,11 +14,12 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { genCode, mockAnalyze } from '../mock';
+import { genCode } from '../mock';
 import { variablesAnalyze } from '../../src/analyze/Analyzers/variablesAnalyze';
 import { ReactiveVariable, SubCompVariable } from '../../src/analyze/types';
 import { findVarByName } from './utils';
 import { viewAnalyze } from '../../src/analyze/Analyzers/viewAnalyze';
+import { mockAnalyze } from './mock';
 
 const analyze = (code: string) => mockAnalyze(code, [variablesAnalyze, viewAnalyze]);
 

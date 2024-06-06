@@ -126,47 +126,47 @@ describe('generate', () => {
     `);
 
     expect(code).toMatchInlineSnapshot(`
-      "function Comp() {
-        let self;
-        let count = 1;
-        let doubleCount = count * 2;
-        let ff = count * 2;
-        let nn = [];
-        let kk = count * doubleCount + 100 + nn[1];
-        self = $$createComponent({
-          willMount: () => {
-            {
-              self.updateDerived(nn.push("jj"), 4);
-              self.updateDerived([count, doubleCount] = () => {
-                self.updateDerived(nn.push("nn"), 4);
-              }, 3);
-            }
-          },
-          updateState: changed => {
-            if (changed & 1) {
-              if (Inula.notCached(self, "random_str", [count])) {
-                self.updateDerived(doubleCount = count * 2, 2);
-                ff = count * 2;
-                {
-                  let nono = 1;
-                  console.log(count);
-                }
-                {
-                  let nono = 2;
-                  console.log(count);
-                }
-              }
-            }
-            if (changed & 7) {
-              if (Inula.notCached(self, "random_str", [count, doubleCount, nn])) {
-                kk = count * doubleCount + 100 + nn[1];
-              }
-            }
-          },
-          updateProp: (propName, newValue) => {}
-        });
-        return self;
-      }"
+"function Comp() {
+  let self;
+  let count = 1;
+  let doubleCount = count * 2;
+  let ff = count * 2;
+  let nn = [];
+  let kk = count * doubleCount + 100 + nn[1];
+  self = $$createComponent({
+    willMount: () => {
+      {
+        self.updateDerived(nn.push("jj"), 4);
+        self.updateDerived([count, doubleCount] = () => {
+          self.updateDerived(nn.push("nn"), 4);
+        }, 3);
+      }
+    },
+    updateState: changed => {
+      if (changed & 1) {
+        if (Inula.notCached(self, "random_str", [count])) {
+          self.updateDerived(doubleCount = count * 2, 2);
+          ff = count * 2;
+          {
+            let nono = 1;
+            console.log(count);
+          }
+          {
+            let nono = 2;
+            console.log(count);
+          }
+        }
+      }
+      if (changed & 7) {
+        if (Inula.notCached(self, "random_str", [count, doubleCount, nn])) {
+          kk = count * doubleCount + 100 + nn[1];
+        }
+      }
+    },
+    updateProp: (propName, newValue) => {}
+  });
+  return self;
+}"
     `);
   });
 
