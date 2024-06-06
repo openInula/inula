@@ -1,7 +1,8 @@
 import { functionalMacroAnalyze } from '../../src/analyze/Analyzers/functionalMacroAnalyze';
-import { genCode, mockAnalyze } from '../mock';
+import { genCode } from '../mock';
 import { describe, expect, it } from 'vitest';
 import { variablesAnalyze } from '../../src/analyze/Analyzers/variablesAnalyze';
+import { mockAnalyze } from './mock';
 
 const analyze = (code: string) => mockAnalyze(code, [functionalMacroAnalyze, variablesAnalyze]);
 

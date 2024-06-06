@@ -14,9 +14,10 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { genCode, mockAnalyze } from '../mock';
+import { genCode } from '../mock';
 import { functionalMacroAnalyze } from '../../src/analyze/Analyzers/functionalMacroAnalyze';
 import { types as t } from '@openinula/babel-api';
+import { mockAnalyze } from './mock';
 
 const analyze = (code: string) => mockAnalyze(code, [functionalMacroAnalyze]);
 const combine = (body: t.Statement[]) => t.program(body);

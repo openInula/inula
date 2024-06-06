@@ -1,9 +1,10 @@
 import { variablesAnalyze } from '../../src/analyze/Analyzers/variablesAnalyze';
 import { ComponentNode } from '../../src/analyze/types';
 import { viewAnalyze } from '../../src/analyze/Analyzers/viewAnalyze';
-import { genCode, mockAnalyze } from '../mock';
+import { genCode } from '../mock';
 import { describe, expect, it } from 'vitest';
 import { findSubCompByName } from './utils';
+import { mockAnalyze } from './mock';
 
 const analyze = (code: string) => mockAnalyze(code, [variablesAnalyze, viewAnalyze]);
 describe('viewAnalyze', () => {
