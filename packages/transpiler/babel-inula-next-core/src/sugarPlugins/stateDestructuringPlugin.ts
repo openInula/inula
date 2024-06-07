@@ -85,12 +85,14 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
 
                   // move the deconstructing assignment into the watch function
                   declarationPath[0].insertAfter(
-                    t.callExpression(t.identifier('watch'), [
-                      t.arrowFunctionExpression(
-                        [],
-                        t.blockStatement([t.expressionStatement(t.assignmentExpression('=', idPath.node, initNode))])
-                      ),
-                    ])
+                    t.expressionStatement(
+                      t.callExpression(t.identifier('watch'), [
+                        t.arrowFunctionExpression(
+                          [],
+                          t.blockStatement([t.expressionStatement(t.assignmentExpression('=', idPath.node, initNode))])
+                        ),
+                      ])
+                    )
                   );
                   path.remove();
                 }

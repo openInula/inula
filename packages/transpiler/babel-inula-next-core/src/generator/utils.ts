@@ -52,10 +52,10 @@ export function isAssignmentExpression(path: NodePath<t.Node>) {
 export function wrapUpdate(node: t.Statement | t.Expression | null, states: ReactiveVariable[]) {
   if (!node) return;
   const addUpdateDerived = (node: t.Node, bit: number) => {
-    return t.callExpression(t.memberExpression(t.identifier('self'), t.identifier('updateDerived')), [
-      node,
-      t.numericLiteral(bit),
-    ]);
+    // add a call to updateDerived and comment show the bit
+    const bitNode = t.numericLiteral(bit);
+    t.addComment(bitNode, 'trailing', `0b${bit.toString(2)}`, false);
+    return t.callExpression(t.memberExpression(t.identifier('self'), t.identifier('updateDerived')), [node, bitNode]);
   };
   traverse(nodeWrapFile(node), {
     Identifier: (path: NodePath<t.Identifier>) => {

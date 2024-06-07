@@ -36,14 +36,14 @@ describe('state deconstructing', () => {
             a,
             b
           } = c_$$props);
-        })
+        });
         let e, f;
         watch(() => {
           ({
             e,
             f
           } = g());
-        })
+        });
       });"
     `);
   });
@@ -60,7 +60,7 @@ describe('state deconstructing', () => {
         let a, b;
         watch(() => {
           [a, b] = c_$$props;
-        })
+        });
       });"
     `);
   });
@@ -89,7 +89,7 @@ describe('state deconstructing', () => {
               p3,
               ...restObj
             } = prop2_$$prop);
-          })
+          });
         });"
       `);
   });

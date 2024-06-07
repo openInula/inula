@@ -41,7 +41,9 @@ export function generate(root: ComponentNode): t.FunctionDeclaration {
   addStatement(...root.variables.map(reconstructVariable));
 
   // ---- Add willMount
-  addStatement(...(generateLifecycle(root, WILL_MOUNT).body as t.BlockStatement).body);
+  if (root.lifecycle[WILL_MOUNT]?.length) {
+    addStatement(...(generateLifecycle(root, WILL_MOUNT).body as t.BlockStatement).body);
+  }
 
   // ---- Add comp
   addStatement(...generateComp(root));
