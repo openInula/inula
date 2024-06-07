@@ -45,7 +45,7 @@ export function functionalMacroAnalyze(): Visitor {
           // lifecycle
           if (isLifeCycleName(calleeName)) {
             const fnNode = extractFnFromMacro(expression, calleeName);
-            addLifecycle(ctx.current, calleeName, getFnBodyPath(fnNode).node);
+            addLifecycle(calleeName, ctx.current, getFnBodyPath(fnNode).node);
             return;
           }
 
@@ -66,7 +66,7 @@ export function functionalMacroAnalyze(): Visitor {
         }
       }
 
-      ctx.unhandledNode.push(path.node);
+      ctx.collectUnhandledNodeToLifecycle(ctx.current, path.node);
     },
   };
 }

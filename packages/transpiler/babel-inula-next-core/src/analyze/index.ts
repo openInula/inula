@@ -30,7 +30,7 @@ export function analyzeFnComp(
     current: componentNode,
     htmlTags,
     analyzers,
-    unhandledNode: [],
+    collectUnhandledNodeToLifecycle: addLifecycle.bind(null, WILL_MOUNT),
     traverse: (path: NodePath<t.Statement>, ctx: AnalyzeContext) => {
       path.traverse(visitor, ctx);
     },
@@ -62,17 +62,13 @@ export function analyzeFnComp(
       // TODO: More type safe way to handle this
       visit(p as unknown as any, context);
     } else {
-      context.unhandledNode.push(p.node);
+      context.collectUnhandledNodeToLifecycle(componentNode, p.node);
     }
 
     if (p.isReturnStatement()) {
       visitor.ReturnStatement?.(p, context);
       break;
     }
-  }
-
-  if (context.unhandledNode.length) {
-    addLifecycle(componentNode, WILL_MOUNT, t.blockStatement(context.unhandledNode));
   }
 }
 

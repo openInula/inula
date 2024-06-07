@@ -3,18 +3,10 @@ import { getBabelApi, types as t } from '@openinula/babel-api';
 import { generateUpdateState } from './updateStateGenerator';
 import { getStates, wrapUpdate } from './utils';
 import { generateUpdateProp } from './updatePropGenerator';
-import {
-  alterAttributeMap,
-  defaultAttributeMap,
-  DID_MOUNT,
-  DID_UNMOUNT,
-  importMap,
-  WILL_MOUNT,
-  WILL_UNMOUNT,
-} from '../constants';
+import { alterAttributeMap, defaultAttributeMap, DID_MOUNT, DID_UNMOUNT, importMap, WILL_UNMOUNT } from '../constants';
 import { generateView } from '@openinula/view-generator';
 
-function generateLifecycle(root: ComponentNode, lifecycleType: LifeCycle) {
+export function generateLifecycle(root: ComponentNode, lifecycleType: LifeCycle) {
   root.lifecycle[lifecycleType]!.forEach(node => wrapUpdate(node, getStates(root)));
   return t.arrowFunctionExpression([], t.blockStatement(root.lifecycle[lifecycleType]!));
 }
@@ -46,7 +38,8 @@ export function generateComp(root: ComponentNode) {
   let result: t.Statement[] = [node];
 
   // ---- Lifecycle
-  const lifecycleNames = [WILL_MOUNT, DID_MOUNT, WILL_UNMOUNT, DID_UNMOUNT] as const;
+  // WILL_MOUNT add to function body directly, because it should be executed immediately
+  const lifecycleNames = [DID_MOUNT, WILL_UNMOUNT, DID_UNMOUNT] as const;
   lifecycleNames.forEach((lifecycleType: LifeCycle) => {
     if (root.lifecycle[lifecycleType]?.length) {
       addProperty(lifecycleType, generateLifecycle(root, lifecycleType));
