@@ -16,7 +16,7 @@
 import { transform as transformWithBabel } from '@babel/core';
 import generate from '@babel/generator';
 import { types as t } from '@openinula/babel-api';
-import plugin from '../dist';
+import plugin from '../src';
 
 export function genCode(ast: t.Node | null) {
   if (!ast) {
