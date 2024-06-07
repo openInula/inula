@@ -88,7 +88,7 @@ export function addSubComponent(comp: ComponentNode, subComp: ComponentNode) {
   comp.variables.push({ ...subComp, type: 'subComp' });
 }
 
-export function addLifecycle(comp: ComponentNode, lifeCycle: LifeCycle, block: t.BlockStatement) {
+export function addLifecycle(lifeCycle: LifeCycle, comp: ComponentNode, block: t.Statement) {
   const compLifecycle = comp.lifecycle;
   if (!compLifecycle[lifeCycle]) {
     compLifecycle[lifeCycle] = [];

@@ -118,7 +118,7 @@ export interface AnalyzeContext {
   analyzers: Analyzer[];
   htmlTags: string[];
   traverse: (p: NodePath<t.Statement>, ctx: AnalyzeContext) => void;
-  unhandledNode: t.Statement[];
+  collectUnhandledNodeToLifecycle: (component: ComponentNode, unhandledNode: t.Statement) => void;
 }
 
 export type Visitor<S = AnalyzeContext> = {

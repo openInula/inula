@@ -1,7 +1,8 @@
 import { ComponentNode, Variable } from '../analyze/types';
 import { types as t } from '@openinula/babel-api';
-import { generateComp } from './compGenerator';
+import { generateComp, generateLifecycle } from './compGenerator';
 import { getStates, wrapUpdate } from './utils';
+import { WILL_MOUNT } from '../constants';
 
 function reconstructVariable(variable: Variable) {
   if (variable.type === 'reactive') {
@@ -38,6 +39,9 @@ export function generate(root: ComponentNode): t.FunctionDeclaration {
 
   // ---- Reconstruct the variables
   addStatement(...root.variables.map(reconstructVariable));
+
+  // ---- Add willMount
+  addStatement(...(generateLifecycle(root, WILL_MOUNT).body as t.BlockStatement).body);
 
   // ---- Add comp
   addStatement(...generateComp(root));

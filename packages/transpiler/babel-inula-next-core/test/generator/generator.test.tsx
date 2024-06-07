@@ -29,7 +29,16 @@ describe('generate', () => {
       const Comp = Component(() => {
         let count = 1
 
+        willMount(() => {
+          console.log('will mount')
+        })
+
         console.log(count)
+
+        willMount(() => {
+          console.log('will mount2')
+        })
+
         didMount(() => {
           console.log('mounted')
         })
@@ -46,12 +55,14 @@ describe('generate', () => {
       "function Comp() {
         let self;
         let count = 1;
+        {
+          console.log('will mount');
+        }
+        console.log(count);
+        {
+          console.log('will mount2');
+        }
         self = $$createComponent({
-          willMount: () => {
-            {
-              console.log(count);
-            }
-          },
           didMount: () => {
             {
               console.log('mounted');
