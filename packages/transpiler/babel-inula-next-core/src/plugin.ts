@@ -11,13 +11,13 @@ import { ComponentNode } from './analyze/types';
 const ALREADY_COMPILED: WeakSet<NodePath> | Set<NodePath> = new (WeakSet ?? Set)();
 
 function replaceWithComponent(path: NodePath<t.CallExpression>, root: ComponentNode) {
-  const variableDeclarationPath = path.parentPath.parentPath;
+  const variableDeclarationPath = path.parentPath.parentPath!;
   const randomName = Math.random().toString(36).substring(7);
   const compNode = generate(root);
-  const realFuncName = compNode.id.name;
-  compNode.id.name = randomName;
+  const realFuncName = compNode.id!.name;
+  compNode.id!.name = randomName;
   variableDeclarationPath.replaceWith(compNode);
-  compNode.id.name = realFuncName;
+  compNode.id!.name = realFuncName;
 }
 
 export default function (api: typeof babel, options: DLightOption): PluginObj {

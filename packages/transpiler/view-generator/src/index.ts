@@ -6,7 +6,7 @@ import type { types as t } from '@babel/core';
 export function generateView(
   viewParticles: ViewParticle[],
   config: ViewGeneratorConfig
-): [t.ArrowFunctionExpression | null, t.Statement[], number] {
+): [t.ArrowFunctionExpression | null, t.Statement[], t.ArrayExpression] {
   return new MainViewGenerator(config).generate(viewParticles);
 }
 

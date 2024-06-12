@@ -47,14 +47,16 @@ describe('props', () => {
               self.updateDerived(id_$p$_ = newValue, 1 /*0b1*/);
             }
           },
-          updateViews: $changed => {
-            if ($changed & 1) {
-              $node0 && $$setHTMLProp($node0, "id", () => id_$p$_, [id_$p$_]);
-            }
-            if ($changed & 2) {
-              $node0 && $$setHTMLProp($node0, "className", () => className_$p$_, [className_$p$_]);
-            }
-            return [$node0];
+          getUpdateViews: () => {
+            return [[$node0], $changed => {
+              if ($changed & 1) {
+                $node0 && $$setHTMLProp($node0, "id", () => id_$p$_, [id_$p$_]);
+              }
+              if ($changed & 2) {
+                $node0 && $$setHTMLProp($node0, "className", () => className_$p$_, [className_$p$_]);
+              }
+              return [$node0];
+            }];
           }
         });
         return self;
@@ -108,20 +110,22 @@ describe('props', () => {
               self.updateDerived(info_$p$_ = newValue, 1 /*0b1*/);
             }
           },
-          updateViews: $changed => {
-            if ($changed & 2) {
-              $node0 && $$setHTMLProp($node0, "id", () => id, [id]);
-            }
-            if ($changed & 4) {
-              $node0 && $$setHTMLProp($node0, "className", () => className, [className]);
-            }
-            if ($changed & 24) {
-              $node0 && $$setStyle($node0, {
-                left: x,
-                top: y
-              });
-            }
-            return [$node0];
+          getUpdateViews: () => {
+            return [[$node0], $changed => {
+              if ($changed & 2) {
+                $node0 && $$setHTMLProp($node0, "id", () => id, [id]);
+              }
+              if ($changed & 4) {
+                $node0 && $$setHTMLProp($node0, "className", () => className, [className]);
+              }
+              if ($changed & 24) {
+                $node0 && $$setStyle($node0, {
+                  left: x,
+                  top: y
+                });
+              }
+              return [$node0];
+            }];
           }
         });
         return self;

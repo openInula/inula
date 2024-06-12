@@ -20,6 +20,7 @@ import { types as t } from '@openinula/babel-api';
 import { DID_MOUNT, DID_UNMOUNT, WATCH, WILL_MOUNT, WILL_UNMOUNT, reactivityFuncNames } from '../../constants';
 import { extractFnFromMacro, getFnBodyPath } from '../../utils';
 import { getDependenciesFromNode } from '@openinula/reactivity-parser';
+import { extractFnBody } from '../utils';
 
 function isLifeCycleName(name: string): name is LifeCycle {
   return [WILL_MOUNT, DID_MOUNT, WILL_UNMOUNT, DID_UNMOUNT].includes(name);
@@ -60,7 +61,11 @@ export function functionalMacroAnalyze(): Visitor {
               reactivityFuncNames
             );
 
-            addWatch(ctx.current, fnPath, dependency);
+            if (dependency._fullDepMask) {
+              addWatch(ctx.current, fnPath, dependency);
+            } else {
+              addLifecycle(WILL_MOUNT, ctx.current, extractFnBody(fnPath.node));
+            }
             return;
           }
         }

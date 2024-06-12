@@ -20,6 +20,7 @@ describe('view generation', () => {
     const code = transform(/*js*/ `
       const Comp = Component(() => {
         let text = 'hello world';
+        console.log(text);
         return <div>{text}</div>
       })
     `);
@@ -36,11 +37,14 @@ describe('view generation', () => {
         self = $$createComponent({
           updateState: changed => {},
           updateProp: (propName, newValue) => {},
-          updateViews: $changed => {
-            if ($changed & 1) {
-              $node1 && $node1.update(() => text, [text]);
-            }
-            return [$node0];
+          getUpdateViews: () => {
+            console.log(text);
+            return [[$node0], $changed => {
+              if ($changed & 1) {
+                $node1 && $node1.update(() => text, [text]);
+              }
+              return [$node0];
+            }];
           }
         });
         return self;
@@ -77,18 +81,20 @@ describe('view generation', () => {
         self = $$createComponent({
           updateState: changed => {},
           updateProp: (propName, newValue) => {},
-          updateViews: $changed => {
-            if ($changed & 1) {
-              $node0 && $$setHTMLProp($node0, "className", () => text, [text]);
-              $node0 && $$setHTMLProp($node0, "id", () => text, [text]);
-              $node1 && $node1.update(() => text, [text]);
-            }
-            if ($changed & 2) {
-              $node0 && $$setStyle($node0, {
-                color
-              });
-            }
-            return [$node0];
+          getUpdateViews: () => {
+            return [[$node0], $changed => {
+              if ($changed & 1) {
+                $node0 && $$setHTMLProp($node0, "className", () => text, [text]);
+                $node0 && $$setHTMLProp($node0, "id", () => text, [text]);
+                $node1 && $node1.update(() => text, [text]);
+              }
+              if ($changed & 2) {
+                $node0 && $$setStyle($node0, {
+                  color
+                });
+              }
+              return [$node0];
+            }];
           }
         });
         return self;
@@ -133,12 +139,14 @@ describe('view generation', () => {
         self = $$createComponent({
           updateState: changed => {},
           updateProp: (propName, newValue) => {},
-          updateViews: $changed => {
-            if ($changed & 1) {
-              $node3 && $node3.update(() => text, [text]);
-              $node4 && $node4.update(() => text, [text]);
-            }
-            return [$node0];
+          getUpdateViews: () => {
+            return [[$node0], $changed => {
+              if ($changed & 1) {
+                $node3 && $node3.update(() => text, [text]);
+                $node4 && $node4.update(() => text, [text]);
+              }
+              return [$node0];
+            }];
           }
         });
         return self;
@@ -174,12 +182,14 @@ describe('view generation', () => {
         self = $$createComponent({
           updateState: changed => {},
           updateProp: (propName, newValue) => {},
-          updateViews: $changed => {
-            if ($changed & 1) {
-              $node1 && $node1.update(() => text, [text]);
-              $node3 && $node3.update(() => text, [text]);
-            }
-            return [$node0, $node2];
+          getUpdateViews: () => {
+            return [[$node0, $node2], $changed => {
+              if ($changed & 1) {
+                $node1 && $node1.update(() => text, [text]);
+                $node3 && $node3.update(() => text, [text]);
+              }
+              return [$node0, $node2];
+            }];
           }
         });
         return self;
@@ -247,12 +257,14 @@ describe('view generation', () => {
         self = $$createComponent({
           updateState: changed => {},
           updateProp: (propName, newValue) => {},
-          updateViews: $changed => {
-            if ($changed & 2) {
-              $node1 && $node1.updateCond();
-            }
-            $node1 && $node1.update($changed);
-            return [$node0];
+          getUpdateViews: () => {
+            return [[$node0], $changed => {
+              if ($changed & 2) {
+                $node1 && $node1.updateCond();
+              }
+              $node1 && $node1.update($changed);
+              return [$node0];
+            }];
           }
         });
         return self;
@@ -299,12 +311,14 @@ describe('view generation', () => {
         self = $$createComponent({
           updateState: changed => {},
           updateProp: (propName, newValue) => {},
-          updateViews: $changed => {
-            if ($changed & 1) {
-              $node1 && $node1.updateArray(list, null);
-            }
-            $node1 && $node1.update($changed);
-            return [$node0];
+          getUpdateViews: () => {
+            return [[$node0], $changed => {
+              if ($changed & 1) {
+                $node1 && $node1.updateArray(list, null);
+              }
+              $node1 && $node1.update($changed);
+              return [$node0];
+            }];
           }
         });
         return self;

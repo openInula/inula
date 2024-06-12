@@ -55,13 +55,6 @@ describe('generate', () => {
       "function Comp() {
         let self;
         let count = 1;
-        {
-          console.log('will mount');
-        }
-        console.log(count);
-        {
-          console.log('will mount2');
-        }
         self = $$createComponent({
           didMount: () => {
             {
@@ -74,7 +67,17 @@ describe('generate', () => {
             }
           },
           updateState: changed => {},
-          updateProp: (propName, newValue) => {}
+          updateProp: (propName, newValue) => {},
+          getUpdateViews: () => {
+            {
+              console.log('will mount');
+            }
+            console.log(count);
+            {
+              console.log('will mount2');
+            }
+            return [[],,];
+          }
         });
         return self;
       }"
@@ -95,7 +98,7 @@ describe('generate', () => {
       "function Comp() {
         let self;
         let count = 1;
-        let doubleCount = count * 2;
+        let doubleCount;
         self = $$createComponent({
           updateState: changed => {
             if (changed & 1) {
@@ -140,14 +143,10 @@ describe('generate', () => {
       "function Comp() {
         let self;
         let count = 1;
-        let doubleCount = count * 2;
-        let ff = count * 2;
+        let doubleCount;
+        let ff;
         let nn = [];
-        let kk = count * doubleCount + 100 + nn[1];
-        self.updateDerived(nn.push("jj"), 4 /*0b100*/);
-        self.updateDerived([count, doubleCount] = () => {
-          self.updateDerived(nn.push("nn"), 4 /*0b100*/);
-        }, 3 /*0b11*/);
+        let kk;
         self = $$createComponent({
           updateState: changed => {
             if (changed & 1) {
@@ -170,7 +169,14 @@ describe('generate', () => {
               }
             }
           },
-          updateProp: (propName, newValue) => {}
+          updateProp: (propName, newValue) => {},
+          getUpdateViews: () => {
+            self.updateDerived(nn.push("jj"), 4 /*0b100*/);
+            self.updateDerived([count, doubleCount] = () => {
+              self.updateDerived(nn.push("nn"), 4 /*0b100*/);
+            }, 3 /*0b11*/);
+            return [[],,];
+          }
         });
         return self;
       }"
@@ -250,7 +256,7 @@ describe('generate', () => {
       "function Comp() {
         let self;
         let prop1_$p$_ = 1;
-        let derived = prop1_$p$_ * 2;
+        let derived;
         self = $$createComponent({
           updateState: changed => {
             if (changed & 1) {
@@ -264,7 +270,7 @@ describe('generate', () => {
           },
           updateProp: (propName, newValue) => {
             if (propName === "prop1") {
-              self.updateDerived(prop1_$p$_ = newValue, 1);
+              self.updateDerived(prop1_$p$_ = newValue, 1 /*0b1*/);
             }
           }
         });
