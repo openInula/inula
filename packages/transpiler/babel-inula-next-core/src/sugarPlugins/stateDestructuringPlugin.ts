@@ -21,6 +21,42 @@ import { ArrowFunctionWithBlock, extractFnFromMacro, isCompPath } from '../utils
 import { types as t } from '@openinula/babel-api';
 
 /**
+ * Iterate identifier in nested destructuring, collect the identifier that can be used
+ * e.g. function ({prop1, prop2: [p20X, {p211, p212: p212X}]}
+ * we should collect prop1, p20X, p211, p212X
+ * @param idPath
+ */
+function searchNestedProps(idPath: NodePath<t.ArrayPattern | t.ObjectPattern>) {
+  const nestedProps: string[] | null = [];
+
+  if (idPath.isObjectPattern() || idPath.isArrayPattern()) {
+    idPath.traverse({
+      Identifier(path) {
+        // judge if the identifier is a prop
+        // 1. is the key of the object property and doesn't have alias
+        // 2. is the item of the array pattern and doesn't have alias
+        // 3. is alias of the object property
+        const parentPath = path.parentPath;
+        if (parentPath.isObjectProperty() && path.parentKey === 'value') {
+          // collect alias of the object property
+          nestedProps.push(path.node.name);
+        } else if (
+          parentPath.isArrayPattern() ||
+          parentPath.isObjectPattern() ||
+          parentPath.isRestElement() ||
+          (parentPath.isAssignmentPattern() && path.key === 'left')
+        ) {
+          // collect the key of the object property or the item of the array pattern
+          nestedProps.push(path.node.name);
+        }
+      },
+    });
+  }
+
+  return nestedProps;
+}
+
+/**
  * The state deconstructing plugin is used to transform the state deconstructing in the component body
  *  let { a, b } = props;
  *  // turn into
@@ -37,54 +73,33 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
   return {
     visitor: {
       CallExpression(path: NodePath<t.CallExpression>) {
-        if (isCompPath(path)) {
-          const fnPath = extractFnFromMacro(path, COMPONENT) as
-            | NodePath<t.FunctionExpression>
-            | NodePath<ArrowFunctionWithBlock>;
+        if (!isCompPath(path)) {
+          return;
+        }
+        const fnPath = extractFnFromMacro(path, COMPONENT) as
+          | NodePath<t.FunctionExpression>
+          | NodePath<ArrowFunctionWithBlock>;
 
-          fnPath.traverse({
-            VariableDeclarator(path) {
+        fnPath.traverse({
+          VariableDeclaration(declarationPath) {
+            const nodesToReplace: t.Statement[] = [];
+
+            declarationPath.get('declarations').map(path => {
               const idPath = path.get('id');
               const initNode = path.node.init;
-              const nestedProps: string[] | null = [];
 
               if (initNode && (idPath.isObjectPattern() || idPath.isArrayPattern())) {
-                // nested destructuring, collect the identifier that can be used in the function body as the prop
-                // e.g. function ({prop1, prop2: [p20X, {p211, p212: p212X}]}
-                // we should collect prop1, p20X, p211, p212X
-                idPath.traverse({
-                  Identifier(path) {
-                    // judge if the identifier is a prop
-                    // 1. is the key of the object property and doesn't have alias
-                    // 2. is the item of the array pattern and doesn't have alias
-                    // 3. is alias of the object property
-                    const parentPath = path.parentPath;
-                    if (parentPath.isObjectProperty() && path.parentKey === 'value') {
-                      // collect alias of the object property
-                      nestedProps.push(path.node.name);
-                    } else if (
-                      parentPath.isArrayPattern() ||
-                      parentPath.isObjectPattern() ||
-                      parentPath.isRestElement() ||
-                      (parentPath.isAssignmentPattern() && path.key === 'left')
-                    ) {
-                      // collect the key of the object property or the item of the array pattern
-                      nestedProps.push(path.node.name);
-                    }
-                  },
-                });
-
+                const nestedProps: string[] | null = searchNestedProps(idPath);
                 if (nestedProps.length) {
                   // declare the nested props as the variable
-                  const declarationPath = path.parentPath.insertAfter(
+                  nodesToReplace.push(
                     t.variableDeclaration(
                       'let',
                       nestedProps.map(prop => t.variableDeclarator(t.identifier(prop)))
                     )
                   );
-
                   // move the deconstructing assignment into the watch function
-                  declarationPath[0].insertAfter(
+                  nodesToReplace.push(
                     t.expressionStatement(
                       t.callExpression(t.identifier('watch'), [
                         t.arrowFunctionExpression(
@@ -94,12 +109,12 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
                       ])
                     )
                   );
-                  path.remove();
+                  declarationPath.replaceWithMultiple(nodesToReplace);
                 }
               }
-            },
-          });
-        }
+            });
+          },
+        });
       },
     },
   };

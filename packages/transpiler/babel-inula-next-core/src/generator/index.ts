@@ -1,14 +1,14 @@
 import { ComponentNode, Variable } from '../analyze/types';
 import { types as t } from '@openinula/babel-api';
-import { generateComp, generateLifecycle } from './compGenerator';
+import { generateComp } from './compGenerator';
 import { getStates, wrapUpdate } from './utils';
-import { WILL_MOUNT } from '../constants';
 
 function reconstructVariable(variable: Variable) {
   if (variable.type === 'reactive') {
-    // ---- If it is a dependency, it is a let, then we can modify it in `updateState`
+    // ---- If it is a computed, we initiate and modify it in `updateState`
     const kind = variable.dependency ? 'let' : variable.kind;
-    return t.variableDeclaration(kind, [t.variableDeclarator(t.identifier(variable.name), variable.value)]);
+    const value = variable.dependency ? null : variable.value;
+    return t.variableDeclaration(kind, [t.variableDeclarator(t.identifier(variable.name), value)]);
   }
 
   if (variable.type === 'method') {
@@ -39,11 +39,6 @@ export function generate(root: ComponentNode): t.FunctionDeclaration {
 
   // ---- Reconstruct the variables
   addStatement(...root.variables.map(reconstructVariable));
-
-  // ---- Add willMount
-  if (root.lifecycle[WILL_MOUNT]?.length) {
-    addStatement(...(generateLifecycle(root, WILL_MOUNT).body as t.BlockStatement).body);
-  }
 
   // ---- Add comp
   addStatement(...generateComp(root));

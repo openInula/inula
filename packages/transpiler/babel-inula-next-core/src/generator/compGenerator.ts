@@ -3,7 +3,15 @@ import { getBabelApi, types as t } from '@openinula/babel-api';
 import { generateUpdateState } from './updateStateGenerator';
 import { getStates, wrapUpdate } from './utils';
 import { generateUpdateProp } from './updatePropGenerator';
-import { alterAttributeMap, defaultAttributeMap, DID_MOUNT, DID_UNMOUNT, importMap, WILL_UNMOUNT } from '../constants';
+import {
+  alterAttributeMap,
+  defaultAttributeMap,
+  DID_MOUNT,
+  DID_UNMOUNT,
+  WILL_MOUNT,
+  WILL_UNMOUNT,
+  importMap,
+} from '../constants';
 import { generateView } from '@openinula/view-generator';
 
 export function generateLifecycle(root: ComponentNode, lifecycleType: LifeCycle) {
@@ -54,7 +62,7 @@ export function generateComp(root: ComponentNode) {
 
   // ---- Update views
   if (root.children) {
-    const [updateViewFn, declarations] = generateView(root.children, {
+    const [updateViewFn, declarations, topLevelNodes] = generateView(root.children, {
       babelApi: getBabelApi(),
       importMap,
       attributeMap: defaultAttributeMap,
@@ -62,7 +70,24 @@ export function generateComp(root: ComponentNode) {
       templateIdx: -1,
     });
 
-    addProperty('updateViews', updateViewFn);
+    // ---- Get update views will avoke the willMount and return the updateView function.
+    let getUpdateViewsFnBody: t.Statement[] = [];
+    if (root.lifecycle[WILL_MOUNT]) {
+      root.lifecycle[WILL_MOUNT].forEach(node => wrapUpdate(node, getStates(root)));
+      getUpdateViewsFnBody = root.lifecycle[WILL_MOUNT];
+    }
+    const getUpdateViews =
+      getUpdateViewsFnBody.length || updateViewFn
+        ? t.arrowFunctionExpression(
+            [],
+            t.blockStatement([
+              ...getUpdateViewsFnBody,
+              t.returnStatement(t.arrayExpression([topLevelNodes, updateViewFn])),
+            ])
+          )
+        : null;
+
+    addProperty('getUpdateViews', getUpdateViews);
     // ---- Add view static declarations
     result = [...declarations, ...result];
   }

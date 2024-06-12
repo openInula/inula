@@ -47,3 +47,7 @@ export function hasJSX(path: NodePath<t.Node>) {
   });
   return seen;
 }
+
+export function extractFnBody(node: t.FunctionExpression | t.ArrowFunctionExpression): t.Statement {
+  return t.isStatement(node.body) ? node.body : t.expressionStatement(node.body);
+}

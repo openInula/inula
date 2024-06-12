@@ -8,7 +8,7 @@ export default class MainViewGenerator extends ViewGenerator {
    * @param viewParticles
    * @returns [viewBody, classProperties, templateIdx]
    */
-  generate(viewParticles: ViewParticle[]): [t.ArrowFunctionExpression | null, t.Statement[], number] {
+  generate(viewParticles: ViewParticle[]): [t.ArrowFunctionExpression | null, t.Statement[], t.ArrayExpression] {
     const allVariables: t.VariableDeclaration[] = [];
     const allInitStatements: t.Statement[] = [];
     const allUpdateStatements: Record<number, t.Statement[]> = {};
@@ -32,7 +32,8 @@ export default class MainViewGenerator extends ViewGenerator {
     // 2. Declare all variables(temporary variables)
     // 3. Declare all init statements(to create dom nodes)
     const allDeclarations = [...this.declareNodes(), ...allVariables, ...allInitStatements];
-    return [this.geneUpdate(allUpdateStatements, topLevelNodes), allDeclarations, this.templateIdx];
+    const topLevelNodesArray = this.t.arrayExpression(topLevelNodes.map(nodeName => this.t.identifier(nodeName)));
+    return [this.geneUpdate(allUpdateStatements, topLevelNodes), allDeclarations, topLevelNodesArray];
   }
 
   /**

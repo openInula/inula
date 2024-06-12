@@ -44,9 +44,11 @@ describe('generate', () => {
         self = $$createComponent({
           updateState: changed => {},
           updateProp: (propName, newValue) => {},
-          updateViews: $changed => {
-            $node1 && $node1.update($changed);
-            return [$node0];
+          getUpdateViews: () => {
+            return [[$node0], $changed => {
+              $node1 && $node1.update($changed);
+              return [$node0];
+            }];
           }
         });
         return self;

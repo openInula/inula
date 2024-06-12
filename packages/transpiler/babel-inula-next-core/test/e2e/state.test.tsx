@@ -16,14 +16,14 @@
 import { describe, expect, it } from 'vitest';
 import { transform } from '../mock';
 
-describe('condition', () => {
-  it('should transform jsx', () => {
+describe('state', () => {
+  it('should transform destructing state', () => {
     expect(
       transform(`
         function App() {
+          const [count, setCount] = useState(0);
           return <div>
-            <if cond={count > 1}>{count} is bigger than is 1</if>
-            <else>{count} is smaller than 1</else>
+            {count} is smaller than 1
           </div>;
         }
       `)
@@ -31,41 +31,26 @@ describe('condition', () => {
       "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, EnvNode as $$EnvNode, PropView as $$PropView, render as $$render } from "@openinula/next";
       function App() {
         let self;
-        let $node0, $node1;
+        let count;
+        let setCount;
+        let $node0, $node1, $node2;
         $node0 = $$createElement("div");
-        $node1 = new $$CondNode(0, $thisCond => {
-          if (count > 1) {
-            if ($thisCond.cond === 0) {
-              $thisCond.didntChange = true;
-              return [];
-            }
-            $thisCond.cond = 0;
-            let $node0, $node1;
-            $thisCond.updateFunc = $changed => {};
-            $node0 = new $$ExpNode(count, []);
-            $node1 = $$createTextNode(" is bigger than is 1", []);
-            return $thisCond.cond === 0 ? [$node0, $node1] : $thisCond.updateCond();
-          } else {
-            if ($thisCond.cond === 1) {
-              $thisCond.didntChange = true;
-              return [];
-            }
-            $thisCond.cond = 1;
-            let $node0, $node1;
-            $thisCond.updateFunc = $changed => {};
-            $node0 = new $$ExpNode(count, []);
-            $node1 = $$createTextNode(" is smaller than 1", []);
-            return $thisCond.cond === 1 ? [$node0, $node1] : $thisCond.updateCond();
-          }
-        });
+        $node1 = new $$ExpNode(count, [count]);
         $$insertNode($node0, $node1, 0);
-        $node0._$nodes = [$node1];
+        $node2 = $$createTextNode(" is smaller than 1\\n          ", []);
+        $$insertNode($node0, $node2, 1);
+        $node0._$nodes = [$node1, $node2];
         self = $$createComponent({
           updateState: changed => {},
           updateProp: (propName, newValue) => {},
           getUpdateViews: () => {
+            {
+              self.updateDerived([count, setCount] = useState(0), 1 /*0b1*/);
+            }
             return [[$node0], $changed => {
-              $node1 && $node1.update($changed);
+              if ($changed & 1) {
+                $node1 && $node1.update(() => count, [count]);
+              }
               return [$node0];
             }];
           }
