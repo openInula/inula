@@ -119,7 +119,7 @@ function pruneViewParticleUnusedBit(particle: ViewParticle, bitPositionToRemove:
       });
       stack.push(...node.mutableParticles);
       stack.push(node.template);
-    } else if (node.type === 'html') {
+    } else if (node.type === 'html' || node.type === 'comp') {
       for (const key in node.props) {
         node.props[key].depMask = getDepMask(node.props[key]._depBitmaps, bitPositionToRemove);
       }
