@@ -76,8 +76,11 @@ export function generateComp(root: ComponentNode) {
       root.lifecycle[WILL_MOUNT].forEach(node => wrapUpdate(node, getStates(root)));
       getUpdateViewsFnBody = root.lifecycle[WILL_MOUNT];
     }
+    if (declarations.length) {
+      getUpdateViewsFnBody.push(...declarations);
+    }
     const getUpdateViews =
-      getUpdateViewsFnBody.length || updateViewFn
+      getUpdateViewsFnBody.length || topLevelNodes.elements.length
         ? t.arrowFunctionExpression(
             [],
             t.blockStatement([
@@ -89,7 +92,7 @@ export function generateComp(root: ComponentNode) {
 
     addProperty('getUpdateViews', getUpdateViews);
     // ---- Add view static declarations
-    result = [...declarations, ...result];
+    result = [...result];
   }
 
   return result;

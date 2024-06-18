@@ -1,7 +1,7 @@
 import type { NodePath } from '@babel/core';
 import { types as t, traverse } from '@openinula/babel-api';
 import { ComponentNode, ReactiveVariable } from '../analyze/types';
-import { reactivityFuncNames } from '../constants';
+import { importMap, reactivityFuncNames } from '../constants';
 
 export function uid() {
   // ---- Or mock for testing
@@ -15,11 +15,7 @@ export function uid() {
  */
 export function wrapCheckCache(cacheNode: t.ArrayExpression, statements: t.Statement[]) {
   return t.ifStatement(
-    t.callExpression(t.memberExpression(t.identifier('Inula'), t.identifier('notCached')), [
-      t.identifier('self'),
-      t.stringLiteral(uid()),
-      cacheNode,
-    ]),
+    t.callExpression(t.identifier(importMap.notCached), [t.identifier('self'), t.stringLiteral(uid()), cacheNode]),
     t.blockStatement(statements)
   );
 }
