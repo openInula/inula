@@ -38,10 +38,10 @@ describe('lifecycle', () => {
     const fn = vi.fn();
 
     function App() {
-      didMount: {
+      didMount(() => {
         expect(container.innerHTML).toBe('<div>test</div>');
         fn();
-      }
+      });
 
       return <div>test</div>;
     }
