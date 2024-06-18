@@ -74,31 +74,39 @@ function Button({ id, text, fn }) {
 function App() {
   let data = [];
   let selected = null;
+
   function run() {
     data = buildData(1000);
   }
+
   function runLots() {
     data = buildData(10000);
   }
+
   function add() {
     data.push(...buildData(1000));
   }
+
   function update() {
     for (let i = 0; i < data.length; i += 10) {
       data[i].label += ' !!!';
     }
   }
+
   function swapRows() {
     if (data.length > 998) {
       [data[1], data[998]] = [data[998], data[1]];
     }
   }
+
   function clear() {
     data = [];
   }
+
   function remove(id) {
     data = data.filter(d => d.id !== id);
   }
+
   function select(id) {
     selected = id;
   }
@@ -124,19 +132,21 @@ function App() {
       </div>
       <table class="table table-hover table-striped test-data">
         <tbody>
-          <for array={data} item={{ id, label }} key={id}>
-            <tr class={selected === id ? 'danger' : ''}>
-              <td class="col-md-1" textContent={id} />
-              <td class="col-md-4">
-                <a onClick={select.bind(this, id)} textContent={label} />
-              </td>
-              <td class="col-md-1">
-                <a onClick={remove.bind(this, id)}>
-                  <span class="glyphicon glyphicon-remove" aria-hidden="true" />
-                </a>
-              </td>
-              <td class="col-md-6" />
-            </tr>
+          <for each={data}>
+            {({ id, label }) => (
+              <tr className={selected === id ? 'danger' : ''}>
+                <td className="col-md-1" textContent={id} />
+                <td className="col-md-4">
+                  <a onClick={select.bind(this, id)} textContent={label} />
+                </td>
+                <td className="col-md-1">
+                  <a onClick={remove.bind(this, id)}>
+                    <span className="glyphicon glyphicon-remove" aria-hidden="true" />
+                  </a>
+                </td>
+                <td className="col-md-6" />
+              </tr>
+            )}
           </for>
         </tbody>
       </table>
