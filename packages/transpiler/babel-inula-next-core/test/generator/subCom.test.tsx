@@ -21,6 +21,9 @@ describe('generate', () => {
     const code = transform(/*js*/ `
       const Comp = Component(() => {
         let count = 1;
+        function SubComp() {
+
+        }
 
         return <Child className={count}>
           <div>1</div>
@@ -32,6 +35,7 @@ describe('generate', () => {
       "function Comp() {
         let self;
         let count = 1;
+        function SubComp() {}
         self = $$createComponent({
           updateState: changed => {},
           updateProp: (propName, newValue) => {},
