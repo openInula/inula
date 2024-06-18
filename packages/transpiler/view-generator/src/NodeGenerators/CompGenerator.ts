@@ -54,23 +54,21 @@ export default class CompGenerator extends ForwardPropGenerator {
 
   /**
    * @View
-   * null
-   *  or
-   * [[prop1, value1, deps1], [prop2, value2, deps2], ...
+   * return Props object
    */
-  private generateCompProps(props: Record<string, DependencyProp>): t.Expression {
-    if (Object.keys(props).length === 0) return this.t.nullLiteral();
-    return this.t.arrayExpression(
-      Object.entries(props).map(([key, { value, dependenciesNode }]) => {
-        return this.t.arrayExpression([this.t.stringLiteral(key), value, dependenciesNode]);
+  private generateCompProps(props: Record<string, t.Expression>): t.Expression {
+    if (Object.keys(props).length === 0) return this.t.objectExpression([]);
+
+    return this.t.objectExpression(
+      Object.entries(props).map(([key, value]) => {
+        return this.t.objectProperty(this.t.stringLiteral(key), value);
       })
     );
   }
 
   /**
    * @View
-   * ${dlNodeName} = new ${tag}()
-   * ${dlNodeName}._$init(${props}, ${content}, ${children}, ${this})
+   * ${dlNodeName} = ${tag}()
    */
   private declareCompNode(
     dlNodeName: string,
@@ -78,29 +76,34 @@ export default class CompGenerator extends ForwardPropGenerator {
     props: Record<string, DependencyProp>,
     children: ViewParticle[]
   ): t.Statement[] {
-    const willForwardProps = 'forwardProps' in props;
     const newProps = Object.fromEntries(
-      Object.entries(props).filter(
-        ([key]) =>
-          !['ref', 'elements', 'forwardProps', '_$content', 'didUpdate', 'props', ...CompGenerator.lifecycle].includes(
-            key
-          )
-      )
+      Object.entries(props)
+        .filter(
+          ([key]) =>
+            ![
+              'ref',
+              'elements',
+              'forwardProps',
+              '_$content',
+              'didUpdate',
+              'props',
+              ...CompGenerator.lifecycle,
+            ].includes(key)
+        )
+        .map(([key, { value }]) => [key, value])
     );
 
-    const content = props._$content;
+    if (children.length > 0) {
+      newProps.children = this.t.identifier(this.declarePropView(children));
+    }
 
     return [
       this.t.expressionStatement(
-        this.t.assignmentExpression('=', this.t.identifier(dlNodeName), this.t.newExpression(tag, []))
-      ),
-      this.t.expressionStatement(
-        this.t.callExpression(this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier('_$init')), [
-          this.generateCompProps(newProps),
-          content ? this.t.arrayExpression([content.value, content.dependenciesNode]) : this.t.nullLiteral(),
-          children.length > 0 ? this.t.identifier(this.declarePropView(children)) : this.t.nullLiteral(),
-          willForwardProps ? this.t.identifier('this') : this.t.nullLiteral(),
-        ])
+        this.t.assignmentExpression(
+          '=',
+          this.t.identifier(dlNodeName),
+          this.t.callExpression(tag, [this.generateCompProps(newProps)])
+        )
       ),
     ];
   }

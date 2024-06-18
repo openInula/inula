@@ -52,6 +52,7 @@ export const importMap = Object.fromEntries(
     'EnvNode',
     'PropView',
     'render',
+    'notCached',
   ].map(name => [name, `$$${name}`])
 );
 

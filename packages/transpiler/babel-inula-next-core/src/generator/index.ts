@@ -43,8 +43,8 @@ export function generate(root: ComponentNode): t.FunctionDeclaration {
   // ---- Add comp
   addStatement(...generateComp(root));
 
-  // ---- Add return self
-  addStatement(t.returnStatement(t.identifier('self')));
+  // ---- Add return self.init()
+  addStatement(t.returnStatement(t.callExpression(t.memberExpression(t.identifier('self'), t.identifier('init')), [])));
 
   return compNode;
 }
