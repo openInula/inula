@@ -116,8 +116,7 @@ describe('props', () => {
     `);
     });
 
-    // TODO: should support children default
-    it.fails('should support children alias with default value', ({ container }) => {
+    it('should support children alias with default value', ({ container }) => {
       function Child({ children: alias = 'default child' }) {
         return <h1>{alias}</h1>;
       }

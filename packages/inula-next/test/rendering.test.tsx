@@ -44,7 +44,7 @@ describe('rendering', () => {
       expect(container).toMatchInlineSnapshot(`
         <div>
           <h1>
-            hello
+            hello 
             world
             !!!
           </h1>
