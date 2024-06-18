@@ -17,6 +17,31 @@ import { describe, expect, it } from 'vitest';
 import { transform } from '../mock';
 
 describe('props', () => {
+  it('should pass empty object without props', () => {
+    expect(
+      transform(`
+        function App() {
+          return <Child />;
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, EnvNode as $$EnvNode, PropView as $$PropView, render as $$render, notCached as $$notCached } from "@openinula/next";
+      function App() {
+        let self;
+        self = $$createComponent({
+          updateState: changed => {},
+          updateProp: (propName, newValue) => {},
+          getUpdateViews: () => {
+            let $node0;
+            $node0 = Child({});
+            return [[$node0],,];
+          }
+        });
+        return self.init();
+      }"
+    `);
+  });
+
   it('should handle props destructing', () => {
     expect(
       transform(`

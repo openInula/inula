@@ -31,11 +31,9 @@ describe('conditional rendering', () => {
 
     function App() {
       let count = 2;
-      willMount: {
-        set = (val: number) => {
-          count = val;
-        };
-      }
+      set = (val: number) => {
+        count = val;
+      };
       return (
         <>
           <if cond={count > 1}>{count} is bigger than is 1</if>
@@ -58,11 +56,9 @@ describe('conditional rendering', () => {
 
     function App() {
       let count = 0;
-      willMount: {
-        set = (val: number) => {
-          count = val;
-        };
-      }
+      set = (val: number) => {
+        count = val;
+      };
       return (
         <if cond={count > 1}>
           {count} is bigger than is 1
