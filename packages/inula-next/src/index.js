@@ -1,5 +1,7 @@
 import { DLNode } from './DLNode';
 import { insertNode } from './HTMLNode';
+import { DLStore } from './store';
+import { CompNode } from './CompNode.js';
 
 export * from './HTMLNode';
 export * from './CompNode';
@@ -11,8 +13,6 @@ export * from './MutableNode/ForNode';
 export * from './MutableNode/ExpNode';
 export * from './MutableNode/CondNode';
 export * from './MutableNode/TryNode';
-
-import { DLStore } from './store';
 
 export { setGlobal, setDocument } from './store';
 
@@ -39,8 +39,8 @@ export function render(Comp, idOrEl) {
   }
   initStore();
   el.innerHTML = '';
-  const dlNode = new Comp();
-  dlNode._$init();
+  const dlNode = Comp();
+  dlNode.init();
   insertNode(el, dlNode, 0);
   DLNode.runDidMount();
 }
@@ -48,6 +48,7 @@ export function render(Comp, idOrEl) {
 export function manual(callback, _deps) {
   return callback();
 }
+
 export function escape(arg) {
   return arg;
 }
@@ -61,6 +62,33 @@ export function use() {
   );
 }
 
-export function createComponent(fn) {
-  return fn();
+/**
+ * @typedef compUpdator
+ * @property {(bit: number) => void} updateState
+ * @property {(propName: string, newValue: any) => void} updateProp
+ * @property {() => ([HTMLElement[], (bit: number) => HTMLElement[]])} getUpdateViews
+ * @property {(newValue: any, bit: number) => {} updateDerived
+ */
+/**
+ * @brief Create a component
+ * @param {compUpdator} compUpdater
+ * @return {*}
+ */
+export function createComponent(compUpdater) {
+  return new CompNode(compUpdater);
+}
+
+export function notCached() {
+  // TODO
+  return true;
+}
+
+export function didMount() {
+  throw new Error('lifecycle should be compiled, check the babel plugin');
+}
+export function willUnmount() {
+  throw new Error('lifecycle should be compiled, check the babel plugin');
+}
+export function didUnMount() {
+  throw new Error('lifecycle should be compiled, check the babel plugin');
 }

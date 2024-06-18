@@ -25,8 +25,14 @@ export class CompNode extends DLNode {
    *  * _$forwardPropsId - the keys of the props that this node is forwarding, collected in _$setForwardProp
    *  * _$forwardPropsSet - contain all the nodes that are forwarding props to this node, collected with _$addForwardProps
    */
-  constructor() {
+  constructor({ updateState, updateProp, getUpdateViews, didUnmount, willUnmount, didMount }) {
     super(DLNodeType.Comp);
+    this.updateState = updateState;
+    this.updateProp = updateProp;
+    this.getUpdateViews = getUpdateViews;
+    this.didUnmount = didUnmount;
+    this.willUnmount = willUnmount;
+    this.didMount = didMount;
   }
 
   /**
@@ -36,18 +42,11 @@ export class CompNode extends DLNode {
    * @param children - Child nodes
    * @param forwardPropsScope - Scope for forwarding properties
    */
-  _$init(props, content, children, forwardPropsScope) {
+  init(props, content, children, forwardPropsScope) {
     this._$notInitd = true;
 
     // ---- Forward props first to allow internal props to override forwarded props
     if (forwardPropsScope) forwardPropsScope._$addForwardProps(this);
-    if (content) this._$setContent(() => content[0], content[1]);
-    if (props)
-      props.forEach(([key, value, deps]) => {
-        if (key === 'props') return this._$setProps(() => value, deps);
-        this._$setProp(key, () => value, deps);
-      });
-    if (children) this._$children = children;
 
     // ---- Add envs
     DLStore.global.DLEnvStore &&
@@ -67,8 +66,11 @@ export class CompNode extends DLNode {
       this.willUnmount && DLNode.addWillUnmount(this, this.willUnmount.bind(this));
       DLNode.addDidUnmount(this, this._$setUnmounted.bind(this));
       this.didUnmount && DLNode.addDidUnmount(this, this.didUnmount.bind(this));
-      this.willMount?.();
-      this._$nodes = this.Body?.() ?? [];
+      if (this.getUpdateViews) {
+        const [baseNode, updateView] = this.getUpdateViews();
+        this.updateView = updateView;
+        this._$nodes = baseNode;
+      }
     };
 
     if (this._$catchable) {
@@ -79,6 +81,8 @@ export class CompNode extends DLNode {
     } else {
       willCall();
     }
+
+    return this;
   }
 
   _$setUnmounted() {
@@ -89,25 +93,8 @@ export class CompNode extends DLNode {
    * @brief Call updates manually before the node is mounted
    */
   _$callUpdatesBeforeInit() {
-    const protoProps = Object.getOwnPropertyNames(Object.getPrototypeOf(this));
-    const ownProps = Object.getOwnPropertyNames(this);
-    const allProps = [...protoProps, ...ownProps];
-    allProps.forEach(key => {
-      // ---- Run watcher
-      if (key.startsWith('$w$')) return this[key.slice(3)]();
-      // ---- Run model update
-      if (key.startsWith('$md$')) {
-        const realKey = key.slice(4);
-        this[realKey] = this[realKey]();
-        return;
-      }
-      // ---- Run derived value
-      if (key.startsWith('$f$')) {
-        const realKey = key.slice(3);
-        this[realKey] = this[key];
-        this._$updateDerived(realKey);
-      }
-    });
+    // invoke full updateState
+    this.updateState(-1);
     delete this._$notInitd;
   }
 
@@ -251,37 +238,33 @@ export class CompNode extends DLNode {
 
   /**
    * @brief Update properties that depend on this property
-   * @param key
+   * @param {any} newValue
+   * @param {number} bit
    */
-  _$updateDerived(key) {
+  updateDerived(newValue, bit) {
     if ('_$notInitd' in this) return;
 
-    this[`$s$${key}`]?.forEach(k => {
-      if (`$w$${k}` in this) {
-        // ---- Watcher
-        this[k](key);
-      } else if (`$md$${k}` in this) {
-        this[k]._$update();
-      } else {
-        // ---- Regular derived value
-        this[k] = this[`$f$${k}`];
-      }
-    });
+    // ---- Update all properties that depend on this property
+    this.updateState(bit);
 
     // ---- "trigger-view"
-    this._$updateView(key);
+    this._$updateView(bit);
   }
 
-  _$updateView(key) {
+  /**
+   *
+   * @param {number} bit
+   * @private
+   */
+  _$updateView(bit) {
     if (this._$modelCallee) return this._$updateModelCallee();
-    if (!('_$update' in this)) return;
-    const depNum = this[`$$${key}`];
-    if (!depNum) return;
+    // if (!('_$update' in this)) return;
+    if (!bit) return;
     // ---- Collect all depNums that need to be updated
     if ('_$depNumsToUpdate' in this) {
-      this._$depNumsToUpdate.push(depNum);
+      this._$depNumsToUpdate.push(bit);
     } else {
-      this._$depNumsToUpdate = [depNum];
+      this._$depNumsToUpdate = [bit];
       // ---- Update in the next microtask
       schedule(() => {
         // ---- Abort if unmounted
@@ -289,7 +272,7 @@ export class CompNode extends DLNode {
         const depNums = this._$depNumsToUpdate;
         if (depNums.length > 0) {
           const depNum = depNums.reduce((acc, cur) => acc | cur, 0);
-          this._$update(depNum);
+          this.updateView(depNum);
         }
         delete this._$depNumsToUpdate;
       });
