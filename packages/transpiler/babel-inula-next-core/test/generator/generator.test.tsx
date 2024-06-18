@@ -19,7 +19,7 @@ describe('generate', () => {
           updateState: changed => {},
           updateProp: (propName, newValue) => {}
         });
-        return self;
+        return self.init();
       }"
     `);
   });
@@ -79,7 +79,7 @@ describe('generate', () => {
             return [[],,];
           }
         });
-        return self;
+        return self.init();
       }"
     `);
   });
@@ -102,14 +102,14 @@ describe('generate', () => {
         self = $$createComponent({
           updateState: changed => {
             if (changed & 1) {
-              if (Inula.notCached(self, "random_str", [count])) {
+              if ($$notCached(self, "random_str", [count])) {
                 doubleCount = count * 2;
               }
             }
           },
           updateProp: (propName, newValue) => {}
         });
-        return self;
+        return self.init();
       }"
     `);
   });
@@ -150,7 +150,7 @@ describe('generate', () => {
         self = $$createComponent({
           updateState: changed => {
             if (changed & 1) {
-              if (Inula.notCached(self, "random_str", [count])) {
+              if ($$notCached(self, "random_str", [count])) {
                 self.updateDerived(doubleCount = count * 2, 2 /*0b10*/);
                 ff = count * 2;
                 {
@@ -164,7 +164,7 @@ describe('generate', () => {
               }
             }
             if (changed & 7) {
-              if (Inula.notCached(self, "random_str", [count, doubleCount, nn])) {
+              if ($$notCached(self, "random_str", [count, doubleCount, nn])) {
                 kk = count * doubleCount + 100 + nn[1];
               }
             }
@@ -178,7 +178,7 @@ describe('generate', () => {
             return [[],,];
           }
         });
-        return self;
+        return self.init();
       }"
     `);
   });
@@ -204,7 +204,7 @@ describe('generate', () => {
             }
           }
         });
-        return self;
+        return self.init();
       }"
     `);
   });
@@ -234,7 +234,7 @@ describe('generate', () => {
             }
           }
         });
-        return self;
+        return self.init();
       }"
     `);
   });
@@ -260,7 +260,7 @@ describe('generate', () => {
         self = $$createComponent({
           updateState: changed => {
             if (changed & 1) {
-              if (Inula.notCached(self, "random_str", [prop1_$p$_])) {
+              if ($$notCached(self, "random_str", [prop1_$p$_])) {
                 derived = prop1_$p$_ * 2;
                 {
                   console.log(prop1_$p$_);
@@ -274,7 +274,7 @@ describe('generate', () => {
             }
           }
         });
-        return self;
+        return self.init();
       }"
     `);
   });
