@@ -1,4 +1,5 @@
 import type babel from '@babel/core';
+import type { BabelFile } from '@babel/core';
 import { NodePath, type PluginObj, type types as t } from '@babel/core';
 import { type DLightOption } from './types';
 import { defaultAttributeMap, defaultHTMLTags, COMPONENT, importMap } from './constants';
@@ -20,7 +21,13 @@ function replaceWithComponent(path: NodePath<t.CallExpression>, root: ComponentN
   compNode.id!.name = realFuncName;
 }
 
-export default function (api: typeof babel, options: DLightOption): PluginObj {
+interface PluginState {
+  customState: Record<string, ComponentNode>;
+  filename: string;
+  file: BabelFile;
+}
+
+export default function (api: typeof babel, options: DLightOption): PluginObj<PluginState> {
   const {
     files = '**/*.{js,ts,jsx,tsx}',
     excludeFiles = '**/{dist,node_modules,lib}/*',
@@ -39,49 +46,63 @@ export default function (api: typeof babel, options: DLightOption): PluginObj {
 
   register(api);
   return {
+    name: 'babel-inula-next-core',
     visitor: {
       Program: {
         enter(path, { filename }) {
           // return pluginProvider.programEnterVisitor(path, filename);
           if (!fileAllowed(filename, toArray(files), toArray(excludeFiles))) {
             path.skip();
+            return;
           }
 
           if (!options.skipImport) {
             addImport(path.node, importMap, packageName);
           }
         },
-        exit(path, { filename }) {
-          // pluginProvider.programExitVisitor.bind(pluginProvider);
-        },
       },
-      CallExpression(path: NodePath<t.CallExpression>) {
-        if (ALREADY_COMPILED.has(path)) return;
+      CallExpression: {
+        exit(path: NodePath<t.CallExpression>, state) {
+          if (ALREADY_COMPILED.has(path)) return;
 
-        if (isCompPath(path)) {
-          const componentNode = extractFnFromMacro(path, COMPONENT);
-          let name = '';
-          // try to get the component name, when parent is a variable declarator
-          if (path.parentPath.isVariableDeclarator()) {
-            const lVal = path.parentPath.get('id');
-            if (lVal.isIdentifier()) {
-              name = lVal.node.name;
-            } else {
-              console.error('Component macro must be assigned to a variable');
+          if (isCompPath(path)) {
+            const componentNode = extractFnFromMacro(path, COMPONENT);
+            let name = '';
+            // try to get the component name, when parent is a variable declarator
+            if (path.parentPath.isVariableDeclarator()) {
+              const lVal = path.parentPath.get('id');
+              if (lVal.isIdentifier()) {
+                name = lVal.node.name;
+              } else {
+                console.error('Component macro must be assigned to a variable');
+              }
             }
+            const root = analyze(name, componentNode, {
+              htmlTags,
+            });
+
+            recordComponentInState(state, name, root);
+
+            replaceWithComponent(path, root);
+
+            // The sub path has been visited, so we just skip
+            path.skip();
           }
-          const root = analyze(name, componentNode, {
-            htmlTags,
-          });
 
-          replaceWithComponent(path, root);
-
-          // The sub path has been visited, so we just skip
-          path.skip();
-        }
-
-        ALREADY_COMPILED.add(path);
+          ALREADY_COMPILED.add(path);
+        },
       },
     },
   };
+}
+
+function recordComponentInState(state: PluginState, name: string, componentNode: ComponentNode) {
+  const metadata = state.file.metadata as { components: Record<string, ComponentNode> };
+  if (metadata.components == null) {
+    metadata.components = {
+      [name]: componentNode,
+    };
+  } else {
+    metadata.components[name] = componentNode;
+  }
 }
