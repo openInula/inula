@@ -240,7 +240,7 @@ export class ForNode extends MutableNode {
    */
   updateWithKey(newArray, newKeys) {
     if (newKeys.length !== new Set(newKeys).size) {
-      throw new Error('DLight: Duplicate keys in for loop are not allowed');
+      throw new Error('Inula-Next: Duplicate keys in for loop are not allowed');
     }
     const prevKeys = this.keys;
     this.keys = newKeys;

@@ -576,6 +576,19 @@ export class ViewParser {
       children = itemFnNode.body;
     }
 
+    if (this.t.isJSXElement(children)) {
+      const keyAttr = children.openingElement.attributes.find(
+        (attr): attr is t.JSXAttribute => this.t.isJSXAttribute(attr) && attr.name.name === 'key'
+      );
+      if (
+        keyAttr?.value &&
+        this.t.isJSXExpressionContainer(keyAttr.value) &&
+        !this.t.isJSXEmptyExpression(keyAttr.value.expression)
+      ) {
+        key = keyAttr.value.expression;
+      }
+    }
+
     const item = itemFnNode.params[0];
     if (!this.t.isJSXElement(children)) throw new Error('For: Expected jsx element in return statement');
 

@@ -1,4 +1,4 @@
-import { type DLightHTMLAttributes } from './htmlTag';
+import { type InulaNextHTMLAttributes } from './htmlTag';
 
 // a very magical solution
 // when vscode parse ts, if it is type A<T> = B<xxx<T>>, it will show the detailed type,
@@ -8,10 +8,10 @@ import { type DLightHTMLAttributes } from './htmlTag';
 // so just don't add key!
 type Useless = { [key in '']: never };
 
-export type DLightObject<T> = {
+export type InulaNextObject<T> = {
   [K in keyof T]-?: undefined extends T[K]
-    ? (value?: T[K]) => DLightObject<Omit<T, K>>
-    : (value: T[K]) => DLightObject<Omit<T, K>>;
+    ? (value?: T[K]) => InulaNextObject<Omit<T, K>>
+    : (value: T[K]) => InulaNextObject<Omit<T, K>>;
 };
 interface CustomNodeProps {
   willMount: (node: any) => void;
@@ -45,23 +45,23 @@ export type CheckContent<T> = RemoveOptional<T>[ContentKeyName<RemoveOptional<T>
 
 type CustomClassTag<T, O> =
   ContentKeyName<RemoveOptional<O>> extends undefined
-    ? () => DLightObject<T>
+    ? () => InulaNextObject<T>
     : undefined extends O[ContentKeyName<RemoveOptional<O>>]
       ? CheckContent<O> extends ContentProp<infer U>
-        ? (content?: U extends unknown ? any : unknown) => DLightObject<Omit<T, ContentKeyName<RemoveOptional<O>>>>
+        ? (content?: U extends unknown ? any : unknown) => InulaNextObject<Omit<T, ContentKeyName<RemoveOptional<O>>>>
         : never
       : CheckContent<O> extends ContentProp<infer U>
-        ? (content: U extends unknown ? any : unknown) => DLightObject<Omit<T, ContentKeyName<RemoveOptional<O>>>>
+        ? (content: U extends unknown ? any : unknown) => InulaNextObject<Omit<T, ContentKeyName<RemoveOptional<O>>>>
         : never;
 
 type CustomSnippetTag<T> = T extends { content: infer U }
-  ? (content: U) => DLightObject<Omit<T, 'content'>>
+  ? (content: U) => InulaNextObject<Omit<T, 'content'>>
   : T extends { content?: infer U }
-    ? (content?: U) => DLightObject<Omit<T, 'content'>>
-    : () => DLightObject<T>;
+    ? (content?: U) => InulaNextObject<Omit<T, 'content'>>
+    : () => InulaNextObject<T>;
 
 type CustomTagType<T, G> = CustomClassTag<
-  T & CustomNodeProps & (keyof G extends never ? object : DLightHTMLAttributes<G, object, HTMLElement>),
+  T & CustomNodeProps & (keyof G extends never ? object : InulaNextHTMLAttributes<G, object, HTMLElement>),
   T
 > &
   Useless;

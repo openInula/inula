@@ -1,6 +1,6 @@
 // ---- env
-import { DLightObject } from './compTag';
+import { InulaNextObject } from './compTag';
 
 type AnyEnv = { _$anyEnv: true };
 
-export const env: <T = AnyEnv>() => T extends AnyEnv ? any : DLightObject<T>;
+export const env: <T = AnyEnv>() => T extends AnyEnv ? any : InulaNextObject<T>;

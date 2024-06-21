@@ -1,13 +1,9 @@
 {
   "name": "@openinula/store",
   "version": "0.0.0",
-  "description": "DLight shared store",
-  "author": {
-    "name": "IanDx",
-    "email": "iandxssxx@gmail.com"
-  },
+  "description": "Inula shared store",
   "keywords": [
-    "dlight.js"
+    "Inula-Next"
   ],
   "license": "MIT",
   "files": [

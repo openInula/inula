@@ -76,7 +76,7 @@ export class CompNode extends DLNode {
     if (this._$catchable) {
       this._$catchable(willCall)();
       if (this._$update) this._$update = this._$catchable(this._$update.bind(this));
-      this._$updateDerived = this._$catchable(this._$updateDerived.bind(this));
+      this.updateDerived = this._$catchable(this.updateDerived.bind(this));
       delete this._$catchable;
     } else {
       willCall();
@@ -130,10 +130,10 @@ export class CompNode extends DLNode {
     const value = valueFunc();
     if (key === '_$content' && this._$contentKey) {
       this[this._$contentKey] = value;
-      this._$updateDerived(this._$contentKey);
+      this.updateDerived(this._$contentKey);
     }
     this[key] = value;
-    this._$updateDerived(key);
+    this.updateDerived(key);
     if (notInitd) this._$forwardPropsId.push(key);
     else this._$setPropToForward(key, value, deps);
   }
@@ -174,7 +174,7 @@ export class CompNode extends DLNode {
     if (!contentKey) return;
     if (this._$cache(contentKey, deps)) return;
     this[contentKey] = valueFunc();
-    this._$updateDerived(contentKey);
+    this.updateDerived(contentKey);
   }
 
   /**
@@ -185,13 +185,9 @@ export class CompNode extends DLNode {
    */
   _$setProp(key, valueFunc, deps) {
     if ('_$forwardProps' in this) return this._$setForwardProp(key, valueFunc, deps);
-    if (!(`$p$${key}` in this)) {
-      console.warn(`[${key}] is not a prop in ${this.constructor.name}`);
-      return;
-    }
     if (this._$cache(key, deps)) return;
     this[key] = valueFunc();
-    this._$updateDerived(key);
+    this.updateProp(key, this[key]);
   }
 
   _$setProps(valueFunc, deps) {
@@ -225,14 +221,14 @@ export class CompNode extends DLNode {
     if (!(`$e$${key}` in this)) return;
     if (envNode !== this[`$en$${key}`]) return;
     this[key] = value;
-    this._$updateDerived(key);
+    this.updateDerived(key);
   }
 
   /**
    * @brief Update a prop
    */
   _$ud(exp, key) {
-    this._$updateDerived(key);
+    this.updateDerived(key);
     return exp;
   }
 
@@ -286,7 +282,7 @@ export class CompNode extends DLNode {
     Promise.resolve().then(() => {
       // ---- Abort if unmounted
       if (this._$unmounted) return;
-      this._$modelCallee._$updateDerived(this._$modelKey);
+      this._$modelCallee.updateDerived(this._$modelKey);
       delete this._$depNumsToUpdate;
     });
   }
@@ -317,7 +313,7 @@ export class CompNode extends DLNode {
   }
 
   /**
-   * @brief Inject Dlight model in to a property
+   * @brief Inject model in to a property
    * @param ModelCls
    * @param props { m: [props, deps], s: [key, value, deps] }
    * @param content
@@ -352,5 +348,5 @@ export const Model = CompNode;
  * @param key
  */
 export function update(dlNode, key) {
-  dlNode._$updateDerived(key);
+  dlNode.updateDerived(key);
 }

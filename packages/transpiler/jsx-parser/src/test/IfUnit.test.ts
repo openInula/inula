@@ -184,7 +184,7 @@ describe('IfUnit', () => {
     expect(
       parse(`
   <>
-      <h1 className="123">Hello dlight fn comp</h1>
+      <h1 className="123">Hello inulax next fn comp</h1>
       <section>
         count: {count}, double is: {db}
         <button onClick={() => (count += 1)}>Add</button>

@@ -20,6 +20,6 @@
     "vite-plugin-inula-next": "workspace:*"
   },
   "keywords": [
-    "dlight.js"
+    "inula-next"
   ]
 }

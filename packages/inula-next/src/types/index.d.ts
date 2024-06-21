@@ -1,9 +1,9 @@
 import { type Typed } from './compTag';
-import { type DLightHtmlTagFunc } from './htmlTag';
+import { type InulaNextHtmlTagFunc } from './htmlTag';
 export { type Properties as CSSProperties } from 'csstype';
 
 export const comp: <T>(tag: T) => object extends T ? any : Typed<T>;
-export const tag: (tag: any) => DLightHtmlTagFunc;
+export const tag: (tag: any) => InulaNextHtmlTagFunc;
 
 export { _ } from './expressionTag';
 export * from './htmlTag';
@@ -33,9 +33,9 @@ export const Snippet: any;
 export const Model: any;
 export const update: any;
 export const required: any;
-export function insertChildren<T>(parent: T, children: DLightViewProp): void;
+export function insertChildren<T>(parent: T, children: InulaNextViewProp): void;
 
 // ---- View types
-export type DLightViewComp<T = any> = Typed<T>;
-export type DLightViewProp = (View: any) => void;
-export type DLightViewLazy<T = any> = () => Promise<{ default: T }>;
+export type InulaNextViewComp<T = any> = Typed<T>;
+export type InulaNextViewProp = (View: any) => void;
+export type InulaNextViewLazy<T = any> = () => Promise<{ default: T }>;

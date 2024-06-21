@@ -1,5 +1,5 @@
 import babel, { NodePath, PluginObj } from '@babel/core';
-import type { DLightOption } from '../types';
+import type { InulaNextOption } from '../types';
 import { register, types as t } from '@openinula/babel-api';
 import { COMPONENT, PROP_SUFFIX } from '../constants';
 import { ArrowFunctionWithBlock, extractFnFromMacro, isCompPath, wrapArrowFunctionWithBlock } from '../utils';
@@ -96,7 +96,7 @@ function extractPropsDestructingInFnBody(
  * @param api
  * @param options
  */
-export default function (api: typeof babel, options: DLightOption): PluginObj {
+export default function (api: typeof babel, options: InulaNextOption): PluginObj {
   register(api);
   let props: Prop[];
 

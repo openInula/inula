@@ -1,4 +1,4 @@
-export interface DLightGlobalEventHandlers {
+export interface InulaNextGlobalEventHandlers {
   /**
    * Fires when the user aborts the download.
    * @param ev The event.

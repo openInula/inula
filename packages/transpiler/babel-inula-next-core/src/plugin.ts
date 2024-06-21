@@ -1,7 +1,7 @@
 import type babel from '@babel/core';
 import type { BabelFile } from '@babel/core';
 import { NodePath, type PluginObj, type types as t } from '@babel/core';
-import { type DLightOption } from './types';
+import { type InulaNextOption } from './types';
 import { defaultAttributeMap, defaultHTMLTags, COMPONENT, importMap } from './constants';
 import { analyze } from './analyze';
 import { addImport, extractFnFromMacro, fileAllowed, isCompPath, toArray } from './utils';
@@ -27,7 +27,7 @@ interface PluginState {
   file: BabelFile;
 }
 
-export default function (api: typeof babel, options: DLightOption): PluginObj<PluginState> {
+export default function (api: typeof babel, options: InulaNextOption): PluginObj<PluginState> {
   const {
     files = '**/*.{js,ts,jsx,tsx}',
     excludeFiles = '**/{dist,node_modules,lib}/*',
@@ -45,6 +45,7 @@ export default function (api: typeof babel, options: DLightOption): PluginObj<Pl
         : customHtmlTags;
 
   register(api);
+  let transformationHappened = false;
   return {
     name: 'babel-inula-next-core',
     visitor: {
@@ -55,10 +56,12 @@ export default function (api: typeof babel, options: DLightOption): PluginObj<Pl
             path.skip();
             return;
           }
-
-          if (!options.skipImport) {
+        },
+        exit(path, state) {
+          if (transformationHappened && !options.skipImport) {
             addImport(path.node, importMap, packageName);
           }
+          transformationHappened = false;
         },
       },
       CallExpression: {
@@ -85,6 +88,7 @@ export default function (api: typeof babel, options: DLightOption): PluginObj<Pl
 
             replaceWithComponent(path, root);
 
+            transformationHappened = true;
             // The sub path has been visited, so we just skip
             path.skip();
           }

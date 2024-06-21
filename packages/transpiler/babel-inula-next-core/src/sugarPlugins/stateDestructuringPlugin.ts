@@ -14,7 +14,7 @@
  */
 
 import babel, { NodePath, PluginObj } from '@babel/core';
-import type { DLightOption } from '../types';
+import type { InulaNextOption } from '../types';
 import { register } from '@openinula/babel-api';
 import { COMPONENT } from '../constants';
 import { ArrowFunctionWithBlock, extractFnFromMacro, isCompPath } from '../utils';
@@ -68,7 +68,7 @@ function searchNestedProps(idPath: NodePath<t.ArrayPattern | t.ObjectPattern>) {
  * @param api
  * @param options
  */
-export default function (api: typeof babel, options: DLightOption): PluginObj {
+export default function (api: typeof babel, options: InulaNextOption): PluginObj {
   register(api);
   return {
     visitor: {
