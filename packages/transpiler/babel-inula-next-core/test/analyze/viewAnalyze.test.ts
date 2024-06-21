@@ -70,8 +70,8 @@ describe('viewAnalyze', () => {
       });
     `);
     const forNode = root.children![0] as any;
-    expect(forNode.children[0].children[0].content.depMask).toEqual(0b111);
-    expect(genCode(forNode.children[0].children[0].content.dependenciesNode)).toMatchInlineSnapshot(`"[prefix, name]"`);
+    expect(forNode.children[0].children[0].content.depMask).toEqual(0b11);
+    expect(genCode(forNode.children[0].children[0].content.dependenciesNode)).toMatchInlineSnapshot(`"[name]"`);
   });
 
   it('should collect key for loop', () => {

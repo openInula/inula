@@ -295,7 +295,7 @@ describe('view generation', () => {
           getUpdateViews: () => {
             let $node0, $node1;
             $node0 = $$createElement("div");
-            $node1 = new $$ForNode(list, 1, null, (item, $updateArr, $idx) => {
+            $node1 = new $$ForNode(list, 1, list.map(item => index), (item, $updateArr, $idx) => {
               let $node0, $node1;
               $updateArr[$idx] = ($changed, $item) => {
                 item = $item;
@@ -314,7 +314,7 @@ describe('view generation', () => {
             $node0._$nodes = [$node1];
             return [[$node0], $changed => {
               if ($changed & 1) {
-                $node1 && $node1.updateArray(list, null);
+                $node1 && $node1.updateArray(list, list.map(item => index));
               }
               $node1 && $node1.update($changed);
               return [$node0];

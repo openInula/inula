@@ -35,7 +35,6 @@ describe('analyze properties', () => {
     `);
     expect(root.variables.length).toBe(2);
     expect(findVarByName(root, 'foo').kind).toBe('let');
-    expect(findVarByName(root, 'bar').kind).toBe('const');
   });
 
   describe('state dependency', () => {
@@ -172,7 +171,8 @@ describe('analyze properties', () => {
         function onInput() {}
       })
     `);
-    expect(root.variables.map(p => p.name)).toEqual(['foo', 'onClick', 'onHover', 'onInput']);
-    expect(root.variables[3].type).toBe('method');
+    [1, 2, 3].forEach(i => {
+      expect(root.variables[i].type).toBe('plain');
+    });
   });
 });

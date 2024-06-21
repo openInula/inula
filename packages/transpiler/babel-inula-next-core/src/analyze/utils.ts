@@ -51,3 +51,7 @@ export function hasJSX(path: NodePath<t.Node>) {
 export function extractFnBody(node: t.FunctionExpression | t.ArrowFunctionExpression): t.Statement {
   return t.isStatement(node.body) ? node.body : t.expressionStatement(node.body);
 }
+
+export function isStaticValue(node: t.VariableDeclarator['init']) {
+  return t.isLiteral(node) || t.isArrowFunctionExpression(node) || t.isFunctionExpression(node);
+}
