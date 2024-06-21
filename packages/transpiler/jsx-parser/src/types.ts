@@ -73,6 +73,7 @@ export interface ForUnit {
   item: t.LVal;
   array: t.Expression;
   key: t.Expression;
+  index: t.Identifier | null;
   children: ViewUnit[];
 }
 export type ViewUnit = TextUnit | HTMLUnit | CompUnit | IfUnit | ExpUnit | EnvUnit | TemplateUnit | ForUnit;

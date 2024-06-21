@@ -44,7 +44,7 @@ export class ForNode extends MutableNode {
     this.array.forEach((item, idx) => {
       this.initUnmountStore();
       const key = this.keys?.[idx] ?? idx;
-      const nodes = nodeFunc(item, this.updateArr, idx);
+      const nodes = nodeFunc(item, idx, this.updateArr);
       this.nodesMap.set(key, nodes);
       this.setUnmountMap(key);
     });
@@ -103,7 +103,7 @@ export class ForNode extends MutableNode {
    */
   getNewNodes(idx, key, array, updateArr) {
     this.initUnmountStore();
-    const nodes = this.geneNewNodesInEnv(() => this.nodeFunc(array[idx], updateArr ?? this.updateArr, idx));
+    const nodes = this.geneNewNodesInEnv(() => this.nodeFunc(array[idx], idx, updateArr ?? this.updateArr));
     this.setUnmountMap(key);
     this.nodesMap.set(key, nodes);
     return nodes;

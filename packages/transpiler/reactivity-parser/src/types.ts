@@ -57,6 +57,7 @@ export interface CompParticle {
 export interface ForParticle {
   type: 'for';
   item: t.LVal;
+  index: t.Identifier | null;
   array: DependencyValue<t.Expression>;
   key: t.Expression;
   children: ViewParticle[];
