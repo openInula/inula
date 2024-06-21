@@ -1,6 +1,6 @@
 import { ContentKeyName, ContentProp } from './compTag';
 
-type RemoveDLightInternal<T, Props> = Omit<T, 'willMount' | 'didMount' | 'didUpdate' | 'willUnmount' | keyof Props>;
+type RemoveInulaNextInternal<T, Props> = Omit<T, 'willMount' | 'didMount' | 'didUpdate' | 'willUnmount' | keyof Props>;
 
 export type Modeling<Model, Props = object> = (props: Props) => Model;
 
@@ -16,7 +16,7 @@ export const use: <M>(
   // @ts-expect-error Model should be a function
   content?: GetContent<Parameters<M>[0]>
   // @ts-expect-error Model should be a function
-) => RemoveDLightInternal<ReturnType<M>, Parameters<M>[0]>;
+) => RemoveInulaNextInternal<ReturnType<M>, Parameters<M>[0]>;
 
 // @ts-expect-error Model should be a function
-export type ModelType<T> = RemoveDLightInternal<ReturnType<T>, Parameters<T>[0]>;
+export type ModelType<T> = RemoveInulaNextInternal<ReturnType<T>, Parameters<T>[0]>;

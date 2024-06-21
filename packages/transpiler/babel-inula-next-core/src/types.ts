@@ -1,7 +1,7 @@
 import { type types as t } from '@babel/core';
 
 export type HTMLTags = string[] | ((defaultHtmlTags: string[]) => string[]);
-export interface DLightOption {
+export interface InulaNextOption {
   /**
    * Files that will be included
    * @default ** /*.{js,jsx,ts,tsx}

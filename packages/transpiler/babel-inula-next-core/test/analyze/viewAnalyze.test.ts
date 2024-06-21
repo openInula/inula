@@ -1,5 +1,4 @@
 import { variablesAnalyze } from '../../src/analyze/Analyzers/variablesAnalyze';
-import { ComponentNode } from '../../src/analyze/types';
 import { viewAnalyze } from '../../src/analyze/Analyzers/viewAnalyze';
 import { genCode } from '../mock';
 import { describe, expect, it } from 'vitest';
@@ -73,5 +72,21 @@ describe('viewAnalyze', () => {
     const forNode = root.children![0] as any;
     expect(forNode.children[0].children[0].content.depMask).toEqual(0b111);
     expect(genCode(forNode.children[0].children[0].content.dependenciesNode)).toMatchInlineSnapshot(`"[prefix, name]"`);
+  });
+
+  it('should collect key for loop', () => {
+    const root = analyze(/*js*/ `
+      Component(({}) => {
+        const unused = 0;
+        const prefix = 'test';
+        const list = [{name: 1}, {name: 2}, {name: 3}];
+        const list2 = [{name: 4}, {name: 5}, {name: 6}];
+        return <for each={[...list, ...list2]}>{
+          ({name}) => <div key={name}>{prefix + name}</div>
+        }</for>;
+      });
+    `);
+    const forNode = root.children![0] as any;
+    expect(genCode(forNode.key)).toMatchInlineSnapshot(`"name"`);
   });
 });

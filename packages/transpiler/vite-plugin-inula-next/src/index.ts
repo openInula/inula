@@ -1,9 +1,9 @@
 import { transform } from '@babel/core';
-import dlight, { type DLightOption } from 'babel-preset-inula-next';
+import InulaNext, { type InulaNextOption } from 'babel-preset-inula-next';
 import { minimatch } from 'minimatch';
 import { Plugin, TransformResult } from 'vite';
 
-export default function (options: DLightOption = {}): Plugin {
+export default function (options: Partial<InulaNextOption> = {}): Plugin {
   const {
     files: preFiles = '**/*.{js,jsx,ts,tsx}',
     excludeFiles: preExcludeFiles = '**/{dist,node_modules,lib}/*.{js,ts}',
@@ -12,7 +12,7 @@ export default function (options: DLightOption = {}): Plugin {
   const excludeFiles = Array.isArray(preExcludeFiles) ? preExcludeFiles : [preExcludeFiles];
 
   return {
-    name: 'dlight',
+    name: 'Inula-Next',
     enforce: 'pre',
     transform(code: string, id: string) {
       let enter = false;
@@ -33,7 +33,7 @@ export default function (options: DLightOption = {}): Plugin {
         return transform(code, {
           babelrc: false,
           configFile: false,
-          presets: [[dlight, options]],
+          presets: [[InulaNext, options]],
           sourceMaps: true,
           filename: id,
         }) as TransformResult;

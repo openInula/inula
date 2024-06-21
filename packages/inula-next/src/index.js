@@ -34,7 +34,7 @@ export function render(Comp, idOrEl) {
     const elFound = DLStore.document.getElementById(idOrEl);
     if (elFound) el = elFound;
     else {
-      throw new Error(`DLight: Element with id ${idOrEl} not found`);
+      throw new Error(`Inula-Next: Element with id ${idOrEl} not found`);
     }
   }
   initStore();
@@ -58,7 +58,7 @@ export const required = null;
 
 export function use() {
   console.error(
-    'DLight: use() is not supported be called directly. You can only assign `use(model)` to a dlight class property. Any other expressions are not allowed.'
+    'Inula-Next: use() is not supported be called directly. You can only assign `use(model)` to a Inula-Next class property. Any other expressions are not allowed.'
   );
 }
 

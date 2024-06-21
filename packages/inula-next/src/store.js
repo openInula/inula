@@ -2,7 +2,7 @@ import { Store } from '@openinula/store';
 
 // ---- Using external Store to store global and document
 //      Because Store is a singleton, it is safe to use it as a global variable
-//      If created in DLight package, different package versions will introduce
+//      If created in Inula-Next package, different package versions will introduce
 //      multiple Store instances.
 
 if (!('global' in Store)) {

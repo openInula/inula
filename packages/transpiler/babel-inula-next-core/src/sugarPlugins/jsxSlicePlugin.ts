@@ -14,8 +14,8 @@
  */
 
 import babel, { NodePath, PluginObj } from '@babel/core';
-import {types as t} from '@openinula/babel-api';
-import type { DLightOption } from '../types';
+import { types as t } from '@openinula/babel-api';
+import type { InulaNextOption } from '../types';
 import { register } from '@openinula/babel-api';
 
 function transformJSXSlice(path: NodePath<t.JSXElement> | NodePath<t.JSXFragment>) {
@@ -105,7 +105,7 @@ function genName(node: t.JSXElement | t.JSXFragment) {
  *   let jsxSlice = <Comp_$id$/>
  * ```
  */
-export default function (api: typeof babel, options: DLightOption): PluginObj {
+export default function (api: typeof babel, options: InulaNextOption): PluginObj {
   register(api);
   return {
     visitor: {

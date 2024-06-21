@@ -1,7 +1,7 @@
 import { transform } from '@babel/standalone';
 import preset from 'babel-preset-inula-next';
 
-const code = /*js*/`
+const code = /*js*/ `
 console.log('ok');
 
 const Comp = Component(() => {
@@ -13,7 +13,7 @@ const Comp = Component(() => {
 `;
 
 const result = transform(code, {
-  presets: [preset]
+  presets: [preset],
 }).code;
 
 console.log(result);

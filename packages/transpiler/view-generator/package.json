@@ -1,13 +1,9 @@
 {
   "name": "@openinula/view-generator",
   "version": "1.0.0-next.2",
-  "description": "DLight View Generator given different types of reactivity units",
-  "author": {
-    "name": "IanDx",
-    "email": "iandxssxx@gmail.com"
-  },
+  "description": "InulaNext View Generator given different types of reactivity units",
   "keywords": [
-    "dlight.js"
+    "Inula-Next"
   ],
   "license": "MIT",
   "files": [
