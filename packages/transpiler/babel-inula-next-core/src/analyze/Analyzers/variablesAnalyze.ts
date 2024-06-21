@@ -14,13 +14,14 @@
  */
 
 import { Visitor } from '../types';
-import { addMethod, addVariable, addSubComponent, createComponentNode } from '../nodeFactory';
-import { isValidPath } from '../utils';
+import { addPlainVariable, addVariable, addSubComponent, createComponentNode } from '../nodeFactory';
+import { isStaticValue, isValidPath } from '../utils';
 import { type NodePath } from '@babel/core';
-import { COMPONENT, reactivityFuncNames } from '../../constants';
+import { reactivityFuncNames } from '../../constants';
 import { analyzeFnComp } from '../index';
 import { getDependenciesFromNode } from '@openinula/reactivity-parser';
 import { types as t } from '@openinula/babel-api';
+import { isCompPath } from '../../utils';
 
 /**
  * collect all properties and methods from the node
@@ -36,33 +37,36 @@ export function variablesAnalyze(): Visitor {
         const id = declaration.get('id');
         // handle destructuring
         if (id.isObjectPattern()) {
-          throw new Error('Object destructuring is not supported yet');
+          throw new Error('Object destructuring is not valid input');
         } else if (id.isArrayPattern()) {
-          // TODO: handle array destructuring
-          throw new Error('Array destructuring is not supported yet');
+          throw new Error('Array destructuring is not valid input');
         } else if (id.isIdentifier()) {
           // --- properties: the state / computed / plain properties / methods ---
           const init = declaration.get('init');
+          const kind = path.node.kind;
+
+          // Check if the variable can't be modified
+          if (kind === 'const' && isStaticValue(init.node)) {
+            addPlainVariable(ctx.current, t.variableDeclaration('const', [declaration.node]));
+            return;
+          }
           if (!isValidPath(init)) {
-            addVariable(
-              ctx.current,
-              {
-                name: id.node.name,
-                value: null,
-                kind: path.node.kind,
-              },
-              null
-            );
+            if (kind !== 'const') {
+              addVariable(
+                ctx.current,
+                {
+                  name: id.node.name,
+                  value: null,
+                  kind,
+                },
+                null
+              );
+            }
             return;
           }
           // handle the subcomponent
           // Should like Component(() => {})
-          if (
-            init.isCallExpression() &&
-            init.get('callee').isIdentifier() &&
-            (init.get('callee').node as t.Identifier).name === COMPONENT &&
-            (init.get('arguments')[0].isFunctionExpression() || init.get('arguments')[0].isArrowFunctionExpression())
-          ) {
+          if (init.isCallExpression() && isCompPath(init)) {
             const fnNode = init.get('arguments')[0] as
               | NodePath<t.ArrowFunctionExpression>
               | NodePath<t.FunctionExpression>;
@@ -91,16 +95,7 @@ export function variablesAnalyze(): Visitor {
       });
     },
     FunctionDeclaration(path: NodePath<t.FunctionDeclaration>, { current }) {
-      const fnId = path.node.id;
-      if (!fnId) {
-        throw new Error('Function declaration must have an id');
-      }
-
-      addMethod(current, {
-        name: fnId.name,
-        value: path.node,
-        kind: 'const',
-      });
+      addPlainVariable(current, path.node);
     },
   };
 }

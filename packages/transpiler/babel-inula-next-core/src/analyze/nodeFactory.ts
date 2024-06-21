@@ -21,7 +21,7 @@ import {
   ReactiveVariable,
   Dependency,
   BaseVariable,
-  MethodVariable,
+  PlainVariable,
 } from './types';
 import { Bitmap, ViewParticle } from '@openinula/reactivity-parser';
 
@@ -79,8 +79,8 @@ export function addVariable(
   });
 }
 
-export function addMethod(comp: ComponentNode, methodInfo: BaseVariable<MethodVariable['value']>) {
-  comp.variables.push({ ...methodInfo, type: 'method' });
+export function addPlainVariable(comp: ComponentNode, value: PlainVariable['value']) {
+  comp.variables.push({ value, type: 'plain' });
 }
 
 export function addSubComponent(comp: ComponentNode, subComp: ComponentNode) {

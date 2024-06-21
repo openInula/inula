@@ -57,13 +57,15 @@ export interface ReactiveVariable extends BaseVariable<t.Expression | null> {
   dependency: Dependency | null;
 }
 
-export interface MethodVariable extends BaseVariable<t.FunctionDeclaration> {
-  type: 'method';
-}
-
 export type SubCompVariable = ComponentNode<'subComp'>;
 
-export type Variable = ReactiveVariable | MethodVariable | SubCompVariable;
+// Including static variable and method
+export interface PlainVariable {
+  type: 'plain';
+  value: t.Statement;
+}
+
+export type Variable = ReactiveVariable | PlainVariable | SubCompVariable;
 
 export type WatchFunc = {
   dependency: Dependency | null;

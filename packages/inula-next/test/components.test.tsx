@@ -16,6 +16,13 @@
 import { describe, expect, vi } from 'vitest';
 import { domTest as it } from './utils';
 import { render, View } from '../src';
+vi.mock('../src/scheduler', async () => {
+  return {
+    schedule: (task: () => void) => {
+      task();
+    },
+  };
+});
 
 describe('components', () => {
   describe('ref', () => {
@@ -75,6 +82,28 @@ describe('components', () => {
 
       render(App, container);
       expect(container.innerHTML).toBe('<div>name is child, theme is dark</div>');
+    });
+  });
+
+  describe('composition', () => {
+    it('should update prop', ({ container }) => {
+      let update: (name: string) => void;
+      function App() {
+        let name = 'child';
+        update = (val: string) => {
+          name = val;
+        };
+        return <Child name={name} />;
+      }
+
+      function Child({ name }: { name: string }) {
+        return <div>name is {name}</div>;
+      }
+
+      render(App, container);
+      expect(container.innerHTML).toBe('<div>name is child</div>');
+      update('new');
+      expect(container.innerHTML).toBe('<div>name is new</div>');
     });
   });
 });

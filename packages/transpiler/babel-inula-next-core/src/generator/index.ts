@@ -11,7 +11,7 @@ function reconstructVariable(variable: Variable) {
     return t.variableDeclaration(kind, [t.variableDeclarator(t.identifier(variable.name), value)]);
   }
 
-  if (variable.type === 'method') {
+  if (variable.type === 'plain') {
     return variable.value;
   }
 
