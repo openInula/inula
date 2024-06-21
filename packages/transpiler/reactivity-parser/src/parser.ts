@@ -336,6 +336,7 @@ export class ReactivityParser {
     const forParticle: ForParticle = {
       type: 'for',
       item: forUnit.item,
+      index: forUnit.index,
       array: {
         value: forUnit.array,
         _depBitmaps: _depBitmaps,

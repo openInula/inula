@@ -1,3 +1,81 @@
-.ok {
-  color: var(--color-ok);
+/* tree-view.css */
+
+.app {
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.app-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.tree-view {
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.tree-view > .tree-node:first-child {
+  margin-top: 5px;  /* Add margin to the first top-level tree-node */
+}
+
+.tree-node {
+  margin-bottom: 5px;
+}
+
+.tree-node-children > .tree-node:first-child {
+  margin-top: 5px;  /* Add margin to the first top-level tree-node */
+}
+
+
+.tree-node-content {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.tree-node-content:hover {
+  background-color: #e0e0e0;
+}
+
+.tree-node-toggle {
+  min-width: 24px;
+  text-align: center;
+  font-size: 12px;
+  color: #666;
+  transition: transform 0.2s;
+}
+
+.tree-node-toggle.expanded {
+  transform: rotate(0deg);
+}
+
+.tree-node-toggle.collapsed {
+  transform: rotate(-90deg);
+}
+
+.tree-node-name {
+  margin-left: 5px;
+}
+
+.tree-node-children {
+  margin-left: 16px;
+  padding-left: 16px;
+  border-left: 1px solid #ccc;
+}
+
+/* Add some color to differentiate levels */
+.tree-node .tree-node .tree-node-content {
+  background-color: #f0f0f0;
+}
+
+.tree-node .tree-node .tree-node .tree-node-content {
+  background-color: #e8e8e8;
 }

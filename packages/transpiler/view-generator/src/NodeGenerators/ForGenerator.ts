@@ -4,12 +4,12 @@ import { type ForParticle, type ViewParticle } from '@openinula/reactivity-parse
 
 export default class ForGenerator extends BaseGenerator {
   run() {
-    const { item, array, key, children } = this.viewParticle as ForParticle;
+    const { item, array, key, children, index } = this.viewParticle as ForParticle;
 
     const dlNodeName = this.generateNodeName();
 
     // ---- Declare for node
-    this.addInitStatement(this.declareForNode(dlNodeName, array.value, item, children, array.depMask ?? 0, key));
+    this.addInitStatement(this.declareForNode(dlNodeName, array.value, item, index, children, array.depMask ?? 0, key));
 
     // ---- Update statements
     this.addUpdateStatements(array.depMask, this.updateForNode(dlNodeName, array.value, item, key));
@@ -25,7 +25,7 @@ export default class ForGenerator extends BaseGenerator {
    *   $updateArr[$idx] = (changed, $item) => {
    *      ${item} = $item
    *      {$updateStatements}
-   *   })
+   *   }
    *   ${children}
    *   return [...${topLevelNodes}]
    * })
@@ -34,20 +34,21 @@ export default class ForGenerator extends BaseGenerator {
     dlNodeName: string,
     array: t.Expression,
     item: t.LVal,
+    index: t.Identifier | null,
     children: ViewParticle[],
     depNum: number,
     key: t.Expression
   ): t.Statement {
     // ---- NodeFunc
     const [childStatements, topLevelNodes, updateStatements, nodeIdx] = this.generateChildren(children, false, true);
-
+    const idxId = index ?? this.t.identifier('$idx');
     // ---- Update func
     childStatements.unshift(
       ...this.declareNodes(nodeIdx),
       this.t.expressionStatement(
         this.t.assignmentExpression(
           '=',
-          this.t.memberExpression(this.t.identifier('$updateArr'), this.t.identifier('$idx'), true),
+          this.t.memberExpression(this.t.identifier('$updateArr'), idxId, true),
           this.t.arrowFunctionExpression(
             [...this.updateParams, this.t.identifier('$item')],
             this.t.blockStatement([
@@ -71,7 +72,7 @@ export default class ForGenerator extends BaseGenerator {
           this.t.numericLiteral(depNum),
           this.getForKeyStatement(array, item, key),
           this.t.arrowFunctionExpression(
-            [item as any, this.t.identifier('$updateArr'), this.t.identifier('$idx')],
+            [item as any, idxId, this.t.identifier('$updateArr')],
             this.t.blockStatement(childStatements)
           ),
         ])

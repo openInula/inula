@@ -16,6 +16,7 @@
 import { describe, expect, vi } from 'vitest';
 import { domTest as it } from './utils';
 import { render } from '../src';
+
 vi.mock('../src/scheduler', async () => {
   return {
     schedule: (task: () => void) => {
@@ -35,11 +36,11 @@ describe('for', () => {
   });
 
   it('should update item when arr changed', ({ container }) => {
-    let updateArr;
+    let updateArr: (num: number) => void;
 
     function App() {
       const arr = [0, 1, 2];
-      updateArr = (num: Number) => {
+      updateArr = (num: number) => {
         arr.push(num);
       };
       return <for each={arr}>{item => <div>{item}</div>}</for>;
@@ -49,6 +50,22 @@ describe('for', () => {
     expect(container.children.length).toEqual(3);
     updateArr(3);
     expect(container.children.length).toEqual(4);
+    expect(container.innerHTML).toMatchInlineSnapshot(`"<div>0</div><div>1</div><div>2</div><div>3</div>"`);
+  });
+
+  it('should get index', ({ container }) => {
+    let update: (num: number) => void;
+    function App() {
+      const arr = [0, 1, 2];
+      update = (num: number) => {
+        arr.push(num);
+      };
+      return <for each={arr}>{(item, index) => <div>{index}</div>}</for>;
+    }
+
+    render(App, container);
+    expect(container.innerHTML).toMatchInlineSnapshot(`"<div>0</div><div>1</div><div>2</div>"`);
+    update(3);
     expect(container.innerHTML).toMatchInlineSnapshot(`"<div>0</div><div>1</div><div>2</div><div>3</div>"`);
   });
 });

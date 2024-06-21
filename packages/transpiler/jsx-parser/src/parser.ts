@@ -117,7 +117,7 @@ export class ViewParser {
       // ---- Specially parse if and env
       if ([this.ifTagName, this.elseIfTagName, this.elseTagName].includes(name)) return this.parseIf(node);
       if (name === this.envTagName) return this.parseEnv(node);
-      if (name === this.forTagName) return this.pareFor(node);
+      if (name === this.forTagName) return this.parseFor(node);
       else if (this.htmlTags.includes(name)) {
         type = 'html';
         tag = this.t.stringLiteral(name);
@@ -535,7 +535,7 @@ export class ViewParser {
     return props.find((prop): prop is t.JSXAttribute => this.t.isJSXAttribute(prop) && prop.name.name === name);
   }
 
-  private pareFor(node: t.JSXElement) {
+  private parseFor(node: t.JSXElement) {
     // ---- Get array
     const arrayContainer = this.findProp(node, 'each');
     if (!arrayContainer) throw new Error('Missing [each] prop in for loop');
@@ -590,12 +590,16 @@ export class ViewParser {
     }
 
     const item = itemFnNode.params[0];
+    const index = itemFnNode.params[1] || null;
+    if (index && !this.t.isIdentifier(index))
+      throw new Error('For: Expected identifier in function second parameter as index');
     if (!this.t.isJSXElement(children)) throw new Error('For: Expected jsx element in return statement');
 
     this.viewUnits.push({
       type: 'for',
       key,
-      item: item as t.LVal,
+      item,
+      index,
       array,
       children: this.parseView(children),
     });
