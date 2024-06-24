@@ -101,6 +101,14 @@ function genConfig(mode) {
           from: path.join(libDir, '/npm/index.js'),
           to: path.join(outDir, 'index.js'),
         },
+        {
+          from: path.join(__dirname,'..', 'package.json'),
+          to: path.join(outDir, 'package.json'),
+        },
+        {
+          from: path.join(libDir, 'README.md'),
+          to: path.join(outDir, 'README.md'),
+        },
       ]),
     ],
   };
