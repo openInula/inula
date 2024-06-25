@@ -47,7 +47,7 @@ export default class HTMLPropGenerator extends ForwardPropGenerator {
     dependenciesNode: t.ArrayExpression
   ): t.Statement | null {
     // ---- Dynamic HTML prop with init and update
-    if (depMask) {
+    if (depMask && key !== 'ref') {
       this.addUpdateStatements(depMask, this.setDynamicHTMLProp(name, tag, key, value, dependenciesNode, true));
       return this.setDynamicHTMLProp(name, tag, key, value, dependenciesNode, false);
     }

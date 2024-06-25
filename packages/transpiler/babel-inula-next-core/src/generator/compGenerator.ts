@@ -11,6 +11,8 @@ import {
   WILL_MOUNT,
   WILL_UNMOUNT,
   importMap,
+  PROP_SUFFIX,
+  ENV_SUFFIX,
 } from '../constants';
 import { generateView } from '@openinula/view-generator';
 
@@ -58,7 +60,16 @@ export function generateComp(root: ComponentNode) {
   addProperty('updateState', generateUpdateState(root));
 
   // ---- Update props
-  addProperty('updateProp', generateUpdateProp(root));
+  const updatePropsFn = generateUpdateProp(root, PROP_SUFFIX);
+  if (updatePropsFn) {
+    addProperty('updateProp', updatePropsFn);
+  }
+
+  // ---- Update env
+  const updateEnvFn = generateUpdateProp(root, ENV_SUFFIX);
+  if (updateEnvFn) {
+    addProperty('updateEnv', updateEnvFn);
+  }
 
   // ---- Update views
   if (root.children) {

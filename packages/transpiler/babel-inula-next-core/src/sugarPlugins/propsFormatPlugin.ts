@@ -1,7 +1,7 @@
 import babel, { NodePath, PluginObj } from '@babel/core';
 import type { InulaNextOption } from '../types';
 import { register, types as t } from '@openinula/babel-api';
-import { COMPONENT, PROP_SUFFIX } from '../constants';
+import { COMPONENT, ENV_SUFFIX, PROP_SUFFIX } from '../constants';
 import { ArrowFunctionWithBlock, extractFnFromMacro, isCompPath, wrapArrowFunctionWithBlock } from '../utils';
 import { type Scope } from '@babel/traverse';
 
@@ -25,8 +25,8 @@ interface Prop {
 //   let prop2_$p$ = prop2
 //   let [p20, p21] = prop2 // Attention: destructuring will be handled in state destructuring plugin.
 // }
-function createPropAssignment(prop: Prop, scope: Scope) {
-  const newName = `${prop.name}${PROP_SUFFIX}`;
+function createPropAssignment(prop: Prop, scope: Scope, suffix: string) {
+  const newName = `${prop.name}${suffix}`;
   const declarations: t.Statement[] = [
     t.variableDeclaration('let', [t.variableDeclarator(t.identifier(newName), t.identifier(prop.name))]),
   ];
@@ -86,6 +86,32 @@ function extractPropsDestructingInFnBody(
   return props;
 }
 
+function transformParam(
+  propsPath: NodePath<t.Identifier | t.RestElement | t.Pattern>,
+  props: Prop[],
+  fnPath: NodePath<t.FunctionExpression> | NodePath<ArrowFunctionWithBlock>,
+  suffix: string
+) {
+  if (propsPath) {
+    if (propsPath.isObjectPattern()) {
+      // --- object destructuring ---
+      props = propsPath.get('properties').map(prop => parseProperty(prop));
+    } else if (propsPath.isIdentifier()) {
+      // --- identifier destructuring ---
+      props = extractPropsDestructingInFnBody(fnPath, propsPath.node.name);
+    }
+  }
+
+  fnPath.node.body.body.unshift(...props.flatMap(prop => createPropAssignment(prop, fnPath.scope, suffix)));
+
+  // --- only keep the first level props---
+  // e.g. function({ prop1, prop2 }) {}
+  const param = t.objectPattern(
+    props.map(prop => (prop.type === PropType.REST ? t.restElement(t.identifier(prop.name)) : createProperty(prop)))
+  );
+  fnPath.node.params = suffix === PROP_SUFFIX ? [param] : [fnPath.node.params[0], param];
+}
+
 /**
  * The props format plugin, which is used to format the props of the component
  * Goal: turn every pattern of props into a standard format
@@ -119,27 +145,11 @@ export default function (api: typeof babel, options: InulaNextOption): PluginObj
           }
 
           const propsPath = params[0];
-          if (propsPath) {
-            if (propsPath.isObjectPattern()) {
-              // --- object destructuring ---
-              props = propsPath.get('properties').map(prop => parseProperty(prop));
-            } else if (propsPath.isIdentifier()) {
-              // --- identifier destructuring ---
-              props = extractPropsDestructingInFnBody(fnPath, propsPath.node.name);
-            }
+          transformParam(propsPath, props, fnPath, PROP_SUFFIX);
+          const envPath = params[1];
+          if (envPath) {
+            transformParam(envPath, props, fnPath, ENV_SUFFIX);
           }
-
-          fnPath.node.body.body.unshift(...props.flatMap(prop => createPropAssignment(prop, fnPath.scope)));
-
-          // --- only keep the first level props---
-          // e.g. function({ prop1, prop2 }) {}
-          fnPath.node.params = [
-            t.objectPattern(
-              props.map(prop =>
-                prop.type === PropType.REST ? t.restElement(t.identifier(prop.name)) : createProperty(prop)
-              )
-            ),
-          ];
         }
       },
     },
@@ -154,6 +164,7 @@ function createProperty(prop: Prop) {
     true
   );
 }
+
 function parseProperty(path: NodePath<t.ObjectProperty | t.RestElement>): Prop {
   if (path.isObjectProperty()) {
     // --- normal property ---

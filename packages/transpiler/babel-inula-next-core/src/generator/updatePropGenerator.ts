@@ -13,11 +13,13 @@ import { PROP_SUFFIX } from '../constants';
  *   }
  * }
  */
-export function generateUpdateProp(root: ComponentNode) {
-  const props = root.variables.filter(v => v.type === 'reactive' && v.name.endsWith(PROP_SUFFIX)) as ReactiveVariable[];
-
+export function generateUpdateProp(root: ComponentNode, suffix: string) {
+  const props = root.variables.filter(v => v.type === 'reactive' && v.name.endsWith(suffix)) as ReactiveVariable[];
+  if (!props.length) {
+    return null;
+  }
   const propNodes: [string, t.ExpressionStatement][] = props.map(prop => {
-    const propName = prop.name.replace(PROP_SUFFIX, '');
+    const propName = prop.name.replace(suffix, '');
     const updateNode = t.expressionStatement(
       t.assignmentExpression('=', t.identifier(prop.name), t.identifier('newValue'))
     );

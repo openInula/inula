@@ -16,16 +16,12 @@ export default class ElementGenerator extends PropViewGenerator {
     const elNode = el
       ? this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier('_$el'))
       : this.t.identifier(dlNodeName);
-    let elementNode;
-    if (this.isOnlyMemberExpression(value)) {
-      elementNode = this.t.conditionalExpression(
-        this.t.binaryExpression('===', this.t.unaryExpression('typeof', value, true), this.t.stringLiteral('function')),
-        this.t.callExpression(value, [elNode]),
-        this.t.assignmentExpression('=', value as t.LVal, elNode)
-      );
-    } else {
-      elementNode = this.t.callExpression(value, [elNode]);
-    }
+
+    const elementNode = this.t.conditionalExpression(
+      this.t.binaryExpression('===', this.t.unaryExpression('typeof', value, true), this.t.stringLiteral('function')),
+      this.t.callExpression(value, [elNode]),
+      this.t.assignmentExpression('=', value as t.LVal, elNode)
+    );
 
     return el
       ? this.t.expressionStatement(
