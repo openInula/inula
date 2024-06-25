@@ -17,6 +17,8 @@ export default class CompGenerator extends ForwardPropGenerator {
     Object.entries(props).forEach(([key, { value, depMask, dependenciesNode }]) => {
       if (key === 'forwardProps') return;
       if (key === 'didUpdate') return;
+      if (key === 'ref') return;
+
       if (depMask) {
         allDepMask |= depMask;
       }
@@ -24,14 +26,7 @@ export default class CompGenerator extends ForwardPropGenerator {
         this.addInitStatement(this.addLifecycle(dlNodeName, key as (typeof CompGenerator.lifecycle)[number], value));
         return;
       }
-      if (key === 'ref') {
-        this.addInitStatement(this.initElement(dlNodeName, value));
-        return;
-      }
-      if (key === 'elements') {
-        this.addInitStatement(this.initElement(dlNodeName, value, true));
-        return;
-      }
+
       if (key === '_$content') {
         this.addUpdateStatements(depMask, this.setCompContent(dlNodeName, value, dependenciesNode));
         return;
@@ -80,17 +75,9 @@ export default class CompGenerator extends ForwardPropGenerator {
       Object.entries(props)
         .filter(
           ([key]) =>
-            ![
-              'ref',
-              'elements',
-              'forwardProps',
-              '_$content',
-              'didUpdate',
-              'props',
-              ...CompGenerator.lifecycle,
-            ].includes(key)
+            !['elements', 'forwardProps', '_$content', 'didUpdate', 'props', ...CompGenerator.lifecycle].includes(key)
         )
-        .map(([key, { value }]) => [key, value])
+        .map(([key, { value }]) => [key, key === 'ref' ? this.wrapRefHandler(value) : value])
     );
 
     if (children.length > 0) {
@@ -102,10 +89,31 @@ export default class CompGenerator extends ForwardPropGenerator {
         this.t.assignmentExpression(
           '=',
           this.t.identifier(dlNodeName),
-          this.t.callExpression(tag, [this.generateCompProps(newProps)])
+          this.t.callExpression(this.t.identifier('$$Comp'), [tag, this.generateCompProps(newProps)])
         )
       ),
     ];
+  }
+
+  private wrapRefHandler(refVal: t.Expression) {
+    const refInput = this.t.identifier('$el');
+    return this.t.functionExpression(
+      null,
+      [refInput],
+      this.t.blockStatement([
+        this.t.expressionStatement(
+          this.t.conditionalExpression(
+            this.t.binaryExpression(
+              '===',
+              this.t.unaryExpression('typeof', refVal, true),
+              this.t.stringLiteral('function')
+            ),
+            this.t.callExpression(refVal, [refInput]),
+            this.t.assignmentExpression('=', refVal as t.LVal, refInput)
+          )
+        ),
+      ])
+    );
   }
 
   /**

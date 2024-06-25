@@ -16,6 +16,7 @@
 import { describe, expect, vi } from 'vitest';
 import { domTest as it } from './utils';
 import { render, View } from '../src';
+
 vi.mock('../src/scheduler', async () => {
   return {
     schedule: (task: () => void) => {
@@ -26,16 +27,16 @@ vi.mock('../src/scheduler', async () => {
 
 describe('components', () => {
   describe('ref', () => {
-    it.fails('should support ref', ({ container }) => {
+    it('should support ref', ({ container }) => {
       let ref: HTMLElement;
 
       function App() {
         let count = 0;
         let _ref: HTMLElement;
 
-        didMount: {
+        didMount(() => {
           ref = _ref;
-        }
+        });
 
         return <div ref={_ref}>test</div>;
       }
@@ -43,6 +44,28 @@ describe('components', () => {
       render(App, container);
 
       expect(ref).toBeInstanceOf(HTMLElement);
+    });
+
+    it('should support ref forwarding', ({ container }) => {
+      let ref: HTMLElement;
+
+      function App() {
+        let count = 0;
+        let _ref: HTMLElement;
+
+        didMount(() => {
+          ref = _ref;
+        });
+
+        return <Input ref={_ref}>test</Input>;
+      }
+
+      function Input({ ref }) {
+        return <input ref={ref} />;
+      }
+
+      render(App, container);
+      expect(ref).toBeInstanceOf(HTMLInputElement);
     });
 
     it('should support ref with function', ({ container }) => {
@@ -58,7 +81,34 @@ describe('components', () => {
       }
 
       render(App, container);
-      expect(fn).toHaveBeenCalled();
+      expect(fn).toHaveBeenCalledTimes(1);
+    });
+
+    it('should support comp ref exposing', ({ container }) => {
+      let ref: HTMLElement;
+      const fn = vi.fn();
+
+      function App() {
+        let count = 0;
+        let _ref;
+        didMount(() => {
+          ref = _ref;
+          _ref.fn();
+        });
+        return <Input ref={_ref}>test</Input>;
+      }
+
+      function Input({ ref }) {
+        let input;
+        didMount(() => {
+          ref({ fn, input });
+        });
+        return <input ref={input} />;
+      }
+
+      render(App, container);
+      expect(fn).toHaveBeenCalledTimes(1);
+      expect(ref.input).toBeInstanceOf(HTMLInputElement);
     });
   });
 
@@ -88,6 +138,7 @@ describe('components', () => {
   describe('composition', () => {
     it('should update prop', ({ container }) => {
       let update: (name: string) => void;
+
       function App() {
         let name = 'child';
         update = (val: string) => {
