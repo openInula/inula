@@ -32,14 +32,13 @@ describe('ref', () => {
 
       `)
     ).toMatchInlineSnapshot(`
-      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, EnvNode as $$EnvNode, PropView as $$PropView, render as $$render, notCached as $$notCached } from "@openinula/next";
+      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, EnvNode as $$EnvNode, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp } from "@openinula/next";
       function App() {
         let self;
         let count = 0;
         let ref;
         self = $$createComponent({
           updateState: changed => {},
-          updateProp: (propName, newValue) => {},
           getUpdateViews: () => {
             let $node0, $node1;
             $node1 = new $$PropView($addUpdate => {
@@ -47,7 +46,7 @@ describe('ref', () => {
               $node0 = $$createTextNode("test", []);
               return [$node0];
             });
-            $node0 = Input({
+            $node0 = $$Comp(Input, {
               "ref": function ($el) {
                 typeof ref === "function" ? ref($el) : ref = $el;
               },

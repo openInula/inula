@@ -31,7 +31,6 @@ describe('view generation', () => {
         let text = 'hello world';
         self = $$createComponent({
           updateState: changed => {},
-          updateProp: (propName, newValue) => {},
           getUpdateViews: () => {
             console.log(text);
             let $node0, $node1;
@@ -70,7 +69,6 @@ describe('view generation', () => {
         let color = 'red';
         self = $$createComponent({
           updateState: changed => {},
-          updateProp: (propName, newValue) => {},
           getUpdateViews: () => {
             let $node0, $node1;
             $node0 = $$createElement("div");
@@ -121,7 +119,6 @@ describe('view generation', () => {
         let text = 'hello world';
         self = $$createComponent({
           updateState: changed => {},
-          updateProp: (propName, newValue) => {},
           getUpdateViews: () => {
             let $node0, $node1, $node2, $node3, $node4;
             const $t0 = (() => {
@@ -172,7 +169,6 @@ describe('view generation', () => {
         let text = 'hello world';
         self = $$createComponent({
           updateState: changed => {},
-          updateProp: (propName, newValue) => {},
           getUpdateViews: () => {
             let $node0, $node1, $node2, $node3;
             $node0 = $$createElement("div");
@@ -221,7 +217,6 @@ describe('view generation', () => {
         let show = true;
         self = $$createComponent({
           updateState: changed => {},
-          updateProp: (propName, newValue) => {},
           getUpdateViews: () => {
             let $node0, $node1;
             $node0 = $$createElement("div");
@@ -291,7 +286,6 @@ describe('view generation', () => {
         let list = ['hello', 'world'];
         self = $$createComponent({
           updateState: changed => {},
-          updateProp: (propName, newValue) => {},
           getUpdateViews: () => {
             let $node0, $node1;
             $node0 = $$createElement("div");

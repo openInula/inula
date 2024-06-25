@@ -34,7 +34,6 @@ describe('generate', () => {
         let count = 1;
         self = $$createComponent({
           updateState: changed => {},
-          updateProp: (propName, newValue) => {},
           getUpdateViews: () => {
             let $node0, $node1;
             $node1 = new $$PropView($addUpdate => {
@@ -43,7 +42,7 @@ describe('generate', () => {
               $node0.textContent = "1";
               return [$node0];
             });
-            $node0 = Child({
+            $node0 = $$Comp(Child, {
               "className": count,
               "children": $node1
             });
