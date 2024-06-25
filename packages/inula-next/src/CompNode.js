@@ -25,10 +25,11 @@ export class CompNode extends DLNode {
    *  * _$forwardPropsId - the keys of the props that this node is forwarding, collected in _$setForwardProp
    *  * _$forwardPropsSet - contain all the nodes that are forwarding props to this node, collected with _$addForwardProps
    */
-  constructor({ updateState, updateProp, getUpdateViews, didUnmount, willUnmount, didMount }) {
+  constructor({ updateState, updateProp, updateEnv, getUpdateViews, didUnmount, willUnmount, didMount }) {
     super(DLNodeType.Comp);
     this.updateState = updateState;
     this.updateProp = updateProp;
+    if (updateEnv) this.updateEnv = updateEnv;
     this.getUpdateViews = getUpdateViews;
     this.didUnmount = didUnmount;
     this.willUnmount = willUnmount;
@@ -37,28 +38,9 @@ export class CompNode extends DLNode {
 
   /**
    * @brief Init function, called explicitly in the subclass's constructor
-   * @param props - Object containing properties
-   * @param content - Content to be used
-   * @param children - Child nodes
-   * @param forwardPropsScope - Scope for forwarding properties
    */
-  init(props, content, children, forwardPropsScope) {
+  init() {
     this._$notInitd = true;
-
-    // ---- Forward props first to allow internal props to override forwarded props
-    if (forwardPropsScope) forwardPropsScope._$addForwardProps(this);
-
-    // ---- Add envs
-    DLStore.global.DLEnvStore &&
-      Object.entries(DLStore.global.DLEnvStore.envs).forEach(([key, [value, envNode]]) => {
-        if (key === '_$catchable') {
-          this._$catchable = value;
-          return;
-        }
-        if (!(`$e$${key}` in this)) return;
-        envNode.addNode(this);
-        this._$initEnv(key, value, envNode);
-      });
 
     const willCall = () => {
       this._$callUpdatesBeforeInit();
@@ -218,10 +200,8 @@ export class CompNode extends DLNode {
    * @param envNode
    */
   _$updateEnv(key, value, envNode) {
-    if (!(`$e$${key}` in this)) return;
-    if (envNode !== this[`$en$${key}`]) return;
-    this[key] = value;
-    this.updateDerived(key);
+    if (!this.updateEnv) return;
+    this.updateEnv(key, value);
   }
 
   /**

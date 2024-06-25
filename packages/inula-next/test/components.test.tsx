@@ -113,7 +113,7 @@ describe('components', () => {
   });
 
   describe('env', () => {
-    it.fails('should support env', ({ container }) => {
+    it('should support env', ({ container }) => {
       function App() {
         return (
           <env theme="dark">
@@ -132,6 +132,56 @@ describe('components', () => {
 
       render(App, container);
       expect(container.innerHTML).toBe('<div>name is child, theme is dark</div>');
+    });
+
+    it('should support recursive env', ({ container }) => {
+      // Folder is the consumer and provider at same time
+      const Folder = ({ name, children }, { level = 0 }) => {
+        return (
+          <env level={level + 1}>
+            <div>
+              <h1>{`Folder: ${name}, level: ${level}`}</h1>
+              {children}
+            </div>
+          </env>
+        );
+      };
+      const File = ({ name }, { level }) => {
+        return <div>{`File: ${name}, level: ${level}`}</div>;
+      };
+
+      const App = () => {
+        return (
+          <Folder name="Root">
+            <File name="file1.txt" />
+            <Folder name="Subfolder 2">
+              <File name="file2.txt" />
+            </Folder>
+          </Folder>
+        );
+      };
+
+      render(App, container);
+      expect(container).toMatchInlineSnapshot(`
+        <div>
+          <div>
+            <h1>
+              Folder: Root, level: 0
+            </h1>
+            <div>
+              File: file1.txt, level: 1
+            </div>
+            <div>
+              <h1>
+                Folder: Subfolder 2, level: 1
+              </h1>
+              <div>
+                File: file2.txt, level: 2
+              </div>
+            </div>
+          </div>
+        </div>
+      `);
     });
   });
 

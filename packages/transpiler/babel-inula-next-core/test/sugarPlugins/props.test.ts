@@ -192,3 +192,60 @@ describe('analyze props', () => {
     });
   });
 });
+
+describe('analyze env', () => {
+  describe('env in params', () => {
+    it('should work', () => {
+      expect(
+        mock(`
+      Component(({}, {foo, bar}) => {
+        const v = foo + bar;
+      })
+    `)
+      ).toMatchInlineSnapshot(`
+        "Component(({}, {
+          foo,
+          bar
+        }) => {
+          let foo_$e$_ = foo;
+          let bar_$e$_ = bar;
+          const v = foo_$e$_ + bar_$e$_;
+        });"
+      `);
+    });
+
+    it('should support default value', () => {
+      expect(
+        mock(`
+      Component(({},{foo = 'default', bar = 123}) => {})
+    `)
+      ).toMatchInlineSnapshot(`
+        "Component(({}, {
+          foo = 'default',
+          bar = 123
+        }) => {
+          let foo_$e$_ = foo;
+          let bar_$e$_ = bar;
+        });"
+      `);
+    });
+
+    it('should support alias', () => {
+      expect(
+        mock(/*js*/ `
+      Component(({},{'foo': renamed, bar: anotherName}) => {})
+    `)
+      ).toMatchInlineSnapshot(`
+        "Component(({}, {
+          foo,
+          bar
+        }) => {
+          let foo_$e$_ = foo;
+          let renamed = foo_$e$_;
+          let bar_$e$_ = bar;
+          let anotherName = bar_$e$_;
+        });"
+      `);
+    });
+  });
+});
