@@ -2,6 +2,7 @@ import { DLNode } from './DLNode';
 import { insertNode } from './HTMLNode';
 import { DLStore } from './store';
 import { CompNode } from './CompNode.js';
+import { schedule } from './scheduler.js';
 
 export * from './HTMLNode';
 export * from './CompNode';
@@ -40,7 +41,6 @@ export function render(Comp, idOrEl) {
   initStore();
   el.innerHTML = '';
   const dlNode = Comp();
-  dlNode.init();
   insertNode(el, dlNode, 0);
   DLNode.runDidMount();
 }
@@ -69,6 +69,32 @@ export function use() {
  * @property {() => ([HTMLElement[], (bit: number) => HTMLElement[]])} getUpdateViews
  * @property {(newValue: any, bit: number) => {} updateDerived
  */
+export function Comp(compFn, props) {
+  // create an env
+  const envs = {};
+  const subscribedEnvNode = new Set();
+  if (DLStore.global.DLEnvStore) {
+    Object.keys(DLStore.global.DLEnvStore.envs).forEach(key => {
+      Object.defineProperty(envs, key, {
+        get() {
+          const [value, envNode] = DLStore.global.DLEnvStore.envs[key];
+          subscribedEnvNode.add(envNode);
+          return value;
+        },
+      });
+    });
+  }
+  const comp = compFn(props, envs || {});
+  if (subscribedEnvNode.size) {
+    subscribedEnvNode.forEach(envNode => {
+      envNode.addNode(comp);
+    });
+    subscribedEnvNode.clear();
+  }
+  return comp;
+}
+
+function createEnv() {}
 /**
  * @brief Create a component
  * @param {compUpdator} compUpdater
@@ -86,9 +112,11 @@ export function notCached() {
 export function didMount() {
   throw new Error('lifecycle should be compiled, check the babel plugin');
 }
+
 export function willUnmount() {
   throw new Error('lifecycle should be compiled, check the babel plugin');
 }
+
 export function didUnMount() {
   throw new Error('lifecycle should be compiled, check the babel plugin');
 }

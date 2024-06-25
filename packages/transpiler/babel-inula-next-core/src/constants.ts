@@ -53,6 +53,7 @@ export const importMap = Object.fromEntries(
     'PropView',
     'render',
     'notCached',
+    'Comp',
   ].map(name => [name, `$$${name}`])
 );
 
@@ -481,3 +482,4 @@ export const defaultHTMLTags = [
   'view',
 ];
 export const PROP_SUFFIX = '_$p$_';
+export const ENV_SUFFIX = '_$e$_';
