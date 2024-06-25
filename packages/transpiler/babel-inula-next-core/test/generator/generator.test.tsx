@@ -16,8 +16,7 @@ describe('generate', () => {
         let self;
         let count = 1;
         self = $$createComponent({
-          updateState: changed => {},
-          updateProp: (propName, newValue) => {}
+          updateState: changed => {}
         });
         return self.init();
       }"
@@ -67,7 +66,6 @@ describe('generate', () => {
             }
           },
           updateState: changed => {},
-          updateProp: (propName, newValue) => {},
           getUpdateViews: () => {
             {
               console.log('will mount');
@@ -106,8 +104,7 @@ describe('generate', () => {
                 doubleCount = count * 2;
               }
             }
-          },
-          updateProp: (propName, newValue) => {}
+          }
         });
         return self.init();
       }"
@@ -169,7 +166,6 @@ describe('generate', () => {
               }
             }
           },
-          updateProp: (propName, newValue) => {},
           getUpdateViews: () => {
             self.updateDerived(nn.push("jj"), 4 /*0b100*/);
             self.updateDerived([count, doubleCount] = () => {
