@@ -2,7 +2,6 @@ import { DLNode } from './DLNode';
 import { insertNode } from './HTMLNode';
 import { DLStore } from './store';
 import { CompNode } from './CompNode.js';
-import { schedule } from './scheduler.js';
 
 export * from './HTMLNode';
 export * from './CompNode';
