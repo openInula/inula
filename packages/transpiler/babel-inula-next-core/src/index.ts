@@ -5,6 +5,7 @@ import inulaNext from './plugin';
 import { type InulaNextOption } from './types';
 import { type ConfigAPI, type TransformOptions } from '@babel/core';
 import autoNamingPlugin from './sugarPlugins/autoNamingPlugin';
+import forSubComponentPlugin from './sugarPlugins/forSubComponentPlugin';
 import propsFormatPlugin from './sugarPlugins/propsFormatPlugin';
 import stateDestructuringPlugin from './sugarPlugins/stateDestructuringPlugin';
 import jsxSlicePlugin from './sugarPlugins/jsxSlicePlugin';
@@ -16,6 +17,7 @@ export default function (_: ConfigAPI, options: InulaNextOption): TransformOptio
       syntaxJSX.default ?? syntaxJSX,
       [syntaxTypescript.default ?? syntaxTypescript, { isTSX: true }],
       [syntaxDecorators.default ?? syntaxDecorators, { legacy: true }],
+      [forSubComponentPlugin, options],
       [autoNamingPlugin, options],
       [propsFormatPlugin, options],
       [stateDestructuringPlugin, options],
