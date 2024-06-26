@@ -26,7 +26,7 @@ import { types as t } from '@openinula/babel-api';
  * we should collect prop1, p20X, p211, p212X
  * @param idPath
  */
-function searchNestedProps(idPath: NodePath<t.ArrayPattern | t.ObjectPattern>) {
+export function searchNestedProps(idPath: NodePath<t.ArrayPattern | t.ObjectPattern>) {
   const nestedProps: string[] | null = [];
 
   if (idPath.isObjectPattern() || idPath.isArrayPattern()) {
