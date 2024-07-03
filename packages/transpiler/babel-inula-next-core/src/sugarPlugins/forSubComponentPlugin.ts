@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import babel, { NodePath } from '@babel/core';
+import babel, { NodePath, PluginObj } from '@babel/core';
 import { register, types as t } from '@openinula/babel-api';
 import { searchNestedProps } from './stateDestructuringPlugin';
 
@@ -24,7 +24,7 @@ import { searchNestedProps } from './stateDestructuringPlugin';
  * @param api
  */
 
-export default function (api: typeof babel): { visitor: { JSXElement(path: NodePath<t.JSXElement>): void } } {
+export default function (api: typeof babel): PluginObj {
   register(api);
   return {
     visitor: {
