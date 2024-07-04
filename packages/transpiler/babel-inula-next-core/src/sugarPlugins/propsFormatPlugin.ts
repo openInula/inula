@@ -146,10 +146,6 @@ export default function (api: typeof babel, options: InulaNextOption): PluginObj
 
           const propsPath = params[0];
           transformParam(propsPath, props, fnPath, PROP_SUFFIX);
-          const envPath = params[1];
-          if (envPath) {
-            transformParam(envPath, props, fnPath, ENV_SUFFIX);
-          }
         }
       },
     },

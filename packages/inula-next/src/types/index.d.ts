@@ -27,6 +27,14 @@ export function manual<T>(callback: () => T, _deps?: any[]): T;
 export function escape<T>(arg: T): T;
 export function setGlobal(globalObj: any): void;
 export function setDocument(customDocument: any): void;
+
+interface Context<V> {
+  value: V;
+}
+
+export function createContext<T>(defaultVal: T): Context<T>;
+export function useContext<T>(ctx: Context<T>): T;
+
 export const $: typeof escape;
 export const View: any;
 export const Snippet: any;

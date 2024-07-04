@@ -29,8 +29,9 @@ export default defineConfig({
     conditions: ['dev'],
   },
   plugins: [
-    // @ts-expect-error TODO: fix vite plugin interface is not compatible
-    inula(),
+    inula({
+      excludeFiles: '**/src/**/*{js,jsx,ts,tsx}',
+    }),
   ],
   test: {
     environment: 'jsdom', // or 'jsdom', 'node'

@@ -2,7 +2,7 @@ import { ComponentNode, LifeCycle } from '../analyze/types';
 import { getBabelApi, types as t } from '@openinula/babel-api';
 import { generateUpdateState } from './updateStateGenerator';
 import { getStates, wrapUpdate } from './utils';
-import { generateUpdateProp } from './updatePropGenerator';
+import { generateUpdateContext, generateUpdateProp } from './updatePropGenerator';
 import {
   alterAttributeMap,
   defaultAttributeMap,
@@ -12,7 +12,6 @@ import {
   WILL_UNMOUNT,
   importMap,
   PROP_SUFFIX,
-  ENV_SUFFIX,
 } from '../constants';
 import { generateView } from '@openinula/view-generator';
 
@@ -66,9 +65,9 @@ export function generateComp(root: ComponentNode) {
   }
 
   // ---- Update env
-  const updateEnvFn = generateUpdateProp(root, ENV_SUFFIX);
-  if (updateEnvFn) {
-    addProperty('updateEnv', updateEnvFn);
+  const updateContextFn = generateUpdateContext(root);
+  if (updateContextFn) {
+    addProperty('updateContext', updateContextFn);
   }
 
   // ---- Update views

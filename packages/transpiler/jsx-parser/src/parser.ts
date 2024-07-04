@@ -11,6 +11,10 @@ import type {
   Context,
 } from './types';
 
+function isContext(str: string) {
+  return /^[A-Z][a-zA-Z0-9]*Context/.test(str);
+}
+
 export class ViewParser {
   // ---- Namespace and tag name
   private readonly htmlNamespace: string = 'html';
@@ -116,7 +120,7 @@ export class ViewParser {
       const name = openingName.name;
       // ---- Specially parse if and env
       if ([this.ifTagName, this.elseIfTagName, this.elseTagName].includes(name)) return this.parseIf(node);
-      if (name === this.envTagName) return this.parseEnv(node);
+      if (isContext(name)) return this.parseContext(node, name);
       if (name === this.forTagName) return this.parseFor(node);
       else if (this.htmlTags.includes(name)) {
         type = 'html';
@@ -205,16 +209,18 @@ export class ViewParser {
   }
 
   /**
-   * @brief Parse EnvUnit
+   * @brief Parse ContextProvider
    * @param node
+   * @param contextName
    */
-  private parseEnv(node: t.JSXElement): void {
+  private parseContext(node: t.JSXElement, contextName: string): void {
     const props = node.openingElement.attributes;
     const propMap: Record<string, UnitProp> = Object.fromEntries(props.map(prop => this.parseJSXProp(prop)));
     const children = node.children.map(child => this.parseView(child)).flat();
     this.viewUnits.push({
-      type: 'env',
+      type: 'context',
       props: propMap,
+      contextName,
       children,
     });
   }

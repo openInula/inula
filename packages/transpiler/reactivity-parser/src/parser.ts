@@ -2,7 +2,7 @@ import {
   type CompParticle,
   type DependencyProp,
   DepMaskMap,
-  type EnvParticle,
+  type ContextParticle,
   type ExpParticle,
   type ForParticle,
   type HTMLParticle,
@@ -17,7 +17,7 @@ import {
 import { type NodePath, type traverse, type types as t } from '@babel/core';
 import {
   type CompUnit,
-  type EnvUnit,
+  type ContextUnit,
   type ExpUnit,
   type ForUnit,
   type HTMLUnit,
@@ -88,7 +88,7 @@ export class ReactivityParser {
     if (viewUnit.type === 'comp') return this.parseComp(viewUnit);
     if (viewUnit.type === 'for') return this.parseFor(viewUnit);
     if (viewUnit.type === 'if') return this.parseIf(viewUnit);
-    if (viewUnit.type === 'env') return this.parseEnv(viewUnit);
+    if (viewUnit.type === 'context') return this.parseContext(viewUnit);
     if (viewUnit.type === 'exp') return this.parseExp(viewUnit);
     return DLError.throw1();
   }
@@ -372,16 +372,17 @@ export class ReactivityParser {
   // ---- @Env ----
   /**
    * @brief Parse an EnvUnit into an EnvParticle with dependencies
-   * @param envUnit
-   * @returns EnvParticle
+   * @param contextProviderUnit
+   * @returns ContextParticle
    */
-  private parseEnv(envUnit: EnvUnit): EnvParticle {
+  private parseContext(contextProviderUnit: ContextUnit): ContextParticle {
     return {
-      type: 'env',
+      type: 'context',
+      contextName: contextProviderUnit.contextName,
       props: Object.fromEntries(
-        Object.entries(envUnit.props).map(([key, prop]) => [key, this.generateDependencyProp(prop)])
+        Object.entries(contextProviderUnit.props).map(([key, prop]) => [key, this.generateDependencyProp(prop)])
       ),
-      children: envUnit.children.map(this.parseViewParticle.bind(this)),
+      children: contextProviderUnit.children.map(this.parseViewParticle.bind(this)),
     };
   }
 

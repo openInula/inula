@@ -77,6 +77,8 @@ function isUpperCamelCase(str: string) {
   return /^[A-Z]/.test(str);
 }
 
+const builtinHooks = ['useContext'];
+
 function isHook(str: string) {
-  return /^use[A-Z]/.test(str);
+  return /^use[A-Z]/.test(str) && !builtinHooks.includes(str);
 }

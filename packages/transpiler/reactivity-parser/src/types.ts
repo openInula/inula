@@ -73,10 +73,11 @@ export interface IfParticle {
   branches: IfBranch[];
 }
 
-export interface EnvParticle {
-  type: 'env';
+export interface ContextParticle {
+  type: 'context';
   props: Record<string, DependencyProp>;
   children: ViewParticle[];
+  contextName: string;
 }
 
 export interface ExpParticle {
@@ -91,7 +92,7 @@ export type ViewParticle =
   | CompParticle
   | ForParticle
   | IfParticle
-  | EnvParticle
+  | ContextParticle
   | ExpParticle;
 
 export interface ReactivityParserConfig {

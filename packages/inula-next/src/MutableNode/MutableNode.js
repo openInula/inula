@@ -1,5 +1,6 @@
 import { DLNode } from '../DLNode';
 import { DLStore } from '../store';
+import { replaceEnvNodes } from '../ContextProvider.js';
 
 export class MutableNode extends DLNode {
   /**
@@ -12,8 +13,9 @@ export class MutableNode extends DLNode {
   constructor(type) {
     super(type);
     // ---- Save the current environment nodes, must be a new reference
-    if (DLStore.global.DLEnvStore && DLStore.global.DLEnvStore.currentEnvNodes.length > 0) {
-      this.savedEnvNodes = [...DLStore.global.DLEnvStore.currentEnvNodes];
+    const envNodeMap = DLStore.global.envNodeMap;
+    if (envNodeMap) {
+      this.savedEnvNodes = new Map([...envNodeMap]);
     }
   }
 
@@ -41,12 +43,12 @@ export class MutableNode extends DLNode {
       return newNodes;
     }
     // ---- Save the current environment nodes
-    const currentEnvNodes = DLStore.global.DLEnvStore.currentEnvNodes;
+    const currentEnvNodes = DLStore.global.envNodeMap;
     // ---- Replace the saved environment nodes
-    DLStore.global.DLEnvStore.replaceEnvNodes(this.savedEnvNodes);
+    replaceEnvNodes(this.savedEnvNodes);
     const newNodes = newNodesFunc();
     // ---- Retrieve the current environment nodes
-    DLStore.global.DLEnvStore.replaceEnvNodes(currentEnvNodes);
+    replaceEnvNodes(currentEnvNodes);
     // ---- Only for IfNode's same condition return
     // ---- Initialize the new nodes
     this.initNewNodes(newNodes);
