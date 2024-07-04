@@ -62,10 +62,11 @@ export interface ExpUnit {
   props: Record<string, UnitProp>;
 }
 
-export interface EnvUnit {
-  type: 'env';
+export interface ContextUnit {
+  type: 'context';
   props: Record<string, UnitProp>;
   children: ViewUnit[];
+  contextName: string;
 }
 
 export interface ForUnit {
@@ -76,7 +77,7 @@ export interface ForUnit {
   index: t.Identifier | null;
   children: ViewUnit[];
 }
-export type ViewUnit = TextUnit | HTMLUnit | CompUnit | IfUnit | ExpUnit | EnvUnit | TemplateUnit | ForUnit;
+export type ViewUnit = TextUnit | HTMLUnit | CompUnit | IfUnit | ExpUnit | ContextUnit | TemplateUnit | ForUnit;
 
 export interface ViewParserConfig {
   babelApi: typeof Babel;

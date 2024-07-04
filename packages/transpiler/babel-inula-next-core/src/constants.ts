@@ -49,7 +49,7 @@ export const importMap = Object.fromEntries(
     'ForNode',
     'CondNode',
     'ExpNode',
-    'EnvNode',
+    'ContextProvider',
     'PropView',
     'render',
     'notCached',

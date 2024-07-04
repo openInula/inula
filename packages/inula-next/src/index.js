@@ -5,7 +5,7 @@ import { CompNode } from './CompNode.js';
 
 export * from './HTMLNode';
 export * from './CompNode';
-export * from './EnvNode';
+export * from './ContextProvider.js';
 export * from './TextNode';
 export * from './PropView';
 export * from './SnippetNode';
@@ -25,10 +25,10 @@ function initStore() {
 
 /**
  * @brief Render the DL class to the element
- * @param {typeof import('./CompNode').CompNode} Comp
+ * @param {typeof import('./CompNode').CompNode} compFn
  * @param {HTMLElement | string} idOrEl
  */
-export function render(Comp, idOrEl) {
+export function render(compFn, idOrEl) {
   let el = idOrEl;
   if (typeof idOrEl === 'string') {
     const elFound = DLStore.document.getElementById(idOrEl);
@@ -39,7 +39,7 @@ export function render(Comp, idOrEl) {
   }
   initStore();
   el.innerHTML = '';
-  const dlNode = Comp();
+  const dlNode = Comp(compFn);
   insertNode(el, dlNode, 0);
   DLNode.runDidMount();
 }
@@ -61,6 +61,8 @@ export function use() {
   );
 }
 
+let currentComp;
+
 /**
  * @typedef compUpdator
  * @property {(bit: number) => void} updateState
@@ -68,39 +70,24 @@ export function use() {
  * @property {() => ([HTMLElement[], (bit: number) => HTMLElement[]])} getUpdateViews
  * @property {(newValue: any, bit: number) => {} updateDerived
  */
-export function Comp(compFn, props) {
-  // create an env
-  const envs = {};
-  const subscribedEnvNode = new Set();
-  if (DLStore.global.DLEnvStore) {
-    Object.keys(DLStore.global.DLEnvStore.envs).forEach(key => {
-      Object.defineProperty(envs, key, {
-        get() {
-          const [value, envNode] = DLStore.global.DLEnvStore.envs[key];
-          subscribedEnvNode.add(envNode);
-          return value;
-        },
-      });
-    });
-  }
-  const comp = compFn(props, envs || {});
-  if (subscribedEnvNode.size) {
-    subscribedEnvNode.forEach(envNode => {
-      envNode.addNode(comp);
-    });
-    subscribedEnvNode.clear();
-  }
-  return comp;
+export function Comp(compFn, props = {}) {
+  const compNode = new CompNode();
+  currentComp = compNode;
+  compFn(props);
+  return compNode;
 }
 
-function createEnv() {}
 /**
  * @brief Create a component
  * @param {compUpdator} compUpdater
  * @return {*}
  */
 export function createComponent(compUpdater) {
-  return new CompNode(compUpdater);
+  if (!currentComp) {
+    throw new Error('Should not call createComponent outside the component function');
+  }
+  currentComp.setUpdateFunc(compUpdater);
+  return currentComp;
 }
 
 export function notCached() {
@@ -118,4 +105,27 @@ export function willUnmount() {
 
 export function didUnMount() {
   throw new Error('lifecycle should be compiled, check the babel plugin');
+}
+
+export function createContext(defaultVal) {
+  return {
+    id: Symbol('inula-ctx'),
+    value: defaultVal,
+  };
+}
+
+export function useContext(ctx, key) {
+  const envNodeMap = DLStore.global.envNodeMap;
+  if (envNodeMap) {
+    const envNode = envNodeMap.get(ctx.id);
+    if (envNode) {
+      envNode.addNode(currentComp);
+    }
+  }
+
+  if (key) {
+    return ctx.value[key];
+  }
+
+  return ctx.value;
 }

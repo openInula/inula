@@ -1,16 +1,17 @@
 import { type types as t } from '@babel/core';
-import { type ViewParticle, type DependencyProp, type EnvParticle } from '@openinula/reactivity-parser';
+import { type ViewParticle, type DependencyProp, type ContextParticle } from '@openinula/reactivity-parser';
 import PropViewGenerator from '../HelperGenerators/PropViewGenerator';
 
-export default class EnvGenerator extends PropViewGenerator {
+export default class ContextGenerator extends PropViewGenerator {
   run() {
-    let { props } = this.viewParticle as EnvParticle;
+    // eslint-disable-next-line prefer-const
+    let { props, contextName } = this.viewParticle as ContextParticle;
     props = this.alterPropViews(props)!;
-    const { children } = this.viewParticle as EnvParticle;
+    const { children } = this.viewParticle as ContextParticle;
 
     const dlNodeName = this.generateNodeName();
 
-    this.addInitStatement(this.declareEnvNode(dlNodeName, props));
+    this.addInitStatement(this.declareEnvNode(dlNodeName, props, contextName));
 
     // ---- Children
     this.addInitStatement(this.geneEnvChildren(dlNodeName, children));
@@ -18,7 +19,7 @@ export default class EnvGenerator extends PropViewGenerator {
     // ---- Update props
     Object.entries(props).forEach(([key, { depMask, value, dependenciesNode }]) => {
       if (!depMask) return;
-      this.addUpdateStatements(depMask, this.updateEnvNode(dlNodeName, key, value, dependenciesNode));
+      this.addUpdateStatements(depMask, this.updateContext(dlNodeName, key, value, dependenciesNode));
     });
 
     return dlNodeName;
@@ -47,14 +48,17 @@ export default class EnvGenerator extends PropViewGenerator {
 
   /**
    * @View
-   * ${dlNodeName} = new EnvNode(envs)
+   * ${dlNodeName} = new ContextProvider(context, envs)
    */
-  private declareEnvNode(dlNodeName: string, props: Record<string, DependencyProp>): t.Statement {
+  private declareEnvNode(dlNodeName: string, props: Record<string, DependencyProp>, contextName: string): t.Statement {
     return this.t.expressionStatement(
       this.t.assignmentExpression(
         '=',
         this.t.identifier(dlNodeName),
-        this.t.newExpression(this.t.identifier(this.importMap.EnvNode), this.generateEnvs(props))
+        this.t.newExpression(this.t.identifier(this.importMap.ContextProvider), [
+          this.t.identifier(contextName),
+          ...this.generateEnvs(props),
+        ])
       )
     );
   }
@@ -75,9 +79,9 @@ export default class EnvGenerator extends PropViewGenerator {
 
   /**
    * @View
-   * ${dlNodeName}.updateEnv(${key}, () => ${value}, ${dependenciesNode})
+   * ${dlNodeName}.updateContext(${key}, () => ${value}, ${dependenciesNode})
    */
-  private updateEnvNode(
+  private updateContext(
     dlNodeName: string,
     key: string,
     value: t.Expression,
@@ -85,11 +89,10 @@ export default class EnvGenerator extends PropViewGenerator {
   ): t.Statement {
     return this.optionalExpression(
       dlNodeName,
-      this.t.callExpression(this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier('updateEnv')), [
-        this.t.stringLiteral(key),
-        this.t.arrowFunctionExpression([], value),
-        dependenciesNode,
-      ])
+      this.t.callExpression(
+        this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier('updateContext')),
+        [this.t.stringLiteral(key), this.t.arrowFunctionExpression([], value), dependenciesNode]
+      )
     );
   }
 }

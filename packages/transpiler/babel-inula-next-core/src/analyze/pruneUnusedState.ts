@@ -134,7 +134,7 @@ function pruneViewParticleUnusedBit(particle: ViewParticle, bitPositionToRemove:
         branch.condition.depMask = getDepMask(branch.condition._depBitmaps, bitPositionToRemove);
         stack.push(...branch.children);
       });
-    } else if (node.type === 'env') {
+    } else if (node.type === 'context') {
       for (const key in node.props) {
         node.props[key].depMask = getDepMask(node.props[key]._depBitmaps, bitPositionToRemove);
       }

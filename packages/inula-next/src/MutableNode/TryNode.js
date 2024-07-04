@@ -1,13 +1,13 @@
 import { DLNodeType } from '../DLNode';
 import { FlatNode } from './FlatNode';
-import { EnvNode } from '../EnvNode';
+import { ContextProvider } from '../ContextProvider.js';
 
 export class TryNode extends FlatNode {
   constructor(tryFunc, catchFunc) {
     super(DLNodeType.Try);
     this.tryFunc = tryFunc;
     const catchable = this.getCatchable(catchFunc);
-    this.envNode = new EnvNode({ _$catchable: catchable });
+    this.envNode = new ContextProvider({ _$catchable: catchable });
     const nodes = tryFunc(this.setUpdateFunc.bind(this), catchable) ?? [];
     this.envNode.initNodes(nodes);
     this._$nodes = nodes;

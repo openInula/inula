@@ -25,11 +25,14 @@ export class CompNode extends DLNode {
    *  * _$forwardPropsId - the keys of the props that this node is forwarding, collected in _$setForwardProp
    *  * _$forwardPropsSet - contain all the nodes that are forwarding props to this node, collected with _$addForwardProps
    */
-  constructor({ updateState, updateProp, updateEnv, getUpdateViews, didUnmount, willUnmount, didMount }) {
+  constructor() {
     super(DLNodeType.Comp);
+  }
+
+  setUpdateFunc({ updateState, updateProp, updateContext, getUpdateViews, didUnmount, willUnmount, didMount }) {
     this.updateState = updateState;
     this.updateProp = updateProp;
-    if (updateEnv) this.updateEnv = updateEnv;
+    if (updateContext) this.updateContext = updateContext;
     this.getUpdateViews = getUpdateViews;
     this.didUnmount = didUnmount;
     this.willUnmount = willUnmount;
@@ -197,11 +200,11 @@ export class CompNode extends DLNode {
    * @brief Update an env, called in EnvNode._$update
    * @param key
    * @param value
-   * @param envNode
+   * @param context
    */
-  _$updateEnv(key, value, envNode) {
-    if (!this.updateEnv) return;
-    this.updateEnv(key, value);
+  _$updateContext(key, value, context) {
+    if (!this.updateContext) return;
+    this.updateContext(context, key, value);
   }
 
   /**

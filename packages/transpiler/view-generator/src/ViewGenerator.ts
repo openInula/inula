@@ -7,7 +7,7 @@ import HTMLGenerator from './NodeGenerators/HTMLGenerator';
 import TemplateGenerator from './NodeGenerators/TemplateGenerator';
 import ForGenerator from './NodeGenerators/ForGenerator';
 import IfGenerator from './NodeGenerators/IfGenerator';
-import EnvGenerator from './NodeGenerators/EnvGenerator';
+import ContextGenerator from './NodeGenerators/ContextGenerator';
 import TextGenerator from './NodeGenerators/TextGenerator';
 import ExpGenerator from './NodeGenerators/ExpGenerator';
 
@@ -34,7 +34,7 @@ export default class ViewGenerator {
     template: TemplateGenerator,
     for: ForGenerator,
     if: IfGenerator,
-    env: EnvGenerator,
+    context: ContextGenerator,
     text: TextGenerator,
     exp: ExpGenerator,
   };
