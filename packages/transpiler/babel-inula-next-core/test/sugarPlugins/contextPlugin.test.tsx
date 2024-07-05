@@ -43,13 +43,13 @@ describe('useContext transform', () => {
       const code = `
         function App() {
           const { user: { name, age } } = useContext(UserContext);
+          const { name, age } = user;
         }
       `;
       const transformedCode = mock(code);
       expect(transformedCode).toMatchInlineSnapshot(`
         "const App = Component(() => {
           let user_$c$_ = useContext(UserContext, "user");
-          let { name, age } = user_$c$_;
         });"
       `);
     });

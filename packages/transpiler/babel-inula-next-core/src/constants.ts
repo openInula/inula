@@ -483,3 +483,7 @@ export const defaultHTMLTags = [
 ];
 export const PROP_SUFFIX = '_$p$_';
 export const ENV_SUFFIX = '_$e$_';
+// The suffix means to bind to context specific key
+export const SPECIFIC_CTX_SUFFIX = '_$c$_';
+// The suffix means to bind to whole context
+export const WHOLE_CTX_SUFFIX = '_$ctx$_';

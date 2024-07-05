@@ -16,7 +16,7 @@
 import babel, { NodePath, PluginObj } from '@babel/core';
 import { register, types as t } from '@openinula/babel-api';
 import { isHookPath, extractFnFromMacro, ArrowFunctionWithBlock, isCompPath } from '../utils';
-import { COMPONENT } from '../constants';
+import { COMPONENT, SPECIFIC_CTX_SUFFIX, WHOLE_CTX_SUFFIX } from '../constants';
 
 const ALREADY_COMPILED: WeakSet<NodePath> | Set<NodePath> = new (WeakSet ?? Set)();
 
@@ -46,10 +46,10 @@ function tryAppendContextVariable(
       .map(prop => {
         if (t.isObjectProperty(prop) && t.isIdentifier(prop.key)) {
           const name = prop.key.name;
-          statementPath.scope.rename(name, `${name}_$c$_`);
+          statementPath.scope.rename(name, `${name}${SPECIFIC_CTX_SUFFIX}`);
           const clonedInit = t.cloneNode(init);
           clonedInit.arguments.push(t.stringLiteral(name));
-          return t.variableDeclarator(t.identifier(`${name}_$c$_`), clonedInit);
+          return t.variableDeclarator(t.identifier(`${name}${SPECIFIC_CTX_SUFFIX}`), clonedInit);
         }
         return null;
       })
@@ -60,7 +60,7 @@ function tryAppendContextVariable(
       });
   } else if (t.isIdentifier(id)) {
     // Direct assignment case
-    const taggedName = `${id.name}_$ctx$_`;
+    const taggedName = `${id.name}${WHOLE_CTX_SUFFIX}`;
     statementPath.scope.rename(id.name, taggedName);
     statementPath.insertAfter(t.variableDeclaration('let', [t.variableDeclarator(t.identifier(taggedName), init)]));
   }
