@@ -1,7 +1,7 @@
 import { types as t } from '@openinula/babel-api';
 import { ComponentNode, ReactiveVariable } from '../analyze/types';
 import { getStates, wrapUpdate } from './utils';
-import { PROP_SUFFIX } from '../constants';
+import { PROP_SUFFIX, SPECIFIC_CTX_SUFFIX, WHOLE_CTX_SUFFIX } from '../constants';
 
 /**
  * @View
@@ -46,7 +46,33 @@ export function generateUpdateProp(root: ComponentNode, suffix: string) {
 }
 
 /**
- *  Transfrom context
+ *  Aggregate the context variable of the same context into a map
+ *  Key is context name
+ *  Value is the context variable arrays
+ * @param contextVars
+ */
+function getContextMap(contextVars: ReactiveVariable[]) {
+  const contextMap = new Map<string, ReactiveVariable[]>();
+  contextVars.forEach(v => {
+    const useContextCallExpression = v.value;
+    if (!t.isCallExpression(useContextCallExpression)) {
+      throw new Error('Context value error, should be useContext()');
+    }
+    const contextId = useContextCallExpression.arguments[0];
+    if (!t.isIdentifier(contextId)) {
+      throw new Error('The first argument of UseContext should be an identifier');
+    }
+    const contextName = contextId.name;
+    if (!contextMap.has(contextName)) {
+      contextMap.set(contextName, []);
+    }
+    contextMap.get(contextName)!.push(v);
+  });
+  return contextMap;
+}
+
+/**
+ *  Generate context update methods
  *  ```js
  *  function App() {
  *    let level_$c$_ = useContext(UserContext, 'level')
@@ -74,68 +100,50 @@ export function generateUpdateProp(root: ComponentNode, suffix: string) {
  */
 export function generateUpdateContext(root: ComponentNode) {
   const contextVars = root.variables.filter(
-    v => v.type === 'reactive' && (v.name.endsWith('_$c$_') || v.name.endsWith('_$ctx$_'))
+    v => v.type === 'reactive' && (v.name.endsWith(SPECIFIC_CTX_SUFFIX) || v.name.endsWith(WHOLE_CTX_SUFFIX))
   ) as ReactiveVariable[];
 
   if (!contextVars.length) {
     return null;
   }
 
-  const contextMap = new Map<string, ReactiveVariable[]>();
+  const contextMap = getContextMap(contextVars);
 
-  contextVars.forEach(v => {
-    const useContextCallExpression = v.value;
-    if (!t.isCallExpression(useContextCallExpression)) {
-      throw new Error('Context value error, should be useContext()');
-    }
-    const contextId = useContextCallExpression.arguments[0];
-    if (!t.isIdentifier(contextId)) {
-      throw new Error('The first argument of UseContext should be an identifier');
-    }
-    const contextName = contextId.name;
-    if (!contextMap.has(contextName)) {
-      contextMap.set(contextName, []);
-    }
-    contextMap.get(contextName)!.push(v);
-  });
+  // The parameters of updateContext
+  const contextParamId = t.identifier('ctx');
+  const keyParamId = t.identifier('key');
+  const valParamId = t.identifier('value');
 
-  const contextCases: t.IfStatement[] = [];
-
+  // The if statements for context to update.
+  const contextUpdateStmts: t.IfStatement[] = [];
   contextMap.forEach((vars, contextName) => {
-    const specificKeys = vars.filter(v => v.name.endsWith('_$c$_'));
-    const wholeContext = vars.find(v => v.name.endsWith('_$ctx$_'));
+    const specificKeyedCtxVars = vars.filter(v => v.name.endsWith(SPECIFIC_CTX_SUFFIX));
+    const wholeCtxVar = vars.find(v => v.name.endsWith(WHOLE_CTX_SUFFIX));
 
-    const keyUpdates: t.Statement[] = specificKeys.map(v => {
-      const keyName = v.name.replace('_$c$_', '');
-      const updateAssign = t.expressionStatement(
-        t.assignmentExpression('=', t.identifier(v.name), t.identifier('value'))
-      );
+    const updateStmts: t.Statement[] = specificKeyedCtxVars.map(v => {
+      const keyName = v.name.replace(SPECIFIC_CTX_SUFFIX, '');
+      const updateAssign = t.expressionStatement(t.assignmentExpression('=', t.identifier(v.name), valParamId));
       wrapUpdate(updateAssign, getStates(root));
 
+      // Gen code like: if (key === 'level') { level_$c$_ = value }
       return t.ifStatement(
-        t.binaryExpression('===', t.identifier('key'), t.stringLiteral(keyName)),
+        t.binaryExpression('===', keyParamId, t.stringLiteral(keyName)),
         t.blockStatement([updateAssign])
       );
     });
 
-    if (wholeContext) {
-      const updateAssign = t.expressionStatement(
-        t.assignmentExpression('=', t.identifier(wholeContext.name), t.identifier('value'))
+    if (wholeCtxVar) {
+      const updateWholeContextAssignment = t.expressionStatement(
+        t.assignmentExpression('=', t.identifier(wholeCtxVar.name), valParamId)
       );
-      wrapUpdate(updateAssign, getStates(root));
-      keyUpdates.push(updateAssign);
+      wrapUpdate(updateWholeContextAssignment, getStates(root));
+      updateStmts.push(updateWholeContextAssignment);
     }
 
-    contextCases.push(
-      t.ifStatement(
-        t.binaryExpression('===', t.identifier('ctx'), t.identifier(contextName)),
-        t.blockStatement(keyUpdates)
-      )
+    contextUpdateStmts.push(
+      t.ifStatement(t.binaryExpression('===', contextParamId, t.identifier(contextName)), t.blockStatement(updateStmts))
     );
   });
 
-  return t.arrowFunctionExpression(
-    [t.identifier('ctx'), t.identifier('key'), t.identifier('value')],
-    t.blockStatement(contextCases)
-  );
+  return t.arrowFunctionExpression([contextParamId, keyParamId, valParamId], t.blockStatement(contextUpdateStmts));
 }
