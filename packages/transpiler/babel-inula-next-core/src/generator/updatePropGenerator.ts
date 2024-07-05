@@ -1,5 +1,5 @@
 import { types as t } from '@openinula/babel-api';
-import { ComponentNode, ReactiveVariable } from '../analyze/types';
+import { ComponentNode, IRNode, ReactiveVariable } from '../analyze/types';
 import { getStates, wrapUpdate } from './utils';
 import { PROP_SUFFIX, SPECIFIC_CTX_SUFFIX, WHOLE_CTX_SUFFIX } from '../constants';
 
@@ -13,7 +13,7 @@ import { PROP_SUFFIX, SPECIFIC_CTX_SUFFIX, WHOLE_CTX_SUFFIX } from '../constants
  *   }
  * }
  */
-export function generateUpdateProp(root: ComponentNode, suffix: string) {
+export function generateUpdateProp(root: IRNode, suffix: string) {
   const props = root.variables.filter(v => v.type === 'reactive' && v.name.endsWith(suffix)) as ReactiveVariable[];
   if (!props.length) {
     return null;
@@ -98,7 +98,7 @@ function getContextMap(contextVars: ReactiveVariable[]) {
  * @param root
  * @param suffix
  */
-export function generateUpdateContext(root: ComponentNode) {
+export function generateUpdateContext(root: IRNode) {
   const contextVars = root.variables.filter(
     v => v.type === 'reactive' && (v.name.endsWith(SPECIFIC_CTX_SUFFIX) || v.name.endsWith(WHOLE_CTX_SUFFIX))
   ) as ReactiveVariable[];

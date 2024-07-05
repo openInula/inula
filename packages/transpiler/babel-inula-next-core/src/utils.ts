@@ -1,6 +1,6 @@
 import { NodePath } from '@babel/core';
 import { types as t } from '@openinula/babel-api';
-import { COMPONENT, Hook } from './constants';
+import { COMPONENT, HOOK } from './constants';
 import { minimatch } from 'minimatch';
 
 export function fileAllowed(fileName: string | undefined, includes: string[], excludes: string[]): boolean {
@@ -70,7 +70,18 @@ export function isCompPath(path: NodePath<t.CallExpression>) {
 export function isHookPath(path: NodePath<t.CallExpression>) {
   // find the component, like: Component(() => {})
   const callee = path.get('callee');
-  return callee.isIdentifier() && callee.node.name === Hook;
+  return callee.isIdentifier() && callee.node.name === HOOK;
+}
+
+export function getMacroType(path: NodePath<t.CallExpression>) {
+  if (isCompPath(path)) {
+    return COMPONENT;
+  }
+  if (isHookPath(path)) {
+    return HOOK;
+  }
+
+  return null;
 }
 
 export interface ArrowFunctionWithBlock extends t.ArrowFunctionExpression {

@@ -1,9 +1,9 @@
 import { types as t } from '@openinula/babel-api';
 import { Bitmap } from '@openinula/reactivity-parser';
-import { ComponentNode, Variable, WatchFunc } from '../analyze/types';
+import { ComponentNode, IRNode, Variable, WatchFunc } from '../analyze/types';
 import { getStates, wrapCheckCache, wrapUpdate } from './utils';
 
-export function generateUpdateState(root: ComponentNode) {
+export function generateUpdateState(root: IRNode) {
   const states = getStates(root);
   const blockNode = t.blockStatement([]);
 

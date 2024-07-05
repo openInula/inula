@@ -1,6 +1,6 @@
 import type { NodePath } from '@babel/core';
 import { types as t, traverse } from '@openinula/babel-api';
-import { ComponentNode, ReactiveVariable } from '../analyze/types';
+import { ComponentNode, IRNode, ReactiveVariable } from '../analyze/types';
 import { importMap, reactivityFuncNames } from '../constants';
 
 export function uid() {
@@ -96,7 +96,7 @@ export function wrapUpdate(node: t.Statement | t.Expression | null, states: Reac
   });
 }
 
-export function getStates(root: ComponentNode) {
+export function getStates(root: IRNode) {
   return root.variables.filter(v => v.type === 'reactive' && v.bit) as ReactiveVariable[];
 }
 

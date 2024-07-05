@@ -14,10 +14,10 @@
  */
 
 import { Visitor } from '../types';
-import { addPlainVariable, addVariable, addSubComponent, createComponentNode } from '../nodeFactory';
+import { addPlainVariable, addSubComponent, addVariable, createIRNode } from '../nodeFactory';
 import { isStaticValue, isValidPath } from '../utils';
 import { type NodePath } from '@babel/core';
-import { reactivityFuncNames } from '../../constants';
+import { COMPONENT, reactivityFuncNames } from '../../constants';
 import { analyzeFnComp } from '../index';
 import { getDependenciesFromNode } from '@openinula/reactivity-parser';
 import { types as t } from '@openinula/babel-api';
@@ -70,7 +70,7 @@ export function variablesAnalyze(): Visitor {
             const fnNode = init.get('arguments')[0] as
               | NodePath<t.ArrowFunctionExpression>
               | NodePath<t.FunctionExpression>;
-            const subComponent = createComponentNode(id.node.name, fnNode, ctx.current);
+            const subComponent = createIRNode(id.node.name, COMPONENT, fnNode, ctx.current);
 
             analyzeFnComp(fnNode, subComponent, ctx);
             addSubComponent(ctx.current, subComponent);

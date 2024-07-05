@@ -1,4 +1,4 @@
-import { ComponentNode, LifeCycle } from '../analyze/types';
+import { ComponentNode, HookNode, IRNode, LifeCycle } from '../analyze/types';
 import { getBabelApi, types as t } from '@openinula/babel-api';
 import { generateUpdateState } from './updateStateGenerator';
 import { getStates, wrapUpdate } from './utils';
@@ -15,9 +15,66 @@ import {
 } from '../constants';
 import { generateView } from '@openinula/view-generator';
 
-export function generateLifecycle(root: ComponentNode, lifecycleType: LifeCycle) {
+export function generateLifecycle(root: IRNode, lifecycleType: LifeCycle) {
   root.lifecycle[lifecycleType]!.forEach(node => wrapUpdate(node, getStates(root)));
   return t.arrowFunctionExpression([], t.blockStatement(root.lifecycle[lifecycleType]!));
+}
+
+function genWillMountCodeBlock(root: IRNode) {
+  // ---- Get update views will avoke the willMount and return the updateView function.
+  let getUpdateViewsFnBody: t.Statement[] = [];
+  if (root.lifecycle[WILL_MOUNT]) {
+    root.lifecycle[WILL_MOUNT].forEach(node => wrapUpdate(node, getStates(root)));
+    getUpdateViewsFnBody = root.lifecycle[WILL_MOUNT];
+  }
+  return getUpdateViewsFnBody;
+}
+
+function generateUpdateViewFn(root: ComponentNode<'comp'>) {
+  const [updateViewFn, declarations, topLevelNodes] = generateView(root.children, {
+    babelApi: getBabelApi(),
+    importMap,
+    attributeMap: defaultAttributeMap,
+    alterAttributeMap,
+    templateIdx: -1,
+  });
+  const getUpdateViewsFnBody = genWillMountCodeBlock(root);
+  if (declarations.length) {
+    getUpdateViewsFnBody.push(...declarations);
+  }
+  return getUpdateViewsFnBody.length || topLevelNodes.elements.length
+    ? t.arrowFunctionExpression(
+        [],
+        t.blockStatement([...getUpdateViewsFnBody, t.returnStatement(t.arrayExpression([topLevelNodes, updateViewFn]))])
+      )
+    : null;
+}
+
+function generateUpdateHookFn(root: HookNode) {
+  const getUpdateViewsFnBody = genWillMountCodeBlock(root);
+  const children = root.children!;
+  const paramId = t.identifier('$changed');
+  const hookUpdateFn = t.functionExpression(
+    null,
+    [paramId],
+    t.blockStatement([
+      t.ifStatement(
+        t.binaryExpression('&', paramId, t.numericLiteral(Number(children.depMask))),
+        t.expressionStatement(
+          t.callExpression(t.memberExpression(t.identifier('self'), t.identifier('emitUpdate')), [])
+        )
+      ),
+    ])
+  );
+  return getUpdateViewsFnBody.length || hookUpdateFn
+    ? t.arrowFunctionExpression(
+        [],
+        t.blockStatement([
+          ...getUpdateViewsFnBody,
+          // hookUpdateFn ? t.returnStatement(hookUpdateFn) : null,
+        ])
+      )
+    : null;
 }
 
 /**
@@ -30,7 +87,7 @@ export function generateLifecycle(root: ComponentNode, lifecycleType: LifeCycle)
  *  updateState: (changed) => {}
  * })
  */
-export function generateComp(root: ComponentNode) {
+export function generateComp(root: ComponentNode | HookNode) {
   const compInitializerNode = t.objectExpression([]);
   const addProperty = (key: string, value: t.Expression | null) => {
     if (value === null) return;
@@ -44,7 +101,7 @@ export function generateComp(root: ComponentNode) {
     )
   );
 
-  let result: t.Statement[] = [node];
+  const result: t.Statement[] = [node];
 
   // ---- Lifecycle
   // WILL_MOUNT add to function body directly, because it should be executed immediately
@@ -64,7 +121,7 @@ export function generateComp(root: ComponentNode) {
     addProperty('updateProp', updatePropsFn);
   }
 
-  // ---- Update env
+  // ---- Update context
   const updateContextFn = generateUpdateContext(root);
   if (updateContextFn) {
     addProperty('updateContext', updateContextFn);
@@ -72,37 +129,16 @@ export function generateComp(root: ComponentNode) {
 
   // ---- Update views
   if (root.children) {
-    const [updateViewFn, declarations, topLevelNodes] = generateView(root.children, {
-      babelApi: getBabelApi(),
-      importMap,
-      attributeMap: defaultAttributeMap,
-      alterAttributeMap,
-      templateIdx: -1,
-    });
-
-    // ---- Get update views will avoke the willMount and return the updateView function.
-    let getUpdateViewsFnBody: t.Statement[] = [];
-    if (root.lifecycle[WILL_MOUNT]) {
-      root.lifecycle[WILL_MOUNT].forEach(node => wrapUpdate(node, getStates(root)));
-      getUpdateViewsFnBody = root.lifecycle[WILL_MOUNT];
+    let getUpdateViews: t.ArrowFunctionExpression | null;
+    if (root.type === 'hook') {
+      getUpdateViews = generateUpdateHookFn(root);
+    } else {
+      getUpdateViews = generateUpdateViewFn(root);
     }
-    if (declarations.length) {
-      getUpdateViewsFnBody.push(...declarations);
-    }
-    const getUpdateViews =
-      getUpdateViewsFnBody.length || topLevelNodes.elements.length
-        ? t.arrowFunctionExpression(
-            [],
-            t.blockStatement([
-              ...getUpdateViewsFnBody,
-              t.returnStatement(t.arrayExpression([topLevelNodes, updateViewFn])),
-            ])
-          )
-        : null;
 
-    addProperty('getUpdateViews', getUpdateViews);
-    // ---- Add view static declarations
-    result = [...result];
+    if (getUpdateViews) {
+      addProperty('getUpdateViews', getUpdateViews);
+    }
   }
 
   return result;

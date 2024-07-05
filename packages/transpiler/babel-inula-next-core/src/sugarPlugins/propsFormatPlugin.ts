@@ -1,7 +1,7 @@
 import babel, { NodePath, PluginObj } from '@babel/core';
 import type { InulaNextOption } from '../types';
 import { register, types as t } from '@openinula/babel-api';
-import { COMPONENT, ENV_SUFFIX, PROP_SUFFIX } from '../constants';
+import { COMPONENT, PROP_SUFFIX } from '../constants';
 import { ArrowFunctionWithBlock, extractFnFromMacro, isCompPath, wrapArrowFunctionWithBlock } from '../utils';
 import { type Scope } from '@babel/traverse';
 

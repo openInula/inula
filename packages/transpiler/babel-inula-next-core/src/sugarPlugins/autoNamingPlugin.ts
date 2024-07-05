@@ -1,7 +1,7 @@
 import babel, { NodePath, PluginObj } from '@babel/core';
 import { register, types as t } from '@openinula/babel-api';
-import { isFnExp, createMacroNode, getFnBodyNode } from '../utils';
-import { COMPONENT, Hook } from '../constants';
+import { createMacroNode, getFnBodyNode, isFnExp } from '../utils';
+import { builtinHooks, COMPONENT, HOOK } from '../constants';
 
 const ALREADY_COMPILED: WeakSet<NodePath> | Set<NodePath> = new (WeakSet ?? Set)();
 
@@ -68,7 +68,7 @@ function getMacroName(name: string | undefined) {
   if (isUpperCamelCase(name)) {
     return COMPONENT;
   } else if (isHook(name)) {
-    return Hook;
+    return HOOK;
   }
 
   return null;
@@ -76,8 +76,6 @@ function getMacroName(name: string | undefined) {
 function isUpperCamelCase(str: string) {
   return /^[A-Z]/.test(str);
 }
-
-const builtinHooks = ['useContext'];
 
 function isHook(str: string) {
   return /^use[A-Z]/.test(str) && !builtinHooks.includes(str);

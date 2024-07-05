@@ -15,8 +15,9 @@
 
 import { types as t } from '@openinula/babel-api';
 import { NodePath } from '@babel/core';
-import { FnComponentDeclaration } from './types';
+import { ComponentNode, FnComponentDeclaration, HookNode, IRNode } from './types';
 import { ArrowFunctionWithBlock } from '../utils';
+import assert from 'node:assert';
 
 export function isValidPath<T>(path: NodePath<T>): path is NodePath<Exclude<T, undefined | null>> {
   return !!path.node;
@@ -54,4 +55,16 @@ export function extractFnBody(node: t.FunctionExpression | t.ArrowFunctionExpres
 
 export function isStaticValue(node: t.VariableDeclarator['init']) {
   return t.isLiteral(node) || t.isArrowFunctionExpression(node) || t.isFunctionExpression(node);
+}
+
+export function assertComponentNode(node: any): asserts node is ComponentNode {
+  if (node.type !== 'comp' && node.type !== 'subComp') {
+    throw new Error('Analyze: Should be component node');
+  }
+}
+
+export function assertHookNode(node: any): asserts node is HookNode {
+  if (node.type !== 'hook') {
+    throw new Error('Analyze: Should be hook node');
+  }
 }

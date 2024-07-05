@@ -22,20 +22,24 @@ import {
   Dependency,
   BaseVariable,
   PlainVariable,
+  IRNode,
+  CompOrHook,
+  HookNode,
 } from './types';
 import { Bitmap, ViewParticle } from '@openinula/reactivity-parser';
+import { COMPONENT, HOOK } from '../constants';
 
-export function createComponentNode(
+export function createIRNode<T extends CompOrHook>(
   name: string,
+  type: T,
   fnNode: NodePath<FunctionalExpression>,
-  parent?: ComponentNode
-): ComponentNode {
-  const comp: ComponentNode = {
-    type: 'comp',
+  parent?: HookNode | ComponentNode
+): HookNode | ComponentNode {
+  const comp: HookNode | ComponentNode = {
+    type: type === COMPONENT ? 'comp' : 'hook',
     params: fnNode.node.params,
     level: parent ? parent.level + 1 : 0,
     name,
-    children: undefined,
     variables: [],
     usedBit: 0,
     _reactiveBitMap: parent ? new Map<string, number>(parent._reactiveBitMap) : new Map<string, number>(),
@@ -55,11 +59,7 @@ export function createComponentNode(
   return comp;
 }
 
-export function addVariable(
-  comp: ComponentNode,
-  varInfo: BaseVariable<t.Expression | null>,
-  dependency: Dependency | null
-) {
+export function addVariable(comp: IRNode, varInfo: BaseVariable<t.Expression | null>, dependency: Dependency | null) {
   // The index of the variable in the availableVariables
   const idx = comp.availableVariables.length;
   const bit = 1 << idx;
@@ -79,16 +79,16 @@ export function addVariable(
   });
 }
 
-export function addPlainVariable(comp: ComponentNode, value: PlainVariable['value']) {
+export function addPlainVariable(comp: IRNode, value: PlainVariable['value']) {
   comp.variables.push({ value, type: 'plain' });
 }
 
-export function addSubComponent(comp: ComponentNode, subComp: ComponentNode) {
+export function addSubComponent(comp: IRNode, subComp: IRNode) {
   comp.usedBit |= subComp.usedBit;
   comp.variables.push({ ...subComp, type: 'subComp' });
 }
 
-export function addLifecycle(lifeCycle: LifeCycle, comp: ComponentNode, block: t.Statement) {
+export function addLifecycle(lifeCycle: LifeCycle, comp: IRNode, block: t.Statement) {
   const compLifecycle = comp.lifecycle;
   if (!compLifecycle[lifeCycle]) {
     compLifecycle[lifeCycle] = [];
@@ -97,7 +97,7 @@ export function addLifecycle(lifeCycle: LifeCycle, comp: ComponentNode, block: t
 }
 
 export function addWatch(
-  comp: ComponentNode,
+  comp: IRNode,
   callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>,
   dependency: Dependency
 ) {
@@ -116,4 +116,8 @@ export function setViewChild(comp: ComponentNode, view: ViewParticle[], usedBit:
   // TODO: Maybe we should merge
   comp.usedBit |= usedBit;
   comp.children = view;
+}
+
+export function setReturnValue(hook: HookNode, expression: t.Expression, dependency: Dependency) {
+  hook.children = { value: expression, ...dependency };
 }

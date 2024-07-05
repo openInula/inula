@@ -1,5 +1,5 @@
 export const COMPONENT = 'Component';
-export const Hook = 'Hook';
+export const HOOK = 'Hook';
 export const WILL_MOUNT = 'willMount';
 export const DID_MOUNT = 'didMount';
 export const WILL_UNMOUNT = 'willUnmount';
@@ -482,8 +482,9 @@ export const defaultHTMLTags = [
   'view',
 ];
 export const PROP_SUFFIX = '_$p$_';
-export const ENV_SUFFIX = '_$e$_';
+export const HOOK_SUFFIX = '_$h$_';
 // The suffix means to bind to context specific key
 export const SPECIFIC_CTX_SUFFIX = '_$c$_';
 // The suffix means to bind to whole context
 export const WHOLE_CTX_SUFFIX = '_$ctx$_';
+export const builtinHooks = ['useContext'];
