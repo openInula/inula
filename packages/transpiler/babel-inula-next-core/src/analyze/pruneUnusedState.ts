@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { ComponentNode } from './types';
+import { ComponentNode, HookNode } from './types';
 import { Bitmap, ViewParticle } from '@openinula/reactivity-parser';
 
 /**
@@ -30,7 +30,7 @@ import { Bitmap, ViewParticle } from '@openinula/reactivity-parser';
  * ```
  */
 export function pruneUnusedState(
-  comp: ComponentNode<'comp'> | ComponentNode<'subComp'>,
+  comp: ComponentNode<'comp'> | ComponentNode<'subComp'> | HookNode,
   index = 1,
   bitPositionToRemoveInParent: number[] = []
 ) {
@@ -70,10 +70,16 @@ export function pruneUnusedState(
   });
 
   // handle children
-  if (comp.children) {
-    comp.children.forEach(child => {
-      pruneViewParticleUnusedBit(child as ViewParticle, bitPositionToRemove);
-    });
+  if (comp.type === 'hook') {
+    if (comp.children) {
+      comp.children.depMask = getDepMask(comp.children._depBitmaps, bitPositionToRemove);
+    }
+  } else {
+    if (comp.children) {
+      comp.children.forEach(child => {
+        pruneViewParticleUnusedBit(child as ViewParticle, bitPositionToRemove);
+      });
+    }
   }
 }
 

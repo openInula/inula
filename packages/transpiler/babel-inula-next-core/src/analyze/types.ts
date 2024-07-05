@@ -14,9 +14,10 @@
  */
 
 import { type NodePath, types as t } from '@babel/core';
-import { DID_MOUNT, DID_UNMOUNT, PropType, WILL_MOUNT, WILL_UNMOUNT } from '../constants';
+import { COMPONENT, DID_MOUNT, DID_UNMOUNT, HOOK, PropType, WILL_MOUNT, WILL_UNMOUNT } from '../constants';
 import { Bitmap, ViewParticle } from '@openinula/reactivity-parser';
 
+export type CompOrHook = typeof COMPONENT | typeof HOOK;
 export type LifeCycle = typeof WILL_MOUNT | typeof DID_MOUNT | typeof WILL_UNMOUNT | typeof DID_UNMOUNT;
 export type Dependency = {
   dependenciesNode: t.ArrayExpression;
@@ -81,8 +82,7 @@ export interface Prop {
   nestedRelationship: t.ObjectPattern | t.ArrayPattern | null;
 }
 
-export interface ComponentNode<Type = 'comp'> {
-  type: Type;
+export interface IRNode {
   name: string;
   level: number;
   params: t.FunctionExpression['params'];
@@ -101,8 +101,7 @@ export interface ComponentNode<Type = 'comp'> {
    * The available variables and props for the component and its parent
    */
   availableVariables: ReactiveVariable[];
-  children?: ViewParticle[];
-  parent?: ComponentNode;
+  parent?: IRNode;
   /**
    * The function body of the fn component code
    */
@@ -114,13 +113,28 @@ export interface ComponentNode<Type = 'comp'> {
   watch?: WatchFunc[];
 }
 
+export interface ComponentNode<Type = 'comp'> extends IRNode {
+  type: Type;
+  children?: ViewParticle[];
+}
+
+export interface HookNode extends IRNode {
+  type: 'hook';
+  children?: {
+    value: t.Expression;
+    depMask?: number; // -> bit
+    _depBitmaps: number[];
+    dependenciesNode: t.ArrayExpression;
+  };
+}
+
 export interface AnalyzeContext {
   level: number;
-  current: ComponentNode;
+  current: ComponentNode | HookNode;
   analyzers: Analyzer[];
   htmlTags: string[];
   traverse: (p: NodePath<t.Statement>, ctx: AnalyzeContext) => void;
-  collectUnhandledNodeToLifecycle: (component: ComponentNode, unhandledNode: t.Statement) => void;
+  collectUnhandledNodeToLifecycle: (component: ComponentNode | HookNode, unhandledNode: t.Statement) => void;
 }
 
 export type Visitor<S = AnalyzeContext> = {

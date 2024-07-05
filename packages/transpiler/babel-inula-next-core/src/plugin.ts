@@ -4,14 +4,14 @@ import { NodePath, type PluginObj, type types as t } from '@babel/core';
 import { type InulaNextOption } from './types';
 import { defaultAttributeMap, defaultHTMLTags, COMPONENT, importMap } from './constants';
 import { analyze } from './analyze';
-import { addImport, extractFnFromMacro, fileAllowed, isCompPath, toArray } from './utils';
+import { addImport, extractFnFromMacro, fileAllowed, getMacroType, isCompPath, toArray } from './utils';
 import { register } from '@openinula/babel-api';
 import { generate } from './generator';
-import { ComponentNode } from './analyze/types';
+import { ComponentNode, HookNode } from './analyze/types';
 
 const ALREADY_COMPILED: WeakSet<NodePath> | Set<NodePath> = new (WeakSet ?? Set)();
 
-function replaceWithComponent(path: NodePath<t.CallExpression>, root: ComponentNode) {
+function replaceWithComponent(path: NodePath<t.CallExpression>, root: ComponentNode | HookNode) {
   const variableDeclarationPath = path.parentPath.parentPath!;
   const randomName = Math.random().toString(36).substring(7);
   const compNode = generate(root);
@@ -67,9 +67,9 @@ export default function (api: typeof babel, options: InulaNextOption): PluginObj
       CallExpression: {
         exit(path: NodePath<t.CallExpression>, state) {
           if (ALREADY_COMPILED.has(path)) return;
-
-          if (isCompPath(path)) {
-            const componentNode = extractFnFromMacro(path, COMPONENT);
+          const type = getMacroType(path);
+          if (type) {
+            const componentNode = extractFnFromMacro(path, type);
             let name = '';
             // try to get the component name, when parent is a variable declarator
             if (path.parentPath.isVariableDeclarator()) {
@@ -77,10 +77,10 @@ export default function (api: typeof babel, options: InulaNextOption): PluginObj
               if (lVal.isIdentifier()) {
                 name = lVal.node.name;
               } else {
-                console.error('Component macro must be assigned to a variable');
+                console.error(`${type} macro must be assigned to a variable`);
               }
             }
-            const root = analyze(name, componentNode, {
+            const root = analyze(type, name, componentNode, {
               htmlTags,
             });
 

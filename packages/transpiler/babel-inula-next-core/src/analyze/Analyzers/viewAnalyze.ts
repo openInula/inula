@@ -13,13 +13,14 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { Visitor } from '../types';
+import { ComponentNode, Visitor } from '../types';
 import { type NodePath } from '@babel/core';
 import { parseView as parseJSX } from '@openinula/jsx-view-parser';
 import { types as t, getBabelApi } from '@openinula/babel-api';
 import { parseReactivity } from '@openinula/reactivity-parser';
 import { reactivityFuncNames } from '../../constants';
 import { setViewChild } from '../nodeFactory';
+import { assertComponentNode } from '../utils';
 
 /**
  * Analyze the watch in the function component
@@ -29,6 +30,8 @@ export function viewAnalyze(): Visitor {
     ReturnStatement(path: NodePath<t.ReturnStatement>, { htmlTags, current }) {
       const returnNode = path.get('argument');
       if (returnNode.isJSXElement() || returnNode.isJSXFragment()) {
+        assertComponentNode(current);
+
         const viewUnits = parseJSX(returnNode.node, {
           babelApi: getBabelApi(),
           htmlTags,
