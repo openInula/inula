@@ -1306,7 +1306,6 @@ export declare namespace JSX {
     main: HTMLAttributes<HTMLElement>;
     map: HTMLAttributes<HTMLMapElement>;
     mark: HTMLAttributes<HTMLElement>;
-    marquee: HTMLAttributes<HTMLMarqueeElement>;
     menu: HTMLAttributes<HTMLMenuElement>;
     menuitem: HTMLAttributes<HTMLUnknownElement>;
     meta: HTMLAttributes<HTMLMetaElement>;
@@ -1319,7 +1318,6 @@ export declare namespace JSX {
     option: HTMLAttributes<HTMLOptionElement>;
     output: HTMLAttributes<HTMLOutputElement>;
     p: HTMLAttributes<HTMLParagraphElement>;
-    param: HTMLAttributes<HTMLParamElement>;
     picture: HTMLAttributes<HTMLPictureElement>;
     pre: HTMLAttributes<HTMLPreElement>;
     progress: HTMLAttributes<HTMLProgressElement>;
