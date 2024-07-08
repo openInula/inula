@@ -245,11 +245,10 @@ export type JSXElementConstructor<P> =
   | ((props: P) => InulaElement<any, any> | null)
   | (new (props: P) => Component<any, any>);
 
-
 interface ClassAttributes<T> extends Attributes {
-  ref : Ref<T>;
-  key : Key | undefined;
-  jsx : boolean | undefined;
+  ref: Ref<T>;
+  key: Key | undefined;
+  jsx: boolean | undefined;
 }
 //让其他代码在值发生变化时得到通知
 interface SignalLike<T> {
@@ -258,8 +257,7 @@ interface SignalLike<T> {
   subscribe(fn: (value: T) => void): () => void;
 }
 export type Signalish<T> = T | SignalLike<T>;
-export interface DOMAttributes<Target extends EventTarget>{
-
+export interface DOMAttributes<Target extends EventTarget> {
   // Image Events
   onLoad?: GenericEventHandler<Target> | undefined;
   onLoadCapture?: GenericEventHandler<Target> | undefined;
@@ -302,13 +300,13 @@ export interface DOMAttributes<Target extends EventTarget>{
   onChange?: GenericEventHandler<Target> | undefined;
   onChangeCapture?: GenericEventHandler<Target> | undefined;
   onInput?: FormEventHandler<Target> | undefined;
-   onInputCapture?: FormEventHandler<Target> | undefined;
+  onInputCapture?: FormEventHandler<Target> | undefined;
   onBeforeInput?: FormEventHandler<Target> | undefined;
   onBeforeInputCapture?: FormEventHandler<Target> | undefined;
   onSearch?: GenericEventHandler<Target> | undefined;
   onSearchCapture?: GenericEventHandler<Target> | undefined;
-   onSubmit?: FormEventHandler<Target> | undefined;
-   onSubmitCapture?: FormEventHandler<Target> | undefined;
+  onSubmit?: FormEventHandler<Target> | undefined;
+  onSubmitCapture?: FormEventHandler<Target> | undefined;
   onInvalid?: GenericEventHandler<Target> | undefined;
   onInvalidCapture?: GenericEventHandler<Target> | undefined;
   onReset?: GenericEventHandler<Target> | undefined;
@@ -472,12 +470,12 @@ export interface DOMAttributes<Target extends EventTarget>{
   onTransitionStartCapture?: TransitionEventHandler<Target>;
 
   // PictureInPicture Events
-   onEnterPictureInPicture?: ChangeEventHandler<Target>;
-   onEnterPictureInPictureCapture?: ChangeEventHandler<Target>;
-   onLeavePictureInPicture?: ChangeEventHandler<Target>;
-   onLeavePictureInPictureCapture?: ChangeEventHandler<Target>;
-    onResize?: ChangeEventHandler<Target>;
-   onResizeCapture?: ChangeEventHandler<Target>;
+  onEnterPictureInPicture?: ChangeEventHandler<Target>;
+  onEnterPictureInPictureCapture?: ChangeEventHandler<Target>;
+  onLeavePictureInPicture?: ChangeEventHandler<Target>;
+  onLeavePictureInPictureCapture?: ChangeEventHandler<Target>;
+  onResize?: ChangeEventHandler<Target>;
+  onResizeCapture?: ChangeEventHandler<Target>;
 }
 
 export interface AriaAttributes {
@@ -489,9 +487,7 @@ export interface AriaAttributes {
    * Indicates whether inputting text could trigger display of one or more predictions of the user's intended value for an input and specifies how predictions would be
    * presented if they are made.
    */
-  'aria-autocomplete'?: Signalish<
-    'none' | 'inline' | 'list' | 'both' | undefined
-  >;
+  'aria-autocomplete'?: Signalish<'none' | 'inline' | 'list' | 'both' | undefined>;
   /**
    * Defines a string value that labels the current element, which is intended to be converted into Braille.
    * @see aria-label.
@@ -538,9 +534,7 @@ export interface AriaAttributes {
    */
   'aria-controls'?: Signalish<string | undefined>;
   /** Indicates the element that represents the current item within a container or set of related elements. */
-  'aria-current'?: Signalish<
-    Booleanish | 'page' | 'step' | 'location' | 'date' | 'time' | undefined
-  >;
+  'aria-current'?: Signalish<Booleanish | 'page' | 'step' | 'location' | 'date' | 'time' | undefined>;
   /**
    * Identifies the element (or elements) that describes the object.
    * @see aria-labelledby
@@ -566,9 +560,7 @@ export interface AriaAttributes {
    * Indicates what functions can be performed when a dragged object is released on the drop target.
    * @deprecated in ARIA 1.1
    */
-  'aria-dropeffect'?: Signalish<
-    'none' | 'copy' | 'execute' | 'link' | 'move' | 'popup' | undefined
-  >;
+  'aria-dropeffect'?: Signalish<'none' | 'copy' | 'execute' | 'link' | 'move' | 'popup' | undefined>;
   /**
    * Identifies the element that provides an error message for the object.
    * @see aria-invalid
@@ -588,9 +580,7 @@ export interface AriaAttributes {
    */
   'aria-grabbed'?: Signalish<Booleanish | undefined>;
   /** Indicates the availability and type of interactive popup element, such as menu or dialog, that can be triggered by an element. */
-  'aria-haspopup'?: Signalish<
-    Booleanish | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog' | undefined
-  >;
+  'aria-haspopup'?: Signalish<Booleanish | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog' | undefined>;
   /**
    * Indicates whether the element is exposed to an accessibility API.
    * @see aria-disabled.
@@ -707,9 +697,7 @@ export interface AriaAttributes {
    */
   'aria-setsize'?: Signalish<number | undefined>;
   /** Indicates if items in a table or grid are sorted in ascending or descending order. */
-  'aria-sort'?: Signalish<
-    'none' | 'ascending' | 'descending' | 'other' | undefined
-  >;
+  'aria-sort'?: Signalish<'none' | 'ascending' | 'descending' | 'other' | undefined>;
   /** Defines the maximum allowed value for a range widget. */
   'aria-valuemax'?: Signalish<number | undefined>;
   /** Defines the minimum allowed value for a range widget. */
@@ -927,24 +915,11 @@ export interface HTMLAttributes<RefType extends EventTarget = EventTarget>
   defaultChecked?: boolean | undefined | SignalLike<boolean | undefined>;
   defaultValue?: string | undefined | SignalLike<string | undefined>;
   defer?: boolean | undefined | SignalLike<boolean | undefined>;
-  dir?:
-    | 'auto'
-    | 'rtl'
-    | 'ltr'
-    | undefined
-    | SignalLike<'auto' | 'rtl' | 'ltr' | undefined>;
+  dir?: 'auto' | 'rtl' | 'ltr' | undefined | SignalLike<'auto' | 'rtl' | 'ltr' | undefined>;
   disabled?: boolean | undefined | SignalLike<boolean | undefined>;
-  disableRemotePlayback?:
-    | boolean
-    | undefined
-    | SignalLike<boolean | undefined>;
+  disableRemotePlayback?: boolean | undefined | SignalLike<boolean | undefined>;
   download?: any | undefined;
-  decoding?:
-    | 'sync'
-    | 'async'
-    | 'auto'
-    | undefined
-    | SignalLike<'sync' | 'async' | 'auto' | undefined>;
+  decoding?: 'sync' | 'async' | 'auto' | undefined | SignalLike<'sync' | 'async' | 'auto' | undefined>;
   draggable?: boolean | undefined | SignalLike<boolean | undefined>;
   encType?: string | undefined | SignalLike<string | undefined>;
   enctype?: string | undefined | SignalLike<string | undefined>;
@@ -957,16 +932,7 @@ export interface HTMLAttributes<RefType extends EventTarget = EventTarget>
     | 'search'
     | 'send'
     | undefined
-    | SignalLike<
-    | 'enter'
-    | 'done'
-    | 'go'
-    | 'next'
-    | 'previous'
-    | 'search'
-    | 'send'
-    | undefined
-  >;
+    | SignalLike<'enter' | 'done' | 'go' | 'next' | 'previous' | 'search' | 'send' | undefined>;
   elementTiming?: string | undefined | SignalLike<string | undefined>;
   elementtiming?: HTMLAttributes['elementTiming'];
   exportparts?: string | undefined | SignalLike<string | undefined>;
@@ -982,28 +948,11 @@ export interface HTMLAttributes<RefType extends EventTarget = EventTarget>
   formnovalidate?: boolean | undefined | SignalLike<boolean | undefined>;
   formTarget?: string | undefined | SignalLike<string | undefined>;
   formtarget?: string | undefined | SignalLike<string | undefined>;
-  frameBorder?:
-    | number
-    | string
-    | undefined
-    | SignalLike<number | string | undefined>;
-  frameborder?:
-    | number
-    | string
-    | undefined
-    | SignalLike<number | string | undefined>;
+  frameBorder?: number | string | undefined | SignalLike<number | string | undefined>;
+  frameborder?: number | string | undefined | SignalLike<number | string | undefined>;
   headers?: string | undefined | SignalLike<string | undefined>;
-  height?:
-    | number
-    | string
-    | undefined
-    | SignalLike<number | string | undefined>;
-  hidden?:
-    | boolean
-    | 'hidden'
-    | 'until-found'
-    | undefined
-    | SignalLike<boolean | 'hidden' | 'until-found' | undefined>;
+  height?: number | string | undefined | SignalLike<number | string | undefined>;
+  hidden?: boolean | 'hidden' | 'until-found' | undefined | SignalLike<boolean | 'hidden' | 'until-found' | undefined>;
   high?: number | undefined | SignalLike<number | undefined>;
   href?: string | undefined | SignalLike<string | undefined>;
   hrefLang?: string | undefined | SignalLike<string | undefined>;
@@ -1025,11 +974,7 @@ export interface HTMLAttributes<RefType extends EventTarget = EventTarget>
   label?: string | undefined | SignalLike<string | undefined>;
   lang?: string | undefined | SignalLike<string | undefined>;
   list?: string | undefined | SignalLike<string | undefined>;
-  loading?:
-    | 'eager'
-    | 'lazy'
-    | undefined
-    | SignalLike<'eager' | 'lazy' | undefined>;
+  loading?: 'eager' | 'lazy' | undefined | SignalLike<'eager' | 'lazy' | undefined>;
   loop?: boolean | undefined | SignalLike<boolean | undefined>;
   low?: number | undefined | SignalLike<number | undefined>;
   manifest?: string | undefined | SignalLike<string | undefined>;
@@ -1068,18 +1013,8 @@ export interface HTMLAttributes<RefType extends EventTarget = EventTarget>
     | SignalLike<'auto' | 'hint' | 'manual' | boolean | undefined>;
   popovertarget?: string | undefined | SignalLike<string | undefined>;
   popoverTarget?: string | undefined | SignalLike<string | undefined>;
-  popovertargetaction?:
-    | 'hide'
-    | 'show'
-    | 'toggle'
-    | undefined
-    | SignalLike<'hide' | 'show' | 'toggle' | undefined>;
-  popoverTargetAction?:
-    | 'hide'
-    | 'show'
-    | 'toggle'
-    | undefined
-    | SignalLike<'hide' | 'show' | 'toggle' | undefined>;
+  popovertargetaction?: 'hide' | 'show' | 'toggle' | undefined | SignalLike<'hide' | 'show' | 'toggle' | undefined>;
+  popoverTargetAction?: 'hide' | 'show' | 'toggle' | undefined | SignalLike<'hide' | 'show' | 'toggle' | undefined>;
   poster?: string | undefined | SignalLike<string | undefined>;
   preload?: string | undefined | SignalLike<string | undefined>;
   radioGroup?: string | undefined | SignalLike<string | undefined>;
@@ -1096,16 +1031,16 @@ export interface HTMLAttributes<RefType extends EventTarget = EventTarget>
     | 'unsafe-url'
     | undefined
     | SignalLike<
-    | 'no-referrer'
-    | 'no-referrer-when-downgrade'
-    | 'origin'
-    | 'origin-when-cross-origin'
-    | 'same-origin'
-    | 'strict-origin'
-    | 'strict-origin-when-cross-origin'
-    | 'unsafe-url'
-    | undefined
-  >;
+        | 'no-referrer'
+        | 'no-referrer-when-downgrade'
+        | 'origin'
+        | 'origin-when-cross-origin'
+        | 'same-origin'
+        | 'strict-origin'
+        | 'strict-origin-when-cross-origin'
+        | 'unsafe-url'
+        | undefined
+      >;
   rel?: string | undefined | SignalLike<string | undefined>;
   required?: boolean | undefined | SignalLike<boolean | undefined>;
   reversed?: boolean | undefined | SignalLike<boolean | undefined>;
@@ -1134,16 +1069,8 @@ export interface HTMLAttributes<RefType extends EventTarget = EventTarget>
   srcLang?: string | undefined | SignalLike<string | undefined>;
   srclang?: string | undefined | SignalLike<string | undefined>;
   start?: number | undefined | SignalLike<number | undefined>;
-  step?:
-    | number
-    | string
-    | undefined
-    | SignalLike<number | string | undefined>;
-  style?:
-    | string
-    | CSSProperties
-    | undefined
-    | SignalLike<string | CSSProperties | undefined>;
+  step?: number | string | undefined | SignalLike<number | string | undefined>;
+  style?: string | CSSProperties | undefined | SignalLike<string | CSSProperties | undefined>;
   summary?: string | undefined | SignalLike<string | undefined>;
   tabIndex?: number | undefined | SignalLike<number | undefined>;
   tabindex?: number | undefined | SignalLike<number | undefined>;
@@ -1152,22 +1079,9 @@ export interface HTMLAttributes<RefType extends EventTarget = EventTarget>
   type?: string | undefined | SignalLike<string | undefined>;
   useMap?: string | undefined | SignalLike<string | undefined>;
   usemap?: string | undefined | SignalLike<string | undefined>;
-  value?:
-    | string
-    | string[]
-    | number
-    | undefined
-    | SignalLike<string | string[] | number | undefined>;
-  volume?:
-    | string
-    | number
-    | undefined
-    | SignalLike<string | number | undefined>;
-  width?:
-    | number
-    | string
-    | undefined
-    | SignalLike<number | string | undefined>;
+  value?: string | string[] | number | undefined | SignalLike<string | string[] | number | undefined>;
+  volume?: string | number | undefined | SignalLike<string | number | undefined>;
+  width?: number | string | undefined | SignalLike<number | string | undefined>;
   wmode?: string | undefined | SignalLike<string | undefined>;
   wrap?: string | undefined | SignalLike<string | undefined>;
 
@@ -1180,15 +1094,7 @@ export interface HTMLAttributes<RefType extends EventTarget = EventTarget>
     | 'words'
     | 'characters'
     | undefined
-    | SignalLike<
-    | 'off'
-    | 'none'
-    | 'on'
-    | 'sentences'
-    | 'words'
-    | 'characters'
-    | undefined
-  >;
+    | SignalLike<'off' | 'none' | 'on' | 'sentences' | 'words' | 'characters' | undefined>;
   autoCapitalize?:
     | 'off'
     | 'none'
@@ -1197,19 +1103,8 @@ export interface HTMLAttributes<RefType extends EventTarget = EventTarget>
     | 'words'
     | 'characters'
     | undefined
-    | SignalLike<
-    | 'off'
-    | 'none'
-    | 'on'
-    | 'sentences'
-    | 'words'
-    | 'characters'
-    | undefined
-  >;
-  disablePictureInPicture?:
-    | boolean
-    | undefined
-    | SignalLike<boolean | undefined>;
+    | SignalLike<'off' | 'none' | 'on' | 'sentences' | 'words' | 'characters' | undefined>;
+  disablePictureInPicture?: boolean | undefined | SignalLike<boolean | undefined>;
   results?: number | undefined | SignalLike<number | undefined>;
   translate?: boolean | undefined | SignalLike<boolean | undefined>;
 
@@ -1236,12 +1131,11 @@ export interface HTMLAttributes<RefType extends EventTarget = EventTarget>
   itemref?: string | undefined | SignalLike<string | undefined>;
 }
 
-
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export declare namespace JSX {
   // JSX内在元素的接口，该接口下声明了JSX中的内置标签及其具有的属性，如<input>标签和<input>标签的value属性
   interface IntrinsicElements {
-  // HTML
+    // HTML
     a: HTMLAttributes<HTMLAnchorElement>;
     abbr: HTMLAttributes<HTMLElement>;
     address: HTMLAttributes<HTMLElement>;
@@ -1357,37 +1251,34 @@ export declare namespace JSX {
     var: HTMLAttributes<HTMLElement>;
     video: HTMLAttributes<HTMLVideoElement>;
     wbr: HTMLAttributes<HTMLElement>;
-
   }
   // 该接口声明了类组件中具有的属性
   interface IntrinsicClassAttributes<T> {
-    ref : Ref<T>;
-    key : any;
-
+    ref: Ref<T>;
+    key: any;
   }
   // 该接口声明了函数式组建中具有的属性
   interface IntrinsicAttributes {
-    key : any;
-    ref : Ref<any>;
+    key: any;
+    ref: Ref<any>;
   }
   // 该接口声明了JSX中组件的元素、属性和子元素的类型
   interface Element {
-    type ?: any;
-    props ?: any;
-    key?:any;
+    type?: any;
+    props?: any;
+    key?: any;
   }
   // 该接口定义了类组件所具有的属性、方法
   interface ElementClass {
-    setState(state: any, callback : () => void): void;
-    forceUpdate(callback : () => void): void;
-    render():any;
+    setState(state: any, callback: () => void): void;
+    forceUpdate(callback: () => void): void;
+    render(): any;
   }
   // 该接口用于确定组件props中子元素的名称
   interface ElementChildrenAttribute {
-    children?:any;
+    children?: any;
   }
 }
-
 
 //
 // --------------------------------- Inula Event Types----------------------------------
@@ -1554,10 +1445,10 @@ export interface MouseEvent<T = Element, E = Event.DomMouseEvent> extends UIEven
 //
 
 export type EventHandler<E extends SyntheticEvent<unknown>> = { bivarianceHack(event: E): void }['bivarianceHack'];
-export type TargetedEvent<
-  Target extends EventTarget = EventTarget,
-  TypedEvent extends Event = Event
-> = Omit<TypedEvent, 'currentTarget'> & {
+export type TargetedEvent<Target extends EventTarget = EventTarget, TypedEvent extends Event = Event> = Omit<
+  TypedEvent,
+  'currentTarget'
+> & {
   readonly currentTarget: Target;
 };
 export type ClipboardEventHandler<T = Element> = EventHandler<ClipboardEvent<T>>;
@@ -1573,10 +1464,8 @@ export type PointerEventHandler<T = Element> = EventHandler<PointerEvent<T>>;
 export type UIEventHandler<T = Element> = EventHandler<UIEvent<T>>;
 export type WheelEventHandler<T = Element> = EventHandler<WheelEvent<T>>;
 export type AnimationEventHandler<T = Element> = EventHandler<AnimationEvent<T>>;
-export type TransitionEventHandler<T = Element> = EventHandler<TransitionEvent<T>>
-type GenericEventHandler<Target extends EventTarget> = (
-  event: TargetedEvent<Target>
-) => void;
+export type TransitionEventHandler<T = Element> = EventHandler<TransitionEvent<T>>;
+type GenericEventHandler<Target extends EventTarget> = (event: TargetedEvent<Target>) => void;
 //
 // --------------------------------- Css Props----------------------------------
 //
