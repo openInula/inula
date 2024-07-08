@@ -11,6 +11,7 @@ import propsFormatPlugin from './sugarPlugins/propsFormatPlugin';
 import stateDestructuringPlugin from './sugarPlugins/stateDestructuringPlugin';
 import jsxSlicePlugin from './sugarPlugins/jsxSlicePlugin';
 import earlyReturnPlugin from './sugarPlugins/earlyReturnPlugin';
+import conditionPlugin from './sugarPlugins/conditionPlugin';
 
 export default function (_: ConfigAPI, options: InulaNextOption): TransformOptions {
   return {
@@ -20,6 +21,7 @@ export default function (_: ConfigAPI, options: InulaNextOption): TransformOptio
       [syntaxDecorators.default ?? syntaxDecorators, { legacy: true }],
       [forSubComponentPlugin, options],
       [mapping2ForPlugin, options],
+      [conditionPlugin, options],
       [autoNamingPlugin, options],
       [propsFormatPlugin, options],
       [stateDestructuringPlugin, options],
