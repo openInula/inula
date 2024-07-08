@@ -74,4 +74,124 @@ describe('condition', () => {
       }"
     `);
   });
+  it('should transform condition to if jsx element', () => {
+    const code = `
+        function MyComp() {
+          const show = true;
+          return <div>{show && <h1>hello world</h1>}</div>
+        }
+      `;
+    const transformedCode = transform(code);
+    expect(transformedCode)
+      .toMatchInlineSnapshot(`"import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, EnvNode as $$EnvNode, PropView as $$PropView, render as $$render, notCached as $$notCached } from "@openinula/next";
+function MyComp() {
+  let self;
+  const show = true;
+  self = $$createComponent({
+    updateState: changed => {},
+    updateProp: (propName, newValue) => {},
+    getUpdateViews: () => {
+      let $node0, $node1;
+      $node0 = $$createElement("div");
+      $node1 = new $$CondNode(0, $thisCond => {
+        if (show) {
+          if ($thisCond.cond === 0) {
+            $thisCond.didntChange = true;
+            return [];
+          }
+          $thisCond.cond = 0;
+          let $node0, $node1;
+          $thisCond.updateFunc = $changed => {
+            $node0 && $node0.update($changed);
+          };
+          $node0 = new $$PropView($addUpdate => {
+            let $node0;
+            $node0 = $$createElement("h1");
+            $node0.textContent = "hello world";
+            return [$node0];
+          });
+          $node1 = new $$ExpNode($node0, []);
+          return $thisCond.cond === 0 ? [$node1] : $thisCond.updateCond();
+        } else {
+          if ($thisCond.cond === 1) {
+            $thisCond.didntChange = true;
+            return [];
+          }
+          $thisCond.cond = 1;
+          $thisCond.updateFunc = $changed => {};
+          return $thisCond.cond === 1 ? [] : $thisCond.updateCond();
+        }
+      });
+      $$insertNode($node0, $node1, 0);
+      $node0._$nodes = [$node1];
+      return [[$node0], $changed => {
+        $node1 && $node1.update($changed);
+        return [$node0];
+      }];
+    }
+  });
+  return self.init();
+}"`);
+  });
+  it('should transform triple to if else jsx element', () => {
+    const code = `
+        function MyComp() {
+          const show = true;
+          return <div>{show ? <h1>hello world</h1> : 'Empty'}</div>
+        }
+      `;
+    const transformedCode = transform(code);
+    expect(transformedCode)
+      .toMatchInlineSnapshot(`"import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, EnvNode as $$EnvNode, PropView as $$PropView, render as $$render, notCached as $$notCached } from "@openinula/next";
+function MyComp() {
+  let self;
+  const show = true;
+  self = $$createComponent({
+    updateState: changed => {},
+    updateProp: (propName, newValue) => {},
+    getUpdateViews: () => {
+      let $node0, $node1;
+      $node0 = $$createElement("div");
+      $node1 = new $$CondNode(0, $thisCond => {
+        if (show) {
+          if ($thisCond.cond === 0) {
+            $thisCond.didntChange = true;
+            return [];
+          }
+          $thisCond.cond = 0;
+          let $node0, $node1;
+          $thisCond.updateFunc = $changed => {
+            $node0 && $node0.update($changed);
+          };
+          $node0 = new $$PropView($addUpdate => {
+            let $node0;
+            $node0 = $$createElement("h1");
+            $node0.textContent = "hello world";
+            return [$node0];
+          });
+          $node1 = new $$ExpNode($node0, []);
+          return $thisCond.cond === 0 ? [$node1] : $thisCond.updateCond();
+        } else {
+          if ($thisCond.cond === 1) {
+            $thisCond.didntChange = true;
+            return [];
+          }
+          $thisCond.cond = 1;
+          let $node0;
+          $thisCond.updateFunc = $changed => {};
+          $node0 = $$createTextNode('Empty', []);
+          return $thisCond.cond === 1 ? [$node0] : $thisCond.updateCond();
+        }
+      });
+      $$insertNode($node0, $node1, 0);
+      $node0._$nodes = [$node1];
+      return [[$node0], $changed => {
+        $node1 && $node1.update($changed);
+        return [$node0];
+      }];
+    }
+  });
+  return self.init();
+}"`);
+  });
 });
