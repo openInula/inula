@@ -119,5 +119,6 @@ export function setViewChild(comp: ComponentNode, view: ViewParticle[], usedBit:
 }
 
 export function setReturnValue(hook: HookNode, expression: t.Expression, dependency: Dependency) {
+  hook.usedBit |= dependency._fullDepMask;
   hook.children = { value: expression, ...dependency };
 }

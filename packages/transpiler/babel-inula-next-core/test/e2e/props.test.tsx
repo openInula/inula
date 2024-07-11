@@ -25,7 +25,7 @@ describe('props', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp } from "@openinula/next";
+      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp, useHook as $$useHook, createHook as $$createHook, untrack as $$untrack, runOnce as $$runOnce } from "@openinula/next";
       function App() {
         let self;
         self = $$createComponent({
@@ -50,7 +50,7 @@ describe('props', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp } from "@openinula/next";
+      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp, useHook as $$useHook, createHook as $$createHook } from "@openinula/next";
       function App({
         id,
         className = 'default'
@@ -97,7 +97,53 @@ describe('props', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp } from "@openinula/next";
+      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp, useHook as $$useHook, createHook as $$createHook, untrack as $$untrack, runOnce as $$runOnce } from "@openinula/next";
+      function App({
+        id,
+        className = 'default'
+      }) {
+        let self;
+        let id_$p$_ = id;
+        let className_$p$_ = className;
+        self = $$createComponent({
+          updateState: changed => {},
+          updateProp: (propName, newValue) => {
+            if (propName === "className") {
+              self.updateDerived(className_$p$_ = newValue, 2 /*0b10*/);
+            } else if (propName === "id") {
+              self.updateDerived(id_$p$_ = newValue, 1 /*0b1*/);
+            }
+          },
+          getUpdateViews: () => {
+            let $node0;
+            $node0 = $$createElement("div");
+            $$setHTMLProp($node0, "id", () => id_$p$_, [id_$p$_]);
+            $$setHTMLProp($node0, "className", () => className_$p$_, [className_$p$_]);
+            return [[$node0], $changed => {
+              if ($changed & 1) {
+                $node0 && $$setHTMLProp($node0, "id", () => id_$p$_, [id_$p$_]);
+              }
+              if ($changed & 2) {
+                $node0 && $$setHTMLProp($node0, "className", () => className_$p$_, [className_$p$_]);
+              }
+              return [$node0];
+            }];
+          }
+        });
+        return self.init();
+      }"
+    `);
+  });
+
+  it('should support alias', () => {
+    expect(
+      transform(/**jsx*/ `
+        function Child({ name: alias }) {
+         return <h1>{alias}</h1>;
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp, useHook as $$useHook, createHook as $$createHook, untrack as $$untrack, runOnce as $$runOnce } from "@openinula/next";
       function App({
         info
       }) {
@@ -147,53 +193,6 @@ describe('props', () => {
                   left: x,
                   top: y
                 });
-              }
-              return [$node0];
-            }];
-          }
-        });
-        return self.init();
-      }"
-    `);
-  });
-
-  it('should support alias', () => {
-    expect(
-      transform(/**jsx*/ `
-        function Child({ name: alias }) {
-         return <h1>{alias}</h1>;
-        }
-      `)
-    ).toMatchInlineSnapshot(`
-      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp } from "@openinula/next";
-      function Child({
-        name
-      }) {
-        let self;
-        let name_$p$_ = name;
-        let alias;
-        self = $$createComponent({
-          updateState: changed => {
-            if (changed & 1) {
-              if ($$notCached(self, "random_str", [name_$p$_])) {
-                self.updateDerived(alias = name_$p$_, 2 /*0b10*/);
-              }
-            }
-          },
-          updateProp: (propName, newValue) => {
-            if (propName === "name") {
-              self.updateDerived(name_$p$_ = newValue, 1 /*0b1*/);
-            }
-          },
-          getUpdateViews: () => {
-            let $node0, $node1;
-            $node0 = $$createElement("h1");
-            $node1 = new $$ExpNode(alias, [alias]);
-            $$insertNode($node0, $node1, 0);
-            $node0._$nodes = [$node1];
-            return [[$node0], $changed => {
-              if ($changed & 2) {
-                $node1 && $node1.update(() => alias, [alias]);
               }
               return [$node0];
             }];

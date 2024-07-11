@@ -15,17 +15,17 @@
 
 import { describe, expect, vi } from 'vitest';
 import { domTest as it } from './utils';
-import { render, View } from '../src';
+import { render, didMount, willMount, didUnmount } from '../src';
 
 describe('lifecycle', () => {
   it('should call willMount', ({ container }) => {
     const fn = vi.fn();
 
     function App() {
-      willMount: {
+      willMount(() => {
         expect(container.innerHTML).toBe('');
         fn();
-      }
+      });
 
       return <div>test</div>;
     }
@@ -51,14 +51,14 @@ describe('lifecycle', () => {
   });
 
   // TODO: implement unmount
-  it.skip('should call willUnmount', ({ container }) => {
+  it.fails('should call willUnmount', ({ container }) => {
     const fn = vi.fn();
 
     function App() {
-      willUnmount: {
+      didUnmount(() => {
         expect(container.innerHTML).toBe('<div>test</div>');
         fn();
-      }
+      });
 
       return <div>test</div>;
     }

@@ -2,12 +2,16 @@ import { ComponentNode, HookNode, Variable } from '../analyze/types';
 import { types as t } from '@openinula/babel-api';
 import { generateComp } from './compGenerator';
 import { getStates, wrapUpdate } from './utils';
+import { HOOK_SUFFIX } from '../constants';
 
 function reconstructVariable(variable: Variable) {
   if (variable.type === 'reactive') {
     // ---- If it is a computed, we initiate and modify it in `updateState`
     const kind = variable.dependency ? 'let' : variable.kind;
     const value = variable.dependency ? null : variable.value;
+    if (variable.name.endsWith(HOOK_SUFFIX)) {
+      (variable.value as t.CallExpression).arguments.push(t.numericLiteral(variable.bit!));
+    }
     return t.variableDeclaration(kind, [t.variableDeclarator(t.identifier(variable.name), value)]);
   }
 

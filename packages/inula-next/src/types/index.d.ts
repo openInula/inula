@@ -28,6 +28,10 @@ export function escape<T>(arg: T): T;
 export function setGlobal(globalObj: any): void;
 export function setDocument(customDocument: any): void;
 
+export function willMount(fn: () => void): void;
+export function didMount(fn: () => void): void;
+export function willUnmount(fn: () => void): void;
+export function didUnmount(fn: () => void): void;
 interface Context<V> {
   value: V;
 }

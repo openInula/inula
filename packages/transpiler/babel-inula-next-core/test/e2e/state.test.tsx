@@ -28,17 +28,23 @@ describe('state', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp } from "@openinula/next";
+      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp, useHook as $$useHook, createHook as $$createHook, untrack as $$untrack, runOnce as $$runOnce } from "@openinula/next";
       function App() {
         let self;
+        let _useState_$h$_ = $$useHook(useState, [0], 1);
         let count;
         let setCount;
         self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            {
-              self.updateDerived([count, setCount] = useState(0), 1 /*0b1*/);
+          updateState: changed => {
+            if (changed & 1) {
+              if ($$notCached(self, "random_str", [_useState_$h$_?.value])) {
+                {
+                  self.updateDerived([count, setCount] = _useState_$h$_.value(), 2 /*0b10*/);
+                }
+              }
             }
+          },
+          getUpdateViews: () => {
             let $node0, $node1, $node2;
             $node0 = $$createElement("div");
             $node1 = new $$ExpNode(count, [count]);
@@ -47,7 +53,7 @@ describe('state', () => {
             $$insertNode($node0, $node2, 1);
             $node0._$nodes = [$node1, $node2];
             return [[$node0], $changed => {
-              if ($changed & 1) {
+              if ($changed & 2) {
                 $node1 && $node1.update(() => count, [count]);
               }
               return [$node0];

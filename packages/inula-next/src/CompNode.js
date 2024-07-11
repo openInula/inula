@@ -31,12 +31,16 @@ export class CompNode extends DLNode {
 
   setUpdateFunc({ updateState, updateProp, updateContext, getUpdateViews, didUnmount, willUnmount, didMount }) {
     this.updateState = updateState;
-    this.updateProp = updateProp;
+    this._$updateProp = updateProp;
     if (updateContext) this.updateContext = updateContext;
     this.getUpdateViews = getUpdateViews;
     this.didUnmount = didUnmount;
     this.willUnmount = willUnmount;
     this.didMount = didMount;
+  }
+
+  updateProp(...args) {
+    this._$updateProp(...args);
   }
 
   /**
@@ -52,9 +56,15 @@ export class CompNode extends DLNode {
       DLNode.addDidUnmount(this, this._$setUnmounted.bind(this));
       this.didUnmount && DLNode.addDidUnmount(this, this.didUnmount.bind(this));
       if (this.getUpdateViews) {
-        const [baseNode, updateView] = this.getUpdateViews();
-        this.updateView = updateView;
-        this._$nodes = baseNode;
+        const result = this.getUpdateViews();
+        // TODO: Need refactor
+        if (Array.isArray(result)) {
+          const [baseNode, updateView] = result;
+          this.updateView = updateView;
+          this._$nodes = baseNode;
+        } else {
+          this.updateView = result;
+        }
       }
     };
 

@@ -30,8 +30,39 @@ describe('use hook transform', () => {
     const output = mock(input);
     expect(output).toMatchInlineSnapshot(`
       "const App = Component(() => {
-        let _useMousePosition_$h$_ = createHook(useMousePosition, [0, 0]);
-        const [x, y] = _useMousePosition_$h$_.return();
+        let _useMousePosition_$h$_ = $$useHook(useMousePosition, [0, 0]);
+        const [x, y] = _useMousePosition_$h$_.value();
+      });"
+    `);
+  });
+
+  it('should transform a custom hook call with multiple params', () => {
+    const input = `
+      function App() {
+        let baseX = 0;
+        let baseY = 0;
+        const [x, y] = useMousePosition(baseX, baseY);
+        watch(() => {
+          console.log(baseX, baseY)
+        })
+      }
+    `;
+    const output = mock(input);
+    expect(output).toMatchInlineSnapshot(`
+      "const App = Component(() => {
+        let baseX = 0;
+        let baseY = 0;
+        let _useMousePosition_$h$_ = $$useHook(useMousePosition, [baseX, baseY]);
+        watch(() => {
+          _useMousePosition_$h$_.updateProp("p0", baseX);
+        });
+        watch(() => {
+          _useMousePosition_$h$_.updateProp("p1", baseY);
+        });
+        const [x, y] = _useMousePosition_$h$_.value();
+        watch(() => {
+          console.log(baseX, baseY);
+        });
       });"
     `);
   });

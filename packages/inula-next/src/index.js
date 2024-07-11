@@ -2,6 +2,7 @@ import { DLNode } from './DLNode';
 import { insertNode } from './HTMLNode';
 import { DLStore } from './store';
 import { CompNode } from './CompNode.js';
+import { HookNode } from './HookNode.js';
 
 export * from './HTMLNode';
 export * from './CompNode';
@@ -44,15 +45,10 @@ export function render(compFn, idOrEl) {
   DLNode.runDidMount();
 }
 
-export function manual(callback, _deps) {
+export function untrack(callback) {
   return callback();
 }
 
-export function escape(arg) {
-  return arg;
-}
-
-export const $ = escape;
 export const required = null;
 
 export function use() {
@@ -61,7 +57,11 @@ export function use() {
   );
 }
 
-let currentComp;
+let currentComp = null;
+
+export function inMount() {
+  return !!currentComp;
+}
 
 /**
  * @typedef compUpdator
@@ -71,9 +71,20 @@ let currentComp;
  * @property {(newValue: any, bit: number) => {} updateDerived
  */
 export function Comp(compFn, props = {}) {
-  const compNode = new CompNode();
-  currentComp = compNode;
-  compFn(props);
+  return mountNode(() => new CompNode(), compFn, props);
+}
+
+function mountNode(ctor, compFn, props) {
+  const compNode = ctor();
+  let prevNode = currentComp;
+  try {
+    currentComp = compNode;
+    compFn(props);
+  } catch (err) {
+    throw err;
+  } finally {
+    currentComp = prevNode;
+  }
   return compNode;
 }
 
@@ -128,4 +139,32 @@ export function useContext(ctx, key) {
   }
 
   return ctx.value;
+}
+
+/**
+ *
+ * @param {(props: Record<string, any>) => any} hookFn
+ * @param {any[]}params
+ * @param {number}bitMap
+ */
+export function useHook(hookFn, params, bitMap) {
+  if (currentComp) {
+    const props = params.reduce((obj, val, idx) => ({ ...obj, [`p${idx}`]: val }), {});
+    // if there is the currentComp means we are mounting the component tree
+    return mountNode(() => new HookNode(currentComp, bitMap), hookFn, props);
+  }
+}
+
+export function createHook(compUpdater) {
+  if (!currentComp) {
+    throw new Error('Should not call createComponent outside the component function');
+  }
+  currentComp.setUpdateFunc(compUpdater);
+  return currentComp;
+}
+
+export function runOnce(fn) {
+  if (currentComp) {
+    fn();
+  }
 }

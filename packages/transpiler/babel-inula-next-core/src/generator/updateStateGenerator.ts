@@ -1,7 +1,20 @@
 import { types as t } from '@openinula/babel-api';
 import { Bitmap } from '@openinula/reactivity-parser';
-import { ComponentNode, IRNode, Variable, WatchFunc } from '../analyze/types';
+import { IRNode, Variable, WatchFunc } from '../analyze/types';
 import { getStates, wrapCheckCache, wrapUpdate } from './utils';
+import { HOOK_SUFFIX } from '../constants';
+import { importMap } from '../constants';
+
+/**
+ * wrap stmt in runOnce function, like
+ * runOnce(() => log(1));
+ * @param stmt
+ */
+function wrapRunOnce(stmt: t.Statement) {
+  return t.expressionStatement(
+    t.callExpression(t.identifier(importMap.runOnce), [t.arrowFunctionExpression([], t.blockStatement([stmt]))])
+  );
+}
 
 export function generateUpdateState(root: IRNode) {
   const states = getStates(root);
@@ -29,10 +42,14 @@ export function generateUpdateState(root: IRNode) {
      * @View
      * variable = ${value}
      */
-    const updateNode = t.expressionStatement(
+    let updateNode = t.expressionStatement(
       t.assignmentExpression('=', t.identifier(variable.name), variable.value ?? t.nullLiteral())
     );
-    wrapUpdate(updateNode, states);
+    if (variable.name.endsWith(HOOK_SUFFIX)) {
+      updateNode = wrapRunOnce(updateNode);
+    } else {
+      wrapUpdate(updateNode, states);
+    }
 
     const depsNode = variable.dependency!.dependenciesNode;
     if (!updates[bitMap]) {
