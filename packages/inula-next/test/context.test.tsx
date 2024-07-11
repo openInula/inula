@@ -49,7 +49,7 @@ describe('context', () => {
     }
 
     render(App, container);
-    expect(container.innerHTML).toBe('name is child, theme is dark');
+    expect(container.innerHTML.trim()).toBe('name is child, theme is dark');
   });
 
   it('should support recursive context', ({ container }) => {

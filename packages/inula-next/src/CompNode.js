@@ -1,6 +1,6 @@
 import { DLNode, DLNodeType } from './DLNode';
 import { forwardHTMLProp } from './HTMLNode';
-import { DLStore, cached } from './store';
+import { cached } from './store';
 import { schedule } from './scheduler';
 
 /**
@@ -101,14 +101,11 @@ export class CompNode extends DLNode {
    */
   _$setPropToForward(key, value, deps) {
     this._$forwardPropsSet.forEach(node => {
-      const isContent = key === '_$content';
       if (node._$dlNodeType === DLNodeType.Comp) {
-        if (isContent) node._$setContent(() => value, deps);
-        else node._$setProp(key, () => value, deps);
+        node._$setProp(key, () => value, deps);
         return;
       }
       if (node instanceof HTMLElement) {
-        if (isContent) key = 'textContent';
         forwardHTMLProp(node, key, () => value, deps);
       }
     });
@@ -131,18 +128,6 @@ export class CompNode extends DLNode {
     this.updateDerived(key);
     if (notInitd) this._$forwardPropsId.push(key);
     else this._$setPropToForward(key, value, deps);
-  }
-
-  /**
-   * @brief Add a node to the set of nodes that are forwarding props to this node and init these props
-   * @param node
-   */
-  _$addForwardProps(node) {
-    this._$forwardPropsSet.add(node);
-    this._$forwardPropsId.forEach(key => {
-      this._$setPropToForward(key, this[key], []);
-    });
-    DLNode.addWillUnmount(node, this._$forwardPropsSet.delete.bind(this._$forwardPropsSet, node));
   }
 
   /**
@@ -179,7 +164,6 @@ export class CompNode extends DLNode {
    * @param deps
    */
   _$setProp(key, valueFunc, deps) {
-    if ('_$forwardProps' in this) return this._$setForwardProp(key, valueFunc, deps);
     if (this._$cache(key, deps)) return;
     this[key] = valueFunc();
     this.updateProp(key, this[key]);
@@ -192,17 +176,6 @@ export class CompNode extends DLNode {
     Object.entries(props).forEach(([key, value]) => {
       this._$setProp(key, () => value, []);
     });
-  }
-
-  /**
-   * @brief Init an env, put the corresponding innermost envNode in $en$key
-   * @param key
-   * @param value
-   * @param envNode
-   */
-  _$initEnv(key, value, envNode) {
-    this[key] = value;
-    this[`$en$${key}`] = envNode;
   }
 
   // ---- Update functions
@@ -246,7 +219,6 @@ export class CompNode extends DLNode {
    * @private
    */
   _$updateView(bit) {
-    if (this._$modelCallee) return this._$updateModelCallee();
     // if (!('_$update' in this)) return;
     if (!bit) return;
     // ---- Collect all depNums that need to be updated
@@ -267,73 +239,10 @@ export class CompNode extends DLNode {
       });
     }
   }
-
-  _$updateModelCallee() {
-    if ('_$depNumsToUpdate' in this) return;
-    this._$depNumsToUpdate = true;
-    // ---- Update in the next microtask
-    Promise.resolve().then(() => {
-      // ---- Abort if unmounted
-      if (this._$unmounted) return;
-      this._$modelCallee.updateDerived(this._$modelKey);
-      delete this._$depNumsToUpdate;
-    });
-  }
-
-  /**
-   * @brief Update all props and content of the model
-   */
-  static _$updateModel(model, propsFunc, contentFunc) {
-    // ---- Suppress update because top level update will be performed
-    //      directly by the state variable in the model callee, which will
-    //      trigger the update of the model
-    const props = propsFunc() ?? {};
-    const collectedProps = props.s ?? [];
-    props.m?.forEach(([props, deps]) => {
-      Object.entries(props).forEach(([key, value]) => {
-        collectedProps.push([key, value, deps]);
-      });
-    });
-    collectedProps.forEach(([key, value, deps]) => {
-      model._$setProp(key, () => value, deps);
-    });
-    const content = contentFunc();
-    if (content) model._$setContent(() => content[0], content[1]);
-  }
-
-  static _$releaseModel() {
-    delete this._$modelCallee;
-  }
-
-  /**
-   * @brief Inject model in to a property
-   * @param ModelCls
-   * @param props { m: [props, deps], s: [key, value, deps] }
-   * @param content
-   * @param key
-   * @returns
-   */
-  _$injectModel(ModelCls, propsFunc, contentFunc, key) {
-    const props = propsFunc() ?? {};
-    const collectedProps = props.s ?? [];
-    props.m?.forEach(([props, deps]) => {
-      Object.entries(props).forEach(([key, value]) => {
-        collectedProps.push([key, value, deps]);
-      });
-    });
-    const model = new ModelCls();
-    model._$init(collectedProps, contentFunc(), null, null);
-    model._$modelCallee = this;
-    model._$modelKey = key;
-    model._$update = CompNode._$updateModel.bind(null, model, propsFunc, contentFunc);
-
-    return model;
-  }
 }
 
 // ---- @View -> class Comp extends View
 export const View = CompNode;
-export const Model = CompNode;
 
 /**
  * @brief Run all update functions given the key
