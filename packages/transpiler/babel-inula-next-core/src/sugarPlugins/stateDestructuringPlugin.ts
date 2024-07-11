@@ -17,7 +17,7 @@ import babel, { NodePath, PluginObj } from '@babel/core';
 import type { InulaNextOption } from '../types';
 import { register } from '@openinula/babel-api';
 import { COMPONENT } from '../constants';
-import { ArrowFunctionWithBlock, extractFnFromMacro, isCompPath } from '../utils';
+import { ArrowFunctionWithBlock, extractFnFromMacro, isCompPath, isHookPath } from '../utils';
 import { types as t } from '@openinula/babel-api';
 
 /**
@@ -73,7 +73,7 @@ export default function (api: typeof babel, options: InulaNextOption): PluginObj
   return {
     visitor: {
       CallExpression(path: NodePath<t.CallExpression>) {
-        if (!isCompPath(path)) {
+        if (!isCompPath(path) && !isHookPath(path)) {
           return;
         }
         const fnPath = extractFnFromMacro(path, COMPONENT) as

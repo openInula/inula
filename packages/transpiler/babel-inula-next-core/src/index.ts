@@ -12,6 +12,7 @@ import stateDestructuringPlugin from './sugarPlugins/stateDestructuringPlugin';
 import jsxSlicePlugin from './sugarPlugins/jsxSlicePlugin';
 import earlyReturnPlugin from './sugarPlugins/earlyReturnPlugin';
 import contextPlugin from './sugarPlugins/contextPlugin';
+import hookPlugin from './sugarPlugins/hookPlugin';
 import conditionPlugin from './sugarPlugins/conditionPlugin';
 
 export default function (_: ConfigAPI, options: InulaNextOption): TransformOptions {
@@ -24,6 +25,7 @@ export default function (_: ConfigAPI, options: InulaNextOption): TransformOptio
       [mapping2ForPlugin, options],
       [conditionPlugin, options],
       [autoNamingPlugin, options],
+      [hookPlugin, options],
       [propsFormatPlugin, options],
       [contextPlugin, options],
       [stateDestructuringPlugin, options],

@@ -2,7 +2,13 @@ import babel, { NodePath, PluginObj } from '@babel/core';
 import type { InulaNextOption } from '../types';
 import { register, types as t } from '@openinula/babel-api';
 import { COMPONENT, PROP_SUFFIX } from '../constants';
-import { ArrowFunctionWithBlock, extractFnFromMacro, isCompPath, wrapArrowFunctionWithBlock } from '../utils';
+import {
+  ArrowFunctionWithBlock,
+  extractFnFromMacro,
+  isCompPath,
+  isHookPath,
+  wrapArrowFunctionWithBlock,
+} from '../utils';
 import { type Scope } from '@babel/traverse';
 
 export enum PropType {
@@ -129,7 +135,7 @@ export default function (api: typeof babel, options: InulaNextOption): PluginObj
   return {
     visitor: {
       CallExpression(path: NodePath<t.CallExpression>) {
-        if (isCompPath(path)) {
+        if (isCompPath(path) || isHookPath(path)) {
           const fnPath = extractFnFromMacro(path, COMPONENT) as
             | NodePath<t.FunctionExpression>
             | NodePath<ArrowFunctionWithBlock>;

@@ -54,6 +54,10 @@ export const importMap = Object.fromEntries(
     'render',
     'notCached',
     'Comp',
+    'useHook',
+    'createHook',
+    'untrack',
+    'runOnce',
   ].map(name => [name, `$$${name}`])
 );
 

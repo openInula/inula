@@ -1,6 +1,6 @@
 import { NodePath } from '@babel/core';
 import { types as t } from '@openinula/babel-api';
-import { COMPONENT, HOOK } from './constants';
+import { COMPONENT, HOOK, importMap } from './constants';
 import { minimatch } from 'minimatch';
 
 export function fileAllowed(fileName: string | undefined, includes: string[], excludes: string[]): boolean {
@@ -107,4 +107,12 @@ export function createMacroNode(
 
 export function isValidPath<T>(path: NodePath<T>): path is NodePath<Exclude<T, undefined | null>> {
   return !!path.node;
+}
+
+/**
+ * Wrap the expression with untrack
+ * e.g. untrack(() => a)
+ */
+export function wrapUntrack(node: t.Expression) {
+  return t.callExpression(t.identifier(importMap.untrack), [t.arrowFunctionExpression([], node)]);
 }

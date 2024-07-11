@@ -50,6 +50,17 @@ function generateUpdateViewFn(root: ComponentNode<'comp'>) {
     : null;
 }
 
+/**
+ * Generate the update hook function
+ * ```js
+ * updateHook: changed => {
+ *   if (changed & 1) {
+ *     self.emitUpdate();
+ *   }
+ * }
+ * ```
+ * @param root
+ */
 function generateUpdateHookFn(root: HookNode) {
   const getUpdateViewsFnBody = genWillMountCodeBlock(root);
   const children = root.children!;
@@ -66,15 +77,15 @@ function generateUpdateHookFn(root: HookNode) {
       ),
     ])
   );
-  return getUpdateViewsFnBody.length || hookUpdateFn
-    ? t.arrowFunctionExpression(
-        [],
-        t.blockStatement([
-          ...getUpdateViewsFnBody,
-          // hookUpdateFn ? t.returnStatement(hookUpdateFn) : null,
-        ])
-      )
-    : null;
+  const fnBody: t.Statement[] = [];
+  if (getUpdateViewsFnBody.length) {
+    fnBody.push(...getUpdateViewsFnBody);
+  }
+  if (hookUpdateFn) {
+    fnBody.push(t.returnStatement(hookUpdateFn));
+  }
+
+  return fnBody.length ? t.arrowFunctionExpression([], t.blockStatement(fnBody)) : null;
 }
 
 /**
@@ -82,7 +93,11 @@ function generateUpdateHookFn(root: HookNode) {
  * self = Inula.createComponent({
  *  willMount: () => {},
  *  baseNode: ${nodePrefix}0,
- *  updateView: changed => {},
+ *  getUpdateViews: () => {
+ *    return [[$node0],changed => {
+ *      if (changed & 1) $node1.update();
+ *    }],
+ *  },
  *  updateProp: (propName, newValue) => {},
  *  updateState: (changed) => {}
  * })
@@ -93,12 +108,10 @@ export function generateComp(root: ComponentNode | HookNode) {
     if (value === null) return;
     compInitializerNode.properties.push(t.objectProperty(t.identifier(key), value));
   };
+
+  const nodeCtor = root.type === 'hook' ? t.identifier(importMap.createHook) : t.identifier(importMap.createComponent);
   const node = t.expressionStatement(
-    t.assignmentExpression(
-      '=',
-      t.identifier('self'),
-      t.callExpression(t.identifier(importMap.createComponent), [compInitializerNode])
-    )
+    t.assignmentExpression('=', t.identifier('self'), t.callExpression(nodeCtor, [compInitializerNode]))
   );
 
   const result: t.Statement[] = [node];
@@ -132,6 +145,8 @@ export function generateComp(root: ComponentNode | HookNode) {
     let getUpdateViews: t.ArrowFunctionExpression | null;
     if (root.type === 'hook') {
       getUpdateViews = generateUpdateHookFn(root);
+
+      addProperty('value', t.arrowFunctionExpression([], root.children.value));
     } else {
       getUpdateViews = generateUpdateViewFn(root);
     }
