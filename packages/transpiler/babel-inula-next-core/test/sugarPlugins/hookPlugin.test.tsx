@@ -54,10 +54,10 @@ describe('use hook transform', () => {
         let baseY = 0;
         let _useMousePosition_$h$_ = $$useHook(useMousePosition, [baseX, baseY]);
         watch(() => {
-          _useMousePosition_$h$_.updateProp("p0", baseX);
+          $$untrack(() => _useMousePosition_$h$_).updateProp("p0", baseX);
         });
         watch(() => {
-          _useMousePosition_$h$_.updateProp("p1", baseY);
+          $$untrack(() => _useMousePosition_$h$_).updateProp("p1", baseY);
         });
         const [x, y] = _useMousePosition_$h$_.value();
         watch(() => {

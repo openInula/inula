@@ -29,7 +29,7 @@ export default function (_: ConfigAPI, options: InulaNextOption): TransformOptio
       [propsFormatPlugin, options],
       [contextPlugin, options],
       [stateDestructuringPlugin, options],
-      [jsxSlicePlugin, options],
+      //TODO: fix plugin conflict -> [jsxSlicePlugin, options],
       [earlyReturnPlugin, options],
       [inulaNext, options],
     ],
