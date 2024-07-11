@@ -2,9 +2,9 @@ import type babel from '@babel/core';
 import type { BabelFile } from '@babel/core';
 import { NodePath, type PluginObj, type types as t } from '@babel/core';
 import { type InulaNextOption } from './types';
-import { defaultAttributeMap, defaultHTMLTags, COMPONENT, importMap } from './constants';
+import { defaultAttributeMap, defaultHTMLTags, importMap } from './constants';
 import { analyze } from './analyze';
-import { addImport, extractFnFromMacro, fileAllowed, getMacroType, isCompPath, toArray } from './utils';
+import { addImport, extractFnFromMacro, fileAllowed, getMacroType, toArray } from './utils';
 import { register } from '@openinula/babel-api';
 import { generate } from './generator';
 import { ComponentNode, HookNode } from './analyze/types';
@@ -100,8 +100,8 @@ export default function (api: typeof babel, options: InulaNextOption): PluginObj
   };
 }
 
-function recordComponentInState(state: PluginState, name: string, componentNode: ComponentNode) {
-  const metadata = state.file.metadata as { components: Record<string, ComponentNode> };
+function recordComponentInState(state: PluginState, name: string, componentNode: ComponentNode | HookNode) {
+  const metadata = state.file.metadata as { components: Record<string, ComponentNode | HookNode> };
   if (metadata.components == null) {
     metadata.components = {
       [name]: componentNode,

@@ -31,6 +31,9 @@ function genWillMountCodeBlock(root: IRNode) {
 }
 
 function generateUpdateViewFn(root: ComponentNode<'comp'>) {
+  if (!root.children) {
+    return null;
+  }
   const [updateViewFn, declarations, topLevelNodes] = generateView(root.children, {
     babelApi: getBabelApi(),
     importMap,
