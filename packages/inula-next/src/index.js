@@ -9,7 +9,6 @@ export * from './CompNode';
 export * from './ContextProvider.js';
 export * from './TextNode';
 export * from './PropView';
-export * from './SnippetNode';
 export * from './MutableNode/ForNode';
 export * from './MutableNode/ExpNode';
 export * from './MutableNode/CondNode';

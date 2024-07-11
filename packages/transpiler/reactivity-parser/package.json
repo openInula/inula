@@ -31,8 +31,7 @@
   "dependencies": {
     "@openinula/error-handler": "workspace:*",
     "@openinula/jsx-view-parser": "workspace:*",
-    "@openinula/babel-api": "workspace:*",
-    "@openinula/view-parser": "workspace:*"
+    "@openinula/babel-api": "workspace:*"
   },
   "tsup": {
     "entry": [
