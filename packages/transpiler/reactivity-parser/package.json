@@ -1,10 +1,6 @@
 {
   "name": "@openinula/reactivity-parser",
   "version": "0.0.1",
-  "author": {
-    "name": "IanDx",
-    "email": "iandxssxx@gmail.com"
-  },
   "keywords": [
     "Inula-Next"
   ],
