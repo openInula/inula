@@ -1,6 +1,6 @@
 {
   "name": "@openinula/error-handler",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "keywords": [
     "Inula-Next"
   ],
@@ -20,8 +20,13 @@
     "typescript": "^5.3.2"
   },
   "tsup": {
-    "entry": ["src/index.ts"],
-    "format": ["cjs", "esm"],
+    "entry": [
+      "src/index.ts"
+    ],
+    "format": [
+      "cjs",
+      "esm"
+    ],
     "clean": true,
     "dts": true,
     "minify": true

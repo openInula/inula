@@ -1,6 +1,6 @@
 {
-  "name": "babel-preset-inula-next",
-  "version": "0.0.3",
+  "name": "@openinula/babel-preset-inula-next",
+  "version": "0.0.0-SNAPSHOT",
   "keywords": [
     "Inula-Next",
     "babel-preset"
@@ -21,6 +21,7 @@
   "devDependencies": {
     "@types/babel__core": "^7.20.5",
     "@types/node": "^20.10.5",
+    "@vitest/coverage-v8": "^1.6.0",
     "sinon": "^18.0.0",
     "tsup": "^6.7.0",
     "typescript": "^5.3.2"
@@ -37,7 +38,6 @@
     "@openinula/babel-api": "workspace:*",
     "@openinula/jsx-view-parser": "workspace:*",
     "@openinula/reactivity-parser": "workspace:*",
-    "@openinula/view-parser": "workspace:*",
     "@openinula/view-generator": "workspace:*",
     "@types/babel-types": "^7.0.15",
     "@types/babel__generator": "^7.6.8",
