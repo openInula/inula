@@ -1,6 +1,6 @@
 {
-  "name": "vite-plugin-inula-next",
-  "version": "0.0.3",
+  "name": "@openinula/vite-plugin-inula-next",
+  "version": "0.0.4",
   "keywords": [
     "Inula-Next",
     "vite-plugin"
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@babel/core": "^7.20.12",
-    "babel-preset-inula-next": "workspace:*",
+    "@openinula/babel-preset-inula-next": "workspace:*",
     "minimatch": "^9.0.3"
   },
   "tsup": {

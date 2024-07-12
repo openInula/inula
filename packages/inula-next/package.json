@@ -1,6 +1,6 @@
 {
   "name": "@openinula/next",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "keywords": [
     "inula"
   ],
@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "tsup": "^6.5.0",
-    "vite-plugin-inula-next": "workspace:*",
+    "@openinula/vite-plugin-inula-next": "workspace:*",
     "vitest": "^1.2.2"
   },
   "tsup": {

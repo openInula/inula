@@ -1,7 +1,7 @@
 {
   "name": "inula-next-todo-mvc",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,12 +12,12 @@
     "@babel/standalone": "^7.22.4",
     "@iandx/easy-css": "^0.10.14",
     "@openinula/next": "workspace:*",
-    "babel-preset-inula-next": "workspace:*"
+    "@openinula/babel-preset-inula-next": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.2.2",
     "vite": "^4.4.9",
-    "vite-plugin-inula-next": "workspace:*"
+    "@openinula/vite-plugin-inula-next": "workspace:*"
   },
   "keywords": [
     "inula-next"
