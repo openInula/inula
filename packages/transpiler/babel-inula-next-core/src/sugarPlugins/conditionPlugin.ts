@@ -32,7 +32,12 @@ export default function (api: typeof babel): PluginObj {
   return {
     visitor: {
       LogicalExpression(path: NodePath<t.LogicalExpression>) {
+        // expression in jsx expression container only
         if (!path.parentPath.isJSXExpressionContainer()) {
+          return;
+        }
+        // expression is jsx element's child
+        if (!path.parentPath.parentPath.isJSXElement()) {
           return;
         }
         // && operator only
@@ -41,6 +46,9 @@ export default function (api: typeof babel): PluginObj {
         }
         const left = path.node.left;
         const right = path.node.right;
+        if (!t.isJSXElement(right) && !t.isLogicalExpression(right) && !t.isConditionalExpression(right)) {
+          return;
+        }
         // create if tag
         const ifTag = t.jsxElement(
           t.jsxOpeningElement(
@@ -54,7 +62,12 @@ export default function (api: typeof babel): PluginObj {
         path.parentPath.replaceWith(ifTag);
       },
       ConditionalExpression(path: NodePath<t.ConditionalExpression>) {
+        // expression in jsx expression container only
         if (!path.parentPath.isJSXExpressionContainer()) {
+          return;
+        }
+        // expression is jsx element's child
+        if (!path.parentPath.parentPath.isJSXElement()) {
           return;
         }
         const test = path.node.test;
@@ -68,17 +81,21 @@ export default function (api: typeof babel): PluginObj {
             false
           ),
           t.jsxClosingElement(t.jSXIdentifier('if')),
-          [t.jSXExpressionContainer(consequent)]
+          [getJsxElementChild(consequent)]
         );
         // create else tag
         const elseTag = t.jsxElement(
           t.jsxOpeningElement(t.jSXIdentifier('else'), [], false),
           t.jsxClosingElement(t.jSXIdentifier('else')),
-          [t.jSXExpressionContainer(alternate)]
+          [getJsxElementChild(alternate)]
         );
         path.parentPath.replaceWith(ifTag);
         path.parentPath.insertAfter(elseTag);
       },
     },
   };
+}
+
+function getJsxElementChild(expression: t.Expression): t.JSXElement | t.JSXExpressionContainer {
+  return t.isJSXElement(expression) ? expression : t.jSXExpressionContainer(expression);
 }
