@@ -15,7 +15,7 @@
 
 // vitest.config.ts
 import { defineConfig } from 'vitest/config';
-import inula from 'vite-plugin-inula-next';
+import inula from '@openinula/vite-plugin-inula-next';
 import * as path from 'node:path';
 
 export default defineConfig({

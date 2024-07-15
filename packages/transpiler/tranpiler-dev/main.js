@@ -1,5 +1,5 @@
 import { transform } from '@babel/standalone';
-import preset from 'babel-preset-inula-next';
+import preset from '@openinula/babel-preset-inula-next';
 
 const code = /*js*/ `
 console.log('ok');
