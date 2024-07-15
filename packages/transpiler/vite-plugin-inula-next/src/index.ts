@@ -1,5 +1,5 @@
 import { transform } from '@babel/core';
-import InulaNext, { type InulaNextOption } from 'babel-preset-inula-next';
+import InulaNext, { type InulaNextOption } from '@openinula/babel-preset-inula-next';
 import { minimatch } from 'minimatch';
 import { Plugin, TransformResult } from 'vite';
 
