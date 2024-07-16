@@ -14,11 +14,9 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { compile } from './mock';
-import forSubComponentPlugin from '../../src/sugarPlugins/forSubComponentPlugin';
+import { transform } from '../mock';
 
-const mock = (code: string) => compile([forSubComponentPlugin], code);
-describe('for', () => {
+describe('for sub component', () => {
   it('should transform for loop', () => {
     const code = `
         function MyComp() {
@@ -36,7 +34,7 @@ describe('for', () => {
           )
         }
       `;
-    const transformedCode = mock(code);
+    const transformedCode = transform(code);
     expect(transformedCode).toMatchInlineSnapshot(`"function MyComp() {
   let name = 'test';
   let arr = [{

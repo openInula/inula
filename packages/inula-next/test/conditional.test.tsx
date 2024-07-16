@@ -87,4 +87,65 @@ describe('conditional rendering', () => {
                 "
     `);
   });
+  it('should transform "and expression in and expression" to "if tag in if tag"', ({ container }) => {
+    let set: (num: number) => void;
+
+    function MyComp() {
+      let count = 0;
+      set = (val: number) => {
+        count = val;
+      };
+      return <div>{count > 0 && count > 1 && <h1>hello world {count}</h1>}</div>;
+    }
+
+    render(MyComp, container);
+    set(0);
+    expect(container.innerHTML).toMatchInlineSnapshot(`"<div></div>"`);
+    set(1);
+    expect(container.innerHTML).toMatchInlineSnapshot(`"<div></div>"`);
+    set(2);
+    expect(container.innerHTML).toMatchInlineSnapshot(`"<div><h1>hello world 2</h1></div>"`);
+  });
+
+  it('should not transform "and expression" whose right is identifier', ({ container }) => {
+    let set: (num: number) => void;
+
+    function MyComp() {
+      let count = 0;
+      set = val => {
+        count = val;
+      };
+      return <div>{count > 0 && count > 1 ? <h1>hello world {count}</h1> : `Empty`}</div>;
+    }
+
+    render(MyComp, container);
+    set(0);
+    expect(container.innerHTML).toMatchInlineSnapshot(`"<div>Empty</div>"`);
+    set(1);
+    expect(container.innerHTML).toMatchInlineSnapshot(`"<div>Empty</div>"`);
+    set(2);
+    expect(container.innerHTML).toMatchInlineSnapshot(`"<div><h1>hello world 2</h1></div>"`);
+  });
+
+  it('should transform "condition expression in condition expression" to "if else tag in if else tag"', ({
+    container,
+  }) => {
+    let set: (num: number) => void;
+
+    function MyComp() {
+      let count = 0;
+      set = val => {
+        count = val;
+      };
+      return <div>{count > 0 ? count > 1 ? <h1>hello world {count}</h1> : 'Empty2' : 'Empty1'}</div>;
+    }
+
+    render(MyComp, container);
+    set(0);
+    expect(container.innerHTML).toMatchInlineSnapshot(`"<div>Empty1</div>"`);
+    set(1);
+    expect(container.innerHTML).toMatchInlineSnapshot(`"<div>Empty2</div>"`);
+    set(2);
+    expect(container.innerHTML).toMatchInlineSnapshot(`"<div><h1>hello world 2</h1></div>"`);
+  });
 });
