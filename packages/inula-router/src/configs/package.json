@@ -1,9 +1,0 @@
-{
-  "module": "./esm/connectRouter.js",
-  "main": "./cjs/connectRouter.js",
-  "types": "./@types/index.d.ts",
-  "peerDependencies": {
-    "react-redux": "^6.0.0 || ^7.1.0",
-    "redux": "^3.6.0 || ^4.0.0"
-  }
-}
