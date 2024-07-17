@@ -1,0 +1,15 @@
+{
+  "files": [
+    "src/router/index.ts"
+  ],
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "skipLibCheck": true,
+    "declarationDir": "./router/@types"
+  },
+  "exclude": [
+    "src/connect-router"
+  ]
+}
