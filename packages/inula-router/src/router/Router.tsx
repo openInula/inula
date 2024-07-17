@@ -38,7 +38,6 @@ function Router<P extends RouterProps>(props: P) {
       pendingLocation.current = arg.location;
     });
   }
-
   // 模拟componentDidMount和componentWillUnmount
   useLayoutEffect(() => {
     isMount.current = true;

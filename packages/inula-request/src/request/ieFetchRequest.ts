@@ -33,6 +33,7 @@ export const ieFetchRequest = (config: IrRequestConfig): Promise<IrResponse> => 
       cancelToken = null,
       withCredentials = false,
     } = config;
+
     let { url } = config;
     let controller: any;
     let signal;
@@ -96,7 +97,6 @@ export const ieFetchRequest = (config: IrRequestConfig): Promise<IrResponse> => 
           headers: response.headers,
           config,
           request: null,
-          responseURL: response.url,
         };
 
         // 根据 responseType 选择相应的解析方法
@@ -123,7 +123,8 @@ export const ieFetchRequest = (config: IrRequestConfig): Promise<IrResponse> => 
                 return JSON.parse(text);
               } catch (e) {
                 // 显式指定返回类型 JSON解析失败报错
-                reject('parse error');
+                const error = new IrError('parse error', '', responseData.config, responseData.request, responseData);
+                reject(error);
               }
             });
             break;

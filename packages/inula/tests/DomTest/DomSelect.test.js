@@ -333,4 +333,60 @@ describe('Dom Select', () => {
     expect(realNode.options[1].selected).toBe(false);
     expect(realNode.options[2].selected).toBe(false);
   });
+
+  it('清空Select中的Option', () => {
+    function genData() {
+      const data = [];
+      for (let i = 0; i < 13; i++) {
+        data.push({ title: `data${i}`, value: i });
+      }
+      return data;
+    }
+    const Option = ({ item }) => {
+      return (
+        <option title={item.title} value={item.value}>
+          {item.value}
+        </option>
+      );
+    };
+
+    let clear;
+    const TestDemo = () => {
+      const [data, setData] = Inula.useState(() => genData());
+      clear = setData;
+
+      return (
+        <>
+          <select id="select1" multiple>
+            {data.map(item => (
+              <option title={item.title} value={item.value}>
+                {item.value}
+              </option>
+            ))}
+          </select>
+          <select id="select2" multiple>
+            {data.map(item => (
+              <Option item={item} />
+            ))}
+          </select>
+          <select id="select3" multiple>
+            {data.map(item => (
+              <optgroup label={item.title} />
+            ))}
+          </select>
+        </>
+      );
+    };
+
+    Inula.act(() => Inula.render(<TestDemo />, document.body));
+    expect(document.getElementById('select1').children.length).toBe(13);
+    expect(document.getElementById('select2').children.length).toBe(13);
+    expect(document.getElementById('select3').children.length).toBe(13);
+    // 清空option
+    Inula.act(() => clear([]));
+
+    expect(document.getElementById('select1').children.length).toBe(0);
+    expect(document.getElementById('select2').children.length).toBe(0);
+    expect(document.getElementById('select3').children.length).toBe(0);
+  });
 });

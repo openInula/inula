@@ -19,9 +19,11 @@ import { getLogUtils } from '../jest/testUtils';
 describe('StrictMode Component test', () => {
   const LogUtils = getLogUtils();
   const { useState, useEffect, useRef, render, act } = Inula;
+
   it('StrictMode is same to Fragment', () => {
     const Parent = () => {
       const [, setS] = useState('1');
+
       return (
         <Inula.StrictMode>
           <button id="btn" onClick={() => setS(prevState => prevState + '!')}>

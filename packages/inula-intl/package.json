@@ -3,13 +3,13 @@
   "version": "0.0.5",
   "description": "",
   "main": "build/intl.umd.js",
-  "type": "commonjs",
+  "type": "module",
   "types": "build/@types/index.d.ts",
   "scripts": {
     "demo-serve": "webpack serve --mode=development",
-    "build": "rollup --config rollup.config.js && npm run build-types",
+    "build": "rollup --config rollup.config.js && npm run build-types ",
     "build-types": "tsc -p tsconfig.json && rollup -c build-type.js",
-    "test": "jest --config jest.config.js",
+    "test": "jest --no-cache --config jest.config.js",
     "test-c": "jest --coverage"
   },
   "repository": {
@@ -17,8 +17,7 @@
     "url": ""
   },
   "files": [
-    "build",
-    "README.md"
+    "/build"
   ],
   "keywords": [],
   "author": "",
@@ -27,35 +26,23 @@
     "openinula": ">=0.1.1"
   },
   "devDependencies": {
-    "@babel/core": "7.21.3",
-    "@babel/preset-env": "^7.16.7",
     "@babel/preset-react": "^7.9.4",
-    "@babel/preset-typescript": "7.16.7",
-    "@rollup/plugin-babel": "^6.0.3",
-    "@rollup/plugin-node-resolve": "^7.1.3",
     "@rollup/plugin-typescript": "^11.0.0",
-    "rollup-plugin-dts": "^6.1.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
-    "@types/node": "^16.18.27",
     "@types/react": "18.0.25",
-    "babel": "^6.23.0",
-    "babel-jest": "^29.5.0",
     "babel-loader": "^9.1.2",
     "html-webpack-plugin": "^5.5.1",
-    "jest": "29.3.1",
     "jest-environment-jsdom": "^29.5.0",
     "jsdom": "^21.1.1",
-    "prettier": "^2.8.7",
-    "rollup": "^2.0.0",
+    "react": "18.2.0-h3",
+    "react-dom": "18.2.0-h3",
     "rollup-plugin-livereload": "^2.0.5",
     "rollup-plugin-serve": "^1.1.0",
-    "rollup-plugin-terser": "^5.3.0",
-    "tslib": "^2.6.1",
-    "ts-jest": "29.0.3",
+    "rollup-plugin-visualizer": "^5.10.0",
     "ts-node": "10.9.1",
-    "typescript": "4.9.3",
-    "webpack": "^5.81.0",
+    "tslib": "^2.6.1",
+    "webpack": "^5.72.1",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.13.3"
   }

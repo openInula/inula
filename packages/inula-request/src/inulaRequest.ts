@@ -69,6 +69,6 @@ inulaRequest.AxiosHeaders = IrHeaders;
 export default inulaRequest;
 
 // 兼容 IE 浏览器 fetch
-if (utils.isIE()) {
+if (typeof window !== 'undefined' && utils.isIE()) {
   (window as any).fetch = fetchLike;
 }

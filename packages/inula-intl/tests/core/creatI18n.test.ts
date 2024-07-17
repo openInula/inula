@@ -29,6 +29,20 @@ describe('createI18n', () => {
     ).toBe('bar');
   });
 
+  it('createIntl', function () {
+    const i18n = createI18n({
+      locale: 'en',
+      messages: {
+        test: 'test',
+      },
+    });
+    expect(
+      i18n.$t({
+        id: 'test',
+      })
+    ).toBe('test');
+  });
+
   it('should not warn when defaultRichTextElements is not used', function () {
     const onWarn = jest.fn();
     createI18n({

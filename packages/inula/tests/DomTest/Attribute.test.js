@@ -96,7 +96,18 @@ describe('Dom Attribute', () => {
     }).not.toThrow();
   });
 
-  it('dangerouslySetInnerHTML和children同时设置，只渲染children', () => {
+  it('给标签不支持布尔值的属性设置布尔值，属性不生效', () => {
+    const props = { title: false };
+    Inula.render(
+      <label id="label" {...props}>
+        123
+      </label>,
+      container
+    );
+    expect(container.querySelector('#label').getAttribute('title')).toBeNull();
+  });
+
+  it('dangerouslySetInnerHTML和children同时设置，dangerouslySetInnerHTML不生效', () => {
     Inula.act(() => {
       Inula.render(
         <div className="root" dangerouslySetInnerHTML={{ __html: '1234' }}>

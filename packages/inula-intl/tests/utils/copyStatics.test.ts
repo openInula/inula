@@ -15,7 +15,7 @@
 import copyStaticProps from '../../src/utils/copyStaticProps';
 
 describe('copyStaticProps', () => {
-  test('should hoist static properties from sourceComponent to targetComponent', () => {
+  it('should hoist static properties from sourceComponent to targetComponent', () => {
     class SourceComponent {
       static staticProp = 'sourceProp';
     }
@@ -23,11 +23,10 @@ describe('copyStaticProps', () => {
     class TargetComponent {}
 
     copyStaticProps(TargetComponent, SourceComponent);
-
     expect((TargetComponent as any).staticProp).toBe('sourceProp');
   });
 
-  test('should hoist static properties from inherited components', () => {
+  it('should hoist static properties from inherited components', () => {
     class SourceComponent {
       static staticProp = 'sourceProp';
     }
@@ -37,11 +36,10 @@ describe('copyStaticProps', () => {
     class TargetComponent {}
 
     copyStaticProps(TargetComponent, InheritedComponent);
-
     expect((TargetComponent as any).staticProp).toBe('sourceProp');
   });
 
-  test('should not hoist properties if descriptor is not valid', () => {
+  it('should not hoist properties if descriptor is not valid', () => {
     class SourceComponent {
       get staticProp() {
         return 'sourceProp';
@@ -51,11 +49,10 @@ describe('copyStaticProps', () => {
     class TargetComponent {}
 
     copyStaticProps(TargetComponent, SourceComponent);
-
     expect((TargetComponent as any).staticProp).toBeUndefined();
   });
 
-  test('should not hoist properties if descriptor is not valid', () => {
+  it('should not hoist properties if descriptor is not valid', () => {
     class SourceComponent {
       static get staticProp() {
         return 'sourceProp';
@@ -65,11 +62,10 @@ describe('copyStaticProps', () => {
     class TargetComponent {}
 
     copyStaticProps(TargetComponent, SourceComponent);
-
     expect((TargetComponent as any).staticProp).toBe('sourceProp');
   });
 
-  test('copyStaticProps should not copy static properties that already exist in target or source component', () => {
+  it('copyStaticProps should not copy static properties that already exist in target or source component', () => {
     const targetComponent = { staticProp: 'target' };
     const sourceComponent = { staticProp: 'source' };
     copyStaticProps(targetComponent, sourceComponent);

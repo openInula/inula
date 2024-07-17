@@ -60,6 +60,13 @@ export interface IrRequestConfig {
   transitional?: TransitionalOptions;
 
   validateStatus?: (status: number) => boolean;
+
+  // 自定义解析请求参数
+  paramsSerializer?: ParamsSerializer;
+}
+
+interface ParamsSerializer {
+  serialize?: (params: Record<string, any>) => string;
 }
 
 export interface TransitionalOptions {
@@ -115,6 +122,8 @@ export interface IrInterface {
   head<T = unknown>(url: string, config?: IrRequestConfig): Promise<IrResponse<T>>;
 
   options<T = unknown>(url: string, config?: IrRequestConfig): Promise<IrResponse<T>>;
+
+  patch<T = unknown>(url: string, data?: any, config?: IrRequestConfig): Promise<IrResponse<T>>;
 
   postForm<T = unknown>(url: string, data: any, config: IrRequestConfig): Promise<IrResponse<T>>;
 

@@ -42,8 +42,11 @@ function handleMapToProps<StateProps, OwnProps>(
         mapToProps: any;
       }
     >function mapToPropsProxy(stateOrDispatch: StateOrDispatch, ownProps?: any) {
-      return proxy.dependsOnOwnProps ? proxy.mapToProps(stateOrDispatch, ownProps) : proxy.mapToProps(stateOrDispatch);
+      return proxy.dependsOnOwnProps
+        ? proxy.mapToProps(stateOrDispatch, ownProps)
+        : proxy.mapToProps(stateOrDispatch, undefined);
     };
+
     proxy.dependsOnOwnProps = true;
 
     proxy.mapToProps = function (stateOrDispatch: StateOrDispatch, ownProps: any) {
@@ -52,7 +55,7 @@ function handleMapToProps<StateProps, OwnProps>(
       let props = proxy(stateOrDispatch, ownProps);
 
       if (typeof props === 'function') {
-        props.mapToProps = props;
+        proxy.mapToProps = props;
         proxy.dependsOnOwnProps = isDependsOnOwnProps(props);
         props = proxy(stateOrDispatch, ownProps);
       }
@@ -76,6 +79,7 @@ function handleMapDispatchToProps<DispatchProps, OwnProps>(
     const selector = () => {
       return { dispatch: dispatch };
     };
+
     selector.dependsOnOwnProps = false;
     return selector;
   } else if (typeof mapDispatchToProps === 'function') {
@@ -133,7 +137,7 @@ function pureSelectorCreator<StateProps, DispatchProps, OwnProps, MergedProps>(
 
   const { areStatesEqual = isSame, areOwnPropsEqual = shallowCompare, areStatePropsEqual = shallowCompare } = options;
 
-  // 首次运行该函数
+  // 首次运行调用该函数
   function firstRun(initState: any, initOwnProps: OwnProps) {
     state = initState;
     ownProps = initOwnProps;
@@ -144,16 +148,19 @@ function pureSelectorCreator<StateProps, DispatchProps, OwnProps, MergedProps>(
     return mergedProps;
   }
 
+  // 第二次及以后调用该函数
   function duplicateRun(newState: any, newOwnProps: OwnProps) {
     const isStateChange = !areStatesEqual(newState, state);
     const isPropsChange = !areOwnPropsEqual(newOwnProps, ownProps);
     state = newState;
     ownProps = newOwnProps;
-    if (isStateChange && isPropsChange) {
+    if (isPropsChange && isStateChange) {
       stateProps = mapStateToProps(state, ownProps);
+
       if (mapDispatchToProps.dependsOnOwnProps) {
         dispatchProps = mapDispatchToProps(dispatch, ownProps);
       }
+
       mergedProps = mergeProps(stateProps, dispatchProps, ownProps);
       return mergedProps;
     }

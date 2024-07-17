@@ -377,6 +377,7 @@ describe('Redux/React binding adapter', () => {
   });
 
   it('Nested use of connect', () => {
+    // Child Component
     const updateInfo = [];
     let dispatchMethod;
     const ChildComponent = ({ childData, dispatch }) => {
@@ -399,7 +400,9 @@ describe('Redux/React binding adapter', () => {
       );
     };
 
-    const mapStateToPropsChild = state => ({ childData: state.childData });
+    const mapStateToPropsChild = state => ({
+      childData: state.childData,
+    });
 
     const Child = connect(mapStateToPropsChild)(ChildComponent);
 
@@ -423,6 +426,7 @@ describe('Redux/React binding adapter', () => {
         </div>
       );
     };
+
     const mapStateToPropsParent = state => ({
       parentData: state.parentData,
     });
@@ -453,12 +457,14 @@ describe('Redux/React binding adapter', () => {
       </Provider>,
       getE(CONTAINER)
     );
+
     expect(getE('child').innerHTML).toBe('0');
     expect(getE('parent').innerHTML).toBe('0');
 
     Inula.act(() => {
       dispatchMethod({ type: 'INCREMENT_CHILD' });
     });
+    // store中的数据更新了，父元素没有订阅该数据，不触发父元素更新
     expect(updateInfo).toStrictEqual(['ChildComponent Updated']);
 
     expect(getE('child').innerHTML).toBe('1');

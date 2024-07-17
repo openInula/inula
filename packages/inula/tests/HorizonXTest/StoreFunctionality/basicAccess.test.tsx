@@ -195,4 +195,37 @@ describe('Basic store manipulation', () => {
 
     expect(document.getElementById(RESULT_ID)?.innerHTML).toBe('5');
   });
+
+  it('should work in dynamic component', () => {
+    const useStore = createStore({
+      id: 'incrementStore',
+      state: {
+        type: 'A',
+      },
+    });
+
+    const Drawers = {
+      A: { title: '心跳', comp: <h1>xxx</h1> },
+    } as const;
+
+    function App() {
+      const store = useStore();
+      const drawer = Drawers[store.type];
+      if (!drawer) {
+        return null;
+      }
+      return <h1 id="test">{drawer.title}</h1>;
+    }
+
+    Inula.render(
+      <>
+        <App />
+        <App />
+      </>,
+      container
+    );
+    expect(container.innerHTML).toBe('<h1 id="test">心跳</h1><h1 id="test">心跳</h1>');
+    useStore().type = 'B';
+    expect(container.innerHTML).toBe('');
+  });
 });

@@ -22,7 +22,7 @@ import I18nProvider from './src/core/components/I18nProvider';
 import injectIntl, { I18nContext, InjectProvider } from './src/core/components/InjectI18n';
 import useI18n from './src/core/hook/useI18n';
 import createI18n from './src/core/createI18n';
-import { InjectedIntl, MessageDescriptor } from './src/types/interfaces';
+import { MessageDescriptor } from './src/types/interfaces';
 // 函数API
 export {
   I18n,
@@ -36,7 +36,7 @@ export {
 // 组件
 export {
   FormattedMessage,
-  I18nContext,
+  I18nContext as IntlContext,
   I18nProvider as IntlProvider,
   injectIntl as injectIntl,
   InjectProvider as RawIntlProvider,
@@ -63,8 +63,4 @@ export function defineMessages<K extends keyof any, T = MessageDescriptor, U = R
 
 export function defineMessage<T>(msg: T): T {
   return msg;
-}
-
-export interface InjectedIntlProps {
-  intl: InjectedIntl;
 }

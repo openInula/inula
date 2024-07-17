@@ -84,14 +84,16 @@ export function setStyles(dom, styles) {
 
   const style = dom.style;
   for (let name of Object.keys(styles)) {
-    const isCustomProperty = name.indexOf('--') == 0;
-    const styleVal = adjustStyleValue(name, styles[name], isCustomProperty);
+    const isCssVariable = name.startsWith('--');
+    const styleVal = adjustStyleValue(name, styles[name], isCssVariable);
     if (name === 'float') {
       name = 'cssFloat';
     }
-    if (isCustomProperty) {
+    // 以--开始的样式直接设置即可
+    if (isCssVariable) {
       style.setProperty(name, styleVal);
     } else {
+      // 使用这种赋值方式，浏览器可以将'WebkitLineClamp'， 'backgroundColor'分别识别为'-webkit-line-clamp'和'backgroud-color'
       style[name] = styleVal;
     }
   }

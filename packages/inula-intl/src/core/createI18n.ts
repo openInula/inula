@@ -13,20 +13,29 @@
  * See the Mulan PSL v2 for more details.
  */
 import { configProps, I18nCache } from '../types/interfaces';
-import I18n, { createI18nInstance } from './I18n';
+import { createI18nInstance } from './I18n';
 import creatI18nCache from '../format/cache/cache';
+import { IntlType } from '../types/types';
 
 /**
  * createI18n hook函数，用于创建国际化i8n实例，以进行相关的数据操作
  */
 
-export const createI18n = (config: configProps, cache?: I18nCache): I18n => {
+export const createI18n = (config: configProps, cache?: I18nCache): IntlType => {
   const { locale, defaultLocale, messages } = config;
-  return createI18nInstance({
-    locale: locale || defaultLocale || 'zh',
+  const i18n = createI18nInstance({
+    locale: locale || defaultLocale || 'en',
     messages: messages,
     cache: cache ?? creatI18nCache(),
   });
+  return {
+    i18n,
+    ...config,
+    formatMessage: i18n.formatMessage.bind(i18n),
+    formatNumber: i18n.formatNumber.bind(i18n),
+    formatDate: i18n.formatDate.bind(i18n),
+    $t: i18n.formatMessage.bind(i18n),
+  };
 };
 
 export default createI18n;

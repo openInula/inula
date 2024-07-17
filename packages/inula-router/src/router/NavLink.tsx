@@ -30,6 +30,7 @@ type NavLinkProps = {
   sensitive?: boolean;
   className?: string | ((isActive: boolean) => string);
   activeClassName?: string;
+  // compat react-router NavLink props type
   [key: string]: any;
 } & Omit<LinkProps, 'className'>;
 

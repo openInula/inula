@@ -12,16 +12,18 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-
-const { resolve } = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+import path from 'path';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import { fileURLToPath } from 'url';
 const isDevelopment = process.env.NODE_ENV === 'development';
 const entryPath = './example/index.tsx';
 
-module.exports = {
-  entry: resolve(__dirname, entryPath),
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+export default {
+  entry: path.join(__dirname, entryPath),
   output: {
-    path: resolve(__dirname, './build'),
+    path: path.join(__dirname, './build'),
     filename: 'main.js',
   },
   module: {
@@ -50,7 +52,7 @@ module.exports = {
   mode: isDevelopment ? 'development' : 'production',
   plugins: [
     new HtmlWebpackPlugin({
-      template: resolve(__dirname, './example/index.html'),
+      template: path.join(__dirname, './example/index.html'),
     }),
   ],
   resolve: {

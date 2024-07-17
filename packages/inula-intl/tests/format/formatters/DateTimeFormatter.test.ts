@@ -61,7 +61,7 @@ describe('DateTimeFormatter', () => {
     expect(spy).toHaveBeenCalledWith('en-GB', { month: 'short' });
   });
 
-  it('should not memoize formatter instances when memoize is false', () => {
+  it('should not memoize formatter instances when cache is effective', () => {
     const spy = jest.spyOn(Intl, 'DateTimeFormat');
     const formatter1 = new DateTimeFormatter('en-US', { month: 'short' });
     const formatter2 = new DateTimeFormatter('en-US', { month: 'short' });
@@ -91,7 +91,7 @@ describe('DateTimeFormatter', () => {
     expect(formatted).toEqual('January 1, 2023');
   });
 
-  it('should format using memorized formatter when useMemorize is true', () => {
+  it('should format using memorized formatter when cache is effective', () => {
     const formatter = new DateTimeFormatter('en-US', { year: 'numeric' }, creatI18nCache());
     const date = new Date(2023, 0, 1);
     const formatted1 = formatter.dateTimeFormat(date);

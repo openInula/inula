@@ -18,4 +18,5 @@ export default {
   text2: '欢迎使用国际化组件！',
   text3: '欢迎使用国际化组件！',
   text4: '欢迎使用国际化组件！',
+  text5: '渲染一个组件 {testComponent1} {testComponent2}!',
 };

@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { createPath } from '../utils';
+import { createPath, parseRelativePath } from '../utils';
 
 describe('createPath', () => {
   describe('given only a pathname', () => {
@@ -71,6 +71,38 @@ describe('createPath', () => {
         hash: '#section-1',
       });
       expect(path).toBe('https://google.com?something=cool#section-1');
+    });
+  });
+
+  describe('parse relative path', () => {
+    it('from is absolute path', () => {
+      const url = parseRelativePath('a', '/b/');
+      expect(url).toBe('/b/a');
+      const url2 = parseRelativePath('a', '');
+      expect(url2).toBe('/a');
+    });
+
+    it('to is end with slash', () => {
+      const url = parseRelativePath('a/', '/b/c/');
+      expect(url).toBe('/b/c/a/');
+      const url2 = parseRelativePath('a/', '/b/c');
+      expect(url2).toBe('/b/a/');
+    });
+
+    it('to contain .. or .', () => {
+      const url = parseRelativePath('../a/', '/b/c/');
+      expect(url).toBe('/b/a/');
+      const url2 = parseRelativePath('../a', '/b/c');
+      expect(url2).toBe('/a');
+      const url3 = parseRelativePath('../../a', '/b/c/d/e');
+      expect(url3).toBe('/b/a');
+    });
+
+    it('to only contain ..', () => {
+      const url = parseRelativePath('../..', '/b/c/e/');
+      expect(url).toBe('/b/');
+      const url2 = parseRelativePath('../..', '/b/c/e');
+      expect(url2).toBe('/');
     });
   });
 });
