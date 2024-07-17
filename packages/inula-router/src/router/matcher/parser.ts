@@ -86,7 +86,10 @@ export function createPathParser<P = unknown>(pathname: string, option: ParserOp
   const lookToNextDelimiter = (currentIdx: number): boolean => {
     let hasOptionalParam = false;
     while (currentIdx < tokens.length && tokens[currentIdx].type !== TokenType.Delimiter) {
-      if (tokens[currentIdx].value === '?' || tokens[currentIdx].value === '*') {
+      if (
+        tokens[currentIdx].value === '?' ||
+        (tokens[currentIdx].value === '*' && tokens[currentIdx].type !== TokenType.WildCard)
+      ) {
         hasOptionalParam = true;
       }
       currentIdx++;
@@ -100,7 +103,7 @@ export function createPathParser<P = unknown>(pathname: string, option: ParserOp
       case TokenType.Delimiter: {
         // 该分隔符后有可选参数则该分割符在匹配时是可选的
         const hasOptional = lookToNextDelimiter(tokenIdx + 1);
-        // 该分割符为最后一个且strictMode===false时，该分隔符在匹配时是可选的
+        // 该分隔符为最后一个且strictMode===false时，该分割符在匹配时是可选的
         const isSlashOptional = nextToken === undefined && !strictMode;
         pattern += `/${hasOptional || isSlashOptional ? '?' : ''}`;
         break;

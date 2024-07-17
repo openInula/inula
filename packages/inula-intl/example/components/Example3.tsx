@@ -13,7 +13,6 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Inula from 'openinula';
 import { FormattedMessage } from '../../index';
 
 const Example3 = props => {

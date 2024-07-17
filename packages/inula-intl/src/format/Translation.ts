@@ -16,7 +16,7 @@
 import { CompiledMessage, Locale, LocaleConfig, Locales } from '../types/types';
 import generateFormatters from './generateFormatters';
 import { FormatOptions, I18nCache } from '../types/interfaces';
-import { createIntlCache } from '../../index';
+import creatI18nCache from './cache/cache';
 
 /**
  * 获取翻译结果
@@ -28,12 +28,18 @@ class Translation {
   private readonly localeConfig: Record<string, any>;
   private readonly cache: I18nCache;
 
-  constructor(compiledMessage, locale, locales, localeConfig, cache?) {
+  constructor(
+    compiledMessage: CompiledMessage,
+    locale: Locale,
+    locales: Locales,
+    localeConfig: LocaleConfig,
+    cache?: I18nCache
+  ) {
     this.compiledMessage = compiledMessage;
     this.locale = locale;
     this.locales = locales;
     this.localeConfig = localeConfig;
-    this.cache = cache ?? createIntlCache;
+    this.cache = cache ?? creatI18nCache();
   }
 
   /**
@@ -53,7 +59,7 @@ class Translation {
         const value = values[name];
         const formatter = formatters[type](value, format);
 
-        let message;
+        let message: any;
         if (typeof formatter === 'function') {
           message = formatter(textFormatter); // 递归调用
         } else {
@@ -68,8 +74,7 @@ class Translation {
 
     const textFormatter = createTextFormatter(this.locale, this.locales, values, formatOptions, this.localeConfig);
     // 通过递归方法formatCore进行格式化处理
-    const result = this.formatMessage(this.compiledMessage, textFormatter);
-    return result; // 返回要格式化的结果
+    return this.formatMessage(this.compiledMessage, textFormatter); // 返回要格式化的结果
   }
 
   formatMessage(compiledMessage: CompiledMessage, textFormatter: (...args: any[]) => any) {

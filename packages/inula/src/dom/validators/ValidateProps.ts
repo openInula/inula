@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { getPropDetails, PROPERTY_TYPE, PropDetails } from './PropertiesData';
+import { getPropDetails, PropDetails, PROPERTY_TYPE } from './PropertiesData';
 
 const INVALID_EVENT_NAME_REGEX = /^on[^A-Z]/;
 
@@ -100,6 +100,21 @@ export function isInvalidValue(
     return false;
   }
 
+  if (typeof value === 'boolean') {
+    if (propDetails !== null) {
+      const isBooleanType =
+        propDetails.type === PROPERTY_TYPE.BOOLEAN || propDetails.type === PROPERTY_TYPE.BOOLEAN_STR;
+      if (!isBooleanType) {
+        return true;
+      }
+    } else {
+      const attrName = name.toLowerCase();
+      if (!attrName.startsWith('data-') && !attrName.startsWith('aria-')) {
+        return true;
+      }
+    }
+  }
+
   if (propDetails !== null && isInvalidBoolean(name, value, propDetails)) {
     return true;
   }
@@ -127,7 +142,7 @@ export function validateProps(type, props) {
     throw new Error('style should be a object.');
   }
 
-  // 对于没有children的元素，设置dangerouslySetInnerHTML不生效
+  // 对于没有children的元素，设置dangerouslySetInnerHTML会不生效
   if (voidTagElements.includes(type)) {
     if (props.dangerouslySetInnerHTML != null) {
       delete props.dangerouslySetInnerHTML;

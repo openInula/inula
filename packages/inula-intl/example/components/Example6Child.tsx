@@ -15,7 +15,7 @@
 
 import { useIntl } from '../../index';
 
-const Example6Child = (props: any) => {
+const Example6Child = () => {
   const { formatMessage } = useIntl();
 
   return (

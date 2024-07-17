@@ -18,29 +18,47 @@ import DateTimeFormatter from '../format/fomatters/DateTimeFormatter';
 import NumberFormatter from '../format/fomatters/NumberFormatter';
 import { getFormatMessage } from '../format/getFormatMessage';
 import { I18nCache, I18nProps, MessageDescriptor, MessageOptions } from '../types/interfaces';
-import { Locale, Locales, Messages, AllLocaleConfig, AllMessages, LocaleConfig, Error, Events } from '../types/types';
+import {
+  Locale,
+  Locales,
+  Messages,
+  AllLocaleConfig,
+  AllMessages,
+  LocaleConfig,
+  Error,
+  Events,
+  InulaNode,
+} from '../types/types';
 import creatI18nCache from '../format/cache/cache';
+import { isValidElement } from 'openinula';
 
 export class I18n extends EventDispatcher<Events> {
   public locale: Locale;
   public locales: Locales;
+  public defaultLocale?: Locale;
+  public timeZone?: string;
+  private allMessages: AllMessages;
   private readonly _localeConfig: AllLocaleConfig;
-  private readonly allMessages: AllMessages;
-  public readonly error?: Error;
+  public readonly onError?: Error;
   public readonly cache?: I18nCache;
 
   constructor(props: I18nProps) {
     super();
-    this.locale = 'en';
+    this.defaultLocale = 'en';
+    this.locale = this.defaultLocale;
     this.locales = this.locale || '';
     this.allMessages = {};
     this._localeConfig = {};
-    this.error = props.error;
+    this.onError = props.onError;
+    this.timeZone = '';
 
     this.loadMessage(props.messages);
 
     if (props.localeConfig) {
       this.loadLocaleConfig(props.localeConfig);
+    }
+    if (props.messages) {
+      this.changeMessage(props.messages);
     }
 
     if (props.locale || props.locales) {
@@ -93,6 +111,11 @@ export class I18n extends EventDispatcher<Events> {
     }
   }
 
+  changeMessage(messages: AllMessages) {
+    this.allMessages = messages;
+    this.emit('change');
+  }
+
   // 加载messages
   loadMessage(localeOrMessages: Locale | AllMessages | undefined, messages?: Messages) {
     if (messages) {
@@ -118,9 +141,21 @@ export class I18n extends EventDispatcher<Events> {
   formatMessage(
     id: MessageDescriptor | string,
     values: Record<string, unknown> | undefined = {},
-    { message, context, formatOptions }: MessageOptions = {}
+    { messages, context, formatOptions }: MessageOptions = {}
   ) {
-    return getFormatMessage(this, id, values, { message, context, formatOptions });
+    // 在多次渲染时，保证存储component不丢失
+    const components: { [key: string]: InulaNode } = {};
+    const tempValues: Record<string, unknown> = { ...values };
+    if (tempValues) {
+      Object.keys(tempValues).forEach((key, index) => {
+        const value = tempValues[key];
+        if (!isValidElement(value)) return;
+        // 将inula元素暂存
+        components[index] = value;
+        tempValues[key] = `<${index}/>`;
+      });
+    }
+    return getFormatMessage(this, id, tempValues, { messages, context, formatOptions }, components!);
   }
 
   formatDate(value: string | Date, formatOptions?: Intl.DateTimeFormatOptions): string {

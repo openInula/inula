@@ -22,14 +22,14 @@ type LinkListNode<T> = {
   value: T;
 } | null;
 
-type CallBack = () => void;
+type Callback = () => void;
 
 interface ListenerManager {
   clear(): void;
 
   trigger(): void;
 
-  subscribe(cb: CallBack): () => void;
+  subscribe(cb: Callback): () => void;
 }
 
 function batchUpdate(callback: () => any) {
@@ -99,9 +99,9 @@ function getLinkedList<T>() {
 }
 
 function getListenerManager(): ListenerManager {
-  const linkedList = getLinkedList<CallBack>();
+  const linkedList = getLinkedList<Callback>();
 
-  function subscribe(cb: CallBack): () => void {
+  function subscribe(cb: Callback): () => void {
     const listener = linkedList.add(cb);
     return () => linkedList.removeNode(listener);
   }
@@ -129,7 +129,7 @@ function getListenerManager(): ListenerManager {
 export interface Subscription {
   stateChange?: () => any;
 
-  addNestedSub(listener: CallBack): CallBack;
+  addNestedSub(listener: Callback): Callback;
 
   triggerNestedSubs(): void;
 
@@ -141,10 +141,10 @@ export interface Subscription {
 const nullListenerStore = {} as unknown as ListenerManager;
 
 function createSubscription(store: ReduxStoreHandler, parentSub: Subscription | null = null): Subscription {
-  let unsubscribe: CallBack | undefined;
+  let unsubscribe: Callback | undefined;
   let listenerStore: ListenerManager = nullListenerStore;
 
-  function addNestedSub(listener: CallBack) {
+  function addNestedSub(listener: Callback) {
     trySubscribe();
     return listenerStore.subscribe(listener);
   }
@@ -154,13 +154,14 @@ function createSubscription(store: ReduxStoreHandler, parentSub: Subscription | 
   }
 
   function storeChangeHandler() {
-    if (typeof subscription.stateChange === 'function') {
+    if (subscription.stateChange) {
       subscription.stateChange();
     }
   }
 
   function trySubscribe() {
     if (!unsubscribe) {
+      // 尝试订阅store的变化。如果已经存在一个订阅，那么它会添加一个嵌套的订阅。否则，它会直接订阅store。
       unsubscribe = parentSub ? parentSub.addNestedSub(storeChangeHandler) : store.subscribe(storeChangeHandler);
       listenerStore = getListenerManager();
     }

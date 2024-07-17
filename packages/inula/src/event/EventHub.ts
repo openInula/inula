@@ -33,6 +33,7 @@ export const portalDefaultDelegatedEvents = [
 
 // 模拟委托事件，不冒泡事件需要利用其他事件来触发冒泡过程
 export const simulatedDelegatedEvents = ['onMouseEnter', 'onMouseLeave'];
+
 // 所有委托的原生事件集合
 export const allDelegatedNativeEvents = new Set();
 

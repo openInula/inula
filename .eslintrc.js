@@ -41,6 +41,7 @@ module.exports = {
     es6: true,
   },
   rules: {
+    '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
@@ -57,7 +58,7 @@ module.exports = {
 
     'no-constant-condition': 'off',
     'no-function-declare-after-return/no-function-declare-after-return': 'error',
-    '@typescript-eslint/ban-ts-comment': 'warn'
+    '@typescript-eslint/ban-ts-comment': 'warn',
   },
   globals: {
     isDev: true,

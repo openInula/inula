@@ -19,6 +19,7 @@ import babel from '@rollup/plugin-babel';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 import { terser } from 'rollup-plugin-terser';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,34 +30,55 @@ const output = path.join(__dirname, '/build');
 
 const extensions = ['.js', '.ts', '.tsx'];
 
-export default {
-  input: entry,
-  output: [
+const BuildConfig = mode => {
+  const prod = mode.startsWith('prod');
+  const outputList = [
     {
-      file: path.resolve(output, 'intl.umd.js'),
-      name: 'InulaI18n',
-      format: 'umd',
+      file: path.join(output, `cjs/intl.${prod ? 'min.' : ''}js`),
+      sourcemap: 'true',
+      format: 'cjs',
+      globals: {
+        openinula: 'Inula',
+      },
     },
     {
-      file: path.resolve(output, 'intl.esm-browser.js'),
+      file: path.join(output, `umd/intl.${prod ? 'min.' : ''}js`),
+      name: 'InulaI18n',
+      sourcemap: 'true',
+      format: 'umd',
+      globals: {
+        openinula: 'Inula',
+      },
+    },
+  ];
+  if (!prod) {
+    outputList.push({
+      file: path.join(output, 'esm/intl.js'),
+      sourcemap: 'true',
       format: 'esm',
-    }
-  ],
-  plugins: [
-    nodeResolve({
-      extensions,
-      modulesOnly: true,
-    }),
-    babel({
-      exclude: 'node_modules/**',
-      configFile: path.join(__dirname, '/babel.config.js'),
-      extensions,
-    }),
-    typescript({
-      tsconfig: 'tsconfig.json',
-      include: ['./**/*.ts', './**/*.tsx'],
-    }),
-    terser(),
-  ],
-  external: ['openinula', 'react', 'react-dom'],
+    });
+  }
+  return {
+    input: entry,
+    output: outputList,
+    plugins: [
+      nodeResolve({
+        extensions,
+        modulesOnly: true,
+      }),
+      babel({
+        exclude: 'node_modules/**',
+        configFile: path.join(__dirname, '/.babelrc'),
+        extensions,
+        babelHelpers: 'runtime',
+      }),
+      typescript({
+        tsconfig: 'tsconfig.json',
+        include: ['./**/*.ts', './**/*.tsx'],
+      }),
+      terser(),
+    ],
+    external: ['openinula', 'react', 'react-dom'],
+  };
 };
+export default [BuildConfig('dev'), BuildConfig('prod')];

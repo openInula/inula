@@ -43,7 +43,7 @@ describe('eventEmitter', () => {
     expect(listener).not.toBeCalled();
   });
 
-  it('should do nothing when even doesn\'t exist', () => {
+  it("should do nothing when even doesn't exist", () => {
     const unknown = jest.fn();
 
     const emitter = new EventEmitter();

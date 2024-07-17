@@ -15,7 +15,7 @@
 import creatI18nCache from '../../../src/format/cache/cache';
 
 describe('creatI18nCache', () => {
-  it('should create an empty IntlCache object', () => {
+  it('should create an empty I18nCache object', () => {
     const intlCache = creatI18nCache();
 
     expect(intlCache).toEqual({

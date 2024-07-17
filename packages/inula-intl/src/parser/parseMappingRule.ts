@@ -17,12 +17,13 @@ import Lexer from './Lexer';
 import { mappingRule } from './mappingRule';
 import ruleUtils from '../utils/parseRuleUtils';
 import { RawToken } from '../types/types';
+import { STATE_GROUP_START_INDEX, GLOBAL_FLAG, STICKY_FLAG, UNICODE_FLAG, VERTICAL_LINE } from '../constants';
 
 const defaultErrorRule = ruleUtils.getRuleOptions('error', { lineBreaks: true, shouldThrow: true });
 
 // 解析规则并生成词法分析器所需的数据结构，以便进行词法分析操作
-function parseRules(rules: Record<string, any>, hasStates: boolean): Record<string, any> {
-  let errorRule: Record<string, any> | null = null;
+function parseRules(rules: Record<string, any>, hasStates: boolean): Record<string, object> {
+  let errorRule: Record<string, object> | null = null;
   const fast: Record<string, unknown> = {};
   let enableFast = true;
   let unicodeFlag: boolean | null = null;
@@ -58,7 +59,7 @@ function parseRules(rules: Record<string, any>, hasStates: boolean): Record<stri
 
     groups.push(options);
 
-    // 检查是否所有规则都使用了 unicode 标志，或者都未使用
+    // 检查是否所有规则都使用了unicode，或者都未使用
     unicodeFlag = checkUnicode(match, unicodeFlag, options);
 
     const pat = ruleUtils.getRegUnion(match.map(ruleUtils.getReg));
@@ -81,11 +82,11 @@ function parseRules(rules: Record<string, any>, hasStates: boolean): Record<stri
 
   // 如果没有 fallback 规则，则使用 sticky 标志，只在当前索引位置寻找匹配项，如果不支持 sticky 标志，则使用无法被否定的空模式来模拟
   const fallbackRule = errorRule && errorRule.fallback;
-  let flags = ruleUtils.checkSticky() && !fallbackRule ? 'ym' : 'gm';
-  const suffix = ruleUtils.checkSticky() || fallbackRule ? '' : '|';
+  let flags = ruleUtils.checkSticky() && !fallbackRule ? STICKY_FLAG : GLOBAL_FLAG;
+  const suffix = ruleUtils.checkSticky() || fallbackRule ? '' : VERTICAL_LINE;
 
   if (unicodeFlag === true) {
-    flags += 'u';
+    flags += UNICODE_FLAG;
   }
   const combined = new RegExp(ruleUtils.getRegUnion(parts) + suffix, flags);
 
@@ -97,18 +98,18 @@ function parseRules(rules: Record<string, any>, hasStates: boolean): Record<stri
   };
 }
 
-export function checkStateGroup(group: Record<string, any>, name: string, map: Record<string, any>) {
+export function checkStateGroup(group: Record<string, any>, name: string, mappingRules: Record<string, object>) {
   const state = group && (group.push || group.next);
-  if (state && !map[state]) {
+  if (state && !mappingRules[state]) {
     throw new Error('The state is missing.');
   }
-  if (group && group.pop && +group.pop !== 1) {
+  if (group && group.pop && +group.pop !== STATE_GROUP_START_INDEX) {
     throw new Error('The value of pop must be 1.');
   }
 }
 
 // 将国际化解析规则注入分词器中
-function parseMappingRule(mappingRule: Record<string, any>, startState?: string): Lexer<RawToken> {
+function parseMappingRule(mappingRule: Record<string, object>, startState?: string): Lexer<RawToken> {
   const keys = Object.getOwnPropertyNames(mappingRule);
 
   if (!startState) {
@@ -133,7 +134,7 @@ function parseMappingRule(mappingRule: Record<string, any>, startState?: string)
         continue;
       }
 
-      const splice = [j, 1];
+      const splice = [j, STATE_GROUP_START_INDEX];
       if (rule.include !== key && !included[rule.include]) {
         included[rule.include] = true;
         const newRules = ruleMap[rule.include];
@@ -174,17 +175,30 @@ function parseMappingRule(mappingRule: Record<string, any>, startState?: string)
     });
   });
 
+  // 将规则注入到词法解析器
   return new Lexer(mappingAllRules, startState);
 }
 
-function processFast(match, fast: Record<string, unknown>, options) {
+/**
+ * 快速匹配模式
+ * @param match
+ * @param fast
+ * @param options
+ */
+function processFast(match: Record<string, any>, fast: Record<string, unknown> = {}, options: Record<string, object>) {
   while (match.length && typeof match[0] === 'string' && match[0].length === 1) {
+    // 获取到数组的第一个元素
     const word = match.shift();
     fast[word.charCodeAt(0)] = options;
   }
 }
 
-function handleErrorRule(options, errorRule: Record<string, any>) {
+/**
+ *  用以处理错误逻辑
+ * @param options 操作属性
+ * @param errorRule 错误规则
+ */
+function handleErrorRule(options: Record<string, object>, errorRule: Record<string, object>) {
   if (!options.fallback === !errorRule.fallback) {
     throw new Error('errorRule can only set one!');
   } else {
@@ -192,7 +206,13 @@ function handleErrorRule(options, errorRule: Record<string, any>) {
   }
 }
 
-function checkUnicode(match, unicodeFlag, options) {
+/**
+ * 用以检查message中是否包含Unicode
+ * @param match 匹配到的message
+ * @param unicodeFlag Unicode标志
+ * @param options 操作属性
+ */
+function checkUnicode(match: Record<string, any>, unicodeFlag: boolean | null, options: Record<string, any>) {
   for (let j = 0; j < match.length; j++) {
     const obj = match[j];
     if (!ruleUtils.checkRegExp(obj)) {
@@ -201,14 +221,16 @@ function checkUnicode(match, unicodeFlag, options) {
 
     if (unicodeFlag === null) {
       unicodeFlag = obj.unicode;
-    } else if (unicodeFlag !== obj.unicode && options.fallback === false) {
-      throw new Error('If the /u flag is used, all!');
+    } else {
+      if (unicodeFlag !== obj.unicode && options.fallback === false) {
+        throw new Error('If the /u flag is used, all!');
+      }
     }
   }
   return unicodeFlag;
 }
 
-function checkStateOptions(hasStates: boolean, options) {
+function checkStateOptions(hasStates: boolean, options: Record<string, any>) {
   if (!hasStates) {
     throw new Error('State toggle options are not allowed in stateless tokenizers!');
   }
@@ -217,6 +239,11 @@ function checkStateOptions(hasStates: boolean, options) {
   }
 }
 
+/**
+ * 检查是否存在fallback属性，用以来判断快速匹配规则
+ * @param rules
+ * @param enableFast
+ */
 function isExistsFallback(rules: Record<string, any>, enableFast: boolean) {
   for (let i = 0; i < rules.length; i++) {
     if (rules[i].fallback) {
@@ -226,7 +253,7 @@ function isExistsFallback(rules: Record<string, any>, enableFast: boolean) {
   return enableFast;
 }
 
-function isOptionsErrorOrFallback(options, errorRule: Record<string, any> | null) {
+function isOptionsErrorOrFallback(options: Record<string, object>, errorRule: Record<string, object> | null) {
   if (options.error || options.fallback) {
     // 只能设置一个 errorRule
     if (errorRule) {

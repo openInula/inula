@@ -49,4 +49,29 @@ describe('Memo Test', () => {
     );
     expect(() => updateApp()).not.toThrow();
   });
+
+  it('Memo should not make the path wrong', function () {
+    const forwardRefComponentLike = function forwardRefComponentLike(_props, _ref) {
+      return <span>FowardRef</span>;
+    };
+
+    const FowardRefComponent = Inula.forwardRef(forwardRefComponentLike, {});
+    const MemoOfFowardRefComponent = Inula.memo(FowardRefComponent);
+
+    function App() {
+      return (
+        <div className="App">
+          <MemoOfFowardRefComponent />
+        </div>
+      );
+    }
+
+    Inula.render(
+      <div>
+        <App></App>
+      </div>,
+      container
+    );
+    // expect(() => updateApp()).not.toThrow();
+  });
 });

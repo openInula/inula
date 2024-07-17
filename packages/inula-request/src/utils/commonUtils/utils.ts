@@ -386,10 +386,16 @@ const convertToCamelCase = (str: string) => {
     .join('');
 };
 
-function objectToQueryString(obj: Record<string, any>) {
+function objectToQueryString(obj: Record<string, any>, options?: Record<string, any>) {
+  const serialize = options && options.serialize;
+
+  if (serialize) {
+    return serialize(obj);
+  }
+
   return Object.keys(obj)
     .map(key => {
-      // params 中 value 为数组时需特殊处理，如：{ key: [1, 2, 3] } -> key[]=1&key[]=2&key[]=3
+      //  params 中 value 为数组时需特殊处理，如： { key: [1, 2, 3] } -> key[]=1&key[]=2&key[]=3
       if (Array.isArray(obj[key])) {
         let urlPart = '';
         obj[key].forEach((value: string) => {
@@ -397,6 +403,8 @@ function objectToQueryString(obj: Record<string, any>) {
           return urlPart;
         });
         return urlPart.slice(0, -1);
+      } else if (utils.checkObject(obj[key])) {
+        return encodeURIComponent(key) + '=' + encodeURIComponent(JSON.stringify(obj[key]));
       }
       return encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]);
     })
@@ -419,7 +427,10 @@ function getNormalizedValue(value: string | any[] | boolean | null | number): st
 }
 
 function isIE(): boolean {
-  return /MSIE|Trident/.test(window.navigator.userAgent);
+  if (typeof window !== 'undefined') {
+    return /MSIE|Trident/.test(window.navigator.userAgent);
+  }
+  return false;
 }
 
 function getObjectByArray(arr: any[]): Record<string, any> {

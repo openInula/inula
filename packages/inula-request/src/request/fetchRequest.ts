@@ -35,8 +35,10 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
       withCredentials = false,
       onUploadProgress = null,
       onDownloadProgress = null,
+      paramsSerializer,
     } = config;
-    let { data = null, url, signal } = config;
+
+    let { signal, url, data = null } = config;
 
     const controller = new AbortController();
     if (!signal) {
@@ -59,7 +61,7 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
 
     // 处理请求参数
     if (params) {
-      const queryString = utils.objectToQueryString(utils.filterUndefinedValues(params));
+      const queryString = utils.objectToQueryString(utils.filterUndefinedValues(params), paramsSerializer);
       if (queryString) {
         url = `${url}${url!.includes('?') ? '&' : '?'}${queryString}`; // 支持用户将部分请求参数写在 url 中
       }
@@ -138,17 +140,18 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
             case 'json':
               parseMethod = new Response(responseBody).text().then((text: string) => {
                 try {
-                  return JSON.parse(text);
+                  return text ? JSON.parse(text) : ''; // 如果服务端请求成功但不返回响应值，默认返回空字符串
                 } catch (e) {
                   // 显式指定返回类型 JSON解析失败报错
-                  reject('parse error');
+                  const error = new IrError('parse error', '', responseData.config, responseData.request, responseData);
+                  reject(error);
                 }
               });
               break;
             default:
               parseMethod = new Response(responseBody).text().then((text: string) => {
                 try {
-                  return JSON.parse(text);
+                  return text ? JSON.parse(text) : '';
                 } catch (e) {
                   // 默认为 JSON 类型，若JSON校验失败则直接返回服务端数据
                   return text;

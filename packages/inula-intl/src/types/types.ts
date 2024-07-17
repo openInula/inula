@@ -23,16 +23,17 @@ import {
   I18nContextProps,
   configProps,
   InjectedIntl,
+  InulaPortal,
 } from './interfaces';
-import I18n from '../core/I18n';
+import { InulaElement } from 'openinula';
 
-export type Error = string | ((message, id, context) => string);
+export type Error = string | ((message: any, id: any, context: any) => string);
 
 export type Locale = string;
 
 export type Locales = Locale | Locale[];
 
-export type LocaleConfig = { plurals?: (...arg: any) => any };
+export type LocaleConfig = { plurals?: (...args: any[]) => any };
 
 export type AllLocaleConfig = Record<Locale, LocaleConfig>;
 
@@ -59,7 +60,7 @@ export type Token = Content | PlainArg | FunctionArg | Select | Octothorpe;
 
 export type DatePool = Date | string;
 
-export type SelectPool = string | Record<string, unknown>;
+export type SelectPool = string | number;
 
 export type RawToken = {
   type: string;
@@ -74,13 +75,23 @@ export type RawToken = {
 
 export type I18nProviderProps = I18nContextProps & configProps;
 
-export type IntlType = {
-  i18n: I18n;
+export type IntlType = I18nContextProps & {
+  defaultLocale?: string | undefined;
+  onError?: Error | undefined;
+  messages?:
+    | string
+    | Record<string, string>
+    | Record<string, string | CompiledMessagePart[]>
+    | Record<string, Record<string, string> | Record<string, string | CompiledMessagePart[]>>;
+  locale?: string;
   formatMessage: (...args: any[]) => any;
   formatNumber: (...args: any[]) => any;
   formatDate: (...args: any[]) => any;
+  $t?: (...args: any[]) => any;
 };
 
-export interface InjectedIntlProps {
+export type InjectedIntlProps = {
   intl: InjectedIntl;
-}
+};
+
+export type InulaNode = InulaElement | string | number | Iterable<InulaNode> | InulaPortal | boolean | null | undefined;

@@ -13,15 +13,25 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { AllLocaleConfig, AllMessages, Locale, Locales, Error, DatePool, SelectPool, RawToken } from './types';
+import {
+  AllLocaleConfig,
+  AllMessages,
+  Locale,
+  Locales,
+  Error,
+  DatePool,
+  SelectPool,
+  RawToken,
+  InulaNode,
+} from './types';
 import I18n from '../core/I18n';
 import Lexer from '../parser/Lexer';
+import { InulaElement, Key } from 'openinula';
 
 // FormattedMessage的参数定义
 export interface FormattedMessageProps extends MessageDescriptor {
   values?: Record<string, unknown>;
   tagName?: string;
-
   children?(nodes: any[]): any;
 }
 
@@ -34,7 +44,7 @@ export interface MessageDescriptor extends MessageOptions {
 
 export interface MessageOptions {
   comment?: string;
-  message?: string;
+  messages?: string;
   context?: string;
   formatOptions?: FormatOptions;
 }
@@ -48,15 +58,26 @@ export interface I18nCache {
   octothorpe: Record<string, any>;
 }
 
+export interface RichText {
+  components?: { [key: string]: InulaNode };
+}
+
+export interface InulaPortal extends InulaElement {
+  key: Key | null;
+  children: InulaNode;
+}
+
 // I18n类的传参
-export interface I18nProps {
+export type I18nProps = RichText & {
   locale?: Locale;
   locales?: Locales;
   messages?: AllMessages;
+  defaultLocale?: string;
+  timeZone?: string;
   localeConfig?: AllLocaleConfig;
   cache?: I18nCache;
-  error?: Error;
-}
+  onError?: Error;
+};
 
 // 消息格式化选项类型
 export interface FormatOptions {
@@ -74,16 +95,13 @@ export interface I18nContextProps {
   i18n?: I18n;
 }
 
-export interface configProps {
-  locale?: Locale;
-  messages?: AllMessages;
-  defaultLocale?: string;
+export type configProps = I18nProps & {
   RenderOnLocaleChange?: boolean;
   children?: any;
   onWarn?: Error;
-}
+};
 
-export interface IntlMessageFormat extends configProps, MessageOptions {
+export interface IntlMessageFormat {
   plural: (
     value: number,
     {
@@ -204,7 +222,6 @@ export interface InjectedIntl {
   formatMessage(
     messageDescriptor: MessageDescriptor,
     values?: Record<string, unknown>,
-    options?: MessageOptions,
-    useMemorize?: boolean
-  ): string;
+    options?: MessageOptions
+  ): string | any[];
 }

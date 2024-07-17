@@ -485,7 +485,6 @@ describe('Fragment', () => {
         { text: 'Apple', id: 1 },
         { text: 'Banana', id: 2 },
       ]);
-
       setFn = setList;
 
       return (
@@ -493,7 +492,7 @@ describe('Fragment', () => {
           {list.map(item => {
             return (
               <Fragment key={item.id}>
-                <Child val={item.text} />
+                <Child val={item.text}></Child>
               </Fragment>
             );
           })}
@@ -515,7 +514,9 @@ describe('Fragment', () => {
       return <div>{val}</div>;
     };
 
-    act(() => Inula.render(<App />, container));
+    act(() => {
+      Inula.render(<App />, container);
+    });
 
     expect(didMount).toHaveBeenCalledTimes(2);
     act(() => {
@@ -525,8 +526,8 @@ describe('Fragment', () => {
         { text: 'Grape', id: 3 },
       ]);
     });
-
-    // 数组前两项Key不变子组件更新，第三个子组件会挂载
+    // 数组前两项Key不变子组件<Child/>不会执行生命周期函数ComponentDidMount，只有第三个子组件会执行ComponentDidMount
+    // 因此didMount执行3次，didUpdate执行两次
     expect(didMount).toHaveBeenCalledTimes(3);
     expect(didUpdate).toHaveBeenCalledTimes(2);
   });

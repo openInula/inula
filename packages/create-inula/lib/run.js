@@ -32,8 +32,8 @@ const generatorType = fs
   });
 
 const runGenerator = async (templatePath, { name = '', cwd = process.cwd(), args = {} }) => {
+  let currentPath;
   return new Promise(resolve => {
-    let currentPath;
     if (name) {
       mkdirp.sync(name);
       currentPath = path.join(cwd, name);

@@ -13,7 +13,6 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Inula from 'openinula';
 import { createIntl } from '../../index';
 
 const Example4 = props => {
