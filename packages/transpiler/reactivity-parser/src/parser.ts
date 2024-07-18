@@ -132,7 +132,7 @@ export class ReactivityParser {
       {
         ...prop,
         depMask: 0,
-        _depBitmaps: [],
+        _fullDepBits: [],
         dependenciesNode: this.t.arrayExpression([]),
       },
     ]);
@@ -234,7 +234,7 @@ export class ReactivityParser {
               value: child.content,
               depMask: 0,
               dependenciesNode: this.t.arrayExpression([]),
-              _depBitmaps: [],
+              _fullDepBits: [],
             });
           }
         });
@@ -321,7 +321,7 @@ export class ReactivityParser {
    * @returns ForParticle
    */
   private parseFor(forUnit: ForUnit): ForParticle {
-    const { _fullDepMask, dependenciesNode, _depBitmaps } = this.getDependencies(forUnit.array);
+    const { _fullDepMask, dependenciesNode, _fullDepBits } = this.getDependencies(forUnit.array);
     const prevMap = this.config.depMaskMap;
 
     // ---- Generate an identifierDepMap to track identifiers in item and make them reactive
@@ -330,7 +330,7 @@ export class ReactivityParser {
     const itemWrapper = this.t.assignmentExpression('=', forUnit.item, this.t.objectExpression([]));
     this.config.depMaskMap = new Map([
       ...this.config.depMaskMap,
-      ...this.getIdentifiers(itemWrapper).map(id => [id, _depBitmaps] as const),
+      ...this.getIdentifiers(itemWrapper).map(id => [id, _fullDepBits] as const),
     ]);
 
     const forParticle: ForParticle = {
@@ -339,7 +339,7 @@ export class ReactivityParser {
       index: forUnit.index,
       array: {
         value: forUnit.array,
-        _depBitmaps: _depBitmaps,
+        _fullDepBits: _fullDepBits,
         depMask: _fullDepMask,
         dependenciesNode,
       },
@@ -429,7 +429,7 @@ export class ReactivityParser {
     if (this.t.isFunctionExpression(node) || this.t.isArrowFunctionExpression(node)) {
       return {
         _fullDepMask: 0,
-        _depBitmaps: [],
+        _fullDepBits: [],
         dependenciesNode: this.t.arrayExpression([]),
       };
     }

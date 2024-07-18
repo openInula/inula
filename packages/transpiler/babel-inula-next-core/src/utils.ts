@@ -2,6 +2,7 @@ import { NodePath } from '@babel/core';
 import { types as t } from '@openinula/babel-api';
 import { COMPONENT, HOOK, importMap } from './constants';
 import { minimatch } from 'minimatch';
+import { SubComponentNode, Variable } from './analyze/types';
 
 export function fileAllowed(fileName: string | undefined, includes: string[], excludes: string[]): boolean {
   if (includes.includes('*')) return true;
@@ -115,4 +116,8 @@ export function isValidPath<T>(path: NodePath<T>): path is NodePath<Exclude<T, u
  */
 export function wrapUntrack(node: t.Expression) {
   return t.callExpression(t.identifier(importMap.untrack), [t.arrowFunctionExpression([], node)]);
+}
+
+export function getSubComp(variables: Variable[]) {
+  return variables.filter((v): v is SubComponentNode => v.type === 'subComp');
 }

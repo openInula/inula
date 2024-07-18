@@ -15,9 +15,7 @@
 
 import { types as t } from '@openinula/babel-api';
 import { NodePath } from '@babel/core';
-import { ComponentNode, FnComponentDeclaration, HookNode, IRNode } from './types';
-import { ArrowFunctionWithBlock } from '../utils';
-import assert from 'node:assert';
+import { ComponentNode, FnComponentDeclaration, HookNode } from './types';
 
 export function isValidPath<T>(path: NodePath<T>): path is NodePath<Exclude<T, undefined | null>> {
   return !!path.node;

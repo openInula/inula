@@ -8,10 +8,9 @@ export default class CompGenerator extends ForwardPropGenerator {
     props = this.alterPropViews(props);
     const { tag, children } = this.viewParticle as CompParticle;
 
-    const dlNodeName = this.generateNodeName();
+    const nodeName = this.generateNodeName();
 
-    this.addInitStatement(...this.declareCompNode(dlNodeName, tag, props, children));
-    let allDepMask: Bitmap = 0;
+    this.addInitStatement(...this.declareCompNode(nodeName, tag, props, children));
 
     // ---- Resolve props
     Object.entries(props).forEach(([key, { value, depMask, dependenciesNode }]) => {
@@ -19,32 +18,27 @@ export default class CompGenerator extends ForwardPropGenerator {
       if (key === 'didUpdate') return;
       if (key === 'ref') return;
 
-      if (depMask) {
-        allDepMask |= depMask;
-      }
       if (CompGenerator.lifecycle.includes(key as (typeof CompGenerator.lifecycle)[number])) {
-        this.addInitStatement(this.addLifecycle(dlNodeName, key as (typeof CompGenerator.lifecycle)[number], value));
+        this.addInitStatement(this.addLifecycle(nodeName, key as (typeof CompGenerator.lifecycle)[number], value));
         return;
       }
 
-      if (key === '_$content') {
-        this.addUpdateStatements(depMask, this.setCompContent(dlNodeName, value, dependenciesNode));
-        return;
-      }
       if (key === 'props') {
-        this.addUpdateStatements(depMask, this.setCompProps(dlNodeName, value, dependenciesNode));
+        this.addUpdateStatements(depMask, this.setCompProps(nodeName, value, dependenciesNode));
         return;
       }
 
-      this.addUpdateStatements(depMask, this.setCompProp(dlNodeName, key, value, dependenciesNode));
+      this.addUpdateStatements(depMask, this.setCompProp(nodeName, key, value, dependenciesNode));
     });
 
-    // ---- Add addUpdate last
-    if (props.didUpdate) {
-      this.addUpdateStatements(allDepMask, this.addOnUpdate(dlNodeName, props.didUpdate.value));
+    // ---- sub component update
+    if (this.t.isIdentifier(tag)) {
+      const depMask = this.config.subComps.find(([name]) => name === tag.name)?.[1];
+      if (depMask) {
+        this.addUpdateStatements(depMask, this.geneSubCompOnUpdate(nodeName, depMask));
+      }
     }
-
-    return dlNodeName;
+    return nodeName;
   }
 
   /**
@@ -160,6 +154,22 @@ export default class CompGenerator extends ForwardPropGenerator {
       this.t.callExpression(this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier('_$setProps')), [
         this.t.arrowFunctionExpression([], value),
         dependenciesNode,
+      ])
+    );
+  }
+
+  /**
+   * @View
+   *   ${nodeName}.updateState(${depMask})
+   * @param nodeName
+   * @param depMask
+   * @private
+   */
+  private geneSubCompOnUpdate(nodeName: string, depMask: number) {
+    return this.t.expressionStatement(
+      this.t.callExpression(this.t.memberExpression(this.t.identifier(nodeName), this.t.identifier('updateDerived')), [
+        this.t.nullLiteral(), // the first parameter should be given.
+        this.t.numericLiteral(depMask),
       ])
     );
   }

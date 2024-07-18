@@ -54,7 +54,7 @@ export default class IfGenerator extends CondGenerator {
         condition: {
           value: this.t.booleanLiteral(true),
           depMask: 0,
-          _depBitmaps: [],
+          _fullDepBits: [],
           dependenciesNode: this.t.arrayExpression([]),
         },
         children: [],

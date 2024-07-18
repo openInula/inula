@@ -10,6 +10,7 @@ import type {
   TemplateProp,
   Context,
 } from './types';
+import { cleanJSXText } from './utils';
 
 function isContext(str: string) {
   return /^[A-Z][a-zA-Z0-9]*Context/.test(str);
@@ -74,11 +75,11 @@ export class ViewParser {
    * @param node
    */
   private parseText(node: t.JSXText): void {
-    const text = node.value.trim();
+    const text = cleanJSXText(node);
     if (!text) return;
     this.viewUnits.push({
       type: 'text',
-      content: this.t.stringLiteral(node.value),
+      content: this.t.stringLiteral(text),
     });
   }
 
@@ -171,7 +172,7 @@ export class ViewParser {
           tag = this.t.identifier(openingName.name.name);
           break;
         default:
-          // ---- Otherwise, treat it as an html tag and make the tag as the namespace:name
+          // ---- Otherwise, treat it as a html tag and make the tag as the namespace:name
           type = 'html';
           tag = this.t.stringLiteral(`${namespace}:${openingName.name.name}`);
           break;

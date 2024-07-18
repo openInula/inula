@@ -8,4 +8,8 @@ export interface ViewGeneratorConfig {
   templateIdx: number;
   attributeMap: Record<string, string[]>;
   alterAttributeMap: Record<string, string>;
+  /**
+   * The subComponent in comp, [name, usedBit]
+   */
+  subComps: Array<[string, number]>;
 }

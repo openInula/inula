@@ -19,9 +19,8 @@ function mergeVisitor(...visitors: Analyzer[]): Visitor {
   }, {});
 }
 
-// walk through the function component body
-export function analyzeFnComp(
-  fnNode: NodePath<t.FunctionExpression | t.ArrowFunctionExpression>,
+// walk through the body a function (maybe a component or a hook)
+export function analyzeUnitOfWork(
   componentNode: ComponentNode | HookNode,
   { htmlTags, analyzers }: { analyzers: Analyzer[]; htmlTags: string[] },
   level = 0
@@ -38,6 +37,7 @@ export function analyzeFnComp(
     },
   };
   // --- analyze the function props ---
+  const fnNode = componentNode.fnNode;
   const params = fnNode.get('params');
   const props = params[0];
   if (props) {
@@ -95,7 +95,7 @@ export function analyze(
   const analyzers = options?.customAnalyzers ? options.customAnalyzers : getBuiltinAnalyzers(type);
 
   const root = createIRNode(fnName, type, path);
-  analyzeFnComp(path, root, { analyzers, htmlTags: options.htmlTags });
+  analyzeUnitOfWork(root, { analyzers, htmlTags: options.htmlTags });
 
   pruneUnusedState(root);
 

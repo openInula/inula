@@ -1,4 +1,4 @@
-import { ComponentNode, HookNode, Variable } from '../analyze/types';
+import { ComponentNode, HookNode, SubComponentNode, Variable } from '../analyze/types';
 import { types as t } from '@openinula/babel-api';
 import { generateComp } from './compGenerator';
 import { getStates, wrapUpdate } from './utils';
@@ -20,10 +20,10 @@ function reconstructVariable(variable: Variable) {
   }
 
   // --- SubComp
-  return t.variableDeclaration('const', [t.variableDeclarator(t.identifier(variable.name), variable.fnNode.node)]);
+  return generate(variable);
 }
 
-export function generate(root: ComponentNode | HookNode): t.FunctionDeclaration {
+export function generate(root: ComponentNode | SubComponentNode | HookNode): t.FunctionDeclaration {
   const states = getStates(root);
 
   // ---- Wrap each variable with update
