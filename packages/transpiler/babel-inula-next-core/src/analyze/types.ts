@@ -29,7 +29,7 @@ export type Dependency = {
   /**
    * The bitmap of each dependency
    */
-  _depBitmaps: Bitmap[];
+  _fullDepBits: Bitmap[];
   _fullDepMask: Bitmap;
 };
 export type FunctionalExpression = t.FunctionExpression | t.ArrowFunctionExpression;
@@ -117,13 +117,13 @@ export interface ComponentNode<Type = 'comp'> extends IRNode {
   type: Type;
   children?: ViewParticle[];
 }
-
+export type SubComponentNode = SubCompVariable;
 export interface HookNode extends IRNode {
   type: 'hook';
   children?: {
     value: t.Expression;
     depMask?: number; // -> bit
-    _depBitmaps: number[];
+    _fullDepBits: number[];
     dependenciesNode: t.ArrayExpression;
   };
 }
@@ -135,6 +135,7 @@ export interface AnalyzeContext {
   htmlTags: string[];
   traverse: (p: NodePath<t.Statement>, ctx: AnalyzeContext) => void;
   collectUnhandledNodeToLifecycle: (component: ComponentNode | HookNode, unhandledNode: t.Statement) => void;
+  workQueue?: Array<ComponentNode | HookNode>;
 }
 
 export type Visitor<S = AnalyzeContext> = {

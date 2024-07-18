@@ -134,4 +134,114 @@ describe('components', () => {
       expect(container.innerHTML).toBe('<div>name is new</div>');
     });
   });
+  describe('nested component', () => {
+    it('should render sub component using parent state', ({ container }) => {
+      function App() {
+        let count = 0;
+
+        function Heading() {
+          return <h1>{count}</h1>;
+        }
+
+        return <Heading />;
+      }
+
+      render(App, container);
+      expect(container.innerHTML).toBe('<h1>0</h1>');
+    });
+
+    it('should update nested component when parent state changes', ({ container }) => {
+      let setCount: (n: number) => void;
+
+      function App() {
+        let count = 0;
+        setCount = (n: number) => {
+          count = n;
+        };
+
+        function Counter() {
+          return <div>Count: {count}</div>;
+        }
+
+        return <Counter />;
+      }
+
+      render(App, container);
+      expect(container.innerHTML).toBe('<div>Count: 0</div>');
+
+      setCount(5);
+      expect(container.innerHTML).toBe('<div>Count: 5</div>');
+    });
+
+    it('should pass props through multiple levels of nesting', ({ container }) => {
+      function App() {
+        let name = 'Alice';
+
+        function Parent({ children }) {
+          return (
+            <div className="parent">
+              <h2>Parent</h2>
+              {children}
+            </div>
+          );
+        }
+
+        function Child({ name }: { name: string }) {
+          return <div className="child">Hello, {name}!</div>;
+        }
+
+        return (
+          <Parent>
+            <Child name={name} />
+          </Parent>
+        );
+      }
+
+      render(App, container);
+      expect(container.innerHTML).toBe(
+        '<div class="parent"><h2>Parent</h2><div class="child">Hello, Alice!</div></div>'
+      );
+    });
+
+    it('should handle sibling nested components with independent state', ({ container }) => {
+      let incrementA: () => void;
+      let incrementB: () => void;
+
+      function App() {
+        let a = 0;
+        let b = 0;
+        incrementA = () => {
+          a += 1;
+        };
+        incrementB = () => {
+          b += 1;
+        };
+
+        function Counter({ name }: { name: string }) {
+          const value = name === 'A' ? a : b;
+          return (
+            <div>
+              Counter {name}: {value}
+            </div>
+          );
+        }
+
+        return (
+          <div>
+            <Counter name="A" />
+            <Counter name="B" />
+          </div>
+        );
+      }
+
+      render(App, container);
+      expect(container.innerHTML).toBe('<div><div>Counter A: 0</div><div>Counter B: 0</div></div>');
+
+      incrementA();
+      expect(container.innerHTML).toBe('<div><div>Counter A: 1</div><div>Counter B: 0</div></div>');
+
+      incrementB();
+      expect(container.innerHTML).toBe('<div><div>Counter A: 1</div><div>Counter B: 1</div></div>');
+    });
+  });
 });

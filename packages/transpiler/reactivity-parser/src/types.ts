@@ -4,7 +4,7 @@ import type Babel from '@babel/core';
 export interface DependencyValue<T> {
   value: T;
   depMask?: number; // -> bit
-  _depBitmaps: number[];
+  _fullDepBits: number[];
   dependenciesNode: t.ArrayExpression;
 }
 
@@ -12,7 +12,7 @@ export interface DependencyProp {
   value: t.Expression;
   viewPropMap: Record<string, ViewParticle[]>;
   depMask?: number;
-  _depBitmaps: number[];
+  _fullDepBits: number[];
   dependenciesNode: t.ArrayExpression;
 }
 
@@ -22,7 +22,7 @@ export interface TemplateProp {
   path: number[];
   value: t.Expression;
   depMask?: number;
-  _depBitmaps: number[];
+  _fullDepBits: number[];
   dependenciesNode: t.ArrayExpression;
 }
 

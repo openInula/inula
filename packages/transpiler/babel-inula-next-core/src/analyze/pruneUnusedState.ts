@@ -18,15 +18,16 @@ import { Bitmap, ViewParticle } from '@openinula/reactivity-parser';
 
 /**
  * To prune the bitmap of unused properties
- * Here are serveral things to be done in this phase:
+ * Here are several things to be done in this phase:
  * 1. The unused reactive variables will turn to plain variables
  * 2. And the bit of the variable should be pruned
  * 3. The depMask of the view, computed and watch will be pruned
  * etc.:
  * ```js
  * let a = 1; // 0b001
- * let b = 2; // 0b010 b is not used*, and should be pruned
+ * let b = 2; // 0b010 if b is not *used*, so it should be pruned
  * let c = 3; // 0b100 -> 0b010(cause bit of b is pruned)
+ * let d = a + c // The depMask of d should be 0b11, pruned from 0b101
  * ```
  */
 export function pruneUnusedState(
@@ -51,9 +52,10 @@ export function pruneUnusedState(
 
       // If computed, prune the depMask
       if (v.dependency) {
-        v.dependency.depMask = getDepMask(v.dependency._depBitmaps, bitPositionToRemove);
+        v.dependency.depMask = getDepMask(v.dependency._fullDepBits, bitPositionToRemove);
       }
     } else if (v.type === 'subComp') {
+      v.usedBit = pruneBitmap(v.usedBit, bitPositionToRemove);
       // Recursively prune the subcomponent, keep the index for the next variable
       pruneUnusedState(v, index, bitPositionToRemove);
     }
@@ -66,13 +68,13 @@ export function pruneUnusedState(
     if (!dependency) {
       return;
     }
-    dependency.depMask = getDepMask(dependency._depBitmaps, bitPositionToRemove);
+    dependency.depMask = getDepMask(dependency._fullDepBits, bitPositionToRemove);
   });
 
   // handle children
   if (comp.type === 'hook') {
     if (comp.children) {
-      comp.children.depMask = getDepMask(comp.children._depBitmaps, bitPositionToRemove);
+      comp.children.depMask = getDepMask(comp.children._fullDepBits, bitPositionToRemove);
     }
   } else {
     if (comp.children) {
@@ -117,38 +119,43 @@ function getDepMask(depBitmaps: Bitmap[], bitPositionToRemove: number[]) {
 function pruneViewParticleUnusedBit(particle: ViewParticle, bitPositionToRemove: number[]) {
   // dfs the view particle to prune the bitmap
   const stack: ViewParticle[] = [particle];
+  const doPrune = pruneBit.bind(null, bitPositionToRemove);
   while (stack.length) {
     const node = stack.pop()! as ViewParticle;
     if (node.type === 'template') {
       node.props.forEach(prop => {
-        prop.depMask = getDepMask(prop._depBitmaps, bitPositionToRemove);
+        doPrune(prop);
       });
       stack.push(...node.mutableParticles);
       stack.push(node.template);
     } else if (node.type === 'html' || node.type === 'comp') {
       for (const key in node.props) {
-        node.props[key].depMask = getDepMask(node.props[key]._depBitmaps, bitPositionToRemove);
+        doPrune(node.props[key]);
       }
       stack.push(...node.children);
     } else if (node.type === 'text') {
-      node.content.depMask = getDepMask(node.content._depBitmaps, bitPositionToRemove);
+      doPrune(node.content);
     } else if (node.type === 'for') {
-      node.array.depMask = getDepMask(node.array._depBitmaps, bitPositionToRemove);
+      doPrune(node.array);
       stack.push(...node.children);
     } else if (node.type === 'if') {
       node.branches.forEach(branch => {
-        branch.condition.depMask = getDepMask(branch.condition._depBitmaps, bitPositionToRemove);
+        doPrune(branch.condition);
         stack.push(...branch.children);
       });
     } else if (node.type === 'context') {
       for (const key in node.props) {
-        node.props[key].depMask = getDepMask(node.props[key]._depBitmaps, bitPositionToRemove);
+        doPrune(node.props[key]);
       }
       stack.push(...node.children);
     } else if (node.type === 'exp') {
-      node.content.depMask = getDepMask(node.content._depBitmaps, bitPositionToRemove);
+      doPrune(node.content);
     }
   }
+}
+
+function pruneBit(bitPositionToRemove: number[], prunable: { _fullDepBits: number[]; depMask?: number }) {
+  prunable.depMask = getDepMask(prunable._fullDepBits, bitPositionToRemove);
 }
 
 function keepHighestBit(bitmap: number) {

@@ -27,6 +27,36 @@ interface PluginState {
   file: BabelFile;
 }
 
+function transformNode(path: NodePath<t.CallExpression>, htmlTags: string[], state: PluginState) {
+  if (ALREADY_COMPILED.has(path)) return false;
+  const type = getMacroType(path);
+  if (type) {
+    const componentNode = extractFnFromMacro(path, type);
+    let name = '';
+    // try to get the component name, when parent is a variable declarator
+    if (path.parentPath.isVariableDeclarator()) {
+      const lVal = path.parentPath.get('id');
+      if (lVal.isIdentifier()) {
+        name = lVal.node.name;
+      } else {
+        console.error(`${type} macro must be assigned to a variable`);
+      }
+    }
+    const root = analyze(type, name, componentNode, {
+      htmlTags,
+    });
+
+    recordComponentInState(state, name, root);
+
+    replaceWithComponent(path, root);
+
+    return true;
+  }
+
+  ALREADY_COMPILED.add(path);
+  return false;
+}
+
 export default function (api: typeof babel, options: InulaNextOption): PluginObj<PluginState> {
   const {
     files = '**/*.{js,ts,jsx,tsx}',
@@ -45,55 +75,26 @@ export default function (api: typeof babel, options: InulaNextOption): PluginObj
         : customHtmlTags;
 
   register(api);
-  let transformationHappened = false;
   return {
     name: 'babel-inula-next-core',
     visitor: {
       Program: {
-        enter(path, { filename }) {
-          // return pluginProvider.programEnterVisitor(path, filename);
-          if (!fileAllowed(filename, toArray(files), toArray(excludeFiles))) {
-            path.skip();
+        exit(program, state) {
+          if (!fileAllowed(state.filename, toArray(files), toArray(excludeFiles))) {
+            program.skip();
             return;
           }
-        },
-        exit(path, state) {
+          let transformationHappened = false;
+
+          program.traverse({
+            CallExpression(path) {
+              transformationHappened = transformNode(path, htmlTags, state) || transformationHappened;
+            },
+          });
+
           if (transformationHappened && !options.skipImport) {
-            addImport(path.node, importMap, packageName);
+            addImport(program.node, importMap, packageName);
           }
-          transformationHappened = false;
-        },
-      },
-      CallExpression: {
-        exit(path: NodePath<t.CallExpression>, state) {
-          if (ALREADY_COMPILED.has(path)) return;
-          const type = getMacroType(path);
-          if (type) {
-            const componentNode = extractFnFromMacro(path, type);
-            let name = '';
-            // try to get the component name, when parent is a variable declarator
-            if (path.parentPath.isVariableDeclarator()) {
-              const lVal = path.parentPath.get('id');
-              if (lVal.isIdentifier()) {
-                name = lVal.node.name;
-              } else {
-                console.error(`${type} macro must be assigned to a variable`);
-              }
-            }
-            const root = analyze(type, name, componentNode, {
-              htmlTags,
-            });
-
-            recordComponentInState(state, name, root);
-
-            replaceWithComponent(path, root);
-
-            transformationHappened = true;
-            // The sub path has been visited, so we just skip
-            path.skip();
-          }
-
-          ALREADY_COMPILED.add(path);
         },
       },
     },

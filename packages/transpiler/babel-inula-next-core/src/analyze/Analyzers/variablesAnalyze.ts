@@ -18,7 +18,7 @@ import { addPlainVariable, addSubComponent, addVariable, createIRNode } from '..
 import { isStaticValue, isValidPath } from '../utils';
 import { type NodePath } from '@babel/core';
 import { COMPONENT, reactivityFuncNames } from '../../constants';
-import { analyzeFnComp } from '../index';
+import { analyzeUnitOfWork } from '../index';
 import { getDependenciesFromNode } from '@openinula/reactivity-parser';
 import { types as t } from '@openinula/babel-api';
 import { isCompPath } from '../../utils';
@@ -72,7 +72,7 @@ export function variablesAnalyze(): Visitor {
               | NodePath<t.FunctionExpression>;
             const subComponent = createIRNode(id.node.name, COMPONENT, fnNode, ctx.current);
 
-            analyzeFnComp(fnNode, subComponent, ctx);
+            analyzeUnitOfWork(subComponent, ctx);
             addSubComponent(ctx.current, subComponent);
             return;
           }

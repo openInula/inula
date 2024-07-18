@@ -1,4 +1,4 @@
-import { ComponentNode, HookNode, IRNode, LifeCycle } from '../analyze/types';
+import { ComponentNode, HookNode, IRNode, LifeCycle, SubComponentNode } from '../analyze/types';
 import { getBabelApi, types as t } from '@openinula/babel-api';
 import { generateUpdateState } from './updateStateGenerator';
 import { getStates, wrapUpdate } from './utils';
@@ -8,12 +8,13 @@ import {
   defaultAttributeMap,
   DID_MOUNT,
   DID_UNMOUNT,
-  WILL_MOUNT,
-  WILL_UNMOUNT,
   importMap,
   PROP_SUFFIX,
+  WILL_MOUNT,
+  WILL_UNMOUNT,
 } from '../constants';
 import { generateView } from '@openinula/view-generator';
+import { getSubComp } from '../utils';
 
 export function generateLifecycle(root: IRNode, lifecycleType: LifeCycle) {
   root.lifecycle[lifecycleType]!.forEach(node => wrapUpdate(node, getStates(root)));
@@ -30,16 +31,18 @@ function genWillMountCodeBlock(root: IRNode) {
   return getUpdateViewsFnBody;
 }
 
-function generateUpdateViewFn(root: ComponentNode<'comp'>) {
+function generateUpdateViewFn(root: ComponentNode<'comp'> | SubComponentNode) {
   if (!root.children) {
     return null;
   }
+  const subComps = getSubComp(root.variables).map((v): [string, number] => [v.name, v.usedBit]);
   const [updateViewFn, declarations, topLevelNodes] = generateView(root.children, {
     babelApi: getBabelApi(),
     importMap,
     attributeMap: defaultAttributeMap,
     alterAttributeMap,
     templateIdx: -1,
+    subComps,
   });
   const getUpdateViewsFnBody = genWillMountCodeBlock(root);
   if (declarations.length) {
@@ -105,7 +108,7 @@ function generateUpdateHookFn(root: HookNode) {
  *  updateState: (changed) => {}
  * })
  */
-export function generateComp(root: ComponentNode | HookNode) {
+export function generateComp(root: ComponentNode | HookNode | SubComponentNode) {
   const compInitializerNode = t.objectExpression([]);
   const addProperty = (key: string, value: t.Expression | null) => {
     if (value === null) return;
