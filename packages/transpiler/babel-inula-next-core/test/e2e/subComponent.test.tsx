@@ -72,4 +72,58 @@ describe('nested component', () => {
       }"
     `);
   });
+
+  it('should transform JSX slice', () => {
+    expect(
+      transform(`
+        function App() {
+          let val = 123;
+          const input = <input value={val}/>;
+          return <div>{input}</div>;
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp, useHook as $$useHook, createHook as $$createHook, untrack as $$untrack, runOnce as $$runOnce } from "@openinula/next";
+      function App() {
+        let self;
+        let val = 123;
+        function JSX_input() {
+          let self1;
+          self1 = $$createComponent({
+            updateState: changed => {},
+            getUpdateViews: () => {
+              let $node0;
+              $node0 = $$createElement("input");
+              $$setHTMLProp($node0, "value", () => val, [val]);
+              return [[$node0], $changed => {
+                if ($changed & 1) {
+                  $node0 && $$setHTMLProp($node0, "value", () => val, [val]);
+                }
+                return [$node0];
+              }];
+            }
+          });
+          return self1.init();
+        }
+        const input = $$Comp(JSX_input);
+        self = $$createComponent({
+          updateState: changed => {},
+          getUpdateViews: () => {
+            let $node0, $node1;
+            $node0 = $$createElement("div");
+            $node1 = new $$ExpNode(input, [input]);
+            $$insertNode($node0, $node1, 0);
+            $node0._$nodes = [$node1];
+            return [[$node0], $changed => {
+              if ($changed & 2) {
+                $node1 && $node1.update(() => input, [input]);
+              }
+              return [$node0];
+            }];
+          }
+        });
+        return self.init();
+      }"
+    `);
+  });
 });

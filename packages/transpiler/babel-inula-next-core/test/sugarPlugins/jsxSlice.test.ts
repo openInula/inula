@@ -29,11 +29,40 @@ describe('jsx slice', () => {
       `)
     ).toMatchInlineSnapshot(/*jsx*/ `
       "function App() {
-        const a = Component(() => <div></div>);
+        const JSX_div = Component(() => <div></div>);
+        const a = JSX_div();
       }"
     `);
   });
 
+  it('should support multi level jsx', () => {
+    expect(
+      mock(`
+        function App() {
+          const content = <div>
+            <header>
+              <h1>Title</h1>
+            </header>
+            <main>
+              <p>Content</p>
+            </main>
+          </div>;
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "function App() {
+        const JSX_div = Component(() => <div>
+                  <header>
+                    <h1>Title</h1>
+                  </header>
+                  <main>
+                    <p>Content</p>
+                  </main>
+                </div>);
+        const content = JSX_div();
+      }"
+    `);
+  });
   it('should work with jsx slice in ternary operator', () => {
     expect(
       mock(`
@@ -45,7 +74,7 @@ describe('jsx slice', () => {
       "function App() {
         const JSX_Table_Col = Component(() => <Table.Col></Table.Col>);
         const JSX_div = Component(() => <div></div>);
-        const a = true ? <JSX_Table_Col /> : <JSX_div />;
+        const a = true ? JSX_Table_Col() : JSX_div();
       }"
     `);
   });
@@ -61,7 +90,22 @@ describe('jsx slice', () => {
       "function App() {
         const JSX_div = Component(() => <div></div>);
         const JSX_h = Component(() => <h1></h1>);
-        const arr = [<JSX_div />, <JSX_h />];
+        const arr = [JSX_div(), JSX_h()];
+      }"
+    `);
+  });
+
+  it('should work with jsx slice in jsx attribute', () => {
+    expect(
+      mock(`
+      function App() {
+        return <div icon={<Icon />}></div>
+      }
+    `)
+    ).toMatchInlineSnapshot(`
+      "function App() {
+        const JSX_Icon = Component(() => <Icon />);
+        return <div icon={JSX_Icon()}></div>;
       }"
     `);
   });
@@ -76,10 +120,11 @@ describe('jsx slice', () => {
     `)
     ).toMatchInlineSnapshot(`
       "function App() {
-        const a = Component(() => <>{test}</>);
-        const JSX_Fragment = Component(() => <><div></div></>);
-        const JSX_Fragment2 = Component(() => <><span></span></>);
-        const b = cond ? <JSX_Fragment /> : <JSX_Fragment2 />;
+        const JSX_Fragment = Component(() => <>{test}</>);
+        const a = JSX_Fragment();
+        const JSX_Fragment2 = Component(() => <><div></div></>);
+        const JSX_Fragment3 = Component(() => <><span></span></>);
+        const b = cond ? JSX_Fragment2() : JSX_Fragment3();
       }"
     `);
   });

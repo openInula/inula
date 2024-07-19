@@ -101,9 +101,14 @@ function transformUseHookCalling(
   fnPath: NodePath<t.FunctionExpression> | NodePath<ArrowFunctionWithBlock>,
   scope: Scope
 ) {
-  const bodyPath = fnPath.get('body') as NodePath<t.BlockStatement>;
+  const bodyPath = fnPath.get('body');
+  if (Array.isArray(bodyPath) || !bodyPath.isBlockStatement()) {
+    return;
+  }
   const topLevelPaths = bodyPath.get('body');
-
+  if (!topLevelPaths) {
+    return;
+  }
   topLevelPaths.forEach(statementPath => {
     if (statementPath.isVariableDeclaration()) {
       const declarator = statementPath.get('declarations')[0];

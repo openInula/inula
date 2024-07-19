@@ -189,7 +189,7 @@ export class ViewParser {
     let unit: ViewUnit = { type, tag, props: propMap, children: childUnits };
 
     if (unit.type === 'html' && childUnits.length === 1 && childUnits[0].type === 'text') {
-      // ---- If the html unit only has one text child, merge the text into the html unit
+      // ---- If the html unit only has one text child, merge the text into the html unit using attribute `textContent`
       const text = childUnits[0] as TextUnit;
       unit = {
         ...unit,
