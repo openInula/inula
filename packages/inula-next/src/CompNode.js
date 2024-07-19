@@ -2,6 +2,7 @@ import { DLNode, DLNodeType } from './DLNode';
 import { forwardHTMLProp } from './HTMLNode';
 import { cached } from './store';
 import { schedule } from './scheduler';
+import { inMount } from './index.js';
 
 /**
  * @class
@@ -210,7 +211,9 @@ export class CompNode extends DLNode {
     this.updateState(bit);
 
     // ---- "trigger-view"
-    this._$updateView(bit);
+    if (!inMount()) {
+      this._$updateView(bit);
+    }
   }
 
   /**

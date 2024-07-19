@@ -44,7 +44,7 @@ describe('rendering', () => {
       expect(container).toMatchInlineSnapshot(`
         <div>
           <h1>
-            hello 
+            hello
             world
             !!!
           </h1>
@@ -88,7 +88,7 @@ describe('rendering', () => {
     });
 
     // TODO: SHOULD FIX
-    it.fails('should support tag, text and variable mixing', ({ container }) => {
+    it('should support tag, text and variable mixing', ({ container }) => {
       function App() {
         let count = 'world';
 

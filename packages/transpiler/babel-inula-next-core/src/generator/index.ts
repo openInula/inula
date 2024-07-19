@@ -29,7 +29,7 @@ export function generate(root: ComponentNode | SubComponentNode | HookNode): t.F
   // ---- Wrap each variable with update
   root.variables.forEach(variable => {
     if (variable.type === 'subComp') return;
-    wrapUpdate(variable.value, states);
+    wrapUpdate(generateSelfId(root.level), variable.value, states);
   });
 
   const compNode = t.functionDeclaration(t.identifier(root.name), root.params, t.blockStatement([]));
@@ -39,7 +39,7 @@ export function generate(root: ComponentNode | SubComponentNode | HookNode): t.F
   };
 
   // ---- Declare self
-  addStatement(t.variableDeclaration('let', [t.variableDeclarator(t.identifier('self'))]));
+  addStatement(t.variableDeclaration('let', [t.variableDeclarator(generateSelfId(root.level))]));
 
   // ---- Reconstruct the variables
   addStatement(...root.variables.map(reconstructVariable));
@@ -48,7 +48,13 @@ export function generate(root: ComponentNode | SubComponentNode | HookNode): t.F
   addStatement(...generateComp(root));
 
   // ---- Add return self.init()
-  addStatement(t.returnStatement(t.callExpression(t.memberExpression(t.identifier('self'), t.identifier('init')), [])));
+  addStatement(
+    t.returnStatement(t.callExpression(t.memberExpression(generateSelfId(root.level), t.identifier('init')), []))
+  );
 
   return compNode;
+}
+
+export function generateSelfId(level: number) {
+  return t.identifier(`self${level ? level : ''}`);
 }

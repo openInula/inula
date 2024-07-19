@@ -2,6 +2,7 @@ import { types as t } from '@openinula/babel-api';
 import { ComponentNode, IRNode, ReactiveVariable } from '../analyze/types';
 import { getStates, wrapUpdate } from './utils';
 import { PROP_SUFFIX, SPECIFIC_CTX_SUFFIX, WHOLE_CTX_SUFFIX } from '../constants';
+import { generateSelfId } from './index';
 
 /**
  * @View
@@ -23,7 +24,7 @@ export function generateUpdateProp(root: IRNode, suffix: string) {
     const updateNode = t.expressionStatement(
       t.assignmentExpression('=', t.identifier(prop.name), t.identifier('newValue'))
     );
-    wrapUpdate(updateNode, getStates(root));
+    wrapUpdate(generateSelfId(root.level), updateNode, getStates(root));
     return [propName, updateNode];
   });
 
@@ -123,7 +124,7 @@ export function generateUpdateContext(root: IRNode) {
     const updateStmts: t.Statement[] = specificKeyedCtxVars.map(v => {
       const keyName = v.name.replace(SPECIFIC_CTX_SUFFIX, '');
       const updateAssign = t.expressionStatement(t.assignmentExpression('=', t.identifier(v.name), valParamId));
-      wrapUpdate(updateAssign, getStates(root));
+      wrapUpdate(generateSelfId(root.level), updateAssign, getStates(root));
 
       // Gen code like: if (key === 'level') { level_$c$_ = value }
       return t.ifStatement(
@@ -136,7 +137,7 @@ export function generateUpdateContext(root: IRNode) {
       const updateWholeContextAssignment = t.expressionStatement(
         t.assignmentExpression('=', t.identifier(wholeCtxVar.name), valParamId)
       );
-      wrapUpdate(updateWholeContextAssignment, getStates(root));
+      wrapUpdate(generateSelfId(root.level), updateWholeContextAssignment, getStates(root));
       updateStmts.push(updateWholeContextAssignment);
     }
 

@@ -15,9 +15,10 @@ import {
 } from '../constants';
 import { generateView } from '@openinula/view-generator';
 import { getSubComp } from '../utils';
+import { generateSelfId } from './index';
 
 export function generateLifecycle(root: IRNode, lifecycleType: LifeCycle) {
-  root.lifecycle[lifecycleType]!.forEach(node => wrapUpdate(node, getStates(root)));
+  root.lifecycle[lifecycleType]!.forEach(node => wrapUpdate(generateSelfId(root.level), node, getStates(root)));
   return t.arrowFunctionExpression([], t.blockStatement(root.lifecycle[lifecycleType]!));
 }
 
@@ -25,7 +26,7 @@ function genWillMountCodeBlock(root: IRNode) {
   // ---- Get update views will avoke the willMount and return the updateView function.
   let getUpdateViewsFnBody: t.Statement[] = [];
   if (root.lifecycle[WILL_MOUNT]) {
-    root.lifecycle[WILL_MOUNT].forEach(node => wrapUpdate(node, getStates(root)));
+    root.lifecycle[WILL_MOUNT].forEach(node => wrapUpdate(generateSelfId(root.level), node, getStates(root)));
     getUpdateViewsFnBody = root.lifecycle[WILL_MOUNT];
   }
   return getUpdateViewsFnBody;
@@ -78,7 +79,7 @@ function generateUpdateHookFn(root: HookNode) {
       t.ifStatement(
         t.binaryExpression('&', paramId, t.numericLiteral(Number(children.depMask))),
         t.expressionStatement(
-          t.callExpression(t.memberExpression(t.identifier('self'), t.identifier('emitUpdate')), [])
+          t.callExpression(t.memberExpression(generateSelfId(root.level), t.identifier('emitUpdate')), [])
         )
       ),
     ])
@@ -117,7 +118,7 @@ export function generateComp(root: ComponentNode | HookNode | SubComponentNode) 
 
   const nodeCtor = root.type === 'hook' ? t.identifier(importMap.createHook) : t.identifier(importMap.createComponent);
   const node = t.expressionStatement(
-    t.assignmentExpression('=', t.identifier('self'), t.callExpression(nodeCtor, [compInitializerNode]))
+    t.assignmentExpression('=', generateSelfId(root.level), t.callExpression(nodeCtor, [compInitializerNode]))
   );
 
   const result: t.Statement[] = [node];

@@ -17,53 +17,48 @@ import babel, { NodePath, PluginObj } from '@babel/core';
 import { types as t } from '@openinula/babel-api';
 import type { InulaNextOption } from '../types';
 import { register } from '@openinula/babel-api';
+import { importMap } from '../constants';
 
 function transformJSXSlice(path: NodePath<t.JSXElement> | NodePath<t.JSXFragment>) {
-  path.skip();
-
-  // don't handle the jsx in return statement or in the arrow function return
-  if (path.parentPath.isReturnStatement() || path.parentPath.isArrowFunctionExpression()) {
+  // don't handle the jsx in three cases:
+  // 1. return statement, like `return <div></div>`
+  // 2. arrow function, like `() => <div></div>`
+  // 3. jsx as a children of other jsx, like `<div><span></span></div>`
+  if (
+    path.parentPath.isReturnStatement() ||
+    path.parentPath.isArrowFunctionExpression() ||
+    path.parentPath.isJSXElement() ||
+    path.parentPath.isJSXFragment()
+  ) {
     // skip the children
     return;
   }
 
   const sliceCompNode = t.callExpression(t.identifier('Component'), [t.arrowFunctionExpression([], path.node)]);
-  // handle the jsx in assignment, like `const a = <div></div>`
+  // extract the jsx slice into a subcomponent,
+  // like const a = type? <div></div> : <span></span>
   // transform it into:
   // ```jsx
-  //   const a = Component(() => {
+  //   const Div$$ = (() => {
   //     return <div></div>
-  //   })
+  //   });
+  //   const Span$$ = Component(() => {
+  //     return <span></span>
+  //   });
+  //   const a = type?  $$Comp(Div$$) : $$Comp(Span$$);
   // ```
-  if (path.parentPath.isVariableDeclarator()) {
-    path.replaceWith(sliceCompNode);
-  } else {
-    // extract the jsx slice into a subcomponent, like const a = type? <div></div> : <span></span>
-    // transform it into:
-    // ```jsx
-    //   const Div$$ = (() => {
-    //     return <div></div>
-    //   });
-    //   const Span$$ = Component(() => {
-    //     return <span></span>
-    //   });
-    //   const a = type? <Div$$/> : <Span$$/>;
-    // ```
-    const sliceId = path.scope.generateUidIdentifier(genName(path.node));
-    sliceId.name = 'JSX' + sliceId.name;
+  const sliceId = path.scope.generateUidIdentifier(genName(path.node));
+  sliceId.name = 'JSX' + sliceId.name;
 
-    // insert the subcomponent
-    const sliceComp = t.variableDeclaration('const', [t.variableDeclarator(sliceId, sliceCompNode)]);
-    // insert into the previous statement
-    const stmt = path.getStatementParent();
-    if (!stmt) {
-      throw new Error('Cannot find the statement parent');
-    }
-    stmt.insertBefore(sliceComp);
-    // replace the jsx slice with the subcomponent
-    const sliceJsxId = t.jSXIdentifier(sliceId.name);
-    path.replaceWith(t.jsxElement(t.jsxOpeningElement(sliceJsxId, [], true), null, [], true));
+  // insert the subcomponent
+  const sliceComp = t.variableDeclaration('const', [t.variableDeclarator(sliceId, sliceCompNode)]);
+  // insert into the previous statement
+  const stmt = path.getStatementParent();
+  if (!stmt) {
+    throw new Error('Cannot find the statement parent');
   }
+  stmt.insertBefore(sliceComp);
+  path.replaceWith(t.callExpression(t.identifier(importMap.Comp), [sliceId]));
 }
 
 function genName(node: t.JSXElement | t.JSXFragment) {
@@ -102,18 +97,22 @@ function genName(node: t.JSXElement | t.JSXFragment) {
  *   function Comp_$id$() {
  *     return <div>{count}</div>
  *   }
- *   let jsxSlice = <Comp_$id$/>
+ *   let jsxSlice = Comp_$id$()
  * ```
  */
 export default function (api: typeof babel, options: InulaNextOption): PluginObj {
   register(api);
   return {
     visitor: {
-      JSXElement(path: NodePath<t.JSXElement>) {
-        transformJSXSlice(path);
-      },
-      JSXFragment(path: NodePath<t.JSXFragment>) {
-        transformJSXSlice(path);
+      Program(program) {
+        program.traverse({
+          JSXElement(path: NodePath<t.JSXElement>) {
+            transformJSXSlice(path);
+          },
+          JSXFragment(path: NodePath<t.JSXFragment>) {
+            transformJSXSlice(path);
+          },
+        });
       },
     },
   };

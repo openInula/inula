@@ -4,6 +4,7 @@ import { IRNode, Variable, WatchFunc } from '../analyze/types';
 import { getStates, wrapCheckCache, wrapUpdate } from './utils';
 import { HOOK_SUFFIX } from '../constants';
 import { importMap } from '../constants';
+import { generateSelfId } from './index';
 
 /**
  * wrap stmt in runOnce function, like
@@ -48,7 +49,7 @@ export function generateUpdateState(root: IRNode) {
     if (variable.name.endsWith(HOOK_SUFFIX)) {
       updateNode = wrapRunOnce(updateNode);
     } else {
-      wrapUpdate(updateNode, states);
+      wrapUpdate(generateSelfId(root.level), updateNode, states);
     }
 
     const depsNode = variable.dependency!.dependenciesNode;
@@ -66,7 +67,7 @@ export function generateUpdateState(root: IRNode) {
     const bitMap = watch.dependency.depMask!;
     let updateNode: t.Statement | t.Expression = watch.callback.node.body;
     if (t.isExpression(updateNode)) updateNode = t.expressionStatement(updateNode);
-    wrapUpdate(updateNode, states);
+    wrapUpdate(generateSelfId(root.level), updateNode, states);
 
     const depsNode = watch.dependency.dependenciesNode;
     if (!updates[bitMap]) {
@@ -95,7 +96,10 @@ export function generateUpdateState(root: IRNode) {
 
   for (const [bit, cacheMap] of Object.entries(updates)) {
     for (const [depsNode, statements] of cacheMap) {
-      addUpdate(Number(bit), depsNode ? [wrapCheckCache(depsNode, statements)] : statements);
+      addUpdate(
+        Number(bit),
+        depsNode ? [wrapCheckCache(generateSelfId(root.level), depsNode, statements)] : statements
+      );
     }
   }
 

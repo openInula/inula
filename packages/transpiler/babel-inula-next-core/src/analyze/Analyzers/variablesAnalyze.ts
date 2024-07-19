@@ -17,7 +17,7 @@ import { Visitor } from '../types';
 import { addPlainVariable, addSubComponent, addVariable, createIRNode } from '../nodeFactory';
 import { isStaticValue, isValidPath } from '../utils';
 import { type NodePath } from '@babel/core';
-import { COMPONENT, reactivityFuncNames } from '../../constants';
+import { COMPONENT, importMap, reactivityFuncNames } from '../../constants';
 import { analyzeUnitOfWork } from '../index';
 import { getDependenciesFromNode } from '@openinula/reactivity-parser';
 import { types as t } from '@openinula/babel-api';
@@ -81,6 +81,22 @@ export function variablesAnalyze(): Visitor {
             init.isArrowFunctionExpression() || init.isFunctionExpression()
               ? null
               : getDependenciesFromNode(init.node, ctx.current._reactiveBitMap, reactivityFuncNames);
+          path.traverse({
+            CallExpression(callPath) {
+              const callee = callPath.node.callee;
+              if (t.isIdentifier(callee) && callee.name === importMap.Comp) {
+                const subCompIdPath = callPath.get('arguments')[0];
+                if (!subCompIdPath.isIdentifier()) {
+                  throw Error('invalid jsx slice');
+                }
+                const subCompName = subCompIdPath.node.name;
+                const subComp = ctx.current.variables.find(sub => sub.type === 'subComp' && sub.name === subCompName);
+                if (!subComp) {
+                  throw Error(`Sub component not found: ${subCompName}`);
+                }
+              }
+            },
+          });
 
           addVariable(
             ctx.current,
