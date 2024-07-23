@@ -48,12 +48,12 @@ export default class ViewGenerator {
     viewParticles: ViewParticle[]
   ): [t.Statement[], Record<number, t.Statement[]>, t.VariableDeclaration[], string[]] {
     const allInitStatements: t.Statement[] = [];
-    const allVariables: t.VariableDeclaration[] = [];
+    const allTemplates: t.VariableDeclaration[] = [];
     const allUpdateStatements: Record<number, t.Statement[]> = {};
     const topLevelNodes: string[] = [];
 
     viewParticles.forEach(viewParticle => {
-      const [initStatements, updateStatements, variables, nodeName] = this.generateChild(viewParticle);
+      const [initStatements, updateStatements, templates, nodeName] = this.generateChild(viewParticle);
       allInitStatements.push(...initStatements);
       Object.entries(updateStatements).forEach(([depNum, statements]) => {
         if (!allUpdateStatements[Number(depNum)]) {
@@ -61,11 +61,11 @@ export default class ViewGenerator {
         }
         allUpdateStatements[Number(depNum)].push(...statements);
       });
-      allVariables.push(...variables);
+      allTemplates.push(...templates);
       topLevelNodes.push(nodeName);
     });
 
-    return [allInitStatements, allUpdateStatements, allVariables, topLevelNodes];
+    return [allInitStatements, allUpdateStatements, allTemplates, topLevelNodes];
   }
 
   nodeIdx = -1;

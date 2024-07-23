@@ -8,7 +8,7 @@ export default class TemplateGenerator extends HTMLPropGenerator {
 
     const dlNodeName = this.generateNodeName();
     // ---- Add template declaration to class
-    const templateName = this.addTemplate(template);
+    const templateName = this.genTemplate(template);
     // ---- Declare template node in View body
     this.addInitStatement(this.declareTemplateNode(dlNodeName, templateName));
 
@@ -68,10 +68,10 @@ export default class TemplateGenerator extends HTMLPropGenerator {
    *  return _$node0
    * })()
    */
-  private addTemplate(template: HTMLParticle): string {
+  private genTemplate(template: HTMLParticle): string {
     const templateName = this.generateTemplateName();
     const [statements, nodeName, , nodeIdx] = this.generateChild(template, false, true);
-    this.addVariables(
+    this.addTemplate(
       templateName,
       this.t.callExpression(
         this.t.arrowFunctionExpression(

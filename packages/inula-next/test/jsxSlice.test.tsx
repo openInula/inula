@@ -130,7 +130,7 @@ describe('JSX Element Usage in Various Contexts', () => {
       }
 
       render(App, container);
-      expect(container.innerHTML).vtoBe('<div>Hello, World!</div><button>Update</button>');
+      expect(container.innerHTML).toBe('<div>Hello, World!</div><button>Update</button>');
 
       container.querySelector('button')?.click();
       expect(container.innerHTML).toBe('<div>Updated World!</div><button>Update</button>');
