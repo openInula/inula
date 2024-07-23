@@ -12,4 +12,5 @@ export interface ViewGeneratorConfig {
    * The subComponent in comp, [name, usedBit]
    */
   subComps: Array<[string, number]>;
+  genTemplateKey: (key: string) => string;
 }

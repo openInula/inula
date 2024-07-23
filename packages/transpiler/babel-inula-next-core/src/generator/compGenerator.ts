@@ -16,6 +16,7 @@ import {
 import { generateView } from '@openinula/view-generator';
 import { getSubComp } from '../utils';
 import { generateSelfId } from './index';
+import { NodePath } from '@babel/core';
 
 export function generateLifecycle(root: IRNode, lifecycleType: LifeCycle) {
   root.lifecycle[lifecycleType]!.forEach(node => wrapUpdate(generateSelfId(root.level), node, getStates(root)));
@@ -37,17 +38,22 @@ function generateUpdateViewFn(root: ComponentNode<'comp'> | SubComponentNode) {
     return null;
   }
   const subComps = getSubComp(root.variables).map((v): [string, number] => [v.name, v.usedBit]);
-  const [updateViewFn, declarations, topLevelNodes] = generateView(root.children, {
+  const [updateViewFn, nodeInitStmt, templates, topLevelNodes] = generateView(root.children, {
     babelApi: getBabelApi(),
     importMap,
     attributeMap: defaultAttributeMap,
     alterAttributeMap,
     templateIdx: -1,
     subComps,
+    genTemplateKey: (key: string) => root.fnNode.scope.generateUid(key),
   });
   const getUpdateViewsFnBody = genWillMountCodeBlock(root);
-  if (declarations.length) {
-    getUpdateViewsFnBody.push(...declarations);
+  if (nodeInitStmt.length) {
+    getUpdateViewsFnBody.push(...nodeInitStmt);
+  }
+  const program = root.fnNode.scope.getProgramParent().path as NodePath<t.Program>;
+  for (let i = templates.length - 1; i >= 0; i--) {
+    program.unshiftContainer('body', templates[i]);
   }
   return getUpdateViewsFnBody.length || topLevelNodes.elements.length
     ? t.arrowFunctionExpression(

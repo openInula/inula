@@ -49,10 +49,10 @@ export default class BaseGenerator {
   }
 
   // ---- Added Class Properties, typically used in for Template
-  private readonly variables: t.VariableDeclaration[] = [];
+  private readonly templates: t.VariableDeclaration[] = [];
 
-  addVariables(key: string, value: t.Expression) {
-    this.variables.push(
+  addTemplate(key: string, value: t.Expression) {
+    this.templates.push(
       this.t.variableDeclaration('const', [this.t.variableDeclarator(this.t.identifier(key), value)])
     );
   }
@@ -76,7 +76,7 @@ export default class BaseGenerator {
    */
   generate(): [t.Statement[], Record<number, t.Statement[]>, t.VariableDeclaration[], string] {
     const nodeName = this.run();
-    return [this.initStatements, this.updateStatements, this.variables, nodeName];
+    return [this.initStatements, this.updateStatements, this.templates, nodeName];
   }
 
   /**
@@ -92,11 +92,11 @@ export default class BaseGenerator {
   ): [t.Statement[], string[], Record<number, t.Statement[]>, number] {
     this.viewGenerator.nodeIdx = newIdx ? -1 : this.nodeIdx;
     this.viewGenerator.templateIdx = this.templateIdx;
-    const [initStatements, updateStatements, variables, topLevelNodes] =
+    const [initStatements, updateStatements, templates, topLevelNodes] =
       this.viewGenerator.generateChildren(viewParticles);
     if (!newIdx) this.nodeIdx = this.viewGenerator.nodeIdx;
     this.templateIdx = this.viewGenerator.templateIdx;
-    this.variables.push(...variables);
+    this.templates.push(...templates);
     if (mergeStatements) this.mergeStatements(updateStatements);
 
     return [initStatements, topLevelNodes, updateStatements, this.viewGenerator.nodeIdx];
@@ -128,10 +128,10 @@ export default class BaseGenerator {
   ): [t.Statement[], string, Record<number, t.Statement[]>, number] {
     this.viewGenerator.nodeIdx = newIdx ? -1 : this.nodeIdx;
     this.viewGenerator.templateIdx = this.templateIdx;
-    const [initStatements, updateStatements, variables, nodeName] = this.viewGenerator.generateChild(viewParticle);
+    const [initStatements, updateStatements, templates, nodeName] = this.viewGenerator.generateChild(viewParticle);
     if (!newIdx) this.nodeIdx = this.viewGenerator.nodeIdx;
     this.templateIdx = this.viewGenerator.templateIdx;
-    this.variables.push(...variables);
+    this.templates.push(...templates);
     if (mergeStatements) this.mergeStatements(updateStatements);
 
     return [initStatements, nodeName, updateStatements, this.viewGenerator.nodeIdx];
@@ -221,30 +221,10 @@ export default class BaseGenerator {
   templateIdx = -1;
 
   generateTemplateName(): string {
-    return `${prefixMap.template}${++this.templateIdx}`;
+    return this.config.genTemplateKey(`${prefixMap.template}${++this.templateIdx}`);
   }
 
   // ---- @Utils -----
-  /**
-   *
-   * @param updateStatements
-   * @returns
-   */
-
-  /**
-   * @brief Calculate the dependency number from an array of dependency index
-   *  e.g.
-   *    [0, 1, 2] => 0b111 => 7
-   *    [1, 3] => 0b1010 => 10
-   * @param dependencies
-   * @returns dependency number
-   */
-  static calcDependencyNum(dependencies: number[] | undefined): number {
-    if (!dependencies || dependencies.length === 0) return 0;
-    dependencies = [...new Set(dependencies)];
-    return dependencies.reduce((acc, dep) => acc + (1 << dep), 0);
-  }
-
   /**
    * @brief Wrap the value in a file
    * @param node

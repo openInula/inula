@@ -8,14 +8,16 @@ export default class MainViewGenerator extends ViewGenerator {
    * @param viewParticles
    * @returns [viewBody, classProperties, templateIdx]
    */
-  generate(viewParticles: ViewParticle[]): [t.ArrowFunctionExpression | null, t.Statement[], t.ArrayExpression] {
-    const allVariables: t.VariableDeclaration[] = [];
+  generate(
+    viewParticles: ViewParticle[]
+  ): [t.ArrowFunctionExpression | null, t.Statement[], t.Statement[], t.ArrayExpression] {
+    const allTemplates: t.VariableDeclaration[] = [];
     const allInitStatements: t.Statement[] = [];
     const allUpdateStatements: Record<number, t.Statement[]> = {};
     const topLevelNodes: string[] = [];
 
     viewParticles.forEach(viewParticle => {
-      const [initStatements, updateStatements, variables, nodeName] = this.generateChild(viewParticle);
+      const [initStatements, updateStatements, templates, nodeName] = this.generateChild(viewParticle);
       allInitStatements.push(...initStatements);
       Object.entries(updateStatements).forEach(([depNum, statements]) => {
         if (!allUpdateStatements[Number(depNum)]) {
@@ -23,7 +25,7 @@ export default class MainViewGenerator extends ViewGenerator {
         }
         allUpdateStatements[Number(depNum)].push(...statements);
       });
-      allVariables.push(...variables);
+      allTemplates.push(...templates);
       topLevelNodes.push(nodeName);
     });
 
@@ -31,9 +33,9 @@ export default class MainViewGenerator extends ViewGenerator {
     // 1. Declare all nodes(the variables that hold the dom nodes)
     // 2. Declare all variables(temporary variables)
     // 3. Declare all init statements(to create dom nodes)
-    const allDeclarations = [...this.declareNodes(), ...allVariables, ...allInitStatements];
+    const nodeInitStmt = [...this.declareNodes(), ...allInitStatements];
     const topLevelNodesArray = this.t.arrayExpression(topLevelNodes.map(nodeName => this.t.identifier(nodeName)));
-    return [this.geneUpdate(allUpdateStatements, topLevelNodes), allDeclarations, topLevelNodesArray];
+    return [this.geneUpdate(allUpdateStatements, topLevelNodes), nodeInitStmt, allTemplates, topLevelNodesArray];
   }
 
   /**

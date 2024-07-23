@@ -73,18 +73,15 @@ describe('conditional rendering', () => {
     expect(container.innerHTML).toMatchInlineSnapshot(`""`);
     set(2);
     expect(container.innerHTML).toMatchInlineSnapshot(`
-      "2 is bigger than is 1
-                "
+      "2 is bigger than is 1"
     `);
     set(3);
     expect(container.innerHTML).toMatchInlineSnapshot(`
-      "3 is bigger than is 1
-                <div>3 is bigger than is 2</div>"
+      "3 is bigger than is 1<div>3 is bigger than is 2</div>"
     `);
     set(2);
     expect(container.innerHTML).toMatchInlineSnapshot(`
-      "2 is bigger than is 1
-                "
+      "2 is bigger than is 1"
     `);
   });
   it('should transform "and expression in and expression" to "if tag in if tag"', ({ container }) => {
