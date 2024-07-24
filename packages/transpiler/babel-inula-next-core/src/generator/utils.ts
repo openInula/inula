@@ -4,18 +4,18 @@ import { IRNode, ReactiveVariable } from '../analyze/types';
 import { importMap, reactivityFuncNames } from '../constants';
 
 export function uid() {
-  // ---- Or mock for testing
-  // return Math.random().toString(36).substring(2, 10);
-  return 'random_str';
+  return t.callExpression(t.memberExpression(t.identifier('Symbol'), t.identifier('for')), [
+    t.stringLiteral('inula-cache'),
+  ]);
 }
 
 /**
  * @View
  * if (Inula.notCached(self, ${uid}, depNode)) {${blockStatement}}
  */
-export function wrapCheckCache(selfId: t.identifier, cacheNode: t.ArrayExpression, statements: t.Statement[]) {
+export function wrapCheckCache(selfId: t.Identifier, cacheNode: t.ArrayExpression, statements: t.Statement[]) {
   return t.ifStatement(
-    t.callExpression(t.identifier(importMap.notCached), [selfId, t.stringLiteral(uid()), cacheNode]),
+    t.callExpression(t.identifier(importMap.notCached), [selfId, uid(), cacheNode]),
     t.blockStatement(statements)
   );
 }

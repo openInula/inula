@@ -1,6 +1,6 @@
 import { DLNode } from './DLNode';
 import { insertNode } from './HTMLNode';
-import { DLStore } from './store';
+import { cached, DLStore } from './store';
 import { CompNode } from './CompNode.js';
 import { HookNode } from './HookNode.js';
 
@@ -100,9 +100,16 @@ export function createComponent(compUpdater) {
   return currentComp;
 }
 
-export function notCached() {
-  // TODO
-  return true;
+export function notCached(node, cacheSymbol, cacheValues) {
+  if (!cacheValues || !cacheValues.length) return false;
+  if (!node.$nonkeyedCache) {
+    node.$nonkeyedCache = {};
+  }
+  if (!cached(cacheValues, node.$nonkeyedCache[cacheSymbol])) {
+    return true;
+  }
+  node.$nonkeyedCache[cacheSymbol] = cacheValues;
+  return false;
 }
 
 export function didMount() {
