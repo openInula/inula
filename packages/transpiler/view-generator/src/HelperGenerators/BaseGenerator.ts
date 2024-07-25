@@ -1,6 +1,6 @@
 import { type types as t, type traverse } from '@babel/core';
 import { Bitmap, type ViewParticle } from '@openinula/reactivity-parser';
-import { type SnippetPropMap, type ViewGeneratorConfig } from '../types';
+import { type ViewGeneratorConfig } from '../types';
 import ViewGenerator from '../ViewGenerator';
 
 export const prefixMap = { template: '$t', node: '$node' };

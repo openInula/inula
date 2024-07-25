@@ -17,6 +17,14 @@ import { describe, expect, vi } from 'vitest';
 import { domTest as it } from './utils';
 import { render, View } from '../src';
 
+vi.mock('../src/scheduler', async () => {
+  return {
+    schedule: (task: () => void) => {
+      task();
+    },
+  };
+});
+
 describe('rendering', () => {
   describe('basic', () => {
     it('should support basic dom', ({ container }) => {
@@ -152,6 +160,62 @@ describe('rendering', () => {
       const h1 = container.querySelector('h1');
       expect(h1.style.color).toBe('red');
     });
+
+    it('should handle style object', ({ container }) => {
+      const color = 'red';
+
+      function App() {
+        const style = { color };
+        return <h1 style={style}>hello world!!!</h1>;
+      }
+
+      render(App, container);
+      const h1 = container.querySelector('h1');
+      expect(h1.style.color).toBe('red');
+    });
+
+    it('should update style', ({ container }) => {
+      function App() {
+        let color = 'red';
+        return (
+          <h1 style={{ color }} onClick={() => (color = 'blue')}>
+            hello world!!!
+          </h1>
+        );
+      }
+
+      render(App, container);
+      const h1 = container.querySelector('h1');
+      expect(h1.style.color).toBe('red');
+      h1.click();
+      expect(h1.style.color).toBe('blue');
+    });
+
+    it('should update when object style changed', ({ container }) => {
+      function App() {
+        let style = { color: 'red', fontSize: '20px' };
+        return (
+          <div
+            style={style}
+            onClick={() => {
+              style = { color: 'blue', height: '20px' };
+            }}
+          >
+            hello world!!!
+          </div>
+        );
+      }
+
+      render(App, container);
+      const div = container.querySelector('div');
+      expect(div.style.color).toBe('red');
+      expect(div.style.fontSize).toBe('20px');
+      expect(div.style.height).toBe('');
+      div.click();
+      expect(div.style.color).toBe('blue');
+      expect(div.style.height).toBe('20px');
+      expect(div.style.fontSize).toBe('');
+    });
   });
 
   describe('event', () => {
@@ -167,6 +231,37 @@ describe('rendering', () => {
       button.click();
 
       expect(handleClick).toHaveBeenCalled();
+    });
+
+    it('should support inline event update', ({ container }) => {
+      function App() {
+        let count = 0;
+        return <button onClick={() => (count += 1)}>add:{count}</button>;
+      }
+
+      render(App, container);
+      expect(container.innerHTML).toEqual('<button>add:0</button>');
+      const button = container.querySelector('button');
+      button.click();
+      expect(container.innerHTML).toEqual('<button>add:1</button>');
+    });
+
+    it('should support inline event for component props', ({ container }) => {
+      function Button({ onClick, children }) {
+        return <button onClick={onClick}>{children}</button>;
+      }
+
+      function App() {
+        let value = '';
+
+        return <Button onClick={() => (value = 'World')}>Hello {value}!</Button>;
+      }
+
+      render(App, container);
+      expect(container.innerHTML).toEqual('<button>Hello !</button>');
+      const button = container.querySelector('button')!;
+      button.click();
+      expect(container.innerHTML).toEqual('<button>Hello World!</button>');
     });
   });
 

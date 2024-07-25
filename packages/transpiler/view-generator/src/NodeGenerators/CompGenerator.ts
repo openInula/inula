@@ -50,6 +50,7 @@ export default class CompGenerator extends ForwardPropGenerator {
 
     return this.t.objectExpression(
       Object.entries(props).map(([key, value]) => {
+        this.config.wrapUpdate(value);
         return this.t.objectProperty(this.t.stringLiteral(key), value);
       })
     );

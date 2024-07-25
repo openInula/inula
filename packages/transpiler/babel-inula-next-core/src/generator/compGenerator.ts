@@ -46,6 +46,9 @@ function generateUpdateViewFn(root: ComponentNode<'comp'> | SubComponentNode) {
     templateIdx: -1,
     subComps,
     genTemplateKey: (key: string) => root.fnNode.scope.generateUid(key),
+    wrapUpdate: (node: t.Statement | t.Expression | null) => {
+      wrapUpdate(generateSelfId(root.level), node, getStates(root));
+    },
   });
   const getUpdateViewsFnBody = genWillMountCodeBlock(root);
   if (nodeInitStmt.length) {

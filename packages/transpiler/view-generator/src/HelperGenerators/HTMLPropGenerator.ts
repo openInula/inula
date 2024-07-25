@@ -165,6 +165,7 @@ export default class HTMLPropGenerator extends ForwardPropGenerator {
    * delegateEvent(${dlNodeName}, ${key}, ${value})
    */
   private delegateEvent(dlNodeName: string, key: string, value: t.Expression, check: boolean): t.Statement {
+    this.config.wrapUpdate(value);
     return this.setPropWithCheck(
       dlNodeName,
       this.t.callExpression(this.t.identifier(this.importMap.delegateEvent), [
