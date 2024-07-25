@@ -55,9 +55,9 @@ export function pruneUnusedState(
         v.dependency.depMask = getDepMask(v.dependency._fullDepBits, bitPositionToRemove);
       }
     } else if (v.type === 'subComp') {
-      v.usedBit = pruneBitmap(v.usedBit, bitPositionToRemove);
       // Recursively prune the subcomponent, keep the index for the next variable
       pruneUnusedState(v, index, bitPositionToRemove);
+      v.usedBit = pruneBitmap(v.usedBit, bitPositionToRemove);
     }
 
     return v;

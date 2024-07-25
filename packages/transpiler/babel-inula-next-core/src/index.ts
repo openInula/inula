@@ -13,7 +13,6 @@ import jsxSlicePlugin from './sugarPlugins/jsxSlicePlugin';
 import earlyReturnPlugin from './sugarPlugins/earlyReturnPlugin';
 import contextPlugin from './sugarPlugins/contextPlugin';
 import hookPlugin from './sugarPlugins/hookPlugin';
-import conditionPlugin from './sugarPlugins/conditionPlugin';
 
 export default function (_: ConfigAPI, options: InulaNextOption): TransformOptions {
   return {
@@ -21,9 +20,8 @@ export default function (_: ConfigAPI, options: InulaNextOption): TransformOptio
       syntaxJSX.default ?? syntaxJSX,
       [syntaxTypescript.default ?? syntaxTypescript, { isTSX: true }],
       [syntaxDecorators.default ?? syntaxDecorators, { legacy: true }],
-      // [forSubComponentPlugin, options],
-      // [mapping2ForPlugin, options],
-      // [conditionPlugin, options],
+      [forSubComponentPlugin, options],
+      [mapping2ForPlugin, options],
       [jsxSlicePlugin, options],
       [autoNamingPlugin, options],
       [hookPlugin, options],

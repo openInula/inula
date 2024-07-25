@@ -2,7 +2,7 @@ import type babel from '@babel/core';
 import type { BabelFile } from '@babel/core';
 import { NodePath, type PluginObj, type types as t } from '@babel/core';
 import { type InulaNextOption } from './types';
-import { defaultAttributeMap, defaultHTMLTags, importMap } from './constants';
+import { defaultAttributeMap, defaultHTMLTags, getAccessedKeys, resetAccessedKeys } from './constants';
 import { analyze } from './analyze';
 import { addImport, extractFnFromMacro, fileAllowed, getMacroType, toArray } from './utils';
 import { register } from '@openinula/babel-api';
@@ -79,6 +79,9 @@ export default function (api: typeof babel, options: InulaNextOption): PluginObj
     name: 'babel-inula-next-core',
     visitor: {
       Program: {
+        enter() {
+          resetAccessedKeys();
+        },
         exit(program, state) {
           if (!fileAllowed(state.filename, toArray(files), toArray(excludeFiles))) {
             program.skip();
@@ -93,7 +96,7 @@ export default function (api: typeof babel, options: InulaNextOption): PluginObj
           });
 
           if (transformationHappened && !options.skipImport) {
-            addImport(program.node, importMap, packageName);
+            addImport(program.node, getAccessedKeys(), packageName);
           }
         },
       },

@@ -25,7 +25,7 @@ describe('template', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp, useHook as $$useHook, createHook as $$createHook, untrack as $$untrack, runOnce as $$runOnce } from "@openinula/next";
+      "import { createComponent as $$createComponent, createElement as $$createElement } from "@openinula/next";
       const _$t = (() => {
         let $node0, $node1;
         $node0 = $$createElement("div");
@@ -60,7 +60,15 @@ describe('template', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp, useHook as $$useHook, createHook as $$createHook, untrack as $$untrack, runOnce as $$runOnce } from "@openinula/next";
+      "import { createComponent as $$createComponent, createElement as $$createElement } from "@openinula/next";
+      const _$t2 = (() => {
+        let $node0, $node1;
+        $node0 = $$createElement("div");
+        $node1 = $$createElement("h1");
+        $node1.textContent = "Title";
+        $node0.appendChild($node1);
+        return $node0;
+      })();
       const _$t = (() => {
         let $node0, $node1;
         $node0 = $$createElement("div");
@@ -81,14 +89,6 @@ describe('template', () => {
         });
         return self.init();
       }
-      const _$t2 = (() => {
-        let $node0, $node1;
-        $node0 = $$createElement("div");
-        $node1 = $$createElement("h1");
-        $node1.textContent = "Title";
-        $node0.appendChild($node1);
-        return $node0;
-      })();
       function Title() {
         let self;
         self = $$createComponent({
@@ -130,7 +130,25 @@ describe('template', () => {
       }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp, useHook as $$useHook, createHook as $$createHook, untrack as $$untrack, runOnce as $$runOnce } from "@openinula/next";
+      "import { createComponent as $$createComponent, createElement as $$createElement, ExpNode as $$ExpNode, insertNode as $$insertNode, notCached as $$notCached, createTextNode as $$createTextNode, PropView as $$PropView } from "@openinula/next";
+      const _$t2 = (() => {
+        let $node0, $node1;
+        $node0 = $$createElement("div");
+        $node0.className = "parent";
+        $node1 = $$createElement("h2");
+        $node1.textContent = "Parent";
+        $node0.appendChild($node1);
+        return $node0;
+      })();
+      const _$t = (() => {
+        let $node0, $node1;
+        $node0 = $$createElement("div");
+        $node0.className = "parent";
+        $node1 = $$createElement("h2");
+        $node1.textContent = "Parent";
+        $node0.appendChild($node1);
+        return $node0;
+      })();
       function App() {
         let self;
         let name = 'Alice';
@@ -169,7 +187,7 @@ describe('template', () => {
           self1 = $$createComponent({
             updateState: changed => {
               if (changed & 1) {
-                if ($$notCached(self1, "random_str", [name])) {
+                if ($$notCached(self1, Symbol.for("inula-cache"), [name])) {
                   self1.updateDerived(name_$p$_ = name, 2 /*0b10*/);
                 }
               }

@@ -25,7 +25,7 @@ describe('props', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp, useHook as $$useHook, createHook as $$createHook, untrack as $$untrack, runOnce as $$runOnce } from "@openinula/next";
+      "import { createComponent as $$createComponent } from "@openinula/next";
       function App() {
         let self;
         self = $$createComponent({
@@ -50,7 +50,7 @@ describe('props', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp, useHook as $$useHook, createHook as $$createHook, untrack as $$untrack, runOnce as $$runOnce } from "@openinula/next";
+      "import { createComponent as $$createComponent, createElement as $$createElement, setHTMLProp as $$setHTMLProp } from "@openinula/next";
       function App({
         id,
         className = 'default'
@@ -97,7 +97,7 @@ describe('props', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp, useHook as $$useHook, createHook as $$createHook, untrack as $$untrack, runOnce as $$runOnce } from "@openinula/next";
+      "import { createComponent as $$createComponent, notCached as $$notCached, createElement as $$createElement, setHTMLProp as $$setHTMLProp, setStyle as $$setStyle } from "@openinula/next";
       function App({
         info
       }) {
@@ -110,7 +110,7 @@ describe('props', () => {
         self = $$createComponent({
           updateState: changed => {
             if (changed & 1) {
-              if ($$notCached(self, "random_str", [info_$p$_])) {
+              if ($$notCached(self, Symbol.for("inula-cache"), [info_$p$_])) {
                 {
                   self.updateDerived(({
                     id,
@@ -165,7 +165,7 @@ describe('props', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp, useHook as $$useHook, createHook as $$createHook, untrack as $$untrack, runOnce as $$runOnce } from "@openinula/next";
+      "import { createComponent as $$createComponent, notCached as $$notCached, createElement as $$createElement, ExpNode as $$ExpNode, insertNode as $$insertNode } from "@openinula/next";
       function Child({
         name
       }) {
@@ -175,7 +175,7 @@ describe('props', () => {
         self = $$createComponent({
           updateState: changed => {
             if (changed & 1) {
-              if ($$notCached(self, "random_str", [name_$p$_])) {
+              if ($$notCached(self, Symbol.for("inula-cache"), [name_$p$_])) {
                 self.updateDerived(alias = name_$p$_, 2 /*0b10*/);
               }
             }
