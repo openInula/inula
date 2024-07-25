@@ -9,19 +9,58 @@ function cache(el, key, deps) {
   return false;
 }
 
+const isCustomProperty = name => name.startsWith('--');
+
 /**
+ * TODO: share logic with legacy inula
  * @brief Plainly set style
  * @param el
- * @param value
+ * @param newStyle
  */
-export function setStyle(el, value) {
-  Object.entries(value).forEach(([key, value]) => {
-    if (key.startsWith('--')) {
-      el.style.setProperty(key, value);
-    } else {
-      el.style[key] = value;
+export function setStyle(el, newStyle) {
+  const style = el.style;
+  const prevStyle = el._prevStyle || {};
+
+  // Remove styles that are no longer present
+  for (const key in prevStyle) {
+    // eslint-disable-next-line no-prototype-builtins
+    if (prevStyle.hasOwnProperty(key) && (newStyle == null || !newStyle.hasOwnProperty(key))) {
+      if (isCustomProperty(key)) {
+        style.removeProperty(key);
+      } else if (key === 'float') {
+        style.cssFloat = '';
+      } else {
+        style[key] = '';
+      }
     }
-  });
+  }
+
+  // Set new or changed styles
+  for (const key in newStyle) {
+    const prevValue = prevStyle[key];
+    const newValue = newStyle[key];
+    // eslint-disable-next-line no-prototype-builtins
+    if (newStyle.hasOwnProperty(key) && newValue !== prevValue) {
+      if (newValue == null || newValue === '' || typeof newValue === 'boolean') {
+        if (isCustomProperty(key)) {
+          style.removeProperty(key);
+        } else if (key === 'float') {
+          style.cssFloat = '';
+        } else {
+          style[key] = '';
+        }
+      } else if (isCustomProperty(key)) {
+        style.setProperty(key, newStyle);
+      } else if (key === 'float') {
+        style.cssFloat = newStyle;
+      } else {
+        el.style[key] = newValue;
+      }
+    }
+  }
+
+  // Store the new style for future comparisons
+  el._prevStyle = { ...newStyle };
 }
 
 /**
@@ -114,6 +153,7 @@ export function delegateEvent(el, key, value) {
     DLStore.document.addEventListener(key, eventHandler);
   }
 }
+
 /**
  * @brief Shortcut for document.createElement
  * @param tag
