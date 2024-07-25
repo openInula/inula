@@ -114,23 +114,23 @@ describe('view generation', () => {
     `);
 
     expect(code).toMatchInlineSnapshot(`
-      "function Comp() {
+      "const _$t = (() => {
+        let $node0, $node1, $node2;
+        $node0 = $$createElement("div");
+        $node1 = $$createElement("div");
+        $node0.appendChild($node1);
+        $node2 = $$createElement("div");
+        $node0.appendChild($node2);
+        return $node0;
+      })();
+      function Comp() {
         let self;
         let text = 'hello world';
         self = $$createComponent({
           updateState: changed => {},
           getUpdateViews: () => {
             let $node0, $node1, $node2, $node3, $node4;
-            const $t0 = (() => {
-              let $node0, $node1, $node2;
-              $node0 = $$createElement("div");
-              $node1 = $$createElement("div");
-              $node0.appendChild($node1);
-              $node2 = $$createElement("div");
-              $node0.appendChild($node2);
-              return $node0;
-            })();
-            $node0 = $t0.cloneNode(true);
+            $node0 = _$t.cloneNode(true);
             $node1 = $node0.firstChild;
             $node2 = $node1.nextSibling;
             $node3 = new $$ExpNode(text, [text]);

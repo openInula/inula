@@ -31,7 +31,7 @@ export const reactivityFuncNames = [
   'clear',
 ];
 
-export const importMap = Object.fromEntries(
+export const originalImportMap = Object.fromEntries(
   [
     'createElement',
     'createComponent',
@@ -60,6 +60,28 @@ export const importMap = Object.fromEntries(
     'runOnce',
   ].map(name => [name, `$$${name}`])
 );
+
+const accessedKeys = new Set<string>();
+
+export const importMap = new Proxy(originalImportMap, {
+  get(target, prop: string, receiver) {
+    accessedKeys.add(prop);
+    return Reflect.get(target, prop, receiver);
+  },
+});
+
+// 函数用于获取被访问过的键
+export function getAccessedKeys() {
+  return Array.from(accessedKeys).reduce<Record<string, string>>((map, key) => {
+    map[key] = originalImportMap[key];
+    return map;
+  }, {});
+}
+
+// 函数用于重置访问记录
+export function resetAccessedKeys() {
+  accessedKeys.clear();
+}
 
 export const alterAttributeMap = {
   class: 'className',

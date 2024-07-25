@@ -32,7 +32,7 @@ describe('hook', () => {
         }
       `)
       ).toMatchInlineSnapshot(`
-        "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp, useHook as $$useHook, createHook as $$createHook, untrack as $$untrack, runOnce as $$runOnce } from "@openinula/next";
+        "import { untrack as $$untrack, useHook as $$useHook, Comp as $$Comp, createComponent as $$createComponent, runOnce as $$runOnce, notCached as $$notCached } from "@openinula/next";
         function App() {
           let self;
           let baseX = 0;
@@ -44,21 +44,21 @@ describe('hook', () => {
           self = $$createComponent({
             updateState: changed => {
               if (changed & 1) {
-                if ($$notCached(self, "random_str", [baseX])) {
+                if ($$notCached(self, Symbol.for("inula-cache"), [baseX])) {
                   {
                     $$untrack(() => _useMousePosition_$h$_).updateProp("p0", baseX);
                   }
                 }
               }
               if (changed & 2) {
-                if ($$notCached(self, "random_str", [baseY])) {
+                if ($$notCached(self, Symbol.for("inula-cache"), [baseY])) {
                   {
                     $$untrack(() => _useMousePosition_$h$_).updateProp("p1", baseY);
                   }
                 }
               }
               if (changed & 3) {
-                if ($$notCached(self, "random_str", [baseX, baseY])) {
+                if ($$notCached(self, Symbol.for("inula-cache"), [baseX, baseY])) {
                   $$runOnce(() => {
                     _useMousePosition_$h$_ = $$useHook(useMousePosition, [baseX, baseY], 4);
                   });
@@ -77,12 +77,12 @@ describe('hook', () => {
                 }
               }
               if (changed & 4) {
-                if ($$notCached(self, "random_str", [_useMousePosition_$h$_?.value])) {
+                if ($$notCached(self, Symbol.for("inula-cache"), [_useMousePosition_$h$_?.value])) {
                   mouse = _useMousePosition_$h$_.value();
                 }
               }
               if (changed & 8) {
-                if ($$notCached(self, "random_str", [_useMousePosition2_$h$_?.value])) {
+                if ($$notCached(self, Symbol.for("inula-cache"), [_useMousePosition2_$h$_?.value])) {
                   mouse2 = _useMousePosition2_$h$_.value();
                 }
               }
@@ -103,7 +103,7 @@ describe('hook', () => {
           );
         }`)
       ).toMatchInlineSnapshot(`
-        "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp, useHook as $$useHook, createHook as $$createHook, untrack as $$untrack, runOnce as $$runOnce } from "@openinula/next";
+        "import { useHook as $$useHook, Comp as $$Comp, createComponent as $$createComponent, notCached as $$notCached, createElement as $$createElement, delegateEvent as $$delegateEvent, createTextNode as $$createTextNode, insertNode as $$insertNode, ExpNode as $$ExpNode } from "@openinula/next";
         function App2() {
           let self;
           let _useCounter_$h$_ = $$useHook(useCounter, [], 1);
@@ -112,7 +112,7 @@ describe('hook', () => {
           self = $$createComponent({
             updateState: changed => {
               if (changed & 1) {
-                if ($$notCached(self, "random_str", [_useCounter_$h$_?.value])) {
+                if ($$notCached(self, Symbol.for("inula-cache"), [_useCounter_$h$_?.value])) {
                   {
                     self.updateDerived(({
                       count,
@@ -173,7 +173,7 @@ describe('hook', () => {
           return [x, y];
         }`)
       ).toMatchInlineSnapshot(`
-        "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp, useHook as $$useHook, createHook as $$createHook, untrack as $$untrack, runOnce as $$runOnce } from "@openinula/next";
+        "import { useHook as $$useHook, Comp as $$Comp, createHook as $$createHook, notCached as $$notCached } from "@openinula/next";
         function useMousePosition({
           p0,
           p1,
@@ -208,17 +208,17 @@ describe('hook', () => {
             },
             updateState: changed => {
               if (changed & 1) {
-                if ($$notCached(self, "random_str", [p0_$p$_])) {
+                if ($$notCached(self, Symbol.for("inula-cache"), [p0_$p$_])) {
                   baseX = p0_$p$_;
                 }
               }
               if (changed & 2) {
-                if ($$notCached(self, "random_str", [p1_$p$_])) {
+                if ($$notCached(self, Symbol.for("inula-cache"), [p1_$p$_])) {
                   baseY = p1_$p$_;
                 }
               }
               if (changed & 4) {
-                if ($$notCached(self, "random_str", [p2_$p$_])) {
+                if ($$notCached(self, Symbol.for("inula-cache"), [p2_$p$_])) {
                   {
                     ({
                       settings,
@@ -228,7 +228,7 @@ describe('hook', () => {
                 }
               }
               if (changed & 32) {
-                if ($$notCached(self, "random_str", [_useStore_$h$_?.value])) {
+                if ($$notCached(self, Symbol.for("inula-cache"), [_useStore_$h$_?.value])) {
                   {
                     ({
                       name

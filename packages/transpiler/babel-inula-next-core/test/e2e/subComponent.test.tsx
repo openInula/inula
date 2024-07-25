@@ -30,27 +30,34 @@ describe('nested component', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp, useHook as $$useHook, createHook as $$createHook, untrack as $$untrack, runOnce as $$runOnce } from "@openinula/next";
+      "import { createComponent as $$createComponent, notCached as $$notCached, createElement as $$createElement, setHTMLProp as $$setHTMLProp, insertNode as $$insertNode } from "@openinula/next";
       function App() {
         let self;
         let val = 123;
         function Input() {
-          let self;
-          self = $$createComponent({
-            updateState: changed => {},
+          let self1;
+          let double;
+          self1 = $$createComponent({
+            updateState: changed => {
+              if (changed & 1) {
+                if ($$notCached(self1, Symbol.for("inula-cache"), [val])) {
+                  self1.updateDerived(double = val * 2, 2 /*0b10*/);
+                }
+              }
+            },
             getUpdateViews: () => {
               let $node0;
               $node0 = $$createElement("input");
-              $$setHTMLProp($node0, "value", () => val, [val]);
+              $$setHTMLProp($node0, "value", () => double, [double]);
               return [[$node0], $changed => {
-                if ($changed & 1) {
-                  $node0 && $$setHTMLProp($node0, "value", () => val, [val]);
+                if ($changed & 2) {
+                  $node0 && $$setHTMLProp($node0, "value", () => double, [double]);
                 }
                 return [$node0];
               }];
             }
           });
-          return self.init();
+          return self1.init();
         }
         self = $$createComponent({
           updateState: changed => {},
@@ -61,8 +68,8 @@ describe('nested component', () => {
             $$insertNode($node0, $node1, 0);
             $node0._$nodes = [$node1];
             return [[$node0], $changed => {
-              if ($changed & 1) {
-                $node1.updateDerived(null, 1);
+              if ($changed & 3) {
+                $node1.updateDerived(null, 3);
               }
               return [$node0];
             }];
@@ -83,7 +90,7 @@ describe('nested component', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createElement as $$createElement, createComponent as $$createComponent, setStyle as $$setStyle, setDataset as $$setDataset, setEvent as $$setEvent, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, setHTMLAttr as $$setHTMLAttr, setHTMLProps as $$setHTMLProps, setHTMLAttrs as $$setHTMLAttrs, createTextNode as $$createTextNode, updateText as $$updateText, insertNode as $$insertNode, ForNode as $$ForNode, CondNode as $$CondNode, ExpNode as $$ExpNode, ContextProvider as $$ContextProvider, PropView as $$PropView, render as $$render, notCached as $$notCached, Comp as $$Comp, useHook as $$useHook, createHook as $$createHook, untrack as $$untrack, runOnce as $$runOnce } from "@openinula/next";
+      "import { Comp as $$Comp, createComponent as $$createComponent, createElement as $$createElement, setHTMLProp as $$setHTMLProp, ExpNode as $$ExpNode, insertNode as $$insertNode } from "@openinula/next";
       function App() {
         let self;
         let val = 123;

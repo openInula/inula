@@ -30,7 +30,7 @@ describe('jsx slice', () => {
     ).toMatchInlineSnapshot(/*jsx*/ `
       "function App() {
         const JSX_div = Component(() => <div></div>);
-        const a = JSX_div();
+        const a = $$Comp(JSX_div);
       }"
     `);
   });
@@ -59,7 +59,7 @@ describe('jsx slice', () => {
                     <p>Content</p>
                   </main>
                 </div>);
-        const content = JSX_div();
+        const content = $$Comp(JSX_div);
       }"
     `);
   });
@@ -74,7 +74,7 @@ describe('jsx slice', () => {
       "function App() {
         const JSX_Table_Col = Component(() => <Table.Col></Table.Col>);
         const JSX_div = Component(() => <div></div>);
-        const a = true ? JSX_Table_Col() : JSX_div();
+        const a = true ? $$Comp(JSX_Table_Col) : $$Comp(JSX_div);
       }"
     `);
   });
@@ -90,7 +90,7 @@ describe('jsx slice', () => {
       "function App() {
         const JSX_div = Component(() => <div></div>);
         const JSX_h = Component(() => <h1></h1>);
-        const arr = [JSX_div(), JSX_h()];
+        const arr = [$$Comp(JSX_div), $$Comp(JSX_h)];
       }"
     `);
   });
@@ -105,7 +105,7 @@ describe('jsx slice', () => {
     ).toMatchInlineSnapshot(`
       "function App() {
         const JSX_Icon = Component(() => <Icon />);
-        return <div icon={JSX_Icon()}></div>;
+        return <div icon={$$Comp(JSX_Icon)}></div>;
       }"
     `);
   });
@@ -121,10 +121,10 @@ describe('jsx slice', () => {
     ).toMatchInlineSnapshot(`
       "function App() {
         const JSX_Fragment = Component(() => <>{test}</>);
-        const a = JSX_Fragment();
+        const a = $$Comp(JSX_Fragment);
         const JSX_Fragment2 = Component(() => <><div></div></>);
         const JSX_Fragment3 = Component(() => <><span></span></>);
-        const b = cond ? JSX_Fragment2() : JSX_Fragment3();
+        const b = cond ? $$Comp(JSX_Fragment2) : $$Comp(JSX_Fragment3);
       }"
     `);
   });
