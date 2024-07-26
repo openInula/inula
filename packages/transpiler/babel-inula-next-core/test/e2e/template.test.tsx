@@ -130,7 +130,7 @@ describe('template', () => {
       }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, createElement as $$createElement, ExpNode as $$ExpNode, insertNode as $$insertNode, notCached as $$notCached, createTextNode as $$createTextNode, PropView as $$PropView } from "@openinula/next";
+      "import { createComponent as $$createComponent, createElement as $$createElement, ExpNode as $$ExpNode, insertNode as $$insertNode, notCached as $$notCached, createTextNode as $$createTextNode, Comp as $$Comp, PropView as $$PropView } from "@openinula/next";
       const _$t2 = (() => {
         let $node0, $node1;
         $node0 = $$createElement("div");

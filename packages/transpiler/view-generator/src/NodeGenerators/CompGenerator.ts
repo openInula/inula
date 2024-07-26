@@ -84,7 +84,7 @@ export default class CompGenerator extends ForwardPropGenerator {
         this.t.assignmentExpression(
           '=',
           this.t.identifier(dlNodeName),
-          this.t.callExpression(this.t.identifier('$$Comp'), [tag, this.generateCompProps(newProps)])
+          this.t.callExpression(this.t.identifier(this.config.importMap.Comp), [tag, this.generateCompProps(newProps)])
         )
       ),
     ];

@@ -13,15 +13,14 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { Visitor } from '../types';
-import { addPlainVariable, addSubComponent, addVariable, createIRNode } from '../nodeFactory';
+import { AnalyzeContext, Visitor } from '../types';
 import { isStaticValue, isValidPath } from '../utils';
 import { type NodePath } from '@babel/core';
-import { COMPONENT, importMap, reactivityFuncNames } from '../../constants';
+import { importMap } from '../../constants';
 import { analyzeUnitOfWork } from '../index';
-import { getDependenciesFromNode } from '@openinula/reactivity-parser';
 import { types as t } from '@openinula/babel-api';
 import { isCompPath } from '../../utils';
+import { IRBuilder } from '../IRBuilder';
 
 /**
  * collect all properties and methods from the node
@@ -31,87 +30,100 @@ import { isCompPath } from '../../utils';
 export function variablesAnalyze(): Visitor {
   return {
     VariableDeclaration(path: NodePath<t.VariableDeclaration>, ctx) {
+      const { builder } = ctx;
       const declarations = path.get('declarations');
       // iterate the declarations
       declarations.forEach(declaration => {
         const id = declaration.get('id');
-        // handle destructuring
-        if (id.isObjectPattern()) {
-          throw new Error('Object destructuring is not valid input');
-        } else if (id.isArrayPattern()) {
-          throw new Error('Array destructuring is not valid input');
-        } else if (id.isIdentifier()) {
-          // --- properties: the state / computed / plain properties / methods ---
-          const init = declaration.get('init');
-          const kind = path.node.kind;
+        assertIdentifier(id);
+        // --- properties: the state / computed / plain properties / methods ---
+        const init = declaration.get('init');
+        const kind = path.node.kind;
 
-          // Check if the variable can't be modified
-          if (kind === 'const' && isStaticValue(init.node)) {
-            addPlainVariable(ctx.current, t.variableDeclaration('const', [declaration.node]));
-            return;
-          }
-          if (!isValidPath(init)) {
-            if (kind !== 'const') {
-              addVariable(
-                ctx.current,
-                {
-                  name: id.node.name,
-                  value: null,
-                  kind,
-                },
-                null
-              );
-            }
-            return;
-          }
-          // handle the subcomponent
-          // Should like Component(() => {})
-          if (init.isCallExpression() && isCompPath(init)) {
-            const fnNode = init.get('arguments')[0] as
-              | NodePath<t.ArrowFunctionExpression>
-              | NodePath<t.FunctionExpression>;
-            const subComponent = createIRNode(id.node.name, COMPONENT, fnNode, ctx.current);
-
-            analyzeUnitOfWork(subComponent, ctx);
-            addSubComponent(ctx.current, subComponent);
-            return;
-          }
-
-          const dependency =
-            init.isArrowFunctionExpression() || init.isFunctionExpression()
-              ? null
-              : getDependenciesFromNode(init.node, ctx.current._reactiveBitMap, reactivityFuncNames);
-          path.traverse({
-            CallExpression(callPath) {
-              const callee = callPath.node.callee;
-              if (t.isIdentifier(callee) && callee.name === importMap.Comp) {
-                const subCompIdPath = callPath.get('arguments')[0];
-                if (!subCompIdPath.isIdentifier()) {
-                  throw Error('invalid jsx slice');
-                }
-                const subCompName = subCompIdPath.node.name;
-                const subComp = ctx.current.variables.find(sub => sub.type === 'subComp' && sub.name === subCompName);
-                if (!subComp) {
-                  throw Error(`Sub component not found: ${subCompName}`);
-                }
-              }
-            },
-          });
-
-          addVariable(
-            ctx.current,
-            {
-              name: id.node.name,
-              value: init.node || null,
-              kind: path.node.kind,
-            },
-            dependency || null
-          );
+        // Check if the variable can't be modified
+        if (kind === 'const' && isStaticValue(init.node)) {
+          builder.addPlainVariable(t.variableDeclaration('const', [declaration.node]));
+          return;
         }
+
+        if (!isValidPath(init)) {
+          resolveUninitializedVariable(kind, builder, id, declaration.node);
+          return;
+        }
+
+        // Handle the subcomponent, should like Component(() => {})
+        if (init.isCallExpression() && isCompPath(init)) {
+          resolveSubComponent(init, builder, id, ctx);
+          return;
+        }
+
+        // ensure evert jsx slice call expression can found responding sub-component
+        assertJSXSliceIsValid(path, builder.checkSubComponent.bind(builder));
+
+        builder.addVariable({
+          name: id.node.name,
+          value: init.node,
+          kind: path.node.kind,
+        });
       });
     },
-    FunctionDeclaration(path: NodePath<t.FunctionDeclaration>, { current }) {
-      addPlainVariable(current, path.node);
+    FunctionDeclaration(path: NodePath<t.FunctionDeclaration>, { builder }) {
+      builder.addPlainVariable(path.node);
     },
   };
+}
+
+function assertIdentifier(id: NodePath<t.LVal>): asserts id is NodePath<t.Identifier> {
+  if (!id.isIdentifier()) {
+    throw new Error(`${id.node.type} is not valid initial value type for state`);
+  }
+}
+
+function assertJSXSliceIsValid(path: NodePath<t.VariableDeclaration>, checker: (name: string) => boolean) {
+  path.traverse({
+    CallExpression(callPath) {
+      const callee = callPath.node.callee;
+      if (t.isIdentifier(callee) && callee.name === importMap.Comp) {
+        const subCompIdPath = callPath.get('arguments')[0];
+        if (!subCompIdPath.isIdentifier()) {
+          throw Error('invalid jsx slice');
+        }
+        const subCompName = subCompIdPath.node.name;
+        if (!checker(subCompName)) {
+          throw Error(`Sub component not found: ${subCompName}`);
+        }
+      }
+    },
+  });
+}
+
+function resolveUninitializedVariable(
+  kind: 'var' | 'let' | 'const' | 'using' | 'await using',
+  builder: IRBuilder,
+  id: NodePath<t.Identifier>,
+  node: Array<t.VariableDeclarator>[number]
+) {
+  if (kind === 'const') {
+    builder.addPlainVariable(t.variableDeclaration('const', [node]));
+  }
+  builder.addVariable({
+    name: id.node.name,
+    value: null,
+    kind,
+  });
+}
+
+function resolveSubComponent(
+  init: NodePath<t.CallExpression>,
+  builder: IRBuilder,
+  id: NodePath<t.Identifier>,
+  ctx: AnalyzeContext
+) {
+  const fnNode = init.get('arguments')[0] as NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>;
+
+  builder.startSubComponent(id.node.name, fnNode);
+
+  analyzeUnitOfWork(id.node.name, fnNode, ctx);
+
+  builder.endSubComponent();
 }

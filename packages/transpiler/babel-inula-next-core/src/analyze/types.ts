@@ -16,6 +16,7 @@
 import { type NodePath, types as t } from '@babel/core';
 import { COMPONENT, DID_MOUNT, DID_UNMOUNT, HOOK, PropType, WILL_MOUNT, WILL_UNMOUNT } from '../constants';
 import { Bitmap, ViewParticle } from '@openinula/reactivity-parser';
+import { IRBuilder } from './IRBuilder';
 
 export type CompOrHook = typeof COMPONENT | typeof HOOK;
 export type LifeCycle = typeof WILL_MOUNT | typeof DID_MOUNT | typeof WILL_UNMOUNT | typeof DID_UNMOUNT;
@@ -46,15 +47,7 @@ export interface ReactiveVariable extends BaseVariable<t.Expression | null> {
   /**
    * The bitmap of the variable that should be used in the codegen
    */
-  bit?: Bitmap;
-  /**
-   * Contains the bit of all dependencies graph
-   * i.e.
-   * let name = 'John';  // name's _fullBits is 0x0001
-   * let age = 18;       // age's _fullBits is 0x0010
-   * let greeting = `Hello, ${name}`; // greeting's _fullBits is 0x0101
-   */
-  _fullBits: Bitmap;
+  bit: Bitmap;
   dependency: Dependency | null;
 }
 
@@ -101,7 +94,7 @@ export interface IRNode {
    * The available variables and props for the component and its parent
    */
   availableVariables: ReactiveVariable[];
-  parent?: IRNode;
+  parent?: ComponentNode;
   /**
    * The function body of the fn component code
    */
@@ -129,13 +122,8 @@ export interface HookNode extends IRNode {
 }
 
 export interface AnalyzeContext {
-  level: number;
-  current: ComponentNode | HookNode;
+  builder: IRBuilder;
   analyzers: Analyzer[];
-  htmlTags: string[];
-  traverse: (p: NodePath<t.Statement>, ctx: AnalyzeContext) => void;
-  collectUnhandledNodeToLifecycle: (component: ComponentNode | HookNode, unhandledNode: t.Statement) => void;
-  workQueue?: Array<ComponentNode | HookNode>;
 }
 
 export type Visitor<S = AnalyzeContext> = {

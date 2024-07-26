@@ -25,7 +25,7 @@ describe('props', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent } from "@openinula/next";
+      "import { createComponent as $$createComponent, Comp as $$Comp } from "@openinula/next";
       function App() {
         let self;
         self = $$createComponent({

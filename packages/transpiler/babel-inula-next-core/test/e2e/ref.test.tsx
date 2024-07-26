@@ -32,7 +32,7 @@ describe('ref', () => {
 
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, createTextNode as $$createTextNode, PropView as $$PropView, createElement as $$createElement } from "@openinula/next";
+      "import { createComponent as $$createComponent, createTextNode as $$createTextNode, PropView as $$PropView, Comp as $$Comp, createElement as $$createElement } from "@openinula/next";
       function App() {
         let self;
         let count = 0;

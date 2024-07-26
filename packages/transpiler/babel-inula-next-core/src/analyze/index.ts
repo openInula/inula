@@ -1,14 +1,13 @@
 import { type NodePath } from '@babel/core';
-import { AnalyzeContext, Analyzer, ComponentNode, CompOrHook, HookNode, Visitor } from './types';
-import { addLifecycle, createIRNode } from './nodeFactory';
+import { AnalyzeContext, Analyzer, CompOrHook, FunctionalExpression, Visitor } from './types';
 import { variablesAnalyze } from './Analyzers/variablesAnalyze';
 import { functionalMacroAnalyze } from './Analyzers/functionalMacroAnalyze';
 import { getFnBodyPath } from '../utils';
 import { viewAnalyze } from './Analyzers/viewAnalyze';
-import { COMPONENT, HOOK, WILL_MOUNT } from '../constants';
+import { COMPONENT, HOOK } from '../constants';
 import { types as t } from '@openinula/babel-api';
-import { pruneUnusedState } from './pruneUnusedState';
 import { hookReturnAnalyze } from './Analyzers/hookAnalyze';
+import { IRBuilder } from './IRBuilder';
 
 const compBuiltinAnalyzers = [variablesAnalyze, functionalMacroAnalyze, viewAnalyze];
 const hookBuiltinAnalyzers = [variablesAnalyze, functionalMacroAnalyze, hookReturnAnalyze];
@@ -20,24 +19,11 @@ function mergeVisitor(...visitors: Analyzer[]): Visitor {
 }
 
 // walk through the body a function (maybe a component or a hook)
-export function analyzeUnitOfWork(
-  componentNode: ComponentNode | HookNode,
-  { htmlTags, analyzers }: { analyzers: Analyzer[]; htmlTags: string[] },
-  level = 0
-) {
+export function analyzeUnitOfWork(name: string, fnNode: NodePath<FunctionalExpression>, context: AnalyzeContext) {
+  const { builder, analyzers } = context;
   const visitor = mergeVisitor(...analyzers);
-  const context: AnalyzeContext = {
-    level,
-    current: componentNode,
-    htmlTags,
-    analyzers,
-    collectUnhandledNodeToLifecycle: addLifecycle.bind(null, WILL_MOUNT),
-    traverse: (path: NodePath<t.Statement>, ctx: AnalyzeContext) => {
-      path.traverse(visitor, ctx);
-    },
-  };
+
   // --- analyze the function props ---
-  const fnNode = componentNode.fnNode;
   const params = fnNode.get('params');
   const props = params[0];
   if (props) {
@@ -46,29 +32,27 @@ export function analyzeUnitOfWork(
         visitor.Prop?.(prop, context);
       });
     } else {
-      throw new Error(
-        `Component ${componentNode.name}: The first parameter of the function component must be an object pattern`
-      );
+      throw new Error(`Component ${name}: The first parameter of the function component must be an object pattern`);
     }
   }
 
   // --- analyze the function body ---
   const bodyStatements = getFnBodyPath(fnNode).get('body');
   for (let i = 0; i < bodyStatements.length; i++) {
-    const p = bodyStatements[i];
+    const path = bodyStatements[i];
 
-    const type = p.node.type;
+    const type = path.node.type;
 
     const visit = visitor[type];
     if (visit) {
       // TODO: More type safe way to handle this
-      visit(p as unknown as any, context);
+      visit(path as unknown as any, context);
     } else {
-      context.collectUnhandledNodeToLifecycle(componentNode, p.node);
+      builder.addWillMount(path.node);
     }
 
-    if (p.isReturnStatement()) {
-      visitor.ReturnStatement?.(p, context);
+    if (path.isReturnStatement()) {
+      visitor.ReturnStatement?.(path, context);
       break;
     }
   }
@@ -94,12 +78,11 @@ export function analyze(
 ) {
   const analyzers = options?.customAnalyzers ? options.customAnalyzers : getBuiltinAnalyzers(type);
 
-  const root = createIRNode(fnName, type, path);
-  analyzeUnitOfWork(root, { analyzers, htmlTags: options.htmlTags });
+  const builder = new IRBuilder(fnName, type, path, options.htmlTags);
 
-  pruneUnusedState(root);
+  analyzeUnitOfWork(fnName, path, { builder, analyzers });
 
-  return root;
+  return builder.build();
 }
 
 function getBuiltinAnalyzers(type: CompOrHook) {
