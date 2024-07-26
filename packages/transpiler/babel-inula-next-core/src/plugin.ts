@@ -11,16 +11,6 @@ import { ComponentNode, HookNode } from './analyze/types';
 
 const ALREADY_COMPILED: WeakSet<NodePath> | Set<NodePath> = new (WeakSet ?? Set)();
 
-function replaceWithComponent(path: NodePath<t.CallExpression>, root: ComponentNode | HookNode) {
-  const variableDeclarationPath = path.parentPath.parentPath!;
-  const randomName = Math.random().toString(36).substring(7);
-  const compNode = generate(root);
-  const realFuncName = compNode.id!.name;
-  compNode.id!.name = randomName;
-  variableDeclarationPath.replaceWith(compNode);
-  compNode.id!.name = realFuncName;
-}
-
 interface PluginState {
   customState: Record<string, ComponentNode>;
   filename: string;
@@ -46,9 +36,11 @@ function transformNode(path: NodePath<t.CallExpression>, htmlTags: string[], sta
       htmlTags,
     });
 
+    const resultNode = generate(root);
+
     recordComponentInState(state, name, root);
 
-    replaceWithComponent(path, root);
+    replaceWithComponent(path, resultNode);
 
     return true;
   }
@@ -62,7 +54,6 @@ export default function (api: typeof babel, options: InulaNextOption): PluginObj
     files = '**/*.{js,ts,jsx,tsx}',
     excludeFiles = '**/{dist,node_modules,lib}/*',
     packageName = '@openinula/next',
-    enableDevTools = false,
     htmlTags: customHtmlTags = defaultHtmlTags => defaultHtmlTags,
     attributeMap = defaultAttributeMap,
   } = options;
@@ -102,6 +93,20 @@ export default function (api: typeof babel, options: InulaNextOption): PluginObj
       },
     },
   };
+}
+
+function replaceWithComponent(path: NodePath<t.CallExpression>, resultNode: t.FunctionDeclaration) {
+  const variableDeclarationPath = path.parentPath.parentPath!;
+  const resultNodeId = resultNode.id;
+  if (resultNodeId) {
+    // if id exist, use a temp name to avoid error of duplicate declaration
+    const realFuncName = resultNodeId.name;
+    resultNodeId.name = path.scope.generateUid('tmp');
+    variableDeclarationPath.replaceWith(resultNode);
+    resultNodeId.name = realFuncName;
+  } else {
+    variableDeclarationPath.replaceWith(resultNode);
+  }
 }
 
 function recordComponentInState(state: PluginState, name: string, componentNode: ComponentNode | HookNode) {
