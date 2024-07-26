@@ -13,13 +13,24 @@ import jsxSlicePlugin from './sugarPlugins/jsxSlicePlugin';
 import earlyReturnPlugin from './sugarPlugins/earlyReturnPlugin';
 import contextPlugin from './sugarPlugins/contextPlugin';
 import hookPlugin from './sugarPlugins/hookPlugin';
+import { resetAccessedKeys } from './constants';
 
+const resetImport = {
+  visitor: {
+    Program: {
+      enter() {
+        resetAccessedKeys();
+      },
+    },
+  },
+};
 export default function (_: ConfigAPI, options: InulaNextOption): TransformOptions {
   return {
     plugins: [
       syntaxJSX.default ?? syntaxJSX,
       [syntaxTypescript.default ?? syntaxTypescript, { isTSX: true }],
       [syntaxDecorators.default ?? syntaxDecorators, { legacy: true }],
+      resetImport,
       [forSubComponentPlugin, options],
       [mapping2ForPlugin, options],
       [jsxSlicePlugin, options],

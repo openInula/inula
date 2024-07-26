@@ -70,9 +70,6 @@ export default function (api: typeof babel, options: InulaNextOption): PluginObj
     name: 'babel-inula-next-core',
     visitor: {
       Program: {
-        enter() {
-          resetAccessedKeys();
-        },
         exit(program, state) {
           if (!fileAllowed(state.filename, toArray(files), toArray(excludeFiles))) {
             program.skip();

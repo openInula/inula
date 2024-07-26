@@ -25,7 +25,7 @@ vi.mock('../src/scheduler', async () => {
   };
 });
 describe('for sub component', () => {
-  it.fails('should transform for loop', ({ container }) => {
+  it('should transform for loop', ({ container }) => {
     function MyComp() {
       let name = 'test';
       let arr = [
@@ -35,22 +35,30 @@ describe('for sub component', () => {
       ];
       return (
         <for each={arr}>
-          {' '}
           {({ x, y }, index) => {
             let name1 = 'test';
             const onClick = () => {
-              name1 = 'test2';
+              name1 = 'changed';
             };
             return (
-              <div className={name} onClick={onClick} style={{ x: index }}>
+              <div onClick={onClick} id={`item${index}`}>
                 {name1}
+                {index}
               </div>
             );
           }}
         </for>
       );
     }
+
     render(MyComp, container);
-    expect(container.innerHTML).toBe('<div><div>1</div><div>2</div><div>3</div><div>4</div></div>');
+    expect(container.innerHTML).toBe(
+      '<div id="item0">test0</div><div id="item1">test1</div><div id="item2">test2</div>'
+    );
+    const item = container.querySelector('#item0') as HTMLDivElement;
+    item.click();
+    expect(container.innerHTML).toBe(
+      '<div id="item0">changed0</div><div id="item1">test1</div><div id="item2">test2</div>'
+    );
   });
 });
