@@ -30,8 +30,7 @@ export type Dependency = {
   /**
    * The bitmap of each dependency
    */
-  _fullDepBits: Bitmap[];
-  _fullDepMask: Bitmap;
+  allDepBits: Bitmap[];
 };
 export type FunctionalExpression = t.FunctionExpression | t.ArrowFunctionExpression;
 
@@ -116,7 +115,7 @@ export interface HookNode extends IRNode {
   children?: {
     value: t.Expression;
     depMask?: number; // -> bit
-    _fullDepBits: number[];
+    allDepBits: number[];
     dependenciesNode: t.ArrayExpression;
   };
 }

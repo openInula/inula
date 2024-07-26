@@ -52,7 +52,7 @@ export function pruneUnusedState(
 
       // If computed, prune the depMask
       if (v.dependency) {
-        v.dependency.depMask = getDepMask(v.dependency._fullDepBits, bitPositionToRemove);
+        v.dependency.depMask = getDepMask(v.dependency.allDepBits, bitPositionToRemove);
       }
     } else if (v.type === 'subComp') {
       // Recursively prune the subcomponent, keep the index for the next variable
@@ -68,13 +68,13 @@ export function pruneUnusedState(
     if (!dependency) {
       return;
     }
-    dependency.depMask = getDepMask(dependency._fullDepBits, bitPositionToRemove);
+    dependency.depMask = getDepMask(dependency.allDepBits, bitPositionToRemove);
   });
 
   // handle children
   if (comp.type === 'hook') {
     if (comp.children) {
-      comp.children.depMask = getDepMask(comp.children._fullDepBits, bitPositionToRemove);
+      comp.children.depMask = getDepMask(comp.children.allDepBits, bitPositionToRemove);
     }
   } else {
     if (comp.children) {
@@ -119,7 +119,7 @@ function getDepMask(depBitmaps: Bitmap[], bitPositionToRemove: number[]) {
 function pruneViewParticleUnusedBit(particle: ViewParticle, bitPositionToRemove: number[]) {
   // dfs the view particle to prune the bitmap
   const doPrune = (value: any) => {
-    if (value && typeof value === 'object' && '_fullDepBits' in value) {
+    if (value && typeof value === 'object' && 'allDepBits' in value) {
       pruneBit(bitPositionToRemove, value);
     }
   };
@@ -143,8 +143,8 @@ function pruneViewParticleUnusedBit(particle: ViewParticle, bitPositionToRemove:
   traverse(particle);
 }
 
-function pruneBit(bitPositionToRemove: number[], prunable: { _fullDepBits: number[]; depMask?: number }) {
-  prunable.depMask = getDepMask(prunable._fullDepBits, bitPositionToRemove);
+function pruneBit(bitPositionToRemove: number[], prunable: { allDepBits: number[]; depMask?: number }) {
+  prunable.depMask = getDepMask(prunable.allDepBits, bitPositionToRemove);
 }
 
 function keepHighestBit(bitmap: number) {

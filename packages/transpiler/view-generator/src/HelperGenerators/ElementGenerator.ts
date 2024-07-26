@@ -5,17 +5,19 @@ export default class ElementGenerator extends PropViewGenerator {
   /**
    * @View
    * el:
-   * View.addDidMount(${dlNodeName}, () => (
+   * View.addDidMount(${nodeName}, () => (
    *   typeof ${value} === "function" ? ${value}($nodeEl) : ${value} = $nodeEl
    * ))
    * not el:
    * typeof ${value} === "function" ? ${value}($nodeEl) : ${value} = $nodeEl
-   * @param el true: dlNodeName._$el, false: dlNodeName
+   * @param nodeName
+   * @param value
+   * @param el true: nodeName._$el, false: nodeName
    */
-  initElement(dlNodeName: string, value: t.Expression, el = false): t.Statement {
+  initElement(nodeName: string, value: t.Expression, el = false): t.Statement {
     const elNode = el
-      ? this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier('_$el'))
-      : this.t.identifier(dlNodeName);
+      ? this.t.memberExpression(this.t.identifier(nodeName), this.t.identifier('_$el'))
+      : this.t.identifier(nodeName);
 
     const elementNode = this.t.conditionalExpression(
       this.t.binaryExpression('===', this.t.unaryExpression('typeof', value, true), this.t.stringLiteral('function')),
@@ -26,7 +28,7 @@ export default class ElementGenerator extends PropViewGenerator {
     return el
       ? this.t.expressionStatement(
           this.t.callExpression(this.t.memberExpression(this.t.identifier('View'), this.t.identifier('addDidMount')), [
-            this.t.identifier(dlNodeName),
+            this.t.identifier(nodeName),
             this.t.arrowFunctionExpression([], elementNode),
           ])
         )

@@ -27,7 +27,7 @@ import {
   type ViewUnit,
 } from '@openinula/jsx-view-parser';
 import { DLError } from './error';
-import { getDependenciesFromNode } from './getDependencies';
+import { Dependency, getDependenciesFromNode } from './getDependencies';
 
 export class ReactivityParser {
   private readonly config: ReactivityParserConfig;
@@ -56,9 +56,7 @@ export class ReactivityParser {
 
   /**
    * @brief Constructor
-   * @param viewUnit
    * @param config
-   * @param options
    */
   constructor(config: ReactivityParserConfig) {
     this.config = config;
@@ -132,7 +130,7 @@ export class ReactivityParser {
       {
         ...prop,
         depMask: 0,
-        _fullDepBits: [],
+        allDepBits: [],
         dependenciesNode: this.t.arrayExpression([]),
       },
     ]);
@@ -234,7 +232,7 @@ export class ReactivityParser {
               value: child.content,
               depMask: 0,
               dependenciesNode: this.t.arrayExpression([]),
-              _fullDepBits: [],
+              allDepBits: [],
             });
           }
         });
@@ -321,7 +319,7 @@ export class ReactivityParser {
    * @returns ForParticle
    */
   private parseFor(forUnit: ForUnit): ForParticle {
-    const { _fullDepMask, dependenciesNode, _fullDepBits } = this.getDependencies(forUnit.array);
+    const { dependenciesNode, allDepBits } = this.getDependencies(forUnit.array);
     const prevMap = this.config.depMaskMap;
 
     // ---- Generate an identifierDepMap to track identifiers in item and make them reactive
@@ -330,7 +328,7 @@ export class ReactivityParser {
     const itemWrapper = this.t.assignmentExpression('=', forUnit.item, this.t.objectExpression([]));
     this.config.depMaskMap = new Map([
       ...this.config.depMaskMap,
-      ...this.getIdentifiers(itemWrapper).map(id => [id, _fullDepBits] as const),
+      ...this.getIdentifiers(itemWrapper).map(id => [id, allDepBits] as const),
     ]);
 
     const forParticle: ForParticle = {
@@ -339,8 +337,7 @@ export class ReactivityParser {
       index: forUnit.index,
       array: {
         value: forUnit.array,
-        _fullDepBits: _fullDepBits,
-        depMask: _fullDepMask,
+        allDepBits,
         dependenciesNode,
       },
       children: forUnit.children.map(this.parseViewParticle.bind(this)),
@@ -425,11 +422,10 @@ export class ReactivityParser {
    * @param node
    * @returns dependency index array
    */
-  private getDependencies(node: t.Expression | t.Statement) {
+  private getDependencies(node: t.Expression | t.Statement): Dependency {
     if (this.t.isFunctionExpression(node) || this.t.isArrowFunctionExpression(node)) {
       return {
-        _fullDepMask: 0,
-        _fullDepBits: [],
+        allDepBits: [],
         dependenciesNode: this.t.arrayExpression([]),
       };
     }
@@ -437,7 +433,7 @@ export class ReactivityParser {
     //      id is for snippet update, prop is normal update
     //      in a snippet, the depsNode should be both id and prop
     const dependency = getDependenciesFromNode(node, this.depMaskMap, this.reactivityFuncNames);
-    this.usedBit |= dependency._fullDepMask;
+    this.usedBit |= dependency.allDepBits.reduce((acc, cur) => acc | cur, 0);
     return dependency;
   }
 

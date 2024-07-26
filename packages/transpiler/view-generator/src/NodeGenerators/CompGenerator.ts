@@ -68,10 +68,7 @@ export default class CompGenerator extends ForwardPropGenerator {
   ): t.Statement[] {
     const newProps = Object.fromEntries(
       Object.entries(props)
-        .filter(
-          ([key]) =>
-            !['elements', 'forwardProps', '_$content', 'didUpdate', 'props', ...CompGenerator.lifecycle].includes(key)
-        )
+        .filter(([key]) => !['elements', '_$content', 'didUpdate', 'props', ...CompGenerator.lifecycle].includes(key))
         .map(([key, { value }]) => [key, key === 'ref' ? this.wrapRefHandler(value) : value])
     );
 
