@@ -55,6 +55,22 @@ describe('analyze lifeCycle', () => {
     `);
   });
 
+  it('should  async on mount', () => {
+    const root = analyze(/*js*/ `
+      Component(() => {
+        didMount(async () => {
+          const data = await fetch(API_URL)
+        })
+      })
+    `);
+
+    expect(genCode(combine(root.lifecycle.didMount!))).toMatchInlineSnapshot(`
+      "(async () => {
+        const data = await fetch(API_URL);
+      })();"
+    `);
+  });
+
   it('should collect willUnmount', () => {
     const root = analyze(/*js*/ `
       Component(() => {

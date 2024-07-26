@@ -43,8 +43,8 @@ export function functionalMacroAnalyze(): Visitor {
           const calleeName = callee.node.name;
           // lifecycle
           if (isLifeCycleName(calleeName)) {
-            const fnNode = extractFnFromMacro(expression, calleeName);
-            builder.addLifecycle(calleeName, getFnBodyPath(fnNode).node);
+            const fnPath = extractFnFromMacro(expression, calleeName);
+            builder.addLifecycle(calleeName, extractFnBody(fnPath.node));
             return;
           }
 
