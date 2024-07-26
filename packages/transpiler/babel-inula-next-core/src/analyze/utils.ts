@@ -48,6 +48,12 @@ export function hasJSX(path: NodePath<t.Node>) {
 }
 
 export function extractFnBody(node: t.FunctionExpression | t.ArrowFunctionExpression): t.Statement {
+  if (node.async) {
+    // async should return iife
+    return t.expressionStatement(t.callExpression(node, []));
+  }
+
+  // For non-async functions, just return the body
   return t.isStatement(node.body) ? node.body : t.expressionStatement(node.body);
 }
 

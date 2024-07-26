@@ -50,6 +50,49 @@ describe('lifecycle', () => {
     expect(fn).toHaveBeenCalled();
   });
 
+  it('should handle async operations in didMount', async ({ container }) => {
+    function App() {
+      let users: string[] = [];
+
+      didMount(async () => {
+        await new Promise(resolve => setTimeout(resolve, 0));
+        users = ['Alice', 'Bob'];
+      });
+
+      return <div>{users.join(', ')}</div>;
+    }
+
+    vi.useFakeTimers();
+    render(App, container);
+    expect(container.innerHTML).toBe('<div></div>');
+
+    await vi.runAllTimersAsync();
+    expect(container.innerHTML).toBe('<div>Alice, Bob</div>');
+  });
+
+  it('should handle async errors in didMount with try-catch', async ({ container }) => {
+    function App() {
+      let text = 'initial';
+
+      didMount(async () => {
+        try {
+          await new Promise((_, reject) => setTimeout(() => reject(new Error('Async error')), 0));
+        } catch (error) {
+          text = 'Error caught';
+        }
+      });
+
+      return <div>{text}</div>;
+    }
+
+    vi.useFakeTimers();
+    render(App, container);
+    expect(container.innerHTML).toBe('<div>initial</div>');
+
+    await vi.runAllTimersAsync();
+    expect(container.innerHTML).toBe('<div>Error caught</div>');
+  });
+
   // TODO: implement unmount
   it.fails('should call willUnmount', ({ container }) => {
     const fn = vi.fn();
