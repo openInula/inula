@@ -40,7 +40,7 @@ export function pruneUnusedState(
   comp.variables = comp.variables.map(v => {
     if (v.type === 'reactive') {
       // get the index bit, computed should keep the highest bit, etc. 0b0111 -> 0b0100
-      const shouldBeReactive = comp.usedBit & keepHighestBit(v._fullBits);
+      const shouldBeReactive = comp.usedBit & keepHighestBit(v.bit);
 
       if (shouldBeReactive) {
         // assign the final bit to the variable, pruning the unused bit
@@ -118,40 +118,29 @@ function getDepMask(depBitmaps: Bitmap[], bitPositionToRemove: number[]) {
 
 function pruneViewParticleUnusedBit(particle: ViewParticle, bitPositionToRemove: number[]) {
   // dfs the view particle to prune the bitmap
-  const stack: ViewParticle[] = [particle];
-  const doPrune = pruneBit.bind(null, bitPositionToRemove);
-  while (stack.length) {
-    const node = stack.pop()! as ViewParticle;
-    if (node.type === 'template') {
-      node.props.forEach(prop => {
-        doPrune(prop);
-      });
-      stack.push(...node.mutableParticles);
-      stack.push(node.template);
-    } else if (node.type === 'html' || node.type === 'comp') {
-      for (const key in node.props) {
-        doPrune(node.props[key]);
+  const doPrune = (value: any) => {
+    if (value && typeof value === 'object' && '_fullDepBits' in value) {
+      pruneBit(bitPositionToRemove, value);
+    }
+  };
+
+  function traverse(value: any) {
+    if (value === null || typeof value !== 'object') {
+      return;
+    }
+
+    doPrune(value);
+
+    if (Array.isArray(value)) {
+      value.forEach(traverse);
+    } else {
+      for (const key in value) {
+        traverse(value[key]);
       }
-      stack.push(...node.children);
-    } else if (node.type === 'text') {
-      doPrune(node.content);
-    } else if (node.type === 'for') {
-      doPrune(node.array);
-      stack.push(...node.children);
-    } else if (node.type === 'if') {
-      node.branches.forEach(branch => {
-        doPrune(branch.condition);
-        stack.push(...branch.children);
-      });
-    } else if (node.type === 'context') {
-      for (const key in node.props) {
-        doPrune(node.props[key]);
-      }
-      stack.push(...node.children);
-    } else if (node.type === 'exp') {
-      doPrune(node.content);
     }
   }
+
+  traverse(particle);
 }
 
 function pruneBit(bitPositionToRemove: number[], prunable: { _fullDepBits: number[]; depMask?: number }) {

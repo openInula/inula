@@ -15,11 +15,9 @@
 
 import { NodePath } from '@babel/core';
 import { LifeCycle, Visitor } from '../types';
-import { addLifecycle, addWatch } from '../nodeFactory';
 import { types as t } from '@openinula/babel-api';
-import { DID_MOUNT, DID_UNMOUNT, WATCH, WILL_MOUNT, WILL_UNMOUNT, reactivityFuncNames } from '../../constants';
+import { DID_MOUNT, DID_UNMOUNT, WATCH, WILL_MOUNT, WILL_UNMOUNT } from '../../constants';
 import { extractFnFromMacro, getFnBodyPath } from '../../utils';
-import { getDependenciesFromNode } from '@openinula/reactivity-parser';
 import { extractFnBody } from '../utils';
 
 function isLifeCycleName(name: string): name is LifeCycle {
@@ -37,7 +35,7 @@ function isLifeCycleName(name: string): name is LifeCycle {
  */
 export function functionalMacroAnalyze(): Visitor {
   return {
-    ExpressionStatement(path: NodePath<t.ExpressionStatement>, ctx) {
+    ExpressionStatement(path: NodePath<t.ExpressionStatement>, { builder }) {
       const expression = path.get('expression');
       if (expression.isCallExpression()) {
         const callee = expression.get('callee');
@@ -46,7 +44,7 @@ export function functionalMacroAnalyze(): Visitor {
           // lifecycle
           if (isLifeCycleName(calleeName)) {
             const fnNode = extractFnFromMacro(expression, calleeName);
-            addLifecycle(calleeName, ctx.current, getFnBodyPath(fnNode).node);
+            builder.addLifecycle(calleeName, getFnBodyPath(fnNode).node);
             return;
           }
 
@@ -55,23 +53,18 @@ export function functionalMacroAnalyze(): Visitor {
             const fnPath = extractFnFromMacro(expression, WATCH);
             const depsPath = getWatchDeps(expression);
 
-            const dependency = getDependenciesFromNode(
-              (depsPath ?? fnPath).node,
-              ctx.current._reactiveBitMap,
-              reactivityFuncNames
-            );
-
+            const dependency = builder.getDependency((depsPath ?? fnPath).node);
             if (dependency._fullDepMask) {
-              addWatch(ctx.current, fnPath, dependency);
+              builder.addWatch(fnPath, dependency);
             } else {
-              addLifecycle(WILL_MOUNT, ctx.current, extractFnBody(fnPath.node));
+              builder.addLifecycle(WILL_MOUNT, extractFnBody(fnPath.node));
             }
             return;
           }
         }
       }
 
-      ctx.collectUnhandledNodeToLifecycle(ctx.current, path.node);
+      builder.addWillMount(path.node);
     },
   };
 }

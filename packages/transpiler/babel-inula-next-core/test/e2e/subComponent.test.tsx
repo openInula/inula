@@ -30,7 +30,7 @@ describe('nested component', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, notCached as $$notCached, createElement as $$createElement, setHTMLProp as $$setHTMLProp, insertNode as $$insertNode } from "@openinula/next";
+      "import { createComponent as $$createComponent, notCached as $$notCached, createElement as $$createElement, setHTMLProp as $$setHTMLProp, Comp as $$Comp, insertNode as $$insertNode } from "@openinula/next";
       function App() {
         let self;
         let val = 123;

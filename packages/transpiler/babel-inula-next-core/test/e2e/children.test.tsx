@@ -39,7 +39,7 @@ describe('children', () => {
       }
     `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent } from "@openinula/next";
+      "import { createComponent as $$createComponent, Comp as $$Comp } from "@openinula/next";
       function App() {
         let self;
         self = $$createComponent({
@@ -72,7 +72,7 @@ describe('children', () => {
       }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, createElement as $$createElement, ExpNode as $$ExpNode, insertNode as $$insertNode, PropView as $$PropView } from "@openinula/next";
+      "import { createComponent as $$createComponent, createElement as $$createElement, ExpNode as $$ExpNode, insertNode as $$insertNode, PropView as $$PropView, Comp as $$Comp } from "@openinula/next";
       function MyComp() {
         let self;
         let count = 0;

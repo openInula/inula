@@ -13,38 +13,19 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { ComponentNode, Visitor } from '../types';
+import { Visitor } from '../types';
 import { type NodePath } from '@babel/core';
-import { parseView as parseJSX } from '@openinula/jsx-view-parser';
-import { types as t, getBabelApi } from '@openinula/babel-api';
-import { parseReactivity } from '@openinula/reactivity-parser';
-import { reactivityFuncNames } from '../../constants';
-import { setViewChild } from '../nodeFactory';
-import { assertComponentNode } from '../utils';
+import { types as t } from '@openinula/babel-api';
 
 /**
  * Analyze the watch in the function component
  */
 export function viewAnalyze(): Visitor {
   return {
-    ReturnStatement(path: NodePath<t.ReturnStatement>, { htmlTags, current }) {
-      const returnNode = path.get('argument');
-      if (returnNode.isJSXElement() || returnNode.isJSXFragment()) {
-        assertComponentNode(current);
-
-        const viewUnits = parseJSX(returnNode.node, {
-          babelApi: getBabelApi(),
-          htmlTags,
-          parseTemplate: false,
-        });
-
-        const [viewParticles, usedBit] = parseReactivity(viewUnits, {
-          babelApi: getBabelApi(),
-          depMaskMap: current._reactiveBitMap,
-          reactivityFuncNames,
-        });
-
-        setViewChild(current, viewParticles, usedBit);
+    ReturnStatement(path: NodePath<t.ReturnStatement>, { builder }) {
+      const returnedPath = path.get('argument');
+      if (returnedPath.isJSXElement() || returnedPath.isJSXFragment()) {
+        builder.setViewChild(returnedPath.node);
       }
     },
   };

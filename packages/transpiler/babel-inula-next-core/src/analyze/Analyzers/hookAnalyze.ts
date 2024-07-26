@@ -15,24 +15,17 @@
 
 import { Visitor } from '../types';
 import { type NodePath } from '@babel/core';
-import { parseView as parseJSX } from '@openinula/jsx-view-parser';
-import { types as t, getBabelApi } from '@openinula/babel-api';
-import { getDependenciesFromNode, parseReactivity } from '@openinula/reactivity-parser';
-import { reactivityFuncNames } from '../../constants';
-import { setReturnValue, setViewChild } from '../nodeFactory';
-import { assertHookNode } from '../utils';
+import { types as t } from '@openinula/babel-api';
 
 /**
  * Analyze the return in the hook
  */
 export function hookReturnAnalyze(): Visitor {
   return {
-    ReturnStatement(path: NodePath<t.ReturnStatement>, { current }) {
-      const returnNode = path.node.argument;
-      assertHookNode(current);
-      if (returnNode) {
-        const dependency = getDependenciesFromNode(returnNode, current._reactiveBitMap, reactivityFuncNames);
-        setReturnValue(current, returnNode, dependency);
+    ReturnStatement(path: NodePath<t.ReturnStatement>, { builder }) {
+      const returnedNode = path.node.argument;
+      if (returnedNode) {
+        builder.setReturnValue(returnedNode);
       }
     },
   };
