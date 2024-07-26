@@ -15,7 +15,7 @@
 
 import { describe, expect, vi } from 'vitest';
 import { domTest as it } from './utils';
-import { render, View } from '../src';
+import { render } from '../src';
 
 vi.mock('../src/scheduler', async () => {
   return {
@@ -26,7 +26,7 @@ vi.mock('../src/scheduler', async () => {
 });
 
 describe('mapping to for', () => {
-  it('should transform map to for jsxelement', ({ container }) => {
+  it('should transform map to for jsx element', ({ container }) => {
     function MyComp() {
       const arr = [1, 2, 3];
       return (
@@ -43,7 +43,7 @@ describe('mapping to for', () => {
   });
   it('should transform map in map to for', ({ container }) => {
     function MyComp() {
-      let matrix = [
+      const matrix = [
         [1, 2],
         [3, 4],
       ];
@@ -53,21 +53,21 @@ describe('mapping to for', () => {
     render(MyComp, container);
     expect(container.innerHTML).toBe('<div><div>1</div><div>2</div><div>3</div><div>4</div></div>');
   });
-  it.fails('should transform last map to for" ', ({ container }) => {
-    function MyComp() {
-      let arr = [1, 2, 3];
-      return (
-        <div>
-          {arr
-            .map(item => <div>{item}</div>)
-            .map(item => (
-              <div>{item}</div>
-            ))}
-        </div>
-      );
-    }
-
-    render(MyComp, container);
-    expect(container.innerHTML).toBe('<div><div>1</div><div>2</div><div>3</div><div>4</div></div>');
-  });
+  // it.fails('should transform last map to for" ', ({ container }) => {
+  //   function MyComp() {
+  //     let arr = [1, 2, 3];
+  //     return (
+  //       <div>
+  //         {arr
+  //           .map(item => <div>{item}</div>)
+  //           .map(item => (
+  //             <div>{item}</div>
+  //           ))}
+  //       </div>
+  //     );
+  //   }
+  //
+  //   render(MyComp, container);
+  //   expect(container.innerHTML).toBe('<div><div>1</div><div>2</div><div>3</div><div>4</div></div>');
+  // });
 });

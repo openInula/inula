@@ -49,15 +49,7 @@ describe('rendering', () => {
       }
 
       render(App, container);
-      expect(container).toMatchInlineSnapshot(`
-        <div>
-          <h1>
-            hello
-            world
-            !!!
-          </h1>
-        </div>
-      `);
+      expect(container.innerHTML).toBe('<h1>hello world!!!</h1>');
     });
 
     // TODO: SHOULD FIX
