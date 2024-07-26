@@ -61,7 +61,10 @@ export function getDependenciesFromNode(
           assignDepMask |= Array.isArray(reactiveBitmap)
             ? reactiveBitmap.reduce((acc, cur) => acc | cur, 0)
             : reactiveBitmap;
-        } else if (isStandAloneIdentifier(innerPath) && !isMemberInUntrackFunction(innerPath)) {
+        } else if (
+          (isStandAloneIdentifier(innerPath) && !isMemberInUntrackFunction(innerPath)) ||
+          isMemberOfMemberExpression(innerPath)
+        ) {
           // read
           if (Array.isArray(reactiveBitmap)) {
             depBitmaps.push(...reactiveBitmap);
@@ -191,6 +194,13 @@ function isMemberInUntrackFunction(innerPath: NodePath): boolean {
     reversePath = reversePath.parentPath;
   }
   return isInFunction;
+}
+
+function isMemberOfMemberExpression(innerPath: NodePath): boolean {
+  if (innerPath.parentPath === null) {
+    return false;
+  }
+  return innerPath.parentPath.isMemberExpression() && innerPath.parentPath.node.property === innerPath.node;
 }
 
 /**

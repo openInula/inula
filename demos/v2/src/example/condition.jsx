@@ -17,8 +17,8 @@ import { render } from '@openinula/next';
 
 function TrafficLight() {
   let lightIndex = 0;
-
-  let light = lightIndex ? 'green' : 'red';
+  const TRAFFIC_LIGHTS = ['red', 'green'];
+  let light = TRAFFIC_LIGHTS[lightIndex];
 
   function nextLight() {
     lightIndex = (lightIndex + 1) % 2;

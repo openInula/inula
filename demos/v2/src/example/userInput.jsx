@@ -17,7 +17,7 @@ import { render } from '@openinula/next';
 function UserInput() {
   let count = 0;
   function incrementCount() {
-    count = count + 1;
+    count++;
   }
 
   return (

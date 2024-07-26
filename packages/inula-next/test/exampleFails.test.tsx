@@ -26,21 +26,29 @@ vi.mock('../src/scheduler', async () => {
 });
 
 describe('example failures', () => {
-  it.fails('should support "++"', ({ container }) => {
-    function Num() {
-      let num = 0;
-      num++; //num = num + 1;has no error
-      return <p>{num}</p>;
+  it('should support "++"', ({ container }) => {
+    let incrementCount: () => void;
+    function UserInput() {
+      let count = 0;
+      incrementCount = () => {
+        count++;
+      };
+
+      return <h1>{count}</h1>;
     }
+    render(UserInput, container);
+    expect(container.innerHTML).toBe('<h1>0</h1>');
+    incrementCount();
+    expect(container.innerHTML).toBe('<h1>1</h1>');
   });
 
-  it.fails('state shlould change when attribute is calculated by index', ({ container }) => {
+  it('state shlould change when attribute is calculated by index', ({ container }) => {
     let set: (num: number) => void;
     function TrafficLight() {
       const TRAFFIC_LIGHTS = ['red', 'green'];
       let lightIndex = 0;
 
-      let light = TRAFFIC_LIGHTS[lightIndex]; // let light = lightIndex ? 'green' : 'red';can change state
+      let light = TRAFFIC_LIGHTS[lightIndex];
       set = (val: number) => {
         lightIndex = val;
       };
