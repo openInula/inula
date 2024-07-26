@@ -60,7 +60,14 @@ export function wrapUpdate(node: t.Statement | t.Expression | null, states: Reac
       const assignmentPath = isAssignmentExpression(path);
       if (!assignmentPath) return;
       const assignmentNode = assignmentPath.node;
-      const leftNode = t.assignmentExpression('=', assignmentNode.left, t.stringLiteral(''));
+      let leftNode;
+      if (t.isUpdateExpression(assignmentNode)) {
+        leftNode = assignmentNode.argument;
+      } else if (t.isAssignmentExpression(assignmentNode)) {
+        leftNode = t.assignmentExpression('=', assignmentNode.left, t.stringLiteral(''));
+      } else {
+        return;
+      }
       // ---- Find all the states in the left
       const variables: ReactiveVariable[] = [];
       traverse(nodeWrapFile(leftNode), {
