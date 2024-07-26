@@ -19,7 +19,7 @@ export default class BaseGenerator {
 
   /**
    * @brief Constructor
-   * @param viewUnit
+   * @param viewParticle
    * @param config
    */
   constructor(viewParticle: ViewParticle, config: ViewGeneratorConfig) {

@@ -54,7 +54,7 @@ export function functionalMacroAnalyze(): Visitor {
             const depsPath = getWatchDeps(expression);
 
             const dependency = builder.getDependency((depsPath ?? fnPath).node);
-            if (dependency._fullDepMask) {
+            if (dependency.allDepBits.length) {
               builder.addWatch(fnPath, dependency);
             } else {
               builder.addLifecycle(WILL_MOUNT, extractFnBody(fnPath.node));

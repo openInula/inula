@@ -278,7 +278,6 @@ export default class HTMLPropGenerator extends ForwardPropGenerator {
     if (attrName === 'dataset') return this.setHTMLDataset(dlNodeName, value, check);
     if (attrName === 'props') return this.setHTMLPropObject(dlNodeName, value, check);
     if (attrName === 'attrs') return this.setHTMLAttrObject(dlNodeName, value, check);
-    if (attrName === 'forwardProps') return this.forwardProps(dlNodeName);
     return DLError.throw2();
   }
 

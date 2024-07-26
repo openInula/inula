@@ -1,4 +1,3 @@
-import { type types as t } from '@babel/core';
 import { type DependencyProp, type ViewParticle } from '@openinula/reactivity-parser';
 import LifecycleGenerator from './LifecycleGenerator';
 
@@ -102,22 +101,5 @@ export default class PropViewGenerator extends LifecycleGenerator {
       },
     });
     return { ...prop, value: newValue };
-  }
-
-  /**
-   * @brief Get the dependency index array from the update statements' keys
-   *  i.e. [1, 2, 7] => [0b1, 0b10, 0b111] => [[1], [2], [0, 1, 2]] => [0, 1, 2]
-   * @param updateStatements
-   * @returns dependency index array
-   */
-  private static reverseDependencyIndexArr(updateStatements: Record<number, t.Statement[]>): number[] {
-    const allDepsNum = Object.keys(updateStatements)
-      .map(Number)
-      .reduce((acc, depNum) => acc | depNum, 0);
-    const allDeps = [];
-    for (let i = 0; i < String(allDepsNum).length; i++) {
-      if (allDepsNum & (1 << i)) allDeps.push(i);
-    }
-    return allDeps;
   }
 }

@@ -28,7 +28,7 @@ import { createIRNode } from './nodeFactory';
 import type { NodePath } from '@babel/core';
 import { getBabelApi, types as t } from '@openinula/babel-api';
 import { COMPONENT, reactivityFuncNames, WILL_MOUNT } from '../constants';
-import { getDependenciesFromNode, parseReactivity } from '@openinula/reactivity-parser';
+import { Bitmap, getDependenciesFromNode, parseReactivity } from '@openinula/reactivity-parser';
 import { assertComponentNode, assertHookNode } from './utils';
 import { parseView as parseJSX } from '@openinula/jsx-view-parser';
 import { pruneUnusedState } from './pruneUnusedState';
@@ -42,6 +42,10 @@ export class IRBuilder {
     this.#htmlTags = htmlTags;
   }
 
+  accumulateUsedBit(allDepBits: Bitmap[]) {
+    this.#current.usedBit |= allDepBits.reduce((acc, cur) => acc | cur, 0);
+  }
+
   addVariable(varInfo: BaseVariable<t.Expression | null>) {
     const value = varInfo.value;
     const dependency =
@@ -50,19 +54,18 @@ export class IRBuilder {
     // The index of the variable in the availableVariables
     const idx = this.#current.availableVariables.length;
     const bit = 1 << idx;
-    const fullDepBits = dependency?._fullDepMask;
-    const bitmap = fullDepBits ? fullDepBits | bit : bit;
+    const allDepBits = dependency?.allDepBits;
 
-    if (fullDepBits) {
-      this.#current.usedBit |= fullDepBits;
+    if (allDepBits?.length) {
+      this.accumulateUsedBit(allDepBits);
     }
-    this.#current._reactiveBitMap.set(varInfo.name, bitmap);
+    this.#current._reactiveBitMap.set(varInfo.name, bit);
     this.#current.variables.push({
       ...varInfo,
       type: 'reactive',
-      bit: bitmap,
+      bit,
       level: this.#current.level,
-      dependency: dependency?._fullDepMask ? dependency : null,
+      dependency: allDepBits?.length ? dependency : null,
     });
   }
 
@@ -92,10 +95,10 @@ export class IRBuilder {
     if (!this.#current.watch) {
       this.#current.watch = [];
     }
-    this.#current.usedBit |= dependency._fullDepMask;
+    this.accumulateUsedBit(dependency.allDepBits);
     this.#current.watch.push({
       callback,
-      dependency: dependency._fullDepMask ? dependency : null,
+      dependency: dependency.allDepBits.length ? dependency : null,
     });
   }
 
@@ -123,7 +126,7 @@ export class IRBuilder {
     assertHookNode(this.#current);
     const dependency = getDependenciesFromNode(expression, this.#current._reactiveBitMap, reactivityFuncNames);
 
-    this.#current.usedBit |= dependency._fullDepMask;
+    this.accumulateUsedBit(dependency.allDepBits);
     this.#current.children = { value: expression, ...dependency };
   }
 

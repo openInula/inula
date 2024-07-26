@@ -27,8 +27,7 @@ export type Dependency = {
   /**
    * The bitmap of each dependency
    */
-  _fullDepBits: Bitmap[];
-  _fullDepMask: Bitmap;
+  allDepBits: Bitmap[];
 };
 
 /**
@@ -98,8 +97,7 @@ export function getDependenciesFromNode(
 
   return {
     dependenciesNode: t.arrayExpression(dependencyNodes as t.Expression[]),
-    _fullDepBits: depBitmaps,
-    _fullDepMask: fullDepMask,
+    allDepBits: depBitmaps,
   };
 }
 
