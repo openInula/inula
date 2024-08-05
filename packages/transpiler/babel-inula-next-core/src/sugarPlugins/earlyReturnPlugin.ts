@@ -153,7 +153,7 @@ function hasEarlyReturn(path: NodePath<t.Node>) {
   return hasReturn;
 }
 
-function genUid(scope: Scope, name: string) {
+export function genUid(scope: Scope, name: string) {
   let result = name;
   let i = 1;
   do {

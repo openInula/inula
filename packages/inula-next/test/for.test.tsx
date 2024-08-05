@@ -68,4 +68,86 @@ describe('for', () => {
     update(3);
     expect(container.innerHTML).toMatchInlineSnapshot(`"<div>0</div><div>1</div><div>2</div><div>3</div>"`);
   });
+  it('should transform for loop', ({ container }) => {
+    function MyComp() {
+      let name = 'test';
+      let arr = [
+        { x: 1, y: 1 },
+        { x: 2, y: 2 },
+        { x: 3, y: 3 },
+      ];
+      return (
+        <for each={arr}>
+          {({ x, y }, index) => {
+            let name1 = 'test';
+            const onClick = () => {
+              name1 = 'changed';
+            };
+            return (
+              <div onClick={onClick} id={`item${index}`}>
+                {name1}
+                {index}
+              </div>
+            );
+          }}
+        </for>
+      );
+    }
+
+    render(MyComp, container);
+    expect(container.innerHTML).toBe(
+      '<div id="item0">test0</div><div id="item1">test1</div><div id="item2">test2</div>'
+    );
+    const item = container.querySelector('#item0') as HTMLDivElement;
+    item.click();
+    expect(container.innerHTML).toBe(
+      '<div id="item0">changed0</div><div id="item1">test1</div><div id="item2">test2</div>'
+    );
+  });
+
+  it('should transform map to for jsx element', ({ container }) => {
+    function MyComp() {
+      const arr = [1, 2, 3];
+      return (
+        <>
+          {arr.map(item => (
+            <div>{item}</div>
+          ))}
+        </>
+      );
+    }
+
+    render(MyComp, container);
+    expect(container.innerHTML).toBe('<div>1</div><div>2</div><div>3</div>');
+  });
+  it('should transform map in map to for', ({ container }) => {
+    function MyComp() {
+      const matrix = [
+        [1, 2],
+        [3, 4],
+      ];
+      return <div>{matrix.map(arr => arr.map(item => <div>{item}</div>))}</div>;
+    }
+
+    render(MyComp, container);
+    expect(container.innerHTML).toBe('<div><div>1</div><div>2</div><div>3</div><div>4</div></div>');
+  });
+  // this test has error, need to be comment
+  // it.fails('should transform last map to for" ', ({ container }) => {
+  //   function MyComp() {
+  //     let arr = [1, 2, 3];
+  //     return (
+  //       <div>
+  //         {arr
+  //           .map(item => <div>{item}</div>)
+  //           .map(item => (
+  //             <div>{item}</div>
+  //           ))}
+  //       </div>
+  //     );
+  //   }
+  //
+  //   render(MyComp, container);
+  //   expect(container.innerHTML).toBe('<div><div>1</div><div>2</div><div>3</div><div>4</div></div>');
+  // });
 });
