@@ -16,6 +16,7 @@
 import babel, { NodePath, PluginObj } from '@babel/core';
 import { register, types as t } from '@openinula/babel-api';
 import { searchNestedProps } from './stateDestructuringPlugin';
+import { genUid } from './earlyReturnPlugin';
 
 /**
  * For Sub Component Plugin
@@ -70,9 +71,13 @@ export default function (api: typeof babel): PluginObj {
           if (Array.isArray(body)) {
             return;
           }
+          if (body.body.length == 1 && t.isReturnStatement(body.body[0])) {
+            return;
+          }
+          const id = genUid(path.scope, 'For');
           arrow.node.body = t.jsxElement(
             t.jsxOpeningElement(
-              t.jSXIdentifier('Comp_$id$'),
+              t.jsxIdentifier(id),
               params.map(param =>
                 t.jsxAttribute(t.jsxIdentifier(param), t.jsxExpressionContainer(t.identifier(param)))
               ),
@@ -81,8 +86,9 @@ export default function (api: typeof babel): PluginObj {
             null,
             []
           );
+
           const func = t.functionDeclaration(
-            t.identifier('Comp_$id$'),
+            t.identifier(id),
             [
               t.objectPattern(
                 params.map(param => t.objectProperty(t.identifier(param), t.identifier(param), false, true))
@@ -90,7 +96,14 @@ export default function (api: typeof babel): PluginObj {
             ],
             body
           );
-          path.parentPath.insertBefore(func);
+          let parent: NodePath<t.Node> = path.parentPath;
+          while (!parent.isReturnStatement()) {
+            if (!parent.parentPath) {
+              return;
+            }
+            parent = parent.parentPath;
+          }
+          parent.insertBefore(func);
         }
       },
     },

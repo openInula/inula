@@ -23,6 +23,7 @@ describe('for sub component', () => {
           let name = 'test';
           let arr = [{x:1, y:1}, {x:2, y:2}, {x:3, y:3}]
           return (
+            <div>
             <for each={arr}> {({x, y}, index) => {
               let name1 = 'test'
               const onClick = () => {
@@ -31,6 +32,15 @@ describe('for sub component', () => {
 
 	          return <div className={name} onClick={onClick} style={{x: index}}>{name1}</div>
             }}</for>
+            <for each={arr}> {({x, y}, index) => {
+              let name1 = 'test'
+              const onClick = () => {
+                name1 = 'test2'
+              }
+
+	          return <div className={name} onClick={onClick} style={{x: index}}>{name1}</div>
+            }}</for>
+            </div>
           )
         }
       `;

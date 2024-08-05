@@ -25,6 +25,7 @@ describe('for', () => {
           let name = 'test';
           let arr = [{x:1, y:1}, {x:2, y:2}, {x:3, y:3}]
           return (
+            <div>
             <for each={arr}> {({x, y}, index) => {
               let name1 = 'test'
               const onClick = () => {
@@ -33,6 +34,15 @@ describe('for', () => {
 
 	          return <div className={name} onClick={onClick} style={{x: index}}>{name1}</div>
             }}</for>
+            <for each={arr}> {({x, y}, index) => {
+              let name1 = 'test'
+              const onClick = () => {
+                name1 = 'test2'
+              }
+
+	          return <div className={name} onClick={onClick} style={{x: index}}>{name1}</div>
+            }}</for>
+            </div>
           )
         }
       `;
@@ -49,7 +59,7 @@ describe('for', () => {
     x: 3,
     y: 3
   }];
-  function Comp_$id$({
+  function For_1({
     x,
     y,
     index
@@ -62,10 +72,29 @@ describe('for', () => {
       x: index
     }}>{name1}</div>;
   }
-  return <for each={arr}> {({
-      x,
-      y
-    }, index) => <Comp_$id$ x={x} y={y} index={index} />}</for>;
+  function For_2({
+    x,
+    y,
+    index
+  }) {
+    let name1 = 'test';
+    const onClick = () => {
+      name1 = 'test2';
+    };
+    return <div className={name} onClick={onClick} style={{
+      x: index
+    }}>{name1}</div>;
+  }
+  return <div>
+            <for each={arr}> {({
+        x,
+        y
+      }, index) => <For_1 x={x} y={y} index={index} />}</for>
+            <for each={arr}> {({
+        x,
+        y
+      }, index) => <For_2 x={x} y={y} index={index} />}</for>
+            </div>;
 }"`);
   });
 });

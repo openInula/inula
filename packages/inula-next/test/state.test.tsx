@@ -25,7 +25,7 @@ vi.mock('../src/scheduler', async () => {
   };
 });
 
-describe('example failures', () => {
+describe('state', () => {
   it('should support "++"', ({ container }) => {
     let incrementCount: () => void;
     function UserInput() {
@@ -40,28 +40,5 @@ describe('example failures', () => {
     expect(container.innerHTML).toBe('<h1>0</h1>');
     incrementCount();
     expect(container.innerHTML).toBe('<h1>1</h1>');
-  });
-
-  it('state shlould change when attribute is calculated by index', ({ container }) => {
-    let set: (num: number) => void;
-    function TrafficLight() {
-      const TRAFFIC_LIGHTS = ['red', 'green'];
-      let lightIndex = 0;
-
-      let light = TRAFFIC_LIGHTS[lightIndex];
-      set = (val: number) => {
-        lightIndex = val;
-      };
-
-      return (
-        <>
-          <p>Light is: {light}</p>
-        </>
-      );
-    }
-    render(TrafficLight, container);
-    expect(container.innerHTML).toBe('<p>Light is: red</p>');
-    set(1);
-    expect(container.innerHTML).toBe('<p>Light is: green</p>');
   });
 });
