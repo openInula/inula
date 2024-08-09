@@ -58,7 +58,11 @@ export function extractFnBody(node: t.FunctionExpression | t.ArrowFunctionExpres
 }
 
 export function isStaticValue(node: t.VariableDeclarator['init']) {
-  return t.isLiteral(node) || t.isArrowFunctionExpression(node) || t.isFunctionExpression(node);
+  return (
+    (t.isLiteral(node) && !t.isTemplateLiteral(node)) ||
+    t.isArrowFunctionExpression(node) ||
+    t.isFunctionExpression(node)
+  );
 }
 
 export function assertComponentNode(node: any): asserts node is ComponentNode {

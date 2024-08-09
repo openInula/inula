@@ -87,6 +87,195 @@ describe('Computed Properties', () => {
       container.querySelector('button')!.click();
       expect(resultElement.textContent).toBe('60');
     });
+
+    it('Should correctly compute and render a derived string state', ({ container }) => {
+      let resultElement: HTMLElement;
+
+      function App() {
+        let firstName = 'John';
+        let lastName = 'Doe';
+        const fullName = `${firstName} ${lastName}`;
+
+        didMount(() => {
+          resultElement = container.querySelector('[data-testid="result"]')!;
+        });
+
+        function updateName() {
+          firstName = 'Jane';
+        }
+
+        return (
+          <div>
+            <p data-testid="result">{fullName}</p>
+            <button onClick={updateName}>Update Name</button>
+          </div>
+        );
+      }
+
+      render(App, container);
+
+      expect(resultElement.textContent).toBe('John Doe');
+      container.querySelector('button')!.click();
+      expect(resultElement.textContent).toBe('Jane Doe');
+    });
+
+    it('Should correctly compute and render a derived number state', ({ container }) => {
+      let resultElement: HTMLElement;
+
+      function App() {
+        let price = 10;
+        let quantity = 2;
+        const total = price * quantity;
+
+        didMount(() => {
+          resultElement = container.querySelector('[data-testid="result"]')!;
+        });
+
+        function increaseQuantity() {
+          quantity += 1;
+        }
+
+        return (
+          <div>
+            <p data-testid="result">Total: ${total}</p>
+            <button onClick={increaseQuantity}>Add Item</button>
+          </div>
+        );
+      }
+
+      render(App, container);
+
+      expect(resultElement.textContent).toBe('Total: $20');
+      container.querySelector('button')!.click();
+      expect(resultElement.textContent).toBe('Total: $30');
+    });
+
+    it('Should correctly compute and render a derived boolean state', ({ container }) => {
+      let resultElement: HTMLElement;
+
+      function App() {
+        let age = 17;
+        const isAdult = age >= 18;
+
+        didMount(() => {
+          resultElement = container.querySelector('[data-testid="result"]')!;
+        });
+
+        function increaseAge() {
+          age += 1;
+        }
+
+        return (
+          <div>
+            <p data-testid="result">Is Adult: {isAdult ? 'Yes' : 'No'}</p>
+            <button onClick={increaseAge}>Have Birthday</button>
+          </div>
+        );
+      }
+
+      render(App, container);
+
+      expect(resultElement.textContent).toBe('Is Adult: No');
+      container.querySelector('button')!.click();
+      expect(resultElement.textContent).toBe('Is Adult: Yes');
+    });
+
+    it('Should correctly compute and render a derived array state', ({ container }) => {
+      let resultElement: HTMLElement;
+
+      function App() {
+        let numbers = [1, 2, 3, 4, 5];
+        const evenNumbers = numbers.filter(n => n % 2 === 0);
+
+        didMount(() => {
+          resultElement = container.querySelector('[data-testid="result"]')!;
+        });
+
+        function addNumber() {
+          numbers.push(6);
+        }
+
+        return (
+          <div>
+            <p data-testid="result">Even numbers: {evenNumbers.join(', ')}</p>
+            <button onClick={addNumber}>Add Number</button>
+          </div>
+        );
+      }
+
+      render(App, container);
+
+      expect(resultElement.textContent).toBe('Even numbers: 2, 4');
+      container.querySelector('button')!.click();
+      expect(resultElement.textContent).toBe('Even numbers: 2, 4, 6');
+    });
+
+    it('Should correctly compute and render a derived object state', ({ container }) => {
+      let resultElement: HTMLElement;
+
+      function App() {
+        let user = { name: 'John', age: 30 };
+        const userSummary = { ...user, isAdult: user.age >= 18 };
+
+        didMount(() => {
+          resultElement = container.querySelector('[data-testid="result"]')!;
+        });
+
+        function updateAge() {
+          user.age = 17;
+        }
+
+        return (
+          <div>
+            <p data-testid="result">
+              {userSummary.name} is {userSummary.isAdult ? 'an adult' : 'not an adult'}
+            </p>
+            <button onClick={updateAge}>Update Age</button>
+          </div>
+        );
+      }
+
+      render(App, container);
+
+      expect(resultElement.textContent).toBe('John is an adult');
+      container.querySelector('button')!.click();
+      expect(resultElement.textContent).toBe('John is not an adult');
+    });
+
+    it('Should correctly compute state based on array index', ({ container }) => {
+      let resultElement: HTMLElement;
+
+      function App() {
+        let items = ['Apple', 'Banana', 'Cherry'];
+        let index = 0;
+        const currentItem = items[index];
+
+        didMount(() => {
+          resultElement = container.querySelector('[data-testid="result"]')!;
+        });
+
+        function nextItem() {
+          index = (index + 1) % items.length;
+        }
+
+        return (
+          <div>
+            <p data-testid="result">Current item: {currentItem}</p>
+            <button onClick={nextItem}>Next Item</button>
+          </div>
+        );
+      }
+
+      render(App, container);
+
+      expect(resultElement.textContent).toBe('Current item: Apple');
+      container.querySelector('button')!.click();
+      expect(resultElement.textContent).toBe('Current item: Banana');
+      container.querySelector('button')!.click();
+      expect(resultElement.textContent).toBe('Current item: Cherry');
+      container.querySelector('button')!.click();
+      expect(resultElement.textContent).toBe('Current item: Apple');
+    });
   });
 
   describe('Multiple Dependencies', () => {
@@ -147,6 +336,365 @@ describe('Computed Properties', () => {
       expect(resultElement.textContent).toBe('16');
       container.querySelectorAll('button')[1].click();
       expect(resultElement.textContent).toBe('17');
+    });
+    it('Should correctly compute and render a derived string state from multi dependency', ({ container }) => {
+      let resultElement: HTMLElement;
+
+      function App() {
+        let firstName = 'John';
+        let lastName = 'Doe';
+        let title = 'Mr.';
+        const fullName = `${title} ${firstName} ${lastName}`;
+
+        didMount(() => {
+          resultElement = container.querySelector('[data-testid="result"]')!;
+        });
+
+        function updateName() {
+          firstName = 'Jane';
+          title = 'Ms.';
+        }
+
+        return (
+          <div>
+            <p data-testid="result">{fullName}</p>
+            <button onClick={updateName}>Update Name</button>
+          </div>
+        );
+      }
+
+      render(App, container);
+
+      expect(resultElement.textContent).toBe('Mr. John Doe');
+      container.querySelector('button')!.click();
+      expect(resultElement.textContent).toBe('Ms. Jane Doe');
+    });
+
+    it('Should correctly compute and render a derived number state from multi dependency', ({ container }) => {
+      let resultElement: HTMLElement;
+
+      function App() {
+        let length = 5;
+        let width = 3;
+        let height = 2;
+        const volume = length * width * height;
+
+        didMount(() => {
+          resultElement = container.querySelector('[data-testid="result"]')!;
+        });
+
+        function updateDimensions() {
+          length += 1;
+          width += 2;
+        }
+
+        return (
+          <div>
+            <p data-testid="result">Volume: {volume}</p>
+            <button onClick={updateDimensions}>Update Dimensions</button>
+          </div>
+        );
+      }
+
+      render(App, container);
+
+      expect(resultElement.textContent).toBe('Volume: 30');
+      container.querySelector('button')!.click();
+      expect(resultElement.textContent).toBe('Volume: 60');
+    });
+
+    it('Should correctly compute and render a derived boolean state from multi dependency', ({ container }) => {
+      let resultElement: HTMLElement;
+
+      function App() {
+        let age = 20;
+        let hasLicense = false;
+        let hasCar = true;
+        const canDrive = age >= 18 && hasLicense && hasCar;
+
+        didMount(() => {
+          resultElement = container.querySelector('[data-testid="result"]')!;
+        });
+
+        function updateStatus() {
+          hasLicense = true;
+        }
+
+        return (
+          <div>
+            <p data-testid="result">Can Drive: {canDrive ? 'Yes' : 'No'}</p>
+            <button onClick={updateStatus}>Get License</button>
+          </div>
+        );
+      }
+
+      render(App, container);
+
+      expect(resultElement.textContent).toBe('Can Drive: No');
+      container.querySelector('button')!.click();
+      expect(resultElement.textContent).toBe('Can Drive: Yes');
+    });
+
+    it('Should correctly compute and render a derived array state from multi dependency', ({ container }) => {
+      let resultElement: HTMLElement;
+
+      function App() {
+        let numbers1 = [1, 2, 3];
+        let numbers2 = [4, 5, 6];
+        let filterEven = true;
+        const result = [...numbers1, ...numbers2].filter(n => (filterEven ? n % 2 === 0 : n % 2 !== 0));
+
+        didMount(() => {
+          resultElement = container.querySelector('[data-testid="result"]')!;
+        });
+
+        function toggleFilter() {
+          filterEven = !filterEven;
+        }
+
+        return (
+          <div>
+            <p data-testid="result">Filtered numbers: {result.join(', ')}</p>
+            <button onClick={toggleFilter}>Toggle Filter</button>
+          </div>
+        );
+      }
+
+      render(App, container);
+
+      expect(resultElement.textContent).toBe('Filtered numbers: 2, 4, 6');
+      container.querySelector('button')!.click();
+      expect(resultElement.textContent).toBe('Filtered numbers: 1, 3, 5');
+    });
+
+    it('Should correctly compute and render a derived object state from multi dependency', ({ container }) => {
+      let resultElement: HTMLElement;
+
+      function App() {
+        let user = { name: 'John', age: 30 };
+        let settings = { theme: 'dark', fontSize: 14 };
+        let isLoggedIn = true;
+        const userProfile = {
+          ...user,
+          ...settings,
+          status: isLoggedIn ? 'Online' : 'Offline',
+        };
+
+        didMount(() => {
+          resultElement = container.querySelector('[data-testid="result"]')!;
+        });
+
+        function updateStatus() {
+          isLoggedIn = false;
+          settings.theme = 'light';
+        }
+
+        return (
+          <div>
+            <p data-testid="result">
+              {userProfile.name} ({userProfile.age}) - {userProfile.status} - Theme: {userProfile.theme}
+            </p>
+            <button onClick={updateStatus}>Logout</button>
+          </div>
+        );
+      }
+
+      render(App, container);
+
+      expect(resultElement.textContent).toBe('John (30) - Online - Theme: dark');
+      container.querySelector('button')!.click();
+      expect(resultElement.textContent).toBe('John (30) - Offline - Theme: light');
+    });
+  });
+
+  describe('Advanced Computed States', () => {
+    it('Should support basic arithmetic operations', ({ container }) => {
+      let resultElement: HTMLElement;
+
+      function App() {
+        let a = 10;
+        let b = 5;
+        const sum = a + b;
+        const difference = a - b;
+        const product = a * b;
+        const quotient = a / b;
+
+        didMount(() => {
+          resultElement = container.querySelector('[data-testid="result"]')!;
+        });
+
+        return (
+          <div data-testid="result">
+            <p>Sum: {sum}</p>
+            <p>Difference: {difference}</p>
+            <p>Product: {product}</p>
+            <p>Quotient: {quotient}</p>
+          </div>
+        );
+      }
+
+      render(App, container);
+
+      expect(resultElement.innerHTML).toBe('<p>Sum: 15</p><p>Difference: 5</p><p>Product: 50</p><p>Quotient: 2</p>');
+    });
+
+    it('Should support array indexing', ({ container }) => {
+      let resultElement: HTMLElement;
+
+      function App() {
+        let arr = [10, 20, 30, 40, 50];
+        let index = 2;
+        const value = arr[index];
+
+        didMount(() => {
+          resultElement = container.querySelector('[data-testid="result"]')!;
+        });
+
+        function updateIndex() {
+          index = 4;
+        }
+
+        return (
+          <div>
+            <p data-testid="result">Value: {value}</p>
+            <button onClick={updateIndex}>Update Index</button>
+          </div>
+        );
+      }
+
+      render(App, container);
+
+      expect(resultElement.textContent).toBe('Value: 30');
+      container.querySelector('button')!.click();
+      expect(resultElement.textContent).toBe('Value: 50');
+    });
+
+    it('Should support property access', ({ container }) => {
+      let resultElement: HTMLElement;
+
+      function App() {
+        let obj = { name: 'John', age: 30 };
+        const name = obj.name;
+
+        didMount(() => {
+          resultElement = container.querySelector('[data-testid="result"]')!;
+        });
+
+        function updateName() {
+          obj.name = 'Jane';
+        }
+
+        return (
+          <div>
+            <p data-testid="result">Name: {name}</p>
+            <button onClick={updateName}>Update Name</button>
+          </div>
+        );
+      }
+
+      render(App, container);
+
+      expect(resultElement.textContent).toBe('Name: John');
+      container.querySelector('button')!.click();
+      expect(resultElement.textContent).toBe('Name: Jane');
+    });
+
+    it('Should support function calls', ({ container }) => {
+      let resultElement: HTMLElement;
+
+      function App() {
+        let numbers = [1, 2, 3, 4, 5];
+        const sum = numbers.reduce((a, b) => a + b, 0);
+
+        didMount(() => {
+          resultElement = container.querySelector('[data-testid="result"]')!;
+        });
+
+        return <p data-testid="result">Sum: {sum}</p>;
+      }
+
+      render(App, container);
+
+      expect(resultElement.textContent).toBe('Sum: 15');
+    });
+
+    it('Should support various number operations', ({ container }) => {
+      let resultElement: HTMLElement;
+
+      function App() {
+        let num = 3.14159;
+        const rounded = Math.round(num);
+        const floored = Math.floor(num);
+        const ceiled = Math.ceil(num);
+        const squared = Math.pow(num, 2);
+
+        didMount(() => {
+          resultElement = container.querySelector('[data-testid="result"]')!;
+        });
+
+        return (
+          <div data-testid="result">
+            <p>Rounded: {rounded}</p>
+            <p>Floored: {floored}</p>
+            <p>Ceiled: {ceiled}</p>
+            <p>Squared: {squared.toFixed(2)}</p>
+          </div>
+        );
+      }
+
+      render(App, container);
+
+      expect(resultElement.innerHTML).toBe('<p>Rounded: 3</p><p>Floored: 3</p><p>Ceiled: 4</p><p>Squared: 9.87</p>');
+    });
+
+    it('Should support map operations', ({ container }) => {
+      let resultElement: HTMLElement;
+
+      function App() {
+        let numbers = [1, 2, 3, 4, 5];
+        const squaredNumbers = numbers.map(n => n * n);
+
+        didMount(() => {
+          resultElement = container.querySelector('[data-testid="result"]')!;
+        });
+
+        return <p data-testid="result">Squared: {squaredNumbers.join(', ')}</p>;
+      }
+
+      render(App, container);
+
+      expect(resultElement.textContent).toBe('Squared: 1, 4, 9, 16, 25');
+    });
+
+    it('Should support conditional expressions', ({ container }) => {
+      let resultElement: HTMLElement;
+
+      function App() {
+        let age = 20;
+        let hasLicense = true;
+        const canDrive = age >= 18 ? (hasLicense ? 'Yes' : 'No, needs license') : 'No, too young';
+
+        didMount(() => {
+          resultElement = container.querySelector('[data-testid="result"]')!;
+        });
+
+        function updateAge() {
+          age = 16;
+        }
+
+        return (
+          <div>
+            <p data-testid="result">Can Drive: {canDrive}</p>
+            <button onClick={updateAge}>Update Age</button>
+          </div>
+        );
+      }
+
+      render(App, container);
+
+      expect(resultElement.textContent).toBe('Can Drive: Yes');
+      container.querySelector('button')!.click();
+      expect(resultElement.textContent).toBe('Can Drive: No, too young');
     });
   });
 
