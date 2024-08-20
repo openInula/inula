@@ -42,6 +42,9 @@ function deleteFolder(filePath) {
  * @param folders {string[]}
  * @returns {{buildEnd(): void, name: string}}
  */
+//先明确什么
+//打包出来
+//ut的例子
 export function cleanUp(folders) {
   return {
     name: 'clean-up',

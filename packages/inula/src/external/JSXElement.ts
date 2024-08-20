@@ -17,7 +17,19 @@ import { TYPE_COMMON_ELEMENT } from './JSXElementType';
 import { getProcessingClassVNode } from '../renderer/GlobalVar';
 import { Source } from '../renderer/Types';
 import { BELONG_CLASS_VNODE_KEY } from '../renderer/vnode/VNode';
-import { InulaElement, KVObject } from '../types';
+import {
+  type BasicStateAction,
+  ChildrenType,
+  type Dispatch,
+  DOMAttributes,
+  HTMLAttributes,
+  InulaElement,
+  InulaNode,
+  JSX,
+  KVObject,
+} from '../types';
+import type { Trigger } from '../renderer/hooks/HookType';
+import { useStateImpl } from '../renderer/hooks/UseStateHook';
 
 /**
  * vtype 节点的类型，这里固定是element
@@ -72,7 +84,7 @@ function mergeDefault(sourceObj, defaultObj) {
 
 // ['key', 'ref', '__source', '__self']属性不从setting获取
 const keyArray = ['key', 'ref', '__source', '__self'];
-
+//这个没太懂 todo
 function buildElement(isClone, type, setting, children) {
   // setting中的值优先级最高，clone情况下从 type 中取值，创建情况下直接赋值为 null
   const key = setting && setting.key !== undefined ? String(setting.key) : isClone ? type.key : null;
@@ -110,14 +122,41 @@ function buildElement(isClone, type, setting, children) {
 }
 
 // 创建Element结构体，供JSX编译时调用
-export function createElement(type, setting, ...children) {
+//type 细节化 todo 参考react
+//解决 例如 div a这样的
+export function createElement(
+  type: string,
+  setting: { [key: string]: any } | null,
+  ...children: InulaNode[]
+): InulaElement;
+//解决元素型
+export function createElement<P>(type: InulaElement<P>, setting?: P | null, ...children: InulaNode[]): InulaElement<P>;
+
+export function createElement<P>(
+  type: string | InulaElement<P>,
+  setting?: (P & { children?: InulaNode }) | null,
+  ...children: InulaNode[]
+): InulaElement | InulaElement<P> {
   return buildElement(false, type, setting, children);
 }
+//只传入 element，克隆该元素，返回一个新的 InulaElement。
+export function cloneElement<P>(element: InulaElement<P>): InulaElement<P>;
+//传入 element 和 setting，克隆元素并覆盖属性。
+export function cloneElement<P>(element: InulaElement<P>, setting: Partial<P> | null): InulaElement<P>;
+//：传入 element、setting 和 children，克隆元素，覆盖属性并指定新的子节点。
+export function cloneElement<P>(
+  element: InulaElement<P>,
+  setting: Partial<P> | null,
+  ...children: InulaNode[]
+): InulaElement<P>;
 
-export function cloneElement(element, setting, ...children) {
+export function cloneElement<P>(
+  element: InulaElement<P>,
+  setting?: Partial<P> | null,
+  ...children: InulaNode[]
+): InulaElement<P> {
   return buildElement(true, element, setting, children);
 }
-
 // 检测结构体是否为合法的Element
 export function isValidElement<P>(element: KVObject | null | undefined): element is InulaElement<P> {
   return !!(element && element.vtype === TYPE_COMMON_ELEMENT);
@@ -128,6 +167,5 @@ export function jsx(type, setting, key) {
   if (setting.key === undefined && key !== undefined) {
     setting.key = key;
   }
-
   return buildElement(false, type, setting, []);
 }

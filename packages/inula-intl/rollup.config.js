@@ -40,7 +40,7 @@ export default {
     {
       file: path.resolve(output, 'intl.esm-browser.js'),
       format: 'esm',
-    }
+    },
   ],
   plugins: [
     nodeResolve({

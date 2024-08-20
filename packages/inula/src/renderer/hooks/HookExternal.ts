@@ -24,7 +24,7 @@ import { useReducerImpl } from './UseReducerHook';
 import { useStateImpl } from './UseStateHook';
 import { getNewContext } from '../components/context/Context';
 import { getProcessingVNode } from '../GlobalVar';
-import type { MutableRef, RefCallBack, RefObject } from './HookType';
+import type { MutableRef, RefCallBack, RefObject, Trigger } from './HookType';
 
 import type {
   BasicStateAction,
@@ -45,10 +45,11 @@ export function useContext<T>(Context: ContextType<T> | Context<T>): T {
 
 export function useState<S>(initialState: (() => S) | S): [S, Dispatch<BasicStateAction<S>>];
 export function useState<S = undefined>(): [S | undefined, Dispatch<BasicStateAction<S | undefined>>];
-export function useState<S>(initialState?: (() => S) | S): [S, Dispatch<BasicStateAction<S>>] {
+export function useState<S>(
+  initialState?: (() => S) | S
+): [S | undefined, Trigger<((arg0: S) => S | undefined) | S | undefined>] | void {
   return useStateImpl(initialState);
 }
-
 export function useReducer<R extends ReducerVoid<any>, I>(
   reducer: R,
   initialArg: I,

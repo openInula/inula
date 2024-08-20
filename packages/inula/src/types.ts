@@ -1131,7 +1131,6 @@ export interface HTMLAttributes<RefType extends EventTarget = EventTarget>
   itemref?: string | undefined | SignalLike<string | undefined>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
 export declare namespace JSX {
   // JSX内在元素的接口，该接口下声明了JSX中的内置标签及其具有的属性，如<input>标签和<input>标签的value属性
   interface IntrinsicElements {
