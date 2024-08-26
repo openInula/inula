@@ -116,6 +116,26 @@ describe('rendering', () => {
       expect(h1.style.color).toBe('red');
     });
 
+    it.fails('should apply styles number correctly', ({ container }) => {
+      function App() {
+        return <h1 style={{ fontSize: 12 }}>hello world!!!</h1>;
+      }
+
+      render(App, container);
+      const h1 = container.querySelector('h1');
+      expect(h1.style.fontSize).toBe('12px');
+    });
+
+    it('should apply styles empty correctly', ({ container }) => {
+      function App() {
+        return <h1 style={{ fontSize: '' }}>hello world!!!</h1>;
+      }
+
+      render(App, container);
+      const h1 = container.querySelector('h1');
+      expect(h1.style.fontSize).toBe('');
+    });
+
     it('should apply multiple styles correctly', ({ container }) => {
       function App() {
         return <h1 style={{ color: 'red', fontSize: '20px' }}>hello world!!!</h1>;

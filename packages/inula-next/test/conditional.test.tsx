@@ -146,3 +146,120 @@ describe('conditional rendering', () => {
     expect(container.innerHTML).toMatchInlineSnapshot(`"<div><h1>hello world 2</h1></div>"`);
   });
 });
+
+describe('additional conditional rendering tests', () => {
+  it('Should correctly render content based on a single if condition', ({ container }) => {
+    let set: (num: number) => void;
+
+    function App() {
+      let count = 0;
+      set = (val: number) => {
+        count = val;
+      };
+      return (
+        <div>
+          <if cond={count > 5}>Count is greater than 5</if>
+        </div>
+      );
+    }
+
+    render(App, container);
+    expect(container.innerHTML).toBe('<div></div>');
+    set(6);
+    expect(container.innerHTML).toBe('<div>Count is greater than 5</div>');
+  });
+
+  it('Should correctly render content based on if-else conditions', ({ container }) => {
+    let set: (num: number) => void;
+
+    function App() {
+      let count = 0;
+      set = (val: number) => {
+        count = val;
+      };
+      return (
+        <div>
+          <if cond={count % 2 === 0}>Count is even</if>
+          <else>Count is odd</else>
+        </div>
+      );
+    }
+
+    render(App, container);
+    expect(container.innerHTML).toBe('<div>Count is even</div>');
+    set(1);
+    expect(container.innerHTML).toBe('<div>Count is odd</div>');
+    set(2);
+    expect(container.innerHTML).toBe('<div>Count is even</div>');
+  });
+
+  it('Should correctly render content based on if-else-if-else conditions', ({ container }) => {
+    let set: (num: number) => void;
+
+    function App() {
+      let count = 0;
+      set = (val: number) => {
+        count = val;
+      };
+      return (
+        <div>
+          <if cond={count > 10}>Count is greater than 10</if>
+          <else-if cond={count > 5}>Count is greater than 5 but not greater than 10</else-if>
+          <else-if cond={count > 0}>Count is greater than 0 but not greater than 5</else-if>
+          <else>Count is 0 or negative</else>
+        </div>
+      );
+    }
+
+    render(App, container);
+    expect(container.innerHTML).toBe('<div>Count is 0 or negative</div>');
+    set(3);
+    expect(container.innerHTML).toBe('<div>Count is greater than 0 but not greater than 5</div>');
+    set(7);
+    expect(container.innerHTML).toBe('<div>Count is greater than 5 but not greater than 10</div>');
+    set(11);
+    expect(container.innerHTML).toBe('<div>Count is greater than 10</div>');
+  });
+
+  it('Should correctly handle nested conditional rendering', ({ container }) => {
+    let set: (obj: { x: number; y: number }) => void;
+
+    function App() {
+      let state = { x: 0, y: 0 };
+      set = (val: { x: number; y: number }) => {
+        state = val;
+      };
+      return (
+        <div>
+          <if cond={state.x > 0}>
+            X is positive
+            <if cond={state.y > 0}>
+              <div>Both X and Y are positive</div>
+            </if>
+            <else>
+              <div>X is positive but Y is not</div>
+            </else>
+          </if>
+          <else>
+            X is not positive
+            <if cond={state.y > 0}>
+              <div>X is not positive but Y is</div>
+            </if>
+            <else>
+              <div>Neither X nor Y are positive</div>
+            </else>
+          </else>
+        </div>
+      );
+    }
+
+    render(App, container);
+    expect(container.innerHTML).toBe('<div>X is not positive<div>Neither X nor Y are positive</div></div>');
+    set({ x: 1, y: 0 });
+    expect(container.innerHTML).toBe('<div>X is positive<div>X is positive but Y is not</div></div>');
+    set({ x: 1, y: 1 });
+    expect(container.innerHTML).toBe('<div>X is positive<div>Both X and Y are positive</div></div>');
+    set({ x: 0, y: 1 });
+    expect(container.innerHTML).toBe('<div>X is not positive<div>X is not positive but Y is</div></div>');
+  });
+});

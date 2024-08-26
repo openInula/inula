@@ -407,3 +407,277 @@ describe('JSX Element Usage in Various Contexts', () => {
     });
   });
 });
+
+describe('JSX Element Attributes', () => {
+  it('should correctly initialize attributes', ({ container }) => {
+    function App() {
+      return (
+        <div id="test" className="example">
+          Content
+        </div>
+      );
+    }
+    render(App, container);
+    expect(container.innerHTML).toBe('<div id="test" class="example">Content</div>');
+  });
+
+  it('should correctly update attributes', ({ container }) => {
+    function App() {
+      let className = 'initial';
+
+      function updateClass() {
+        className = 'updated';
+      }
+
+      return (
+        <>
+          <div className={className}>Content</div>
+          <button onClick={updateClass}>Update</button>
+        </>
+      );
+    }
+    render(App, container);
+    expect(container.innerHTML).toBe('<div class="initial">Content</div><button>Update</button>');
+
+    container.querySelector('button')?.click();
+    expect(container.innerHTML).toBe('<div class="updated">Content</div><button>Update</button>');
+  });
+
+  it('should correctly render attributes dependent on variables', ({ container }) => {
+    function App() {
+      let className = 'initial';
+      let b = className;
+      function updateClass() {
+        className = 'updated';
+      }
+
+      return (
+        <>
+          <div className={b}>Content</div>
+          <button onClick={updateClass}>Update</button>
+        </>
+      );
+    }
+    render(App, container);
+    expect(container.innerHTML).toBe('<div class="initial">Content</div><button>Update</button>');
+
+    container.querySelector('button')?.click();
+    expect(container.innerHTML).toBe('<div class="updated">Content</div><button>Update</button>');
+  });
+
+  it('should correctly render attributes with expressions', ({ container }) => {
+    function App() {
+      const count = 5;
+      return <div data-count={`Count is ${count}`}>Content</div>;
+    }
+    render(App, container);
+    expect(container.innerHTML).toBe('<div data-count="Count is 5">Content</div>');
+  });
+
+  it('should correctly render boolean attributes', ({ container }) => {
+    function App() {
+      const disabled = true;
+      return <button disabled={disabled}>Click me</button>;
+    }
+    render(App, container);
+    expect(container.innerHTML).toBe('<button disabled="">Click me</button>');
+  });
+
+  it.fails('should correctly render attributes without values', ({ container }) => {
+    function App() {
+      const checked = true;
+      return <input type="checkbox" checked />;
+    }
+    render(App, container);
+    expect(container.innerHTML).toBe('<input type="checkbox" checked="">');
+  });
+
+  it.fails('should correctly spread multiple attributes', ({ container }) => {
+    function App() {
+      const props = {
+        id: 'test-id',
+        className: 'test-class',
+        'data-test': 'test-data',
+      };
+      return <div {...props}>Content</div>;
+    }
+    render(App, container);
+    expect(container.innerHTML).toBe('<div id="test-id" class="test-class" data-test="test-data">Content</div>');
+  });
+
+  it.fails('should correctly handle attribute spreading and individual props', ({ container }) => {
+    function App() {
+      const props = {
+        id: 'base-id',
+        className: 'base-class',
+      };
+      return (
+        <div {...props} id="override-id" data-extra="extra">
+          Content
+        </div>
+      );
+    }
+    render(App, container);
+    expect(container.innerHTML).toBe('<div id="override-id" class="base-class" data-extra="extra">Content</div>');
+  });
+});
+
+describe('JSX Element Inline Styles', () => {
+  it('should correctly apply inline styles to an element', ({ container }) => {
+    function App() {
+      return <div style={{ color: 'red', fontSize: '16px' }}>Styled content</div>;
+    }
+    render(App, container);
+    expect(container.innerHTML).toBe('<div style="color: red; font-size: 16px;">Styled content</div>');
+  });
+
+  it('should correctly apply multiple inline styles to an element', ({ container }) => {
+    function App() {
+      return <div style={{ color: 'blue', fontSize: '20px', fontWeight: 'bold', margin: '10px' }}>Multiple styles</div>;
+    }
+    render(App, container);
+    expect(container.innerHTML).toBe(
+      '<div style="color: blue; font-size: 20px; font-weight: bold; margin: 10px;">Multiple styles</div>'
+    );
+  });
+
+  it('should correctly apply styles from a variable', ({ container }) => {
+    function App() {
+      const styleObj = { color: 'green', padding: '5px' };
+      return <div style={styleObj}>Variable style</div>;
+    }
+    render(App, container);
+    expect(container.innerHTML).toBe('<div style="color: green; padding: 5px;">Variable style</div>');
+  });
+
+  it('should correctly update styles', ({ container }) => {
+    function App() {
+      let style = { color: 'purple' };
+
+      function updateStyle() {
+        style = { color: 'orange', fontSize: '24px' };
+      }
+
+      return (
+        <>
+          <div style={style}>Updatable style</div>
+          <button onClick={updateStyle}>Update</button>
+        </>
+      );
+    }
+    render(App, container);
+    expect(container.innerHTML).toBe('<div style="color: purple;">Updatable style</div><button>Update</button>');
+
+    container.querySelector('button')?.click();
+    expect(container.innerHTML).toBe(
+      '<div style="color: orange; font-size: 24px;">Updatable style</div><button>Update</button>'
+    );
+  });
+
+  it('should correctly apply styles from an expression', ({ container }) => {
+    function App() {
+      const size = 18;
+      return <div style={{ fontSize: `${size}px`, lineHeight: `${size * 1.5}px` }}>Expression style</div>;
+    }
+    render(App, container);
+    expect(container.innerHTML).toBe('<div style="font-size: 18px; line-height: 27px;">Expression style</div>');
+  });
+
+  it('should correctly merge style objects', ({ container }) => {
+    function App() {
+      const baseStyle = { color: 'red', fontSize: '16px' };
+      const additionalStyle = { fontSize: '20px', fontWeight: 'bold' };
+      return <div style={{ ...baseStyle, ...additionalStyle }}>Merged styles</div>;
+    }
+    render(App, container);
+    expect(container.innerHTML).toBe(
+      '<div style="color: red; font-size: 20px; font-weight: bold;">Merged styles</div>'
+    );
+  });
+
+  it('should correctly apply styles from a function call', ({ container }) => {
+    function getStyles(color: string) {
+      return { color, border: `1px solid ${color}` };
+    }
+    function App() {
+      return <div style={getStyles('blue')}>Function style</div>;
+    }
+    render(App, container);
+    expect(container.innerHTML).toBe('<div style="color: blue; border: 1px solid blue;">Function style</div>');
+  });
+
+  it('should correctly apply styles based on a condition', ({ container }) => {
+    function App() {
+      const isActive = true;
+      const style = isActive
+        ? { backgroundColor: 'green', color: 'white' }
+        : { backgroundColor: 'gray', color: 'black' };
+      return <div style={style}>Conditional style</div>;
+    }
+    render(App, container);
+    expect(container.innerHTML).toBe('<div style="background-color: green; color: white;">Conditional style</div>');
+  });
+
+  it('should correctly apply styles based on an array of conditions', ({ container }) => {
+    function App() {
+      const conditions = [true, false, true];
+      const style = {
+        color: conditions[0] ? 'red' : 'blue',
+        fontWeight: conditions[1] ? 'bold' : 'normal',
+        fontSize: conditions[2] ? '20px' : '16px',
+      };
+      return <div style={style}>Array condition style</div>;
+    }
+    render(App, container);
+    expect(container.innerHTML).toBe(
+      '<div style="color: red; font-weight: normal; font-size: 20px;">Array condition style</div>'
+    );
+  });
+
+  it('should correctly apply styles using ternary and binary expressions', ({ container }) => {
+    function App() {
+      const isPrimary = true;
+      const isLarge = true;
+      return (
+        <div
+          style={{
+            color: isPrimary ? 'blue' : 'gray',
+            fontSize: isLarge && '24px',
+          }}
+        >
+          Ternary and binary style
+        </div>
+      );
+    }
+    render(App, container);
+    expect(container.innerHTML).toBe('<div style="color: blue; font-size: 24px;">Ternary and binary style</div>');
+  });
+
+  it('should correctly apply styles using member expressions', ({ container }) => {
+    const theme = {
+      colors: {
+        primary: 'blue',
+        secondary: 'green',
+      },
+      sizes: {
+        small: '12px',
+        medium: '16px',
+        large: '20px',
+      },
+    };
+    function App() {
+      return (
+        <div
+          style={{
+            color: theme.colors.primary,
+            fontSize: theme.sizes.medium,
+          }}
+        >
+          Member expression style
+        </div>
+      );
+    }
+    render(App, container);
+    expect(container.innerHTML).toBe('<div style="color: blue; font-size: 16px;">Member expression style</div>');
+  });
+});

@@ -366,3 +366,359 @@ describe('Custom Hook Tests', () => {
     });
   });
 });
+
+describe('Hook and Watch Combined Tests', () => {
+  it('should update watched value when hook state changes', ({ container }) => {
+    let setCount;
+    function useCounter(initial = 0) {
+      let count = initial;
+      setCount = n => {
+        count = n;
+      };
+      return { count };
+    }
+
+    function TestComponent() {
+      const { count } = useCounter(0);
+      let watchedCount = 0;
+
+      watch(() => {
+        watchedCount = count * 2;
+      });
+
+      return <div>{watchedCount}</div>;
+    }
+
+    render(TestComponent, container);
+    expect(container.innerHTML).toBe('<div>0</div>');
+    setCount(5);
+    expect(container.innerHTML).toBe('<div>10</div>');
+  });
+
+  it('should handle multiple watches in a custom hook', ({ container }) => {
+    let setX, setY;
+    function usePosition() {
+      let x = 0,
+        y = 0;
+      setX = newX => {
+        x = newX;
+      };
+      setY = newY => {
+        y = newY;
+      };
+
+      let position = '';
+      watch(() => {
+        position = `(${x},${y})`;
+      });
+
+      let quadrant = 0;
+      watch(() => {
+        quadrant = x >= 0 && y >= 0 ? 1 : x < 0 && y >= 0 ? 2 : x < 0 && y < 0 ? 3 : 4;
+      });
+
+      return { position, quadrant };
+    }
+
+    function TestComponent() {
+      const { position, quadrant } = usePosition();
+      return (
+        <div>
+          {position} Q{quadrant}
+        </div>
+      );
+    }
+
+    render(TestComponent, container);
+    expect(container.innerHTML).toBe('<div>(0,0) Q1</div>');
+    setX(-5);
+    setY(10);
+    expect(container.innerHTML).toBe('<div>(-5,10) Q2</div>');
+  });
+
+  it('should correctly handle watch dependencies in hooks', ({ container }) => {
+    let setItems;
+    function useFilteredList(initialItems = []) {
+      let items = initialItems;
+      setItems = newItems => {
+        items = newItems;
+      };
+
+      let evenItems = [];
+      let oddItems = [];
+
+      watch(() => {
+        evenItems = items.filter(item => item % 2 === 0);
+      });
+
+      watch(() => {
+        oddItems = items.filter(item => item % 2 !== 0);
+      });
+
+      return { evenItems, oddItems };
+    }
+
+    function TestComponent() {
+      const { evenItems, oddItems } = useFilteredList([1, 2, 3, 4, 5]);
+      return (
+        <div>
+          Even: {evenItems.join(',')} Odd: {oddItems.join(',')}
+        </div>
+      );
+    }
+
+    render(TestComponent, container);
+    expect(container.innerHTML).toBe('<div>Even: 2,4 Odd: 1,3,5</div>');
+    setItems([2, 4, 6, 8, 10]);
+    expect(container.innerHTML).toBe('<div>Even: 2,4,6,8,10 Odd: </div>');
+  });
+});
+
+describe('Advanced Hook Tests', () => {
+  // Hook return tests
+  describe('Hook Return Tests', () => {
+    it('should handle expression return', ({ container }) => {
+      function useExpression(a: number, b: number) {
+        return a + b * 2;
+      }
+
+      function TestComponent() {
+        const result = useExpression(3, 4);
+        return <div>{result}</div>;
+      }
+
+      render(TestComponent, container);
+      expect(container.innerHTML).toBe('<div>11</div>');
+    });
+
+    it('should handle object spread return', ({ container }) => {
+      function useObjectSpread(obj: object) {
+        return { ...obj, newProp: 'added' };
+      }
+
+      function TestComponent() {
+        const result = useObjectSpread({ existingProp: 'original' });
+        return <div>{JSON.stringify(result)}</div>;
+      }
+
+      render(TestComponent, container);
+      expect(container.innerHTML).toBe('<div>{"existingProp":"original","newProp":"added"}</div>');
+    });
+
+    it('should handle function call return', ({ container }) => {
+      function useFunction() {
+        const innerFunction = () => 42;
+        return innerFunction();
+      }
+
+      function TestComponent() {
+        const result = useFunction();
+        return <div>{result}</div>;
+      }
+
+      render(TestComponent, container);
+      expect(container.innerHTML).toBe('<div>42</div>');
+    });
+
+    it('should handle conditional expression return', ({ container }) => {
+      function useConditional(condition: boolean) {
+        return condition ? 'True' : 'False';
+      }
+
+      function TestComponent() {
+        const result = useConditional(true);
+        return <div>{result}</div>;
+      }
+
+      render(TestComponent, container);
+      expect(container.innerHTML).toBe('<div>True</div>');
+    });
+
+    it('should handle array computation return', ({ container }) => {
+      function useArrayComputation(arr: number[]) {
+        return arr.reduce((sum, num) => sum + num, 0);
+      }
+
+      function TestComponent() {
+        const result = useArrayComputation([1, 2, 3, 4, 5]);
+        return <div>{result}</div>;
+      }
+
+      render(TestComponent, container);
+      expect(container.innerHTML).toBe('<div>15</div>');
+    });
+
+    it('should handle ternary expression return', ({ container }) => {
+      function useTernary(value: number) {
+        return value > 5 ? 'High' : value < 0 ? 'Low' : 'Medium';
+      }
+
+      function TestComponent() {
+        const result = useTernary(7);
+        return <div>{result}</div>;
+      }
+
+      render(TestComponent, container);
+      expect(container.innerHTML).toBe('<div>High</div>');
+    });
+
+    it('should handle member expression return', ({ container }) => {
+      function useMemberExpression(obj: { prop: string }) {
+        return obj.prop;
+      }
+
+      function TestComponent() {
+        const result = useMemberExpression({ prop: 'test' });
+        return <div>{result}</div>;
+      }
+
+      render(TestComponent, container);
+      expect(container.innerHTML).toBe('<div>test</div>');
+    });
+  });
+
+  // Hook input tests
+  describe('Hook Input Tests', () => {
+    it('should handle expression input', ({ container }) => {
+      function useExpression(value: number) {
+        return value * 2;
+      }
+
+      function TestComponent() {
+        const result = useExpression(3 + 4);
+        return <div>{result}</div>;
+      }
+
+      render(TestComponent, container);
+      expect(container.innerHTML).toBe('<div>14</div>');
+    });
+
+    it('should handle object spread input', ({ container }) => {
+      function useObjectSpread(obj: { a: number; b: number }) {
+        return obj.a + obj.b;
+      }
+
+      function TestComponent() {
+        const baseObj = { a: 1, c: 3 };
+        const result = useObjectSpread({ ...baseObj, b: 2 });
+        return <div>{result}</div>;
+      }
+
+      render(TestComponent, container);
+      expect(container.innerHTML).toBe('<div>3</div>');
+    });
+
+    it('should handle function call input', ({ container }) => {
+      function useFunction(value: number) {
+        return value * 2;
+      }
+
+      function getValue() {
+        return 21;
+      }
+
+      function TestComponent() {
+        const result = useFunction(getValue());
+        return <div>{result}</div>;
+      }
+
+      render(TestComponent, container);
+      expect(container.innerHTML).toBe('<div>42</div>');
+    });
+
+    it('should handle conditional expression input', ({ container }) => {
+      function useConditional(value: string) {
+        return `Received: ${value}`;
+      }
+
+      function TestComponent() {
+        const condition = true;
+        const result = useConditional(condition ? 'Yes' : 'No');
+        return <div>{result}</div>;
+      }
+
+      render(TestComponent, container);
+      expect(container.innerHTML).toBe('<div>Received: Yes</div>');
+    });
+
+    it('should handle array computation input', ({ container }) => {
+      function useArraySum(sum: number) {
+        return `Sum: ${sum}`;
+      }
+
+      function TestComponent() {
+        const numbers = [1, 2, 3, 4, 5];
+        const result = useArraySum(numbers.reduce((sum, num) => sum + num, 0));
+        return <div>{result}</div>;
+      }
+
+      render(TestComponent, container);
+      expect(container.innerHTML).toBe('<div>Sum: 15</div>');
+    });
+
+    it('should handle ternary expression input', ({ container }) => {
+      function useStatus(status: string) {
+        return `Current status: ${status}`;
+      }
+
+      function TestComponent() {
+        const value = 7;
+        const result = useStatus(value > 5 ? 'High' : value < 0 ? 'Low' : 'Medium');
+        return <div>{result}</div>;
+      }
+
+      render(TestComponent, container);
+      expect(container.innerHTML).toBe('<div>Current status: High</div>');
+    });
+
+    it('should handle member expression input', ({ container }) => {
+      function useName(name: string) {
+        return `Hello, ${name}!`;
+      }
+
+      function TestComponent() {
+        const user = { name: 'Alice' };
+        const result = useName(user.name);
+        return <div>{result}</div>;
+      }
+
+      render(TestComponent, container);
+      expect(container.innerHTML).toBe('<div>Hello, Alice!</div>');
+    });
+  });
+
+  // Additional tests
+  describe('Additional Hook Tests', () => {
+    it('should handle input based on other variables', ({ container }) => {
+      function useComputed(value: number) {
+        return value * 2;
+      }
+
+      function TestComponent() {
+        let baseValue = 5;
+        let multiplier = 3;
+        const result = useComputed(baseValue * multiplier);
+        return <div>{result}</div>;
+      }
+
+      render(TestComponent, container);
+      expect(container.innerHTML).toBe('<div>30</div>');
+    });
+
+    it('should handle function input and output', ({ container }) => {
+      function useFunction(fn: (x: number) => number) {
+        return (y: number) => fn(y) * 2;
+      }
+
+      function TestComponent() {
+        const inputFn = (x: number) => x + 1;
+        const resultFn = useFunction(inputFn);
+        const result = resultFn(5);
+        return <div>{result}</div>;
+      }
+
+      render(TestComponent, container);
+      expect(container.innerHTML).toBe('<div>12</div>');
+    });
+  });
+});

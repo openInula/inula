@@ -132,7 +132,7 @@ describe('for', () => {
     render(MyComp, container);
     expect(container.innerHTML).toBe('<div><div>1</div><div>2</div><div>3</div><div>4</div></div>');
   });
-  // this test has error, need to be comment
+
   // it.fails('should transform last map to for" ', ({ container }) => {
   //   function MyComp() {
   //     let arr = [1, 2, 3];
@@ -150,4 +150,75 @@ describe('for', () => {
   //   render(MyComp, container);
   //   expect(container.innerHTML).toBe('<div><div>1</div><div>2</div><div>3</div><div>4</div></div>');
   // });
+  it('Should correctly render a single-level loop of elements', ({ container }) => {
+    function App() {
+      const fruits = ['Apple', 'Banana', 'Cherry'];
+      return <for each={fruits}>{fruit => <li>{fruit}</li>}</for>;
+    }
+
+    render(App, container);
+    expect(container.innerHTML).toMatchInlineSnapshot(`"<li>Apple</li><li>Banana</li><li>Cherry</li>"`);
+  });
+
+  it('Should correctly render nested loops of elements', ({ container }) => {
+    function App() {
+      const matrix = [
+        [1, 2],
+        [3, 4],
+        [5, 6],
+      ];
+      return (
+        <for each={matrix}>
+          {row => (
+            <div>
+              <for each={row}>{cell => <span>{cell}</span>}</for>
+            </div>
+          )}
+        </for>
+      );
+    }
+
+    render(App, container);
+    expect(container.innerHTML).toMatchInlineSnapshot(
+      `"<div><span>1</span><span>2</span></div><div><span>3</span><span>4</span></div><div><span>5</span><span>6</span></div>"`
+    );
+  });
+
+  it('Should correctly render loops with complex data structures', ({ container }) => {
+    function App() {
+      const users = [
+        { id: 1, name: 'Alice', hobbies: ['reading', 'gaming'] },
+        { id: 2, name: 'Bob', hobbies: ['cycling', 'photography'] },
+      ];
+      return (
+        <for each={users}>
+          {user => (
+            <div>
+              <h2>{user.name}</h2>
+              <ul>
+                <for each={user.hobbies}>{hobby => <li>{hobby}</li>}</for>
+              </ul>
+            </div>
+          )}
+        </for>
+      );
+    }
+
+    render(App, container);
+    expect(container.innerHTML).toMatchInlineSnapshot(
+      `"<div><h2>Alice</h2><ul><li>reading</li><li>gaming</li></ul></div><div><h2>Bob</h2><ul><li>cycling</li><li>photography</li></ul></div>"`
+    );
+  });
+
+  it('Should correctly render when for tag input is an array map', ({ container }) => {
+    function App() {
+      const numbers = [1, 2, 3, 4, 5];
+      return <for each={numbers.map(n => n * 2)}>{doubledNumber => <span>{doubledNumber}</span>}</for>;
+    }
+
+    render(App, container);
+    expect(container.innerHTML).toMatchInlineSnapshot(
+      `"<span>2</span><span>4</span><span>6</span><span>8</span><span>10</span>"`
+    );
+  });
 });
