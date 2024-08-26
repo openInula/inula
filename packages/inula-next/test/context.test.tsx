@@ -219,4 +219,130 @@ describe('context', () => {
     container.querySelector('button').click();
     expect(container.querySelector('div').textContent).toBe('Count: 1');
   });
+  it('Should correctly create and provide context', ({ container }) => {
+    const ThemeContext = createContext('light');
+
+    function App() {
+      return (
+        <ThemeContext theme="dark">
+          <Child />
+        </ThemeContext>
+      );
+    }
+
+    function Child() {
+      const { theme } = useContext(ThemeContext);
+      return <div>Current theme: {theme}</div>;
+    }
+
+    render(App, container);
+    expect(container.innerHTML).toBe('<div>Current theme: dark</div>');
+  });
+
+  it('Should correctly consume context in child components', ({ container }) => {
+    const UserContext = createContext({ name: '', age: 0 });
+
+    function App() {
+      return (
+        <UserContext name="Alice" age={30}>
+          <Parent />
+        </UserContext>
+      );
+    }
+
+    function Parent() {
+      return (
+        <div>
+          <Child1 />
+          <Child2 />
+        </div>
+      );
+    }
+
+    function Child1() {
+      const { name } = useContext(UserContext);
+      return <div>Name: {name}</div>;
+    }
+
+    function Child2() {
+      const { age } = useContext(UserContext);
+      return <div>Age: {age}</div>;
+    }
+
+    render(App, container);
+    expect(container.innerHTML).toBe('<div><div>Name: Alice</div><div>Age: 30</div></div>');
+  });
+
+  it('Should correctly update context and re-render consumers', ({ container }) => {
+    const CountContext = createContext(0);
+
+    function App() {
+      let count = 0;
+      const increment = () => {
+        count += 1;
+      };
+
+      return (
+        <CountContext count={count}>
+          <Counter />
+          <button onClick={increment}>Increment</button>
+        </CountContext>
+      );
+    }
+
+    function Counter() {
+      const { count } = useContext(CountContext);
+      return <div>Count: {count}</div>;
+    }
+
+    render(App, container);
+    expect(container.querySelector('div').textContent).toBe('Count: 0');
+
+    container.querySelector('button').click();
+    expect(container.querySelector('div').textContent).toBe('Count: 1');
+  });
+
+  it('Should handle nested contexts correctly', ({ container }) => {
+    const ThemeContext = createContext('light');
+    const LanguageContext = createContext('en');
+
+    function App() {
+      return (
+        <ThemeContext theme="dark">
+          <LanguageContext language="fr">
+            <Child />
+          </LanguageContext>
+        </ThemeContext>
+      );
+    }
+
+    function Child() {
+      const { theme } = useContext(ThemeContext);
+      const { language } = useContext(LanguageContext);
+      return (
+        <div>
+          Theme: {theme}, Language: {language}
+        </div>
+      );
+    }
+
+    render(App, container);
+    expect(container.innerHTML).toBe('<div>Theme: dark, Language: fr</div>');
+  });
+
+  it('Should use default value when no provider is present', ({ container }) => {
+    const DefaultContext = createContext({ message: 'Default message' });
+
+    function App() {
+      return <Child />;
+    }
+
+    function Child() {
+      const { message } = useContext(DefaultContext);
+      return <div>{message}</div>;
+    }
+
+    render(App, container);
+    expect(container.innerHTML).toBe('<div>Default message</div>');
+  });
 });

@@ -136,3 +136,193 @@ describe('props', () => {
     });
   });
 });
+
+describe('extended prop tests', () => {
+  it('should correctly pass and render string props', ({ container }) => {
+    function Child({ text }) {
+      return <p>{text}</p>;
+    }
+
+    function App() {
+      return <Child text="Hello, world!" />;
+    }
+
+    render(App, container);
+    expect(container).toMatchInlineSnapshot(`
+        <div>
+          <p>
+            Hello, world!
+          </p>
+        </div>
+      `);
+  });
+
+  it('should correctly pass and render number props', ({ container }) => {
+    function Child({ number }) {
+      return <span>{number}</span>;
+    }
+
+    function App() {
+      return <Child number={42} />;
+    }
+
+    render(App, container);
+    expect(container).toMatchInlineSnapshot(`
+        <div>
+          <span>
+            42
+          </span>
+        </div>
+      `);
+  });
+
+  it('should correctly pass and render boolean props', ({ container }) => {
+    function Child({ isActive }) {
+      return <div>{isActive ? 'Active' : 'Inactive'}</div>;
+    }
+
+    function App() {
+      return <Child isActive={true} />;
+    }
+
+    render(App, container);
+    expect(container).toMatchInlineSnapshot(`
+        <div>
+          <div>
+            Active
+          </div>
+        </div>
+      `);
+  });
+
+  it.fails('should correctly pass and render array props', ({ container }) => {
+    function Child({ items }) {
+      return (
+        <ul>
+          {items.map((item, index) => (
+            <li key={index}>{item}</li>
+          ))}
+        </ul>
+      );
+    }
+
+    function App() {
+      return <Child items={['Apple', 'Banana', 'Cherry']} />;
+    }
+
+    render(App, container);
+    expect(container).toMatchInlineSnapshot(`
+        <div>
+          <ul>
+            <li>Apple</li>
+            <li>Banana</li>
+            <li>Cherry</li>
+          </ul>
+        </div>
+      `);
+  });
+
+  it.fails('should correctly pass and render object props', ({ container }) => {
+    function Child({ person }) {
+      return (
+        <div>
+          {person.name}, {person.age}
+        </div>
+      );
+    }
+
+    function App() {
+      return <Child person={{ name: 'Alice', age: 30 }} />;
+    }
+
+    render(App, container);
+    expect(container).toMatchInlineSnapshot(`
+        <div>
+          <div>
+            Alice, 30
+          </div>
+        </div>
+      `);
+  });
+
+  it('should correctly handle default prop values', ({ container }) => {
+    function Child({ message = 'Default message' }) {
+      return <h2>{message}</h2>;
+    }
+
+    function App() {
+      return <Child />;
+    }
+
+    render(App, container);
+    expect(container).toMatchInlineSnapshot(`
+        <div>
+          <h2>
+            Default message
+          </h2>
+        </div>
+      `);
+  });
+
+  it.fails('should correctly spread props', ({ container }) => {
+    function Child(props) {
+      return (
+        <div>
+          {props.a} {props.b} {props.c}
+        </div>
+      );
+    }
+
+    function App() {
+      const extraProps = { b: 'World', c: '!' };
+      return <Child a="Hello" {...extraProps} />;
+    }
+
+    render(App, container);
+    expect(container).toMatchInlineSnapshot(`
+        <div>
+          <div>
+            Hello World !
+          </div>
+        </div>
+      `);
+  });
+
+  it.fails('should handle props without values', ({ container }) => {
+    function Child({ isDisabled }) {
+      return <button disabled={isDisabled}>Click me</button>;
+    }
+
+    function App() {
+      return <Child isDisabled />;
+    }
+
+    render(App, container);
+    expect(container).toMatchInlineSnapshot(`
+        <div>
+          <button disabled>
+            Click me
+          </button>
+        </div>
+      `);
+  });
+
+  it('should handle props with expressions', ({ container }) => {
+    function Child({ result }) {
+      return <div>{result}</div>;
+    }
+
+    function App() {
+      return <Child result={1 + 2 * 3} />;
+    }
+
+    render(App, container);
+    expect(container).toMatchInlineSnapshot(`
+        <div>
+          <div>
+            7
+          </div>
+        </div>
+      `);
+  });
+});
