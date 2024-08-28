@@ -66,6 +66,7 @@ function processDTS() {
       if (fs.existsSync(dtsFilePath)) {
         let dtsContent = fs.readFileSync(dtsFilePath, 'utf-8');
         dtsContent = dtsContent.replace(/^export\s+.*_.*;/gm, '');
+        //todo 这块如何优化 index.ts 的全部函数
         dtsContent = dtsContent.replace(/import\("openinula"\)/g, 'import { InulaNode } from "openinula"');
 
         // 写回处理后的 .d.ts 文件

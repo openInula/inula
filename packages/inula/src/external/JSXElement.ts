@@ -15,13 +15,12 @@
 
 import { TYPE_COMMON_ELEMENT } from './JSXElementType';
 import { getProcessingClassVNode } from '../renderer/GlobalVar';
-import { ContextType, Source } from '../renderer/Types';
+import { Source } from '../renderer/Types';
 import { BELONG_CLASS_VNODE_KEY } from '../renderer/vnode/VNode';
 import { Context, ExoticComponent, InulaElement, InulaNode, KVObject, ConsumerProps, ProviderProps } from '../types';
 import { ReduxStoreHandler } from 'src/inulax/adapters/redux';
 import { Subscription } from 'src/inulax/adapters/subscription';
 import { OriginalComponent } from '../inulax/adapters/reduxReact';
-import { MergePropsP } from '../../build';
 
 /**
  * vtype 节点的类型，这里固定是element
@@ -117,7 +116,7 @@ function buildElement(isClone, type, setting, children) {
 //type 细节化 todo 参考react
 export function createElement<P>(
   //仍然需要修改 MergeProps定义问题
-  type: OriginalComponent<MergedProps>,
+  type: OriginalComponent<P>,
   setting?: P | null,
   ...children: InulaNode[]
 ): InulaElement<P>;
@@ -145,7 +144,7 @@ export function createElement<P>(
     | ExoticComponent<ConsumerProps<P>>
     | Context<{ store: ReduxStoreHandler; subscription: Subscription }>
     | ExoticComponent<ProviderProps<{ store: ReduxStoreHandler; subscription: Subscription }>>
-    | OriginalComponent<MergeProps>,
+    | OriginalComponent<P>,
   setting?: (P & { children?: InulaNode }) | null,
   ...children: InulaNode[]
 ): InulaElement | InulaElement<P> {
