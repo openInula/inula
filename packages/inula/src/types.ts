@@ -17,7 +17,7 @@ import { Component } from './renderer/components/BaseClassComponent';
 import { MutableRef, RefCallBack, RefObject } from './renderer/hooks/HookType';
 
 import * as Event from './EventTypes';
-import Element = JSX.Element;
+//import Element = JSX.Element;
 
 //
 // --------------------------------- Inula Base Types ----------------------------------
@@ -56,12 +56,12 @@ export interface ExoticComponent<P = KVObject> {
   (props: P): InulaElement | null;
 }
 
-interface ProviderProps<T> {
+export interface ProviderProps<T> {
   value: T;
   children?: InulaNode | undefined;
 }
 
-interface ConsumerProps<T> {
+export interface ConsumerProps<T> {
   children: (value: T) => InulaNode;
 }
 
@@ -1131,9 +1131,10 @@ export interface HTMLAttributes<RefType extends EventTarget = EventTarget>
   itemref?: string | undefined | SignalLike<string | undefined>;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export declare namespace JSX {
   // JSX内在元素的接口，该接口下声明了JSX中的内置标签及其具有的属性，如<input>标签和<input>标签的value属性
-  interface IntrinsicElements {
+  export interface IntrinsicElements {
     // HTML
     a: HTMLAttributes<HTMLAnchorElement>;
     abbr: HTMLAttributes<HTMLElement>;
@@ -1262,7 +1263,7 @@ export declare namespace JSX {
     ref: Ref<any>;
   }
   // 该接口声明了JSX中组件的元素、属性和子元素的类型
-  interface Element {
+  export interface Element {
     type?: any;
     props?: any;
     key?: any;

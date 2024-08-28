@@ -15,21 +15,13 @@
 
 import { TYPE_COMMON_ELEMENT } from './JSXElementType';
 import { getProcessingClassVNode } from '../renderer/GlobalVar';
-import { Source } from '../renderer/Types';
+import { ContextType, Source } from '../renderer/Types';
 import { BELONG_CLASS_VNODE_KEY } from '../renderer/vnode/VNode';
-import {
-  type BasicStateAction,
-  ChildrenType,
-  type Dispatch,
-  DOMAttributes,
-  HTMLAttributes,
-  InulaElement,
-  InulaNode,
-  JSX,
-  KVObject,
-} from '../types';
-import type { Trigger } from '../renderer/hooks/HookType';
-import { useStateImpl } from '../renderer/hooks/UseStateHook';
+import { Context, ExoticComponent, InulaElement, InulaNode, KVObject, ConsumerProps, ProviderProps } from '../types';
+import { ReduxStoreHandler } from 'src/inulax/adapters/redux';
+import { Subscription } from 'src/inulax/adapters/subscription';
+import { OriginalComponent } from '../inulax/adapters/reduxReact';
+import { MergePropsP } from '../../build';
 
 /**
  * vtype 节点的类型，这里固定是element
@@ -123,17 +115,37 @@ function buildElement(isClone, type, setting, children) {
 
 // 创建Element结构体，供JSX编译时调用
 //type 细节化 todo 参考react
-//解决 例如 div a这样的
+export function createElement<P>(
+  //仍然需要修改 MergeProps定义问题
+  type: OriginalComponent<MergedProps>,
+  setting?: P | null,
+  ...children: InulaNode[]
+): InulaElement<P>;
+
 export function createElement(
-  type: string,
+  type: ExoticComponent<ProviderProps<{ store: ReduxStoreHandler; subscription: Subscription }>>,
+  setting: { [p: string]: any } | null,
+  ...children: InulaNode[]
+): InulaElement;
+
+export function createElement(
+  type: ExoticComponent<ConsumerProps<{ store: ReduxStoreHandler; subscription: Subscription }>>,
   setting: { [key: string]: any } | null,
   ...children: InulaNode[]
 ): InulaElement;
-//解决元素型
+
+// 重载签名 2：处理 InulaElement 类型
 export function createElement<P>(type: InulaElement<P>, setting?: P | null, ...children: InulaNode[]): InulaElement<P>;
 
+// 实现签名：与重载签名一致的实现
 export function createElement<P>(
-  type: string | InulaElement<P>,
+  type:
+    | string
+    | InulaElement<P>
+    | ExoticComponent<ConsumerProps<P>>
+    | Context<{ store: ReduxStoreHandler; subscription: Subscription }>
+    | ExoticComponent<ProviderProps<{ store: ReduxStoreHandler; subscription: Subscription }>>
+    | OriginalComponent<MergeProps>,
   setting?: (P & { children?: InulaNode }) | null,
   ...children: InulaNode[]
 ): InulaElement | InulaElement<P> {

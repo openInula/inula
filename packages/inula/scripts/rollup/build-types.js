@@ -53,7 +53,27 @@ export function cleanUp(folders) {
     },
   };
 }
+/**
+ * 自定义插件：处理生成的 .d.ts 文件
+ * 例如，移除内部方法或不需要的类型定义。
+ * @returns {{writeBundle(): void, name: string}}
+ */
+function processDTS() {
+  return {
+    name: 'process-dts',
+    writeBundle() {
+      const dtsFilePath = path.resolve('./build/@types/index.d.ts');
+      if (fs.existsSync(dtsFilePath)) {
+        let dtsContent = fs.readFileSync(dtsFilePath, 'utf-8');
+        dtsContent = dtsContent.replace(/^export\s+.*_.*;/gm, '');
+        dtsContent = dtsContent.replace(/import\("openinula"\)/g, 'import { InulaNode } from "openinula"');
 
+        // 写回处理后的 .d.ts 文件
+        fs.writeFileSync(dtsFilePath, dtsContent, 'utf-8');
+      }
+    },
+  };
+}
 function buildTypeConfig() {
   return {
     input: ['./build/@types/index.d.ts'],
@@ -61,7 +81,7 @@ function buildTypeConfig() {
       file: './build/@types/index.d.ts',
       format: 'es',
     },
-    plugins: [dts(), cleanUp(['./build/@types/'])],
+    plugins: [dts(), processDTS(), cleanUp(['./build/@types/'])],
   };
 }
 
