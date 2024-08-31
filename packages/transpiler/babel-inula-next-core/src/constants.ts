@@ -46,6 +46,7 @@ export const originalImportMap = Object.fromEntries(
     'createTextNode',
     'updateText',
     'insertNode',
+    'appendNode',
     'ForNode',
     'CondNode',
     'ExpNode',

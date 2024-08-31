@@ -34,7 +34,7 @@ export default class HTMLGenerator extends HTMLPropGenerator {
       const [initStatements, childName] = this.generateChild(child);
       childNames.push(childName);
       this.addInitStatement(...initStatements);
-      if (child.type === 'html') {
+      if (child.type === 'html' || child.type === 'text') {
         this.addInitStatement(this.appendChild(dlNodeName, childName));
       } else {
         mutable = true;
@@ -76,11 +76,12 @@ export default class HTMLGenerator extends HTMLPropGenerator {
 
   /**
    * @View
-   * ${dlNodeName}.appendChild(${childNodeName})
+   * appendNode(${dlNodeName}, ${childNodeName})
    */
   private appendChild(dlNodeName: string, childNodeName: string): t.Statement {
     return this.t.expressionStatement(
-      this.t.callExpression(this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier('appendChild')), [
+      this.t.callExpression(this.t.identifier(this.importMap.appendNode), [
+        this.t.identifier(dlNodeName),
         this.t.identifier(childNodeName),
       ])
     );
