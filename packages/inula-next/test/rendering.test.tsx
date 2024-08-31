@@ -53,10 +53,9 @@ describe('rendering', () => {
     });
 
     // TODO: SHOULD FIX
-    it.fails('should support dom has multiple layers ', ({ container }) => {
+    it('should support dom has multiple layers ', ({ container }) => {
       function App() {
         let count = 0;
-
         return (
           <div>
             Header
@@ -71,37 +70,50 @@ describe('rendering', () => {
 
       render(App, container);
       expect(container).toMatchInlineSnapshot(`
-      <div>
         <div>
-          <h1>
-            hello world!!!
-          </h1>
-          <section>
-            <button>
-              Add, Now is
-              0
-            </button>
-          </section>
+          <div>
+            Header
+            <h1>
+              hello world!!!
+            </h1>
+            <section>
+              <button>
+                Add, Now is
+                0
+              </button>
+            </section>
+            Footer
+          </div>
         </div>
-      </div>
-    `);
+      `);
     });
 
     // TODO: SHOULD FIX
-    it.fails('should support tag, text and variable mixing', ({ container }) => {
+    it('should support tag, text and variable mixing', ({ container }) => {
       function App() {
         let count = 'world';
 
         return (
           <section>
-            count: {count}
-            <button>Add, count is {count}</button>
+            count:{count}
+            <button>Add, count is{count}</button>
           </section>
         );
       }
 
       render(App, container);
-      expect(container).toMatchInlineSnapshot();
+      expect(container).toMatchInlineSnapshot(`
+        <div>
+          <section>
+            count:
+            world
+            <button>
+              Add, count is
+              world
+            </button>
+          </section>
+        </div>
+      `);
     });
   });
 
