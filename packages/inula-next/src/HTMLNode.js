@@ -181,6 +181,13 @@ export function insertNode(el, node, position) {
   DLNode.addParentEl([node], el);
 }
 
+export function appendNode(el, child) {
+  // ---- Set _$nodes
+  if (!el._$nodes) el._$nodes = Array.from(el.childNodes);
+  el._$nodes.push(child);
+
+  el.appendChild(child);
+}
 /**
  * @brief An inclusive assign prop function that accepts any type of prop
  * @param el

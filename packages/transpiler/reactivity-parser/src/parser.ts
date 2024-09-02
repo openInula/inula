@@ -180,9 +180,15 @@ export class ReactivityParser {
       });
       // ---- Recursively generate mutable particles for static HTMLUnit children
       unit.children
-        ?.filter(child => child.type === 'html' && this.t.isStringLiteral(child.tag))
+        ?.filter(
+          child =>
+            (child.type === 'html' && this.t.isStringLiteral(child.tag)) ||
+            (child.type === 'text' && this.t.isStringLiteral(child.content))
+        )
         .forEach((child, idx) => {
-          generateMutableUnit(child as HTMLUnit, [...path, idx]);
+          if (child.type === 'html') {
+            generateMutableUnit(child as HTMLUnit, [...path, idx]);
+          }
         });
     };
     generateMutableUnit(htmlUnit);

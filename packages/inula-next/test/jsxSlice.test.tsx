@@ -225,7 +225,7 @@ describe('JSX Element Usage in Various Contexts', () => {
       expect(container.innerHTML).toBe('<div class="outer"><p class="inner"><span>Nested content</span></p></div>');
     });
 
-    it.fails('should correctly render a mix of HTML elements and text', ({ container }) => {
+    it('should correctly render a mix of HTML elements and text', ({ container }) => {
       function App() {
         return (
           <div>
@@ -237,7 +237,7 @@ describe('JSX Element Usage in Various Contexts', () => {
       expect(container.innerHTML).toBe('<div>Text before <span>Element</span> Text after</div>');
     });
 
-    it.fails('should correctly render text on both sides of an element', ({ container }) => {
+    it('should correctly render text on both sides of an element', ({ container }) => {
       function App() {
         return (
           <div>
@@ -249,29 +249,25 @@ describe('JSX Element Usage in Various Contexts', () => {
       expect(container.innerHTML).toBe('<div>Left side text <strong>Bold text</strong> Right side text</div>');
     });
 
-    it.fails(
-      'should correctly render a mix of curly braces, text, and elements in different orders',
-      ({ container }) => {
-        function App() {
-          const name = 'World';
-          return (
-            <div>
-              {/* Curly braces, then text, then element */}
-              {name}, Hello <strong>!</strong>
-              {/* Element, then curly braces, then text */}
-              <em>Greetings</em> {name} to you
-              {/* Text, then element, then curly braces */}
-              Welcome <span>dear</span> {name}
-            </div>
-          );
-        }
-        render(App, container);
-        expect(container.innerHTML).toBe(
-          '<div>World, Hello <strong>!</strong><em>Greetings</em> World to you' +
-            'Welcome <span>dear</span> World</div>'
+    it('should correctly render a mix of curly braces, text, and elements in different orders', ({ container }) => {
+      function App() {
+        const name = 'World';
+        return (
+          <div>
+            {/* Curly braces, then text, then element */}
+            {name}, Hello <strong>!</strong>
+            {/* Element, then curly braces, then text */}
+            <em>Greetings</em> {name} to you
+            {/* Text, then element, then curly braces */}
+            Welcome <span>dear</span> {name}
+          </div>
         );
       }
-    );
+      render(App, container);
+      expect(container.innerHTML).toBe(
+        '<div>World, Hello <strong>!</strong><em>Greetings</em> World to you' + 'Welcome <span>dear</span> World</div>'
+      );
+    });
   });
   describe('update', () => {
     it('should support variable assignment of JSX elements and updates', ({ container }) => {
