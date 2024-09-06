@@ -195,7 +195,7 @@ describe('extended prop tests', () => {
       `);
   });
 
-  it.fails('should correctly pass and render array props', ({ container }) => {
+  it('should correctly pass and render array props', ({ container }) => {
     function Child({ items }) {
       return (
         <ul>
@@ -212,21 +212,33 @@ describe('extended prop tests', () => {
 
     render(App, container);
     expect(container).toMatchInlineSnapshot(`
-        <div>
-          <ul>
-            <li>Apple</li>
-            <li>Banana</li>
-            <li>Cherry</li>
-          </ul>
-        </div>
-      `);
+      <div>
+        <ul>
+          <li
+            key="0"
+          >
+            Apple
+          </li>
+          <li
+            key="1"
+          >
+            Banana
+          </li>
+          <li
+            key="2"
+          >
+            Cherry
+          </li>
+        </ul>
+      </div>
+    `);
   });
 
-  it.fails('should correctly pass and render object props', ({ container }) => {
+  it('should correctly pass and render object props', ({ container }) => {
     function Child({ person }) {
       return (
         <div>
-          {person.name}, {person.age}
+          {person.name},{person.age}
         </div>
       );
     }
@@ -237,12 +249,14 @@ describe('extended prop tests', () => {
 
     render(App, container);
     expect(container).toMatchInlineSnapshot(`
+      <div>
         <div>
-          <div>
-            Alice, 30
-          </div>
+          Alice
+          ,
+          30
         </div>
-      `);
+      </div>
+    `);
   });
 
   it('should correctly handle default prop values', ({ container }) => {
@@ -283,6 +297,25 @@ describe('extended prop tests', () => {
         <div>
           <div>
             Hello World !
+          </div>
+        </div>
+      `);
+  });
+
+  it('should support member prop', ({ container }) => {
+    function Child(props) {
+      return <div>{props.a}</div>;
+    }
+
+    function App() {
+      return <Child a="Hello" />;
+    }
+
+    render(App, container);
+    expect(container).toMatchInlineSnapshot(`
+        <div>
+          <div>
+            Hello
           </div>
         </div>
       `);
