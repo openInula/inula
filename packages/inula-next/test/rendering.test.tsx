@@ -61,7 +61,7 @@ describe('rendering', () => {
             Header
             <h1>hello world!!!</h1>
             <section>
-              <button>Add, Now is {count}</button>
+              <button>Add, Now is{count}</button>
             </section>
             Footer
           </div>
