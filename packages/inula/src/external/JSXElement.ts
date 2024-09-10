@@ -18,9 +18,9 @@ import { getProcessingClassVNode } from '../renderer/GlobalVar';
 import { Source } from '../renderer/Types';
 import { BELONG_CLASS_VNODE_KEY } from '../renderer/vnode/VNode';
 import { Context, ExoticComponent, InulaElement, InulaNode, KVObject, ConsumerProps, ProviderProps } from '../types';
-import { ReduxStoreHandler } from 'src/inulax/adapters/redux';
-import { Subscription } from 'src/inulax/adapters/subscription';
 import { OriginalComponent } from '../inulax/adapters/reduxReact';
+import { ReduxStoreHandler } from '../inulax/adapters/redux';
+import { Subscription } from '../inulax/adapters/subscription';
 
 /**
  * vtype 节点的类型，这里固定是element
@@ -76,7 +76,7 @@ function mergeDefault(sourceObj, defaultObj) {
 // ['key', 'ref', '__source', '__self']属性不从setting获取
 const keyArray = ['key', 'ref', '__source', '__self'];
 //这个没太懂 todo
-function buildElement(isClone, type, setting, children) {
+function buildElement(isClone: boolean, type, setting, children: InulaNode[]) {
   // setting中的值优先级最高，clone情况下从 type 中取值，创建情况下直接赋值为 null
   const key = setting && setting.key !== undefined ? String(setting.key) : isClone ? type.key : null;
   const ref = setting && setting.ref !== undefined ? setting.ref : isClone ? type.ref : null;
@@ -144,6 +144,7 @@ export function createElement<P>(
     | ExoticComponent<ConsumerProps<P>>
     | Context<{ store: ReduxStoreHandler; subscription: Subscription }>
     | ExoticComponent<ProviderProps<{ store: ReduxStoreHandler; subscription: Subscription }>>
+    // todo MergedProps 接口？
     | OriginalComponent<P>,
   setting?: (P & { children?: InulaNode }) | null,
   ...children: InulaNode[]
@@ -160,7 +161,6 @@ export function cloneElement<P>(
   setting: Partial<P> | null,
   ...children: InulaNode[]
 ): InulaElement<P>;
-
 export function cloneElement<P>(
   element: InulaElement<P>,
   setting?: Partial<P> | null,
