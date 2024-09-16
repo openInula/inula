@@ -14,7 +14,6 @@
  */
 
 import inulaRequest from './src/inulaRequest';
-import useIR from './src/core/useIR/useIR';
 
 const {
   create,
@@ -60,7 +59,6 @@ export {
   isIrError,
   spread,
   IrHeaders,
-  useIR,
   // 兼容axios
   Axios,
   AxiosError,

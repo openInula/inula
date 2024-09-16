@@ -13,23 +13,16 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Inula, { Component } from 'openinula';
 import { injectIntl } from '../../index';
 
-class Example5 extends Component<any, any, any> {
-  public constructor(props: any, context) {
-    super(props, context);
-  }
-
-  render() {
-    const { intl } = this.props as any;
-    return (
-      <div className="card">
-        <h2>injectIntl方式测试Demo</h2>
-        <pre>{intl.formatMessage({ id: 'text4' })}</pre>
-      </div>
-    );
-  }
-}
-
+const Example5 = ({ intl }) => {
+  // 使用intl.formatMessage来获取国际化消息
+  console.log(intl + '------------intl-------------');
+  return (
+    <div className="card">
+      <h2>injectIntl方式测试Demo</h2>
+      <pre>{intl.formatMessage({ id: 'text4' })}</pre>
+    </div>
+  );
+};
 export default injectIntl(Example5);

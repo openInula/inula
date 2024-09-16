@@ -16,9 +16,12 @@
 import ruleUtils from '../utils/parseRuleUtils';
 import { LexerInterface } from '../types/interfaces';
 
+/**
+ * 词法解析器，主要根据设计的规则对message进行处理成Token
+ */
 class Lexer<T> implements LexerInterface<T> {
   readonly startState: string;
-  readonly states: Record<string, any>;
+  readonly unionReg: Record<string, any>;
   private buffer = '';
   private stack: string[] = [];
   private index = 0;
@@ -28,19 +31,23 @@ class Lexer<T> implements LexerInterface<T> {
   private state = '';
   private groups: string[] = [];
   private error: Record<string, any> | undefined;
-  private regexp;
+  private regexp: any;
   private fast: Record<string, unknown> = {};
   private queuedGroup: string | null = '';
   private value = '';
 
   constructor(unionReg: Record<string, any>, startState: string) {
     this.startState = startState;
-    this.states = unionReg;
+    this.unionReg = unionReg;
     this.buffer = '';
     this.stack = [];
     this.reset();
   }
 
+  /**
+   *  根据新的消息重置解析器
+   * @param data 消息数据
+   */
   public reset(data?: string) {
     this.buffer = data || '';
     this.index = 0;
@@ -57,7 +64,7 @@ class Lexer<T> implements LexerInterface<T> {
       return;
     }
     this.state = state;
-    const info = this.states[state];
+    const info = this.unionReg[state];
     this.groups = info.groups;
     this.error = info.error;
     this.regexp = info.regexp;
@@ -73,7 +80,7 @@ class Lexer<T> implements LexerInterface<T> {
     this.setState(state);
   }
 
-  private getGroup(match: Record<string, any>) {
+  private getGroup(match: Record<string, object>) {
     const groupCount = this.groups.length;
     for (let i = 0; i < groupCount; i++) {
       if (match[i + 1] !== undefined) {
@@ -87,7 +94,9 @@ class Lexer<T> implements LexerInterface<T> {
     return this.value;
   }
 
-  // 迭代获取下一个 token
+  /**
+   * 迭代获取下一个 token
+   */
   public next() {
     const index = this.index;
 
@@ -112,7 +121,6 @@ class Lexer<T> implements LexerInterface<T> {
     const regexp = this.regexp;
     regexp.lastIndex = index;
     const match = getMatch(regexp, buffer);
-
     const error = this.error;
     if (match == null) {
       return this.getToken(error, buffer.slice(index, buffer.length), index);
@@ -131,9 +139,9 @@ class Lexer<T> implements LexerInterface<T> {
   }
 
   /**
-   *  獲取Token
-   * @param group 解析模板后獲得的屬性值
-   * @param text 文本屬性的信息
+   * 获取Token
+   * @param group 解析模板后获得的属性值
+   * @param text 文本属性的信息
    * @param offset 偏移量
    * @private
    */
@@ -187,7 +195,7 @@ class Lexer<T> implements LexerInterface<T> {
     return token;
   }
 
-  // 增加迭代器
+  // 增加迭代器，允许逐个访问集合中的元素方法
   [Symbol.iterator]() {
     return {
       next: (): IteratorResult<T> => {
@@ -198,9 +206,15 @@ class Lexer<T> implements LexerInterface<T> {
   }
 }
 
+/**
+ * 根据正则表达式，获取匹配到message的值
+ * 索引为 0 的元素是完整的匹配结果。
+ * 索引为 1、2、3 等的元素是正则表达式中指定的捕获组的匹配结果。
+ */
 const getMatch = ruleUtils.checkSticky()
   ? // 正则表达式具有 sticky 标志
-    (regexp, buffer) => regexp.exec(buffer)
+    (regexp: any, buffer: string) => regexp.exec(buffer)
   : // 正则表达式具有 global 标志,匹配的字符串长度为 0，则表示匹配失败
-    (regexp, buffer) => (regexp.exec(buffer)[0].length === 0 ? null : regexp.exec(buffer));
+    (regexp: any, buffer: string) => (regexp.exec(buffer)[0].length === 0 ? null : regexp.exec(buffer));
+
 export default Lexer;

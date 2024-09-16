@@ -16,6 +16,7 @@
 import { IrProgressEvent, IrRequestConfig, IrResponse } from '../types/interfaces';
 import IrError from '../core/IrError';
 import CancelError from '../cancel/CancelError';
+import { calculateTransRate } from '../utils/dataUtils/calculateTransRate';
 
 function processUploadProgress(
   onUploadProgress: (progressEvent: IrProgressEvent) => void | null,
@@ -42,15 +43,29 @@ function processUploadProgress(
 
     const handleUploadProgress = () => {
       const xhr = new XMLHttpRequest();
+      let loadedBytes = 0;
+      const calculate = calculateTransRate(50, 250);
 
       // 添加 progress 事件监听器
       xhr.upload.addEventListener('progress', event => {
-        if (event.lengthComputable) {
-          // 可以计算上传进度
-          onUploadProgress!({ loaded: event.loaded, total: event.total });
-        } else {
-          onUploadProgress!({ loaded: event.loaded, total: totalBytesToUpload });
-        }
+        const loaded = event.loaded;
+        const total = event.lengthComputable ? event.total : undefined;
+        const progressBytes = loaded - loadedBytes;
+        const rate = calculate(progressBytes);
+        const inRange = total && loaded <= total;
+        loadedBytes = loaded;
+        const feedback = {
+          loaded,
+          total,
+          progress: total ? loaded / total : undefined,
+          bytes: progressBytes,
+          rate: rate ?? undefined,
+          estimated: rate && total && inRange ? (total - loaded) / rate : undefined,
+          event,
+          upload: true,
+        };
+        // 可以计算上传进度
+        onUploadProgress!(feedback);
       });
 
       // 添加 readystatechange 事件监听器，当 xhr.readyState 变更时执行回调函数
@@ -67,7 +82,16 @@ function processUploadProgress(
                 parsedText = xhr.responseText;
             }
           } catch (e) {
-            reject('parse error');
+            const responseData = {
+              data: parsedText,
+              status: xhr.status,
+              statusText: xhr.statusText,
+              headers: xhr.getAllResponseHeaders(),
+              config: config,
+              request: xhr,
+            };
+            const error = new IrError('parse error', '', config, xhr, responseData);
+            reject(error);
           }
           const response: IrResponse = {
             data: parsedText,

@@ -67,50 +67,51 @@ export function isPromise(obj: any): boolean {
   return isObject(obj) && typeof obj.then === 'function';
 }
 
-export function isSame(x: unknown, y: unknown): boolean {
+export function isSame(obj1: unknown, obj2: unknown) {
   // 如果两个对象是同一个引用，直接返回true
-  if (x === y) {
+  if (obj1 === obj2) {
     return true;
   }
-  // 如果两个对象类型不同，直接返回false
-  if (typeof x !== typeof y) {
+  // 如果两个对象的类型不同，直接返回false
+  if (typeof obj1 !== typeof obj2) {
     return false;
   }
-  // 此时x和y类型一致，若都为undefined或null返回true，但也有可能此时为一个对象和null，这种情况直接比较
+  // 此时obj1和obj2类型一致，若都为undefined或null返回true，但也有可能此时为一个对象和null，这种情况直接比较对象
   // typeof null === 'object'
-  if (x == null || y == null) {
-    return x === y;
+  if (obj1 == null || obj2 == null) {
+    return obj1 === obj2;
   }
-  // 如果两个对象都是基本类型，比较他们的值是否相等
-  if (typeof x !== 'object') {
-    return x === y;
+  // 如果两个对象都是基本类型，比较它们的值是否相等
+  if (typeof obj1 !== 'object') {
+    return obj1 === obj2;
   }
-  // 如果两个对象都是数组，比较他们的长度是否相等，然后递归比较每个元素是否相等
-  if (Array.isArray(x) && Array.isArray(y)) {
-    if (x.length !== y.length) {
+  // 如果两个对象都是数组，比较它们的长度是否相等，然后递归比较每个元素是否相等
+  if (Array.isArray(obj1) && Array.isArray(obj2)) {
+    if (obj1.length !== obj2.length) {
       return false;
     }
-    for (let i = 0; i < x.length; i++) {
-      if (!isSame(x[i], y[i])) {
+    for (let i = 0; i < obj1.length; i++) {
+      if (!isSame(obj1[i], obj2[i])) {
         return false;
       }
     }
     return true;
   }
-  // 两个对象都是普通对象，首先比较他们的属性数量是否相等，然后递归比较每个属性的值是否相等
-  if (typeof x === 'object' && typeof y === 'object') {
-    const keys1 = Object.keys(x!).sort();
-    const keys2 = Object.keys(y!).sort();
+  // 如果两个对象都是普通对象，比较它们的属性数量是否相等，然后递归比较每个属性的值是否相等
+  if (typeof obj1 === 'object') {
+    const keys1 = Object.keys(obj1).sort();
+    const keys2 = Object.keys(obj2).sort();
     if (keys1.length !== keys2.length) {
       return false;
     }
     for (let i = 0; i < keys1.length; i++) {
-      if (!isSame(x![keys1[i]], y![keys2[i]])) {
+      if (!isSame(obj1[keys1[i]], obj2[keys2[i]])) {
         return false;
       }
     }
     return true;
   }
+  // 其他情况，返回false
   return false;
 }
 

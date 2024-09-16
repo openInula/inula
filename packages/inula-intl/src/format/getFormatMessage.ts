@@ -19,19 +19,21 @@ import I18n from '../core/I18n';
 import { MessageDescriptor, MessageOptions } from '../types/interfaces';
 import { CompiledMessage } from '../types/types';
 import creatI18nCache from './cache/cache';
+import { formatElements } from '../utils/formatElements';
 
 export function getFormatMessage(
   i18n: I18n,
   id: MessageDescriptor | string,
   values: Record<string, unknown> | undefined = {},
-  options: MessageOptions = {}
+  options: MessageOptions = {},
+  components: any
 ) {
-  let { message, context } = options;
+  let { messages, context } = options;
   const { formatOptions } = options;
   const cache = i18n.cache ?? creatI18nCache();
   if (typeof id !== 'string') {
     values = values || id.defaultValues;
-    message = id.message || id.defaultMessage;
+    messages = id.messages || id.defaultMessage;
     context = id.context;
     id = id.id;
   }
@@ -42,7 +44,7 @@ export function getFormatMessage(
   const messageUnavailable = isMissingContextMessage || isMissingMessage;
 
   // 对错误消息进行处理
-  const messageError = i18n.error;
+  const messageError = i18n.onError;
   if (messageError && messageUnavailable) {
     if (typeof messageError === 'function') {
       return messageError(i18n.locale, id, context);
@@ -53,14 +55,17 @@ export function getFormatMessage(
 
   let compliedMessage: CompiledMessage;
   if (context) {
-    compliedMessage = i18n.messages[context][id] || message || id;
+    compliedMessage = i18n.messages[context][id] || messages || id;
   } else {
-    compliedMessage = i18n.messages[id] || message || id;
+    compliedMessage = i18n.messages[id] || messages || id;
   }
 
-  // 对解析的messages进行parse解析，并输出解析后的Token
+  // 对解析的message进行parse解析，并输出解析后的Token
   compliedMessage = typeof compliedMessage === 'string' ? utils.compile(compliedMessage) : compliedMessage;
 
   const translation = new Translation(compliedMessage, i18n.locale, i18n.locales, i18n.localeConfig, cache);
-  return translation.translate(values, formatOptions);
+  const formatResult = translation.translate(values, formatOptions);
+
+  // 如果存在inula元素，则返回包含格式化的Inula元素的数组
+  return formatElements(formatResult, components);
 }

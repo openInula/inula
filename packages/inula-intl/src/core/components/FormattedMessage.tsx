@@ -12,7 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import Inula, { Children, Fragment } from 'openinula';
+import { Children, Fragment } from 'openinula';
 import { FormattedMessageProps } from '../../types/interfaces';
 import useI18n from '../hook/useI18n';
 
@@ -22,28 +22,17 @@ import useI18n from '../hook/useI18n';
  * @constructor
  */
 function FormattedMessage(props: FormattedMessageProps) {
-  const { i18n } = useI18n();
-  const {
-    id,
-    values,
-    messages,
-    formatOptions,
-    context,
-    tagName: TagName = Fragment,
-    children,
-    comment,
-    useMemorize,
-  }: any = props;
+  const { formatMessage } = useI18n();
+  const { id, values, messages, formatOptions, context, tagName: TagName = Fragment, children, comment }: any = props;
 
   const formatMessageOptions = {
     comment,
     messages,
     context,
-    useMemorize,
     formatOptions,
   };
 
-  let formattedMessage = i18n.formatMessage(id, values, formatMessageOptions);
+  const formattedMessage = formatMessage(id, values, formatMessageOptions);
 
   if (typeof children === 'function') {
     const childNodes = Array.isArray(formattedMessage) ? formattedMessage : [formattedMessage];

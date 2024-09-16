@@ -18,6 +18,7 @@ function getType(input: any): string {
   return str.slice(8, -1).toLowerCase();
 }
 
+// 类型检查器
 const createTypeChecker = (type: string) => {
   return (input: any) => {
     return getType(input) === type.toLowerCase();
@@ -28,24 +29,25 @@ const checkObject = (input: any) => input !== null && typeof input === 'object';
 
 const checkRegExp = createTypeChecker('RegExp');
 
+// 使用正则表达式，如果对象存在则访问该属性，用来判断当前环境是否支持正则表达式sticky属性。
 const checkSticky = () => typeof new RegExp('')?.sticky === 'boolean';
 
 // 转义正则表达式中的特殊字符
-function transferReg(s: string): string {
+function transferReg(str: string): string {
   // eslint-disable-next-line
-  return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
 
-// 计算正则表达式中捕获组的数量
-function getRegGroups(s: string): number {
-  const re = new RegExp('|' + s);
+// 计算正则表达式中捕获组的数量，用以匹配（）
+function getRegGroups(str: string): number {
+  const regExp = new RegExp('|' + str);
   // eslint-disable-next-line
-  return re.exec('')?.length! - 1;
+  return regExp.exec('')?.length! - 1;
 }
 
 // 创建一个捕获组的正则表达式模式
-function getRegCapture(s: string): string {
-  return '(' + s + ')';
+function getRegCapture(str: string): string {
+  return '(' + str + ')';
 }
 
 // 将正则表达式合并为一个联合的正则表达式模式
@@ -53,7 +55,7 @@ function getRegUnion(regexps: string[]): string {
   if (!regexps.length) {
     return '(?!)';
   }
-  const source = regexps.map(s => '(?:' + s + ')').join('|');
+  const source = regexps.map(str => '(?:' + str + ')').join('|');
   return '(?:' + source + ')';
 }
 
@@ -143,7 +145,7 @@ function getRulesByArray(array: any[]) {
   return result;
 }
 
-function getRuleOptions(type, obj) {
+function getRuleOptions(type: any, obj: any) {
   // 如果 obj 不是一个对象，则将其转换为包含 'match' 属性的对象
   if (!checkObject(obj)) {
     obj = { match: obj };
@@ -182,23 +184,23 @@ function getRuleOptions(type, obj) {
   } else {
     options.match = [];
   }
-  options.match.sort((a, b) => {
+  options.match.sort((str1: string, str2: string) => {
     // 根据规则的类型进行排序，确保正则表达式排在最前面，长度较长的规则排在前面
-    if (checkRegExp(a) && checkRegExp(b)) {
+    if (checkRegExp(str1) && checkRegExp(str2)) {
       return 0;
-    } else if (checkRegExp(b)) {
+    } else if (checkRegExp(str2)) {
       return -1;
-    } else if (checkRegExp(a)) {
+    } else if (checkRegExp(str1)) {
       return +1;
     } else {
-      return b.length - a.length;
+      return str2.length - str1.length;
     }
   });
 
   return options;
 }
 
-function getRules(spec) {
+function getRules(spec: any) {
   return Array.isArray(spec) ? getRulesByArray(spec) : getRulesByObject(spec);
 }
 

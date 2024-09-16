@@ -13,16 +13,16 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Inula from 'openinula';
 import { useIntl } from '../../index';
 
 const Example1 = () => {
-  const { i18n } = useIntl();
+  const i18n = useIntl();
 
   return (
     <div className="card">
       <h2>useIntl方式测试Demo</h2>
       <pre>{i18n.formatMessage({ id: 'text1' })}</pre>
+      <pre>{i18n.$t({ id: 'text1' })}</pre>
     </div>
   );
 };

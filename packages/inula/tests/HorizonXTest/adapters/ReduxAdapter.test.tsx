@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-// @ts-ignore
+//@ts-ignore
 import * as Inula from '../../../src/index';
 import { createStore, applyMiddleware, combineReducers, bindActionCreators } from '../../../src/inulax/adapters/redux';
 import { describe, it, expect } from '@jest/globals';
@@ -181,7 +181,6 @@ describe('Redux adapter', () => {
 
     reduxStore.dispatch({ type: 'toggle' });
     reduxStore.dispatch({ type: 'toggle' });
-
     expect(counter).toBe(2); // execute dispatch two times, applyMiddleware was called same times
   });
 

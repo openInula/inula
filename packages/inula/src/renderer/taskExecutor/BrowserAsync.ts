@@ -22,13 +22,14 @@ let browserCallback = null;
 let port1: MessagePort | null = null;
 let port2: MessagePort | null = null;
 let isTestRuntime = false;
+const isFirefox = typeof window.navigator !== 'undefined' ? window.navigator.userAgent.includes('Firefox') : false;
 
 export function isOverTime() {
   return false;
 }
 
 function asyncCall() {
-  if (isTestRuntime) {
+  if (isTestRuntime || isFirefox) {
     setTimeout(callRenderTasks, 0);
   } else {
     (port2 as unknown as MessagePort).postMessage(null);

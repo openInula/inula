@@ -12,10 +12,10 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import Inula, { useRef, useState, useEffect, useMemo } from 'openinula';
+import { useRef, useState, useEffect, useMemo } from 'openinula';
 import { InjectProvider } from './InjectI18n';
 import I18n, { createI18nInstance } from '../I18n';
-import { I18nProviderProps } from '../../types/types';
+import { AllMessages, I18nProviderProps, Messages } from '../../types/types';
 
 /**
  * 用于为应用程序提供国际化的格式化功能，管理程序中的语言文本信息和本地化资源信息
@@ -23,28 +23,31 @@ import { I18nProviderProps } from '../../types/types';
  * @constructor
  */
 const I18nProvider = (props: I18nProviderProps) => {
-  const { locale, messages, children } = props;
+  const { locale, messages, children, i18n } = props;
 
-  const i18n = useMemo(() => {
-    return createI18nInstance({
-      locale: locale,
-      messages: messages,
-    });
-  }, [locale, messages]);
+  const i18nInstance =
+    i18n ||
+    useMemo(() => {
+      return createI18nInstance({
+        locale: locale,
+        messages: messages,
+      });
+    }, [locale, messages]);
 
   // 使用useRef保存上次的locale值
-  const localeRef = useRef<string | undefined>(i18n.locale);
-
-  const [context, setContext] = useState<I18n>(i18n);
+  const localeRef = useRef<string | undefined>(i18nInstance.locale);
+  const localeMessage = useRef<string | Messages | AllMessages>(i18nInstance.messages);
+  const [context, setContext] = useState<I18n>(i18nInstance);
 
   useEffect(() => {
     const handleChange = () => {
-      if (localeRef.current !== i18n.locale) {
-        localeRef.current = i18n.locale;
-        setContext(i18n);
+      if (localeRef.current !== i18nInstance.locale || localeMessage.current !== i18nInstance.messages) {
+        localeRef.current = i18nInstance.locale;
+        localeMessage.current = i18nInstance.messages;
+        setContext(i18nInstance);
       }
     };
-    let removeListener = i18n.on('change', handleChange);
+    const removeListener = i18nInstance.on('change', handleChange);
 
     // 手动触发一次 handleChange，以确保 context 的正确性
     handleChange();
@@ -53,7 +56,7 @@ const I18nProvider = (props: I18nProviderProps) => {
     return () => {
       removeListener();
     };
-  }, [i18n]);
+  }, [i18nInstance]);
 
   // 提供一个Provider组件
   return <InjectProvider value={context}>{children}</InjectProvider>;

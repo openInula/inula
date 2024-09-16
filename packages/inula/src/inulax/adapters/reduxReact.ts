@@ -18,13 +18,14 @@ import { createContext } from '../../renderer/components/context/CreateContext';
 import { createElement } from '../../external/JSXElement';
 import type { BoundActionCreator, ReduxAction, ReduxStoreHandler } from './redux';
 import { forwardRef } from '../../renderer/components/ForwardRef';
-import createSubscription, { Subscription } from './subscription';
-import { ForwardRef } from '../../types';
+import createSubscription from './subscription';
+import type { Subscription } from './subscription';
 import { isContextConsumer } from '../../external/InulaIs';
 import { getSelector } from './reduxSelector';
+import { ForwardRef } from '../../types';
 
-const DefaultContext = createContext<{ store: ReduxStoreHandler; subscription: Subscription }>(null as any);
-type Context = typeof DefaultContext;
+export const ReduxAdapterContext = createContext<{ store: ReduxStoreHandler; subscription: Subscription }>(null as any);
+type Context = typeof ReduxAdapterContext;
 type Selector = (state: unknown) => unknown;
 
 type ConnectProps = {
@@ -38,7 +39,7 @@ type WrapperInnerProps = {
 
 export function Provider({
   store,
-  context = DefaultContext,
+  context = ReduxAdapterContext,
   children,
 }: {
   store: ReduxStoreHandler;
@@ -61,7 +62,7 @@ export function Provider({
       subscription.triggerNestedSubs();
     }
     return () => {
-      subscription.trySubscribe();
+      subscription.tryUnsubscribe();
       subscription.stateChange = undefined;
     };
   }, [ctxValue, prevStoreValue]);
@@ -90,16 +91,16 @@ export function createDispatchHook(context: Context): () => BoundActionCreator {
   };
 }
 
-export const useSelector = (selector: Selector) => {
-  return createSelectorHook(DefaultContext)(selector);
+export const useSelector = (selector?: Selector) => {
+  return createSelectorHook(ReduxAdapterContext)(selector);
 };
 
 export const useDispatch = () => {
-  return createDispatchHook(DefaultContext)();
+  return createDispatchHook(ReduxAdapterContext)();
 };
 
 export const useStore = () => {
-  return createStoreHook(DefaultContext)();
+  return createStoreHook(ReduxAdapterContext)();
 };
 
 export type MapStateToPropsP<StateProps, OwnProps> = (state: any, ownProps: OwnProps) => StateProps;
@@ -112,8 +113,8 @@ export type MergePropsP<StateProps, DispatchProps, OwnProps, MergedProps> = (
   ownProps: OwnProps
 ) => MergedProps;
 
-type WrappedComponent<OwnProps> = (props: OwnProps) => ReturnType<typeof createElement>;
-export type OriginalComponent<MergedProps> = (props: MergedProps) => ReturnType<typeof createElement>;
+type WrappedComponent<OwnProps> = (props: OwnProps & WrapperInnerProps) => ReturnType<typeof createElement>;
+type OriginalComponent<MergedProps> = (props: MergedProps) => ReturnType<typeof createElement>;
 type Connector<OwnProps, MergedProps> = (Component: OriginalComponent<MergedProps>) => WrappedComponent<OwnProps>;
 export type ConnectOption<State, StateProps, OwnProps> = {
   /** @deprecated */
@@ -122,7 +123,7 @@ export type ConnectOption<State, StateProps, OwnProps> = {
   context?: Context;
   areOwnPropsEqual?: (newOwnProps: OwnProps, oldOwnProps: OwnProps) => boolean;
   areStatePropsEqual?: (newStateProps: StateProps, oldStateProps: StateProps) => boolean;
-  areStatesEqual?: (oldState: State, newState: State) => boolean;
+  areStatesEqual?: (newState: State, oldState: State) => boolean;
 };
 
 export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
@@ -131,7 +132,7 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
   mergeProps?: MergePropsP<StateProps, DispatchProps, OwnProps, MergedProps>,
   options: ConnectOption<any, StateProps, OwnProps> = {}
 ): Connector<OwnProps, MergedProps> {
-  //this component should bear the type returned from mapping functions
+  // this component should bear the type returned from mapping functions
 
   const selectorOptions = {
     mapStateToProps,
@@ -140,10 +141,10 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
     options,
   };
 
-  const { context: storeContext = DefaultContext } = options;
+  const { context: storeContext = ReduxAdapterContext } = options;
 
   return (Component: OriginalComponent<MergedProps>): WrappedComponent<OwnProps> => {
-    //this component should mimic original type of component used
+    // this component should mimic original type of component used
     const Wrapper: WrappedComponent<OwnProps> = (props: OwnProps & ConnectProps & WrapperInnerProps) => {
       const [, forceUpdate] = useReducer(s => s + 1, 0);
 
@@ -168,28 +169,25 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
         const triggerNestedSubs = subscription.triggerNestedSubs.bind(subscription);
         return [subscription, triggerNestedSubs];
       }, [store, isStoreFromProps, context]);
-
-      /**
-       * 如果在调用listener中间组件被卸载，subscription会变为空
-       * 在一开始就复制一份triggerNestedSubs保证即使组件卸载也可以正常使用
-       */
+      // 如果在调用listener中间组件被卸载subscription会变为空，
+      // 在一开始就复制一份triggerNestedSubs保证即使组件卸载也可以正常使用
 
       const overrideContext = useMemo(
         () => (isStoreFromProps ? context : { ...context, subscription }),
         [isStoreFromProps, context, subscription]
       );
 
-      // 使用Ref存储最新的子组件Props，在更新时进行比较，防止重复渲染
+      // 使用Ref存储最新的子组件Props，再更新时进行比较，防止多余的渲染
       const latestChildProps = useRef<any>();
       const latestWrappedProps = useRef(wrappedProps);
-      const childPropsFormStore = useRef<any>();
+      const childPropsFromStore = useRef<any>();
       const isRendering = useRef<boolean>(false);
 
       const selector = useMemo(() => getSelector(store, selectorOptions), [store]);
 
       const childProps = useMemo(() => {
-        return childPropsFormStore.current && wrappedProps === latestChildProps.current
-          ? childPropsFormStore.current
+        return childPropsFromStore.current && wrappedProps === latestWrappedProps.current
+          ? childPropsFromStore.current
           : selector(store.getState(), wrappedProps as OwnProps);
       }, [store, wrappedProps, latestWrappedProps]);
 
@@ -197,8 +195,8 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
         latestChildProps.current = childProps;
         latestWrappedProps.current = wrappedProps;
         isRendering.current = false;
-        if (childPropsFormStore.current) {
-          childPropsFormStore.current = null;
+        if (childPropsFromStore.current) {
+          childPropsFromStore.current = null;
           triggerNestedSubs();
         }
       });
@@ -212,14 +210,14 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
           }
           const latestStoreState = store.getState();
           const newChildProps = selector(latestStoreState, latestWrappedProps.current as OwnProps);
-          // 如果新的子组件的props和之前不同，就更新ref对象的值，并强制更新组件
+          // 如果新的子组件的 props 和之前的不同，就更新 ref 对象的值，并强制更新组件
           if (newChildProps === latestChildProps.current) {
             if (!isRendering.current) {
               triggerNestedSubs();
             }
           } else {
             latestChildProps.current = newChildProps;
-            childPropsFormStore.current = newChildProps;
+            childPropsFromStore.current = newChildProps;
             isRendering.current = true;
             forceUpdate();
           }
@@ -230,7 +228,7 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
         update();
         return () => {
           isUnsubscribe = true;
-          subscription.trySubscribe();
+          subscription.tryUnsubscribe();
           subscription.stateChange = undefined;
         };
       }, [store, subscription, selector]);
@@ -243,8 +241,8 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
     };
 
     if (options.forwardRef) {
-      const forwarded = forwardRef((props, ref) => {
-        return Wrapper({ ...props, ref: ref });
+      const forwarded = forwardRef(function (props, ref) {
+        return Wrapper({ ...props, reduxAdapterRef: ref });
       });
       return forwarded as WrappedComponent<OwnProps>;
     }
@@ -263,9 +261,10 @@ function useSelectorWithStore(store: ReduxStoreHandler, selector: Selector) {
   const state = store.getState();
   let selectedState: any;
 
-  // 检查选择器或状态自上次渲染以来是否发生了变更
+  // 检查选择器或状态是否自上次渲染以来发生了更改
   if (selector !== latestSelector.current || state !== latestState.current) {
     const newSelectedState = selector(state);
+    // 如果选择的状态发生了更改，请更新它
     if (latestSelectedState.current === undefined || newSelectedState !== latestSelectedState.current) {
       selectedState = newSelectedState;
     } else {
@@ -275,13 +274,14 @@ function useSelectorWithStore(store: ReduxStoreHandler, selector: Selector) {
     selectedState = latestSelectedState.current;
   }
 
+  // 更新最新的选择器、状态和选择的状态
   useLayoutEffect(() => {
     latestSelector.current = selector;
     latestState.current = state;
     latestSelectedState.current = selectedState;
   });
 
-  // 订阅存储并在状态变更时更新组件
+  // 订阅存储并在状态更改时更新组件
   useLayoutEffect(() => {
     const update = () => {
       const newState = store.getState();

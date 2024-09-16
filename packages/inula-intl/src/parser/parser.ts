@@ -14,23 +14,13 @@
  */
 
 import { lexer } from './parseMappingRule';
-import { RawToken, Token } from '../types/types';
+import { RawToken } from '../types/types';
 import { DEFAULT_PLURAL_KEYS } from '../constants';
 import { Content, FunctionArg, PlainArg, Select, TokenContext } from '../types/interfaces';
-import Lexer from './Lexer';
 
-const getContext = (lt: Record<string, any>): TokenContext => ({
-  offset: lt.offset,
-  line: lt.line,
-  col: lt.col,
-  text: lt.text,
-  lineNum: lt.lineBreaks,
-});
-
-export const checkSelectType = (value: string): boolean => {
-  return value === 'plural' || value === 'select' || value === 'selectordinal';
-};
-
+/**
+ *  语法解析器，根据Token,获得具备上下文的AST
+ */
 class Parser {
   cardinalKeys: string[] = DEFAULT_PLURAL_KEYS;
   ordinalKeys: string[] = DEFAULT_PLURAL_KEYS;
@@ -39,7 +29,7 @@ class Parser {
     lexer.reset(message);
   }
 
-  isSelectKeyValid(token: RawToken, type: Select['type'], value: string) {
+  isSelectKeyValid(type: Select['type'], value: string) {
     if (value[0] === '=') {
       if (type === 'select') {
         throw new Error('The key value of the select type is invalid.');
@@ -75,7 +65,7 @@ class Parser {
           break;
         }
         case 'case': {
-          this.isSelectKeyValid(token, type, token.value);
+          this.isSelectKeyValid(type, token.value);
           select.cases.push({
             key: token.value.replace(/=/g, ''),
             tokens: this.parse(isPlural),
@@ -94,6 +84,11 @@ class Parser {
     throw new Error('The message end position is invalid.');
   }
 
+  /**
+   * 解析获得的Token
+   * @param token
+   * @param isPlural
+   */
   parseToken(token: RawToken, isPlural: boolean): PlainArg | FunctionArg | Select {
     const context = getContext(token);
     const nextToken = lexer.next();
@@ -153,7 +148,12 @@ class Parser {
     }
   }
 
-  // 在根级别解析时，遇到结束符号即结束解析并返回结果；而在非根级别解析时，遇到结束符号会被视为不合法的结束位置，抛出错误
+  /**
+   * 解析方法入口
+   * 在根级别解析时，遇到结束符号即结束解析并返回结果；而在非根级别解析时，遇到结束符号会被视为不合法的结束位置，抛出错误
+   * @param isPlural  标记复数
+   * @param isRoot  标记根节点
+   */
   parse(isPlural: boolean, isRoot?: boolean): Array<Content | PlainArg | FunctionArg | Select> {
     const tokens: any[] = [];
     let content: string | Content | null = null;
@@ -200,6 +200,23 @@ class Parser {
     throw new Error('The message end position is invalid.');
   }
 }
+
+/**
+ * 获得 Token 的上下文
+ * @param Token Token
+ */
+const getContext = (Token: RawToken): TokenContext => ({
+  offset: Token.offset,
+  line: Token.line,
+  col: Token.col,
+  text: Token.text,
+  lineNum: Token.lineBreaks,
+});
+
+// 用以检查select规则中的类型
+export const checkSelectType = (value: string): boolean => {
+  return value === 'plural' || value === 'select' || value === 'selectordinal';
+};
 
 export default function parse(message: string): Array<Content | PlainArg | FunctionArg | Select> {
   const parser = new Parser(message);

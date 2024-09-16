@@ -24,7 +24,7 @@ describe('getFormatMessage', () => {
       },
     },
     locale: 'en',
-    error: 'missingMessage',
+    onError: 'missingMessage',
   });
 
   it('should return the correct translation for an existing message ID', () => {
@@ -32,7 +32,7 @@ describe('getFormatMessage', () => {
     const values = { name: 'John' };
     const expectedResult = 'Hello, John!';
 
-    const result = getFormatMessage(i18nInstance, id, values);
+    const result = getFormatMessage(i18nInstance, id, values, {}, {});
 
     expect(result).toEqual(expectedResult);
   });
@@ -41,7 +41,7 @@ describe('getFormatMessage', () => {
     const id = 'missingMessage';
     const expectedResult = 'missingMessage';
 
-    const result = getFormatMessage(i18nInstance, id);
+    const result = getFormatMessage(i18nInstance, id, {}, {}, {});
 
     expect(result).toEqual(expectedResult);
   });

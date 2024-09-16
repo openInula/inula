@@ -25,6 +25,7 @@ export {
   connect,
   createSelectorHook,
   createDispatchHook,
+  ReduxAdapterContext,
 } from './reduxReact';
 
 export type ReduxStoreHandler<T = any> = {
@@ -91,6 +92,7 @@ function mergeData(state, data) {
 }
 
 export function createStore(reducer: Reducer, preloadedState?: any, enhancers?: StoreEnhancer): ReduxStoreHandler {
+  // 兼容redux可以不输入第二个参数preloadedState
   if (typeof preloadedState === 'function' && typeof enhancers === 'undefined') {
     enhancers = preloadedState;
     preloadedState = undefined;
@@ -170,7 +172,7 @@ function applyMiddlewares(createStore: StoreCreator, middlewares: ReduxMiddlewar
       dispatch = middleware(storeObj)(dispatch);
     });
     storeObj.dispatch = dispatch;
-    return storeObj;
+    return { ...storeObj, dispatch: dispatch };
   };
 }
 

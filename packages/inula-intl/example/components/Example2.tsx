@@ -12,7 +12,6 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import Inula from 'openinula';
 import { FormattedMessage } from '../../index';
 
 const Example2 = () => {
@@ -21,6 +20,9 @@ const Example2 = () => {
       <h2>FormattedMessage方式测试Demo</h2>
       <pre>
         <FormattedMessage id="text2" />
+      </pre>
+      <pre>
+        <FormattedMessage id="text5" values={{ testComponent1: <b>123</b>, testComponent2: <b>456</b> }} />
       </pre>
     </div>
   );
