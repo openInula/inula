@@ -65,16 +65,30 @@ function processDTS() {
       const dtsFilePath = path.resolve('./build/@types/index.d.ts');
       if (fs.existsSync(dtsFilePath)) {
         let dtsContent = fs.readFileSync(dtsFilePath, 'utf-8');
+
+        // 删除所有带有下划线的 export 声明
         dtsContent = dtsContent.replace(/^export\s+.*_.*;/gm, '');
-        //todo 这块如何优化 index.ts 的全部函数
+
+        // 替换特定的导入路径
         dtsContent = dtsContent.replace(/import\("openinula"\)/g, 'import { InulaNode } from "openinula"');
 
-        // 写回处理后的 .d.ts 文件
+        // 处理 .d.ts 文件中所有导出的函数
+        dtsContent = dtsContent.replace(
+          /export\s+(function|const|let|var|type|interface)\s+(\w+)\s*(:|\()/g,
+          (match, type, name) => {
+            if (type === 'function') {
+              return `export function ${name}`;
+            }
+            return match;
+          }
+        );
         fs.writeFileSync(dtsFilePath, dtsContent, 'utf-8');
       }
     },
   };
 }
+
+module.exports = processDTS;
 function buildTypeConfig() {
   return {
     input: ['./build/@types/index.d.ts'],
