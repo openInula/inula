@@ -278,11 +278,13 @@ describe('extended prop tests', () => {
       `);
   });
 
-  it.fails('should correctly spread props', ({ container }) => {
+  it('should correctly spread props', ({ container }) => {
     function Child(props) {
       return (
         <div>
-          {props.a} {props.b} {props.c}
+          {props.a}
+          {props.b}
+          {props.c}
         </div>
       );
     }
@@ -296,7 +298,9 @@ describe('extended prop tests', () => {
     expect(container).toMatchInlineSnapshot(`
         <div>
           <div>
-            Hello World !
+            Hello
+            World
+            !
           </div>
         </div>
       `);
@@ -321,9 +325,9 @@ describe('extended prop tests', () => {
       `);
   });
 
-  it.fails('should handle props without values', ({ container }) => {
+  it('should handle props without values', ({ container }) => {
     function Child({ isDisabled }) {
-      return <button disabled={isDisabled}>Click me</button>;
+      return <button disabled={isDisabled}>Click me{isDisabled + ''}</button>;
     }
 
     function App() {
@@ -332,12 +336,15 @@ describe('extended prop tests', () => {
 
     render(App, container);
     expect(container).toMatchInlineSnapshot(`
-        <div>
-          <button disabled>
-            Click me
-          </button>
-        </div>
-      `);
+      <div>
+        <button
+          disabled=""
+        >
+          Click me
+          true
+        </button>
+      </div>
+     `);
   });
 
   it('should handle props with expressions', ({ container }) => {
