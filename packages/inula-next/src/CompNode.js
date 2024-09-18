@@ -161,11 +161,18 @@ export class CompNode extends DLNode {
   /**
    * @brief Set a prop directly, if this is a forwarded prop, go and init forwarded props
    * @param key
-   * @param value
+   * @param valueFunc
    * @param deps
    */
   _$setProp(key, valueFunc, deps) {
     if (this._$cache(key, deps)) return;
+    if (key === '*spread*') {
+      const spread = valueFunc();
+      Object.keys(spread).forEach(key => {
+        this.updateProp(key, this[key]);
+      });
+      return;
+    }
     this[key] = valueFunc();
     this.updateProp(key, this[key]);
   }

@@ -70,6 +70,9 @@ export function inMount() {
  * @property {(newValue: any, bit: number) => {} updateDerived
  */
 export function Comp(compFn, props = {}) {
+  if (props['*spread*']) {
+    props = { ...props, ...props['*spread*'] };
+  }
   return mountNode(() => new CompNode(), compFn, props);
 }
 
