@@ -114,7 +114,7 @@ export type MergePropsP<StateProps, DispatchProps, OwnProps, MergedProps> = (
 ) => MergedProps;
 
 type WrappedComponent<OwnProps> = (props: OwnProps & WrapperInnerProps) => ReturnType<typeof createElement>;
-type OriginalComponent<MergedProps> = (props: MergedProps) => ReturnType<typeof createElement>;
+export type OriginalComponent<MergedProps> = (props: MergedProps) => ReturnType<typeof createElement>;
 type Connector<OwnProps, MergedProps> = (Component: OriginalComponent<MergedProps>) => WrappedComponent<OwnProps>;
 export type ConnectOption<State, StateProps, OwnProps> = {
   /** @deprecated */

@@ -130,7 +130,7 @@ export type RefAttributes<T> = Attributes & {
   ref?: Ref<T> | null;
 };
 
-export type ComponentPropsWithRef<T extends any> = T extends new (props: infer P) => Component<any, any>
+export type ComponentPropsWithRef<T> = T extends new (props: infer P) => Component<any, any>
   ? PropsOmitRef<P> & RefAttributes<InstanceType<T>>
   : PropsWithRef<any>;
 
