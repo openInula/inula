@@ -53,6 +53,8 @@ export function setStyle(el, newStyle) {
         style.setProperty(key, newStyle);
       } else if (key === 'float') {
         style.cssFloat = newStyle;
+      } else if (typeof newValue === 'number') {
+        el.style[key] = newValue + 'px';
       } else {
         el.style[key] = newValue;
       }
