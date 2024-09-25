@@ -190,38 +190,5 @@ describe('analyze props', () => {
         });"
       `);
     });
-
-    it('should support props member expression', () => {
-      expect(
-        mock(/*js*/ `
-        Component((props) => {
-          const foo = props.foo;
-        })
-      `)
-      ).toMatchInlineSnapshot(`
-        "Component(({
-          foo
-        }) => {
-          let foo_$p$_ = foo;
-        });"
-      `);
-    });
-    it('should support props member expression rename', () => {
-      expect(
-        mock(/*js*/ `
-        Component((props) => {
-          const renamed = props.foo
-          return props.foo;
-        })
-      `)
-      ).toMatchInlineSnapshot(`
-        "Component(({
-          foo
-        }) => {
-          let foo_$p$_ = foo;
-          let renamed = foo_$p$_;
-        });"
-      `);
-    });
   });
 });

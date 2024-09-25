@@ -16,7 +16,7 @@
   "scripts": {
     "build": "tsup --sourcemap",
     "type-check": "tsc --noEmit",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "devDependencies": {
     "@types/babel__core": "^7.20.5",

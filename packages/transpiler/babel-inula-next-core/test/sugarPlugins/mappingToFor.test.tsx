@@ -25,18 +25,20 @@ describe('mapping2ForPlugin', () => {
           let arr = [1, 2, 3];
           return (
             <>
-            {arr.map((item) => (<div>{item}</div>))}
+            {arr.map((item, index) => (<div key={index}>{item}</div>))}
             </>
           )
         }
       `;
     const transformedCode = mock(code);
-    expect(transformedCode).toMatchInlineSnapshot(`"function MyComp() {
-  let arr = [1, 2, 3];
-  return <>
-            <for each={arr}>{item => <div>{item}</div>}</for>
-            </>;
-}"`);
+    expect(transformedCode).toMatchInlineSnapshot(`
+      "function MyComp() {
+        let arr = [1, 2, 3];
+        return <>
+                  <for each={arr}>{(item, index) => <div key={index}>{item}</div>}</for>
+                  </>;
+      }"
+    `);
   });
   it('should transform map to for jsxelement inside div', () => {
     const code = `

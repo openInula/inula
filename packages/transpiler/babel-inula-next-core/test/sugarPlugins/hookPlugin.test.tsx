@@ -54,16 +54,29 @@ describe('use hook transform', () => {
         let baseY = 0;
         let _useMousePosition_$h$_ = $$useHook(useMousePosition, [baseX, baseY]);
         watch(() => {
-          $$untrack(() => _useMousePosition_$h$_).updateProp("p0", baseX);
+          $$untrack(() => _useMousePosition_$h$_) && $$untrack(() => _useMousePosition_$h$_).updateProp("p0", baseX);
         });
         watch(() => {
-          $$untrack(() => _useMousePosition_$h$_).updateProp("p1", baseY);
+          $$untrack(() => _useMousePosition_$h$_) && $$untrack(() => _useMousePosition_$h$_).updateProp("p1", baseY);
         });
         const [x, y] = _useMousePosition_$h$_.value();
         watch(() => {
           console.log(baseX, baseY);
         });
       });"
+    `);
+  });
+
+  it('should transform hook props', () => {
+    const input = `
+      function useMousePosition(baseX,baseY) {}
+    `;
+    const output = mock(input);
+    expect(output).toMatchInlineSnapshot(`
+      "const useMousePosition = Hook(({
+        p0: baseX,
+        p1: baseY
+      }) => {});"
     `);
   });
 });

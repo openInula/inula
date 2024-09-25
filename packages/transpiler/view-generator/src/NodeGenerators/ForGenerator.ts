@@ -1,26 +1,28 @@
 import { type types as t } from '@babel/core';
 import BaseGenerator from '../HelperGenerators/BaseGenerator';
 import { type ForParticle, type ViewParticle } from '@openinula/reactivity-parser';
+import { typeNode } from '../shard';
+import { InulaNodeType } from '@openinula/next-shared';
 
 export default class ForGenerator extends BaseGenerator {
   run() {
     const { item, array, key, children, index } = this.viewParticle as ForParticle;
 
-    const dlNodeName = this.generateNodeName();
+    const nodeName = this.generateNodeName();
 
     // ---- Declare for node
-    this.addInitStatement(this.declareForNode(dlNodeName, array.value, item, index, children, array.depMask ?? 0, key));
+    this.addInitStatement(this.declareForNode(nodeName, array.value, item, index, children, array.depMask ?? 0, key));
 
     // ---- Update statements
-    this.addUpdateStatements(array.depMask, this.updateForNode(dlNodeName, array.value, item, key));
-    this.addUpdateStatementsWithoutDep(this.updateForNodeItem(dlNodeName));
+    this.addUpdateStatements(array.depMask, this.updateForNode(nodeName, array.value, item, key));
+    this.addUpdateStatementsWithoutDep(this.updateForNodeItem(nodeName));
 
-    return dlNodeName;
+    return nodeName;
   }
 
   /**
    * @View
-   * ${dlNodeName} = new ForNode(${array}, ${depNum}, ${array}.map(${item} => ${key}),
+   * ${nodeName} = createNode(InulaNodeType.For, ${array}, ${depNum}, ${array}.map(${item} => ${key}),
    * ((${item}, $updateArr, $idx) => {
    *   $updateArr[$idx] = (changed, $item) => {
    *      ${item} = $item
@@ -31,7 +33,7 @@ export default class ForGenerator extends BaseGenerator {
    * })
    */
   private declareForNode(
-    dlNodeName: string,
+    nodeName: string,
     array: t.Expression,
     item: t.LVal,
     index: t.Identifier | null,
@@ -66,11 +68,12 @@ export default class ForGenerator extends BaseGenerator {
     return this.t.expressionStatement(
       this.t.assignmentExpression(
         '=',
-        this.t.identifier(dlNodeName),
-        this.t.newExpression(this.t.identifier(this.importMap.ForNode), [
+        this.t.identifier(nodeName),
+        this.t.callExpression(this.t.identifier(this.importMap.createNode), [
+          typeNode(InulaNodeType.For),
           array,
           this.t.numericLiteral(depNum),
-          this.getForKeyStatement(array, item, key, index),
+          this.getForKeyStatement(array, item, key),
           this.t.arrowFunctionExpression(
             [item as any, idxId, this.t.identifier('$updateArr')],
             this.t.blockStatement(childStatements)
@@ -82,33 +85,25 @@ export default class ForGenerator extends BaseGenerator {
 
   /**
    * @View
-   * ${array}.map(${item, index} => ${key})
+   * ${array}.map(${item} => ${key})
    */
-  private getForKeyStatement(
-    array: t.Expression,
-    item: t.LVal,
-    key: t.Expression,
-    index: t.Identifier | null
-  ): t.Expression {
-    const params = [item as any];
-    if (index) {
-      params.push(index);
-    }
+  private getForKeyStatement(array: t.Expression, item: t.LVal, key: t.Expression): t.Expression {
     return this.t.isNullLiteral(key)
       ? key
       : this.t.callExpression(this.t.memberExpression(array, this.t.identifier('map')), [
-          this.t.arrowFunctionExpression(params, key),
+          this.t.arrowFunctionExpression([item as any], key),
         ]);
   }
 
   /**
    * @View
-   * ${dlNodeName}.updateArray(${array}, ${array}.map(${item} => ${key}))
+   * updateNode(${nodeName}, ${array}, ${array}.map(${item} => ${key}))
    */
-  private updateForNode(dlNodeName: string, array: t.Expression, item: t.LVal, key: t.Expression): t.Statement {
+  private updateForNode(nodeName: string, array: t.Expression, item: t.LVal, key: t.Expression): t.Statement {
     return this.optionalExpression(
-      dlNodeName,
-      this.t.callExpression(this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier('updateArray')), [
+      nodeName,
+      this.t.callExpression(this.t.identifier(this.importMap.updateNode), [
+        this.t.identifier(nodeName),
         array,
         ...this.updateParams.slice(1),
         this.getForKeyStatement(array, item, key),
@@ -118,15 +113,15 @@ export default class ForGenerator extends BaseGenerator {
 
   /**
    * @View
-   * ${dlNodeName}?.update(changed)
+   * updateChildren(${nodeName}, changed)
    */
-  private updateForNodeItem(dlNodeName: string): t.Statement {
+  private updateForNodeItem(nodeName: string): t.Statement {
     return this.optionalExpression(
-      dlNodeName,
-      this.t.callExpression(
-        this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier('update')),
-        this.updateParams
-      )
+      nodeName,
+      this.t.callExpression(this.t.identifier(this.importMap.updateChildren), [
+        this.t.identifier(nodeName),
+        ...this.updateParams,
+      ])
     );
   }
 }

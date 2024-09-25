@@ -31,7 +31,7 @@ describe('fragment', () => {
         );
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, createElement as $$createElement } from "@openinula/next";
+      "import { createComponent as $$createComponent, createElement as $$createElement, initCompNode as $$initCompNode } from "@openinula/next";
       import { render } from '@openinula/next';
       function App() {
         let self;
@@ -44,7 +44,7 @@ describe('fragment', () => {
             return [[$node0],,];
           }
         });
-        return self.init();
+        return $$initCompNode(self);
       }
       render(App, document.getElementById('app'));"
     `);
