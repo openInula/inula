@@ -40,7 +40,7 @@ describe('generate', () => {
           updateState: changed => {},
           getUpdateViews: () => {
             let $node0, $node1;
-            $node1 = new $$PropView($addUpdate => {
+            $node1 = $$createNode(6 /*Children*/, $addUpdate => {
               let $node0;
               $node0 = $$createElement("div");
               $node0.textContent = "1";
@@ -52,14 +52,14 @@ describe('generate', () => {
             });
             return [[$node0], $changed => {
               if ($changed & 1) {
-                $node0 && $node0._$setProp("className", () => count, [count]);
+                $node0 && $$setProp($node0, "className", () => count, [count]);
               }
-              $node1 && $node1.update($changed);
+              $$updateNode($node1, $changed);
               return [$node0];
             }];
           }
         });
-        return self.init();
+        return $$initCompNode(self);
       }"
     `);
   });

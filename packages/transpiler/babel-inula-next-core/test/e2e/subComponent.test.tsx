@@ -30,7 +30,7 @@ describe('nested component', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, notCached as $$notCached, createElement as $$createElement, setHTMLProp as $$setHTMLProp, Comp as $$Comp, insertNode as $$insertNode } from "@openinula/next";
+      "import { createComponent as $$createComponent, updateNode as $$updateNode, notCached as $$notCached, createElement as $$createElement, setHTMLProp as $$setHTMLProp, initCompNode as $$initCompNode, Comp as $$Comp, insertNode as $$insertNode } from "@openinula/next";
       function App() {
         let self;
         let val = 123;
@@ -40,8 +40,8 @@ describe('nested component', () => {
           self1 = $$createComponent({
             updateState: changed => {
               if (changed & 1) {
-                if ($$notCached(self1, Symbol.for("inula-cache"), [val])) {
-                  self1.updateDerived(double = val * 2, 2 /*0b10*/);
+                if ($$notCached(self1, "cache0", [val])) {
+                  $$updateNode(self1, double = val * 2, 2 /*0b10*/);
                 }
               }
             },
@@ -57,7 +57,7 @@ describe('nested component', () => {
               }];
             }
           });
-          return self1.init();
+          return $$initCompNode(self1);
         }
         self = $$createComponent({
           updateState: changed => {},
@@ -69,13 +69,13 @@ describe('nested component', () => {
             $node0._$nodes = [$node1];
             return [[$node0], $changed => {
               if ($changed & 3) {
-                $node1.updateDerived(null, 3);
+                $$updateNode($node1, null, 3);
               }
               return [$node0];
             }];
           }
         });
-        return self.init();
+        return $$initCompNode(self);
       }"
     `);
   });
@@ -90,7 +90,7 @@ describe('nested component', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { Comp as $$Comp, createComponent as $$createComponent, createElement as $$createElement, setHTMLProp as $$setHTMLProp, ExpNode as $$ExpNode, insertNode as $$insertNode } from "@openinula/next";
+      "import { Comp as $$Comp, createComponent as $$createComponent, createElement as $$createElement, setHTMLProp as $$setHTMLProp, initCompNode as $$initCompNode, createNode as $$createNode, updateNode as $$updateNode, insertNode as $$insertNode } from "@openinula/next";
       function App() {
         let self;
         let val = 123;
@@ -110,7 +110,7 @@ describe('nested component', () => {
               }];
             }
           });
-          return self1.init();
+          return $$initCompNode(self1);
         }
         const input = $$Comp(JSX_input);
         self = $$createComponent({
@@ -118,18 +118,18 @@ describe('nested component', () => {
           getUpdateViews: () => {
             let $node0, $node1;
             $node0 = $$createElement("div");
-            $node1 = new $$ExpNode(input, [input]);
+            $node1 = $$createNode(3 /*Exp*/, () => input, [input]);
             $$insertNode($node0, $node1, 0);
             $node0._$nodes = [$node1];
             return [[$node0], $changed => {
               if ($changed & 2) {
-                $node1 && $node1.update(() => input, [input]);
+                $node1 && $$updateNode($node1, () => input, [input]);
               }
               return [$node0];
             }];
           }
         });
-        return self.init();
+        return $$initCompNode(self);
       }"
     `);
   });

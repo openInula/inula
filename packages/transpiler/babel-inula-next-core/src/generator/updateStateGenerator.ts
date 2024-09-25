@@ -94,11 +94,12 @@ export function generateUpdateState(root: IRNode) {
     );
   };
 
+  let idx = 0;
   for (const [bit, cacheMap] of Object.entries(updates)) {
     for (const [depsNode, statements] of cacheMap) {
       addUpdate(
         Number(bit),
-        depsNode ? [wrapCheckCache(generateSelfId(root.level), depsNode, statements)] : statements
+        depsNode ? [wrapCheckCache(generateSelfId(root.level), depsNode, statements, idx++)] : statements
       );
     }
   }
