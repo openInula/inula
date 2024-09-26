@@ -17,10 +17,30 @@ import { TYPE_COMMON_ELEMENT } from './JSXElementType';
 import { getProcessingClassVNode } from '../renderer/GlobalVar';
 import { Source } from '../renderer/Types';
 import { BELONG_CLASS_VNODE_KEY } from '../renderer/vnode/VNode';
-import { Context, ExoticComponent, InulaElement, InulaNode, KVObject, ConsumerProps, ProviderProps } from '../types';
-import { OriginalComponent } from '../inulax/adapters/reduxReact';
-import { ReduxStoreHandler } from '../inulax/adapters/redux';
-import { Subscription } from '../inulax/adapters/subscription';
+import {
+  Attributes,
+  ClassAttributes,
+  ClassType,
+  ClassicComponent,
+  ClassicComponentClass,
+  ComponentClass,
+  ComponentState,
+  FunctionComponentElement,
+  InulaCElement,
+  InulaElement,
+  InulaNode,
+  KVObject,
+} from '../types';
+import { Component } from '../renderer/components/BaseClassComponent';
+import { DOMAttributes, HTMLAttributes, InputHTMLAttributes, SVGAttributes } from '../jsx-type/baseAttr';
+import {
+  DOMElement,
+  DetailedInulaHTMLElement,
+  InulaHTML,
+  InulaHTMLElement,
+  InulaSVG,
+  InulaSVGElement,
+} from '../jsx-type';
 
 /**
  * vtype 节点的类型，这里固定是element
@@ -75,8 +95,8 @@ function mergeDefault(sourceObj, defaultObj) {
 
 // ['key', 'ref', '__source', '__self']属性不从setting获取
 const keyArray = ['key', 'ref', '__source', '__self'];
-//这个没太懂 todo
-function buildElement(isClone: boolean, type, setting, children: InulaNode[]) {
+
+function buildElement(isClone, type, setting, children) {
   // setting中的值优先级最高，clone情况下从 type 中取值，创建情况下直接赋值为 null
   const key = setting && setting.key !== undefined ? String(setting.key) : isClone ? type.key : null;
   const ref = setting && setting.ref !== undefined ? setting.ref : isClone ? type.ref : null;
@@ -112,62 +132,86 @@ function buildElement(isClone: boolean, type, setting, children: InulaNode[]) {
   return JSXElement(element, key, ref, vNode, props, src);
 }
 
+export function createElement(
+  type: 'input',
+  props?: (InputHTMLAttributes<HTMLInputElement> & ClassAttributes<HTMLInputElement>) | null,
+  ...children: InulaNode[]
+): DetailedInulaHTMLElement<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
+
+export function createElement<P extends HTMLAttributes<T>, T extends HTMLElement>(
+  type: keyof InulaHTML,
+  props?: (ClassAttributes<T> & P) | null,
+  ...children: InulaNode[]
+): DetailedInulaHTMLElement<P, T>;
+
+export function createElement<P extends SVGAttributes<T>, T extends SVGElement>(
+  type: keyof InulaSVG,
+  props?: (ClassAttributes<T> & P) | null,
+  ...children: InulaNode[]
+): InulaSVGElement;
+
+export function createElement<P extends DOMAttributes<T>, T extends Element>(
+  type: string,
+  props?: (ClassAttributes<T> & P) | null,
+  ...children: InulaNode[]
+): DOMElement<P, T>;
+
+export function createElement<P extends KVObject>(
+  type: ClassType<P, ClassicComponent<P, ComponentState>, ClassicComponentClass<P>>,
+  props?: (ClassAttributes<ClassicComponent<P, ComponentState>> & P) | null,
+  ...children: InulaNode[]
+): InulaCElement<P, ClassicComponent<P, ComponentState>>;
+export function createElement<P extends KVObject, T extends Component<P, ComponentState>, C extends ComponentClass<P>>(
+  type: ClassType<P, T, C>,
+  props?: (ClassAttributes<T> & P) | null,
+  ...children: InulaNode[]
+): InulaCElement<P, T>;
+
 // 创建Element结构体，供JSX编译时调用
-//type 细节化 todo 参考react
-export function createElement<P>(
-  //仍然需要修改 MergeProps定义问题
-  type: OriginalComponent<P>,
-  setting?: P | null,
-  ...children: InulaNode[]
-): InulaElement<P>;
-
-export function createElement(
-  type: ExoticComponent<ProviderProps<{ store: ReduxStoreHandler; subscription: Subscription }>>,
-  setting: { [p: string]: any } | null,
-  ...children: InulaNode[]
-): InulaElement;
-
-export function createElement(
-  type: ExoticComponent<ConsumerProps<{ store: ReduxStoreHandler; subscription: Subscription }>>,
-  setting: { [key: string]: any } | null,
-  ...children: InulaNode[]
-): InulaElement;
-
-// 重载签名 2：处理 InulaElement 类型
-export function createElement<P>(type: InulaElement<P>, setting?: P | null, ...children: InulaNode[]): InulaElement<P>;
-
-// 实现签名：与重载签名一致的实现
-export function createElement<P>(
-  type:
-    | string
-    | InulaElement<P>
-    | ExoticComponent<ConsumerProps<P>>
-    | Context<{ store: ReduxStoreHandler; subscription: Subscription }>
-    | ExoticComponent<ProviderProps<{ store: ReduxStoreHandler; subscription: Subscription }>>
-    // todo MergedProps 接口？
-    | OriginalComponent<P>,
-  setting?: (P & { children?: InulaNode }) | null,
-  ...children: InulaNode[]
-): InulaElement | InulaElement<P> {
+export function createElement(type, setting, ...children) {
   return buildElement(false, type, setting, children);
 }
-//只传入 element，克隆该元素，返回一个新的 InulaElement。
-export function cloneElement<P>(element: InulaElement<P>): InulaElement<P>;
-//传入 element 和 setting，克隆元素并覆盖属性。
-export function cloneElement<P>(element: InulaElement<P>, setting: Partial<P> | null): InulaElement<P>;
-//：传入 element、setting 和 children，克隆元素，覆盖属性并指定新的子节点。
+
+export function cloneElement<P extends HTMLAttributes<T>, T extends HTMLElement>(
+  element: DetailedInulaHTMLElement<P, T>,
+  props?: P,
+  ...children: InulaNode[]
+): DetailedInulaHTMLElement<P, T>;
+export function cloneElement<P extends HTMLAttributes<T>, T extends HTMLElement>(
+  element: InulaHTMLElement<T>,
+  props?: P,
+  ...children: InulaNode[]
+): InulaHTMLElement<T>;
+export function cloneElement<P extends SVGAttributes<T>, T extends SVGElement>(
+  element: InulaSVGElement,
+  props?: P,
+  ...children: InulaNode[]
+): InulaSVGElement;
+export function cloneElement<P extends DOMAttributes<T>, T extends Element>(
+  element: DOMElement<P, T>,
+  props?: DOMAttributes<T> & P,
+  ...children: InulaNode[]
+): DOMElement<P, T>;
+export function cloneElement<P>(
+  element: FunctionComponentElement<P>,
+  props?: Partial<P> & Attributes,
+  ...children: InulaNode[]
+): FunctionComponentElement<P>;
+export function cloneElement<P, T extends Component<P, ComponentState>>(
+  element: InulaCElement<P, T>,
+  props?: Partial<P> & ClassAttributes<T>,
+  ...children: InulaNode[]
+): InulaCElement<P, T>;
 export function cloneElement<P>(
   element: InulaElement<P>,
-  setting: Partial<P> | null,
+  props?: Partial<P> & Attributes,
   ...children: InulaNode[]
 ): InulaElement<P>;
-export function cloneElement<P>(
-  element: InulaElement<P>,
-  setting?: Partial<P> | null,
-  ...children: InulaNode[]
-): InulaElement<P> {
+
+export function cloneElement(element, setting, ...children) {
   return buildElement(true, element, setting, children);
 }
+
 // 检测结构体是否为合法的Element
 export function isValidElement<P>(element: KVObject | null | undefined): element is InulaElement<P> {
   return !!(element && element.vtype === TYPE_COMMON_ELEMENT);
@@ -178,5 +222,6 @@ export function jsx(type, setting, key) {
   if (setting.key === undefined && key !== undefined) {
     setting.key = key;
   }
+
   return buildElement(false, type, setting, []);
 }
