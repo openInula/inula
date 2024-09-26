@@ -44,9 +44,7 @@ interface InulaErrorInfo {
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export type KVObject = {
-  // vtype: number;
-};
+export type KVObject = {};
 
 export type InulaFragment = Iterable<InulaNode>;
 
@@ -58,12 +56,12 @@ export interface ExoticComponent<P = KVObject> {
   (props: P): InulaElement | null;
 }
 
-export interface ProviderProps<T> {
+interface ProviderProps<T> {
   value: T;
   children?: InulaNode | undefined;
 }
 
-export interface ConsumerProps<T> {
+interface ConsumerProps<T> {
   children: (value: T) => InulaNode;
 }
 

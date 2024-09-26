@@ -210,7 +210,7 @@ function patchNamespaceType() {
         } else if (node.type === 'ExportNamedDeclaration' && !node.source) {
           for (let i = 0; i < node.specifiers.length; i++) {
             const spec = node.specifiers[i];
-            if (spec.type === 'ExportSpecifier' && spec.local.name !== LIB_NAME) {
+            if (spec.type === 'ExportSpecifier' && spec.local.name != LIB_NAME) {
               assert(spec.exported.type === 'Identifier');
               const exported = spec.exported.name;
               if (!moduleSet.has(spec.local.name)) {
