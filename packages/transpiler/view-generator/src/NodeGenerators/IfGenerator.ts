@@ -10,13 +10,13 @@ export default class IfGenerator extends CondGenerator {
     }, 0);
 
     // ---- declareIfNode
-    const dlNodeName = this.generateNodeName();
-    this.addInitStatement(this.declareIfNode(dlNodeName, branches, deps));
+    const nodeName = this.generateNodeName();
+    this.addInitStatement(this.declareIfNode(nodeName, branches, deps));
 
-    this.addUpdateStatements(deps, this.updateCondNodeCond(dlNodeName));
-    this.addUpdateStatementsWithoutDep(this.updateCondNode(dlNodeName));
+    this.addUpdateStatements(deps, this.updateCondNodeCond(nodeName));
+    this.addUpdateStatementsWithoutDep(this.updateCondNode(nodeName));
 
-    return dlNodeName;
+    return nodeName;
   }
 
   /**
@@ -29,7 +29,7 @@ export default class IfGenerator extends CondGenerator {
 
   /**
    * @View
-   * const ${dlNodeName} = new IfNode(($thisCond) => {
+   * const ${nodeName} = new IfNode(($thisCond) => {
    *   if (cond1) {
    *    if ($thisCond.cond === 0) return
    *    ${children}
@@ -43,7 +43,7 @@ export default class IfGenerator extends CondGenerator {
    *   }
    * })
    */
-  private declareIfNode(dlNodeName: string, branches: IfBranch[], depMask: Bitmap): t.Statement {
+  private declareIfNode(nodeName: string, branches: IfBranch[], depMask: Bitmap): t.Statement {
     // ---- If no else statement, add one
     if (
       !this.t.isBooleanLiteral(branches[branches.length - 1].condition.value, {
@@ -93,6 +93,6 @@ export default class IfGenerator extends CondGenerator {
       return this.geneIfStatement(condition.value, childStatements, acc);
     }, undefined);
 
-    return this.declareCondNode(dlNodeName, this.t.blockStatement([ifStatement]), depMask);
+    return this.declareCondNode(nodeName, this.t.blockStatement([ifStatement]), depMask);
   }
 }

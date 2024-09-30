@@ -35,18 +35,18 @@ describe('view generation', () => {
             console.log(text);
             let $node0, $node1;
             $node0 = $$createElement("div");
-            $node1 = new $$ExpNode(text, [text]);
+            $node1 = $$createNode(3 /*Exp*/, () => text, [text]);
             $$insertNode($node0, $node1, 0);
             $node0._$nodes = [$node1];
             return [[$node0], $changed => {
               if ($changed & 1) {
-                $node1 && $node1.update(() => text, [text]);
+                $node1 && $$updateNode($node1, () => text, [text]);
               }
               return [$node0];
             }];
           }
         });
-        return self.init();
+        return $$initCompNode(self);
       }"
     `);
   });
@@ -77,14 +77,14 @@ describe('view generation', () => {
             $$setStyle($node0, {
               color
             });
-            $node1 = new $$ExpNode(text, [text]);
+            $node1 = $$createNode(3 /*Exp*/, () => text, [text]);
             $$insertNode($node0, $node1, 0);
             $node0._$nodes = [$node1];
             return [[$node0], $changed => {
               if ($changed & 1) {
                 $node0 && $$setHTMLProp($node0, "className", () => text, [text]);
                 $node0 && $$setHTMLProp($node0, "id", () => text, [text]);
-                $node1 && $node1.update(() => text, [text]);
+                $node1 && $$updateNode($node1, () => text, [text]);
               }
               if ($changed & 2) {
                 $node0 && $$setStyle($node0, {
@@ -95,7 +95,7 @@ describe('view generation', () => {
             }];
           }
         });
-        return self.init();
+        return $$initCompNode(self);
       }"
     `);
   });
@@ -118,9 +118,9 @@ describe('view generation', () => {
         let $node0, $node1, $node2;
         $node0 = $$createElement("div");
         $node1 = $$createElement("div");
-        $node0.appendChild($node1);
+        $$appendNode($node0, $node1);
         $node2 = $$createElement("div");
-        $node0.appendChild($node2);
+        $$appendNode($node0, $node2);
         return $node0;
       })();
       function Comp() {
@@ -133,20 +133,20 @@ describe('view generation', () => {
             $node0 = _$t.cloneNode(true);
             $node1 = $node0.firstChild;
             $node2 = $node1.nextSibling;
-            $node3 = new $$ExpNode(text, [text]);
+            $node3 = $$createNode(3 /*Exp*/, () => text, [text]);
             $$insertNode($node1, $node3, 0);
-            $node4 = new $$ExpNode(text, [text]);
+            $node4 = $$createNode(3 /*Exp*/, () => text, [text]);
             $$insertNode($node2, $node4, 0);
             return [[$node0], $changed => {
               if ($changed & 1) {
-                $node3 && $node3.update(() => text, [text]);
-                $node4 && $node4.update(() => text, [text]);
+                $node3 && $$updateNode($node3, () => text, [text]);
+                $node4 && $$updateNode($node4, () => text, [text]);
               }
               return [$node0];
             }];
           }
         });
-        return self.init();
+        return $$initCompNode(self);
       }"
     `);
   });
@@ -172,23 +172,23 @@ describe('view generation', () => {
           getUpdateViews: () => {
             let $node0, $node1, $node2, $node3;
             $node0 = $$createElement("div");
-            $node1 = new $$ExpNode(text, [text]);
+            $node1 = $$createNode(3 /*Exp*/, () => text, [text]);
             $$insertNode($node0, $node1, 0);
             $node0._$nodes = [$node1];
             $node2 = $$createElement("div");
-            $node3 = new $$ExpNode(text, [text]);
+            $node3 = $$createNode(3 /*Exp*/, () => text, [text]);
             $$insertNode($node2, $node3, 0);
             $node2._$nodes = [$node3];
             return [[$node0, $node2], $changed => {
               if ($changed & 1) {
-                $node1 && $node1.update(() => text, [text]);
-                $node3 && $node3.update(() => text, [text]);
+                $node1 && $$updateNode($node1, () => text, [text]);
+                $node3 && $$updateNode($node3, () => text, [text]);
               }
               return [$node0, $node2];
             }];
           }
         });
-        return self.init();
+        return $$initCompNode(self);
       }"
     `);
   });
@@ -220,7 +220,7 @@ describe('view generation', () => {
           getUpdateViews: () => {
             let $node0, $node1;
             $node0 = $$createElement("div");
-            $node1 = new $$CondNode(2, $thisCond => {
+            $node1 = $$createNode(2 /*Cond*/, 2, $thisCond => {
               if (show) {
                 if ($thisCond.cond === 0) {
                   $thisCond.didntChange = true;
@@ -230,14 +230,14 @@ describe('view generation', () => {
                 let $node0, $node1;
                 $thisCond.updateFunc = $changed => {
                   if ($changed & 1) {
-                    $node1 && $node1.update(() => text, [text]);
+                    $node1 && $$updateNode($node1, () => text, [text]);
                   }
                 };
                 $node0 = $$createElement("div");
-                $node1 = new $$ExpNode(text, [text]);
+                $node1 = $$createNode(3 /*Exp*/, () => text, [text]);
                 $$insertNode($node0, $node1, 0);
                 $node0._$nodes = [$node1];
-                return $thisCond.cond === 0 ? [$node0] : $thisCond.updateCond();
+                return $thisCond.cond === 0 ? [$node0] : $$updateNode($thisCond);
               } else {
                 if ($thisCond.cond === 1) {
                   $thisCond.didntChange = true;
@@ -248,21 +248,21 @@ describe('view generation', () => {
                 $thisCond.updateFunc = $changed => {};
                 $node0 = $$createElement("h1");
                 $node0.textContent = "else";
-                return $thisCond.cond === 1 ? [$node0] : $thisCond.updateCond();
+                return $thisCond.cond === 1 ? [$node0] : $$updateNode($thisCond);
               }
             });
             $$insertNode($node0, $node1, 0);
             $node0._$nodes = [$node1];
             return [[$node0], $changed => {
               if ($changed & 2) {
-                $node1 && $node1.updateCond();
+                $node1 && $$updateNode($node1);
               }
-              $node1 && $node1.update($changed);
+              $node1 && $$updateChildren($node1, $changed);
               return [$node0];
             }];
           }
         });
-        return self.init();
+        return $$initCompNode(self);
       }"
     `);
   });
@@ -289,17 +289,17 @@ describe('view generation', () => {
           getUpdateViews: () => {
             let $node0, $node1;
             $node0 = $$createElement("div");
-            $node1 = new $$ForNode(list, 1, list.map(item => index), (item, index, $updateArr) => {
+            $node1 = $$createNode(1 /*For*/, list, 1, list.map(item => index), (item, index, $updateArr) => {
               let $node0, $node1;
               $updateArr[index] = ($changed, $item) => {
                 item = $item;
                 if ($changed & 1) {
-                  $node1 && $node1.update(() => item, [item]);
+                  $node1 && $$updateNode($node1, () => item, [item]);
                 }
               };
               $node0 = $$createElement("div");
               $node0.setAttribute("key", index);
-              $node1 = new $$ExpNode(item, [item]);
+              $node1 = $$createNode(3 /*Exp*/, () => item, [item]);
               $$insertNode($node0, $node1, 0);
               $node0._$nodes = [$node1];
               return [$node0];
@@ -308,14 +308,14 @@ describe('view generation', () => {
             $node0._$nodes = [$node1];
             return [[$node0], $changed => {
               if ($changed & 1) {
-                $node1 && $node1.updateArray(list, list.map(item => index));
+                $node1 && $$updateNode($node1, list, list.map(item => index));
               }
-              $node1 && $node1.update($changed);
+              $node1 && $$updateChildren($node1, $changed);
               return [$node0];
             }];
           }
         });
-        return self.init();
+        return $$initCompNode(self);
       }"
     `);
   });

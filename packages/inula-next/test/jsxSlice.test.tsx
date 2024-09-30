@@ -15,7 +15,8 @@
 
 import { describe, expect, vi } from 'vitest';
 import { domTest as it } from './utils';
-import { render, useContext, createContext } from '../src';
+import { render } from '../src';
+import { useContext, createContext } from '../src/ContextNode';
 
 vi.mock('../src/scheduler', async () => {
   return {

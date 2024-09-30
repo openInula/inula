@@ -20,6 +20,7 @@ import { builtinHooks, COMPONENT, HOOK_SUFFIX, importMap } from '../constants';
 import type { Scope } from '@babel/traverse';
 
 const ALREADY_COMPILED: WeakSet<NodePath> | Set<NodePath> = new (WeakSet ?? Set)();
+const HOOK_USING_PREFIX = 'use';
 
 function isValidArgument(arg: t.Node): arg is t.Expression | t.SpreadElement {
   if (t.isExpression(arg) || t.isSpreadElement(arg)) {
@@ -115,7 +116,7 @@ function transformUseHookCalling(
       const init = declarator.get('init');
       if (init.isCallExpression() && init.get('callee').isIdentifier()) {
         const callee = init.node.callee as t.Identifier;
-        if (callee.name.startsWith('use') && !builtinHooks.includes(callee.name)) {
+        if (callee.name.startsWith(HOOK_USING_PREFIX) && !builtinHooks.includes(callee.name)) {
           // Generate a unique identifier for the hook
           const hookId = t.identifier(`${scope.generateUid(callee.name)}${HOOK_SUFFIX}`);
 
@@ -125,7 +126,6 @@ function transformUseHookCalling(
           // Create the createHook call
           const createHookCall = t.callExpression(t.identifier(importMap.useHook), [
             callee,
-            // wrapUntrack(t.arrayExpression(validArguments)),
             t.arrayExpression(validArguments),
           ]);
 
@@ -158,10 +158,14 @@ function generateUpdateWatchers(
             [],
             t.blockStatement([
               t.expressionStatement(
-                t.callExpression(t.memberExpression(wrapUntrack(hookId), t.identifier('updateProp')), [
-                  t.stringLiteral(argName),
-                  arg,
-                ])
+                t.logicalExpression(
+                  '&&',
+                  wrapUntrack(hookId),
+                  t.callExpression(t.memberExpression(wrapUntrack(hookId), t.identifier('updateProp'), false, true), [
+                    t.stringLiteral(argName),
+                    arg,
+                  ])
+                )
               ),
             ])
           ),

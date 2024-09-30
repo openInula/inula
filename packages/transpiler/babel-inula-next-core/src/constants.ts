@@ -47,11 +47,6 @@ export const originalImportMap = Object.fromEntries(
     'updateText',
     'insertNode',
     'appendNode',
-    'ForNode',
-    'CondNode',
-    'ExpNode',
-    'ContextProvider',
-    'PropView',
     'render',
     'notCached',
     'Comp',
@@ -59,6 +54,13 @@ export const originalImportMap = Object.fromEntries(
     'createHook',
     'untrack',
     'runOnce',
+    'createNode',
+    'updateNode',
+    'updateChildren',
+    'setProp',
+    'initContextChildren',
+    'initCompNode',
+    'emitUpdate',
   ].map(name => [name, `$$${name}`])
 );
 
