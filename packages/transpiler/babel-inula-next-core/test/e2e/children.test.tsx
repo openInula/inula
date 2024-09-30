@@ -39,7 +39,7 @@ describe('children', () => {
       }
     `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, Comp as $$Comp, setProp as $$setProp, initCompNode as $$initCompNode } from "@openinula/next";
+      "import { createComponent as $$createComponent, Comp as $$Comp } from "@openinula/next";
       function App() {
         let self;
         self = $$createComponent({
@@ -52,7 +52,7 @@ describe('children', () => {
             return [[$node0],,];
           }
         });
-        return $$initCompNode(self);
+        return self.init();
       }"
     `);
   });
@@ -72,24 +72,24 @@ describe('children', () => {
       }
       `)
     ).toMatchInlineSnapshot(`
-      "import { updateNode as $$updateNode, createComponent as $$createComponent, createElement as $$createElement, createNode as $$createNode, insertNode as $$insertNode, Comp as $$Comp, initCompNode as $$initCompNode } from "@openinula/next";
+      "import { createComponent as $$createComponent, createElement as $$createElement, ExpNode as $$ExpNode, insertNode as $$insertNode, PropView as $$PropView, Comp as $$Comp } from "@openinula/next";
       function MyComp() {
         let self;
         let count = 0;
-        const add = () => $$updateNode(self, count += 1, 1 /*0b1*/);
+        const add = () => self.updateDerived(count += 1, 1 /*0b1*/);
         self = $$createComponent({
           updateState: changed => {},
           getUpdateViews: () => {
             let $node0, $node1;
-            $node1 = $$createNode(6 /*Children*/, $addUpdate => {
+            $node1 = new $$PropView($addUpdate => {
               let $node0, $node1;
               $addUpdate($changed => {
                 if ($changed & 1) {
-                  $node1 && $$updateNode($node1, () => count, [count]);
+                  $node1 && $node1.update(() => count, [count]);
                 }
               });
               $node0 = $$createElement("h1");
-              $node1 = $$createNode(3 /*Exp*/, () => count, [count]);
+              $node1 = new $$ExpNode(count, [count]);
               $$insertNode($node0, $node1, 0);
               $node0._$nodes = [$node1];
               return [$node0];
@@ -98,12 +98,12 @@ describe('children', () => {
               "children": $node1
             });
             return [[$node0], $changed => {
-              $$updateNode($node1, $changed);
+              $node1 && $node1.update($changed);
               return [$node0];
             }];
           }
         });
-        return $$initCompNode(self);
+        return self.init();
       }"
     `);
   });

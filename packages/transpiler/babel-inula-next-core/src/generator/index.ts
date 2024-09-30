@@ -2,7 +2,7 @@ import { ComponentNode, HookNode, SubComponentNode, Variable } from '../analyze/
 import { types as t } from '@openinula/babel-api';
 import { generateComp } from './compGenerator';
 import { getStates, wrapUpdate } from './utils';
-import { HOOK_SUFFIX, importMap } from '../constants';
+import { HOOK_SUFFIX } from '../constants';
 
 function reconstructVariable(variable: Variable) {
   if (variable.type === 'reactive') {
@@ -48,7 +48,9 @@ export function generate(root: ComponentNode | SubComponentNode | HookNode): t.F
   addStatement(...generateComp(root));
 
   // ---- Add return self.init()
-  addStatement(t.returnStatement(t.callExpression(t.identifier(importMap.initCompNode), [generateSelfId(root.level)])));
+  addStatement(
+    t.returnStatement(t.callExpression(t.memberExpression(generateSelfId(root.level), t.identifier('init')), []))
+  );
 
   return compNode;
 }

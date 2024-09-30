@@ -203,14 +203,14 @@ export default class BaseGenerator {
 
   /**
    * @brief To be implemented by the subclass as the main node generation function
-   * @returns nodeName
+   * @returns dlNodeName
    */
   run(): string {
     return '';
   }
 
   // ---- Name ----
-  // ---- Used as nodeName for any node declaration
+  // ---- Used as dlNodeName for any node declaration
   nodeIdx = -1;
 
   generateNodeName(idx?: number): string {
@@ -236,10 +236,10 @@ export default class BaseGenerator {
 
   /**
    * @View
-   * ${nodeName} && ${expression}
+   * ${dlNodeName} && ${expression}
    */
-  optionalExpression(nodeName: string, expression: t.Expression): t.Statement {
-    return this.t.expressionStatement(this.t.logicalExpression('&&', this.t.identifier(nodeName), expression));
+  optionalExpression(dlNodeName: string, expression: t.Expression): t.Statement {
+    return this.t.expressionStatement(this.t.logicalExpression('&&', this.t.identifier(dlNodeName), expression));
   }
 
   /**

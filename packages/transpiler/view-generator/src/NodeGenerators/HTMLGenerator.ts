@@ -6,9 +6,9 @@ export default class HTMLGenerator extends HTMLPropGenerator {
   run() {
     const { tag, props, children } = this.viewParticle as HTMLParticle;
 
-    const nodeName = this.generateNodeName();
+    const dlNodeName = this.generateNodeName();
 
-    this.addInitStatement(this.declareHTMLNode(nodeName, tag));
+    this.addInitStatement(this.declareHTMLNode(dlNodeName, tag));
 
     // ---- Resolve props
     // ---- Use the tag name to check if the prop is internal for the tag,
@@ -21,10 +21,10 @@ export default class HTMLGenerator extends HTMLPropGenerator {
       if (depMask) {
         allDepMask |= depMask;
       }
-      this.addInitStatement(this.addHTMLProp(nodeName, tagName, key, value, depMask, dependenciesNode));
+      this.addInitStatement(this.addHTMLProp(dlNodeName, tagName, key, value, depMask, dependenciesNode));
     });
     if (props.didUpdate) {
-      this.addUpdateStatements(allDepMask, this.addOnUpdate(nodeName, props.didUpdate.value));
+      this.addUpdateStatements(allDepMask, this.addOnUpdate(dlNodeName, props.didUpdate.value));
     }
 
     // ---- Resolve children
@@ -35,15 +35,15 @@ export default class HTMLGenerator extends HTMLPropGenerator {
       childNames.push(childName);
       this.addInitStatement(...initStatements);
       if (child.type === 'html' || child.type === 'text') {
-        this.addInitStatement(this.appendChild(nodeName, childName));
+        this.addInitStatement(this.appendChild(dlNodeName, childName));
       } else {
         mutable = true;
-        this.addInitStatement(this.insertNode(nodeName, childName, idx));
+        this.addInitStatement(this.insertNode(dlNodeName, childName, idx));
       }
     });
-    if (mutable) this.addInitStatement(this.setHTMLNodes(nodeName, childNames));
+    if (mutable) this.addInitStatement(this.setHTMLNodes(dlNodeName, childNames));
 
-    return nodeName;
+    return dlNodeName;
   }
 
   /**
@@ -62,13 +62,13 @@ export default class HTMLGenerator extends HTMLPropGenerator {
 
   /**
    * @View
-   * ${nodeName}._$nodes = [...${childNames}]
+   * ${dlNodeName}._$nodes = [...${childNames}]
    */
-  private setHTMLNodes(nodeName: string, childNames: string[]): t.Statement {
+  private setHTMLNodes(dlNodeName: string, childNames: string[]): t.Statement {
     return this.t.expressionStatement(
       this.t.assignmentExpression(
         '=',
-        this.t.memberExpression(this.t.identifier(nodeName), this.t.identifier('_$nodes')),
+        this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier('_$nodes')),
         this.t.arrayExpression(childNames.map(name => this.t.identifier(name)))
       )
     );
@@ -76,12 +76,12 @@ export default class HTMLGenerator extends HTMLPropGenerator {
 
   /**
    * @View
-   * appendNode(${nodeName}, ${childNodeName})
+   * appendNode(${dlNodeName}, ${childNodeName})
    */
-  private appendChild(nodeName: string, childNodeName: string): t.Statement {
+  private appendChild(dlNodeName: string, childNodeName: string): t.Statement {
     return this.t.expressionStatement(
       this.t.callExpression(this.t.identifier(this.importMap.appendNode), [
-        this.t.identifier(nodeName),
+        this.t.identifier(dlNodeName),
         this.t.identifier(childNodeName),
       ])
     );

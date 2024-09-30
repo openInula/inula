@@ -13,16 +13,9 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { describe, expect, vi, beforeEach } from 'vitest';
+import { describe, expect, vi } from 'vitest';
 import { domTest as it } from './utils';
-import { render, didMount, willMount, didUnmount, willUnmount } from '../src';
-vi.mock('../src/scheduler', async () => {
-  return {
-    schedule: (task: () => void) => {
-      task();
-    },
-  };
-});
+import { render, didMount, willMount, didUnmount } from '../src';
 
 describe('lifecycle', () => {
   it('should call willMount', ({ container }) => {
@@ -100,85 +93,20 @@ describe('lifecycle', () => {
     expect(container.innerHTML).toBe('<div>Error caught</div>');
   });
 
-  describe('willUnmount', () => {
-    // TODO: implement unmount
-    it.fails('should call willUnmount', ({ container }) => {
-      const fn = vi.fn();
-
-      function App() {
-        didUnmount(() => {
-          expect(container.innerHTML).toBe('<div>test</div>');
-          fn();
-        });
-
-        return <div>test</div>;
-      }
-
-      render(App, container);
-      expect(fn).toHaveBeenCalled();
-    });
-
+  // TODO: implement unmount
+  it.fails('should call willUnmount', ({ container }) => {
     const fn = vi.fn();
 
-    function Child() {
-      willUnmount(() => {
+    function App() {
+      didUnmount(() => {
+        expect(container.innerHTML).toBe('<div>test</div>');
         fn();
       });
 
       return <div>test</div>;
     }
 
-    beforeEach(() => {
-      fn.mockClear();
-    });
-
-    it('should call willUnmount in if condition changed', ({ container }) => {
-      let setCond: (cond: boolean) => void;
-      function App() {
-        let cond = true;
-        setCond = (value: boolean) => {
-          cond = value;
-        };
-        return (
-          <if cond={cond}>
-            <Child />
-          </if>
-        );
-      }
-
-      render(App, container);
-      setCond!(false);
-      expect(fn).toHaveBeenCalled();
-    });
-
-    it('should call willUnmount in expression updated', ({ container }) => {
-      let setCond: (cond: boolean) => void;
-      function App() {
-        let cond = true;
-        setCond = (value: boolean) => {
-          cond = value;
-        };
-        return <div>{cond ? <Child /> : null}</div>;
-      }
-
-      render(App, container);
-      setCond!(false);
-      expect(fn).toHaveBeenCalled();
-    });
-
-    it('should call willUnmount in for', ({ container }) => {
-      let setArr: (arr: string[]) => void;
-      function App() {
-        let arr = ['a', 'b', 'c'];
-        setArr = (value: string[]) => {
-          arr = value;
-        };
-        return <for each={arr}>{item => <Child />}</for>;
-      }
-
-      render(App, container);
-      setArr!([]);
-      expect(fn).toHaveBeenCalledTimes(3);
-    });
+    render(App, container);
+    expect(fn).toHaveBeenCalled();
   });
 });

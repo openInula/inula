@@ -57,12 +57,12 @@ export default class HTMLPropGenerator extends ForwardPropGenerator {
 
   /**
    * @View
-   * insertNode(${nodeName}, ${childNodeName}, ${position})
+   * insertNode(${dlNodeName}, ${childNodeName}, ${position})
    */
-  insertNode(nodeName: string, childNodeName: string, position: number): t.ExpressionStatement {
+  insertNode(dlNodeName: string, childNodeName: string, position: number): t.ExpressionStatement {
     return this.t.expressionStatement(
       this.t.callExpression(this.t.identifier(this.importMap.insertNode), [
-        this.t.identifier(nodeName),
+        this.t.identifier(dlNodeName),
         this.t.identifier(childNodeName),
         this.t.numericLiteral(position),
       ])
@@ -71,48 +71,48 @@ export default class HTMLPropGenerator extends ForwardPropGenerator {
 
   /**
    * @View
-   * ${nodeName} && ${expression}
+   * ${dlNodeName} && ${expression}
    */
-  private setPropWithCheck(nodeName: string, expression: t.Expression, check: boolean): t.Statement {
+  private setPropWithCheck(dlNodeName: string, expression: t.Expression, check: boolean): t.Statement {
     if (check) {
-      return this.optionalExpression(nodeName, expression);
+      return this.optionalExpression(dlNodeName, expression);
     }
     return this.t.expressionStatement(expression);
   }
 
   /**
    * @View
-   * setStyle(${nodeName}, ${value})
+   * setStyle(${dlNodeName}, ${value})
    */
-  private setHTMLStyle(nodeName: string, value: t.Expression, check: boolean): t.Statement {
+  private setHTMLStyle(dlNodeName: string, value: t.Expression, check: boolean): t.Statement {
     return this.setPropWithCheck(
-      nodeName,
-      this.t.callExpression(this.t.identifier(this.importMap.setStyle), [this.t.identifier(nodeName), value]),
+      dlNodeName,
+      this.t.callExpression(this.t.identifier(this.importMap.setStyle), [this.t.identifier(dlNodeName), value]),
       check
     );
   }
 
   /**
    * @View
-   * setStyle(${nodeName}, ${value})
+   * setStyle(${dlNodeName}, ${value})
    */
-  private setHTMLDataset(nodeName: string, value: t.Expression, check: boolean): t.Statement {
+  private setHTMLDataset(dlNodeName: string, value: t.Expression, check: boolean): t.Statement {
     return this.setPropWithCheck(
-      nodeName,
-      this.t.callExpression(this.t.identifier(this.importMap.setDataset), [this.t.identifier(nodeName), value]),
+      dlNodeName,
+      this.t.callExpression(this.t.identifier(this.importMap.setDataset), [this.t.identifier(dlNodeName), value]),
       check
     );
   }
 
   /**
    * @View
-   * ${nodeName}.${key} = ${value}
+   * ${dlNodeName}.${key} = ${value}
    */
-  private setHTMLProp(nodeName: string, key: string, value: t.Expression): t.Statement {
+  private setHTMLProp(dlNodeName: string, key: string, value: t.Expression): t.Statement {
     return this.t.expressionStatement(
       this.t.assignmentExpression(
         '=',
-        this.t.memberExpression(this.t.identifier(nodeName), this.t.identifier(key)),
+        this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier(key)),
         value
       )
     );
@@ -120,11 +120,11 @@ export default class HTMLPropGenerator extends ForwardPropGenerator {
 
   /**
    * @View
-   * ${nodeName}.setAttribute(${key}, ${value})
+   * ${dlNodeName}.setAttribute(${key}, ${value})
    */
-  private setHTMLAttr(nodeName: string, key: string, value: t.Expression): t.Statement {
+  private setHTMLAttr(dlNodeName: string, key: string, value: t.Expression): t.Statement {
     return this.t.expressionStatement(
-      this.t.callExpression(this.t.memberExpression(this.t.identifier(nodeName), this.t.identifier('setAttribute')), [
+      this.t.callExpression(this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier('setAttribute')), [
         this.t.stringLiteral(key),
         value,
       ])
@@ -133,12 +133,12 @@ export default class HTMLPropGenerator extends ForwardPropGenerator {
 
   /**
    * @View
-   * ${nodeName}.addEventListener(${key}, ${value})
+   * ${dlNodeName}.addEventListener(${key}, ${value})
    */
-  private setHTMLEvent(nodeName: string, key: string, value: t.Expression): t.Statement {
+  private setHTMLEvent(dlNodeName: string, key: string, value: t.Expression): t.Statement {
     return this.t.expressionStatement(
       this.t.callExpression(
-        this.t.memberExpression(this.t.identifier(nodeName), this.t.identifier('addEventListener')),
+        this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier('addEventListener')),
         [this.t.stringLiteral(key), value]
       )
     );
@@ -146,13 +146,13 @@ export default class HTMLPropGenerator extends ForwardPropGenerator {
 
   /**
    * @View
-   * setEvent(${nodeName}, ${key}, ${value})
+   * setEvent(${dlNodeName}, ${key}, ${value})
    */
-  private setEvent(nodeName: string, key: string, value: t.Expression, check: boolean): t.Statement {
+  private setEvent(dlNodeName: string, key: string, value: t.Expression, check: boolean): t.Statement {
     return this.setPropWithCheck(
-      nodeName,
+      dlNodeName,
       this.t.callExpression(this.t.identifier(this.importMap.setEvent), [
-        this.t.identifier(nodeName),
+        this.t.identifier(dlNodeName),
         this.t.stringLiteral(key),
         value,
       ]),
@@ -162,14 +162,14 @@ export default class HTMLPropGenerator extends ForwardPropGenerator {
 
   /**
    * @View
-   * delegateEvent(${nodeName}, ${key}, ${value})
+   * delegateEvent(${dlNodeName}, ${key}, ${value})
    */
-  private delegateEvent(nodeName: string, key: string, value: t.Expression, check: boolean): t.Statement {
+  private delegateEvent(dlNodeName: string, key: string, value: t.Expression, check: boolean): t.Statement {
     this.config.wrapUpdate(value);
     return this.setPropWithCheck(
-      nodeName,
+      dlNodeName,
       this.t.callExpression(this.t.identifier(this.importMap.delegateEvent), [
-        this.t.identifier(nodeName),
+        this.t.identifier(dlNodeName),
         this.t.stringLiteral(key),
         value,
       ]),
@@ -179,19 +179,19 @@ export default class HTMLPropGenerator extends ForwardPropGenerator {
 
   /**
    * @View
-   * setHTMLProp(${nodeName}, ${key}, ${valueFunc}, ${dependenciesNode})
+   * setHTMLProp(${dlNodeName}, ${key}, ${valueFunc}, ${dependenciesNode})
    */
   private setCachedProp(
-    nodeName: string,
+    dlNodeName: string,
     key: string,
     value: t.Expression,
     dependenciesNode: t.ArrayExpression,
     check: boolean
   ): t.Statement {
     return this.setPropWithCheck(
-      nodeName,
+      dlNodeName,
       this.t.callExpression(this.t.identifier(this.importMap.setHTMLProp), [
-        this.t.identifier(nodeName),
+        this.t.identifier(dlNodeName),
         this.t.stringLiteral(key),
         this.t.arrowFunctionExpression([], value),
         dependenciesNode,
@@ -202,19 +202,19 @@ export default class HTMLPropGenerator extends ForwardPropGenerator {
 
   /**
    * @View
-   * setHTMLAttr(${nodeName}, ${key}, ${valueFunc}, ${dependenciesNode}, ${check})
+   * setHTMLAttr(${dlNodeName}, ${key}, ${valueFunc}, ${dependenciesNode}, ${check})
    */
   private setCachedAttr(
-    nodeName: string,
+    dlNodeName: string,
     key: string,
     value: t.Expression,
     dependenciesNode: t.ArrayExpression,
     check: boolean
   ): t.Statement {
     return this.setPropWithCheck(
-      nodeName,
+      dlNodeName,
       this.t.callExpression(this.t.identifier(this.importMap.setHTMLAttr), [
-        this.t.identifier(nodeName),
+        this.t.identifier(dlNodeName),
         this.t.stringLiteral(key),
         this.t.arrowFunctionExpression([], value),
         dependenciesNode,
@@ -225,24 +225,24 @@ export default class HTMLPropGenerator extends ForwardPropGenerator {
 
   /**
    * @View
-   * setHTMLProps(${nodeName}, ${value})
+   * setHTMLProps(${dlNodeName}, ${value})
    */
-  private setHTMLPropObject(nodeName: string, value: t.Expression, check: boolean): t.Statement {
+  private setHTMLPropObject(dlNodeName: string, value: t.Expression, check: boolean): t.Statement {
     return this.setPropWithCheck(
-      nodeName,
-      this.t.callExpression(this.t.identifier(this.importMap.setHTMLProps), [this.t.identifier(nodeName), value]),
+      dlNodeName,
+      this.t.callExpression(this.t.identifier(this.importMap.setHTMLProps), [this.t.identifier(dlNodeName), value]),
       check
     );
   }
 
   /**
    * @View
-   * setHTMLAttrs(${nodeName}, ${value})
+   * setHTMLAttrs(${dlNodeName}, ${value})
    */
-  private setHTMLAttrObject(nodeName: string, value: t.Expression, check: boolean): t.Statement {
+  private setHTMLAttrObject(dlNodeName: string, value: t.Expression, check: boolean): t.Statement {
     return this.setPropWithCheck(
-      nodeName,
-      this.t.callExpression(this.t.identifier(this.importMap.setHTMLAttrs), [this.t.identifier(nodeName), value]),
+      dlNodeName,
+      this.t.callExpression(this.t.identifier(this.importMap.setHTMLAttrs), [this.t.identifier(dlNodeName), value]),
       check
     );
   }
@@ -261,64 +261,69 @@ export default class HTMLPropGenerator extends ForwardPropGenerator {
    * For style/dataset/ref/attr/prop
    */
   private addCommonHTMLProp(
-    nodeName: string,
+    dlNodeName: string,
     attrName: string,
     value: t.Expression,
     check: boolean
   ): t.Statement | null {
     if (HTMLPropGenerator.lifecycle.includes(attrName as (typeof HTMLPropGenerator.lifecycle)[number])) {
-      if (!check) return this.addLifecycle(nodeName, attrName as (typeof HTMLPropGenerator.lifecycle)[number], value);
+      if (!check) return this.addLifecycle(dlNodeName, attrName as (typeof HTMLPropGenerator.lifecycle)[number], value);
       return null;
     }
     if (attrName === 'ref') {
-      if (!check) return this.initElement(nodeName, value);
+      if (!check) return this.initElement(dlNodeName, value);
       return null;
     }
-    if (attrName === 'style') return this.setHTMLStyle(nodeName, value, check);
-    if (attrName === 'dataset') return this.setHTMLDataset(nodeName, value, check);
-    if (attrName === 'props') return this.setHTMLPropObject(nodeName, value, check);
-    if (attrName === 'attrs') return this.setHTMLAttrObject(nodeName, value, check);
+    if (attrName === 'style') return this.setHTMLStyle(dlNodeName, value, check);
+    if (attrName === 'dataset') return this.setHTMLDataset(dlNodeName, value, check);
+    if (attrName === 'props') return this.setHTMLPropObject(dlNodeName, value, check);
+    if (attrName === 'attrs') return this.setHTMLAttrObject(dlNodeName, value, check);
     return DLError.throw2();
   }
 
   /**
    * @View
    * 1. Event listener
-   *  - ${nodeName}.addEventListener(${key}, ${value})
+   *  - ${dlNodeName}.addEventListener(${key}, ${value})
    * 2. HTML internal attribute -> DOM property
-   *  - ${nodeName}.${key} = ${value}
+   *  - ${dlNodeName}.${key} = ${value}
    * 3. HTML custom attribute
-   *  - ${nodeName}.setAttribute(${key}, ${value})
+   *  - ${dlNodeName}.setAttribute(${key}, ${value})
    */
-  private setStaticHTMLProp(nodeName: string, tag: string, attrName: string, value: t.Expression): t.Statement | null {
+  private setStaticHTMLProp(
+    dlNodeName: string,
+    tag: string,
+    attrName: string,
+    value: t.Expression
+  ): t.Statement | null {
     if (HTMLPropGenerator.commonHTMLPropKeys.includes(attrName))
-      return this.addCommonHTMLProp(nodeName, attrName, value, false);
+      return this.addCommonHTMLProp(dlNodeName, attrName, value, false);
     if (attrName.startsWith('on')) {
       const eventName = attrName.slice(2).toLowerCase();
       if (HTMLPropGenerator.DelegatedEvents.has(eventName)) {
-        return this.delegateEvent(nodeName, eventName, value, false);
+        return this.delegateEvent(dlNodeName, eventName, value, false);
       }
-      return this.setHTMLEvent(nodeName, eventName, value);
+      return this.setHTMLEvent(dlNodeName, eventName, value);
     }
     if (this.isInternalAttribute(tag, attrName)) {
       if (attrName === 'class') attrName = 'className';
       else if (attrName === 'for') attrName = 'htmlFor';
-      return this.setHTMLProp(nodeName, attrName, value);
+      return this.setHTMLProp(dlNodeName, attrName, value);
     }
-    return this.setHTMLAttr(nodeName, attrName, value);
+    return this.setHTMLAttr(dlNodeName, attrName, value);
   }
 
   /**
    * @View
    * 1. Event listener
-   *  - ${setEvent}(${nodeName}, ${key}, ${value})
+   *  - ${setEvent}(${dlNodeName}, ${key}, ${value})
    * 2. HTML internal attribute -> DOM property
-   *  - ${setHTMLProp}(${nodeName}, ${key}, ${value})
+   *  - ${setHTMLProp}(${dlNodeName}, ${key}, ${value})
    * 3. HTML custom attribute
-   *  - ${setHTMLAttr}(${nodeName}, ${key}, ${value})
+   *  - ${setHTMLAttr}(${dlNodeName}, ${key}, ${value})
    */
   private setDynamicHTMLProp(
-    nodeName: string,
+    dlNodeName: string,
     tag: string,
     attrName: string,
     value: t.Expression,
@@ -326,21 +331,21 @@ export default class HTMLPropGenerator extends ForwardPropGenerator {
     check: boolean
   ): t.Statement | null {
     if (HTMLPropGenerator.commonHTMLPropKeys.includes(attrName))
-      return this.addCommonHTMLProp(nodeName, attrName, value, check);
+      return this.addCommonHTMLProp(dlNodeName, attrName, value, check);
     if (attrName.startsWith('on')) {
       const eventName = attrName.slice(2).toLowerCase();
       if (HTMLPropGenerator.DelegatedEvents.has(eventName)) {
-        return this.delegateEvent(nodeName, eventName, value, check);
+        return this.delegateEvent(dlNodeName, eventName, value, check);
       }
-      return this.setEvent(nodeName, eventName, value, check);
+      return this.setEvent(dlNodeName, eventName, value, check);
     }
     if (this.alterAttributeMap[attrName]) {
       attrName = this.alterAttributeMap[attrName];
     }
     if (this.isInternalAttribute(tag, attrName)) {
-      return this.setCachedProp(nodeName, attrName, value, dependenciesNode, check);
+      return this.setCachedProp(dlNodeName, attrName, value, dependenciesNode, check);
     }
-    return this.setCachedAttr(nodeName, attrName, value, dependenciesNode, check);
+    return this.setCachedAttr(dlNodeName, attrName, value, dependenciesNode, check);
   }
 
   /**

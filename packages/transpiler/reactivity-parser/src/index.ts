@@ -12,13 +12,13 @@ export function parseReactivity(viewUnits: ViewUnit[], config: ReactivityParserC
   // ---- ReactivityParser only accepts one view unit at a time,
   //      so we loop through the view units and get all the used properties
   let usedBit = 0;
-  const particles = viewUnits.map(viewUnit => {
+  const dlParticles = viewUnits.map(viewUnit => {
     const parser = new ReactivityParser(config);
-    const particle = parser.parse(viewUnit);
+    const dlParticle = parser.parse(viewUnit);
     usedBit |= parser.usedBit;
-    return particle;
+    return dlParticle;
   });
-  return [particles, usedBit];
+  return [dlParticles, usedBit];
 }
 
 export { getDependenciesFromNode } from './getDependencies';

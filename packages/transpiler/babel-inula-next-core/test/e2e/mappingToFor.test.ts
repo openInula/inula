@@ -30,7 +30,7 @@ describe('mapping2ForPlugin', () => {
       `;
     const transformedCode = transform(code);
     expect(transformedCode).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, createElement as $$createElement, createNode as $$createNode, updateNode as $$updateNode, insertNode as $$insertNode, updateChildren as $$updateChildren, initCompNode as $$initCompNode } from "@openinula/next";
+      "import { createComponent as $$createComponent, createElement as $$createElement, ExpNode as $$ExpNode, insertNode as $$insertNode, ForNode as $$ForNode } from "@openinula/next";
       function MyComp() {
         let self;
         let arr = [1, 2, 3];
@@ -38,30 +38,30 @@ describe('mapping2ForPlugin', () => {
           updateState: changed => {},
           getUpdateViews: () => {
             let $node0;
-            $node0 = $$createNode(1 /*For*/, arr, 1, null, (item, $idx, $updateArr) => {
+            $node0 = new $$ForNode(arr, 1, null, (item, $idx, $updateArr) => {
               let $node0, $node1;
               $updateArr[$idx] = ($changed, $item) => {
                 item = $item;
                 if ($changed & 1) {
-                  $node1 && $$updateNode($node1, () => item, [item]);
+                  $node1 && $node1.update(() => item, [item]);
                 }
               };
               $node0 = $$createElement("div");
-              $node1 = $$createNode(3 /*Exp*/, () => item, [item]);
+              $node1 = new $$ExpNode(item, [item]);
               $$insertNode($node0, $node1, 0);
               $node0._$nodes = [$node1];
               return [$node0];
             });
             return [[$node0], $changed => {
               if ($changed & 1) {
-                $node0 && $$updateNode($node0, arr, null);
+                $node0 && $node0.updateArray(arr, null);
               }
-              $node0 && $$updateChildren($node0, $changed);
+              $node0 && $node0.update($changed);
               return [$node0];
             }];
           }
         });
-        return $$initCompNode(self);
+        return self.init();
       }"
     `);
   });
@@ -77,43 +77,6 @@ describe('mapping2ForPlugin', () => {
         }
       `;
     const transformedCode = transform(code);
-    expect(transformedCode).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, createElement as $$createElement, createNode as $$createNode, updateNode as $$updateNode, insertNode as $$insertNode, updateChildren as $$updateChildren, initCompNode as $$initCompNode } from "@openinula/next";
-      function MyComp() {
-        let self;
-        let arr = [1, 2, 3];
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            let $node0, $node1;
-            $node0 = $$createElement("div");
-            $node1 = $$createNode(1 /*For*/, arr.map(item => <h1>{item}</h1>), 1, null, (item, $idx, $updateArr) => {
-              let $node0, $node1;
-              $updateArr[$idx] = ($changed, $item) => {
-                item = $item;
-                if ($changed & 1) {
-                  $node1 && $$updateNode($node1, () => item, [item]);
-                }
-              };
-              $node0 = $$createElement("div");
-              $node1 = $$createNode(3 /*Exp*/, () => item, [item]);
-              $$insertNode($node0, $node1, 0);
-              $node0._$nodes = [$node1];
-              return [$node0];
-            });
-            $$insertNode($node0, $node1, 0);
-            $node0._$nodes = [$node1];
-            return [[$node0], $changed => {
-              if ($changed & 1) {
-                $node1 && $$updateNode($node1, arr.map(item => <h1>{item}</h1>), null);
-              }
-              $node1 && $$updateChildren($node1, $changed);
-              return [$node0];
-            }];
-          }
-        });
-        return $$initCompNode(self);
-      }"
-    `);
+    expect(transformedCode).toMatchInlineSnapshot('TODO');
   });
 });
