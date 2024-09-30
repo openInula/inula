@@ -1,13 +1,5 @@
 # vite-plugin-inula-next
 
-## 0.0.4
-
-### Patch Changes
-
-- support hook
-- Updated dependencies
-  - babel-preset-inula-next@0.0.4
-
 ## 0.0.3
 
 ### Patch Changes

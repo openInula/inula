@@ -1,8 +1,6 @@
 import { type types as t } from '@babel/core';
 import BaseGenerator from './BaseGenerator';
 import { Bitmap } from '@openinula/reactivity-parser';
-import { typeNode } from '../shard';
-import { InulaNodeType } from '@openinula/next-shared';
 
 export default class CondGenerator extends BaseGenerator {
   /**
@@ -48,13 +46,12 @@ export default class CondGenerator extends BaseGenerator {
 
   /**
    * @View
-   * updateNode(${nodeName}, key)
+   * ${dlNodeName}?.updateCond(key)
    */
-  updateCondNodeCond(nodeName: string): t.Statement {
+  updateCondNodeCond(dlNodeName: string): t.Statement {
     return this.optionalExpression(
-      nodeName,
-      this.t.callExpression(this.t.identifier(this.importMap.updateNode), [
-        this.t.identifier(nodeName),
+      dlNodeName,
+      this.t.callExpression(this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier('updateCond')), [
         ...this.updateParams.slice(1),
       ])
     );
@@ -62,29 +59,28 @@ export default class CondGenerator extends BaseGenerator {
 
   /**
    * @View
-   * updateChildren(${nodeName}, changed)
+   * ${dlNodeName}?.update(changed)
    */
-  updateCondNode(nodeName: string): t.Statement {
+  updateCondNode(dlNodeName: string): t.Statement {
     return this.optionalExpression(
-      nodeName,
-      this.t.callExpression(this.t.identifier(this.importMap.updateChildren), [
-        this.t.identifier(nodeName),
-        ...this.updateParams,
-      ])
+      dlNodeName,
+      this.t.callExpression(
+        this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier('update')),
+        this.updateParams
+      )
     );
   }
 
   /**
    * @View
-   * ${nodeName} = createNode(InulaNodeType.Cond, ${depNum}, ($thisCond) => {})
+   * ${dlNodeName} = new CondNode(${depNum}, ($thisCond) => {})
    */
-  declareCondNode(nodeName: string, condFunc: t.BlockStatement, depMask: Bitmap): t.Statement {
+  declareCondNode(dlNodeName: string, condFunc: t.BlockStatement, depMask: Bitmap): t.Statement {
     return this.t.expressionStatement(
       this.t.assignmentExpression(
         '=',
-        this.t.identifier(nodeName),
-        this.t.callExpression(this.t.identifier(this.importMap.createNode), [
-          typeNode(InulaNodeType.Cond),
+        this.t.identifier(dlNodeName),
+        this.t.newExpression(this.t.identifier(this.importMap.CondNode), [
           this.t.numericLiteral(depMask),
           this.t.arrowFunctionExpression([this.t.identifier('$thisCond')], condFunc),
         ])
@@ -93,7 +89,7 @@ export default class CondGenerator extends BaseGenerator {
   }
 
   /**
-   * return $thisCond.cond === ${branchIdx} ? [${nodeNames}] : updateNode($thisCond)
+   * return $thisCond.cond === ${branchIdx} ? [${nodeNames}] : $thisCond.updateCond()
    */
   geneCondReturnStatement(nodeNames: string[], branchIdx: number): t.Statement {
     // ---- If the returned cond is not the last one,
@@ -107,10 +103,10 @@ export default class CondGenerator extends BaseGenerator {
           this.t.numericLiteral(branchIdx)
         ),
         this.t.arrayExpression(nodeNames.map(name => this.t.identifier(name))),
-        this.t.callExpression(this.t.identifier(this.importMap.updateNode), [
-          this.t.identifier('$thisCond'),
-          ...this.updateParams.slice(1),
-        ])
+        this.t.callExpression(
+          this.t.memberExpression(this.t.identifier('$thisCond'), this.t.identifier('updateCond')),
+          this.updateParams.slice(1)
+        )
       )
     );
   }

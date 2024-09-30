@@ -3,22 +3,19 @@ import { types as t, traverse } from '@openinula/babel-api';
 import { IRNode, ReactiveVariable } from '../analyze/types';
 import { importMap, reactivityFuncNames } from '../constants';
 
-export function uid(idx: number) {
-  return t.stringLiteral(`cache${idx}`);
+export function uid() {
+  return t.callExpression(t.memberExpression(t.identifier('Symbol'), t.identifier('for')), [
+    t.stringLiteral('inula-cache'),
+  ]);
 }
 
 /**
  * @View
  * if (Inula.notCached(self, ${uid}, depNode)) {${blockStatement}}
  */
-export function wrapCheckCache(
-  selfId: t.Identifier,
-  cacheNode: t.ArrayExpression,
-  statements: t.Statement[],
-  idx: number
-) {
+export function wrapCheckCache(selfId: t.Identifier, cacheNode: t.ArrayExpression, statements: t.Statement[]) {
   return t.ifStatement(
-    t.callExpression(t.identifier(importMap.notCached), [selfId, uid(idx), cacheNode]),
+    t.callExpression(t.identifier(importMap.notCached), [selfId, uid(), cacheNode]),
     t.blockStatement(statements)
   );
 }
@@ -56,7 +53,7 @@ export function wrapUpdate(selfId: t.Identifier, node: t.Statement | t.Expressio
     // add a call to updateDerived and comment show the bit
     const bitNode = t.numericLiteral(bit);
     t.addComment(bitNode, 'trailing', `0b${bit.toString(2)}`, false);
-    return t.callExpression(t.identifier(importMap.updateNode), [selfId, node, bitNode]);
+    return t.callExpression(t.memberExpression(selfId, t.identifier('updateDerived')), [node, bitNode]);
   };
   traverse(nodeWrapFile(node), {
     Identifier: (path: NodePath<t.Identifier>) => {

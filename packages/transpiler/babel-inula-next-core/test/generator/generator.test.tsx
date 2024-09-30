@@ -18,7 +18,7 @@ describe('generate', () => {
         self = $$createComponent({
           updateState: changed => {}
         });
-        return $$initCompNode(self);
+        return self.init();
       }"
     `);
   });
@@ -77,7 +77,7 @@ describe('generate', () => {
             return [[],,];
           }
         });
-        return $$initCompNode(self);
+        return self.init();
       }"
     `);
   });
@@ -100,13 +100,13 @@ describe('generate', () => {
         self = $$createComponent({
           updateState: changed => {
             if (changed & 1) {
-              if ($$notCached(self, "cache0", [count])) {
+              if ($$notCached(self, Symbol.for("inula-cache"), [count])) {
                 doubleCount = count * 2;
               }
             }
           }
         });
-        return $$initCompNode(self);
+        return self.init();
       }"
     `);
   });
@@ -147,8 +147,8 @@ describe('generate', () => {
         self = $$createComponent({
           updateState: changed => {
             if (changed & 1) {
-              if ($$notCached(self, "cache0", [count])) {
-                $$updateNode(self, doubleCount = count * 2, 2 /*0b10*/);
+              if ($$notCached(self, Symbol.for("inula-cache"), [count])) {
+                self.updateDerived(doubleCount = count * 2, 2 /*0b10*/);
                 ff = count * 2;
                 {
                   let nono = 1;
@@ -161,20 +161,20 @@ describe('generate', () => {
               }
             }
             if (changed & 7) {
-              if ($$notCached(self, "cache1", [count, doubleCount, nn])) {
+              if ($$notCached(self, Symbol.for("inula-cache"), [count, doubleCount, nn])) {
                 kk = count * doubleCount + 100 + nn[1];
               }
             }
           },
           getUpdateViews: () => {
-            $$updateNode(self, nn.push("jj"), 4 /*0b100*/);
-            $$updateNode(self, [count, doubleCount] = () => {
-              $$updateNode(self, nn.push("nn"), 4 /*0b100*/);
+            self.updateDerived(nn.push("jj"), 4 /*0b100*/);
+            self.updateDerived([count, doubleCount] = () => {
+              self.updateDerived(nn.push("nn"), 4 /*0b100*/);
             }, 3 /*0b11*/);
             return [[],,];
           }
         });
-        return $$initCompNode(self);
+        return self.init();
       }"
     `);
   });
@@ -200,7 +200,7 @@ describe('generate', () => {
             }
           }
         });
-        return $$initCompNode(self);
+        return self.init();
       }"
     `);
   });
@@ -230,7 +230,7 @@ describe('generate', () => {
             }
           }
         });
-        return $$initCompNode(self);
+        return self.init();
       }"
     `);
   });
@@ -256,7 +256,7 @@ describe('generate', () => {
         self = $$createComponent({
           updateState: changed => {
             if (changed & 1) {
-              if ($$notCached(self, "cache0", [prop1_$p$_])) {
+              if ($$notCached(self, Symbol.for("inula-cache"), [prop1_$p$_])) {
                 derived = prop1_$p$_ * 2;
                 {
                   console.log(prop1_$p$_);
@@ -266,11 +266,11 @@ describe('generate', () => {
           },
           updateProp: (propName, newValue) => {
             if (propName === "prop1") {
-              $$updateNode(self, prop1_$p$_ = newValue, 1 /*0b1*/);
+              self.updateDerived(prop1_$p$_ = newValue, 1 /*0b1*/);
             }
           }
         });
-        return $$initCompNode(self);
+        return self.init();
       }"
     `);
   });

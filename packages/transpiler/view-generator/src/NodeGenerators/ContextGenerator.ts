@@ -1,8 +1,6 @@
 import { type types as t } from '@babel/core';
 import { type ViewParticle, type DependencyProp, type ContextParticle } from '@openinula/reactivity-parser';
 import PropViewGenerator from '../HelperGenerators/PropViewGenerator';
-import { InulaNodeType } from '@openinula/next-shared';
-import { typeNode } from '../shard';
 
 export default class ContextGenerator extends PropViewGenerator {
   run() {
@@ -11,28 +9,28 @@ export default class ContextGenerator extends PropViewGenerator {
     props = this.alterPropViews(props)!;
     const { children } = this.viewParticle as ContextParticle;
 
-    const nodeName = this.generateNodeName();
+    const dlNodeName = this.generateNodeName();
 
-    this.addInitStatement(this.declareEnvNode(nodeName, props, contextName));
+    this.addInitStatement(this.declareEnvNode(dlNodeName, props, contextName));
 
     // ---- Children
-    this.addInitStatement(this.geneEnvChildren(nodeName, children));
+    this.addInitStatement(this.geneEnvChildren(dlNodeName, children));
 
     // ---- Update props
     Object.entries(props).forEach(([key, { depMask, value, dependenciesNode }]) => {
       if (!depMask) return;
-      this.addUpdateStatements(depMask, this.updateContext(nodeName, key, value, dependenciesNode));
+      this.addUpdateStatements(depMask, this.updateContext(dlNodeName, key, value, dependenciesNode));
     });
 
-    return nodeName;
+    return dlNodeName;
   }
 
   /**
    * @View
-   * { ${key}: ${value}, ... } // contextValues
-   * { ${key}: ${deps}, ... } // contextDeps
+   * { ${key}: ${value}, ... }
+   * { ${key}: ${deps}, ... }
    */
-  private generateContext(props: Record<string, DependencyProp>): t.Expression[] {
+  private generateEnvs(props: Record<string, DependencyProp>): t.Expression[] {
     return [
       this.t.objectExpression(
         Object.entries(props).map(([key, { value }]) => this.t.objectProperty(this.t.identifier(key), value))
@@ -50,17 +48,16 @@ export default class ContextGenerator extends PropViewGenerator {
 
   /**
    * @View
-   * ${nodeName} = createNode(InulaNodeType.Context, context, contextValues, contextDeps)
+   * ${dlNodeName} = new ContextProvider(context, envs)
    */
-  private declareEnvNode(nodeName: string, props: Record<string, DependencyProp>, contextName: string): t.Statement {
+  private declareEnvNode(dlNodeName: string, props: Record<string, DependencyProp>, contextName: string): t.Statement {
     return this.t.expressionStatement(
       this.t.assignmentExpression(
         '=',
-        this.t.identifier(nodeName),
-        this.t.callExpression(this.t.identifier(this.importMap.createNode), [
-          typeNode(InulaNodeType.Context),
+        this.t.identifier(dlNodeName),
+        this.t.newExpression(this.t.identifier(this.importMap.ContextProvider), [
           this.t.identifier(contextName),
-          ...this.generateContext(props),
+          ...this.generateEnvs(props),
         ])
       )
     );
@@ -68,14 +65,13 @@ export default class ContextGenerator extends PropViewGenerator {
 
   /**
    * @View
-   * initContextChildren(${nodeName}, [${childrenNames}])
+   * ${dlNodeName}.initNodes([${childrenNames}])
    */
-  private geneEnvChildren(nodeName: string, children: ViewParticle[]): t.Statement {
+  private geneEnvChildren(dlNodeName: string, children: ViewParticle[]): t.Statement {
     const [statements, childrenNames] = this.generateChildren(children);
     this.addInitStatement(...statements);
     return this.t.expressionStatement(
-      this.t.callExpression(this.t.identifier(this.importMap.initContextChildren), [
-        this.t.identifier(nodeName),
+      this.t.callExpression(this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier('initNodes')), [
         this.t.arrayExpression(childrenNames.map(name => this.t.identifier(name))),
       ])
     );
@@ -83,22 +79,20 @@ export default class ContextGenerator extends PropViewGenerator {
 
   /**
    * @View
-   * updateNode(${nodeName}, ${key}, () => ${value}, ${dependenciesNode})
+   * ${dlNodeName}.updateContext(${key}, () => ${value}, ${dependenciesNode})
    */
   private updateContext(
-    nodeName: string,
+    dlNodeName: string,
     key: string,
     value: t.Expression,
     dependenciesNode: t.ArrayExpression
   ): t.Statement {
     return this.optionalExpression(
-      nodeName,
-      this.t.callExpression(this.t.identifier(this.importMap.updateNode), [
-        this.t.identifier(nodeName),
-        this.t.stringLiteral(key),
-        this.t.arrowFunctionExpression([], value),
-        dependenciesNode,
-      ])
+      dlNodeName,
+      this.t.callExpression(
+        this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier('updateContext')),
+        [this.t.stringLiteral(key), this.t.arrowFunctionExpression([], value), dependenciesNode]
+      )
     );
   }
 }

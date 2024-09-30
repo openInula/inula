@@ -6,26 +6,29 @@ export default class TextGenerator extends BaseGenerator {
   run() {
     const { content } = this.viewParticle as TextParticle;
 
-    const nodeName = this.generateNodeName();
+    const dlNodeName = this.generateNodeName();
 
-    this.addInitStatement(this.declareTextNode(nodeName, content.value, content.dependenciesNode));
+    this.addInitStatement(this.declareTextNode(dlNodeName, content.value, content.dependenciesNode));
 
     if (content.depMask) {
-      this.addUpdateStatements(content.depMask, this.updateTextNode(nodeName, content.value, content.dependenciesNode));
+      this.addUpdateStatements(
+        content.depMask,
+        this.updateTextNode(dlNodeName, content.value, content.dependenciesNode)
+      );
     }
 
-    return nodeName;
+    return dlNodeName;
   }
 
   /**
    * @View
-   * ${nodeName} = createTextNode(${value}, ${deps})
+   * ${dlNodeName} = createTextNode(${value}, ${deps})
    */
-  private declareTextNode(nodeName: string, value: t.Expression, dependenciesNode: t.Expression): t.Statement {
+  private declareTextNode(dlNodeName: string, value: t.Expression, dependenciesNode: t.Expression): t.Statement {
     return this.t.expressionStatement(
       this.t.assignmentExpression(
         '=',
-        this.t.identifier(nodeName),
+        this.t.identifier(dlNodeName),
         this.t.callExpression(this.t.identifier(this.importMap.createTextNode), [value, dependenciesNode])
       )
     );
@@ -33,15 +36,15 @@ export default class TextGenerator extends BaseGenerator {
 
   /**
    * @View
-   * ${nodeName} && updateText(${nodeName}, () => ${value}, ${deps})
+   * ${dlNodeName} && updateText(${dlNodeName}, () => ${value}, ${deps})
    */
-  private updateTextNode(nodeName: string, value: t.Expression, dependenciesNode: t.Expression): t.Statement {
+  private updateTextNode(dlNodeName: string, value: t.Expression, dependenciesNode: t.Expression): t.Statement {
     return this.t.expressionStatement(
       this.t.logicalExpression(
         '&&',
-        this.t.identifier(nodeName),
+        this.t.identifier(dlNodeName),
         this.t.callExpression(this.t.identifier(this.importMap.updateText), [
-          this.t.identifier(nodeName),
+          this.t.identifier(dlNodeName),
           this.t.arrowFunctionExpression([], value),
           dependenciesNode,
         ])

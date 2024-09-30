@@ -92,12 +92,66 @@ function extractPropsDestructingInFnBody(
   return props;
 }
 
+function extractMemberExpressionInFnBody(
+  fnPath: NodePath<t.FunctionExpression> | NodePath<ArrowFunctionWithBlock>,
+  propsName: string
+) {
+  const props: Prop[] = [];
+  const body = fnPath.get('body') as NodePath<t.BlockStatement>;
+  body.traverse({
+    MemberExpression(path: NodePath<t.MemberExpression>) {
+      // find the props destructuring, like const { prop1, prop2 } = props;
+      const obj = path.node.object;
+
+      if (t.isIdentifier(obj) && obj.name === propsName) {
+        const property = path.node.property;
+        if (!t.isIdentifier(property)) {
+          return;
+        }
+        const name = property.name;
+        const prop: Prop = { type: PropType.SINGLE, name };
+        if (path.parentPath.isVariableDeclarator() && t.isIdentifier(path.parentPath.node.id)) {
+          const rename = path.parentPath.node.id.name;
+          if (name !== rename) {
+            prop.alias = rename;
+          }
+          path.parentPath.remove();
+        }
+        if (!props.map(prop => prop.name).includes(prop.name)) {
+          props.push(prop);
+        }
+      }
+    },
+  });
+  return props;
+}
+
+function replaceProps(
+  fnPath: NodePath<t.FunctionExpression> | NodePath<ArrowFunctionWithBlock>,
+  propsName: string,
+  props: Prop[]
+) {
+  const body = fnPath.get('body') as NodePath<t.BlockStatement>;
+  props.forEach(prop => {
+    body.traverse({
+      MemberExpression(path: NodePath<t.MemberExpression>) {
+        const obj = path.node.object;
+        const property = path.node.property;
+        if (t.isIdentifier(property) && t.isIdentifier(obj) && obj.name === propsName && property.name === prop.name) {
+          path.replaceWith(t.identifier(prop.name + PROP_SUFFIX));
+        }
+      },
+    });
+  });
+}
+
 function transformParam(
   propsPath: NodePath<t.Identifier | t.RestElement | t.Pattern>,
   props: Prop[],
   fnPath: NodePath<t.FunctionExpression> | NodePath<ArrowFunctionWithBlock>,
   suffix: string
 ) {
+  let memberExpressionProps: Prop[] = [];
   if (propsPath) {
     if (propsPath.isObjectPattern()) {
       // --- object destructuring ---
@@ -105,11 +159,15 @@ function transformParam(
     } else if (propsPath.isIdentifier()) {
       // --- identifier destructuring ---
       props = extractPropsDestructingInFnBody(fnPath, propsPath.node.name);
+      memberExpressionProps = extractMemberExpressionInFnBody(fnPath, propsPath.node.name);
+      props = [...props, ...memberExpressionProps];
     }
   }
 
   fnPath.node.body.body.unshift(...props.flatMap(prop => createPropAssignment(prop, fnPath.scope, suffix)));
-
+  if (propsPath.isIdentifier()) {
+    replaceProps(fnPath, propsPath.node.name, memberExpressionProps);
+  }
   // --- only keep the first level props---
   // e.g. function({ prop1, prop2 }) {}
   const param = t.objectPattern(

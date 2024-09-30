@@ -300,21 +300,6 @@ describe('Computed Properties', () => {
       expect(resultElement.textContent).toBe('52');
     });
 
-    it.fails('should compute correctly with functional dependencies', ({ container }) => {
-      function App() {
-        let x = 1;
-        const double = x * 2;
-        const quadruple = double * 2;
-        const getQuadruple = () => quadruple;
-        const result = getQuadruple() + x;
-        return <div>{result}</div>;
-      }
-
-      render(App, container);
-
-      expect(container.innerHTML).toBe('<div>5</div>');
-    });
-
     it('should update when any dependency changes', ({ container }) => {
       let resultElement: HTMLElement;
 

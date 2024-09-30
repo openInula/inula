@@ -75,20 +75,15 @@ export default function (api: typeof babel, options: InulaNextOption): PluginObj
             program.skip();
             return;
           }
-          let transformationHappenedInFile = false;
+          let transformationHappened = false;
 
           program.traverse({
             CallExpression(path) {
-              const transformed = transformNode(path, htmlTags, state);
-              if (transformed) {
-                path.skip();
-              }
-
-              transformationHappenedInFile = transformed || transformationHappenedInFile;
+              transformationHappened = transformNode(path, htmlTags, state) || transformationHappened;
             },
           });
 
-          if (transformationHappenedInFile && !options.skipImport) {
+          if (transformationHappened && !options.skipImport) {
             addImport(program.node, getAccessedKeys(), packageName);
           }
         },

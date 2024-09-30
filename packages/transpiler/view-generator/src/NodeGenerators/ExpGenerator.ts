@@ -1,37 +1,37 @@
 import { type types as t } from '@babel/core';
 import { type ExpParticle } from '@openinula/reactivity-parser';
 import ElementGenerator from '../HelperGenerators/ElementGenerator';
-import { typeNode } from '../shard';
-import { InulaNodeType } from '@openinula/next-shared';
 
 export default class ExpGenerator extends ElementGenerator {
   run() {
     let { content } = this.viewParticle as ExpParticle;
     content = this.alterPropView(content)!;
 
-    const nodeName = this.generateNodeName();
+    const dlNodeName = this.generateNodeName();
 
-    this.addInitStatement(this.declareExpNode(nodeName, content.value, content.dependenciesNode));
+    this.addInitStatement(this.declareExpNode(dlNodeName, content.value, content.dependenciesNode));
 
     if (content.depMask) {
-      this.addUpdateStatements(content.depMask, this.updateExpNode(nodeName, content.value, content.dependenciesNode));
+      this.addUpdateStatements(
+        content.depMask,
+        this.updateExpNode(dlNodeName, content.value, content.dependenciesNode)
+      );
     }
 
-    return nodeName;
+    return dlNodeName;
   }
 
   /**
    * @View
-   * ${nodeName} = createNode(InulaNodeType.Exp, () => ${value}, dependenciesNode)
+   * ${dlNodeName} = new ExpNode(${value}, dependenciesNode)
    */
-  private declareExpNode(nodeName: string, value: t.Expression, dependenciesNode: t.ArrayExpression): t.Statement {
+  private declareExpNode(dlNodeName: string, value: t.Expression, dependenciesNode: t.ArrayExpression): t.Statement {
     return this.t.expressionStatement(
       this.t.assignmentExpression(
         '=',
-        this.t.identifier(nodeName),
-        this.t.callExpression(this.t.identifier(this.importMap.createNode), [
-          typeNode(InulaNodeType.Exp),
-          this.t.arrowFunctionExpression([], value),
+        this.t.identifier(dlNodeName),
+        this.t.newExpression(this.t.identifier(this.importMap.ExpNode), [
+          value,
           dependenciesNode ?? this.t.nullLiteral(),
         ])
       )
@@ -40,13 +40,12 @@ export default class ExpGenerator extends ElementGenerator {
 
   /**
    * @View
-   * updateNode(${nodeName}, value, dependenciesNode)
+   * ${dlNodeName}.update(() => value, dependenciesNode)
    */
-  private updateExpNode(nodeName: string, value: t.Expression, dependenciesNode: t.ArrayExpression): t.Statement {
+  private updateExpNode(dlNodeName: string, value: t.Expression, dependenciesNode: t.ArrayExpression): t.Statement {
     return this.optionalExpression(
-      nodeName,
-      this.t.callExpression(this.t.identifier(this.importMap.updateNode), [
-        this.t.identifier(nodeName),
+      dlNodeName,
+      this.t.callExpression(this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier('update')), [
         this.t.arrowFunctionExpression([], value),
         dependenciesNode ?? this.t.nullLiteral(),
       ])

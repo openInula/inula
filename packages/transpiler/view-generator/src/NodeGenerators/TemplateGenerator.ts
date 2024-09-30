@@ -6,11 +6,11 @@ export default class TemplateGenerator extends HTMLPropGenerator {
   run() {
     const { template, mutableParticles, props } = this.viewParticle as TemplateParticle;
 
-    const nodeName = this.generateNodeName();
+    const dlNodeName = this.generateNodeName();
     // ---- Add template declaration to class
     const templateName = this.genTemplate(template);
     // ---- Declare template node in View body
-    this.addInitStatement(this.declareTemplateNode(nodeName, templateName));
+    this.addInitStatement(this.declareTemplateNode(dlNodeName, templateName));
 
     // ---- Insert elements first
     const paths: number[][] = [];
@@ -20,7 +20,7 @@ export default class TemplateGenerator extends HTMLPropGenerator {
     mutableParticles.forEach(({ path }) => {
       paths.push(path.slice(0, -1));
     });
-    const [insertElementStatements, pathNameMap] = this.insertElements(paths, nodeName);
+    const [insertElementStatements, pathNameMap] = this.insertElements(paths, dlNodeName);
     this.addInitStatement(...insertElementStatements);
 
     // ---- Resolve props
@@ -56,7 +56,7 @@ export default class TemplateGenerator extends HTMLPropGenerator {
       this.addInitStatement(this.insertNode(parentName, childName, path[path.length - 1]));
     });
 
-    return nodeName;
+    return dlNodeName;
   }
 
   /**
@@ -91,13 +91,13 @@ export default class TemplateGenerator extends HTMLPropGenerator {
 
   /**
    * @View
-   * ${nodeName} = ${templateName}.cloneNode(true)
+   * ${dlNodeName} = ${templateName}.cloneNode(true)
    */
-  private declareTemplateNode(nodeName: string, templateName: string): t.Statement {
+  private declareTemplateNode(dlNodeName: string, templateName: string): t.Statement {
     return this.t.expressionStatement(
       this.t.assignmentExpression(
         '=',
-        this.t.identifier(nodeName),
+        this.t.identifier(dlNodeName),
         this.t.callExpression(
           this.t.memberExpression(this.t.identifier(templateName), this.t.identifier('cloneNode')),
           [this.t.booleanLiteral(true)]
@@ -108,14 +108,14 @@ export default class TemplateGenerator extends HTMLPropGenerator {
 
   /**
    * @View
-   * ${nodeName}.firstChild
+   * ${dlNodeName}.firstChild
    *  or
-   * ${nodeName}.firstChild.nextSibling
+   * ${dlNodeName}.firstChild.nextSibling
    *  or
    * ...
-   * ${nodeName}.childNodes[${num}]
+   * ${dlNodeName}.childNodes[${num}]
    */
-  private insertElement(nodeName: string, path: number[], offset: number): t.Statement {
+  private insertElement(dlNodeName: string, path: number[], offset: number): t.Statement {
     const newNodeName = this.generateNodeName();
     if (path.length === 0) {
       return this.t.expressionStatement(
@@ -124,7 +124,7 @@ export default class TemplateGenerator extends HTMLPropGenerator {
           this.t.identifier(newNodeName),
           Array.from<t.Expression>({ length: offset }).reduce((acc: t.Expression) => {
             return this.t.memberExpression(acc as t.Expression, this.t.identifier('nextSibling'));
-          }, this.t.identifier(nodeName))
+          }, this.t.identifier(dlNodeName))
         )
       );
     }
@@ -159,7 +159,7 @@ export default class TemplateGenerator extends HTMLPropGenerator {
           if (cur === 1) return addSecondChild(acc);
           if (cur === 2) return addThirdChild(acc);
           return addOtherChild(acc, cur);
-        }, this.t.identifier(nodeName))
+        }, this.t.identifier(dlNodeName))
       )
     );
   }
@@ -167,17 +167,17 @@ export default class TemplateGenerator extends HTMLPropGenerator {
   /**
    * @brief Insert elements to the template node from the paths
    * @param paths
-   * @param nodeName
+   * @param dlNodeName
    * @returns
    */
-  private insertElements(paths: number[][], nodeName: string): [t.Statement[], Record<string, string>] {
+  private insertElements(paths: number[][], dlNodeName: string): [t.Statement[], Record<string, string>] {
     const [statements, collect] = HTMLPropGenerator.statementsCollector();
-    const nameMap: Record<string, number[]> = { [nodeName]: [] };
+    const nameMap: Record<string, number[]> = { [dlNodeName]: [] };
 
     const commonPrefixPaths = TemplateGenerator.pathWithCommonPrefix(paths);
 
     commonPrefixPaths.forEach(path => {
-      const res = TemplateGenerator.findBestNodeAndPath(nameMap, path, nodeName);
+      const res = TemplateGenerator.findBestNodeAndPath(nameMap, path, dlNodeName);
       const [, pat, offset] = res;
       let name = res[0];
 
