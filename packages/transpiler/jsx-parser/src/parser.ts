@@ -89,6 +89,8 @@ export class ViewParser {
    */
   private parseExpression(node: t.Expression | t.JSXEmptyExpression): void {
     if (this.t.isJSXEmptyExpression(node)) return;
+    if (this.t.isBooleanLiteral(node)) return;
+    if (this.t.isNullLiteral(node)) return;
     if (this.t.isLiteral(node) && !this.t.isTemplateLiteral(node)) {
       // ---- Treat literal as text except template literal
       //      Cuz template literal may have viewProp inside like:
