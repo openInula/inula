@@ -25,7 +25,7 @@ describe('props', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, Comp as $$Comp } from "@openinula/next";
+      "import { createComponent as $$createComponent, Comp as $$Comp, initCompNode as $$initCompNode } from "@openinula/next";
       function App() {
         let self;
         self = $$createComponent({
@@ -36,7 +36,7 @@ describe('props', () => {
             return [[$node0],,];
           }
         });
-        return self.init();
+        return $$initCompNode(self);
       }"
     `);
   });
@@ -50,7 +50,7 @@ describe('props', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, createElement as $$createElement, setHTMLProp as $$setHTMLProp } from "@openinula/next";
+      "import { createComponent as $$createComponent, updateNode as $$updateNode, createElement as $$createElement, setHTMLProp as $$setHTMLProp, initCompNode as $$initCompNode } from "@openinula/next";
       function App({
         id,
         className = 'default'
@@ -62,9 +62,9 @@ describe('props', () => {
           updateState: changed => {},
           updateProp: (propName, newValue) => {
             if (propName === "className") {
-              self.updateDerived(className_$p$_ = newValue, 2 /*0b10*/);
+              $$updateNode(self, className_$p$_ = newValue, 2 /*0b10*/);
             } else if (propName === "id") {
-              self.updateDerived(id_$p$_ = newValue, 1 /*0b1*/);
+              $$updateNode(self, id_$p$_ = newValue, 1 /*0b1*/);
             }
           },
           getUpdateViews: () => {
@@ -83,7 +83,7 @@ describe('props', () => {
             }];
           }
         });
-        return self.init();
+        return $$initCompNode(self);
       }"
     `);
   });
@@ -97,7 +97,7 @@ describe('props', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, notCached as $$notCached, createElement as $$createElement, setHTMLProp as $$setHTMLProp, setStyle as $$setStyle } from "@openinula/next";
+      "import { createComponent as $$createComponent, updateNode as $$updateNode, notCached as $$notCached, createElement as $$createElement, setHTMLProp as $$setHTMLProp, setStyle as $$setStyle, initCompNode as $$initCompNode } from "@openinula/next";
       function App({
         info
       }) {
@@ -110,9 +110,9 @@ describe('props', () => {
         self = $$createComponent({
           updateState: changed => {
             if (changed & 1) {
-              if ($$notCached(self, Symbol.for("inula-cache"), [info_$p$_])) {
+              if ($$notCached(self, "cache0", [info_$p$_])) {
                 {
-                  self.updateDerived(({
+                  $$updateNode(self, ({
                     id,
                     className = 'default',
                     pos: [x, y]
@@ -123,7 +123,7 @@ describe('props', () => {
           },
           updateProp: (propName, newValue) => {
             if (propName === "info") {
-              self.updateDerived(info_$p$_ = newValue, 1 /*0b1*/);
+              $$updateNode(self, info_$p$_ = newValue, 1 /*0b1*/);
             }
           },
           getUpdateViews: () => {
@@ -152,7 +152,7 @@ describe('props', () => {
             }];
           }
         });
-        return self.init();
+        return $$initCompNode(self);
       }"
     `);
   });
@@ -165,7 +165,7 @@ describe('props', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, notCached as $$notCached, createElement as $$createElement, ExpNode as $$ExpNode, insertNode as $$insertNode } from "@openinula/next";
+      "import { createComponent as $$createComponent, updateNode as $$updateNode, notCached as $$notCached, createElement as $$createElement, createNode as $$createNode, insertNode as $$insertNode, initCompNode as $$initCompNode } from "@openinula/next";
       function Child({
         name
       }) {
@@ -175,31 +175,31 @@ describe('props', () => {
         self = $$createComponent({
           updateState: changed => {
             if (changed & 1) {
-              if ($$notCached(self, Symbol.for("inula-cache"), [name_$p$_])) {
-                self.updateDerived(alias = name_$p$_, 2 /*0b10*/);
+              if ($$notCached(self, "cache0", [name_$p$_])) {
+                $$updateNode(self, alias = name_$p$_, 2 /*0b10*/);
               }
             }
           },
           updateProp: (propName, newValue) => {
             if (propName === "name") {
-              self.updateDerived(name_$p$_ = newValue, 1 /*0b1*/);
+              $$updateNode(self, name_$p$_ = newValue, 1 /*0b1*/);
             }
           },
           getUpdateViews: () => {
             let $node0, $node1;
             $node0 = $$createElement("h1");
-            $node1 = new $$ExpNode(alias, [alias]);
+            $node1 = $$createNode(3 /*Exp*/, () => alias, [alias]);
             $$insertNode($node0, $node1, 0);
             $node0._$nodes = [$node1];
             return [[$node0], $changed => {
               if ($changed & 2) {
-                $node1 && $node1.update(() => alias, [alias]);
+                $node1 && $$updateNode($node1, () => alias, [alias]);
               }
               return [$node0];
             }];
           }
         });
-        return self.init();
+        return $$initCompNode(self);
       }"
     `);
   });

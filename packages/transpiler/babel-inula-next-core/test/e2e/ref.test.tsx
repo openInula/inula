@@ -32,7 +32,7 @@ describe('ref', () => {
 
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, createTextNode as $$createTextNode, PropView as $$PropView, Comp as $$Comp, createElement as $$createElement } from "@openinula/next";
+      "import { createComponent as $$createComponent, createTextNode as $$createTextNode, createNode as $$createNode, updateNode as $$updateNode, Comp as $$Comp, initCompNode as $$initCompNode, createElement as $$createElement } from "@openinula/next";
       function App() {
         let self;
         let count = 0;
@@ -41,24 +41,24 @@ describe('ref', () => {
           updateState: changed => {},
           getUpdateViews: () => {
             let $node0, $node1;
-            $node1 = new $$PropView($addUpdate => {
+            $node1 = $$createNode(6 /*Children*/, $addUpdate => {
               let $node0;
               $node0 = $$createTextNode("test", []);
               return [$node0];
             });
             $node0 = $$Comp(Input, {
               "ref": function ($el) {
-                typeof ref === "function" ? ref($el) : self.updateDerived(ref = $el, 1 /*0b1*/);
+                typeof ref === "function" ? ref($el) : $$updateNode(self, ref = $el, 1 /*0b1*/);
               },
               "children": $node1
             });
             return [[$node0], $changed => {
-              $node1 && $node1.update($changed);
+              $$updateNode($node1, $changed);
               return [$node0];
             }];
           }
         });
-        return self.init();
+        return $$initCompNode(self);
       }
       function Input({
         ref
@@ -69,7 +69,7 @@ describe('ref', () => {
           updateState: changed => {},
           updateProp: (propName, newValue) => {
             if (propName === "ref") {
-              self.updateDerived(ref_$p$_ = newValue, 1 /*0b1*/);
+              $$updateNode(self, ref_$p$_ = newValue, 1 /*0b1*/);
             }
           },
           getUpdateViews: () => {
@@ -79,7 +79,7 @@ describe('ref', () => {
             return [[$node0],,];
           }
         });
-        return self.init();
+        return $$initCompNode(self);
       }"
     `);
   });

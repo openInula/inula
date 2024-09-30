@@ -23,11 +23,6 @@ export default class CompGenerator extends ForwardPropGenerator {
         return;
       }
 
-      if (key === 'props') {
-        this.addUpdateStatements(depMask, this.setCompProps(nodeName, value, dependenciesNode));
-        return;
-      }
-
       this.addUpdateStatements(depMask, this.setCompProp(nodeName, key, value, dependenciesNode));
     });
 
@@ -58,10 +53,10 @@ export default class CompGenerator extends ForwardPropGenerator {
 
   /**
    * @View
-   * ${dlNodeName} = ${tag}()
+   * ${nodeName} = ${tag}()
    */
   private declareCompNode(
-    dlNodeName: string,
+    nodeName: string,
     tag: t.Expression,
     props: Record<string, DependencyProp>,
     children: ViewParticle[]
@@ -80,7 +75,7 @@ export default class CompGenerator extends ForwardPropGenerator {
       this.t.expressionStatement(
         this.t.assignmentExpression(
           '=',
-          this.t.identifier(dlNodeName),
+          this.t.identifier(nodeName),
           this.t.callExpression(this.t.identifier(this.config.importMap.Comp), [tag, this.generateCompProps(newProps)])
         )
       ),
@@ -110,31 +105,32 @@ export default class CompGenerator extends ForwardPropGenerator {
 
   /**
    * @View
-   * ${dlNodeName}._$setContent(() => ${value}, ${dependenciesNode})
+   * ${nodeName}._$setContent(() => ${value}, ${dependenciesNode})
    */
-  private setCompContent(dlNodeName: string, value: t.Expression, dependenciesNode: t.ArrayExpression): t.Statement {
-    return this.optionalExpression(
-      dlNodeName,
-      this.t.callExpression(this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier('_$setContent')), [
-        this.t.arrowFunctionExpression([], value),
-        dependenciesNode,
-      ])
-    );
-  }
+  // private setCompContent(nodeName: string, value: t.Expression, dependenciesNode: t.ArrayExpression): t.Statement {
+  //   return this.optionalExpression(
+  //     nodeName,
+  //     this.t.callExpression(this.t.memberExpression(this.t.identifier(nodeName), this.t.identifier('_$setContent')), [
+  //       this.t.arrowFunctionExpression([], value),
+  //       dependenciesNode,
+  //     ])
+  //   );
+  // }
 
   /**
    * @View
-   * ${dlNodeName}._$setProp(${key}, () => ${value}, ${dependenciesNode})
+   * setProp(${nodeName}, ${key}, () => ${value}, ${dependenciesNode})
    */
   private setCompProp(
-    dlNodeName: string,
+    nodeName: string,
     key: string,
     value: t.Expression,
     dependenciesNode: t.ArrayExpression
   ): t.Statement {
     return this.optionalExpression(
-      dlNodeName,
-      this.t.callExpression(this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier('_$setProp')), [
+      nodeName,
+      this.t.callExpression(this.t.identifier(this.importMap.setProp), [
+        this.t.identifier(nodeName),
         this.t.stringLiteral(key),
         this.t.arrowFunctionExpression([], value),
         dependenciesNode,
@@ -144,28 +140,29 @@ export default class CompGenerator extends ForwardPropGenerator {
 
   /**
    * @View
-   * ${dlNodeName}._$setProps(() => ${value}, ${dependenciesNode})
+   * ${nodeName}._$setProps(() => ${value}, ${dependenciesNode})
    */
-  private setCompProps(dlNodeName: string, value: t.Expression, dependenciesNode: t.ArrayExpression): t.Statement {
-    return this.optionalExpression(
-      dlNodeName,
-      this.t.callExpression(this.t.memberExpression(this.t.identifier(dlNodeName), this.t.identifier('_$setProps')), [
-        this.t.arrowFunctionExpression([], value),
-        dependenciesNode,
-      ])
-    );
-  }
+  // private setCompProps(nodeName: string, value: t.Expression, dependenciesNode: t.ArrayExpression): t.Statement {
+  //   return this.optionalExpression(
+  //     nodeName,
+  //     this.t.callExpression(this.t.memberExpression(this.t.identifier(nodeName), this.t.identifier('_$setProps')), [
+  //       this.t.arrowFunctionExpression([], value),
+  //       dependenciesNode,
+  //     ])
+  //   );
+  // }
 
   /**
    * @View
-   *   ${nodeName}.updateState(${depMask})
+   *   updateNode(${nodeName}, ${depMask})
    * @param nodeName
    * @param depMask
    * @private
    */
   private geneSubCompOnUpdate(nodeName: string, depMask: number) {
     return this.t.expressionStatement(
-      this.t.callExpression(this.t.memberExpression(this.t.identifier(nodeName), this.t.identifier('updateDerived')), [
+      this.t.callExpression(this.t.identifier(this.importMap.updateNode), [
+        this.t.identifier(nodeName),
         this.t.nullLiteral(), // the first parameter should be given.
         this.t.numericLiteral(depMask),
       ])

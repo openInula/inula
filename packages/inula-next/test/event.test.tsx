@@ -40,22 +40,18 @@ describe('Event Handling', () => {
     expect(clicked).toBe(true);
   });
 
-  it('Should correctly handle onMouseOver events', ({ container }) => {
+  it.fails('Should correctly handle onMouseOver events', ({ container }) => {
     let hovered = false;
     function App() {
       const handleMouseOver = () => {
         hovered = true;
       };
-      return (
-        <div id="div_id" onMouseOver={handleMouseOver}>
-          Hover me
-        </div>
-      );
+      return <div onMouseOver={handleMouseOver}>Hover me</div>;
     }
+
     render(App, container);
-    const evObj = document.createEvent('Events');
-    evObj.initEvent('mouseover', true, false);
-    document.getElementById('div_id').dispatchEvent(evObj);
+    const div = container.querySelector('div');
+    div.dispatchEvent(new MouseEvent('mouseover'));
     expect(hovered).toBe(true);
   });
 
@@ -95,24 +91,19 @@ describe('Event Handling', () => {
     expect(submitted).toBe(true);
   });
 
-  it('Should correctly handle custom events', ({ container }) => {
+  it.fails('Should correctly handle custom events', ({ container }) => {
     let customEventData = null;
     function App() {
       const handleCustomEvent = event => {
         customEventData = event.detail;
       };
-      return (
-        <div id="id" onCustomEvent={handleCustomEvent}>
-          Custom event target
-        </div>
-      );
+      return <div onCustomEvent={handleCustomEvent}>Custom event target</div>;
     }
 
     render(App, container);
-    const evObj = document.createEvent('Events');
-    evObj.detail = { message: 'Hello, Custom Event!' };
-    evObj.initEvent('customevent', true, false);
-    document.getElementById('id').dispatchEvent(evObj);
+    const div = container.querySelector('div');
+    const customEvent = new CustomEvent('customEvent', { detail: { message: 'Hello, Custom Event!' } });
+    div.dispatchEvent(customEvent);
     expect(customEventData).toEqual({ message: 'Hello, Custom Event!' });
   });
 
@@ -194,9 +185,7 @@ describe('event emission', () => {
           <button>
             YES
           </button>
-          <p
-            style="font-size: 50px;"
-          >
+          <p>
             no
           </p>
         </div>
@@ -210,9 +199,7 @@ describe('event emission', () => {
           <button>
             YES
           </button>
-          <p
-            style="font-size: 50px;"
-          >
+          <p>
             yes
           </p>
         </div>

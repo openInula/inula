@@ -12,10 +12,11 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import { describe, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, expect, vi } from 'vitest';
 import { domTest as it } from './utils';
 
-import { didMount, didUnmount, render, useContext, createContext } from '../src';
+import { didMount, didUnMount, render } from '../src';
+import { useContext, createContext } from '../src/ContextNode';
 
 // 模拟调度器
 vi.mock('../src/scheduler', async () => {
@@ -110,6 +111,21 @@ describe('Custom Hook Tests', () => {
 
       render(TestComponent, container);
       expect(container.innerHTML).toBe('<div>15</div>');
+    });
+
+    it('should support derived by state', ({ container }) => {
+      let updateCount: (max: number) => void;
+      function TestComponent() {
+        let init = 15;
+        updateCount = (value: number) => (init = value);
+        const { count } = useCounterWithMultipleParams(init, 3, 20);
+        return <div>{count}</div>;
+      }
+
+      render(TestComponent, container);
+      expect(container.innerHTML).toBe('<div>15</div>');
+      updateCount(10);
+      expect(container.innerHTML).toBe('<div>10</div>');
     });
 
     // Test single variable output
@@ -243,7 +259,7 @@ describe('Custom Hook Tests', () => {
         didMount(() => {
           mockEffect();
         });
-        didUnmount(() => {
+        didUnMount(() => {
           mockCleanup();
         });
       }
@@ -256,8 +272,6 @@ describe('Custom Hook Tests', () => {
       render(TestComponent, container);
 
       expect(mockEffect).toHaveBeenCalledTimes(1);
-      // unmount();
-      // expect(mockCleanup).toHaveBeenCalledTimes(1);
     });
   });
 
