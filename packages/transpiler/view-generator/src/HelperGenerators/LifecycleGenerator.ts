@@ -6,14 +6,14 @@ export default class LifecycleGenerator extends BaseGenerator {
 
   /**
    * @View
-   * ${dlNodeName} && ${value}(${dlNodeName}, changed)
+   * ${nodeName} && ${value}(${nodeName}, changed)
    */
-  addOnUpdate(dlNodeName: string, value: t.Expression): t.Statement {
+  addOnUpdate(nodeName: string, value: t.Expression): t.Statement {
     return this.t.expressionStatement(
       this.t.logicalExpression(
         '&&',
-        this.t.identifier(dlNodeName),
-        this.t.callExpression(value, [this.t.identifier(dlNodeName), ...this.updateParams.slice(1)])
+        this.t.identifier(nodeName),
+        this.t.callExpression(value, [this.t.identifier(nodeName), ...this.updateParams.slice(1)])
       )
     );
   }
@@ -21,35 +21,31 @@ export default class LifecycleGenerator extends BaseGenerator {
   /**
    * @View
    * willMount:
-   *  - ${value}(${dlNodeName})
+   *  - ${value}(${nodeName})
    * didMount/willUnmount/didUnmount:
-   *  - View.addDidMount(${dlNodeName}, ${value})
+   *  - View.addDidMount(${nodeName}, ${value})
    */
-  addLifecycle(
-    dlNodeName: string,
-    key: (typeof LifecycleGenerator.lifecycle)[number],
-    value: t.Expression
-  ): t.Statement {
+  addLifecycle(nodeName: string, key: (typeof LifecycleGenerator.lifecycle)[number], value: t.Expression): t.Statement {
     if (key === 'willMount') {
-      return this.addWillMount(dlNodeName, value);
+      return this.addWillMount(nodeName, value);
     }
-    return this.addOtherLifecycle(dlNodeName, value, key);
+    return this.addOtherLifecycle(nodeName, value, key);
   }
 
   /**
    * @View
-   * ${value}(${dlNodeName})
+   * ${value}(${nodeName})
    */
-  addWillMount(dlNodeName: string, value: t.Expression): t.ExpressionStatement {
-    return this.t.expressionStatement(this.t.callExpression(value, [this.t.identifier(dlNodeName)]));
+  addWillMount(nodeName: string, value: t.Expression): t.ExpressionStatement {
+    return this.t.expressionStatement(this.t.callExpression(value, [this.t.identifier(nodeName)]));
   }
 
   /**
    * @View
-   * View.addDidMount(${dlNodeName}, ${value})
+   * View.addDidMount(${nodeName}, ${value})
    */
   addOtherLifecycle(
-    dlNodeName: string,
+    nodeName: string,
     value: t.Expression,
     type: 'didMount' | 'willUnmount' | 'didUnmount'
   ): t.ExpressionStatement {
@@ -59,7 +55,7 @@ export default class LifecycleGenerator extends BaseGenerator {
           this.t.identifier('View'),
           this.t.identifier(`add${type[0].toUpperCase()}${type.slice(1)}`)
         ),
-        [this.t.identifier(dlNodeName), value]
+        [this.t.identifier(nodeName), value]
       )
     );
   }

@@ -1,5 +1,7 @@
 import { type DependencyProp, type ViewParticle } from '@openinula/reactivity-parser';
 import LifecycleGenerator from './LifecycleGenerator';
+import { InulaNodeType } from '@openinula/next-shared';
+import { typeNode } from '../shard';
 
 export default class PropViewGenerator extends LifecycleGenerator {
   /**
@@ -18,7 +20,7 @@ export default class PropViewGenerator extends LifecycleGenerator {
 
   /**
    * @View
-   * ${dlNodeName} = new PropView(($addUpdate) => {
+   * ${nodeName} = createNode(InulaNodeType.Children, ($addUpdate) => {
    *  addUpdate((changed) => { ${updateStatements} })
    *  ${initStatements}
    *  return ${topLevelNodes}
@@ -47,35 +49,32 @@ export default class PropViewGenerator extends LifecycleGenerator {
     initStatements.unshift(...this.declareNodes(nodeIdx));
     initStatements.push(this.generateReturnStatement(topLevelNodes));
 
-    // ---- Assign as a dlNode
-    const dlNodeName = this.generateNodeName();
+    // ---- Assign as a children node
+    const nodeName = this.generateNodeName();
     const propViewNode = this.t.expressionStatement(
       this.t.assignmentExpression(
         '=',
-        this.t.identifier(dlNodeName),
-        this.t.newExpression(this.t.identifier(this.importMap.PropView), [
+        this.t.identifier(nodeName),
+        this.t.callExpression(this.t.identifier(this.importMap.createNode), [
+          typeNode(InulaNodeType.Children),
           this.t.arrowFunctionExpression([this.t.identifier('$addUpdate')], this.t.blockStatement(initStatements)),
         ])
       )
     );
     this.addInitStatement(propViewNode);
-    const propViewIdentifier = this.t.identifier(dlNodeName);
+    const propViewIdentifier = this.t.identifier(nodeName);
 
     // ---- Add to update statements
     /**
-     * ${dlNodeName}?.update(changed)
+     * updateNode(${nodeName}, changed)
      */
     this.addUpdateStatementsWithoutDep(
-      this.optionalExpression(
-        dlNodeName,
-        this.t.callExpression(
-          this.t.memberExpression(propViewIdentifier, this.t.identifier('update')),
-          this.updateParams
-        )
+      this.t.expressionStatement(
+        this.t.callExpression(this.t.identifier(this.importMap.updateNode), [propViewIdentifier, ...this.updateParams])
       )
     );
 
-    return dlNodeName;
+    return nodeName;
   }
 
   /**

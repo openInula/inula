@@ -14,27 +14,28 @@
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {
-    "build": "tsup --sourcemap && cp src/index.d.ts dist/ && cp -r src/types dist/",
+    "build": "tsup --sourcemap",
     "test": "vitest --ui"
   },
   "dependencies": {
     "csstype": "^3.1.3",
-    "@openinula/store": "workspace:*"
+    "@openinula/next-shared": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^6.5.0",
     "@openinula/vite-plugin-inula-next": "workspace:*",
-    "vitest": "^1.2.2"
+    "vitest": "2.0.5"
   },
   "tsup": {
     "entry": [
-      "src/index.js"
+      "src/index.ts"
     ],
     "format": [
       "cjs",
       "esm"
     ],
     "clean": true,
-    "minify": true
+    "minify": false,
+    "noExternal": ["@openinula/next-shared"]
   }
 }

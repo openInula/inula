@@ -71,7 +71,7 @@ function generateUpdateViewFn(root: ComponentNode<'comp'> | SubComponentNode) {
  * ```js
  * updateHook: changed => {
  *   if (changed & 1) {
- *     self.emitUpdate();
+ *     emitUpdate(self);
  *   }
  * }
  * ```
@@ -87,9 +87,7 @@ function generateUpdateHookFn(root: HookNode) {
     t.blockStatement([
       t.ifStatement(
         t.binaryExpression('&', paramId, t.numericLiteral(Number(children.depMask))),
-        t.expressionStatement(
-          t.callExpression(t.memberExpression(generateSelfId(root.level), t.identifier('emitUpdate')), [])
-        )
+        t.expressionStatement(t.callExpression(t.identifier(importMap.emitUpdate), [generateSelfId(root.level)]))
       ),
     ])
   );
