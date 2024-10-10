@@ -143,6 +143,14 @@ export function setHTMLProps(el: InulaHTMLNode, value: HTMLAttrsObject): void {
 
 export function setHTMLAttr(el: InulaHTMLNode, key: string, valueFunc: () => string, deps: any[]): void {
   if (cache(el, key, deps)) return;
+  if (key === '*spread*') {
+    const spread = valueFunc();
+    Object.keys(spread).forEach(key => {
+      const realkey = key === 'className' ? 'class' : key;
+      el.setAttribute(realkey, spread[key]);
+    });
+    return;
+  }
   el.setAttribute(key, valueFunc());
 }
 
