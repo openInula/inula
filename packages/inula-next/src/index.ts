@@ -55,6 +55,9 @@ interface CompUpdater {
 }
 
 export function Comp(compFn: FunctionComponent, props: Record<string, unknown> = {}): CompNode {
+  if (props['*spread*']) {
+    props = { ...props, ...props['*spread*'] };
+  }
   return mountNode(() => createCompNode(), compFn, props);
 }
 
