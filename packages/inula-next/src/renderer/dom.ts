@@ -86,6 +86,8 @@ export function setStyle(el: InulaHTMLNode, newStyle: CSSStyleDeclaration): void
         style.setProperty(key, newValue);
       } else if (key === 'float') {
         style.cssFloat = newValue;
+      } else if (typeof newValue === 'number') {
+        el.style[key] = newValue + 'px';
       } else {
         el.style[key] = newValue;
       }

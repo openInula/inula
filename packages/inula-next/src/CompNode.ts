@@ -91,6 +91,13 @@ function cacheCheck(node: CompNode, key: string, deps: any[]): boolean {
 
 export function setProp(node: CompNode, key: string, valueFunc: () => any, deps: any[]) {
   if (cacheCheck(node, key, deps)) return;
+  if (key === '*spread*') {
+    const spread = valueFunc();
+    Object.keys(spread).forEach(key => {
+      node.updateProp(key, node.props[key]);
+    });
+    return;
+  }
   node.props[key] = valueFunc();
   node.updateProp(key, node.props[key]);
 }

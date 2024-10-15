@@ -73,7 +73,7 @@ export default class ForGenerator extends BaseGenerator {
           typeNode(InulaNodeType.For),
           array,
           this.t.numericLiteral(depNum),
-          this.getForKeyStatement(array, item, key),
+          this.getForKeyStatement(array, item, key, index),
           this.t.arrowFunctionExpression(
             [item as any, idxId, this.t.identifier('$updateArr')],
             this.t.blockStatement(childStatements)
@@ -85,13 +85,22 @@ export default class ForGenerator extends BaseGenerator {
 
   /**
    * @View
-   * ${array}.map(${item} => ${key})
+   * ${array}.map(${item, index} => ${key})
    */
-  private getForKeyStatement(array: t.Expression, item: t.LVal, key: t.Expression): t.Expression {
+  private getForKeyStatement(
+    array: t.Expression,
+    item: t.LVal,
+    key: t.Expression,
+    index: t.Identifier | null
+  ): t.Expression {
+    const params = [item as any];
+    if (index) {
+      params.push(index);
+    }
     return this.t.isNullLiteral(key)
       ? key
       : this.t.callExpression(this.t.memberExpression(array, this.t.identifier('map')), [
-          this.t.arrowFunctionExpression([item as any], key),
+          this.t.arrowFunctionExpression(params, key),
         ]);
   }
 
