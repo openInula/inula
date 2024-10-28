@@ -33,7 +33,7 @@ export default (api: API) => {
         args._.shift();
       }
       if (args._.length === 0) {
-        api.logger.warn('Can\'t find any generate options.');
+        api.logger.warn("Can't find any generate options.");
         return;
       }
 
