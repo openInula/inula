@@ -59,20 +59,23 @@ import { createStore, useStore, clearStore } from './inulax/store/StoreHandler';
 import * as reduxAdapter from './inulax/adapters/redux';
 import { watch } from './inulax/proxy/watch';
 import { act } from './external/TestUtil';
-
+import { defaultHostConfig } from './dom';
 import {
   render,
   createPortal,
   unstable_batchedUpdates,
-  findDOMNode,
+  findNode as findDOMNode,
   unmountComponentAtNode,
   createRoot,
-} from './dom/DOMExternal';
+} from './renderer/External';
 
 import { syncUpdates as flushSync } from './renderer/TreeBuilder';
 import { toRaw } from './inulax/proxy/ProxyHandler';
+import { InulaReconciler } from './renderer';
 
 const version = __VERSION__;
+// 使用默认renderer
+InulaReconciler.setHostConfig(defaultHostConfig);
 
 const Inula = {
   Children,
@@ -185,3 +188,4 @@ export {
 
 export * from './types';
 export default Inula;
+export { InulaReconciler };

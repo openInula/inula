@@ -16,7 +16,7 @@
 import type { VNode } from '../Types';
 import { FlagUtils } from '../vnode/VNodeFlags';
 import { TYPE_COMMON_ELEMENT, TYPE_FRAGMENT, TYPE_PORTAL, TYPE_STRICT_MODE } from '../../external/JSXElementType';
-import { DomText, DomPortal, Fragment, DomComponent } from '../vnode/VNodeTags';
+import { Text, Portal, Fragment, Component } from '../vnode/VNodeTags';
 import {
   updateVNode,
   createVNodeFromElement,
@@ -137,7 +137,7 @@ function getNewNode(parentNode: VNode, newChild: any, oldNode: VNode | null) {
   let resultNode: VNode | null = null;
   switch (newNodeType) {
     case DiffCategory.TEXT_NODE: {
-      if (oldNode === null || oldNode.tag !== DomText) {
+      if (oldNode === null || oldNode.tag !== Text) {
         resultNode = createDomTextVNode(String(newChild));
       } else {
         resultNode = updateVNode(oldNode, String(newChild));
@@ -175,7 +175,7 @@ function getNewNode(parentNode: VNode, newChild: any, oldNode: VNode | null) {
         }
         break;
       } else if (newChild.vtype === TYPE_PORTAL) {
-        if (oldNode === null || oldNode.tag !== DomPortal || oldNode.realNode !== newChild.realNode) {
+        if (oldNode === null || oldNode.tag !== Portal || oldNode.realNode !== newChild.realNode) {
           resultNode = createPortalVNode(newChild);
         } else {
           resultNode = updateVNode(oldNode, newChild.children || []);
@@ -364,7 +364,7 @@ function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newC
      * 优化策略：首先克隆这些节点的共同父节点P，然后将父节点P从DOM树中删除，最后再将克隆的P节点添加回DOM树中。
      * 例外处理：当父节点为select时，克隆option子节点时会导致原父节点child变化，因此不适用与该优化，降级采用deleteVNodes。
      */
-    if (firstChild && parentNode.tag === DomComponent && parentNode.type !== 'select' && newChildren.length === 0) {
+    if (firstChild && parentNode.tag === Component && parentNode.type !== 'select' && newChildren.length === 0) {
       FlagUtils.markClear(parentNode);
       parentNode.clearChild = firstChild;
     } else {
@@ -385,13 +385,13 @@ function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newC
     // 是否可以扩大至非dom类型节点待确认
     // 如果dom节点在上次添加前没有节点，说明本次添加时，可以直接添加到最后，不需要通过 getSiblingDom 函数找到 before 节点
     if (
-      parentNode.tag === DomComponent &&
+      parentNode.tag === Component &&
       parentNode.oldProps?.children?.length === 0 &&
       rightIdx - leftIdx === newChildren.length
     ) {
       isDirectAdd = true;
     }
-    const isAddition = parentNode.tag === DomPortal || !parentNode.isCreated;
+    const isAddition = parentNode.tag === Portal || !parentNode.isCreated;
     for (; leftIdx < rightIdx; leftIdx++) {
       newNode = getNewNode(parentNode, newChildren[leftIdx], null);
 
@@ -525,7 +525,7 @@ function diffStringNodeHandler(parentNode: VNode, newChild: any, firstChildVNode
   let newTextNode: VNode | null = null;
 
   // 第一个vNode是Text，则复用
-  if (firstChildVNode !== null && firstChildVNode.tag === DomText) {
+  if (firstChildVNode !== null && firstChildVNode.tag === Text) {
     newTextNode = updateVNode(firstChildVNode, String(newChild));
     deleteVNodes(parentNode, firstChildVNode.next);
     newTextNode.next = null;
@@ -598,7 +598,7 @@ function diffObjectNodeHandler(
   } else if (newChild.vtype === TYPE_PORTAL) {
     if (canReuseNode) {
       // 可以复用
-      if (canReuseNode.tag === DomPortal && canReuseNode.realNode === newChild.realNode) {
+      if (canReuseNode.tag === Portal && canReuseNode.realNode === newChild.realNode) {
         resultNode = updateVNode(canReuseNode, newChild.children || []);
         startDelVNode = canReuseNode.next;
         resultNode.next = null;

@@ -17,7 +17,6 @@ import * as Inula from '../../src/index';
 
 describe('mouseenter和mouseleave事件测试', () => {
   let container;
-
   beforeEach(() => {
     jest.resetModules();
     container = document.createElement('div');
@@ -254,7 +253,6 @@ describe('mouseenter和mouseleave事件测试', () => {
     const divRef = Inula.createRef();
     const otherDivRef = Inula.createRef();
     const onMouseEnter = jest.fn();
-
     function Component() {
       return (
         <div ref={divRef}>

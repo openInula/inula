@@ -13,11 +13,11 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { getNearestVNode, getVNode } from '../dom/DOMInternalKeys';
+import { getNearestVNode, getVNode } from '../renderer/utils/InternalKeys';
 import { WrappedEvent } from './EventWrapper';
 import { VNode } from '../renderer/vnode/VNode';
 import { AnyNativeEvent, ListenerUnitList } from './Types';
-import { DomComponent, DomText } from '../renderer/vnode/VNodeTags';
+import { Component, Text } from '../renderer/vnode/VNodeTags';
 import { collectMouseListeners } from './ListenerGetter';
 import { getNearestMountedVNode } from './utils';
 
@@ -79,7 +79,7 @@ function getEndpointVNode(
     toVNode = related ? getNearestVNode(related) : null;
     if (toVNode !== null) {
       const nearestMounted = getNearestMountedVNode(toVNode);
-      if (toVNode !== nearestMounted || (toVNode.tag !== DomComponent && toVNode.tag !== DomText)) {
+      if (toVNode !== nearestMounted || (toVNode.tag !== Component && toVNode.tag !== Text)) {
         toVNode = null;
       }
     }

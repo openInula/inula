@@ -17,12 +17,13 @@
  * 事件绑定实现，分为绑定委托事件和非委托事件
  */
 import { allDelegatedInulaEvents, portalDefaultDelegatedEvents, simulatedDelegatedEvents } from './EventHub';
-import { isDocument } from '../dom/utils/Common';
-import { EVENT_KEY, getNearestVNode, getNonDelegatedListenerMap } from '../dom/DOMInternalKeys';
+import { EVENT_KEY, getNearestVNode, getNonDelegatedListenerMap } from '../renderer/utils/InternalKeys';
 import { asyncUpdates, runDiscreteUpdates } from '../renderer/TreeBuilder';
 import { handleEventMain } from './InulaEventMain';
 import { decorateNativeEvent } from './EventWrapper';
 import { VNode } from '../renderer/vnode/VNode';
+import { ElementType } from '../renderer/Types';
+import { InulaReconciler } from '../renderer';
 
 // 触发委托事件
 function triggerDelegatedEvent(
@@ -41,15 +42,15 @@ function triggerDelegatedEvent(
 }
 
 // 监听委托事件
-function listenToNativeEvent(nativeEvtName: string, delegatedElement: Element, isCapture: boolean) {
-  let dom: Element | Document = delegatedElement;
+function listenToNativeEvent(nativeEvtName: string, delegatedElement: ElementType, isCapture: boolean) {
+  let element: ElementType = delegatedElement;
   // document层次可能触发selectionchange事件，为了捕获这类事件，selectionchange事件绑定在document节点上
-  if (nativeEvtName === 'selectionchange' && !isDocument(delegatedElement)) {
-    dom = delegatedElement.ownerDocument;
+  if (nativeEvtName === 'selectionchange') {
+    element = delegatedElement.ownerDocument;
   }
 
-  const listener = triggerDelegatedEvent.bind(null, nativeEvtName, isCapture, dom);
-  dom.addEventListener(nativeEvtName, listener, isCapture);
+  const listener = triggerDelegatedEvent.bind(null, nativeEvtName, isCapture, element);
+  InulaReconciler.hostConfig.addEventListener(element, nativeEvtName, listener, isCapture);
 
   return listener;
 }
@@ -121,15 +122,15 @@ function getWrapperListener(inulaEventName, nativeEvtName, targetElement, listen
 }
 
 // 非委托事件单独监听到各自dom节点
-export function listenNonDelegatedEvent(inulaEventName: string, domElement: Element, listener): void {
+export function listenNonDelegatedEvent(inulaEventName: string, element: ElementType, listener): void {
   const isCapture = isCaptureEvent(inulaEventName);
   const nativeEvtName = getNativeEvtName(inulaEventName, isCapture);
 
   // 先判断是否存在老的监听事件，若存在则移除
-  const nonDelegatedListenerMap = getNonDelegatedListenerMap(domElement);
+  const nonDelegatedListenerMap = getNonDelegatedListenerMap(element);
   const currentListener = nonDelegatedListenerMap.get(inulaEventName);
   if (currentListener) {
-    domElement.removeEventListener(nativeEvtName, currentListener);
+    InulaReconciler.hostConfig.removeEventListener(element, nativeEvtName, currentListener);
     nonDelegatedListenerMap.delete(inulaEventName);
   }
 
@@ -138,8 +139,8 @@ export function listenNonDelegatedEvent(inulaEventName: string, domElement: Elem
   }
 
   // 为了和委托事件对外行为一致，将事件对象封装成CustomBaseEvent
-  const wrapperListener = getWrapperListener(inulaEventName, nativeEvtName, domElement, listener);
+  const wrapperListener = getWrapperListener(inulaEventName, nativeEvtName, element, listener);
   // 添加新的监听
   nonDelegatedListenerMap.set(inulaEventName, wrapperListener);
-  domElement.addEventListener(nativeEvtName, wrapperListener, isCapture);
+  InulaReconciler.hostConfig.addEventListener(element, nativeEvtName, wrapperListener, isCapture);
 }

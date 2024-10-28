@@ -1,27 +1,28 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
+import { isEventProp } from './ValidateProps';
+import { getCurrentRoot } from '../RootStack';
 import { allDelegatedInulaEvents } from '../../event/EventHub';
-import { updateCommonProp } from './UpdateCommonProp';
-import { setStyles } from './StyleHandler';
 import { lazyDelegateOnRoot, listenNonDelegatedEvent } from '../../event/EventBinding';
-import { isEventProp } from '../validators/ValidateProps';
-import { getCurrentRoot } from '../../renderer/RootStack';
+import { InulaReconciler } from '../../renderer';
+import { ElementType } from '../../renderer/Types';
+import { Props } from '../utils/InternalKeys';
+import { shouldAutoFocus } from '../utils/common';
+import { validateProps } from './ValidateProps';
+
+export function initElementProps(element: Element, tagName: string, rawProps: Props): boolean {
+  validateProps(tagName, rawProps);
+
+  // 获取不包括value，defaultValue的属性
+  const props: Record<string, any> = InulaReconciler.hostConfig.getProps(tagName, element, rawProps);
+
+  // 初始化DOM属性（不包括value，defaultValue）
+  const isNativeTag = isNativeElement(tagName, props);
+  setElementProps(element as ElementType, props, isNativeTag, true);
+  InulaReconciler.hostConfig.onPropInit(element, tagName, rawProps)
+  return shouldAutoFocus(tagName, rawProps);
+}
 
 // 初始化DOM属性和更新 DOM 属性
-export function setDomProps(dom: Element, props: Record<string, any>, isNativeTag: boolean, isInit: boolean): void {
+export function setElementProps(element: ElementType, props: Record<string, any>, isNativeTag: boolean, isInit: boolean): void {
   const keysOfProps = Object.keys(props);
   let propName;
   let propVal;
@@ -29,31 +30,23 @@ export function setDomProps(dom: Element, props: Record<string, any>, isNativeTa
   for (let i = 0; i < keyLength; i++) {
     propName = keysOfProps[i];
     propVal = props[propName];
-
-    if (propName === 'style') {
-      setStyles(dom, propVal);
-    } else if (isEventProp(propName)) {
+    if (isEventProp(propName)) {
       // 事件监听属性处理
       const currentRoot = getCurrentRoot();
       if (!allDelegatedInulaEvents.has(propName)) {
-        listenNonDelegatedEvent(propName, dom, propVal);
+        listenNonDelegatedEvent(propName, element, propVal);
       } else if (currentRoot && !currentRoot.delegatedEvents.has(propName)) {
         lazyDelegateOnRoot(currentRoot, propName);
       }
-    } else if (propName === 'children') {
-      // 只处理纯文本子节点，其他children在VNode树中处理
-      const type = typeof propVal;
-      if (type === 'string' || type === 'number') {
-        dom.textContent = propVal;
-      }
-    } else if (propName === 'dangerouslySetInnerHTML') {
-      dom.innerHTML = propVal.__html;
-    } else if (!isInit || (propVal !== null && propVal !== undefined)) {
-      updateCommonProp(dom, propName, propVal, isNativeTag);
+      continue;
     }
+    InulaReconciler.hostConfig.setProps(element, propName, propVal, isNativeTag, isInit);
   }
 }
-
+// 是内置元素
+export function isNativeElement(tagName: string, props: Record<string, any>) {
+    return !tagName.includes('-') && props.is === undefined;
+  }
 // 找出两个 DOM 属性的差别，生成需要更新的属性集合
 export function compareProps(oldProps: Record<string, any>, newProps: Record<string, any>): Record<string, any> {
   let updatesForStyle = {};

@@ -13,12 +13,16 @@
  * See the Mulan PSL v2 for more details.
  */
 
+//kb-tag
+import { isNotNull } from '../../renderer/utils/common';
+import { updateInputValue } from './InputValueHandler';
 /**
  * Inula的输入框和文本框的change事件在原生的change事件上做了一层处理
  * 只有值发生变化时才会触发change事件。
  */
 
-import { HANDLER_KEY } from '../DOMInternalKeys';
+import { HANDLER_KEY } from '../../renderer/utils/InternalKeys';
+import { Props } from '../../renderer/Types';
 
 // 判断是否是 check 类型
 function isCheckType(dom: HTMLInputElement): boolean {
@@ -90,4 +94,47 @@ export function updateInputHandlerIfChanged(dom) {
   }
 
   return false;
+}
+// export function controlInputValue(inputDom: Element, props: Props) {
+//   const { name, type } = props;
+
+//   // 如果是 radio，找出同一form内，name相同的Radio，更新它们Handler的Value
+//   if (type === 'radio' && isNotNull(name)) {
+//     const radioList = document.querySelectorAll<HTMLInputElement>(`input[type="radio"][name="${name}"]`);
+//     for (let i = 0; i < radioList.length; i++) {
+//       const radio = radioList[i];
+//       if (radio === inputDom) {
+//         continue;
+//       }
+//       if (isNotNull(radio.form) && isNotNull(inputDom.form) && radio.form !== inputDom.form) {
+//         continue;
+//       }
+
+//       updateInputHandlerIfChanged(radio);
+//     }
+//   } else {
+//     updateInputValue(inputDom, props);
+//   }
+// }
+
+export function controlInputValue(inputDom: HTMLInputElement, props: Props) {
+  const { name, type } = props;
+
+  // 如果是 radio，找出同一form内，name相同的Radio，更新它们Handler的Value
+  if (type === 'radio' && isNotNull(name)) {
+    const radioList = document.querySelectorAll<HTMLInputElement>(`input[type="radio"][name="${name}"]`);
+    for (let i = 0; i < radioList.length; i++) {
+      const radio = radioList[i];
+      if (radio === inputDom) {
+        continue;
+      }
+      if (isNotNull(radio.form) && isNotNull(inputDom.form) && radio.form !== inputDom.form) {
+        continue;
+      }
+
+      updateInputHandlerIfChanged(radio);
+    }
+  } else {
+    updateInputValue(inputDom, props);
+  }
 }

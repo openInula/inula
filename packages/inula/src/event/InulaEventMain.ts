@@ -15,7 +15,7 @@
 
 import { AnyNativeEvent, ListenerUnitList } from './Types';
 import type { VNode } from '../renderer/Types';
-import { isInputElement, setPropertyWritable } from './utils';
+import { setPropertyWritable } from './utils';
 import { decorateNativeEvent } from './EventWrapper';
 import { getListenersFromTree } from './ListenerGetter';
 import { asyncUpdates, runDiscreteUpdates } from '../renderer/Renderer';
@@ -27,11 +27,11 @@ import {
   inulaEventToNativeMap,
   transformToInulaEvent,
 } from './EventHub';
-import { getDomTag } from '../dom/utils/Common';
-import { updateInputHandlerIfChanged } from '../dom/valueHandler/ValueChangeHandler';
-import { getDom } from '../dom/DOMInternalKeys';
+import { getTag } from '../renderer/utils/common';
+import { getElement } from '../renderer/utils/InternalKeys';
 import { recordChangeEventTargets, shouldControlValue, tryControlValue } from './FormValueController';
 import { getMouseEnterListeners } from './MouseEvent';
+import { InulaReconciler } from '../renderer';
 
 // web规范，鼠标右键key值
 const RIGHT_MOUSE_BUTTON = 2;
@@ -42,22 +42,9 @@ const RIGHT_MOUSE_BUTTON = 2;
 // | <select/> / <input type="file/> | change | NO |
 // | <input type="checkbox" /> <input type="radio" /> | click | YES |
 // | <input type="input /> / <input type="text" /> | input / change | YES |
-function shouldTriggerChangeEvent(targetDom, evtName) {
-  const { type } = targetDom;
-  const domTag = getDomTag(targetDom);
-
-  if (domTag === 'select' || (domTag === 'input' && type === 'file')) {
-    return evtName === 'change';
-  } else if (domTag === 'input' && (type === 'checkbox' || type === 'radio')) {
-    if (evtName === 'click') {
-      return updateInputHandlerIfChanged(targetDom);
-    }
-  } else if (isInputElement(targetDom)) {
-    if (evtName === 'input' || evtName === 'change') {
-      return updateInputHandlerIfChanged(targetDom);
-    }
-  }
-  return false;
+function shouldTriggerChangeEvent(targetElement, evtName) {
+  const elementTag = getTag(targetElement);
+  return InulaReconciler.hostConfig.shouldTriggerChangeEvent(targetElement, elementTag ?? '', evtName);
 }
 
 /**
@@ -73,7 +60,7 @@ function getChangeListeners(
   if (!vNode) {
     return [];
   }
-  const targetDom = getDom(vNode);
+  const targetDom = getElement(vNode);
 
   // 判断是否需要触发change事件
   if (shouldTriggerChangeEvent(targetDom, nativeEvtName)) {

@@ -13,15 +13,17 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { asyncUpdates, getFirstCustomDom, syncUpdates, startUpdate, createTreeRootVNode } from '../renderer/Renderer';
-import { createPortal } from '../renderer/components/CreatePortal';
-import type { Container } from './DOMOperator';
-import { isElement } from './utils/Common';
-import { findDOMByClassInst } from '../renderer/vnode/VNodeUtils';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { asyncUpdates, getFirstCustomElement, syncUpdates, startUpdate, createTreeRootVNode } from './Renderer';
+import { createPortal } from './components/CreatePortal';
+import type { Container, ElementType } from './Types';
+import { isElement } from './utils/common';
+import { findElementByClassInst } from './utils/InternalKeys';
 import { listenSimulatedDelegatedEvents } from '../event/EventBinding';
-import { Callback } from '../renderer/Types';
+import { Callback } from './Types';
 import { InulaNode } from '../types';
-import { EVENT_KEY } from './DOMInternalKeys';
+import { EVENT_KEY } from './utils/InternalKeys';
+import { InulaReconciler } from '.';
 
 function createRoot(children: any, container: Container, callback?: Callback) {
   // 清空容器
@@ -40,7 +42,7 @@ function createRoot(children: any, container: Container, callback?: Callback) {
   if (typeof callback === 'function') {
     const cb = callback;
     callback = function () {
-      const instance = getFirstCustomDom(treeRoot);
+      const instance = getFirstCustomElement(treeRoot);
       cb.call(instance);
     };
   }
@@ -63,7 +65,7 @@ function executeRender(children: any, container: Container, callback?: Callback)
     if (typeof callback === 'function') {
       const cb = callback;
       callback = function () {
-        const instance = getFirstCustomDom(treeRoot);
+        const instance = getFirstCustomElement(treeRoot);
         cb.call(instance);
       };
     }
@@ -71,21 +73,21 @@ function executeRender(children: any, container: Container, callback?: Callback)
     startUpdate(children, treeRoot, callback);
   }
 
-  return getFirstCustomDom(treeRoot);
+  return getFirstCustomElement(treeRoot);
 }
 
-function findDOMNode(domOrEle?: Element): null | Element | Text {
-  if (domOrEle === null || domOrEle === undefined) {
+function findNode(Ele?: Element): null | Element | Text {
+  if (Ele === null || Ele === undefined) {
     return null;
   }
 
   // 普通节点
-  if (isElement(domOrEle)) {
-    return domOrEle;
+  if (isElement(Ele as ElementType)) {
+    return Ele;
   }
 
   // class的实例
-  return findDOMByClassInst(domOrEle);
+  return findElementByClassInst(Ele);
 }
 
 // 情况根节点监听器
@@ -96,7 +98,7 @@ function removeRootEventLister(container: Container) {
       const listener = events[event];
 
       if (listener) {
-        container.removeEventListener(event, listener);
+        InulaReconciler.hostConfig.removeEventListener(container, event, listener);
         events[event] = null;
       }
     });
@@ -140,7 +142,7 @@ function createRootElement(container: Container, option?: Record<string, any>): 
 export {
   createPortal,
   asyncUpdates as unstable_batchedUpdates,
-  findDOMNode,
+  findNode,
   executeRender as render,
   createRootElement as createRoot,
   destroy as unmountComponentAtNode,

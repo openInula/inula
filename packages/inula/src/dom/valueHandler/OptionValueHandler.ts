@@ -14,7 +14,8 @@
  */
 
 import { Children } from '../../external/ChildrenUtil';
-import { Props } from '../utils/Interface';
+// kb-tag
+import { Props } from '../../renderer/Types';
 
 // 把 const a = 'a'; <option>gir{a}ffe</option> 转成 giraffe
 function concatChildren(children) {

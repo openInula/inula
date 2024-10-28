@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { unstable_batchedUpdates } from '../../dom/DOMExternal';
+import { unstable_batchedUpdates } from '../../renderer/External';
 import { ReduxStoreHandler } from './redux';
 
 type LinkListNode<T> = {
@@ -161,7 +161,7 @@ function createSubscription(store: ReduxStoreHandler, parentSub: Subscription | 
 
   function trySubscribe() {
     if (!unsubscribe) {
-      // ³¢ÊÔ¶©ÔÄstoreµÄ±ä»¯¡£Èç¹ûÒÑ¾­´æÔÚÒ»¸ö¶©ÔÄ£¬ÄÇÃ´Ëü»áÌí¼ÓÒ»¸öÇ¶Ì×µÄ¶©ÔÄ¡£·ñÔò£¬Ëü»áÖ±½Ó¶©ÔÄstore¡£
+      // ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½storeï¿½Ä±ä»¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½Ã´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ç¶ï¿½×µÄ¶ï¿½ï¿½Ä¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½Ó¶ï¿½ï¿½ï¿½storeï¿½ï¿½
       unsubscribe = parentSub ? parentSub.addNestedSub(storeChangeHandler) : store.subscribe(storeChangeHandler);
       listenerStore = getListenerManager();
     }

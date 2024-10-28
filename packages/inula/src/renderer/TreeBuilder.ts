@@ -17,7 +17,7 @@ import type { VNode } from './Types';
 
 import { callRenderQueueImmediate, pushRenderCallback } from './taskExecutor/RenderQueue';
 import { updateVNode } from './vnode/VNodeCreator';
-import { ContextProvider, DomComponent, DomPortal, TreeRoot } from './vnode/VNodeTags';
+import { ContextProvider, Component, Portal, TreeRoot } from './vnode/VNodeTags';
 import { FlagUtils, InitFlag, Interrupted } from './vnode/VNodeFlags';
 import { captureVNode } from './render/BaseComponent';
 import { checkLoopingUpdateLimit, submitToRender } from './submit/Submit';
@@ -250,7 +250,7 @@ function recoverTreeContext(vNode: VNode) {
   while (parent !== null) {
     if (parent.tag === ContextProvider) {
       contextProviders.unshift(parent);
-    } else if (parent.tag === DomPortal) {
+    } else if (parent.tag === Portal) {
       portalRoots.unshift(parent);
     }
     parent = parent.parent;
@@ -271,7 +271,7 @@ function resetTreeContext(vNode: VNode) {
     if (parent.tag === ContextProvider) {
       resetContext(parent);
     }
-    if (parent.tag === DomPortal) {
+    if (parent.tag === Portal) {
       popCurrentRoot();
     }
     parent = parent.parent;
@@ -297,9 +297,9 @@ function buildVNodeTree(treeRoot: VNode) {
     let parent = startVNode.parent;
     while (parent !== null) {
       const tag = parent.tag;
-      if (tag === DomComponent) {
+      if (tag === Component) {
         break;
-      } else if (tag === TreeRoot || tag === DomPortal) {
+      } else if (tag === TreeRoot || tag === Portal) {
         break;
       }
       parent = parent.parent;
