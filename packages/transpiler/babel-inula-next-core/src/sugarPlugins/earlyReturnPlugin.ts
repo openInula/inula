@@ -52,7 +52,7 @@ function generateCondNode(branches: Branch[]) {
 }
 
 function createFragmentNode(children: t.JSXElement[]) {
-  return t.jsxElement(t.jsxOpeningElement(t.jSXIdentifier(''), []), t.jsxClosingElement(t.jSXIdentifier('')), children);
+  return t.jSXFragment(t.jSXOpeningFragment(), t.jSXClosingFragment(), children);
 }
 
 export default function (api: typeof babel): PluginObj {
@@ -82,7 +82,7 @@ export default function (api: typeof babel): PluginObj {
             i--;
           }
 
-          // Then we generate the every brach component
+          // Then we generate  every branch component
           const branchNodes = branches.map(branch =>
             t.variableDeclaration('const', [t.variableDeclarator(t.identifier(branch.name), branch.content)])
           );
