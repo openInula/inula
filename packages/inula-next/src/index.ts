@@ -112,6 +112,10 @@ export function didUnMount(fn: () => void) {
   throw new Error('lifecycle should be compiled, check the babel plugin');
 }
 
+export function watch(fn: () => void) {
+  throw new Error('watch should be compiled, check the babel plugin');
+}
+
 export function useHook(hookFn: (props: Record<string, unknown>) => HookNode, params: unknown[], bitMap: number) {
   if (currentComp) {
     const props = params.reduce<Record<string, unknown>>((obj, val, idx) => ({ ...obj, [`p${idx}`]: val }), {});
