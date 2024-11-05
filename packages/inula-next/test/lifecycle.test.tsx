@@ -57,6 +57,18 @@ describe('lifecycle', () => {
     expect(fn).toHaveBeenCalled();
   });
 
+  it('should run when return null', ({ container }) => {
+    const fn = vi.fn();
+
+    function App() {
+      fn();
+
+      return null;
+    }
+    render(App, container);
+    expect(fn).toHaveBeenCalled();
+  });
+
   it('should handle async operations in didMount', async ({ container }) => {
     function App() {
       let users: string[] = [];

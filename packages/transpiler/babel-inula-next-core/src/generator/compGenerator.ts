@@ -34,36 +34,35 @@ function genWillMountCodeBlock(root: IRNode) {
 }
 
 function generateUpdateViewFn(root: ComponentNode<'comp'> | SubComponentNode) {
-  if (!root.children) {
-    return null;
-  }
-  const subComps = getSubComp(root.variables).map((v): [string, number] => [v.name, v.usedBit]);
-  const [updateViewFn, nodeInitStmt, templates, topLevelNodes] = generateView(root.children, {
-    babelApi: getBabelApi(),
-    importMap,
-    attributeMap: defaultAttributeMap,
-    alterAttributeMap,
-    templateIdx: -1,
-    subComps,
-    genTemplateKey: (key: string) => root.fnNode.scope.generateUid(key),
-    wrapUpdate: (node: t.Statement | t.Expression | null) => {
-      wrapUpdate(generateSelfId(root.level), node, getStates(root));
-    },
-  });
   const getUpdateViewsFnBody = genWillMountCodeBlock(root);
-  if (nodeInitStmt.length) {
-    getUpdateViewsFnBody.push(...nodeInitStmt);
+  const fnBodyStmts: t.Statement[] = [...getUpdateViewsFnBody];
+  if (root.children) {
+    // ---- Generate view
+    const subComps = getSubComp(root.variables).map((v): [string, number] => [v.name, v.usedBit]);
+    const [updateViewFn, nodeInitStmt, templates, topLevelNodes] = generateView(root.children, {
+      babelApi: getBabelApi(),
+      importMap,
+      attributeMap: defaultAttributeMap,
+      alterAttributeMap,
+      templateIdx: -1,
+      subComps,
+      genTemplateKey: (key: string) => root.fnNode.scope.generateUid(key),
+      wrapUpdate: (node: t.Statement | t.Expression | null) => {
+        wrapUpdate(generateSelfId(root.level), node, getStates(root));
+      },
+    });
+    const program = root.fnNode.scope.getProgramParent().path as NodePath<t.Program>;
+    for (let i = templates.length - 1; i >= 0; i--) {
+      program.unshiftContainer('body', templates[i]);
+    }
+
+    if (nodeInitStmt.length) {
+      fnBodyStmts.push(...nodeInitStmt);
+    }
+    fnBodyStmts.push(t.returnStatement(t.arrayExpression([topLevelNodes, updateViewFn])));
   }
-  const program = root.fnNode.scope.getProgramParent().path as NodePath<t.Program>;
-  for (let i = templates.length - 1; i >= 0; i--) {
-    program.unshiftContainer('body', templates[i]);
-  }
-  return getUpdateViewsFnBody.length || topLevelNodes.elements.length
-    ? t.arrowFunctionExpression(
-        [],
-        t.blockStatement([...getUpdateViewsFnBody, t.returnStatement(t.arrayExpression([topLevelNodes, updateViewFn]))])
-      )
-    : null;
+
+  return fnBodyStmts.length ? t.arrowFunctionExpression([], t.blockStatement(fnBodyStmts)) : null;
 }
 
 /**
@@ -79,23 +78,25 @@ function generateUpdateViewFn(root: ComponentNode<'comp'> | SubComponentNode) {
  */
 function generateUpdateHookFn(root: HookNode) {
   const getUpdateViewsFnBody = genWillMountCodeBlock(root);
-  const children = root.children!;
-  const paramId = t.identifier('$changed');
-  const hookUpdateFn = t.functionExpression(
-    null,
-    [paramId],
-    t.blockStatement([
-      t.ifStatement(
-        t.binaryExpression('&', paramId, t.numericLiteral(Number(children.depMask))),
-        t.expressionStatement(t.callExpression(t.identifier(importMap.emitUpdate), [generateSelfId(root.level)]))
-      ),
-    ])
-  );
+
   const fnBody: t.Statement[] = [];
   if (getUpdateViewsFnBody.length) {
     fnBody.push(...getUpdateViewsFnBody);
   }
-  if (hookUpdateFn) {
+
+  const children = root.children;
+  if (children) {
+    const paramId = t.identifier('$changed');
+    const hookUpdateFn = t.functionExpression(
+      null,
+      [paramId],
+      t.blockStatement([
+        t.ifStatement(
+          t.binaryExpression('&', paramId, t.numericLiteral(Number(children.depMask))),
+          t.expressionStatement(t.callExpression(t.identifier(importMap.emitUpdate), [generateSelfId(root.level)]))
+        ),
+      ])
+    );
     fnBody.push(t.returnStatement(hookUpdateFn));
   }
 
@@ -155,19 +156,16 @@ export function generateComp(root: ComponentNode | HookNode | SubComponentNode) 
   }
 
   // ---- Update views
-  if (root.children) {
-    let getUpdateViews: t.ArrowFunctionExpression | null;
-    if (root.type === 'hook') {
-      getUpdateViews = generateUpdateHookFn(root);
+  let getUpdateViews: t.ArrowFunctionExpression | null;
+  if (root.type === 'hook') {
+    getUpdateViews = generateUpdateHookFn(root);
+    addProperty('value', root.children ? t.arrowFunctionExpression([], root.children.value) : t.nullLiteral());
+  } else {
+    getUpdateViews = generateUpdateViewFn(root);
+  }
 
-      addProperty('value', t.arrowFunctionExpression([], root.children.value));
-    } else {
-      getUpdateViews = generateUpdateViewFn(root);
-    }
-
-    if (getUpdateViews) {
-      addProperty('getUpdateViews', getUpdateViews);
-    }
+  if (getUpdateViews) {
+    addProperty('getUpdateViews', getUpdateViews);
   }
 
   return result;
