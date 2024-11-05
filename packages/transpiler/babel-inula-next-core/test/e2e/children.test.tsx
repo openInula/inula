@@ -107,4 +107,27 @@ describe('children', () => {
       }"
     `);
   });
+
+  it('should support null children', () => {
+    expect(
+      transform(`
+      function App() {
+        fn();
+        return null;
+      }
+    `)
+    ).toMatchInlineSnapshot(`
+      "import { createComponent as $$createComponent, initCompNode as $$initCompNode } from "@openinula/next";
+      function App() {
+        let self;
+        self = $$createComponent({
+          updateState: changed => {},
+          getUpdateViews: () => {
+            fn();
+          }
+        });
+        return $$initCompNode(self);
+      }"
+    `);
+  });
 });
