@@ -79,4 +79,18 @@ describe('use hook transform', () => {
       }) => {});"
     `);
   });
+
+  it('should transform hook call expression statements', () => {
+    const input = `
+      function App() {
+        useCustomHook(0, 0);
+      }
+    `;
+    const output = mock(input);
+    expect(output).toMatchInlineSnapshot(`
+      "const App = Component(() => {
+        $$useHook(useCustomHook, [0, 0]);
+      });"
+    `);
+  });
 });

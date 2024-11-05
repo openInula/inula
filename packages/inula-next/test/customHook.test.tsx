@@ -15,7 +15,7 @@
 import { describe, expect, vi } from 'vitest';
 import { domTest as it } from './utils';
 
-import { didMount, didUnMount, render } from '../src';
+import { didMount, didUnmount, render } from '../src';
 import { useContext, createContext } from '../src/ContextNode';
 
 // 模拟调度器
@@ -251,7 +251,7 @@ describe('Custom Hook Tests', () => {
 
   // 3. Lifecycle and Effects
   describe('Lifecycle and Effects', () => {
-    it.fails('should run effects on mount and cleanup on unmount', ({ container }) => {
+    it('should run effects on mount and cleanup on unmount', ({ container }) => {
       const mockEffect = vi.fn();
       const mockCleanup = vi.fn();
 
@@ -259,14 +259,14 @@ describe('Custom Hook Tests', () => {
         didMount(() => {
           mockEffect();
         });
-        didUnMount(() => {
+        didUnmount(() => {
           mockCleanup();
         });
       }
 
       function TestComponent() {
         useEffectTest();
-        return null;
+        return <div />;
       }
 
       render(TestComponent, container);

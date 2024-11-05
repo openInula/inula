@@ -108,7 +108,7 @@ export function willUnmount(fn: () => void) {
   throw new Error('lifecycle should be compiled, check the babel plugin');
 }
 
-export function didUnMount(fn: () => void) {
+export function didUnmount(fn: () => void) {
   throw new Error('lifecycle should be compiled, check the babel plugin');
 }
 
