@@ -16,8 +16,10 @@
 import { describe, expect, it } from 'vitest';
 import { compile } from './mock';
 import jsxSlicePlugin from '../../src/sugarPlugins/jsxSlicePlugin';
+import mapping2ForPlugin from '../../src/sugarPlugins/mapping2ForPlugin';
+import autoNamingPlugin from '../../src/sugarPlugins/autoNamingPlugin';
 
-const mock = (code: string) => compile([jsxSlicePlugin], code);
+const mock = (code: string) => compile([autoNamingPlugin, mapping2ForPlugin, jsxSlicePlugin], code);
 
 describe('jsx slice', () => {
   it('should work with jsx slice', () => {
@@ -27,11 +29,11 @@ describe('jsx slice', () => {
           const a = <div></div>
         }
       `)
-    ).toMatchInlineSnapshot(/*jsx*/ `
-      "function App() {
+    ).toMatchInlineSnapshot(`
+      "const App = Component(() => {
         const JSX_div = Component(() => <div></div>);
         const a = $$Comp(JSX_div);
-      }"
+      });"
     `);
   });
 
@@ -50,7 +52,7 @@ describe('jsx slice', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "function App() {
+      "const App = Component(() => {
         const JSX_div = Component(() => <div>
                   <header>
                     <h1>Title</h1>
@@ -60,7 +62,7 @@ describe('jsx slice', () => {
                   </main>
                 </div>);
         const content = $$Comp(JSX_div);
-      }"
+      });"
     `);
   });
   it('should work with jsx slice in ternary operator', () => {
@@ -71,11 +73,11 @@ describe('jsx slice', () => {
       }
     `)
     ).toMatchInlineSnapshot(`
-      "function App() {
+      "const App = Component(() => {
         const JSX_Table_Col = Component(() => <Table.Col></Table.Col>);
         const JSX_div = Component(() => <div></div>);
         const a = true ? $$Comp(JSX_Table_Col) : $$Comp(JSX_div);
-      }"
+      });"
     `);
   });
 
@@ -87,11 +89,11 @@ describe('jsx slice', () => {
       }
     `)
     ).toMatchInlineSnapshot(`
-      "function App() {
+      "const App = Component(() => {
         const JSX_div = Component(() => <div></div>);
         const JSX_h = Component(() => <h1></h1>);
         const arr = [$$Comp(JSX_div), $$Comp(JSX_h)];
-      }"
+      });"
     `);
   });
 
@@ -103,10 +105,10 @@ describe('jsx slice', () => {
       }
     `)
     ).toMatchInlineSnapshot(`
-      "function App() {
+      "const App = Component(() => {
         const JSX_Icon = Component(() => <Icon />);
         return <div icon={$$Comp(JSX_Icon)}></div>;
-      }"
+      });"
     `);
   });
 
@@ -119,13 +121,13 @@ describe('jsx slice', () => {
       }
     `)
     ).toMatchInlineSnapshot(`
-      "function App() {
+      "const App = Component(() => {
         const JSX_Fragment = Component(() => <>{test}</>);
         const a = $$Comp(JSX_Fragment);
         const JSX_Fragment2 = Component(() => <><div></div></>);
         const JSX_Fragment3 = Component(() => <><span></span></>);
         const b = cond ? $$Comp(JSX_Fragment2) : $$Comp(JSX_Fragment3);
-      }"
+      });"
     `);
   });
 
@@ -138,5 +140,155 @@ describe('jsx slice', () => {
     //
     //   return <div>{fn([1, 2, 3])}</div>
     // }
+  });
+
+  it('should not transform jsx in return of arrow for, transform jsx not in return of arrow', () => {
+    expect(
+      mock(`
+      function Colors() {
+        const colors = ['red', 'green', 'blue'];
+        return (
+       <ul>
+            <for each={colors}>{color => {
+              const fn = (color) => {
+                return <div>{color}</div> // should be transformed
+              }
+              return <li>{fn(color)}</li>  // should not transformed
+            }}</for>
+          </ul>
+        );
+      }
+    `)
+    ).toMatchInlineSnapshot(`
+      "const Colors = Component(() => {
+        const colors = ['red', 'green', 'blue'];
+        return <ul>
+                  <for each={colors}>{color => {
+              const fn = color => {
+                const JSX_div = Component(() => <div>{color}</div>);
+                return $$Comp(JSX_div); // should be transformed
+              };
+              return <li>{fn(color)}</li>; // should not transformed
+            }}</for>
+                </ul>;
+      });"
+    `);
+  });
+
+  it('should transform jsx in arrow', () => {
+    expect(
+      mock(`
+      function Colors() {
+        return (
+          <App render={(color) => <ul><li>{color}</li></ul>
+          }>
+          </App>
+        );
+      }
+    `)
+    ).toMatchInlineSnapshot(`
+      "const Colors = Component(() => {
+        return <App render={color => {
+          const JSX_ul = Component(() => <ul><li>{color}</li></ul>);
+          return $$Comp(JSX_ul);
+        }}>
+                </App>;
+      });"
+    `);
+  });
+  it('should transform jsx in return', () => {
+    expect(
+      mock(`
+      function Colors() {
+        return (
+          <App render={(color) => {
+            return  <ul><li>{color}</li></ul>;
+          }
+          }>
+          </App>
+        );
+      }
+    `)
+    ).toMatchInlineSnapshot(`
+      "const Colors = Component(() => {
+        return <App render={color => {
+          const JSX_ul = Component(() => <ul><li>{color}</li></ul>);
+          return $$Comp(JSX_ul);
+        }}>
+                </App>;
+      });"
+    `);
+  });
+  it('should not transform jsx of arrow in for', () => {
+    expect(
+      mock(`
+      function App() {
+      const arr = [0, 1, 2];
+      return <for each={arr}>{item => <div>{item}</div>}</for>;
+    }
+    `)
+    ).toMatchInlineSnapshot(`
+      "const App = Component(() => {
+        const arr = [0, 1, 2];
+        return <for each={arr}>{item => <div>{item}</div>}</for>;
+      });"
+    `);
+  });
+
+  it('should not transform jsx of arrow in map', () => {
+    expect(
+      mock(`
+      function MyComp() {
+      const arr = [1, 2, 3];
+      return (
+        <>
+          {arr.map(item =>
+            <div>{item}</div>
+          )}
+        </>
+      );
+    }
+    `)
+    ).toMatchInlineSnapshot(`
+      "const MyComp = Component(() => {
+        const arr = [1, 2, 3];
+        return <>
+                <for each={arr}>{item => <div>{item}</div>}</for>
+              </>;
+      });"
+    `);
+  });
+
+  it('should not transform jsx in return of component', () => {
+    expect(
+      mock(`
+      const Folder = ({ name, children }) => {
+        const { level } = useContext(FileContext);
+        return (
+          <FileContext level={level + 1}>
+            <div>
+              <h1>{\`Folder: ${name}, level:\`}</h1>
+              {children}
+            </div>
+          </FileContext>
+        );
+      };
+    `)
+    ).toMatchInlineSnapshot(`
+      "const Folder = Component(({
+        name,
+        children
+      }) => {
+        const {
+          level
+        } = useContext(FileContext);
+        return <FileContext level={level + 1}>
+                  <div>
+                    <h1>{\`Folder: , level:\`}</h1>
+                    {children}
+                  </div>
+                </FileContext>;
+      });"
+    `);
   });
 });

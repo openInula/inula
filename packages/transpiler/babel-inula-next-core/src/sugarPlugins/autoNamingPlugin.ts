@@ -20,32 +20,36 @@ export default function (api: typeof babel): PluginObj {
 
   return {
     visitor: {
-      FunctionDeclaration(path: NodePath<t.FunctionDeclaration>) {
-        if (ALREADY_COMPILED.has(path)) return;
+      Program(program) {
+        program.traverse({
+          FunctionDeclaration(path: NodePath<t.FunctionDeclaration>) {
+            if (ALREADY_COMPILED.has(path)) return;
 
-        const { id } = path.node;
-        const macroNode = getMacroNode(id, path.node.body, path.node.params);
-        if (macroNode) {
-          path.replaceWith(macroNode);
-        }
-
-        ALREADY_COMPILED.add(path);
-      },
-      VariableDeclaration(path: NodePath<t.VariableDeclaration>) {
-        if (ALREADY_COMPILED.has(path)) return;
-
-        if (path.node.declarations.length === 1) {
-          const { id, init } = path.node.declarations[0];
-          if (t.isIdentifier(id) && isFnExp(init)) {
-            const macroNode = getMacroNode(id, getFnBodyNode(init), init.params);
-
+            const { id } = path.node;
+            const macroNode = getMacroNode(id, path.node.body, path.node.params);
             if (macroNode) {
               path.replaceWith(macroNode);
             }
-          }
-        }
 
-        ALREADY_COMPILED.add(path);
+            ALREADY_COMPILED.add(path);
+          },
+          VariableDeclaration(path: NodePath<t.VariableDeclaration>) {
+            if (ALREADY_COMPILED.has(path)) return;
+
+            if (path.node.declarations.length === 1) {
+              const { id, init } = path.node.declarations[0];
+              if (t.isIdentifier(id) && isFnExp(init)) {
+                const macroNode = getMacroNode(id, getFnBodyNode(init), init.params);
+
+                if (macroNode) {
+                  path.replaceWith(macroNode);
+                }
+              }
+            }
+
+            ALREADY_COMPILED.add(path);
+          },
+        });
       },
     },
   };
