@@ -33,8 +33,12 @@ export default function (api: typeof babel): PluginObj {
   register(api);
   return {
     visitor: {
-      CallExpression(path: NodePath<t.CallExpression>) {
-        callExpressionVisitor(path, false);
+      Program(program) {
+        program.traverse({
+          CallExpression(path: NodePath<t.CallExpression>) {
+            callExpressionVisitor(path, false);
+          },
+        });
       },
     },
   };
