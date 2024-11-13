@@ -19,8 +19,8 @@
 
 import type { VNode } from '../Types';
 
-import { DomComponent, DomPortal, DomText, TreeRoot } from './VNodeTags';
-import { getNearestVNode } from '../../dom/DOMInternalKeys';
+import { Component, Portal, Text, TreeRoot } from './VNodeTags';
+import { getNearestVNode } from '../../renderer/utils/InternalKeys';
 import { Addition, InitFlag } from './VNodeFlags';
 import { BELONG_CLASS_VNODE_KEY } from './VNode';
 
@@ -133,19 +133,19 @@ export function clearVNode(vNode: VNode) {
 
 // 是dom类型的vNode
 export function isDomVNode(node: VNode) {
-  return node.tag === DomComponent || node.tag === DomText;
+  return node.tag === Component || node.tag === Text;
 }
 
 // 是容器类型的vNode
 function isDomContainer(vNode: VNode): boolean {
-  return vNode.tag === DomComponent || vNode.tag === TreeRoot || vNode.tag === DomPortal;
+  return vNode.tag === Component || vNode.tag === TreeRoot || vNode.tag === Portal;
 }
 
 export function findDomVNode(vNode: VNode): VNode | null {
   const ret = travelVNodeTree(
     vNode,
     node => {
-      if (node.tag === DomComponent || node.tag === DomText) {
+      if (node.tag === Component || node.tag === Text) {
         return node;
       }
       return null;
@@ -210,7 +210,7 @@ export function getSiblingDom(vNode: VNode): Element | null {
       }
 
       // 没有子节点，或是DomPortal
-      if (!node.child || node.tag === DomPortal) {
+      if (!node.child || node.tag === Portal) {
         continue findSibling;
       } else {
         const childVNode = node.child;
@@ -227,11 +227,11 @@ export function getSiblingDom(vNode: VNode): Element | null {
 }
 
 function isPortalRoot(vNode, targetContainer) {
-  if (vNode.tag === DomPortal) {
+  if (vNode.tag === Portal) {
     let topVNode = vNode.parent;
     while (topVNode !== null) {
       const grandTag = topVNode.tag;
-      if (grandTag === TreeRoot || grandTag === DomPortal) {
+      if (grandTag === TreeRoot || grandTag === Portal) {
         const topContainer = topVNode.realNode;
         // 如果topContainer是targetContainer，不需要在这里处理
         if (topContainer === targetContainer) {
@@ -250,7 +250,7 @@ export function findRoot(targetVNode, targetDom) {
   // 确认vNode节点是否准确，portal场景下可能祖先节点不准确
   let vNode = targetVNode;
   while (vNode !== null) {
-    if (vNode.tag === TreeRoot || vNode.tag === DomPortal) {
+    if (vNode.tag === TreeRoot || vNode.tag === Portal) {
       let dom = vNode.realNode;
       if (dom === targetDom) {
         break;
@@ -264,7 +264,7 @@ export function findRoot(targetVNode, targetDom) {
         if (parentNode === null) {
           return null;
         }
-        if (parentNode.tag === DomComponent || parentNode.tag === DomText) {
+        if (parentNode.tag === Component || parentNode.tag === Text) {
           return findRoot(parentNode, targetDom);
         }
         dom = dom.parentNode;

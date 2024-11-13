@@ -31,13 +31,16 @@ export const InjectProvider = Provider;
 function injectI18n(Component, options?: InjectOptions): any {
   const {
     isUsingForwardRef = false, // 默认不使用
+    ensureContext = false,
   } = options || {};
 
   // 定义一个名为 WrappedI18n 的函数组件，接收传入组件的 props 和 forwardedRef，返回传入组件并注入 i18n
   const WrappedI18n = props => (
     <Consumer>
       {context => {
-        isVariantI18n(context);
+        if (ensureContext) {
+          isVariantI18n(context);
+        }
 
         const i18nProps = {
           intl: context,

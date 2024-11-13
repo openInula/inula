@@ -31,6 +31,7 @@
     "declaration": true,
     "experimentalDecorators": true,
     "downlevelIteration": true,
+    "emitDeclarationOnly": true,
     "declarationDir": "./build/@types",
     // 赋值为空数组使@types/node不会起作用
     "lib": [
@@ -54,7 +55,8 @@
     }
   },
   "include": [
-    "./index.ts"
+    "./index.ts",
+
   ],
   "exclude": [
     "node_modules",

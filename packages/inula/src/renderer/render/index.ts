@@ -20,10 +20,10 @@ import * as ContextProviderRender from './ContextProvider';
 import * as ForwardRefRender from './ForwardRef';
 import * as FragmentRender from './Fragment';
 import * as FunctionComponentRender from './FunctionComponent';
-import * as DomComponentRender from './DomComponent';
-import * as DomPortalRender from './DomPortal';
+import * as DomComponentRender from './Component';
+import * as DomPortalRender from './Portal';
 import * as TreeRootRender from './TreeRoot';
-import * as DomTextRender from './DomText';
+import * as DomTextRender from './Text';
 import * as LazyComponentRender from './LazyComponent';
 import * as MemoComponentRender from './MemoComponent';
 import * as SuspenseComponentRender from './SuspenseComponent';
@@ -35,10 +35,10 @@ import {
   ForwardRef,
   Fragment,
   FunctionComponent,
-  DomComponent,
-  DomPortal,
+  Component,
+  Portal,
   TreeRoot,
-  DomText,
+  Text,
   LazyComponent,
   MemoComponent,
   SuspenseComponent,
@@ -53,10 +53,10 @@ export default {
   [ForwardRef]: ForwardRefRender,
   [Fragment]: FragmentRender,
   [FunctionComponent]: FunctionComponentRender,
-  [DomComponent]: DomComponentRender,
-  [DomPortal]: DomPortalRender,
+  [Component]: DomComponentRender,
+  [Portal]: DomPortalRender,
   [TreeRoot]: TreeRootRender,
-  [DomText]: DomTextRender,
+  [Text]: DomTextRender,
   [LazyComponent]: LazyComponentRender,
   [MemoComponent]: MemoComponentRender,
   [SuspenseComponent]: SuspenseComponentRender,

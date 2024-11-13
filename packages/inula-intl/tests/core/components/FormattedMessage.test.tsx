@@ -43,7 +43,7 @@ describe('<FormattedMessage>', () => {
     );
 
     setTimeout(() => {
-      expect(getByTestId('id')).toHaveTextContent(i18n.formatMessage('hello', '', {}));
+      expect(getByTestId('id').textContent).toEqual(i18n.formatMessage('hello', {}, {}));
     }, 1000);
   });
   it('should  format context', function () {
@@ -58,6 +58,6 @@ describe('<FormattedMessage>', () => {
         </span>
       </I18nProvider>
     );
-    expect(getByTestId('id')).toHaveTextContent(i18n.formatMessage('id', { name: 'fred' }, {}));
+    expect(getByTestId('id').textContent).toEqual(i18n.formatMessage('id', { name: 'fred' }, {}));
   });
 });

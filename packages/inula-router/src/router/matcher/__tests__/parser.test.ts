@@ -50,12 +50,14 @@ describe('parser test', () => {
     const params = parser.parse('/www.a.com/a/b1/c1/d1');
     const params1 = parser.parse('/www.a.com/a/b1/c1/');
     const params2 = parser.parse('/www.a.com/a/b1/');
+    const params3 = parser.parse('/www.a.com/a1/b1/');
     expect(params!.params).toStrictEqual({ '*': ['b1', 'c1', 'd1'] });
     expect(params!.score).toStrictEqual([10, 10, 3, 3, 3]);
     expect(params1!.params).toStrictEqual({ '*': ['b1', 'c1'] });
     expect(params1!.score).toStrictEqual([10, 10, 3, 3]);
     expect(params2!.params).toStrictEqual({ '*': ['b1'] });
     expect(params2!.score).toStrictEqual([10, 10, 3]);
+    expect(params3).toBeNull();
   });
 
   it('compile wildcard', function () {
@@ -121,7 +123,13 @@ describe('parser test', () => {
   it('url without end slash match wildcard', function () {
     const parser = createPathParser('/about/', { strictMode: false });
     const matched = parser.parse('/about');
-    expect(matched).toBeNull();
+    expect(matched).toStrictEqual({
+      path: '/about/',
+      url: '/about',
+      score: [10],
+      isExact: true,
+      params: {},
+    });
   });
 
   it('url without end slash match wildcard (strictMode)', function () {
@@ -259,7 +267,7 @@ describe('parser test', () => {
   });
 
   it('dynamic param with complex regexp pattern', () => {
-    const parser = createPathParser('/detail/:action([\\da-z]+)', { exact: true });
+    const parser = createPathParser('/detail/:action([\\da-z]+)', { exact: true, caseSensitive: true });
     const res = parser.parse('/detail/a123');
     expect(res).toEqual({
       isExact: true,
@@ -279,11 +287,14 @@ describe('parser test', () => {
   it('wildcard param in centre', function () {
     const parser = createPathParser('/a/b/*/:c/c');
     const res = parser.parse('/a/b/d/x/yy/zzz/abc/c');
+    const res2 = parser.parse('/a/b/abc/c');
     expect(res!.params).toEqual({
       '*': ['d', 'x', 'yy', 'zzz'],
       c: 'abc',
     });
+    expect(res2).toBe(null);
   });
+
   it('support wildcard "*" in end of static path 1', function () {
     const parser = createPathParser('/home*');
     const res = parser.parse('/homeAbc/a123');

@@ -118,7 +118,7 @@
         putResult.innerHTML = JSON.stringify(error, null, 2);
       });
 
-    inulaRequest.delete('http://localhost:3001/users', {params: {id: 1}})
+    inulaRequest.delete('http://localhost:3001/users', {params: {id: 1, test:['{}']}})
       .then(function (response) {
         deleteResult.innerHTML = JSON.stringify(response.data, null, 2);
       })

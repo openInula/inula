@@ -7,12 +7,12 @@ function deleteFolder(filePath) {
     if (fs.lstatSync(filePath).isDirectory()) {
       const files = fs.readdirSync(filePath);
       files.forEach(file => {
-        const nectFilePath = path.join(filePath, file);
-        const states = fs.lstatSync(nectFilePath);
+        const nextFilePath = path.join(filePath, file);
+        const states = fs.lstatSync(nextFilePath);
         if (states.isDirectory()) {
-          deleteFolder(nectFilePath);
+          deleteFolder(nextFilePath);
         } else {
-          fs.unlinkSync(nectFilePath);
+          fs.unlinkSync(nextFilePath);
         }
       });
       fs.rmdirSync(filePath);
@@ -31,12 +31,12 @@ export function cleanUp(folders) {
   return {
     name: 'clean-up',
     buildEnd() {
-      folders.forEach(folder => deleteFolder(folder));
+      folders.forEach(f => deleteFolder(f));
     },
   };
 }
 
-function builderTypeConfig() {
+function buildTypeConfig() {
   return {
     input: './build/@types/index.d.ts',
     output: {
@@ -47,4 +47,4 @@ function builderTypeConfig() {
   };
 }
 
-export default [builderTypeConfig()];
+export default [buildTypeConfig()];

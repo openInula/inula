@@ -17,7 +17,7 @@ import type { VNode } from './Types';
 
 import { callRenderQueueImmediate, pushRenderCallback } from './taskExecutor/RenderQueue';
 import { updateVNode } from './vnode/VNodeCreator';
-import { ContextProvider, DomComponent, DomPortal, TreeRoot } from './vnode/VNodeTags';
+import { ContextProvider, Component, Portal, TreeRoot } from './vnode/VNodeTags';
 import { FlagUtils, InitFlag, Interrupted } from './vnode/VNodeFlags';
 import { captureVNode } from './render/BaseComponent';
 import { checkLoopingUpdateLimit, submitToRender } from './submit/Submit';
@@ -55,7 +55,7 @@ import { getPathArr } from './utils/vNodePath';
 import { injectUpdater } from '../external/devtools';
 import { popCurrentRoot, pushCurrentRoot } from './RootStack';
 
-// 使用 push 扩展语法合并数组场景下被合并数组元素的上限（经验值）
+// 使用push扩展语法合并数组场景下被合并数组元素的上限（经验值）
 const MAX_NUM_PUSH_MERGE_ARRAY = 1000;
 
 // 不可恢复错误
@@ -84,7 +84,7 @@ function collectDirtyNodes(vNode: VNode, parent: VNode): void {
     if (parent.dirtyNodes === null) {
       parent.dirtyNodes = dirtyNodes;
     } else {
-      // 超过上限继续使用 push 方法合并数组将导致性能劣化/调用栈溢出
+      // 超过上限继续使用push方法合并数组将导致性能劣化、调用栈溢出
       if (dirtyNodes.length > MAX_NUM_PUSH_MERGE_ARRAY) {
         parent.dirtyNodes = parent.dirtyNodes.concat(dirtyNodes);
       } else {
@@ -200,8 +200,9 @@ function getChildByIndex(vNode: VNode, idx: number) {
 // 从多个更新节点中，计算出开始节点。即：找到最近的共同的父辈节点
 export function calcStartUpdateVNode(treeRoot: VNode) {
   const toUpdateNodes = Array.from(treeRoot.toUpdateNodes!);
-
-  if (toUpdateNodes.length === 0) {
+  // 所有待更新元素的parent为null说明所有node的父元素已经被卸载，应该从根节点发起更新
+  // Array.every方法对于空数组总返回true
+  if (toUpdateNodes.every(node => node.parent === null)) {
     return treeRoot;
   }
 
@@ -249,11 +250,8 @@ function recoverTreeContext(vNode: VNode) {
   while (parent !== null) {
     if (parent.tag === ContextProvider) {
       contextProviders.unshift(parent);
-    } else if (parent.tag === DomPortal) {
+    } else if (parent.tag === Portal) {
       portalRoots.unshift(parent);
-    }
-    if (parent.tag === DomPortal) {
-      pushCurrentRoot(parent);
     }
     parent = parent.parent;
   }
@@ -273,7 +271,7 @@ function resetTreeContext(vNode: VNode) {
     if (parent.tag === ContextProvider) {
       resetContext(parent);
     }
-    if (parent.tag === DomPortal) {
+    if (parent.tag === Portal) {
       popCurrentRoot();
     }
     parent = parent.parent;
@@ -299,9 +297,9 @@ function buildVNodeTree(treeRoot: VNode) {
     let parent = startVNode.parent;
     while (parent !== null) {
       const tag = parent.tag;
-      if (tag === DomComponent) {
+      if (tag === Component) {
         break;
-      } else if (tag === TreeRoot || tag === DomPortal) {
+      } else if (tag === TreeRoot || tag === Portal) {
         break;
       }
       parent = parent.parent;

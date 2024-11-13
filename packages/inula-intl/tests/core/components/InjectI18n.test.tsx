@@ -42,7 +42,6 @@ describe('InjectIntl', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     const Injected = injectIntl(Wrapped);
 
-    // @ts-ignore
     expect(() => render(<Injected />)).toThrow("Cannot read properties of null (reading 'i18n')");
   });
 
@@ -53,7 +52,7 @@ describe('InjectIntl', () => {
     };
 
     const { getByTestId } = mountWithProvider(<Injected {...props} />);
-    expect(getByTestId('test')).toHaveTextContent(
+    expect(JSON.stringify(getByTestId('test'))).toEqual(
       '{"_events":{},"locale":"en","locales":["en"],"allMessages":{},"_localeData":{}}'
     );
   });

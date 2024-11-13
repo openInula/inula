@@ -86,7 +86,10 @@ export function createPathParser<P = unknown>(pathname: string, option: ParserOp
   const lookToNextDelimiter = (currentIdx: number): boolean => {
     let hasOptionalParam = false;
     while (currentIdx < tokens.length && tokens[currentIdx].type !== TokenType.Delimiter) {
-      if (tokens[currentIdx].value === '?' || tokens[currentIdx].value === '*') {
+      if (
+        tokens[currentIdx].value === '?' ||
+        (tokens[currentIdx].value === '*' && tokens[currentIdx].type !== TokenType.WildCard)
+      ) {
         hasOptionalParam = true;
       }
       currentIdx++;
@@ -97,12 +100,14 @@ export function createPathParser<P = unknown>(pathname: string, option: ParserOp
     const token = tokens[tokenIdx];
     const nextToken = tokens[tokenIdx + 1];
     switch (token.type) {
-      case TokenType.Delimiter:
-        {
-          const hasOptional = lookToNextDelimiter(tokenIdx + 1);
-          pattern += `/${hasOptional ? '?' : ''}`;
-        }
+      case TokenType.Delimiter: {
+        // 该分隔符后有可选参数则该分割符在匹配时是可选的
+        const hasOptional = lookToNextDelimiter(tokenIdx + 1);
+        // 该分隔符为最后一个且strictMode===false时，该分割符在匹配时是可选的
+        const isSlashOptional = nextToken === undefined && !strictMode;
+        pattern += `/${hasOptional || isSlashOptional ? '?' : ''}`;
         break;
+      }
       case TokenType.Static:
         pattern += token.value.replace(REGEX_CHARS_RE, '\\$&');
         if (nextToken && nextToken.type === TokenType.Pattern) {
@@ -112,32 +117,31 @@ export function createPathParser<P = unknown>(pathname: string, option: ParserOp
         }
         scores.push(MatchScore.static);
         break;
-      case TokenType.Param:
-        {
-          // 动态参数支持形如/:param、/:param*、/:param?、/:param(\\d+)的形式
-          let paramRegexp = '';
-          if (nextToken) {
-            switch (nextToken.type) {
-              case TokenType.LBracket:
-                // 跳过当前Token和左括号
-                tokenIdx += 2;
-                while (tokens[tokenIdx].type !== TokenType.RBracket) {
-                  paramRegexp += tokens[tokenIdx].value;
-                  tokenIdx++;
-                }
-                paramRegexp = `(${paramRegexp})`;
-                break;
-              case TokenType.Pattern:
+      case TokenType.Param: {
+        // 动态参数支持形如/:param、/:param*、/:param?、/:param(\\d+)的形式
+        let paramRegexp = '';
+        if (nextToken) {
+          switch (nextToken.type) {
+            case TokenType.LBracket:
+              // 跳过当前Token和左括号
+              tokenIdx += 2;
+              while (tokens[tokenIdx].type !== TokenType.RBracket) {
+                paramRegexp += tokens[tokenIdx].value;
                 tokenIdx++;
-                paramRegexp += `(${nextToken.value === '*' ? '.*' : BASE_PARAM_PATTERN})${nextToken.value}`;
-                break;
-            }
+              }
+              paramRegexp = `(${paramRegexp})`;
+              break;
+            case TokenType.Pattern:
+              tokenIdx++;
+              paramRegexp += `(${nextToken.value === '*' ? '.*' : BASE_PARAM_PATTERN})${nextToken.value}`;
+              break;
           }
-          pattern += paramRegexp ? `(?:${paramRegexp})` : `(${BASE_PARAM_PATTERN})`;
-          keys.push(token.value);
-          scores.push(MatchScore.param);
         }
+        pattern += paramRegexp ? `(?:${paramRegexp})` : `(${BASE_PARAM_PATTERN})`;
+        keys.push(token.value);
+        scores.push(MatchScore.param);
         break;
+      }
       case TokenType.WildCard:
         keys.push(token.value);
         pattern += `((?:${BASE_PARAM_PATTERN})${onlyHasWildCard ? '?' : ''}(?:/(?:${BASE_PARAM_PATTERN}))*)`;
@@ -215,16 +219,15 @@ export function createPathParser<P = unknown>(pathname: string, option: ParserOp
           }
           path += params[token.value];
           break;
-        case TokenType.WildCard:
-          {
-            const wildCard = params['*'];
-            if (wildCard instanceof Array) {
-              path += wildCard.join('/');
-            } else {
-              path += wildCard;
-            }
+        case TokenType.WildCard: {
+          const wildCard = params['*'];
+          if (wildCard instanceof Array) {
+            path += wildCard.join('/');
+          } else {
+            path += wildCard;
           }
           break;
+        }
         case TokenType.Delimiter:
           path += token.value;
           break;

@@ -17,7 +17,7 @@ import { travelVNodeTree } from '../renderer/vnode/VNodeUtils';
 import { Hook, Reducer, MutableRef, Effect, CallBack, Memo } from '../renderer/hooks/HookType';
 import { VNode } from '../renderer/vnode/VNode';
 import { launchUpdateFromVNode } from '../renderer/TreeBuilder';
-import { DomComponent } from '../renderer/vnode/VNodeTags';
+import { Component } from '../renderer/vnode/VNodeTags';
 import { getElementTag } from '../renderer/vnode/VNodeCreator';
 import { JSXElement } from '../renderer/Types';
 import { EffectConstant } from '../renderer/hooks/EffectConstant';
@@ -108,7 +108,7 @@ export const helper = {
     travelVNodeTree(
       vNode,
       (node: VNode) => {
-        if (node.tag === DomComponent) {
+        if (node.tag === Component) {
           // 找到组件的第一个dom元素，返回它所在父节点的全部子节点
           const dom = node.realNode;
           info['Nodes'] = dom?.parentNode?.childNodes;

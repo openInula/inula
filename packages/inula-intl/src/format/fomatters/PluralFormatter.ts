@@ -17,7 +17,7 @@ import utils from '../../utils/utils';
 import NumberFormatter from './NumberFormatter';
 import { Locale, Locales } from '../../types/types';
 import { I18nCache } from '../../types/interfaces';
-import { createIntlCache } from '../../../index';
+import creatI18nCache from '../cache/cache';
 
 /**
  * 复数格式化
@@ -29,12 +29,12 @@ class PluralFormatter {
   private readonly message: any;
   private readonly cache: I18nCache;
 
-  constructor(locale, locales, value, message, cache?) {
+  constructor(locale: Locale, locales: Locales, value: any, message: any, cache?: I18nCache) {
     this.locale = locale;
     this.locales = locales;
     this.value = value;
     this.message = message;
-    this.cache = cache ?? createIntlCache();
+    this.cache = cache ?? creatI18nCache();
   }
 
   // 将 message中的“#”替换为指定数字value，并返回新的字符串或者字符串数组

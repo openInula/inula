@@ -14,7 +14,7 @@
  */
 
 import utils from '../../utils/utils';
-import { Locale } from '../../types/types';
+import { Locale, SelectPool } from '../../types/types';
 import { I18nCache } from '../../types/interfaces';
 
 /**
@@ -26,12 +26,12 @@ class SelectFormatter {
   private readonly locale: Locale;
   private readonly cache: I18nCache;
 
-  constructor(locale, cache) {
+  constructor(locale: Locale, cache: I18nCache) {
     this.locale = locale;
     this.cache = cache;
   }
 
-  getRule(value, rules) {
+  getRule(value: SelectPool, rules: any) {
     if (this.cache.select) {
       // 创建key，用于唯一标识
       const cacheKey = utils.generateKey<Intl.NumberFormatOptions>(this.locale, rules);

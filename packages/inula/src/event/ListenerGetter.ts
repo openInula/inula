@@ -14,7 +14,7 @@
  */
 
 import { VNode } from '../renderer/Types';
-import { DomComponent } from '../renderer/vnode/VNodeTags';
+import { Component } from '../renderer/vnode/VNodeTags';
 import { WrappedEvent } from './EventWrapper';
 import { InulaEventListener, ListenerUnitList } from './Types';
 import { EVENT_TYPE_ALL, EVENT_TYPE_BUBBLE, EVENT_TYPE_CAPTURE } from './EventHub';
@@ -55,7 +55,7 @@ export function getListenersFromTree(
   // 从目标节点到根节点遍历获取listener
   while (vNode !== null) {
     const { realNode, tag } = vNode;
-    if (tag === DomComponent && realNode !== null) {
+    if (tag === Component && realNode !== null) {
       if (eventType === EVENT_TYPE_ALL || eventType === EVENT_TYPE_CAPTURE) {
         const captureName = inulaEvtName + EVENT_TYPE_CAPTURE;
         const captureListener = getListenerFromVNode(vNode, captureName);
@@ -94,7 +94,7 @@ function getParent(inst: VNode | null): VNode | null {
   }
   do {
     inst = inst.parent;
-  } while (inst && inst.tag !== DomComponent);
+  } while (inst && inst.tag !== Component);
   return inst || null;
 }
 
@@ -123,7 +123,7 @@ function getMouseListenersFromTree(event: WrappedEvent, target: VNode, commonPar
       break;
     }
     const { realNode, tag } = vNode;
-    if (tag === DomComponent && realNode !== null) {
+    if (tag === Component && realNode !== null) {
       const currentTarget = realNode;
       const listener = getListenerFromVNode(vNode, registrationName);
       if (listener) {

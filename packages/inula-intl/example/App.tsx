@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Inula, { useState } from 'openinula';
+import { useState } from 'openinula';
 import { IntlProvider } from '../index';
 import zh from './locale/zh';
 import en from './locale/en';
@@ -32,23 +32,29 @@ const App = () => {
   const message = locale === 'zh' ? zh : en;
 
   return (
-    <IntlProvider locale={locale} messages={locale === 'zh' ? zh : en}>
-      <header>Inula-Intl API Test Demo</header>
-
-      <div className="container">
-        <Example1 />
-        <Example2 />
-        <Example3 locale={locale} setLocale={setLocale} />
-      </div>
+    <>
+      <IntlProvider locale={locale} messages={locale === 'zh' ? zh : en}>
+        <header>Inula-Intl API Test Demo</header>
+        <div className="container">
+          <Example1 />
+          <Example2 />
+          <Example3 locale={locale} setLocale={setLocale} />
+        </div>
+        <div className="container">
+          {/*<Example4 locale={locale} messages={message} />*/}
+          <Example5 />
+        </div>
+        <div className="button">
+          <button onClick={handleChange}>切换语言</button>
+        </div>
+      </IntlProvider>
       <div className="container">
         <Example4 locale={locale} messages={message} />
-        <Example5 />
+      </div>
+      <div className="container">
         <Example6 locale={{ locale }} messages={message} />
       </div>
-      <div className="button">
-        <button onClick={handleChange}>切换语言</button>
-      </div>
-    </IntlProvider>
+    </>
   );
 };
 

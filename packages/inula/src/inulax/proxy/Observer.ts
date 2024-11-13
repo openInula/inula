@@ -117,7 +117,7 @@ export class Observer implements IObserver {
         vNodes: nodesList.map((vNode: VNode) => {
           let realNode = vNode.realNode;
           let searchedNode: VNode | null | undefined = vNode;
-          while (!realNode) {
+          while (searchedNode && !realNode) {
             searchedNode = searchedNode?.child;
             realNode = searchedNode?.realNode;
           }

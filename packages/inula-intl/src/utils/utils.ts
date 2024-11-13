@@ -32,7 +32,7 @@ function compile(message: string): CompiledMessage {
   try {
     return getTokenAST(parse(message));
   } catch (e) {
-    console.error(`Message cannot be parse due to syntax errors: ${message}`);
+    console.error(`Message cannot be parse due to syntax errors: ${message},cause by ${e}`);
     return message;
   }
 }

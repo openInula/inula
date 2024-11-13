@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-module.exports = {
+export default {
   coverageDirectory: 'coverage',
   resetModules: true,
   preset: 'ts-jest/presets/js-with-ts',
@@ -30,8 +30,10 @@ module.exports = {
   globals: {
     'ts-jest': {
       tsconfig: 'tsconfig.json',
+      diagnostics: false,
     },
   },
+  testPathIgnorePatterns: ['\\\\node_modules\\\\'],
 
   testEnvironment: 'jsdom',
 };

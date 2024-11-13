@@ -37,7 +37,7 @@ export function startUpdate(element: any, treeRoot: VNode, callback?: Callback) 
   launchUpdateFromVNode(treeRoot);
 }
 
-export function getFirstCustomDom(treeRoot?: VNode | null): Element | Text | null {
+export function getFirstCustomElement(treeRoot?: VNode | null): Element | Text | null {
   if (treeRoot?.child) {
     return treeRoot.child.realNode;
   }

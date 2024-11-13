@@ -17,6 +17,7 @@ import { Component } from './renderer/components/BaseClassComponent';
 import { MutableRef, RefCallBack, RefObject } from './renderer/hooks/HookType';
 
 import * as Event from './EventTypes';
+import { BaseElement } from './jsx-type';
 
 //
 // --------------------------------- Inula Base Types ----------------------------------
@@ -67,7 +68,6 @@ interface ConsumerProps<T> {
 export interface Context<T> {
   Provider: ExoticComponent<ProviderProps<T>>;
   Consumer: ExoticComponent<ConsumerProps<T>>;
-  // 兼容React
   displayName?: string | undefined;
 }
 
@@ -75,6 +75,28 @@ export interface FunctionComponent<P = KVObject> {
   (props: P, context?: any): InulaElement<any, any> | null;
 
   displayName?: string;
+}
+
+export type ClassType<P, T extends Component<P, ComponentState>, C extends ComponentClass<P>> = C &
+  (new (props: P, context?: any) => T);
+export interface ClassicComponent<P = KVObject, S = KVObject> extends Component<P, S> {
+  replaceState(nextState: S, callback?: () => void): void;
+  isMounted(): boolean;
+  getInitialState?(): S;
+}
+
+export type InulaCElement<P, T extends Component<P, ComponentState>> = ComponentElement<P, T>;
+interface ComponentElement<P, T extends Component<P, ComponentState>> extends InulaElement<P, ComponentClass<P>> {
+  ref?: LegacyRef<T> | undefined;
+}
+
+export interface ClassicComponentClass<P = KVObject> extends ComponentClass<P> {
+  new (props: P, context?: any): ClassicComponent<P, ComponentState>;
+  getDefaultProps?(): P;
+}
+
+export interface FunctionComponentElement<P> extends InulaElement<P, FunctionComponent<P>> {
+  ref?: ('ref' extends keyof P ? (P extends { ref?: infer R | undefined } ? R : never) : never) | undefined;
 }
 
 export interface ComponentClass<P = KVObject, S = ComponentState> extends StaticLifecycle<P, S> {
@@ -103,7 +125,7 @@ export interface ChildrenType {
   toArray(children: InulaNode | InulaNode[]): Array<Exclude<InulaNode, boolean | null | undefined>>;
 }
 
-type ForwardRef<T> = ((inst: T | null) => void) | MutableRef<T | null> | null;
+export type ForwardRef<T> = ((inst: T | null) => void) | MutableRef<T | null> | null;
 
 export interface ForwardRefRenderFunc<T, P = KVObject> {
   (props: P, ref: ForwardRef<T>): InulaElement | null;
@@ -119,7 +141,7 @@ export type PropsWithRef<P> = 'ref' extends keyof P
     : P
   : P;
 
-type Attributes = {
+export type Attributes = {
   key?: Key | null | undefined;
 };
 
@@ -272,7 +294,7 @@ interface InulaBaseEvent<E = unknown, Tr = unknown, Ta = unknown> {
 }
 
 // eslint-disable-next-line
-interface SyntheticEvent<T = Element, E = Event> extends InulaBaseEvent<E, EventTarget & T, EventTarget> {}
+export interface SyntheticEvent<T = Element, E = Event> extends InulaBaseEvent<E, EventTarget & T, EventTarget> {}
 
 export interface ClipboardEvent<T = Element> extends SyntheticEvent<T, Event.DomClipboardEvent> {
   clipboardData: DataTransfer;
@@ -410,23 +432,59 @@ export interface MouseEvent<T = Element, E = Event.DomMouseEvent> extends UIEven
 
 export type EventHandler<E extends SyntheticEvent<unknown>> = { bivarianceHack(event: E): void }['bivarianceHack'];
 
-export type ClipboardEventHandler<T = Element> = EventHandler<ClipboardEvent<T>>;
-export type CompositionEventHandler<T = Element> = EventHandler<CompositionEvent<T>>;
-export type DragEventHandler<T = Element> = EventHandler<DragEvent<T>>;
-export type FocusEventHandler<T = Element> = EventHandler<FocusEvent<T>>;
-export type FormEventHandler<T = Element> = EventHandler<FormEvent<T>>;
-export type ChangeEventHandler<T = Element> = EventHandler<ChangeEvent<T>>;
-export type KeyboardEventHandler<T = Element> = EventHandler<KeyboardEvent<T>>;
-export type MouseEventHandler<T = Element> = EventHandler<MouseEvent<T>>;
-export type TouchEventHandler<T = Element> = EventHandler<TouchEvent<T>>;
-export type PointerEventHandler<T = Element> = EventHandler<PointerEvent<T>>;
-export type UIEventHandler<T = Element> = EventHandler<UIEvent<T>>;
-export type WheelEventHandler<T = Element> = EventHandler<WheelEvent<T>>;
-export type AnimationEventHandler<T = Element> = EventHandler<AnimationEvent<T>>;
-export type TransitionEventHandler<T = Element> = EventHandler<TransitionEvent<T>>;
+export type InulaClipboardEventHandler<T = Element> = EventHandler<ClipboardEvent<T>>;
+export type InulaCompositionEventHandler<T = Element> = EventHandler<CompositionEvent<T>>;
+export type InulaDragEventHandler<T = Element> = EventHandler<DragEvent<T>>;
+export type InulaFocusEventHandler<T = Element> = EventHandler<FocusEvent<T>>;
+export type InulaFormEventHandler<T = Element> = EventHandler<FormEvent<T>>;
+export type InulaChangeEventHandler<T = Element> = EventHandler<ChangeEvent<T>>;
+export type InulaKeyboardEventHandler<T = Element> = EventHandler<KeyboardEvent<T>>;
+export type InulaMouseEventHandler<T = Element> = EventHandler<MouseEvent<T>>;
+export type InulaTouchEventHandler<T = Element> = EventHandler<TouchEvent<T>>;
+export type InulaPointerEventHandler<T = Element> = EventHandler<PointerEvent<T>>;
+export type InulaUIEventHandler<T = Element> = EventHandler<UIEvent<T>>;
+export type InulaWheelEventHandler<T = Element> = EventHandler<WheelEvent<T>>;
+export type InulaAnimationEventHandler<T = Element> = EventHandler<AnimationEvent<T>>;
+export type InulaTransitionEventHandler<T = Element> = EventHandler<TransitionEvent<T>>;
 
 //
 // --------------------------------- Css Props----------------------------------
 //
 
 export type CSSProperties = Record<string | number, any>;
+
+//
+// --------------------------------- VDOM ---------------------------------------
+//
+export type LegacyRef<T> = string | Ref<T>;
+export interface ClassAttributes<T> extends Attributes {
+  ref?: LegacyRef<T> | undefined;
+}
+
+export interface InulaCSSProperties extends CSSProperties {}
+
+export type InulaBoolean = boolean | 'true' | 'false';
+
+export type InulaEventHandler<T = Element> = EventHandler<SyntheticEvent<T>>;
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace JSX {
+    interface IntrinsicAttributes extends Attributes {}
+    interface Element extends InulaElement<any, any> {}
+
+    interface ElementClass extends Component<any> {
+      render(): InulaNode;
+    }
+
+    interface ElementAttributesProperty {
+      props: KVObject;
+    }
+    interface ElementChildrenAttribute {
+      children: KVObject;
+    }
+    interface IntrinsicClassAttributes<T> extends ClassAttributes<T> {}
+
+    type IntrinsicElements = BaseElement;
+  }
+}

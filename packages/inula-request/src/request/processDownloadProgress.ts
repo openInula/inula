@@ -35,7 +35,7 @@ function processDownloadProgress(
             }
 
             totalBytesRead += value.byteLength;
-            onProgress!({ loaded: totalBytesRead, total: response.headers.get('Content-Length') });
+            onProgress!({ loaded: totalBytesRead, total: Number(response.headers.get('Content-Length')) });
             controller.enqueue(value); // 将读取到的数据块添加到新的 ReadableStream 中
             read(); // 递归调用，继续读取 stream 直到结束
           });

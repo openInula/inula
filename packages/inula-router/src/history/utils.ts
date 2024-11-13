@@ -66,6 +66,8 @@ export function createLocation<S>(current: string | Location, to: To, state?: S,
   };
   if (!location.pathname) {
     location.pathname = pathname ? pathname : '/';
+  } else if (!location.pathname.startsWith('/')) {
+    location.pathname = parseRelativePath(location.pathname, pathname);
   }
   if (location.search && location.search[0] !== '?') {
     location.search = '?' + location.search;
@@ -153,4 +155,35 @@ function genRandomKey(length: number): () => string {
   return () => {
     return Math.random().toString(18).substring(2, end);
   };
+}
+
+export function parseRelativePath(to: string, from: string) {
+  if (to.startsWith('/')) {
+    return to;
+  }
+  const formParts = from.split('/');
+  const toParts = to.split('/');
+  const lastToPart = toParts[toParts.length - 1];
+  if (lastToPart === '..' || lastToPart === '.') {
+    toParts.push('');
+  }
+  let index = formParts.length - 1;
+  let toIndex = 0;
+  let urlPart: string;
+
+  while (toIndex < toParts.length) {
+    urlPart = toParts[toIndex];
+    if (urlPart === '.') {
+      continue;
+    }
+    if (urlPart === '..') {
+      if (index > 1) {
+        index--;
+      }
+      toIndex++;
+    } else {
+      break;
+    }
+  }
+  return formParts.slice(0, index).join('/') + '/' + toParts.slice(toIndex).join('/');
 }

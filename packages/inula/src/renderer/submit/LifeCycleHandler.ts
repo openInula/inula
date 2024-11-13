@@ -17,32 +17,22 @@
  * 该文件负责把更新应用到界面上 以及 和生命周期的相关调用
  */
 
-import type { Container } from '../../dom/DOMOperator';
-import type { RefType, VNode } from '../Types';
-
+import { Container } from '../Types';
+import type { ElementType, RefType, VNode } from '../Types';
 import { listenToPromise, SuspenseChildStatus } from '../render/SuspenseComponent';
 import {
   FunctionComponent,
   ForwardRef,
   ClassComponent,
   TreeRoot,
-  DomComponent,
-  DomText,
-  DomPortal,
+  Component,
+  Text,
+  Portal,
   SuspenseComponent,
   MemoComponent,
 } from '../vnode/VNodeTags';
 import { FlagUtils, ResetText, Clear, Update, DirectAddition } from '../vnode/VNodeFlags';
 import { mergeDefaultProps } from '../render/LazyComponent';
-import {
-  submitDomUpdate,
-  clearText,
-  appendChildElement,
-  insertDomBefore,
-  removeChildDom,
-  hideDom,
-  unHideDom,
-} from '../../dom/DOMOperator';
 import {
   callEffectRemove,
   callUseEffects,
@@ -51,8 +41,37 @@ import {
 } from './HookEffectHandler';
 import { handleSubmitError } from '../ErrorHandler';
 import { travelVNodeTree, clearVNode, isDomVNode, getSiblingDom } from '../vnode/VNodeUtils';
-import { shouldAutoFocus } from '../../dom/utils/Common';
+import { shouldAutoFocus } from '../../renderer/utils/common';
 import { BELONG_CLASS_VNODE_KEY } from '../vnode/VNode';
+import { saveVNode, updateVNodeProps } from '../utils/InternalKeys';
+import { InulaReconciler } from '..';
+import { isNativeElement } from '../props/PropHandler';
+import { setElementProps } from '../props/PropHandler';
+
+function submitDomUpdate(tag: string, vNode: VNode) {
+  const newProps = vNode.props;
+  const element: ElementType | null = vNode.realNode;
+
+  if (tag === Component) {
+    // DomComponent类型
+    if (element !== null && element !== undefined) {
+      const type = vNode.type;
+      const changeList = vNode.changeList;
+      vNode.changeList = null;
+
+      if (changeList !== null) {
+        saveVNode(vNode, element);
+        updateVNodeProps(element, newProps);
+        InulaReconciler.hostConfig.onSubmit(tag, type, element, newProps, changeList);
+        const isNativeTag = isNativeElement(type, newProps);
+        setElementProps(element, changeList, isNativeTag, false);
+        InulaReconciler.hostConfig.updateInputValue(type, element, newProps);
+      }
+    }
+  } else if (tag === Text) {
+    InulaReconciler.hostConfig.onSubmit('Text', '', element as ElementType, newProps, []);
+  }
+}
 
 function callComponentWillUnmount(vNode: VNode, instance: any) {
   try {
@@ -122,7 +141,7 @@ function callAfterSubmitLifeCycles(vNode: VNode): void {
       callStateCallback(vNode, instance);
       return;
     }
-    case DomComponent: {
+    case Component: {
       if (vNode.isCreated && (vNode.flags & Update) === Update) {
         // button、input、select、textarea、如果有 autoFocus 属性需要focus
         if (shouldAutoFocus(vNode.type, vNode.props)) {
@@ -141,11 +160,11 @@ function hideOrUnhideAllChildren(vNode, isHidden) {
     (node: VNode) => {
       const instance = node.realNode;
 
-      if (node.tag === DomComponent || node.tag === DomText) {
+      if (node.tag === Component || node.tag === Text) {
         if (isHidden) {
-          hideDom(node.tag, instance);
+          InulaReconciler.hostConfig.hideElement(node.tag, instance);
         } else {
-          unHideDom(node.tag, instance, node.props);
+          InulaReconciler.hostConfig.unHideElement(node.tag, instance, node.props);
         }
       }
     },
@@ -192,7 +211,7 @@ function unmountNestedVNodes(vNode: VNode): void {
     },
     node =>
       // 如果是DomPortal，不需要遍历child
-      node.tag === DomPortal,
+      node.tag === Portal,
     vNode,
     null
   );
@@ -213,7 +232,7 @@ function unmountDomComponents(vNode: VNode): void {
         let tag;
         while (parent !== null) {
           tag = parent.tag;
-          if (tag === DomComponent || tag === TreeRoot || tag === DomPortal) {
+          if (tag === Component || tag === TreeRoot || tag === Portal) {
             currentParent = parent.realNode;
             break;
           }
@@ -222,13 +241,13 @@ function unmountDomComponents(vNode: VNode): void {
         currentParentIsValid = true;
       }
 
-      if (node.tag === DomComponent || node.tag === DomText) {
+      if (node.tag === Component || node.tag === Text) {
         // 卸载vNode，递归遍历子vNode
         unmountNestedVNodes(node);
 
         // 在所有子项都卸载后，删除dom树中的节点
-        removeChildDom(currentParent, node.realNode);
-      } else if (node.tag === DomPortal) {
+        InulaReconciler.hostConfig.removeChildElement(currentParent, node.realNode);
+      } else if (node.tag === Portal) {
         if (node.child !== null) {
           currentParent = node.realNode;
         }
@@ -238,10 +257,10 @@ function unmountDomComponents(vNode: VNode): void {
     },
     node =>
       // 如果是dom不用再遍历child
-      node.tag === DomComponent || node.tag === DomText,
+      node.tag === Component || node.tag === Text,
     vNode,
     node => {
-      if (node.tag === DomPortal) {
+      if (node.tag === Portal) {
         // 当离开portal，需要重新设置parent
         currentParentIsValid = false;
       }
@@ -275,11 +294,11 @@ function unmountVNode(vNode: VNode): void {
       }
       break;
     }
-    case DomComponent: {
+    case Component: {
       detachRef(vNode);
       break;
     }
-    case DomPortal: {
+    case Portal: {
       // 这里会递归
       unmountDomComponents(vNode);
       break;
@@ -292,9 +311,9 @@ function unmountVNode(vNode: VNode): void {
 
 function insertDom(parent, realNode, beforeDom) {
   if (beforeDom) {
-    insertDomBefore(parent, realNode, beforeDom);
+    InulaReconciler.hostConfig.insertElementBefore(parent, realNode, beforeDom);
   } else {
-    appendChildElement(parent, realNode);
+    InulaReconciler.hostConfig.appendChildElement(parent, realNode);
   }
 }
 
@@ -303,7 +322,7 @@ function insertOrAppendPlacementNode(node: VNode, beforeDom: Element | null, par
 
   if (isDomVNode(node)) {
     insertDom(parent, realNode, beforeDom);
-  } else if (tag === DomPortal) {
+  } else if (tag === Portal) {
     // 这里不做处理，直接在portal中处理
   } else {
     // 插入子节点们
@@ -321,7 +340,7 @@ function submitAddition(vNode: VNode): void {
   let tag;
   while (parent !== null) {
     tag = parent.tag;
-    if (tag === DomComponent || tag === TreeRoot || tag === DomPortal) {
+    if (tag === Component || tag === TreeRoot || tag === Portal) {
       parentDom = parent.realNode;
       break;
     }
@@ -330,7 +349,7 @@ function submitAddition(vNode: VNode): void {
 
   if ((parent!.flags & ResetText) === ResetText) {
     // 在insert之前先reset
-    clearText(parentDom);
+    InulaReconciler.hostConfig.clearText(parentDom);
     FlagUtils.removeFlag(parent!, ResetText);
   }
 
@@ -365,7 +384,7 @@ function submitClear(vNode: VNode): void {
   let tag;
   while (parent !== null) {
     tag = parent.tag;
-    if (tag === DomComponent || tag === TreeRoot || tag === DomPortal) {
+    if (tag === Component || tag === TreeRoot || tag === Portal) {
       parentDom = parent.realNode;
       break;
     }
@@ -381,7 +400,7 @@ function submitClear(vNode: VNode): void {
   }
 
   // 在所有子项都卸载后，删除dom树中的节点
-  removeChildDom(parentDom, vNode.realNode);
+  InulaReconciler.hostConfig.removeChildElement(parentDom, vNode.realNode);
   const realNodeNext = getSiblingDom(vNode);
   insertDom(parentDom, cloneDom, realNodeNext);
   vNode.realNode = cloneDom;
@@ -414,8 +433,8 @@ function submitUpdate(vNode: VNode): void {
       callUseLayoutEffectRemove(vNode);
       break;
     }
-    case DomComponent:
-    case DomText: {
+    case Component:
+    case Text: {
       submitDomUpdate(vNode.tag, vNode);
       break;
     }
@@ -431,7 +450,7 @@ function submitUpdate(vNode: VNode): void {
 }
 
 function submitResetTextContent(vNode: VNode) {
-  clearText(vNode.realNode);
+  InulaReconciler.hostConfig.clearText(vNode.realNode);
 }
 
 export {

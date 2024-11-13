@@ -17,7 +17,7 @@ import type { ContextType } from '../../Types';
 import { TYPE_PROVIDER, TYPE_CONTEXT } from '../../../external/JSXElementType';
 import { Context } from '../../../types';
 
-export function createContext<T>(val: T): Context<T>;
+// export function createContext<T>(val: T): Context<T>;
 export function createContext<T>(val: T): ContextType<T> | Context<T> {
   const context: ContextType<T> = {
     vtype: TYPE_CONTEXT,

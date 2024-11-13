@@ -16,26 +16,24 @@
 </div>
 <script src="../../dist/bundle.js"></script>
 <script>
-  import inulaRequest from "../../index";
-
   const sendRequestButton = document.getElementById('sendRequestButton');
   const cancelRequestButton = document.getElementById('cancelRequestButton');
   const message = document.getElementById('message');
 
-  let controller = new AbortController;
+  let controller = new AbortController();
   const signal = controller.signal;
 
   sendRequestButton.addEventListener('click', function() {
-    setInterval(function() {
+    setInterval(() => {
       inulaRequest.get('http://localhost:3001/data', {
         signal
       }).then(function(response) {
         message.innerHTML = '请求成功: ' + JSON.stringify(response.data, null, 2);
       }).catch(function(error) {
         if (inulaRequest.isCancel(error)) {
-          message.innerHTML = '请求已被取消： ' + error.message;
+          message.innerHTML = '请求已被取消：' + error.message;
         } else {
-          message.innerHTML = '请求出错： ' + error.message;
+          message.innerHTML = '请求出错：' + error.message;
         }
       });
     }, 1000)
