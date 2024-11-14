@@ -12,6 +12,9 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
+/**
+ * @jsxImportSource @openinula/next
+ */
 import { describe, expect, vi } from 'vitest';
 import { domTest as it } from './utils';
 

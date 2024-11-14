@@ -12,6 +12,9 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
+/**
+ * @jsxImportSource @openinula/next
+ */
 
 import { describe, expect, vi } from 'vitest';
 import { domTest as it } from './utils';
@@ -78,7 +81,7 @@ describe('for', () => {
       ];
       return (
         <for each={arr}>
-          {({ x, y }, index) => {
+          {({ x, y }: { x: number; y: number }, index) => {
             let name1 = 'test';
             const onClick = () => {
               name1 = 'changed';

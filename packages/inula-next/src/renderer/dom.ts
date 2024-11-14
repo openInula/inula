@@ -63,6 +63,7 @@ export function setStyle(el: InulaHTMLNode, newStyle: CSSStyleDeclaration): void
       } else if (key === 'float') {
         style.cssFloat = '';
       } else {
+        // @ts-ignore
         style[key] = '';
       }
     }
@@ -70,7 +71,9 @@ export function setStyle(el: InulaHTMLNode, newStyle: CSSStyleDeclaration): void
 
   // Set new or changed styles
   for (const key in newStyle) {
+    // @ts-ignore
     const prevValue = prevStyle[key];
+    // @ts-ignore
     const newValue = newStyle[key];
     // eslint-disable-next-line no-prototype-builtins
     if (newStyle.hasOwnProperty(key) && newValue !== prevValue) {
@@ -143,17 +146,22 @@ export function setHTMLProps(el: InulaHTMLNode, value: HTMLAttrsObject): void {
  * @param deps
  */
 
-export function setHTMLAttr(el: InulaHTMLNode, key: string, valueFunc: () => string, deps: any[]): void {
+export function setHTMLAttr(
+  el: InulaHTMLNode,
+  key: string,
+  valueFunc: () => string | Record<string, string>,
+  deps: any[]
+): void {
   if (cache(el, key, deps)) return;
   if (key === '*spread*') {
-    const spread = valueFunc();
+    const spread = valueFunc() as Record<string, string>;
     Object.keys(spread).forEach(key => {
       const realkey = key === 'className' ? 'class' : key;
       el.setAttribute(realkey, spread[key]);
     });
     return;
   }
-  el.setAttribute(key, valueFunc());
+  el.setAttribute(key, valueFunc() as string);
 }
 
 interface HTMLAttrsObject {
@@ -170,7 +178,7 @@ interface HTMLAttrsObject {
 
 export function setHTMLAttrs(el: InulaHTMLNode, value: HTMLAttrsObject): void {
   Object.entries(value).forEach(([key, v]) => {
-    setHTMLAttr(el, key, () => v, []);
+    setHTMLAttr(el, key, () => v as string, []);
   });
 }
 
@@ -191,6 +199,7 @@ export function setEvent(el: InulaHTMLNode, key: string, value: EventListener): 
 function eventHandler(e: Event): void {
   const key = `$$${e.type}`;
   for (const node of e.composedPath()) {
+    // @ts-ignore
     if (node[key]) node[key](e);
     if (e.cancelBubble) return;
   }
