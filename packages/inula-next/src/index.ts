@@ -3,13 +3,16 @@ import { insertNode } from './renderer/dom';
 import { equal } from './equal';
 import { constructComp, createCompNode, updateCompNode } from './CompNode';
 import { constructHook, createHookNode } from './HookNode';
-import { CompNode, VNode, InulaHTMLNode, HookNode, ChildrenNode } from './types';
+import { CompNode, VNode, InulaHTMLNode, HookNode, ChildrenNode, InulaNode } from './types';
 import { createContextNode, updateContextNode } from './ContextNode';
 import { InulaNodeType } from '@openinula/next-shared';
 import { createChildrenNode, updateChildrenNode } from './ChildrenNode';
 import { createForNode, updateForChildren, updateForNode } from './MutableNode/ForNode';
 import { createExpNode, updateExpNode } from './MutableNode/ExpNode';
 import { createCondNode, updateCondChildren, updateCondNode } from './MutableNode/CondNode';
+import { JSX } from '../types/jsx';
+type JSXElement = JSX.Element;
+export type { JSX, JSXElement };
 
 export * from './renderer/dom';
 export * from './CompNode';
@@ -18,7 +21,7 @@ export * from './MutableNode/ForNode';
 export * from './MutableNode/ExpNode';
 export * from './MutableNode/CondNode';
 
-export type FunctionComponent = (props: Record<PropertyKey, unknown>) => CompNode | HookNode;
+export type FunctionComponent = (props: Record<PropertyKey, unknown>) => InulaNode;
 
 export function render(compFn: FunctionComponent, container: HTMLElement): void {
   if (container == null) {

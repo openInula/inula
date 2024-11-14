@@ -1,3 +1,6 @@
+/**
+ * @jsxImportSource @openinula/next
+ */
 import { describe, expect, vi } from 'vitest';
 import { domTest as it } from './utils';
 import { render } from '../src';

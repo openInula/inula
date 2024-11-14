@@ -12,6 +12,9 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
+/**
+ * @jsxImportSource @openinula/next
+ */
 
 import { describe, expect, vi } from 'vitest';
 import { domTest as it } from './utils';
@@ -83,9 +86,9 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.textContent).toBe('50');
+      expect(resultElement!.textContent).toBe('50');
       container.querySelector('button')!.click();
-      expect(resultElement.textContent).toBe('60');
+      expect(resultElement!.textContent).toBe('60');
     });
 
     it('Should correctly compute and render a derived string state', ({ container }) => {
@@ -114,9 +117,9 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.textContent).toBe('John Doe');
+      expect(resultElement!.textContent).toBe('John Doe');
       container.querySelector('button')!.click();
-      expect(resultElement.textContent).toBe('Jane Doe');
+      expect(resultElement!.textContent).toBe('Jane Doe');
     });
 
     it('Should correctly compute and render a derived number state', ({ container }) => {
@@ -145,9 +148,9 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.textContent).toBe('Total: $20');
+      expect(resultElement!.textContent).toBe('Total: $20');
       container.querySelector('button')!.click();
-      expect(resultElement.textContent).toBe('Total: $30');
+      expect(resultElement!.textContent).toBe('Total: $30');
     });
 
     it('Should correctly compute and render a derived boolean state', ({ container }) => {
@@ -175,9 +178,9 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.textContent).toBe('Is Adult: No');
+      expect(resultElement!.textContent).toBe('Is Adult: No');
       container.querySelector('button')!.click();
-      expect(resultElement.textContent).toBe('Is Adult: Yes');
+      expect(resultElement!.textContent).toBe('Is Adult: Yes');
     });
 
     it('Should correctly compute and render a derived array state', ({ container }) => {
@@ -205,9 +208,9 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.textContent).toBe('Even numbers: 2, 4');
+      expect(resultElement!.textContent).toBe('Even numbers: 2, 4');
       container.querySelector('button')!.click();
-      expect(resultElement.textContent).toBe('Even numbers: 2, 4, 6');
+      expect(resultElement!.textContent).toBe('Even numbers: 2, 4, 6');
     });
 
     it('Should correctly compute and render a derived object state', ({ container }) => {
@@ -237,9 +240,9 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.textContent).toBe('John is an adult');
+      expect(resultElement!.textContent).toBe('John is an adult');
       container.querySelector('button')!.click();
-      expect(resultElement.textContent).toBe('John is not an adult');
+      expect(resultElement!.textContent).toBe('John is not an adult');
     });
 
     it('Should correctly compute state based on array index', ({ container }) => {
@@ -270,11 +273,11 @@ describe('Computed Properties', () => {
 
       expect(resultElement.textContent).toBe('Current item: Apple');
       container.querySelector('button')!.click();
-      expect(resultElement.textContent).toBe('Current item: Banana');
+      expect(resultElement!.textContent).toBe('Current item: Banana');
       container.querySelector('button')!.click();
-      expect(resultElement.textContent).toBe('Current item: Cherry');
+      expect(resultElement!.textContent).toBe('Current item: Cherry');
       container.querySelector('button')!.click();
-      expect(resultElement.textContent).toBe('Current item: Apple');
+      expect(resultElement!.textContent).toBe('Current item: Apple');
     });
   });
 
@@ -297,7 +300,7 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.textContent).toBe('52');
+      expect(resultElement!.textContent).toBe('52');
     });
 
     it.fails('should compute correctly with functional dependencies', ({ container }) => {
@@ -346,11 +349,11 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.textContent).toBe('15');
+      expect(resultElement!.textContent).toBe('15');
       container.querySelectorAll('button')[0].click();
-      expect(resultElement.textContent).toBe('16');
+      expect(resultElement!.textContent).toBe('16');
       container.querySelectorAll('button')[1].click();
-      expect(resultElement.textContent).toBe('17');
+      expect(resultElement!.textContent).toBe('17');
     });
     it('Should correctly compute and render a derived string state from multi dependency', ({ container }) => {
       let resultElement: HTMLElement;
@@ -380,9 +383,9 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.textContent).toBe('Mr. John Doe');
+      expect(resultElement!.textContent).toBe('Mr. John Doe');
       container.querySelector('button')!.click();
-      expect(resultElement.textContent).toBe('Ms. Jane Doe');
+      expect(resultElement!.textContent).toBe('Ms. Jane Doe');
     });
 
     it('Should correctly compute and render a derived number state from multi dependency', ({ container }) => {
@@ -413,9 +416,9 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.textContent).toBe('Volume: 30');
+      expect(resultElement!.textContent).toBe('Volume: 30');
       container.querySelector('button')!.click();
-      expect(resultElement.textContent).toBe('Volume: 60');
+      expect(resultElement!.textContent).toBe('Volume: 60');
     });
 
     it('Should correctly compute and render a derived boolean state from multi dependency', ({ container }) => {
@@ -445,9 +448,9 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.textContent).toBe('Can Drive: No');
+      expect(resultElement!.textContent).toBe('Can Drive: No');
       container.querySelector('button')!.click();
-      expect(resultElement.textContent).toBe('Can Drive: Yes');
+      expect(resultElement!.textContent).toBe('Can Drive: Yes');
     });
 
     it('Should correctly compute and render a derived array state from multi dependency', ({ container }) => {
@@ -477,9 +480,9 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.textContent).toBe('Filtered numbers: 2, 4, 6');
+      expect(resultElement!.textContent).toBe('Filtered numbers: 2, 4, 6');
       container.querySelector('button')!.click();
-      expect(resultElement.textContent).toBe('Filtered numbers: 1, 3, 5');
+      expect(resultElement!.textContent).toBe('Filtered numbers: 1, 3, 5');
     });
 
     it('Should correctly compute and render a derived object state from multi dependency', ({ container }) => {
@@ -516,9 +519,9 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.textContent).toBe('John (30) - Online - Theme: dark');
+      expect(resultElement!.textContent).toBe('John (30) - Online - Theme: dark');
       container.querySelector('button')!.click();
-      expect(resultElement.textContent).toBe('John (30) - Offline - Theme: light');
+      expect(resultElement!.textContent).toBe('John (30) - Offline - Theme: light');
     });
   });
 
@@ -550,7 +553,7 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.innerHTML).toBe('<p>Sum: 15</p><p>Difference: 5</p><p>Product: 50</p><p>Quotient: 2</p>');
+      expect(resultElement!.innerHTML).toBe('<p>Sum: 15</p><p>Difference: 5</p><p>Product: 50</p><p>Quotient: 2</p>');
     });
 
     it('Should support array indexing', ({ container }) => {
@@ -579,9 +582,9 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.textContent).toBe('Value: 30');
+      expect(resultElement!.textContent).toBe('Value: 30');
       container.querySelector('button')!.click();
-      expect(resultElement.textContent).toBe('Value: 50');
+      expect(resultElement!.textContent).toBe('Value: 50');
     });
 
     it('Should support property access', ({ container }) => {
@@ -609,9 +612,9 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.textContent).toBe('Name: John');
+      expect(resultElement!.textContent).toBe('Name: John');
       container.querySelector('button')!.click();
-      expect(resultElement.textContent).toBe('Name: Jane');
+      expect(resultElement!.textContent).toBe('Name: Jane');
     });
 
     it('Should support function calls', ({ container }) => {
@@ -630,7 +633,7 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.textContent).toBe('Sum: 15');
+      expect(resultElement!.textContent).toBe('Sum: 15');
     });
 
     it('Should support various number operations', ({ container }) => {
@@ -659,7 +662,7 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.innerHTML).toBe('<p>Rounded: 3</p><p>Floored: 3</p><p>Ceiled: 4</p><p>Squared: 9.87</p>');
+      expect(resultElement!.innerHTML).toBe('<p>Rounded: 3</p><p>Floored: 3</p><p>Ceiled: 4</p><p>Squared: 9.87</p>');
     });
 
     it('Should support map operations', ({ container }) => {
@@ -678,7 +681,7 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.textContent).toBe('Squared: 1, 4, 9, 16, 25');
+      expect(resultElement!.textContent).toBe('Squared: 1, 4, 9, 16, 25');
     });
 
     it('Should support conditional expressions', ({ container }) => {
@@ -707,9 +710,9 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.textContent).toBe('Can Drive: Yes');
+      expect(resultElement!.textContent).toBe('Can Drive: Yes');
       container.querySelector('button')!.click();
-      expect(resultElement.textContent).toBe('Can Drive: No, too young');
+      expect(resultElement!.textContent).toBe('Can Drive: No, too young');
     });
   });
 
@@ -740,9 +743,9 @@ describe('Computed Properties', () => {
 
       render(App, container);
 
-      expect(resultElement.textContent).toBe('125');
+      expect(resultElement!.textContent).toBe('125');
       container.querySelector('button')!.click();
-      expect(resultElement.textContent).toBe('216');
+      expect(resultElement!.textContent).toBe('216');
     });
   });
 
@@ -798,23 +801,23 @@ describe('Computed Properties', () => {
       render(App, container);
 
       // Check initial state
-      expect(resultElement.textContent).toBe('20');
+      expect(resultElement!.textContent).toBe('20');
 
       // Switch to alternative value
-      toggleButton.click();
-      expect(resultElement.textContent).toBe('40');
+      toggleButton!.click();
+      expect(resultElement!.textContent).toBe('40');
 
       // Increment value1 (should not affect result as we're using value2)
-      incrementValue1Button.click();
-      expect(resultElement.textContent).toBe('40');
+      incrementValue1Button!.click();
+      expect(resultElement!.textContent).toBe('40');
 
       // Increment value2 (should affect result)
-      incrementValue2Button.click();
-      expect(resultElement.textContent).toBe('50');
+      incrementValue2Button!.click();
+      expect(resultElement!.textContent).toBe('50');
 
       // Switch back to original value
-      toggleButton.click();
-      expect(resultElement.textContent).toBe('30'); // value1 was incremented earlier
+      toggleButton!.click();
+      expect(resultElement!.textContent).toBe('30'); // value1 was incremented earlier
     });
   });
 });

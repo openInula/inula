@@ -1,3 +1,7 @@
+/**
+ * @jsxImportSource @openinula/next
+ */
+
 /*
  * Copyright (c) 2024 Huawei Technologies Co.,Ltd.
  *
