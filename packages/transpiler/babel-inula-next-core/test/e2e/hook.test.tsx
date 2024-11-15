@@ -114,10 +114,10 @@ describe('hook', () => {
               if (changed & 1) {
                 if ($$notCached(self, "cache0", [_useCounter_$h$_?.value])) {
                   {
-                    $$updateNode(self, ({
+                    $$updateNode(self, {
                       count,
                       setCount
-                    } = _useCounter_$h$_.value()), 6 /*0b110*/);
+                    } = _useCounter_$h$_.value(), 6 /*0b110*/);
                   }
                 }
               }

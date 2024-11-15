@@ -81,7 +81,7 @@ type DOMFactory<P extends DOMAttributes<T>, T extends Element> = (
 ) => DOMElement<P, T>;
 
 type RefCallBack<T> = (instance: T | null) => void;
-export type Ref<T> = RefCallBack<T> | null;
+export type Ref<T> = RefCallBack<T> | T | null;
 
 // TODO: rename to InulaAttributes
 interface ClassAttributes<T> {
@@ -539,5 +539,6 @@ declare global {
     type IntrinsicElements = BaseElement;
   }
 }
+function For() {}
 
 export type { JSX };

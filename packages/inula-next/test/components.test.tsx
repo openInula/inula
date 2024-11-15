@@ -36,6 +36,7 @@ describe('components', () => {
       function App() {
         let count = 0;
         let _ref: HTMLElement;
+        const div = <div></div>;
 
         didMount(() => {
           ref = _ref;
@@ -102,7 +103,7 @@ describe('components', () => {
       }
 
       function Input({ ref }) {
-        let input;
+        let input: HTMLInputElement;
         didMount(() => {
           ref({ fn, input });
         });

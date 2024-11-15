@@ -10,6 +10,7 @@ export const WATCH = 'watch';
 export enum PropType {
   REST = 'rest',
   SINGLE = 'single',
+  WHOLE = 'whole',
 }
 
 export const reactivityFuncNames = [

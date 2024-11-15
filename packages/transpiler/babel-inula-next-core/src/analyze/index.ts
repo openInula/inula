@@ -8,9 +8,10 @@ import { COMPONENT, HOOK } from '../constants';
 import { types as t } from '@openinula/babel-api';
 import { hookReturnAnalyze } from './Analyzers/hookAnalyze';
 import { IRBuilder } from './IRBuilder';
+import { propsAnalyze } from './Analyzers/propsAnalyze';
 
-const compBuiltinAnalyzers = [variablesAnalyze, functionalMacroAnalyze, viewAnalyze];
-const hookBuiltinAnalyzers = [variablesAnalyze, functionalMacroAnalyze, hookReturnAnalyze];
+const compBuiltinAnalyzers = [variablesAnalyze, functionalMacroAnalyze, viewAnalyze, propsAnalyze];
+const hookBuiltinAnalyzers = [variablesAnalyze, functionalMacroAnalyze, hookReturnAnalyze, propsAnalyze];
 
 function mergeVisitor(...visitors: Analyzer[]): Visitor {
   return visitors.reduce<Visitor<AnalyzeContext>>((acc, cur) => {
@@ -31,8 +32,12 @@ export function analyzeUnitOfWork(name: string, fnNode: NodePath<FunctionalExpre
       props.get('properties').forEach(prop => {
         visitor.Prop?.(prop, context);
       });
+    } else if (props.isIdentifier()) {
+      visitor.Props?.(props, context);
     } else {
-      throw new Error(`Component ${name}: The first parameter of the function component must be an object pattern`);
+      throw new Error(
+        `Component ${name}: The first parameter of the function component must be an object pattern or identifier`
+      );
     }
   }
 
