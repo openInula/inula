@@ -23,19 +23,59 @@ import {
   IRNode,
   LifeCycle,
   PlainVariable,
+  WholeProp,
 } from './types';
 import { createIRNode } from './nodeFactory';
 import type { NodePath } from '@babel/core';
 import { getBabelApi, types as t } from '@openinula/babel-api';
-import { COMPONENT, reactivityFuncNames, WILL_MOUNT } from '../constants';
+import { COMPONENT, PropType, reactivityFuncNames, WILL_MOUNT } from '../constants';
 import { Bitmap, getDependenciesFromNode, parseReactivity } from '@openinula/reactivity-parser';
 import { assertComponentNode, assertHookNode } from './utils';
 import { parseView as parseJSX } from '@openinula/jsx-view-parser';
 import { pruneUnusedState } from './pruneUnusedState';
 
+type PlainStmt = {
+  type: 'plain';
+  value: t.Statement;
+};
+
+type WatchStmt = {
+  type: 'watch';
+  callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>;
+  dependency: Dependency;
+};
+
+type LifecycleStmt = {
+  type: 'lifecycle';
+  lifeCycle: LifeCycle;
+  block: t.Statement;
+};
+
+type InitStmt = {
+  type: 'init';
+};
+
+type SubCompStmt = {
+  type: 'subComp';
+  name: string;
+  fnNode: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>;
+};
+
+type DerivedStmt = {
+  type: 'derived';
+  dependency: Dependency;
+};
+
+type IRStmt = PlainStmt | WatchStmt | LifecycleStmt | InitStmt | SubCompStmt | DerivedStmt;
+
 export class IRBuilder {
   #current: HookNode | ComponentNode;
   readonly #htmlTags: string[];
+  // The value of the reactiveMap is whether the variable is used.
+  reactiveMap = new Map<string, number>();
+  usedReactive = new Set<string>();
+  body: IRStmt[] = [];
+  indexer = 1;
 
   constructor(name: string, type: CompOrHook, fnNode: NodePath<FunctionalExpression>, htmlTags: string[]) {
     this.#current = createIRNode(name, type, fnNode);
@@ -46,10 +86,68 @@ export class IRBuilder {
     this.#current.usedBit |= allDepBits.reduce((acc, cur) => acc | cur, 0);
   }
 
+  addProps(name: string, value: t.Identifier) {
+    this.reactiveMap.set(name, this.indexer++);
+    this.#current.props = {
+      name,
+      value,
+      type: PropType.WHOLE,
+    };
+  }
+
+  addRestProps(name: string, value: t.Identifier) {
+    // check if the props is initialized
+    if (!this.#current.props) {
+      this.#current.props = [];
+    } else if (!Array.isArray(this.#current.props)) {
+      throw new Error('props is not an array');
+    }
+    this.reactiveMap.set(name, this.indexer++);
+    this.#current.props.push({
+      name,
+      value,
+      type: PropType.REST,
+    });
+  }
+
+  addSingleProp(name: string, path: NodePath<t.ObjectPattern | t.ArrayPattern>) {
+    // check if the props is initialized
+    if (!this.#current.props) {
+      this.#current.props = [];
+    } else if (!Array.isArray(this.#current.props)) {
+      throw new Error('props is not an array');
+    }
+    const destructuredNames = searchNestedProps(path);
+    const value = path.node;
+    // All destructured names share the same index
+    const index = this.indexer++;
+    destructuredNames.forEach(name => {
+      this.reactiveMap.set(name, index);
+    });
+    this.#current.props.push({
+      name,
+      value,
+      type: PropType.SINGLE,
+      destructuring: value,
+      destructuredNames,
+    });
+  }
   addVariable(varInfo: BaseVariable<t.Expression | null>) {
     const value = varInfo.value;
-    const dependency =
-      !value || t.isArrowFunctionExpression(value) || t.isFunctionExpression(value) ? null : this.getDependency(value);
+    if (value) {
+      const dependency = this.getDependency(value);
+
+      if (dependency) {
+        dependency.dependencies.forEach(name => {
+          this.usedReactive.add(name);
+        });
+        this.body.push({
+          type: 'derived',
+          value,
+          dependency,
+        });
+      }
+    }
 
     // The index of the variable in the availableVariables
     const idx = this.#current.availableVariables.length;
@@ -153,4 +251,40 @@ export class IRBuilder {
     pruneUnusedState(this.#current);
     return this.#current;
   }
+}
+
+/**
+ * Iterate identifier in nested destructuring, collect the identifier that can be used
+ * e.g. function ({prop1, prop2: [p20X, {p211, p212: p212X}]}
+ * we should collect prop1, p20X, p211, p212X
+ * @param idPath
+ */
+export function searchNestedProps(idPath: NodePath<t.ArrayPattern | t.ObjectPattern>) {
+  const nestedProps: string[] | null = [];
+
+  if (idPath.isObjectPattern() || idPath.isArrayPattern()) {
+    idPath.traverse({
+      Identifier(path) {
+        // judge if the identifier is a prop
+        // 1. is the key of the object property and doesn't have alias
+        // 2. is the item of the array pattern and doesn't have alias
+        // 3. is alias of the object property
+        const parentPath = path.parentPath;
+        if (parentPath.isObjectProperty() && path.parentKey === 'value') {
+          // collect alias of the object property
+          nestedProps.push(path.node.name);
+        } else if (
+          parentPath.isArrayPattern() ||
+          parentPath.isObjectPattern() ||
+          parentPath.isRestElement() ||
+          (parentPath.isAssignmentPattern() && path.key === 'left')
+        ) {
+          // collect the key of the object property or the item of the array pattern
+          nestedProps.push(path.node.name);
+        }
+      },
+    });
+  }
+
+  return nestedProps;
 }

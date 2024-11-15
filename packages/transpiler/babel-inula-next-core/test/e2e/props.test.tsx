@@ -112,11 +112,11 @@ describe('props', () => {
             if (changed & 1) {
               if ($$notCached(self, "cache0", [info_$p$_])) {
                 {
-                  $$updateNode(self, ({
+                  $$updateNode(self, {
                     id,
                     className = 'default',
                     pos: [x, y]
-                  } = info_$p$_), 30 /*0b11110*/);
+                  } = info_$p$_, 30 /*0b11110*/);
                 }
               }
             }

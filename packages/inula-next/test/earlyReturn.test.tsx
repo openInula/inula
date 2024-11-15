@@ -106,7 +106,12 @@ describe('early return', () => {
   });
 
   it('should support nested if early returns', ({ container }) => {
-    let updateUser: (updates: Partial<typeof user>) => void;
+    let updateUser: (
+      updates: Partial<{
+        type: string;
+        age: number;
+      }>
+    ) => void;
 
     const App = () => {
       let user = { type: 'vip', age: 65 };
@@ -142,7 +147,12 @@ describe('early return', () => {
   });
 
   it('should support combined condition early returns', ({ container }) => {
-    let updateUser: (updates: Partial<typeof user>) => void;
+    let updateUser: (
+      updates: Partial<{
+        type: string;
+        age: number;
+      }>
+    ) => void;
 
     const App = () => {
       let user = { isVip: true, isSenior: true, age: 65 };

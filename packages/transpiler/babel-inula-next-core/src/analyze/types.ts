@@ -17,21 +17,11 @@ import { type NodePath, types as t } from '@babel/core';
 import { COMPONENT, DID_MOUNT, DID_UNMOUNT, HOOK, PropType, WILL_MOUNT, WILL_UNMOUNT } from '../constants';
 import { Bitmap, ViewParticle } from '@openinula/reactivity-parser';
 import { IRBuilder } from './IRBuilder';
+import { isTemplateElement } from 'babel-types';
 
 export type CompOrHook = typeof COMPONENT | typeof HOOK;
 export type LifeCycle = typeof WILL_MOUNT | typeof DID_MOUNT | typeof WILL_UNMOUNT | typeof DID_UNMOUNT;
-export type Dependency = {
-  dependenciesNode: t.ArrayExpression;
-  /**
-   * Only contains the bit of direct dependencies and not contains the bit of used variables
-   * So it's configured in pruneUnusedBit.ts
-   */
-  depMask?: Bitmap;
-  /**
-   * The bitmap of each dependency
-   */
-  allDepBits: Bitmap[];
-};
+
 export type FunctionalExpression = t.FunctionExpression | t.ArrowFunctionExpression;
 
 export interface BaseVariable<V> {
@@ -64,14 +54,23 @@ export type WatchFunc = {
   dependency: Dependency | null;
   callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>;
 };
-
-export interface Prop {
+export interface SingleProp {
   name: string;
-  type: PropType;
-  alias: string | null;
-  default: t.Expression | null;
-  nestedProps: string[] | null;
-  nestedRelationship: t.ObjectPattern | t.ArrayPattern | null;
+  value: t.ObjectProperty['value'];
+  destructuring: t.ObjectPattern | t.ArrayPattern;
+  destructuredNames: string[];
+  type: PropType.SINGLE;
+}
+export interface RestProp {
+  name: string;
+  value: t.Identifier;
+  type: PropType.REST;
+}
+
+export interface WholeProp {
+  name: string;
+  value: t.Identifier;
+  type: PropType.WHOLE;
 }
 
 export interface IRNode {
@@ -81,6 +80,7 @@ export interface IRNode {
   // The variables defined in the component
   variables: Variable[];
   usedBit: Bitmap;
+  props: WholeProp | Array<SingleProp | RestProp>;
   /**
    * The map to find the reactive bitmap by name
    */
@@ -128,7 +128,8 @@ export interface AnalyzeContext {
 export type Visitor<S = AnalyzeContext> = {
   [Type in t.Statement['type']]?: (path: NodePath<Extract<t.Statement, { type: Type }>>, state: S) => void;
 } & {
-  Prop?: (path: NodePath<t.ObjectProperty | t.RestElement>, state: S) => void;
+  Prop?: (path: NodePath<t.RestElement | t.ObjectProperty>, state: S) => void;
+  Props?: (path: NodePath<t.Identifier>, state: S) => void;
 };
 export type Analyzer = () => Visitor;
 

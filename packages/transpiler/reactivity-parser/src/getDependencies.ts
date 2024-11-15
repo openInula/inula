@@ -19,15 +19,7 @@ import { Bitmap } from './types';
 
 export type Dependency = {
   dependenciesNode: t.ArrayExpression;
-  /**
-   * Only contains the bit of direct dependencies and not contains the bit of used variables
-   * So it's configured in pruneUnusedBit.ts
-   */
-  depMask?: Bitmap;
-  /**
-   * The bitmap of each dependency
-   */
-  allDepBits: Bitmap[];
+  dependencies: string[];
 };
 
 /**
@@ -39,53 +31,50 @@ export type Dependency = {
  */
 export function getDependenciesFromNode(
   node: t.Expression | t.Statement,
-  reactiveMap: Map<string, Bitmap | Bitmap[]>,
+  reactiveMap: Map<string, number>,
   reactivityFuncNames: string[]
-): Dependency {
+): Dependency | null {
   // ---- Deps: console.log(count)
-  const depBitmaps: number[] = [];
+  let readingBits = 0;
+  const dependencies: string[] = [];
   // ---- Assign deps: count = 1 or count++
-  let assignDepMask = 0;
+  let writingBits = 0;
   const depNodes: Record<string, t.Node[]> = {};
   const wrappedNode = valueWrapper(node);
 
   getBabelApi().traverse(wrappedNode, {
     Identifier: (innerPath: NodePath<t.Identifier>) => {
-      const propertyKey = innerPath.node.name;
-      const reactiveBitmap = reactiveMap.get(propertyKey);
+      const reactiveName = innerPath.node.name;
+      const reactiveIndex = reactiveMap.get(reactiveName);
 
-      if (reactiveBitmap !== undefined) {
+      if (reactiveIndex !== undefined) {
         if (isAssignmentExpressionLeft(innerPath) || isAssignmentFunction(innerPath, reactivityFuncNames)) {
           // write
-          assignDepMask |= Array.isArray(reactiveBitmap)
-            ? reactiveBitmap.reduce((acc, cur) => acc | cur, 0)
-            : reactiveBitmap;
+          writingBits |= 1 << reactiveIndex;
         } else if (
           (isStandAloneIdentifier(innerPath) && !isMemberInUntrackFunction(innerPath)) ||
           isMemberOfMemberExpression(innerPath)
         ) {
+          dependencies.push(reactiveName);
           // read
-          if (Array.isArray(reactiveBitmap)) {
-            depBitmaps.push(...reactiveBitmap);
-          } else {
-            depBitmaps.push(reactiveBitmap);
-          }
+          readingBits |= 1 << reactiveIndex;
 
-          if (!depNodes[propertyKey]) depNodes[propertyKey] = [];
-          depNodes[propertyKey].push(geneDependencyNode(innerPath));
+          if (!depNodes[reactiveName]) depNodes[reactiveName] = [];
+          depNodes[reactiveName].push(geneDependencyNode(innerPath));
         }
       }
     },
   });
 
-  const fullDepMask = depBitmaps.reduce((acc, cur) => acc | cur, 0);
   // ---- Eliminate deps that are assigned in the same method
   //      e.g. { console.log(count); count = 1 }
   //      this will cause infinite loop
   //      so we eliminate "count" from deps
-  if (assignDepMask & fullDepMask) {
+  if (writingBits & readingBits) {
     // TODO: We should throw an error here to indicate the user that there is a loop
   }
+
+  if (readingBits === 0) return null;
 
   // deduplicate the dependency nodes
   let dependencyNodes = Object.values(depNodes).flat();
@@ -97,7 +86,7 @@ export function getDependenciesFromNode(
 
   return {
     dependenciesNode: t.arrayExpression(dependencyNodes as t.Expression[]),
-    allDepBits: depBitmaps,
+    dependencies,
   };
 }
 
