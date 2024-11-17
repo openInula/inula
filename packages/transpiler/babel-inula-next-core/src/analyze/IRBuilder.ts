@@ -63,7 +63,9 @@ type SubCompStmt = {
 
 type DerivedStmt = {
   type: 'derived';
+  id: t.LVal;
   dependency: Dependency;
+  value: t.Expression;
 };
 
 type IRStmt = PlainStmt | WatchStmt | LifecycleStmt | InitStmt | SubCompStmt | DerivedStmt;
@@ -132,7 +134,21 @@ export class IRBuilder {
       destructuredNames,
     });
   }
+  
   addVariable(varInfo: BaseVariable<t.Expression | null>) {
+    const id = varInfo.id;
+    const index = this.indexer++;
+    if (id.isIdentifier()) {
+      this.reactiveMap.set(id.node.name, index);
+    } else if (id.isObjectPattern() || id.isArrayPattern()) {
+      const destructuredNames = searchNestedProps(id);
+      destructuredNames.forEach(name => {
+        this.reactiveMap.set(name, index);
+      });
+    } else {
+      throw new Error('Invalid variable LVal');
+    }
+
     const value = varInfo.value;
     if (value) {
       const dependency = this.getDependency(value);
@@ -143,28 +159,12 @@ export class IRBuilder {
         });
         this.body.push({
           type: 'derived',
+          id: id.node,
           value,
           dependency,
         });
       }
     }
-
-    // The index of the variable in the availableVariables
-    const idx = this.#current.availableVariables.length;
-    const bit = 1 << idx;
-    const allDepBits = dependency?.allDepBits;
-
-    if (allDepBits?.length) {
-      this.accumulateUsedBit(allDepBits);
-    }
-    this.#current._reactiveBitMap.set(varInfo.name, bit);
-    this.#current.variables.push({
-      ...varInfo,
-      type: 'reactive',
-      bit,
-      level: this.#current.level,
-      dependency: allDepBits?.length ? dependency : null,
-    });
   }
 
   addPlainVariable(value: PlainVariable['value']) {

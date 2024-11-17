@@ -25,7 +25,7 @@ export type LifeCycle = typeof WILL_MOUNT | typeof DID_MOUNT | typeof WILL_UNMOU
 export type FunctionalExpression = t.FunctionExpression | t.ArrowFunctionExpression;
 
 export interface BaseVariable<V> {
-  name: string;
+  id: NodePath<t.LVal>;
   value: V;
   kind: t.VariableDeclaration['kind'];
 }
