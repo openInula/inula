@@ -22,16 +22,20 @@ export type Dependency = {
   dependencies: string[];
 };
 
+export function genReactiveBitMap(reactiveIndexMap: Map<string, number>): Map<string, Bitmap> {
+  return new Map(Array.from(reactiveIndexMap).map(([key, index]) => [key, 1 << index]));
+}
+
 /**
  * @brief Get all valid dependencies of a babel path
  * @returns
  * @param node
- * @param reactiveMap
+ * @param reactiveBitMap
  * @param reactivityFuncNames
  */
 export function getDependenciesFromNode(
   node: t.Expression | t.Statement,
-  reactiveMap: Map<string, number>,
+  reactiveBitMap: Map<string, Bitmap>,
   reactivityFuncNames: string[]
 ): Dependency | null {
   // ---- Deps: console.log(count)
@@ -45,19 +49,19 @@ export function getDependenciesFromNode(
   getBabelApi().traverse(wrappedNode, {
     Identifier: (innerPath: NodePath<t.Identifier>) => {
       const reactiveName = innerPath.node.name;
-      const reactiveIndex = reactiveMap.get(reactiveName);
+      const bit = reactiveBitMap.get(reactiveName);
 
-      if (reactiveIndex !== undefined) {
+      if (bit !== undefined) {
         if (isAssignmentExpressionLeft(innerPath) || isAssignmentFunction(innerPath, reactivityFuncNames)) {
           // write
-          writingBits |= 1 << reactiveIndex;
+          writingBits |= bit;
         } else if (
           (isStandAloneIdentifier(innerPath) && !isMemberInUntrackFunction(innerPath)) ||
           isMemberOfMemberExpression(innerPath)
         ) {
           dependencies.push(reactiveName);
           // read
-          readingBits |= 1 << reactiveIndex;
+          readingBits |= bit;
 
           if (!depNodes[reactiveName]) depNodes[reactiveName] = [];
           depNodes[reactiveName].push(geneDependencyNode(innerPath));

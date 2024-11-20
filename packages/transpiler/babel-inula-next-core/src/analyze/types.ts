@@ -17,7 +17,7 @@ import { type NodePath, types as t } from '@babel/core';
 import { COMPONENT, DID_MOUNT, DID_UNMOUNT, HOOK, PropType, WILL_MOUNT, WILL_UNMOUNT } from '../constants';
 import { Bitmap, ViewParticle } from '@openinula/reactivity-parser';
 import { IRBuilder } from './IRBuilder';
-import { isTemplateElement } from 'babel-types';
+import { Dependency } from '@openinula/reactivity-parser';
 
 export type CompOrHook = typeof COMPONENT | typeof HOOK;
 export type LifeCycle = typeof WILL_MOUNT | typeof DID_MOUNT | typeof WILL_UNMOUNT | typeof DID_UNMOUNT;
@@ -54,69 +54,114 @@ export type WatchFunc = {
   dependency: Dependency | null;
   callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>;
 };
-export interface SingleProp {
+export interface SinglePropStmt {
   name: string;
   value: t.ObjectProperty['value'];
-  destructuring: t.ObjectPattern | t.ArrayPattern;
-  destructuredNames: string[];
+  destructuring?: t.ObjectPattern | t.ArrayPattern;
+  destructuredNames?: string[];
   type: PropType.SINGLE;
+  node: t.ObjectProperty;
 }
-export interface RestProp {
+export interface RestPropStmt {
   name: string;
-  value: t.Identifier;
   type: PropType.REST;
 }
 
-export interface WholeProp {
+export interface WholePropStmt {
   name: string;
   value: t.Identifier;
   type: PropType.WHOLE;
 }
 
-export interface IRNode {
+export type RawStmt = {
+  type: 'raw';
+  value: t.Statement;
+};
+
+export type WatchStmt = {
+  type: 'watch';
+  callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>;
+  dependency: Dependency;
+};
+
+export type LifecycleStmt = {
+  type: 'lifecycle';
+  lifeCycle: LifeCycle;
+  block: t.Statement;
+};
+
+export type InitStmt = {
+  type: 'init';
+};
+
+export type SubCompStmt = {
+  type: 'subComp';
   name: string;
+  component: ComponentNode;
+};
+
+export type StateStmt = {
+  type: 'state';
+  name: t.Identifier | t.ArrayPattern | t.ObjectPattern;
+  value: t.Expression | null;
+};
+
+export type DerivedStmt = {
+  type: 'derived';
+  id: t.LVal;
+  dependency: Dependency;
+  value: t.Expression;
+};
+
+export type IRStmt =
+  | RawStmt
+  | WatchStmt
+  | LifecycleStmt
+  | InitStmt
+  | SubCompStmt
+  | DerivedStmt
+  | StateStmt
+  | SinglePropStmt
+  | RestPropStmt
+  | WholePropStmt;
+
+export interface IRScope {
+  /**
+   * The map to find the reactive index by name
+   */
+  reactiveMap: Map<string, number>;
+  /**
+   * The bits of the used reactive ids
+   * e.g. we have 3 reactives, a,b,c, and bc is used, then usedIdBits = 0b110
+   */
+  usedIdBits: number;
   level: number;
+}
+export interface IRBlock {
+  name: string;
   params: t.FunctionExpression['params'];
-  // The variables defined in the component
-  variables: Variable[];
-  usedBit: Bitmap;
-  props: WholeProp | Array<SingleProp | RestProp>;
-  /**
-   * The map to find the reactive bitmap by name
-   */
-  _reactiveBitMap: Map<string, Bitmap>;
-  /**
-   * The available variables and props owned by the component
-   */
-  ownAvailableVariables: ReactiveVariable[];
-  /**
-   * The available variables and props for the component and its parent
-   */
-  availableVariables: ReactiveVariable[];
-  parent?: ComponentNode;
+  body: IRStmt[];
+  parent?: IRBlock;
+  scope: IRScope;
   /**
    * The function body of the fn component code
    */
   fnNode: NodePath<FunctionalExpression>;
-  lifecycle: Partial<Record<LifeCycle, t.Statement[]>>;
-  /**
-   * The watch fn in the component
-   */
-  watch?: WatchFunc[];
 }
 
-export interface ComponentNode<Type = 'comp'> extends IRNode {
+export interface ComponentNode<Type = 'comp'> extends IRBlock {
   type: Type;
   children?: ViewParticle[];
+  parent?: ComponentNode;
 }
 export type SubComponentNode = SubCompVariable;
-export interface HookNode extends IRNode {
+export interface HookNode extends IRBlock {
   type: 'hook';
+  parent?: ComponentNode | HookNode;
   children?: {
     value: t.Expression;
-    depMask?: number; // -> bit
-    allDepBits: number[];
-    dependenciesNode: t.ArrayExpression;
+    dependencies?: string[];
+    dependenciesNode?: t.ArrayExpression;
   };
 }
 

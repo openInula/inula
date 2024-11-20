@@ -15,11 +15,11 @@ export function parseReactivity(viewUnits: ViewUnit[], config: ReactivityParserC
   const particles = viewUnits.map(viewUnit => {
     const parser = new ReactivityParser(config);
     const particle = parser.parse(viewUnit);
-    usedBit |= parser.usedBit;
+    usedBit |= parser.usedReactiveBits;
     return particle;
   });
   return [particles, usedBit];
 }
 
-export { getDependenciesFromNode } from './getDependencies';
+export { getDependenciesFromNode, genReactiveBitMap, Dependency } from './getDependencies';
 export * from './types';

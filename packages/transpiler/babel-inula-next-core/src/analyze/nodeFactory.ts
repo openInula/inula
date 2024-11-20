@@ -14,7 +14,7 @@
  */
 
 import { NodePath } from '@babel/core';
-import { ComponentNode, FunctionalExpression, ReactiveVariable, CompOrHook, HookNode } from './types';
+import { ComponentNode, FunctionalExpression, ReactiveVariable, CompOrHook, HookNode, IRScope } from './types';
 import { COMPONENT } from '../constants';
 
 export function createIRNode<T extends CompOrHook>(
@@ -23,26 +23,24 @@ export function createIRNode<T extends CompOrHook>(
   fnNode: NodePath<FunctionalExpression>,
   parent?: ComponentNode
 ): HookNode | ComponentNode {
+  const parentScope = parent?.scope;
   const comp: HookNode | ComponentNode = {
     type: type === COMPONENT ? 'comp' : 'hook',
     params: fnNode.node.params,
-    level: parent ? parent.level + 1 : 0,
     name,
-    variables: [],
-    usedBit: 0,
-    _reactiveBitMap: parent ? new Map<string, number>(parent._reactiveBitMap) : new Map<string, number>(),
-    lifecycle: {},
+    body: [],
     parent,
     fnNode,
-    get ownAvailableVariables() {
-      return [...comp.variables.filter((p): p is ReactiveVariable => p.type === 'reactive')];
-    },
-    get availableVariables() {
-      // Here is critical for the dependency analysis, must put parent's availableVariables first
-      // so the subcomponent can react to the parent's variables change
-      return [...(comp.parent ? comp.parent.availableVariables : []), ...comp.ownAvailableVariables];
-    },
+    scope: createScope(parentScope),
   };
 
   return comp;
+}
+
+function createScope(parentScope: IRScope | undefined) {
+  return {
+    level: parentScope ? parentScope.level + 1 : 0,
+    reactiveMap: new Map<string, number>(),
+    usedIdBits: 0,
+  };
 }

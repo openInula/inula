@@ -16,13 +16,23 @@
 import { describe, expect, it } from 'vitest';
 import { genCode } from '../mock';
 import { variablesAnalyze } from '../../src/analyze/Analyzers/variablesAnalyze';
-import { ReactiveVariable, SubCompVariable } from '../../src/analyze/types';
+import {
+  ComponentNode,
+  ReactiveVariable,
+  StateStmt,
+  SubCompVariable,
+  DerivedStmt,
+  SubCompStmt,
+} from '../../src/analyze/types';
 import { findVarByName } from './utils';
 import { viewAnalyze } from '../../src/analyze/Analyzers/viewAnalyze';
 import { mockAnalyze } from './mock';
+import { propsAnalyze } from '../../src/analyze/Analyzers/propsAnalyze';
 
-const analyze = (code: string) => mockAnalyze(code, [variablesAnalyze, viewAnalyze]);
+const analyze = (code: string) => mockAnalyze(code, [variablesAnalyze, viewAnalyze, propsAnalyze]);
 
+const getStates = (root: ComponentNode) => root.body.filter(node => node.type === 'state') as StateStmt[];
+const getDerived = (root: ComponentNode) => root.body.filter(node => node.type === 'derived') as DerivedStmt[];
 describe('analyze properties', () => {
   it('should work', () => {
     const root = analyze(`
@@ -33,8 +43,7 @@ describe('analyze properties', () => {
         return <div>{foo}{bar}</div>;
       })
     `);
-    expect(root.variables.length).toBe(2);
-    expect(findVarByName(root, 'foo').kind).toBe('let');
+    expect(getStates(root).length).toBe(1);
   });
 
   describe('state dependency', () => {
@@ -46,15 +55,12 @@ describe('analyze properties', () => {
           let _ = bar; // use bar to avoid pruning
         })
       `);
-      const fooVar = findVarByName(root, 'foo');
-      expect(!!fooVar.dependency).toBe(false);
-      expect(genCode(fooVar.value)).toBe('1');
-
-      const barVar = findVarByName(root, 'bar');
-      expect(!!barVar.dependency).toBe(true);
-      expect(genCode(barVar.value)).toBe('foo');
-      expect(barVar.bit).toEqual(0b10);
-      expect(barVar.dependency!.depMask).toEqual(0b01);
+      expect(root.scope.reactiveMap).toMatchInlineSnapshot(`
+        Map {
+          "foo" => 0,
+          "bar" => 1,
+        }
+      `);
     });
 
     it('should analyze dependency from state in different shape', () => {
@@ -67,42 +73,44 @@ describe('analyze properties', () => {
           let _ = bar; // use bar to avoid pruning
         })
       `);
-
-      const barVar = root.variables[3] as ReactiveVariable;
-      expect(!!barVar.dependency).toBe(true);
-      expect(genCode(barVar.value)).toMatchInlineSnapshot(`
-        "{
-          foo: foo ? a : b
-        }"
+      expect(root.scope.reactiveMap).toMatchInlineSnapshot(`
+        Map {
+          "foo" => 0,
+          "a" => 1,
+          "b" => 2,
+          "bar" => 3,
+        }
       `);
-      expect(barVar.dependency!.depMask).toEqual(0b0111);
     });
 
-    // TODO:MOVE TO PROPS PLUGIN TEST
-    it.skip('should analyze dependency from props', () => {
+    it('should analyze dependency from props', () => {
       const root = analyze(`
         Component(({ foo }) => {
           let bar = foo;
+          let _ = bar; // use bar to avoid pruning
         })
       `);
-      expect(root.variables.length).toBe(1);
-
-      const barVar = root.variables[0] as ReactiveVariable;
-      expect(!!barVar.dependency).toBe(true);
+      expect(root.scope.reactiveMap).toMatchInlineSnapshot(`
+        Map {
+          "foo" => 0,
+          "bar" => 1,
+        }
+      `);
     });
 
-    // TODO:MOVE TO PROPS PLUGIN TEST
-    it.skip('should analyze dependency from nested props', () => {
+    it('should analyze dependency from nested props', () => {
       const root = analyze(`
         Component(({ foo: foo1, name: [first, last] }) => {
           let bar = [foo1, first, last];
         })
       `);
-      expect(root.variables.length).toBe(1);
-      const barVar = root.variables[0] as ReactiveVariable;
-      expect(!!barVar.dependency).toBe(true);
-      // @ts-expect-error ignore ts here
-      expect(root.dependencyMap).toEqual({ bar: ['foo1', 'first', 'last'] });
+      expect(root.scope.reactiveMap).toMatchInlineSnapshot(`
+        Map {
+          "foo1" => 0,
+          "first" => 1,
+          "last" => 1,
+        }
+      `);
     });
 
     it('should not collect invalid dependency', () => {
@@ -113,9 +121,11 @@ describe('analyze properties', () => {
           let _ = bar; // use bar to avoid pruning
         })
       `);
-      const barVar = root.variables[0] as ReactiveVariable;
-      expect(!!barVar.dependency).toBe(false);
-      expect(barVar.bit).toEqual(0b1);
+      expect(root.scope.reactiveMap).toMatchInlineSnapshot(`
+        Map {
+          "bar" => 0,
+        }
+      `);
     });
   });
 
@@ -130,7 +140,18 @@ describe('analyze properties', () => {
           });
         })
       `);
-      expect((root.variables[1] as SubCompVariable).ownAvailableVariables[0].dependency!.depMask).toBe(0b1);
+      expect(root.scope.reactiveMap).toMatchInlineSnapshot(`
+        Map {
+          "foo" => 0,
+        }
+      `);
+
+      const subNode = root.body[1] as SubCompStmt;
+      expect(subNode.component.scope.reactiveMap).toMatchInlineSnapshot(`
+        Map {
+          "bar" => 1,
+        }
+      `);
     });
 
     it('should analyze dependency in parent', () => {
@@ -149,14 +170,22 @@ describe('analyze properties', () => {
           });
         })
       `);
-      const sonNode = root.variables[3] as SubCompVariable;
+      const sonNode = root.body[3] as SubCompStmt;
       // Son > middleName
-      expect(findVarByName(sonNode, 'middleName').dependency!.depMask).toBe(0b100);
       // Son > name
-      expect(findVarByName(sonNode, 'name').dependency!.depMask).toBe(0b1001);
-      const grandSonNode = sonNode.variables[2] as SubCompVariable;
+      expect(sonNode.component.scope.reactiveMap).toMatchInlineSnapshot(`
+        Map {
+          "middleName" => 3,
+          "name" => 4,
+        }
+      `);
+      const grandSonNode = sonNode.component.body[2] as SubCompStmt;
       // GrandSon > grandSonName
-      expect(grandSonNode.ownAvailableVariables[0].dependency!.depMask).toBe(0b10001);
+      expect(grandSonNode.component.scope.reactiveMap).toMatchInlineSnapshot(`
+        Map {
+          "grandSonName" => 5,
+        }
+      `);
     });
   });
 

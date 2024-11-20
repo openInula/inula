@@ -3,27 +3,18 @@ import type Babel from '@babel/core';
 
 export interface DependencyValue<T> {
   value: T;
-  depMask?: number; // -> bit
-  allDepBits: number[];
+  dependencies: string[];
   dependenciesNode: t.ArrayExpression;
 }
 
-export interface DependencyProp {
-  value: t.Expression;
+export interface DependencyProp extends DependencyValue<t.Expression> {
   viewPropMap: Record<string, ViewParticle[]>;
-  depMask?: number;
-  allDepBits: number[];
-  dependenciesNode: t.ArrayExpression;
 }
 
-export interface TemplateProp {
+export interface TemplateProp extends DependencyValue<t.Expression> {
   tag: string;
   key: string;
   path: number[];
-  value: t.Expression;
-  depMask?: number;
-  allDepBits: number[];
-  dependenciesNode: t.ArrayExpression;
 }
 
 export type MutableParticle = ViewParticle & { path: number[] };
@@ -97,13 +88,16 @@ export type ViewParticle =
 
 export interface ReactivityParserConfig {
   babelApi: typeof Babel;
-  depMaskMap: DepMaskMap;
-  identifierDepMap?: Record<string, Bitmap>;
+  reactiveIndexMap: ReactiveBitMap;
   dependencyParseType?: 'property' | 'identifier';
   parseTemplate?: boolean;
   reactivityFuncNames?: string[];
+  /**
+   * @brief A map of derived reactive variables to their source reactive variables
+   */
+  derivedMap?: Map<string, string[]>;
 }
 
 // TODO: unify with the types in babel-inula-next-core
 export type Bitmap = number;
-export type DepMaskMap = Map<string, Bitmap | Bitmap[]>;
+export type ReactiveBitMap = Map<string, Bitmap>;
