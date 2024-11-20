@@ -59,14 +59,7 @@ export class ReactivityParser {
   usedReactiveBits = 0;
 
   addReactiveBits(dependency: Dependency) {
-    dependency.dependencies.forEach(reactive => {
-      const bit = this.reactiveBitMap.get(reactive);
-      if (bit !== undefined) {
-        this.usedReactiveBits |= bit;
-      } else {
-        console.warn(`Reactive ${reactive} not found in the reactive map`);
-      }
-    });
+    this.usedReactiveBits |= dependency.depIdBitmap;
   }
 
   mergeReactiveBits(other: ReactivityParser) {
@@ -343,21 +336,17 @@ export class ReactivityParser {
    * @returns ForParticle
    */
   private parseFor(forUnit: ForUnit): ForParticle {
-    const { dependenciesNode, dependencies } = this.getDependencies(forUnit.array);
+    const { dependenciesNode, depIdBitmap } = this.getDependencies(forUnit.array);
     const prevMap = this.config.reactiveIndexMap;
     const prevDerivedMap = this.config.derivedMap ?? new Map();
     // ---- Generate an identifierDepMap to track identifiers in item and make them reactive
     //      based on the dependencies from the array
     // Just wrap the item in an assignment expression to get all the identifiers
     const itemWrapper = this.t.assignmentExpression('=', forUnit.item, this.t.objectExpression([]));
-    const arrayReactBits = dependencies.reduce((acc, reactive) => acc | this.reactiveBitMap.get(reactive)!, 0);
+    const arrayReactBits = depIdBitmap;
     this.config.reactiveIndexMap = new Map([
       ...this.config.reactiveIndexMap,
       ...this.getIdentifiers(itemWrapper).map(id => [id, arrayReactBits] as const),
-    ]);
-    this.config.derivedMap = new Map([
-      ...prevDerivedMap,
-      ...this.getIdentifiers(itemWrapper).map(id => [id, dependencies] as const),
     ]);
 
     const forParticle: ForParticle = {
@@ -366,8 +355,8 @@ export class ReactivityParser {
       index: forUnit.index,
       array: {
         value: forUnit.array,
-        dependencies,
         dependenciesNode,
+        depIdBitmap,
       },
       children: forUnit.children.map(this.parseViewParticle.bind(this)),
       key: forUnit.key,
@@ -449,7 +438,7 @@ export class ReactivityParser {
    */
   private getDependencies(node: t.Expression | t.Statement): Dependency {
     const emptyDependency: Dependency = {
-      dependencies: [],
+      depIdBitmap: 0,
       dependenciesNode: this.t.arrayExpression([]),
     };
     if (this.t.isFunctionExpression(node) || this.t.isArrowFunctionExpression(node)) {
@@ -458,26 +447,10 @@ export class ReactivityParser {
     const dependency = getDependenciesFromNode(node, this.reactiveBitMap, this.reactivityFuncNames);
     if (dependency) {
       this.addReactiveBits(dependency);
-
-      dependency.dependencies = this.findSource(dependency.dependencies);
       return dependency;
     }
 
     return emptyDependency;
-  }
-
-  private findSource(dependencies: string[]): string[] {
-    // ---- If there's a derivedMap, we need to find the source of the reactive
-    if (this.config.derivedMap?.size) {
-      return dependencies.reduce<string[]>((acc, reactive) => {
-        const source = this.config.derivedMap!.get(reactive);
-        if (source) {
-          return [...acc, ...source];
-        }
-        return [...acc, reactive];
-      }, []);
-    }
-    return dependencies;
   }
 
   // ---- Utils ----

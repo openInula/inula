@@ -28,7 +28,11 @@ export function createIRNode<T extends CompOrHook>(
     type: type === COMPONENT ? 'comp' : 'hook',
     params: fnNode.node.params,
     name,
-    body: [],
+    body: [
+      {
+        type: 'init',
+      },
+    ],
     parent,
     fnNode,
     scope: createScope(parentScope),
@@ -41,6 +45,7 @@ function createScope(parentScope: IRScope | undefined) {
   return {
     level: parentScope ? parentScope.level + 1 : 0,
     reactiveMap: new Map<string, number>(),
+    waveMap: new Map<string, number>(),
     usedIdBits: 0,
   };
 }

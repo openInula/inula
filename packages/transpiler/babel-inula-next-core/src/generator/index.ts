@@ -1,9 +1,14 @@
-import { ComponentNode, HookNode, SubComponentNode, Variable } from '../analyze/types';
+import { ComponentNode, HookNode, IRStmt, SubComponentNode, Variable } from '../analyze/types';
 import { types as t } from '@openinula/babel-api';
 import { generateComp } from './compGenerator';
 import { getStates, wrapUpdate } from './utils';
 import { HOOK_SUFFIX, importMap } from '../constants';
 
+// according to the type of IRStmt
+export type Generator = {
+  [type in IRStmt['type']]?: (stmt: Extract<IRStmt, { type: type }>) => t.Statement | t.Statement[];
+};
+const builtinGenerators: Generator = [];
 function reconstructVariable(variable: Variable) {
   if (variable.type === 'reactive') {
     // ---- If it is a computed, we initiate and modify it in `updateState`
@@ -26,6 +31,11 @@ function reconstructVariable(variable: Variable) {
 export function generate(root: ComponentNode | SubComponentNode | HookNode): t.FunctionDeclaration {
   const states = getStates(root);
 
+  const fnBody: t.Statement[] = root.body.map(stmt => {
+    if (stmt.type === 'init') {
+      return stmt.block;
+    }
+  });
   // ---- Wrap each variable with update
   root.variables.forEach(variable => {
     if (variable.type === 'subComp') return;

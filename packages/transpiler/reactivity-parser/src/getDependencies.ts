@@ -19,7 +19,9 @@ import { Bitmap } from './types';
 
 export type Dependency = {
   dependenciesNode: t.ArrayExpression;
-  dependencies: string[];
+  // idBitmap is a bitmap of reactive ids
+  // e.g. 0b101000 means the reactive ids are 3 and 5
+  depIdBitmap: number;
 };
 
 export function genReactiveBitMap(reactiveIndexMap: Map<string, number>): Map<string, Bitmap> {
@@ -40,7 +42,6 @@ export function getDependenciesFromNode(
 ): Dependency | null {
   // ---- Deps: console.log(count)
   let readingBits = 0;
-  const dependencies: string[] = [];
   // ---- Assign deps: count = 1 or count++
   let writingBits = 0;
   const depNodes: Record<string, t.Node[]> = {};
@@ -59,7 +60,6 @@ export function getDependenciesFromNode(
           (isStandAloneIdentifier(innerPath) && !isMemberInUntrackFunction(innerPath)) ||
           isMemberOfMemberExpression(innerPath)
         ) {
-          dependencies.push(reactiveName);
           // read
           readingBits |= bit;
 
@@ -90,7 +90,7 @@ export function getDependenciesFromNode(
 
   return {
     dependenciesNode: t.arrayExpression(dependencyNodes as t.Expression[]),
-    dependencies,
+    depIdBitmap: readingBits,
   };
 }
 

@@ -23,37 +23,12 @@ export type CompOrHook = typeof COMPONENT | typeof HOOK;
 export type LifeCycle = typeof WILL_MOUNT | typeof DID_MOUNT | typeof WILL_UNMOUNT | typeof DID_UNMOUNT;
 
 export type FunctionalExpression = t.FunctionExpression | t.ArrowFunctionExpression;
-
 export interface BaseVariable<V> {
   id: NodePath<t.LVal>;
   value: V;
   kind: t.VariableDeclaration['kind'];
+  node: t.VariableDeclarator;
 }
-
-export interface ReactiveVariable extends BaseVariable<t.Expression | null> {
-  type: 'reactive';
-  level: number;
-  /**
-   * The bitmap of the variable that should be used in the codegen
-   */
-  bit: Bitmap;
-  dependency: Dependency | null;
-}
-
-export type SubCompVariable = ComponentNode<'subComp'>;
-
-// Including static variable and method
-export interface PlainVariable {
-  type: 'plain';
-  value: t.Statement;
-}
-
-export type Variable = ReactiveVariable | PlainVariable | SubCompVariable;
-
-export type WatchFunc = {
-  dependency: Dependency | null;
-  callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>;
-};
 export interface SinglePropStmt {
   name: string;
   value: t.ObjectProperty['value'];
@@ -104,6 +79,7 @@ export type StateStmt = {
   type: 'state';
   name: t.Identifier | t.ArrayPattern | t.ObjectPattern;
   value: t.Expression | null;
+  node: t.VariableDeclarator;
 };
 
 export type DerivedStmt = {
@@ -126,6 +102,7 @@ export type IRStmt =
   | WholePropStmt;
 
 export interface IRScope {
+  waveMap: Map<string, number>;
   /**
    * The map to find the reactive index by name
    */
@@ -154,7 +131,7 @@ export interface ComponentNode<Type = 'comp'> extends IRBlock {
   children?: ViewParticle[];
   parent?: ComponentNode;
 }
-export type SubComponentNode = SubCompVariable;
+export type SubComponentNode = ComponentNode<'subComp'>;
 export interface HookNode extends IRBlock {
   type: 'hook';
   parent?: ComponentNode | HookNode;
