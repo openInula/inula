@@ -1,6 +1,6 @@
 import type { NodePath } from '@babel/core';
 import { types as t, traverse } from '@openinula/babel-api';
-import { IRNode, ReactiveVariable } from '../analyze/types';
+import { IRBlock, ReactiveVariable } from '../analyze/types';
 import { importMap, reactivityFuncNames } from '../constants';
 
 export function uid(idx: number) {
@@ -123,7 +123,7 @@ function extractWritingPart(assignmentNode: t.AssignmentExpression | t.UpdateExp
   return null;
 }
 
-export function getStates(root: IRNode) {
+export function getStates(root: IRBlock) {
   return root.variables.filter(v => v.type === 'reactive' && v.bit) as ReactiveVariable[];
 }
 

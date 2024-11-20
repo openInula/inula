@@ -1,7 +1,7 @@
 import {
   type CompParticle,
   type DependencyProp,
-  DepMaskMap,
+  ReactiveBitMap,
   type ContextParticle,
   type ExpParticle,
   type ForParticle,
@@ -27,14 +27,19 @@ import {
   type ViewUnit,
 } from '@openinula/jsx-view-parser';
 import { DLError } from './error';
-import { Dependency, getDependenciesFromNode } from './getDependencies';
+import { Dependency, genReactiveBitMap, getDependenciesFromNode } from './getDependencies';
 
 export class ReactivityParser {
   private readonly config: ReactivityParserConfig;
 
   private readonly t: typeof t;
   private readonly traverse: typeof traverse;
-  private readonly depMaskMap: DepMaskMap;
+
+  /**
+   * The reactive bit map in the specific scope.
+   * We utilize bitmaps to detect concurrent read-write operations on reactive variables
+   */
+  private readonly reactiveBitMap: ReactiveBitMap;
   private readonly reactivityFuncNames;
 
   private static readonly customHTMLProps = [
@@ -51,8 +56,22 @@ export class ReactivityParser {
     'forwardProps',
   ];
 
-  readonly usedProperties = new Set<string>();
-  usedBit = 0;
+  usedReactiveBits = 0;
+
+  addReactiveBits(dependency: Dependency) {
+    dependency.dependencies.forEach(reactive => {
+      const bit = this.reactiveBitMap.get(reactive);
+      if (bit !== undefined) {
+        this.usedReactiveBits |= bit;
+      } else {
+        console.warn(`Reactive ${reactive} not found in the reactive map`);
+      }
+    });
+  }
+
+  mergeReactiveBits(other: ReactivityParser) {
+    this.usedReactiveBits |= other.usedReactiveBits;
+  }
 
   /**
    * @brief Constructor
@@ -62,7 +81,7 @@ export class ReactivityParser {
     this.config = config;
     this.t = config.babelApi.types;
     this.traverse = config.babelApi.traverse;
-    this.depMaskMap = config.depMaskMap;
+    this.reactiveBitMap = genReactiveBitMap(config.reactiveIndexMap);
     this.reactivityFuncNames = config.reactivityFuncNames ?? [];
   }
 
@@ -236,9 +255,8 @@ export class ReactivityParser {
               key: 'value',
               path: [...path, idx],
               value: child.content,
-              depMask: 0,
               dependenciesNode: this.t.arrayExpression([]),
-              allDepBits: [],
+              dependencies: [],
             });
           }
         });
@@ -325,16 +343,21 @@ export class ReactivityParser {
    * @returns ForParticle
    */
   private parseFor(forUnit: ForUnit): ForParticle {
-    const { dependenciesNode, allDepBits } = this.getDependencies(forUnit.array);
-    const prevMap = this.config.depMaskMap;
-
+    const { dependenciesNode, dependencies } = this.getDependencies(forUnit.array);
+    const prevMap = this.config.reactiveIndexMap;
+    const prevDerivedMap = this.config.derivedMap ?? new Map();
     // ---- Generate an identifierDepMap to track identifiers in item and make them reactive
     //      based on the dependencies from the array
     // Just wrap the item in an assignment expression to get all the identifiers
     const itemWrapper = this.t.assignmentExpression('=', forUnit.item, this.t.objectExpression([]));
-    this.config.depMaskMap = new Map([
-      ...this.config.depMaskMap,
-      ...this.getIdentifiers(itemWrapper).map(id => [id, allDepBits] as const),
+    const arrayReactBits = dependencies.reduce((acc, reactive) => acc | this.reactiveBitMap.get(reactive)!, 0);
+    this.config.reactiveIndexMap = new Map([
+      ...this.config.reactiveIndexMap,
+      ...this.getIdentifiers(itemWrapper).map(id => [id, arrayReactBits] as const),
+    ]);
+    this.config.derivedMap = new Map([
+      ...prevDerivedMap,
+      ...this.getIdentifiers(itemWrapper).map(id => [id, dependencies] as const),
     ]);
 
     const forParticle: ForParticle = {
@@ -343,13 +366,14 @@ export class ReactivityParser {
       index: forUnit.index,
       array: {
         value: forUnit.array,
-        allDepBits,
+        dependencies,
         dependenciesNode,
       },
       children: forUnit.children.map(this.parseViewParticle.bind(this)),
       key: forUnit.key,
     };
-    this.config.depMaskMap = prevMap;
+    this.config.reactiveIndexMap = prevMap;
+    this.config.derivedMap = prevDerivedMap;
     return forParticle;
   }
 
@@ -372,9 +396,9 @@ export class ReactivityParser {
     };
   }
 
-  // ---- @Env ----
+  // ---- @Context ----
   /**
-   * @brief Parse an EnvUnit into an EnvParticle with dependencies
+   * @brief Parse an ContextUnit into an ContextParticle with dependencies
    * @param contextProviderUnit
    * @returns ContextParticle
    */
@@ -419,28 +443,41 @@ export class ReactivityParser {
   }
 
   /**
-   * @brief Get all the dependencies of a node
-   *  this.dependencyParseType controls how we parse the dependencies
-   * 1. property: parse the dependencies of a node as a property, e.g. this.name
-   * 2. identifier: parse the dependencies of a node as an identifier, e.g. name
-   * The availableProperties is the list of all the properties that can be used in the template,
-   * no matter it's a property or an identifier
+   * Get all the dependencies of a node
    * @param node
-   * @returns dependency index array
+   * @returns Dependency | null
    */
   private getDependencies(node: t.Expression | t.Statement): Dependency {
+    const emptyDependency: Dependency = {
+      dependencies: [],
+      dependenciesNode: this.t.arrayExpression([]),
+    };
     if (this.t.isFunctionExpression(node) || this.t.isArrowFunctionExpression(node)) {
-      return {
-        allDepBits: [],
-        dependenciesNode: this.t.arrayExpression([]),
-      };
+      return emptyDependency;
     }
-    // ---- Both id and prop deps need to be calculated because
-    //      id is for snippet update, prop is normal update
-    //      in a snippet, the depsNode should be both id and prop
-    const dependency = getDependenciesFromNode(node, this.depMaskMap, this.reactivityFuncNames);
-    this.usedBit |= dependency.allDepBits.reduce((acc, cur) => acc | cur, 0);
-    return dependency;
+    const dependency = getDependenciesFromNode(node, this.reactiveBitMap, this.reactivityFuncNames);
+    if (dependency) {
+      this.addReactiveBits(dependency);
+
+      dependency.dependencies = this.findSource(dependency.dependencies);
+      return dependency;
+    }
+
+    return emptyDependency;
+  }
+
+  private findSource(dependencies: string[]): string[] {
+    // ---- If there's a derivedMap, we need to find the source of the reactive
+    if (this.config.derivedMap?.size) {
+      return dependencies.reduce<string[]>((acc, reactive) => {
+        const source = this.config.derivedMap!.get(reactive);
+        if (source) {
+          return [...acc, ...source];
+        }
+        return [...acc, reactive];
+      }, []);
+    }
+    return dependencies;
   }
 
   // ---- Utils ----
@@ -452,9 +489,7 @@ export class ReactivityParser {
   private parseViewParticle(viewUnit: ViewUnit): ViewParticle {
     const parser = new ReactivityParser(this.config);
     const parsedUnit = parser.parse(viewUnit);
-    // ---- Collect used properties
-    parser.usedProperties.forEach(this.usedProperties.add.bind(this.usedProperties));
-    this.usedBit |= parser.usedBit;
+    this.mergeReactiveBits(parser);
     return parsedUnit;
   }
 

@@ -1,4 +1,4 @@
-import { ComponentNode, HookNode, IRNode, LifeCycle, SubComponentNode } from '../analyze/types';
+import { ComponentNode, HookNode, IRBlock, LifeCycle, SubComponentNode } from '../analyze/types';
 import { getBabelApi, types as t } from '@openinula/babel-api';
 import { generateUpdateState } from './updateStateGenerator';
 import { getStates, wrapUpdate } from './utils';
@@ -18,12 +18,12 @@ import { getSubComp } from '../utils';
 import { generateSelfId } from './index';
 import { NodePath } from '@babel/core';
 
-export function generateLifecycle(root: IRNode, lifecycleType: LifeCycle) {
+export function generateLifecycle(root: IRBlock, lifecycleType: LifeCycle) {
   root.lifecycle[lifecycleType]!.forEach(node => wrapUpdate(generateSelfId(root.level), node, getStates(root)));
   return t.arrowFunctionExpression([], t.blockStatement(root.lifecycle[lifecycleType]!));
 }
 
-function genWillMountCodeBlock(root: IRNode) {
+function genWillMountCodeBlock(root: IRBlock) {
   // ---- Get update views will avoke the willMount and return the updateView function.
   let getUpdateViewsFnBody: t.Statement[] = [];
   if (root.lifecycle[WILL_MOUNT]) {

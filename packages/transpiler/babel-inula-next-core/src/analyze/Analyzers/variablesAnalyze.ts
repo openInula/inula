@@ -35,24 +35,25 @@ export function variablesAnalyze(): Visitor {
       // iterate the declarations
       declarations.forEach(declaration => {
         const id = declaration.get('id');
-        assertIdentifier(id);
         // --- properties: the state / computed / plain properties / methods ---
         const init = declaration.get('init');
         const kind = path.node.kind;
 
         // Check if the variable can't be modified
         if (kind === 'const' && isStaticValue(init.node)) {
-          builder.addPlainVariable(t.variableDeclaration('const', [declaration.node]));
+          builder.addRawStmt(path.node);
           return;
         }
 
         if (!isValidPath(init)) {
+          assertIdentifier(id);
           resolveUninitializedVariable(kind, builder, id, declaration.node);
           return;
         }
 
         // Handle the subcomponent, should like Component(() => {})
         if (init.isCallExpression() && isCompPath(init)) {
+          assertIdentifier(id);
           resolveSubComponent(init, builder, id, ctx);
           return;
         }
@@ -61,14 +62,14 @@ export function variablesAnalyze(): Visitor {
         assertJSXSliceIsValid(path, builder.checkSubComponent.bind(builder));
 
         builder.addVariable({
-          name: id.node.name,
+          id,
           value: init.node,
           kind: path.node.kind,
         });
       });
     },
     FunctionDeclaration(path: NodePath<t.FunctionDeclaration>, { builder }) {
-      builder.addPlainVariable(path.node);
+      builder.addRawStmt(path.node);
     },
   };
 }
@@ -104,10 +105,10 @@ function resolveUninitializedVariable(
   node: Array<t.VariableDeclarator>[number]
 ) {
   if (kind === 'const') {
-    builder.addPlainVariable(t.variableDeclaration('const', [node]));
+    builder.addRawStmt(t.variableDeclaration('const', [node]));
   }
   builder.addVariable({
-    name: id.node.name,
+    id,
     value: null,
     kind,
   });

@@ -13,137 +13,123 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import {
-  BaseVariable,
-  ComponentNode,
-  CompOrHook,
-  Dependency,
-  FunctionalExpression,
-  HookNode,
-  IRNode,
-  LifeCycle,
-  PlainVariable,
-  WholeProp,
-} from './types';
+import { BaseVariable, ComponentNode, CompOrHook, FunctionalExpression, HookNode, IRStmt, LifeCycle } from './types';
 import { createIRNode } from './nodeFactory';
 import type { NodePath } from '@babel/core';
 import { getBabelApi, types as t } from '@openinula/babel-api';
 import { COMPONENT, PropType, reactivityFuncNames, WILL_MOUNT } from '../constants';
-import { Bitmap, getDependenciesFromNode, parseReactivity } from '@openinula/reactivity-parser';
+import {
+  Bitmap,
+  Dependency,
+  getDependenciesFromNode,
+  parseReactivity,
+  genReactiveBitMap,
+} from '@openinula/reactivity-parser';
 import { assertComponentNode, assertHookNode } from './utils';
 import { parseView as parseJSX } from '@openinula/jsx-view-parser';
 import { pruneUnusedState } from './pruneUnusedState';
 
-type PlainStmt = {
-  type: 'plain';
-  value: t.Statement;
-};
-
-type WatchStmt = {
-  type: 'watch';
-  callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>;
-  dependency: Dependency;
-};
-
-type LifecycleStmt = {
-  type: 'lifecycle';
-  lifeCycle: LifeCycle;
-  block: t.Statement;
-};
-
-type InitStmt = {
-  type: 'init';
-};
-
-type SubCompStmt = {
-  type: 'subComp';
-  name: string;
-  fnNode: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>;
-};
-
-type DerivedStmt = {
-  type: 'derived';
-  id: t.LVal;
-  dependency: Dependency;
-  value: t.Expression;
-};
-
-type IRStmt = PlainStmt | WatchStmt | LifecycleStmt | InitStmt | SubCompStmt | DerivedStmt;
-
 export class IRBuilder {
   #current: HookNode | ComponentNode;
   readonly #htmlTags: string[];
-  // The value of the reactiveMap is whether the variable is used.
-  reactiveMap = new Map<string, number>();
-  usedReactive = new Set<string>();
-  body: IRStmt[] = [];
-  indexer = 1;
+  reactiveId = 0;
+
+  getNextId() {
+    return this.reactiveId++;
+  }
+
+  addStmt(stmt: IRStmt) {
+    this.#current.body.push(stmt);
+  }
+
+  addDeclaredReactive(name: string, id?: number) {
+    this.#current.scope.reactiveMap.set(name, id ?? this.getNextId());
+  }
+
+  getDependency(node: t.Expression | t.Statement) {
+    const fullReactiveMap = new Map(this.#current.scope.reactiveMap);
+    let next = this.#current.parent;
+    while (next) {
+      next.scope.reactiveMap.forEach((id, name) => {
+        if (!fullReactiveMap.has(name)) {
+          fullReactiveMap.set(name, id);
+        }
+      });
+      next = next.parent;
+    }
+
+    return getDependenciesFromNode(node, genReactiveBitMap(fullReactiveMap), reactivityFuncNames);
+  }
 
   constructor(name: string, type: CompOrHook, fnNode: NodePath<FunctionalExpression>, htmlTags: string[]) {
     this.#current = createIRNode(name, type, fnNode);
     this.#htmlTags = htmlTags;
   }
 
-  accumulateUsedBit(allDepBits: Bitmap[]) {
-    this.#current.usedBit |= allDepBits.reduce((acc, cur) => acc | cur, 0);
+  addRawStmt(stmt: t.Statement) {
+    this.addStmt({
+      type: 'raw',
+      value: stmt,
+    });
   }
 
   addProps(name: string, value: t.Identifier) {
-    this.reactiveMap.set(name, this.indexer++);
-    this.#current.props = {
+    this.addDeclaredReactive(name);
+    this.addStmt({
       name,
       value,
       type: PropType.WHOLE,
-    };
+    });
   }
 
-  addRestProps(name: string, value: t.Identifier) {
+  addRestProps(name: string) {
     // check if the props is initialized
-    if (!this.#current.props) {
-      this.#current.props = [];
-    } else if (!Array.isArray(this.#current.props)) {
-      throw new Error('props is not an array');
-    }
-    this.reactiveMap.set(name, this.indexer++);
-    this.#current.props.push({
+    this.addDeclaredReactive(name);
+    this.addStmt({
       name,
-      value,
       type: PropType.REST,
     });
   }
 
-  addSingleProp(name: string, path: NodePath<t.ObjectPattern | t.ArrayPattern>) {
-    // check if the props is initialized
-    if (!this.#current.props) {
-      this.#current.props = [];
-    } else if (!Array.isArray(this.#current.props)) {
-      throw new Error('props is not an array');
+  addSingleProp(name: string, valPath: NodePath<t.Expression | t.PatternLike>, node: t.ObjectProperty) {
+    const value = valPath.node;
+
+    const index = this.getNextId();
+    if (valPath.isObjectPattern() || valPath.isArrayPattern()) {
+      const destructuredNames = searchNestedProps(valPath);
+
+      // All destructured names share the same index
+      destructuredNames.forEach(name => this.addDeclaredReactive(name, index));
+      this.addStmt({
+        name,
+        value,
+        type: PropType.SINGLE,
+        node,
+        destructuredNames,
+      });
+    } else {
+      if (valPath.isIdentifier() && valPath.node.name !== name) {
+        name = valPath.node.name;
+      }
+      this.addDeclaredReactive(name, index);
+      this.addStmt({
+        name,
+        value,
+        type: PropType.SINGLE,
+        node,
+      });
     }
-    const destructuredNames = searchNestedProps(path);
-    const value = path.node;
-    // All destructured names share the same index
-    const index = this.indexer++;
-    destructuredNames.forEach(name => {
-      this.reactiveMap.set(name, index);
-    });
-    this.#current.props.push({
-      name,
-      value,
-      type: PropType.SINGLE,
-      destructuring: value,
-      destructuredNames,
-    });
   }
-  
+
   addVariable(varInfo: BaseVariable<t.Expression | null>) {
     const id = varInfo.id;
-    const index = this.indexer++;
+    const index = this.getNextId();
     if (id.isIdentifier()) {
-      this.reactiveMap.set(id.node.name, index);
+      this.addDeclaredReactive(id.node.name, index);
     } else if (id.isObjectPattern() || id.isArrayPattern()) {
       const destructuredNames = searchNestedProps(id);
       destructuredNames.forEach(name => {
-        this.reactiveMap.set(name, index);
+        this.addDeclaredReactive(name, index);
       });
     } else {
       throw new Error('Invalid variable LVal');
@@ -154,34 +140,63 @@ export class IRBuilder {
       const dependency = this.getDependency(value);
 
       if (dependency) {
-        dependency.dependencies.forEach(name => {
-          this.usedReactive.add(name);
-        });
-        this.body.push({
+        this.addUsedReactives(dependency);
+        this.addStmt({
           type: 'derived',
           id: id.node,
           value,
           dependency,
         });
+
+        return;
       }
+    }
+
+    this.addStmt({
+      type: 'state',
+      name: id.node,
+      value,
+    });
+  }
+
+  private findReactiveId(name: string) {
+    let next: HookNode | ComponentNode | undefined = this.#current;
+    while (next) {
+      const id = next.scope.reactiveMap.get(name);
+      if (id !== undefined) {
+        return id;
+      }
+      next = next.parent;
     }
   }
 
-  addPlainVariable(value: PlainVariable['value']) {
-    this.#current.variables.push({ value, type: 'plain' });
+  private addUsedReactives(dependency: Dependency) {
+    dependency.dependencies.forEach(name => {
+      const id = this.findReactiveId(name);
+
+      if (id !== undefined) {
+        this.#current.scope.usedIdBits |= 1 << id;
+      } else {
+        throw new Error(`Reactive ${name} is not declared`);
+      }
+    });
   }
 
-  addSubComponent(subComp: IRNode) {
-    this.#current.usedBit |= subComp.usedBit;
-    this.#current.variables.push({ ...subComp, type: 'subComp' });
+  addSubComponent(subComp: ComponentNode) {
+    this.#current.scope.usedIdBits |= subComp.scope.usedIdBits;
+    this.addStmt({
+      type: 'subComp',
+      component: subComp,
+      name: subComp.name,
+    });
   }
 
   addLifecycle(lifeCycle: LifeCycle, block: t.Statement) {
-    const compLifecycle = this.#current.lifecycle;
-    if (!compLifecycle[lifeCycle]) {
-      compLifecycle[lifeCycle] = [];
-    }
-    compLifecycle[lifeCycle]!.push(block);
+    this.addStmt({
+      type: 'lifecycle',
+      lifeCycle,
+      block,
+    });
   }
 
   addWillMount(stmt: t.Statement) {
@@ -189,14 +204,11 @@ export class IRBuilder {
   }
 
   addWatch(callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>, dependency: Dependency) {
-    // if watch not exist, create a new one
-    if (!this.#current.watch) {
-      this.#current.watch = [];
-    }
-    this.accumulateUsedBit(dependency.allDepBits);
-    this.#current.watch.push({
+    this.addUsedReactives(dependency);
+    this.addStmt({
+      type: 'watch',
       callback,
-      dependency: dependency.allDepBits.length ? dependency : null,
+      dependency,
     });
   }
 
@@ -209,31 +221,29 @@ export class IRBuilder {
       parseTemplate: false,
     });
 
-    const [viewParticles, usedBit] = parseReactivity(viewUnits, {
+    const [viewParticles, useIdBits] = parseReactivity(viewUnits, {
       babelApi: getBabelApi(),
-      depMaskMap: this.#current._reactiveBitMap,
+      reactiveIndexMap: this.#current.scope.reactiveMap,
       reactivityFuncNames,
     });
 
     // TODO: Maybe we should merge
-    this.#current.usedBit |= usedBit;
+    this.#current.scope.usedIdBits |= useIdBits;
     this.#current.children = viewParticles;
   }
 
   setReturnValue(expression: t.Expression) {
     assertHookNode(this.#current);
-    const dependency = getDependenciesFromNode(expression, this.#current._reactiveBitMap, reactivityFuncNames);
+    const dependency = getDependenciesFromNode(expression, this.#current.scope.reactiveMap, reactivityFuncNames);
 
-    this.accumulateUsedBit(dependency.allDepBits);
-    this.#current.children = { value: expression, ...dependency };
-  }
-
-  getDependency(node: t.Expression | t.Statement) {
-    return getDependenciesFromNode(node, this.#current._reactiveBitMap, reactivityFuncNames);
+    if (dependency) {
+      this.addUsedReactives(dependency);
+    }
+    (this.#current as HookNode).children = { value: expression, ...dependency };
   }
 
   checkSubComponent(subCompName: string) {
-    return !!this.#current.variables.find(sub => sub.type === 'subComp' && sub.name === subCompName);
+    return !!this.#current.body.find(sub => sub.type === 'subComp' && sub.name === subCompName);
   }
 
   startSubComponent(name: string, fnNode: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>) {
@@ -242,7 +252,7 @@ export class IRBuilder {
   }
 
   endSubComponent() {
-    const subComp = this.#current;
+    const subComp = this.#current as ComponentNode; // we start from a component node
     this.#current = this.#current.parent!;
     this.addSubComponent(subComp);
   }

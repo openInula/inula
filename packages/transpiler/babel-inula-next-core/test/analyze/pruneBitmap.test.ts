@@ -19,6 +19,7 @@ import { functionalMacroAnalyze } from '../../src/analyze/Analyzers/functionalMa
 import { describe, expect, it } from 'vitest';
 import { findVarByName, findSubCompByName } from './utils';
 import { mockAnalyze } from './mock';
+import { SubCompStmt } from '../../src/analyze/types';
 
 const analyze = (code: string) => mockAnalyze(code, [variablesAnalyze, viewAnalyze, functionalMacroAnalyze]);
 describe('prune unused bit', () => {
@@ -32,36 +33,56 @@ describe('prune unused bit', () => {
         let unused2;
         let count = name; // 0b10
         let doubleCount = count * 2; // 0b100
-        const Input =  Component(() => {
+        const Double =  Component(() => {
           let count3 = 1;
           let count2 = 1;
           let count = 1; // 0b1000
           const db = count * 2; // 0b10000
           return <input>{count}{db * count}</input>;
         });
+
+        const Triple =  Component(() => {
+          let unused3 = 1;
+          let unused2 = 1;
+          let count = 1; // 0b1000
+          const triple = count * 3; // 0b10000
+          const TripleChild =  Component(() => {
+            let unused2 = 1;
+            let count = 1; // 0b1000
+            const subTriple = count * 3; // 0b10000
+            return <input>{count}{triple * count}</input>;
+          });
+          return <input>{count}{triple * count}</input>;
+        });
         return <div className={count}>{doubleCount}</div>;
       });
     `);
-    // test plain var
-    const unusedVar = findVarByName(root, 'unused');
-    expect(unusedVar.bit).toEqual(0);
-    // test computed
-    const countVar = findVarByName(root, 'count');
-    expect(countVar.bit).toEqual(0b10);
-    expect(countVar.dependency!.depMask).toEqual(0b1);
-
-    // test view
-    const div = root.children![0] as any;
-    expect(div.children[0].content.depMask).toEqual(0b100);
-    expect(div.props.className.depMask).toEqual(0b10);
-
-    // test sub component
-    const InputCompNode = findSubCompByName(root, 'Input');
-    // @ts-expect-error it's the {count}
-    const inputFirstExp = InputCompNode.children![0].children[0];
-    expect(inputFirstExp.content.depMask).toEqual(0b1000);
-    // @ts-expect-error it's the {doubleCount}
-    const inputSecondExp = InputCompNode.children![0].children![1];
-    expect(inputSecondExp.content.depMask).toEqual(0b11000);
+    expect(root.scope.reactiveMap).toMatchInlineSnapshot(`
+      Map {
+        "name" => 0,
+        "count" => 1,
+        "doubleCount" => 2,
+      }
+    `);
+    const DoubleNode = root.body[7] as SubCompStmt;
+    expect(DoubleNode.component.scope.reactiveMap).toMatchInlineSnapshot(`
+      Map {
+        "count" => 3,
+        "db" => 4,
+      }
+    `);
+    const TripleNode = root.body[8] as SubCompStmt;
+    expect(TripleNode.component.scope.reactiveMap).toMatchInlineSnapshot(`
+      Map {
+        "count" => 3,
+        "triple" => 4,
+      }
+    `);
+    const TripleChildNode = TripleNode.component.body[4] as SubCompStmt;
+    expect(TripleChildNode.component.scope.reactiveMap).toMatchInlineSnapshot(`
+      Map {
+        "count" => 5,
+      }
+    `);
   });
 });

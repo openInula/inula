@@ -1,6 +1,6 @@
 import { types as t } from '@openinula/babel-api';
 import { Bitmap } from '@openinula/reactivity-parser';
-import { IRNode, Variable, WatchFunc } from '../analyze/types';
+import { IRBlock, Variable, WatchFunc } from '../analyze/types';
 import { getStates, wrapCheckCache, wrapUpdate } from './utils';
 import { HOOK_SUFFIX } from '../constants';
 import { importMap } from '../constants';
@@ -17,7 +17,7 @@ function wrapRunOnce(stmt: t.Statement) {
   );
 }
 
-export function generateUpdateState(root: IRNode) {
+export function generateUpdateState(root: IRBlock) {
   const states = getStates(root);
   const blockNode = t.blockStatement([]);
 
