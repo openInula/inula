@@ -65,6 +65,7 @@ export function variablesAnalyze(): Visitor {
           id,
           value: init.node,
           kind: path.node.kind,
+          node: declaration.node,
         });
       });
     },

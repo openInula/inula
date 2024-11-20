@@ -1,10 +1,9 @@
 import { type types as t } from '@babel/core';
 import type Babel from '@babel/core';
+import { Dependency } from './getDependencies';
 
-export interface DependencyValue<T> {
+export interface DependencyValue<T> extends Dependency {
   value: T;
-  dependencies: string[];
-  dependenciesNode: t.ArrayExpression;
 }
 
 export interface DependencyProp extends DependencyValue<t.Expression> {

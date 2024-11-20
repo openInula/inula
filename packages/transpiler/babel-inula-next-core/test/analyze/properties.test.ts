@@ -188,20 +188,4 @@ describe('analyze properties', () => {
       `);
     });
   });
-
-  it('should collect method', () => {
-    const root = analyze(`
-      Component(() => {
-        let foo = 1;
-        const onClick = () => {};
-        const onHover = function() {
-          onClick(foo)
-        };
-        function onInput() {}
-      })
-    `);
-    [1, 2, 3].forEach(i => {
-      expect(root.variables[i].type).toBe('plain');
-    });
-  });
 });

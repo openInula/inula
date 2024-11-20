@@ -13,7 +13,17 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { BaseVariable, ComponentNode, CompOrHook, FunctionalExpression, HookNode, IRStmt, LifeCycle } from './types';
+import {
+  BaseVariable,
+  ComponentNode,
+  CompOrHook,
+  FunctionalExpression,
+  HookNode,
+  IRBlock,
+  IRScope,
+  IRStmt,
+  LifeCycle,
+} from './types';
 import { createIRNode } from './nodeFactory';
 import type { NodePath } from '@babel/core';
 import { getBabelApi, types as t } from '@openinula/babel-api';
@@ -28,6 +38,124 @@ import {
 import { assertComponentNode, assertHookNode } from './utils';
 import { parseView as parseJSX } from '@openinula/jsx-view-parser';
 import { pruneUnusedState } from './pruneUnusedState';
+
+// 定义基础对象接口
+interface ReactiveInfo {
+  name: string;
+  id: string;
+  bit: number;
+}
+// 定义数据管理器类
+class ReactiveMap {
+  private entities: Map<string, ReactiveInfo>;
+  private nameToId: Map<string, string>;
+  private idToBit: Map<string, number>;
+
+  constructor() {
+    this.entities = new Map<string, ReactiveInfo>();
+    this.nameToId = new Map<string, string>();
+    this.idToBit = new Map<string, number>();
+  }
+
+  /**
+   * 添加新对象
+   * @param name 对象名称
+   * @param id 对象ID
+   * @param bit 位标志
+   * @returns 新添加的对象
+   */
+  public add(name: string, id: string, bit: number): ReactiveInfo {
+    const obj: ReactiveInfo = { name, id, bit };
+
+    this.entities.set(id, obj);
+    this.nameToId.set(name, id);
+    this.idToBit.set(id, bit);
+
+    return obj;
+  }
+
+  /**
+   * 通过name查找id
+   * @param name 对象名称
+   * @returns 对象ID或undefined
+   */
+  public getIdByName(name: string): string | undefined {
+    return this.nameToId.get(name);
+  }
+
+  /**
+   * 通过id查找bit
+   * @param id 对象ID
+   * @returns bit值或undefined
+   */
+  public getBitById(id: string): number | undefined {
+    return this.idToBit.get(id);
+  }
+
+  /**
+   * 获取完整对象
+   * @param id 对象ID
+   * @returns 完整对象或undefined
+   */
+  public getObjectById(id: string): ReactiveInfo | undefined {
+    return this.entities.get(id);
+  }
+
+  /**
+   * 更新对象的bit值
+   * @param id 对象ID
+   * @param newBit 新的bit值
+   * @returns 更新是否成功
+   */
+  public updateBit(id: string, newBit: number): boolean {
+    const obj = this.entities.get(id);
+    if (obj) {
+      obj.bit = newBit;
+      this.idToBit.set(id, newBit);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * 清理符合条件的对象
+   * @param bitCondition 判断函数，返回true的对象将被删除
+   */
+  public cleanup(bitCondition: (bit: number) => boolean): void {
+    for (const [id, obj] of this.entities) {
+      if (bitCondition(obj.bit)) {
+        this.nameToId.delete(obj.name);
+        this.idToBit.delete(id);
+        this.entities.delete(id);
+      }
+    }
+  }
+
+  /**
+   * 获取所有对象
+   * @returns 所有对象的数组
+   */
+  public getAllObjects(): ReactiveInfo[] {
+    return Array.from(this.entities.values());
+  }
+
+  /**
+   * 获取存储的对象数量
+   * @returns 对象数量
+   */
+  public size(): number {
+    return this.entities.size;
+  }
+
+  /**
+   * 检查是否包含指定ID的对象
+   * @param id 对象ID
+   * @returns 是否存在
+   */
+  public has(id: string): boolean {
+    return this.entities.has(id);
+  }
+}
 
 export class IRBuilder {
   #current: HookNode | ComponentNode;
@@ -156,6 +284,7 @@ export class IRBuilder {
       type: 'state',
       name: id.node,
       value,
+      node: varInfo.node,
     });
   }
 
@@ -171,15 +300,7 @@ export class IRBuilder {
   }
 
   private addUsedReactives(dependency: Dependency) {
-    dependency.dependencies.forEach(name => {
-      const id = this.findReactiveId(name);
-
-      if (id !== undefined) {
-        this.#current.scope.usedIdBits |= 1 << id;
-      } else {
-        throw new Error(`Reactive ${name} is not declared`);
-      }
-    });
+    this.#current.scope.usedIdBits |= dependency.depIdBitmap;
   }
 
   addSubComponent(subComp: ComponentNode) {
@@ -259,10 +380,29 @@ export class IRBuilder {
 
   build() {
     pruneUnusedState(this.#current);
+
+    function traverse(node: ComponentNode | HookNode) {
+      while (node) {
+        node.body.forEach(stmt => {
+          if (stmt.type === 'subComp') {
+            traverse(stmt.component);
+          }
+          node.scope.waveMap = buildWaveMap(node);
+        });
+      }
+    }
     return this.#current;
   }
 }
 
+function buildWaveMap(block: IRBlock) {
+  block.body.forEach(stmt => {
+    if (stmt.type === 'derived') {
+      stmt.dependency.dependencies.forEach(dep => {});
+    }
+  });
+  return waveMap;
+}
 /**
  * Iterate identifier in nested destructuring, collect the identifier that can be used
  * e.g. function ({prop1, prop2: [p20X, {p211, p212: p212X}]}
