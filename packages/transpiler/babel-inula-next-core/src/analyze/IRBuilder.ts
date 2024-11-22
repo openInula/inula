@@ -45,6 +45,7 @@ interface ReactiveInfo {
   id: string;
   bit: number;
 }
+
 // 定义数据管理器类
 class ReactiveMap {
   private entities: Map<string, ReactiveInfo>;
@@ -272,6 +273,7 @@ export class IRBuilder {
         this.addStmt({
           type: 'derived',
           id: id.node,
+          reactiveId: index,
           value,
           dependency,
         });
@@ -379,30 +381,54 @@ export class IRBuilder {
   }
 
   build() {
-    pruneUnusedState(this.#current);
-
-    function traverse(node: ComponentNode | HookNode) {
-      while (node) {
-        node.body.forEach(stmt => {
-          if (stmt.type === 'subComp') {
-            traverse(stmt.component);
+    const idToWaveBitMap = new Map<number, number>();
+    pruneUnusedState(this.#current, idToWaveBitMap);
+    // wave map is a map from reactive id to wave bit
+    const waveBitsMap = new Map<number, number>();
+    function buildWaveMap(block: IRBlock) {
+      for (let i = block.body.length - 1; i >= 0; i--) {
+        const stmt = block.body[i];
+        if (stmt.type === 'derived') {
+          // First, we need to find the own wave bit of the reactive id
+          let derivedOwnBit = idToWaveBitMap.get(stmt.reactiveId);
+          if (!derivedOwnBit) {
+            // The derived reactive id is not found in the wave map,
+            // which means it is not used and has been pruned
+            return;
           }
-          node.scope.waveMap = buildWaveMap(node);
-        });
+          const derivedWavesBits = waveBitsMap.get(stmt.reactiveId);
+
+          const derivedWaves = derivedWavesBits ? derivedWavesBits | derivedOwnBit : derivedOwnBit;
+
+          bitmapToIndices(stmt.dependency.depIdBitmap).forEach(id => {
+            const waveBits = waveBitsMap.get(id);
+            if (waveBits) {
+              waveBitsMap.set(id, waveBits | derivedWaves);
+            } else {
+              waveBitsMap.set(id, derivedWaves);
+            }
+          });
+        }
       }
     }
-    return this.#current;
+
+    // post order traverse to build wave map because
+    // e.g. a = b, b = c, a need to know c's wave bit
+    // so we need to travese bottom up
+    function traverse(node: ComponentNode | HookNode) {
+      node.body.forEach(stmt => {
+        if (stmt.type === 'subComp') {
+          traverse(stmt.component);
+        }
+      });
+      buildWaveMap(node);
+    }
+
+    traverse(this.#current);
+    return [this.#current, waveBitsMap] as const;
   }
 }
 
-function buildWaveMap(block: IRBlock) {
-  block.body.forEach(stmt => {
-    if (stmt.type === 'derived') {
-      stmt.dependency.dependencies.forEach(dep => {});
-    }
-  });
-  return waveMap;
-}
 /**
  * Iterate identifier in nested destructuring, collect the identifier that can be used
  * e.g. function ({prop1, prop2: [p20X, {p211, p212: p212X}]}
@@ -437,4 +463,32 @@ export function searchNestedProps(idPath: NodePath<t.ArrayPattern | t.ObjectPatt
   }
 
   return nestedProps;
+}
+
+/**
+ * Convert a bitmap to an array of indices where bits are set to 1
+ * @param {number} bitmap - The bitmap to convert
+ * @returns {number[]} Array of indices where bits are set
+ */
+function bitmapToIndices(bitmap: number) {
+  // Handle edge cases
+  if (bitmap === 0) return [];
+  if (bitmap < 0) throw new Error('Negative numbers are not supported');
+
+  const indices = [];
+  let currentBit = 0;
+
+  // Continue until we've processed all set bits
+  while (bitmap > 0) {
+    // Check if current bit is set
+    if (bitmap & 1) {
+      indices.push(currentBit);
+    }
+
+    // Move to next bit
+    bitmap = bitmap >>> 1;
+    currentBit++;
+  }
+
+  return indices;
 }

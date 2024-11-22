@@ -26,29 +26,32 @@ import { Bitmap, ViewParticle } from '@openinula/reactivity-parser';
  * let d = a + c // The depMask of d should be 0b11, pruned from 0b101
  * ```
  */
-export function pruneUnusedState(comp: ComponentNode<'comp'> | ComponentNode<'subComp'> | HookNode, newId = -1) {
+export function pruneUnusedState(
+  comp: ComponentNode<'comp'> | ComponentNode<'subComp'> | HookNode,
+  idMap: Map<number, number>,
+  bitIndex = -1
+) {
   const reactiveMap = comp.scope.reactiveMap;
   const usedIdBits = comp.scope.usedIdBits;
 
   let preId: number;
-  const newReactiveMap = new Map<string, number>();
   Array.from(reactiveMap).forEach(([name, id]) => {
     const bit = 1 << id;
     if (usedIdBits & bit) {
       if (preId !== id) {
         // the reactive shared same id with previous one, we should not change the index
-        newId++;
+        bitIndex++;
       }
-      newReactiveMap.set(name, newId);
+      idMap.set(id, 1 << bitIndex);
     }
-    preId = newId;
+    preId = bitIndex;
   });
-
-  comp.scope.reactiveMap = newReactiveMap;
 
   for (const stmt of comp.body) {
     if (stmt.type === 'subComp') {
-      pruneUnusedState(stmt.component, newId);
+      bitIndex = pruneUnusedState(stmt.component, idMap, bitIndex);
     }
   }
+
+  return bitIndex;
 }

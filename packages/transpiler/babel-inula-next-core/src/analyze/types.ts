@@ -85,6 +85,7 @@ export type StateStmt = {
 export type DerivedStmt = {
   type: 'derived';
   id: t.LVal;
+  reactiveId: number;
   dependency: Dependency;
   value: t.Expression;
 };

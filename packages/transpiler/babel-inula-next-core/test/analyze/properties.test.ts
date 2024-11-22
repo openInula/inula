@@ -16,14 +16,7 @@
 import { describe, expect, it } from 'vitest';
 import { genCode } from '../mock';
 import { variablesAnalyze } from '../../src/analyze/Analyzers/variablesAnalyze';
-import {
-  ComponentNode,
-  ReactiveVariable,
-  StateStmt,
-  SubCompVariable,
-  DerivedStmt,
-  SubCompStmt,
-} from '../../src/analyze/types';
+import { ComponentNode, StateStmt, DerivedStmt, SubCompStmt } from '../../src/analyze/types';
 import { findVarByName } from './utils';
 import { viewAnalyze } from '../../src/analyze/Analyzers/viewAnalyze';
 import { mockAnalyze } from './mock';
@@ -32,10 +25,9 @@ import { propsAnalyze } from '../../src/analyze/Analyzers/propsAnalyze';
 const analyze = (code: string) => mockAnalyze(code, [variablesAnalyze, viewAnalyze, propsAnalyze]);
 
 const getStates = (root: ComponentNode) => root.body.filter(node => node.type === 'state') as StateStmt[];
-const getDerived = (root: ComponentNode) => root.body.filter(node => node.type === 'derived') as DerivedStmt[];
 describe('analyze properties', () => {
   it('should work', () => {
-    const root = analyze(`
+    const [root, waveBitsMap] = analyze(`
       Component(() => {
         let foo = 1;
         const bar = 1;
@@ -44,11 +36,17 @@ describe('analyze properties', () => {
       })
     `);
     expect(getStates(root).length).toBe(1);
+    expect(waveBitsMap).toMatchInlineSnapshot(`
+      Map {
+        "foo" => 1,
+        "bar" => 2,
+      }
+    `);
   });
 
   describe('state dependency', () => {
     it('should analyze dependency from state', () => {
-      const root = analyze(`
+      const [root, waveBitsMap] = analyze(`
         Component(() => {
           let foo = 1;
           let bar = foo;
@@ -64,7 +62,7 @@ describe('analyze properties', () => {
     });
 
     it('should analyze dependency from state in different shape', () => {
-      const root = analyze(`
+      const [root, waveBitsMap] = analyze(`
         Component(() => {
           let foo = 1;
           let a = 1;
@@ -84,7 +82,7 @@ describe('analyze properties', () => {
     });
 
     it('should analyze dependency from props', () => {
-      const root = analyze(`
+      const [root, waveBitsMap] = analyze(`
         Component(({ foo }) => {
           let bar = foo;
           let _ = bar; // use bar to avoid pruning
@@ -99,7 +97,7 @@ describe('analyze properties', () => {
     });
 
     it('should analyze dependency from nested props', () => {
-      const root = analyze(`
+      const [root, waveBitsMap] = analyze(`
         Component(({ foo: foo1, name: [first, last] }) => {
           let bar = [foo1, first, last];
         })
@@ -114,7 +112,7 @@ describe('analyze properties', () => {
     });
 
     it('should not collect invalid dependency', () => {
-      const root = analyze(`
+      const [root, waveBitsMap] = analyze(`
         const cond = true
         Component(() => {
           let bar = cond ? count : window.innerWidth;
@@ -131,7 +129,7 @@ describe('analyze properties', () => {
 
   describe('subComponent', () => {
     it('should analyze dependency from subComponent', () => {
-      const root = analyze(`
+      const [root, waveBitsMap] = analyze(`
         Component(() => {
           let foo = 1;
           const Sub = Component(() => {
@@ -155,7 +153,7 @@ describe('analyze properties', () => {
     });
 
     it('should analyze dependency in parent', () => {
-      const root = analyze(/*jsx*/ `
+      const [root, waveBitsMap] = analyze(/*jsx*/ `
         Component(() => {
           let lastName;
           let parentFirstName = 'sheldon';
