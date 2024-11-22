@@ -13,15 +13,16 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { Analyzer, ComponentNode } from '../../src/analyze/types';
+import { Analyzer, ComponentNode, HookNode } from '../../src/analyze/types';
 import { type PluginObj, transform as transformWithBabel } from '@babel/core';
 import syntaxJSX from '@babel/plugin-syntax-jsx';
 import { register } from '@openinula/babel-api';
 import { analyze } from '../../src/analyze';
 import { COMPONENT, defaultHTMLTags } from '../../src/constants';
 
-export function mockAnalyze(code: string, analyzers?: Analyzer[]): ComponentNode {
-  let root: ComponentNode | null = null;
+export function mockAnalyze(code: string, analyzers?: Analyzer[]): [ComponentNode, Map<number, number>] {
+  let root: ComponentNode | HookNode | null = null;
+  let waveBitsMap: Map<number, number>;
   transformWithBabel(code, {
     plugins: [
       syntaxJSX.default ?? syntaxJSX,
@@ -34,7 +35,10 @@ export function mockAnalyze(code: string, analyzers?: Analyzer[]): ComponentNode
               if (seen.has(path)) {
                 return;
               }
-              root = analyze(COMPONENT, 'test', path, { customAnalyzers: analyzers, htmlTags: defaultHTMLTags });
+              [root, waveBitsMap] = analyze(COMPONENT, 'test', path, {
+                customAnalyzers: analyzers,
+                htmlTags: defaultHTMLTags,
+              });
               seen.add(path);
               if (root) {
                 path.skip();
@@ -44,7 +48,10 @@ export function mockAnalyze(code: string, analyzers?: Analyzer[]): ComponentNode
               if (seen.has(path)) {
                 return;
               }
-              root = analyze(COMPONENT, 'test', path, { customAnalyzers: analyzers, htmlTags: defaultHTMLTags });
+              [root, waveBitsMap] = analyze(COMPONENT, 'test', path, {
+                customAnalyzers: analyzers,
+                htmlTags: defaultHTMLTags,
+              });
               seen.add(path);
               if (root) {
                 path.skip();
@@ -61,5 +68,5 @@ export function mockAnalyze(code: string, analyzers?: Analyzer[]): ComponentNode
     throw new Error('root is null');
   }
 
-  return root;
+  return [root, waveBitsMap] as const;
 }
