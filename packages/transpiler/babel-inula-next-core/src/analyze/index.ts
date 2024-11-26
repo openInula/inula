@@ -1,5 +1,5 @@
 import { type NodePath } from '@babel/core';
-import { AnalyzeContext, Analyzer, CompOrHook, FunctionalExpression, Visitor } from './types';
+import { AnalyzeContext, Analyzer, CompOrHook, FunctionalExpression } from './types';
 import { variablesAnalyze } from './Analyzers/variablesAnalyze';
 import { functionalMacroAnalyze } from './Analyzers/functionalMacroAnalyze';
 import { getFnBodyPath } from '../utils';
@@ -9,15 +9,10 @@ import { types as t } from '@openinula/babel-api';
 import { hookReturnAnalyze } from './Analyzers/hookAnalyze';
 import { IRBuilder } from './IRBuilder';
 import { propsAnalyze } from './Analyzers/propsAnalyze';
+import { mergeVisitor } from '../utils';
 
-const compBuiltinAnalyzers = [variablesAnalyze, functionalMacroAnalyze, viewAnalyze, propsAnalyze];
-const hookBuiltinAnalyzers = [variablesAnalyze, functionalMacroAnalyze, hookReturnAnalyze, propsAnalyze];
-
-function mergeVisitor(...visitors: Analyzer[]): Visitor {
-  return visitors.reduce<Visitor<AnalyzeContext>>((acc, cur) => {
-    return { ...acc, ...cur() };
-  }, {});
-}
+const compBuiltinAnalyzers = [variablesAnalyze, functionalMacroAnalyze, viewAnalyze, propsAnalyze] as Analyzer[];
+const hookBuiltinAnalyzers = [variablesAnalyze, functionalMacroAnalyze, hookReturnAnalyze, propsAnalyze] as Analyzer[];
 
 // walk through the body a function (maybe a component or a hook)
 export function analyzeUnitOfWork(name: string, fnNode: NodePath<FunctionalExpression>, context: AnalyzeContext) {

@@ -1,6 +1,7 @@
-import { type types as t } from '@babel/core';
-import { Bitmap, type HTMLParticle } from '@openinula/reactivity-parser';
+import { Bitmap, Dependency, type HTMLParticle } from '@openinula/reactivity-parser';
 import HTMLPropGenerator from '../HelperGenerators/HTMLPropGenerator';
+import { ViewGenerator, ViewContext } from '../..';
+import { types as t } from '@openInula/babel-api';
 
 export default class HTMLGenerator extends HTMLPropGenerator {
   run() {
@@ -87,3 +88,101 @@ export default class HTMLGenerator extends HTMLPropGenerator {
     );
   }
 }
+
+const addHTMLProp = (
+  ctx: ViewContext,
+  nodeName: string,
+  tagName: string,
+  key: string,
+  value: t.Expression,
+  dependency: Dependency | undefined
+): t.Statement => {
+  // ---- Dynamic HTML prop with init and update
+  if (dependency) {
+    const { dependenciesNode, depIdBitmap } = dependency;
+  }
+};
+/**
+ *    createReactiveHTMLNode('h4', node => {
+        setReactiveHTMLProp(node, 'textContent', () => result, [result], 0b1000);
+      }),
+      createHTMLNode('button', node => {
+        setHTMLProp(node, 'textContent', 'Increment');
+        delegateEvent(node, 'click', increment);
+      }),
+ */
+export const htmlGenerator: ViewGenerator = {
+  html: (viewParticle: HTMLParticle, ctx: ViewContext) => {
+    const { tag, props, children } = viewParticle;
+
+    const initStatements: t.Statement[] = [];
+    initStatements.push(
+      t.expressionStatement(
+        t.assignmentExpression(
+          '=',
+          t.identifier(nodeName),
+          t.callExpression(t.identifier(ctx.importMap.createElement), [tag])
+        )
+      )
+    );
+
+    // ---- Resolve props
+    const tagName = t.isStringLiteral(tag) ? tag.value : 'ANY';
+    let allDepMask: Bitmap = 0;
+    Object.entries(props).forEach(([key, { value, depMask, dependenciesNode }]) => {
+      if (key === 'didUpdate') return;
+      if (depMask) {
+        allDepMask |= depMask;
+      }
+      initStatements.push(addHTMLProp(ctx, nodeName, tagName, key, value, depMask, dependenciesNode));
+    });
+
+    if (props.didUpdate) {
+      const updateStatements = addOnUpdate(ctx, nodeName, props.didUpdate.value);
+      ctx.addUpdateStatements(allDepMask, updateStatements);
+    }
+
+    // ---- Resolve children
+    const childNames: string[] = [];
+    let mutable = false;
+    children.forEach((child, idx) => {
+      const [childInitStatements, childName] = generateChild(child, ctx);
+      childNames.push(childName);
+      initStatements.push(...childInitStatements);
+
+      if (child.type === 'html' || child.type === 'text') {
+        initStatements.push(
+          t.expressionStatement(
+            t.callExpression(t.identifier(ctx.importMap.appendNode), [t.identifier(nodeName), t.identifier(childName)])
+          )
+        );
+      } else {
+        mutable = true;
+        initStatements.push(
+          t.expressionStatement(
+            t.callExpression(t.identifier(ctx.importMap.insertNode), [
+              t.identifier(nodeName),
+              t.identifier(childName),
+              t.numericLiteral(idx),
+            ])
+          )
+        );
+      }
+    });
+
+    if (mutable) {
+      initStatements.push(
+        t.expressionStatement(
+          t.assignmentExpression(
+            '=',
+            t.memberExpression(t.identifier(nodeName), t.identifier('_$nodes')),
+            t.arrayExpression(childNames.map(name => t.identifier(name)))
+          )
+        )
+      );
+    }
+
+    return initStatements;
+    return [];
+  },
+};

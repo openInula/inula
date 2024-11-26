@@ -31,7 +31,8 @@ export interface BaseVariable<V> {
 }
 export interface SinglePropStmt {
   name: string;
-  value: t.ObjectProperty['value'];
+  value: t.LVal;
+  reactiveId: number;
   destructuring?: t.ObjectPattern | t.ArrayPattern;
   destructuredNames?: string[];
   type: PropType.SINGLE;
@@ -40,11 +41,13 @@ export interface SinglePropStmt {
 export interface RestPropStmt {
   name: string;
   type: PropType.REST;
+  reactiveId: number;
 }
 
 export interface WholePropStmt {
   name: string;
   value: t.Identifier;
+  reactiveId: number;
   type: PropType.WHOLE;
 }
 
@@ -61,8 +64,8 @@ export type WatchStmt = {
 
 export type LifecycleStmt = {
   type: 'lifecycle';
+  callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>;
   lifeCycle: LifeCycle;
-  block: t.Statement;
 };
 
 export type InitStmt = {
@@ -79,12 +82,14 @@ export type StateStmt = {
   type: 'state';
   name: t.Identifier | t.ArrayPattern | t.ObjectPattern;
   value: t.Expression | null;
+  reactiveId: number;
   node: t.VariableDeclarator;
 };
 
 export type DerivedStmt = {
   type: 'derived';
-  id: t.LVal;
+  ids: string[];
+  lVal: t.Identifier | t.ArrayPattern | t.ObjectPattern;
   reactiveId: number;
   dependency: Dependency;
   value: t.Expression;

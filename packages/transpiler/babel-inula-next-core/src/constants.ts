@@ -8,9 +8,9 @@ export const DID_UNMOUNT = 'didUnmount';
 export const WATCH = 'watch';
 
 export enum PropType {
-  REST = 'rest',
-  SINGLE = 'single',
-  WHOLE = 'whole',
+  REST = 'restProp',
+  SINGLE = 'singleProp',
+  WHOLE = 'wholeProp',
 }
 
 export const reactivityFuncNames = [
@@ -32,42 +32,48 @@ export const reactivityFuncNames = [
   'clear',
 ];
 
-export const originalImportMap = Object.fromEntries(
-  [
-    'createElement',
-    'createComponent',
-    'setStyle',
-    'setDataset',
-    'setEvent',
-    'delegateEvent',
-    'setHTMLProp',
-    'setHTMLAttr',
-    'setHTMLProps',
-    'setHTMLAttrs',
-    'createTextNode',
-    'updateText',
-    'insertNode',
-    'appendNode',
-    'render',
-    'notCached',
-    'Comp',
-    'useHook',
-    'createHook',
-    'untrack',
-    'runOnce',
-    'createNode',
-    'updateNode',
-    'updateChildren',
-    'setProp',
-    'initContextChildren',
-    'initCompNode',
-    'emitUpdate',
-  ].map(name => [name, `$$${name}`])
-);
+const API_NAMES = [
+  'createElement',
+  'createComponent',
+  'setStyle',
+  'setDataset',
+  'setEvent',
+  'delegateEvent',
+  'setHTMLProp',
+  'setHTMLAttr',
+  'setHTMLProps',
+  'setHTMLAttrs',
+  'createTextNode',
+  'updateText',
+  'insertNode',
+  'appendNode',
+  'render',
+  'notCached',
+  'Comp',
+  'useHook',
+  'createHook',
+  'untrack',
+  'runOnce',
+  'createNode',
+  'updateNode',
+  'updateChildren',
+  'setProp',
+  'initContextChildren',
+  'initCompNode',
+  'emitUpdate',
+  'compBuilder',
+] as const;
+
+export const originalImportMap = Object.fromEntries(API_NAMES.map(name => [name, `$$${name}`])) as ImportMapType;
+
+// 生成 ImportMap 类型
+export type ImportMapType = {
+  readonly [K in (typeof API_NAMES)[number]]: string;
+};
 
 const accessedKeys = new Set<string>();
 
-export const importMap = new Proxy(originalImportMap, {
+export const importMap: ImportMapType = new Proxy(originalImportMap, {
   get(target, prop: string, receiver) {
     accessedKeys.add(prop);
     return Reflect.get(target, prop, receiver);
