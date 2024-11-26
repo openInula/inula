@@ -1,9 +1,9 @@
 import { type types as t } from '@babel/core';
 import { DLError } from '../error';
-import ForwardPropGenerator from './ForwardPropGenerator';
 import { Bitmap } from '@openinula/reactivity-parser';
+import BaseGenerator from './BaseGenerator';
 
-export default class HTMLPropGenerator extends ForwardPropGenerator {
+export default class HTMLPropGenerator extends BaseGenerator {
   static DelegatedEvents = new Set([
     'beforeinput',
     'click',

@@ -1,8 +1,8 @@
 import { type types as t } from '@babel/core';
 import { type DependencyProp, type CompParticle, type ViewParticle, Bitmap } from '@openinula/reactivity-parser';
-import ForwardPropGenerator from '../HelperGenerators/ForwardPropGenerator';
+import BaseGenerator from '../HelperGenerators/BaseGenerator';
 
-export default class CompGenerator extends ForwardPropGenerator {
+export default class CompGenerator extends BaseGenerator {
   run() {
     let { props } = this.viewParticle as CompParticle;
     props = this.alterPropViews(props);

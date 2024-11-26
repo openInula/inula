@@ -1,6 +1,5 @@
 import type { NodePath } from '@babel/core';
 import { types as t, traverse } from '@openinula/babel-api';
-import { IRBlock, ReactiveVariable } from '../analyze/types';
 import { importMap, reactivityFuncNames } from '../constants';
 
 export function uid(idx: number) {
@@ -48,20 +47,23 @@ export function isAssignmentExpression(
 
 /**
  * @View
- * xxx = yyy => self.updateDerived(xxx = yyy, 1)
+ * xxx = yyy => self.wave(xxx = yyy, 1)
  */
-export function wrapUpdate(selfId: t.Identifier, node: t.Statement | t.Expression | null, states: ReactiveVariable[]) {
+export function wrapUpdate(
+  selfId: t.Identifier,
+  node: t.Statement | t.Expression | null,
+  getWaveBits: (name: string) => number
+) {
   if (!node) return;
-  const addUpdateDerived = (node: t.CallExpression['arguments'][number], bit: number) => {
-    // add a call to updateDerived and comment show the bit
+  const addWave = (node: t.CallExpression['arguments'][number], bit: number) => {
+    // add a call to wave and comment show the bit
     const bitNode = t.numericLiteral(bit);
     t.addComment(bitNode, 'trailing', `0b${bit.toString(2)}`, false);
     return t.callExpression(t.identifier(importMap.updateNode), [selfId, node, bitNode]);
   };
   traverse(nodeWrapFile(node), {
     Identifier: (path: NodePath<t.Identifier>) => {
-      const variable = states.find(v => v.name === path.node.name);
-      if (!variable) return;
+      if (!getWaveBits(path.node.name)) return;
 
       const assignmentPath = isAssignmentExpression(path);
       if (!assignmentPath) return;
@@ -72,16 +74,13 @@ export function wrapUpdate(selfId: t.Identifier, node: t.Statement | t.Expressio
 
       // ---- Find all the states in the left
       const variables: ReactiveVariable[] = [];
+      let allBits = 0;
       traverse(nodeWrapFile(writingNode), {
         Identifier: (path: NodePath<t.Identifier>) => {
-          const variable = states.find(v => v.name === path.node.name);
-          if (variable && !variables.find(v => v.name === variable.name)) {
-            variables.push(variable);
-          }
+          allBits |= getWaveBits(path.node.name);
         },
       });
-      const allBits = variables.reduce((acc, cur) => acc | cur.bit!, 0);
-      assignmentPath.replaceWith(addUpdateDerived(assignmentNode, allBits));
+      assignmentPath.replaceWith(addWave(assignmentNode, allBits));
       assignmentPath.skip();
     },
     CallExpression: (path: NodePath<t.CallExpression>) => {
@@ -100,9 +99,9 @@ export function wrapUpdate(selfId: t.Identifier, node: t.Statement | t.Expressio
       if (callee.isIdentifier()) {
         const key = callee.node.name;
 
-        const variable = states.find(v => v.name === key);
-        if (!variable) return;
-        path.replaceWith(addUpdateDerived(path.node, variable.bit!));
+        const waveBits = getWaveBits(key);
+        if (!waveBits) return;
+        path.replaceWith(addWave(path.node, waveBits));
       }
 
       path.skip();
@@ -121,10 +120,6 @@ function extractWritingPart(assignmentNode: t.AssignmentExpression | t.UpdateExp
     return t.assignmentExpression('=', assignmentNode.left, t.stringLiteral(''));
   }
   return null;
-}
-
-export function getStates(root: IRBlock) {
-  return root.variables.filter(v => v.type === 'reactive' && v.bit) as ReactiveVariable[];
 }
 
 export function nodeWrapFile(node: t.Expression | t.Statement): t.File {

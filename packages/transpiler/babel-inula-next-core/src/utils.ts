@@ -2,7 +2,7 @@ import { NodePath } from '@babel/core';
 import { types as t } from '@openinula/babel-api';
 import { COMPONENT, HOOK, importMap } from './constants';
 import { minimatch } from 'minimatch';
-import { SubComponentNode, Variable } from './analyze/types';
+import { AnalyzeContext, Analyzer, SubComponentNode, Variable, Visitor } from './analyze/types';
 
 export function fileAllowed(fileName: string | undefined, includes: string[], excludes: string[]): boolean {
   if (includes.includes('*')) return true;
@@ -120,4 +120,36 @@ export function wrapUntrack(node: t.Expression) {
 
 export function getSubComp(variables: Variable[]) {
   return variables.filter((v): v is SubComponentNode => v.type === 'subComp');
+}
+/**
+ * Convert a bitmap to an array of indices where bits are set to 1
+ * @param {number} bitmap - The bitmap to convert
+ * @returns {number[]} Array of indices where bits are set
+ */
+export function bitmapToIndices(bitmap: number) {
+  // Handle edge cases
+  if (bitmap === 0) return [];
+  if (bitmap < 0) throw new Error('Negative numbers are not supported');
+
+  const indices = [];
+  let currentBit = 0;
+
+  // Continue until we've processed all set bits
+  while (bitmap > 0) {
+    // Check if current bit is set
+    if (bitmap & 1) {
+      indices.push(currentBit);
+    }
+
+    // Move to next bit
+    bitmap = bitmap >>> 1;
+    currentBit++;
+  }
+
+  return indices;
+}
+export function mergeVisitor<T extends Record<string, any>>(...visitors: Array<() => T>): T {
+  return visitors.reduce<T>((acc, cur) => {
+    return { ...acc, ...cur() };
+  }, {} as T);
 }

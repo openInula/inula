@@ -38,6 +38,7 @@ import {
 import { assertComponentNode, assertHookNode } from './utils';
 import { parseView as parseJSX } from '@openinula/jsx-view-parser';
 import { pruneUnusedState } from './pruneUnusedState';
+import { bitmapToIndices } from '../utils';
 
 // 定义基础对象接口
 interface ReactiveInfo {
@@ -204,10 +205,12 @@ export class IRBuilder {
 
   addProps(name: string, value: t.Identifier) {
     this.addDeclaredReactive(name);
+    const reactiveId = this.getNextId();
     this.addStmt({
       name,
       value,
       type: PropType.WHOLE,
+      reactiveId,
     });
   }
 
@@ -217,49 +220,52 @@ export class IRBuilder {
     this.addStmt({
       name,
       type: PropType.REST,
+      reactiveId: this.getNextId(),
     });
   }
 
-  addSingleProp(name: string, valPath: NodePath<t.Expression | t.PatternLike>, node: t.ObjectProperty) {
-    const value = valPath.node;
-
-    const index = this.getNextId();
-    if (valPath.isObjectPattern() || valPath.isArrayPattern()) {
-      const destructuredNames = searchNestedProps(valPath);
-
-      // All destructured names share the same index
-      destructuredNames.forEach(name => this.addDeclaredReactive(name, index));
-      this.addStmt({
-        name,
-        value,
-        type: PropType.SINGLE,
-        node,
-        destructuredNames,
-      });
-    } else {
-      if (valPath.isIdentifier() && valPath.node.name !== name) {
-        name = valPath.node.name;
-      }
-      this.addDeclaredReactive(name, index);
-      this.addStmt({
-        name,
-        value,
-        type: PropType.SINGLE,
-        node,
-      });
+  addSingleProp(key: string, valPath: NodePath<t.Expression | t.PatternLike>, node: t.ObjectProperty) {
+    if (!valPath.isLVal()) {
+      throw new Error('Invalid Prop Value type: ' + valPath.type);
     }
+    const reactiveId = this.getNextId();
+    const destructured = getDestructure(valPath);
+    if (destructured) {
+      const destructuredNames = searchNestedProps(destructured);
+
+      // All destructured names share the same id
+      destructuredNames.forEach(name => this.addDeclaredReactive(name, reactiveId));
+    } else {
+      let propName = key;
+      // alias
+      if (valPath.isIdentifier() && valPath.node.name !== key) {
+        propName = valPath.node.name;
+      }
+      this.addDeclaredReactive(propName, reactiveId);
+    }
+    this.addStmt({
+      name: key,
+      reactiveId,
+      value: valPath.node,
+      type: PropType.SINGLE,
+      node,
+    });
   }
 
   addVariable(varInfo: BaseVariable<t.Expression | null>) {
     const id = varInfo.id;
-    const index = this.getNextId();
+    const reactiveId = this.getNextId();
+    let varIds = [];
     if (id.isIdentifier()) {
-      this.addDeclaredReactive(id.node.name, index);
+      const name = id.node.name;
+      this.addDeclaredReactive(name, reactiveId);
+      varIds.push(name);
     } else if (id.isObjectPattern() || id.isArrayPattern()) {
       const destructuredNames = searchNestedProps(id);
       destructuredNames.forEach(name => {
-        this.addDeclaredReactive(name, index);
+        this.addDeclaredReactive(name, reactiveId);
       });
+      varIds = destructuredNames;
     } else {
       throw new Error('Invalid variable LVal');
     }
@@ -272,8 +278,9 @@ export class IRBuilder {
         this.addUsedReactives(dependency);
         this.addStmt({
           type: 'derived',
-          id: id.node,
-          reactiveId: index,
+          ids: varIds,
+          lVal: id.node,
+          reactiveId: reactiveId,
           value,
           dependency,
         });
@@ -286,6 +293,7 @@ export class IRBuilder {
       type: 'state',
       name: id.node,
       value,
+      reactiveId,
       node: varInfo.node,
     });
   }
@@ -314,11 +322,11 @@ export class IRBuilder {
     });
   }
 
-  addLifecycle(lifeCycle: LifeCycle, block: t.Statement) {
+  addLifecycle(lifeCycle: LifeCycle, callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>) {
     this.addStmt({
       type: 'lifecycle',
       lifeCycle,
-      block,
+      callback,
     });
   }
 
@@ -388,17 +396,20 @@ export class IRBuilder {
     function buildWaveMap(block: IRBlock) {
       for (let i = block.body.length - 1; i >= 0; i--) {
         const stmt = block.body[i];
-        if (stmt.type === 'derived') {
+        if (stmt.type === 'state') {
+          waveBitsMap.set(stmt.reactiveId, idToWaveBitMap.get(stmt.reactiveId) ?? 0);
+        } else if (stmt.type === 'derived') {
           // First, we need to find the own wave bit of the reactive id
-          let derivedOwnBit = idToWaveBitMap.get(stmt.reactiveId);
-          if (!derivedOwnBit) {
+          const ownBit = idToWaveBitMap.get(stmt.reactiveId);
+          if (!ownBit) {
             // The derived reactive id is not found in the wave map,
             // which means it is not used and has been pruned
             return;
           }
+          // Then, we need to find the wave bits(other derived reactive dependcy on it) of the derived reactive id
           const derivedWavesBits = waveBitsMap.get(stmt.reactiveId);
 
-          const derivedWaves = derivedWavesBits ? derivedWavesBits | derivedOwnBit : derivedOwnBit;
+          const derivedWaves = derivedWavesBits ? derivedWavesBits | ownBit : ownBit;
 
           bitmapToIndices(stmt.dependency.depIdBitmap).forEach(id => {
             const waveBits = waveBitsMap.get(id);
@@ -425,10 +436,42 @@ export class IRBuilder {
     }
 
     traverse(this.#current);
-    return [this.#current, waveBitsMap] as const;
+    return [this.#current, new BitManager(waveBitsMap, idToWaveBitMap)] as const;
   }
 }
 
+export class BitManager {
+  constructor(
+    private readonly waveBitsMap: Map<number, number>,
+    private readonly idToWaveBitMap: Map<number, number>
+  ) {}
+
+  getWaveBits(block: IRBlock, name: string) {
+    let current: IRBlock | undefined = block;
+    while (current) {
+      const id = current.scope.reactiveMap.get(name);
+      if (id) {
+        return this.waveBitsMap.get(id) ?? 0;
+      }
+      current = current.parent;
+    }
+    return 0;
+  }
+
+  getWaveBitsById(id: number) {
+    return this.waveBitsMap.get(id) ?? 0;
+  }
+
+  getReactBits(idBitmap: number) {
+    return bitmapToIndices(idBitmap).reduce((acc, depId) => {
+      const waveBit = this.idToWaveBitMap.get(depId);
+      if (waveBit) {
+        return acc | waveBit;
+      }
+      throw new Error(`wave bit not found for id ${depId}`);
+    }, 0);
+  }
+}
 /**
  * Iterate identifier in nested destructuring, collect the identifier that can be used
  * e.g. function ({prop1, prop2: [p20X, {p211, p212: p212X}]}
@@ -465,30 +508,14 @@ export function searchNestedProps(idPath: NodePath<t.ArrayPattern | t.ObjectPatt
   return nestedProps;
 }
 
-/**
- * Convert a bitmap to an array of indices where bits are set to 1
- * @param {number} bitmap - The bitmap to convert
- * @returns {number[]} Array of indices where bits are set
- */
-function bitmapToIndices(bitmap: number) {
-  // Handle edge cases
-  if (bitmap === 0) return [];
-  if (bitmap < 0) throw new Error('Negative numbers are not supported');
-
-  const indices = [];
-  let currentBit = 0;
-
-  // Continue until we've processed all set bits
-  while (bitmap > 0) {
-    // Check if current bit is set
-    if (bitmap & 1) {
-      indices.push(currentBit);
+function getDestructure(path: NodePath<t.LVal>) {
+  if (path.isAssignmentPattern()) {
+    const left = path.get('left');
+    if (left.isObjectPattern() || left.isArrayPattern()) {
+      return left;
     }
-
-    // Move to next bit
-    bitmap = bitmap >>> 1;
-    currentBit++;
+  } else if (path.isObjectPattern() || path.isArrayPattern()) {
+    return path;
   }
-
-  return indices;
+  return null;
 }

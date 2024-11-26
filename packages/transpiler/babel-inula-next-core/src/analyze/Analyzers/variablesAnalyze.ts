@@ -111,6 +111,7 @@ function resolveUninitializedVariable(
   builder.addVariable({
     id,
     value: null,
+    node,
     kind,
   });
 }

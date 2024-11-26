@@ -36,8 +36,8 @@ describe('prune unused bit', () => {
         const Double =  Component(() => {
           let count3 = 1; // 7
           let count2 = 1; // 8
-          let count = 1; // 9
-          const db = count * 2; // 10
+          let count = 1; // 9 0b1000
+          const db = count * 2; // 10 0b10000
           return <input>{count}{db * count}</input>;
         });
 
