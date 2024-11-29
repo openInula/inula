@@ -24,9 +24,6 @@ export default class HTMLGenerator extends HTMLPropGenerator {
       }
       this.addInitStatement(this.addHTMLProp(nodeName, tagName, key, value, depMask, dependenciesNode));
     });
-    if (props.didUpdate) {
-      this.addUpdateStatements(allDepMask, this.addOnUpdate(nodeName, props.didUpdate.value));
-    }
 
     // ---- Resolve children
     const childNames: string[] = [];
@@ -113,6 +110,7 @@ const addHTMLProp = (
  */
 export const htmlGenerator: ViewGenerator = {
   html: (viewParticle: HTMLParticle, ctx: ViewContext) => {
+    const { t, getReactBits, importMap } = ctx;
     const { tag, props, children } = viewParticle;
 
     const initStatements: t.Statement[] = [];
@@ -121,19 +119,15 @@ export const htmlGenerator: ViewGenerator = {
         t.assignmentExpression(
           '=',
           t.identifier(nodeName),
-          t.callExpression(t.identifier(ctx.importMap.createElement), [tag])
+          t.callExpression(t.identifier(importMap.createElement), [tag])
         )
       )
     );
 
     // ---- Resolve props
     const tagName = t.isStringLiteral(tag) ? tag.value : 'ANY';
-    let allDepMask: Bitmap = 0;
-    Object.entries(props).forEach(([key, { value, depMask, dependenciesNode }]) => {
-      if (key === 'didUpdate') return;
-      if (depMask) {
-        allDepMask |= depMask;
-      }
+    Object.entries(props).forEach(([key, { value, depIdBitmap }]) => {
+      const reactBits = getReactBits(depIdBitmap);
       initStatements.push(addHTMLProp(ctx, nodeName, tagName, key, value, depMask, dependenciesNode));
     });
 
