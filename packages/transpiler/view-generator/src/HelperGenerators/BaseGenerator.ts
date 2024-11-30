@@ -5,6 +5,11 @@ import ViewGenerator from '../ViewGenerator';
 
 export const prefixMap = { template: '$t', node: '$node' };
 
+export let elementAttributeMap: Record<string, string[]> = {};
+export let alterAttributeMap: Record<string, string[]> = {};
+export let importMap: Record<string, string> = {};
+export const nodeNameInUpdate = 'node';
+
 export default class BaseGenerator {
   readonly viewParticle: ViewParticle;
   readonly config: ViewGeneratorConfig;
