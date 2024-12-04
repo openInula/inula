@@ -71,7 +71,7 @@ export interface ContextUnit {
 
 export interface ForUnit {
   type: 'for';
-  item: t.LVal;
+  item: t.Identifier | t.RestElement | t.Pattern;
   array: t.Expression;
   key: t.Expression;
   index: t.Identifier | null;
