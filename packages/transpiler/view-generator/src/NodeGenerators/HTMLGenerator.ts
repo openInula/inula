@@ -1,5 +1,5 @@
 import { type HTMLParticle } from '@openinula/reactivity-parser';
-import { addHTMLProp } from '../HelperGenerators/HTMLPropGenerator';
+import { setHTMLProp } from '../HelperGenerators/HTMLPropGenerator';
 import { ViewGenerator, ViewContext } from '../../index';
 import { types as t } from '@openInula/babel-api';
 import { nodeNameInUpdate } from '../HelperGenerators/BaseGenerator';
@@ -29,7 +29,7 @@ export const htmlGenerator: ViewGenerator = {
     Object.entries(props).forEach(([key, { value, depIdBitmap, dependenciesNode }]) => {
       const reactBits = getReactBits(depIdBitmap);
       if (reactBits) isDynamic = true;
-      propStmts.push(addHTMLProp(nodeNameInUpdate, tagName, key, value, reactBits, dependenciesNode));
+      propStmts.push(setHTMLProp(nodeNameInUpdate, tagName, key, value, reactBits, dependenciesNode));
     });
 
     // ---- Resolve children

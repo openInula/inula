@@ -3,6 +3,9 @@ import { types as t } from '@openInula/babel-api';
 import { ViewGeneratorConfig } from './src/types';
 import MainViewGenerator from './src/MainViewGenerator';
 import { htmlGenerator } from './src/NodeGenerators/HTMLGenerator';
+import { forGenerator } from './src/NodeGenerators/ForGenerator';
+import { templateGenerator } from './src/NodeGenerators/TemplateGenerator';
+import { compGenerator } from './src/NodeGenerators/CompGenerator';
 
 export type ViewContext = {
   getReactBits: (depIdBitmap: Bitmap) => Bitmap;
@@ -18,7 +21,7 @@ export type ViewGenerator = {
     ctx: ViewContext
   ) => t.Expression;
 };
-const generators = [htmlGenerator];
+const generators = [htmlGenerator, forGenerator, templateGenerator, compGenerator];
 
 function mergeViewGenerators(generators: ViewGenerator[]) {
   return generators.reduce((acc, generator) => ({ ...acc, ...generator }), {});

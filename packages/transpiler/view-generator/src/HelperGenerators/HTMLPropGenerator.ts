@@ -180,7 +180,7 @@ export function setHTMLPropObject(nodeName: string, value: t.Expression, check: 
   );
 }
 
-export function addHTMLProp(
+export function setHTMLProp(
   name: string,
   tag: string,
   key: string,
