@@ -1,0 +1,38 @@
+{
+  "name": "@openinula/next",
+  "version": "0.0.3",
+  "keywords": [
+    "inula"
+  ],
+  "license": "MIT",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup --sourcemap",
+    "test": "vitest --ui",
+    "dev": "vite",
+    "build:dev": "vite build --outDir dev/dist"
+  },
+  "devDependencies": {
+    "tsup": "^6.5.0",
+    "vitest": "2.0.5",
+    "vite": "^5.4.10"
+  },
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "format": [
+      "cjs",
+      "esm"
+    ],
+    "clean": true,
+    "minify": false
+  }
+}
