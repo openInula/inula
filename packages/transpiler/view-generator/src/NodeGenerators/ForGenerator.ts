@@ -1,7 +1,5 @@
-import BaseGenerator, { importMap } from '../HelperGenerators/BaseGenerator';
-import { type ForParticle, type ViewParticle } from '@openinula/reactivity-parser';
-import { typeNode } from '../shard';
-import { InulaNodeType } from '@openinula/next-shared';
+import { importMap } from '../HelperGenerators/BaseGenerator';
+import { DependencyValue, type ForParticle } from '@openinula/reactivity-parser';
 import { ViewContext, ViewGenerator } from '../../index';
 import { types as t } from '@openinula/babel-api';
 
@@ -28,40 +26,68 @@ export const forGenerator: ViewGenerator = {
       throw new Error('ForGenerator: item cannot be a member expression');
     }
     const index = indexParam ?? t.identifier('idx');
+    const updateItemFuncArr = t.identifier('updateItemFuncArr');
+
     return t.callExpression(t.identifier(importMap.createForNode), [
       // Array
       t.arrowFunctionExpression([], array.value),
       // Key
-      t.arrowFunctionExpression(
-        [],
-        t.callExpression(t.memberExpression(array.value, t.identifier('map')), [t.arrowFunctionExpression([item], key)])
-      ),
+      keyMappingFn(array, item, key),
       // Update func
       t.arrowFunctionExpression(
         [
           t.identifier('node'), // TODO
-          t.identifier('updateItemFuncArr'),
+          updateItemFuncArr,
           item,
           t.identifier('key'),
           index,
         ],
         t.blockStatement([
           t.expressionStatement(
-            t.assignmentExpression(
-              '=',
-              t.memberExpression(t.identifier('updateItemFuncArr'), index),
-              t.arrowFunctionExpression(
-                [t.identifier('newItem'), t.identifier('newIdx')],
-                t.blockStatement([
-                  t.expressionStatement(t.assignmentExpression('=', item, t.identifier('newItem'))),
-                  t.expressionStatement(t.assignmentExpression('=', index, t.identifier('newIdx'))),
-                ])
-              )
-            )
+            t.assignmentExpression('=', t.memberExpression(updateItemFuncArr, index), itemUpdater(item, indexParam))
           ),
           t.returnStatement(t.arrayExpression(children.map(child => ctx.next(child)))),
         ])
       ),
+      // reactBits
+      t.numericLiteral(ctx.getReactBits(array.depIdBitmap)),
     ]);
   },
 };
+
+/**
+ * @example
+ * ```ts
+ * (item) => item.id
+ * ```
+ */
+function keyMappingFn(
+  array: DependencyValue<t.Expression>,
+  item: t.Identifier | t.Pattern | t.RestElement,
+  key: t.Expression
+): t.Expression | t.SpreadElement | t.ArgumentPlaceholder {
+  return t.arrowFunctionExpression(
+    [],
+    t.callExpression(t.memberExpression(array.value, t.identifier('map')), [t.arrowFunctionExpression([item], key)])
+  );
+}
+
+/**
+ * @example
+ * ```ts
+ * (newItem, newIdx) => {
+ *   item = newItem
+ *   idx = newIdx // if indexParam is provided
+ * }
+ * ```
+ */
+function itemUpdater(item: t.Identifier | t.Pattern | t.RestElement, indexParam: t.Identifier | null): t.Expression {
+  const newItem = t.identifier('newItem');
+  const newIdx = t.identifier('newIdx');
+  const itemAssign = t.expressionStatement(t.assignmentExpression('=', item, newItem));
+  const indexAssign = indexParam && t.expressionStatement(t.assignmentExpression('=', indexParam, newIdx));
+  return t.arrowFunctionExpression(
+    [newItem, newIdx],
+    t.blockStatement([itemAssign, indexAssign].filter((s): s is t.ExpressionStatement => Boolean(s)))
+  );
+}
