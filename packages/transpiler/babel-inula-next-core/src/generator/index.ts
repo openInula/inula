@@ -4,10 +4,18 @@ import { importMap, type ImportMapType } from '../constants';
 import { stateGenerator } from './stateGenerator';
 import { mergeVisitor } from '../utils';
 import { BitManager } from '../analyze/IRBuilder';
+import { wrapUpdate } from './utils';
+import { viewGenerator } from './viewGenerator';
+import { rawStmtGenerator } from './rawStmtGenerator';
+import { compGenerator } from './compGenerator';
+import { functionalMacroGenerator } from './functionalMacroGenerator';
+import { propGenerator } from './propGenerator';
 
 interface GeneratorContext {
   selfId: t.Identifier;
   bitManager: BitManager;
+  hoist: (node: t.Statement | t.Statement[]) => void;
+  wrapUpdate: (node: t.Statement | t.Expression | null) => void;
   getReactBits: (depIdBitmap: number) => number;
   getWaveBits: (name: string) => number;
   getWaveBitsById: (id: number) => number;
@@ -18,15 +26,29 @@ interface GeneratorContext {
 export type Generator<S = GeneratorContext> = {
   [type in IRStmt['type']]?: (stmt: Extract<IRStmt, { type: type }>, state: S) => t.Statement | t.Statement[];
 };
-const builtinGenerators: Array<() => Generator> = [stateGenerator];
+
+const builtinGenerators: Array<() => Generator> = [
+  stateGenerator,
+  rawStmtGenerator,
+  propGenerator,
+  viewGenerator,
+  compGenerator,
+  rawStmtGenerator,
+  functionalMacroGenerator,
+];
 
 export function generate(
   root: ComponentNode | SubComponentNode | HookNode,
-  bitManager: BitManager
+  bitManager: BitManager,
+  hoist: (node: t.Statement | t.Statement[]) => void
 ): t.FunctionDeclaration {
   const ctx: GeneratorContext = {
     selfId: generateSelfId(root.scope.level),
     bitManager,
+    hoist,
+    wrapUpdate: (node: t.Statement | t.Expression | null) => {
+      wrapUpdate(ctx.selfId, node, ctx.getWaveBits);
+    },
     getReactBits: bitManager.getReactBits,
     getWaveBits: bitManager.getWaveBits.bind(null, root),
     getWaveBitsById: bitManager.getWaveBitsById,

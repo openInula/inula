@@ -1,51 +1,37 @@
-import { type types as t } from '@babel/core';
 import { type TextParticle } from '@openinula/reactivity-parser';
-import BaseGenerator from '../HelperGenerators/BaseGenerator';
+import { importMap } from '../HelperGenerators/BaseGenerator';
+import { types as t } from '@openinula/babel-api';
+import { ViewContext, ViewGenerator } from '../index';
 
-export default class TextGenerator extends BaseGenerator {
-  run() {
-    const { content } = this.viewParticle as TextParticle;
-
-    const nodeName = this.generateNodeName();
-
-    this.addInitStatement(this.declareTextNode(nodeName, content.value, content.dependenciesNode));
-
-    if (content.depMask) {
-      this.addUpdateStatements(content.depMask, this.updateTextNode(nodeName, content.value, content.dependenciesNode));
+/**
+ * @example
+ * ```ts
+ * createTextNode(
+ *   ${value},
+ *   node => {
+ *     setText(node, () => ${value}, ${deps}, ${reactBits})
+ *   }
+ * )
+ * ```
+ */
+export const textGenerator: ViewGenerator = {
+  text: ({ content }: TextParticle, ctx: ViewContext) => {
+    const node = t.identifier('node');
+    function textUpdater(): t.Expression | t.SpreadElement | t.ArgumentPlaceholder {
+      return t.arrowFunctionExpression(
+        [],
+        t.callExpression(t.identifier(importMap.setText), [
+          node,
+          content.value,
+          content.dependenciesNode,
+          t.numericLiteral(ctx.getReactBits(content.depIdBitmap)),
+        ])
+      );
     }
 
-    return nodeName;
-  }
-
-  /**
-   * @View
-   * ${nodeName} = createTextNode(${value}, ${deps})
-   */
-  private declareTextNode(nodeName: string, value: t.Expression, dependenciesNode: t.Expression): t.Statement {
-    return this.t.expressionStatement(
-      this.t.assignmentExpression(
-        '=',
-        this.t.identifier(nodeName),
-        this.t.callExpression(this.t.identifier(this.importMap.createTextNode), [value, dependenciesNode])
-      )
+    return t.callExpression(
+      t.identifier(importMap.createTextNode),
+      [content.value, content.depIdBitmap ? textUpdater() : null].filter(Boolean) as t.Expression[]
     );
-  }
-
-  /**
-   * @View
-   * ${nodeName} && updateText(${nodeName}, () => ${value}, ${deps})
-   */
-  private updateTextNode(nodeName: string, value: t.Expression, dependenciesNode: t.Expression): t.Statement {
-    return this.t.expressionStatement(
-      this.t.logicalExpression(
-        '&&',
-        this.t.identifier(nodeName),
-        this.t.callExpression(this.t.identifier(this.importMap.updateText), [
-          this.t.identifier(nodeName),
-          this.t.arrowFunctionExpression([], value),
-          dependenciesNode,
-        ])
-      )
-    );
-  }
-}
+  },
+};

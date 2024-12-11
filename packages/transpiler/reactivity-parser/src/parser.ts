@@ -13,9 +13,11 @@ import {
   type TemplateProp,
   type TextParticle,
   type ViewParticle,
+  FragmentParticle,
 } from './types';
 import { type NodePath, type traverse, type types as t } from '@babel/core';
 import {
+  FragmentUnit,
   type CompUnit,
   type ContextUnit,
   type ExpUnit,
@@ -74,7 +76,7 @@ export class ReactivityParser {
     this.config = config;
     this.t = config.babelApi.types;
     this.traverse = config.babelApi.traverse;
-    this.reactiveBitMap = genReactiveBitMap(config.reactiveIndexMap);
+    this.reactiveBitMap = config.reactiveMap;
     this.reactivityFuncNames = config.reactivityFuncNames ?? [];
   }
 
@@ -100,6 +102,7 @@ export class ReactivityParser {
     if (viewUnit.type === 'if') return this.parseIf(viewUnit);
     if (viewUnit.type === 'context') return this.parseContext(viewUnit);
     if (viewUnit.type === 'exp') return this.parseExp(viewUnit);
+    if (viewUnit.type === 'fragment') return this.parseFragment(viewUnit);
     return DLError.throw1();
   }
 
@@ -118,6 +121,13 @@ export class ReactivityParser {
       template: this.generateTemplate(htmlUnit),
       props: this.parseTemplateProps(htmlUnit),
       mutableParticles: this.generateMutableParticles(htmlUnit),
+    };
+  }
+
+  private parseFragment(fragmentUnit: FragmentUnit): FragmentParticle {
+    return {
+      type: 'fragment',
+      children: fragmentUnit.children.map(this.parseViewParticle.bind(this)),
     };
   }
 
@@ -337,15 +347,15 @@ export class ReactivityParser {
    */
   private parseFor(forUnit: ForUnit): ForParticle {
     const { dependenciesNode, depIdBitmap } = this.getDependencies(forUnit.array);
-    const prevMap = this.config.reactiveIndexMap;
+    const prevMap = this.config.reactiveMap;
     const prevDerivedMap = this.config.derivedMap ?? new Map();
     // ---- Generate an identifierDepMap to track identifiers in item and make them reactive
     //      based on the dependencies from the array
     // Just wrap the item in an assignment expression to get all the identifiers
     const itemWrapper = this.t.assignmentExpression('=', forUnit.item, this.t.objectExpression([]));
     const arrayReactBits = depIdBitmap;
-    this.config.reactiveIndexMap = new Map([
-      ...this.config.reactiveIndexMap,
+    this.config.reactiveMap = new Map([
+      ...this.config.reactiveMap,
       ...this.getIdentifiers(itemWrapper).map(id => [id, arrayReactBits] as const),
     ]);
 
@@ -361,7 +371,7 @@ export class ReactivityParser {
       children: forUnit.children.map(this.parseViewParticle.bind(this)),
       key: forUnit.key,
     };
-    this.config.reactiveIndexMap = prevMap;
+    this.config.reactiveMap = prevMap;
     this.config.derivedMap = prevDerivedMap;
     return forParticle;
   }

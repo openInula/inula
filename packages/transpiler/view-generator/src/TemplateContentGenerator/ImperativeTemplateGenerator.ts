@@ -1,4 +1,4 @@
-import { HTMLParticle, TemplateParticle, TextParticle, ViewParticle } from '@openinula/reactivity-parser';
+import { HTMLParticle, TextParticle, ViewParticle } from '@openinula/reactivity-parser';
 import { GenTemplateContent, TemplateContentGenerator } from './interface';
 import { importMap, prefixMap } from '../HelperGenerators/BaseGenerator';
 import { types as t } from '@openInula/babel-api';

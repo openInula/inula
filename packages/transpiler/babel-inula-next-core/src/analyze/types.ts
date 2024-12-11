@@ -15,7 +15,7 @@
 
 import { type NodePath, types as t } from '@babel/core';
 import { COMPONENT, DID_MOUNT, DID_UNMOUNT, HOOK, PropType, WILL_MOUNT, WILL_UNMOUNT } from '../constants';
-import { Bitmap, ViewParticle } from '@openinula/reactivity-parser';
+import { ViewParticle } from '@openinula/reactivity-parser';
 import { IRBuilder } from './IRBuilder';
 import { Dependency } from '@openinula/reactivity-parser';
 
@@ -24,24 +24,31 @@ export type LifeCycle = typeof WILL_MOUNT | typeof DID_MOUNT | typeof WILL_UNMOU
 
 export type FunctionalExpression = t.FunctionExpression | t.ArrowFunctionExpression;
 export interface BaseVariable<V> {
-  id: NodePath<t.LVal>;
+  id: NodePath<t.Identifier | t.ObjectPattern | t.ArrayPattern>;
   value: V;
   kind: t.VariableDeclaration['kind'];
   node: t.VariableDeclarator;
 }
+
+export const PARAM_PROPS = 'props';
+export const CTX_PROPS = 'ctx';
+export type PropsSource = typeof PARAM_PROPS | typeof CTX_PROPS;
+
 export interface SinglePropStmt {
   name: string;
   value: t.LVal;
   reactiveId: number;
-  destructuring?: t.ObjectPattern | t.ArrayPattern;
-  destructuredNames?: string[];
   type: PropType.SINGLE;
+  isDesctructured: boolean;
   node: t.ObjectProperty;
+  defaultValue?: t.Expression | null;
+  source: PropsSource;
 }
 export interface RestPropStmt {
   name: string;
   type: PropType.REST;
   reactiveId: number;
+  source: PropsSource;
 }
 
 export interface WholePropStmt {
@@ -49,6 +56,7 @@ export interface WholePropStmt {
   value: t.Identifier;
   reactiveId: number;
   type: PropType.WHOLE;
+  source: PropsSource;
 }
 
 export type RawStmt = {
@@ -59,7 +67,7 @@ export type RawStmt = {
 export type WatchStmt = {
   type: 'watch';
   callback: NodePath<t.ArrowFunctionExpression> | NodePath<t.FunctionExpression>;
-  dependency: Dependency;
+  dependency: Dependency | null;
 };
 
 export type LifecycleStmt = {
@@ -95,6 +103,18 @@ export type DerivedStmt = {
   value: t.Expression;
 };
 
+export type ViewReturnStmt = {
+  type: 'viewReturn';
+  value: ViewParticle;
+};
+
+export type UseContextStmt = {
+  type: 'useContext';
+  ids: string[];
+  lVal: t.Identifier | t.ArrayPattern | t.ObjectPattern;
+  context: t.Identifier;
+};
+
 export type IRStmt =
   | RawStmt
   | WatchStmt
@@ -105,12 +125,14 @@ export type IRStmt =
   | StateStmt
   | SinglePropStmt
   | RestPropStmt
-  | WholePropStmt;
+  | WholePropStmt
+  | ViewReturnStmt
+  | UseContextStmt;
 
 export interface IRScope {
   waveMap: Map<string, number>;
   /**
-   * The map to find the reactive index by name
+   * The map to find the reactive id bit by name
    */
   reactiveMap: Map<string, number>;
   /**

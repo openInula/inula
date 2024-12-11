@@ -24,10 +24,6 @@ export type Dependency = {
   depIdBitmap: number;
 };
 
-export function genReactiveBitMap(reactiveIndexMap: Map<string, number>): Map<string, Bitmap> {
-  return new Map(Array.from(reactiveIndexMap).map(([key, index]) => [key, 1 << index]));
-}
-
 /**
  * @brief Get all valid dependencies of a babel path
  * @returns

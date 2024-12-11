@@ -17,9 +17,7 @@ import { variablesAnalyze } from '../../src/analyze/Analyzers/variablesAnalyze';
 import { viewAnalyze } from '../../src/analyze/Analyzers/viewAnalyze';
 import { functionalMacroAnalyze } from '../../src/analyze/Analyzers/functionalMacroAnalyze';
 import { describe, expect, it } from 'vitest';
-import { findVarByName, findSubCompByName } from './utils';
 import { mockAnalyze } from './mock';
-import { SubCompStmt } from '../../src/analyze/types';
 
 const analyze = (code: string) => mockAnalyze(code, [variablesAnalyze, viewAnalyze, functionalMacroAnalyze]);
 describe('prune unused bit', () => {

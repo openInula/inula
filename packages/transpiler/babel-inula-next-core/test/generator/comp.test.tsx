@@ -30,32 +30,13 @@ describe('generate', () => {
 
     expect(code).toMatchInlineSnapshot(`
       "function Comp() {
-        let self;
+        const self = $$compBuilder();
         let count = 1;
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            let $node0, $node1;
-            $node1 = $$createNode(6 /*Children*/, $addUpdate => {
-              let $node0;
-              $node0 = $$createElement("div");
-              $node0.textContent = "1";
-              return [$node0];
-            });
-            $node0 = $$Comp(Child, {
-              "className": count,
-              "children": $node1
-            });
-            return [[$node0], $changed => {
-              if ($changed & 1) {
-                $node0 && $$setProp($node0, "className", () => count, [count]);
-              }
-              $$updateNode($node1, $changed);
-              return [$node0];
-            }];
-          }
-        });
-        return $$initCompNode(self);
+        return self.prepare().init($$createCompNode(Child({
+          "className": count
+        }), node => {
+          node.updateProp("className", () => count, [count], 1);
+        }));
       }"
     `);
   });

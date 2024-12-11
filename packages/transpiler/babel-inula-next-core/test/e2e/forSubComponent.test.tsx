@@ -48,9 +48,9 @@ describe('for sub component', () => {
       `;
     const transformedCode = transform(code);
     expect(transformedCode).toMatchInlineSnapshot(`
-      "import { updateNode as $$updateNode, createComponent as $$createComponent, createElement as $$createElement, setHTMLProp as $$setHTMLProp, delegateEvent as $$delegateEvent, setStyle as $$setStyle, createNode as $$createNode, insertNode as $$insertNode, initCompNode as $$initCompNode, Comp as $$Comp, setProp as $$setProp, updateChildren as $$updateChildren } from "@openinula/next";
+      "import { compBuilder as $$compBuilder, delegateEvent as $$delegateEvent, setHTMLProp as $$setHTMLProp, createExpNode as $$createExpNode, createHTMLNode as $$createHTMLNode, createForNode as $$createForNode, createCompNode as $$createCompNode } from "@openinula/next";
       function MyComp() {
-        let self;
+        const self = $$compBuilder();
         let name = 'test';
         let arr = [{
           x: 1,
@@ -67,177 +67,88 @@ describe('for sub component', () => {
           y,
           index
         }) {
-          let self1;
-          let x_$p$_ = x;
-          let y_$p$_ = y;
-          let index_$p$_ = index;
+          const self1 = $$compBuilder();
+          self1.addProp("x", value => x = value, 0);
+          self1.addProp("y", value => y = value, 0);
+          self1.addProp("index", value => index = value, 2);
           let name1 = 'test';
           const onClick = () => {
-            $$updateNode(self1, name1 = 'test2', 8 /*0b1000*/);
+            self1.wave(self1, name1 = 'test2', 4 /*0b100*/);
           };
-          self1 = $$createComponent({
-            updateState: changed => {},
-            updateProp: (propName, newValue) => {
-              if (propName === "index") {
-                $$updateNode(self1, index_$p$_ = newValue, 4 /*0b100*/);
-              } else if (propName === "y") {
-                y_$p$_ = newValue;
-              } else if (propName === "x") {
-                x_$p$_ = newValue;
-              }
-            },
-            getUpdateViews: () => {
-              let $node0, $node1;
-              $node0 = $$createElement("div");
-              $$setHTMLProp($node0, "className", () => name, [name]);
-              $$delegateEvent($node0, "click", onClick);
-              $$setStyle($node0, {
-                x: index_$p$_
-              });
-              $node1 = $$createNode(3 /*Exp*/, () => name1, [name1]);
-              $$insertNode($node0, $node1, 0);
-              $node0._$nodes = [$node1];
-              return [[$node0], $changed => {
-                if ($changed & 1) {
-                  $node0 && $$setHTMLProp($node0, "className", () => name, [name]);
-                }
-                if ($changed & 4) {
-                  $node0 && $$setStyle($node0, {
-                    x: index_$p$_
-                  });
-                }
-                if ($changed & 8) {
-                  $node1 && $$updateNode($node1, () => name1, [name1]);
-                }
-                return [$node0];
-              }];
-            }
-          });
-          return $$initCompNode(self1);
+          return self1.prepare().init($$createHTMLNode("div", () => {
+            node.setAttribute("className", name);
+            $$delegateEvent(node, "click", onClick);
+            $$setHTMLProp(node, "style", () => ({
+              x: index
+            }), [index], 2);
+          }, $$createExpNode(() => name1, [name1], 4)));
         }
         function For_2({
           x,
           y,
           index
         }) {
-          let self1;
-          let x_$p$_ = x;
-          let y_$p$_ = y;
-          let index_$p$_ = index;
+          const self1 = $$compBuilder();
+          self1.addProp("x", value => x = value, 0);
+          self1.addProp("y", value => y = value, 0);
+          self1.addProp("index", value => index = value, 8);
           let name1 = 'test';
           const onClick = () => {
-            $$updateNode(self1, name1 = 'test2', 8 /*0b1000*/);
+            self1.wave(self1, name1 = 'test2', 16 /*0b10000*/);
           };
-          self1 = $$createComponent({
-            updateState: changed => {},
-            updateProp: (propName, newValue) => {
-              if (propName === "index") {
-                $$updateNode(self1, index_$p$_ = newValue, 4 /*0b100*/);
-              } else if (propName === "y") {
-                y_$p$_ = newValue;
-              } else if (propName === "x") {
-                x_$p$_ = newValue;
-              }
-            },
-            getUpdateViews: () => {
-              let $node0, $node1;
-              $node0 = $$createElement("div");
-              $$setHTMLProp($node0, "className", () => name, [name]);
-              $$delegateEvent($node0, "click", onClick);
-              $$setStyle($node0, {
-                x: index_$p$_
-              });
-              $node1 = $$createNode(3 /*Exp*/, () => name1, [name1]);
-              $$insertNode($node0, $node1, 0);
-              $node0._$nodes = [$node1];
-              return [[$node0], $changed => {
-                if ($changed & 1) {
-                  $node0 && $$setHTMLProp($node0, "className", () => name, [name]);
-                }
-                if ($changed & 4) {
-                  $node0 && $$setStyle($node0, {
-                    x: index_$p$_
-                  });
-                }
-                if ($changed & 8) {
-                  $node1 && $$updateNode($node1, () => name1, [name1]);
-                }
-                return [$node0];
-              }];
-            }
-          });
-          return $$initCompNode(self1);
+          return self1.prepare().init($$createHTMLNode("div", () => {
+            node.setAttribute("className", name);
+            $$delegateEvent(node, "click", onClick);
+            $$setHTMLProp(node, "style", () => ({
+              x: index
+            }), [index], 8);
+          }, $$createExpNode(() => name1, [name1], 16)));
         }
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            let $node0, $node1, $node2;
-            $node0 = $$createElement("div");
-            $node1 = $$createNode(1 /*For*/, arr, 2, null, ({
+        return self.prepare().init($$createHTMLNode("div", null, $$createForNode(() => arr, () => arr.map(({
+          x,
+          y
+        }) => null), (node, updateItemFuncArr, {
+          x,
+          y
+        }, key, index) => {
+          updateItemFuncArr.index = (newItem, newIdx) => {
+            ({
               x,
               y
-            }, index, $updateArr) => {
-              let $node0;
-              $updateArr[index] = ($changed, $item) => {
-                ({
-                  x,
-                  y
-                } = $item);
-                if ($changed & 2) {
-                  $node0 && $$setProp($node0, "x", () => x, [x]);
-                  $node0 && $$setProp($node0, "y", () => y, [y]);
-                }
-                if ($changed & 49) {
-                  $$updateNode($node0, null, 49);
-                }
-              };
-              $node0 = $$Comp(For_1, {
-                "x": x,
-                "y": y,
-                "index": index
-              });
-              return [$node0];
-            });
-            $$insertNode($node0, $node1, 0);
-            $node2 = $$createNode(1 /*For*/, arr, 2, null, ({
+            } = newItem);
+            index = newIdx;
+          };
+          return [$$createCompNode(For_1({
+            "x": x,
+            "y": y,
+            "index": index
+          }), node => {
+            node.updateProp("x", () => x, [x], 1);
+            node.updateProp("y", () => y, [y], 1);
+          })];
+        }, 1), $$createForNode(() => arr, () => arr.map(({
+          x,
+          y
+        }) => null), (node, updateItemFuncArr, {
+          x,
+          y
+        }, key, index) => {
+          updateItemFuncArr.index = (newItem, newIdx) => {
+            ({
               x,
               y
-            }, index, $updateArr) => {
-              let $node0;
-              $updateArr[index] = ($changed, $item) => {
-                ({
-                  x,
-                  y
-                } = $item);
-                if ($changed & 2) {
-                  $node0 && $$setProp($node0, "x", () => x, [x]);
-                  $node0 && $$setProp($node0, "y", () => y, [y]);
-                }
-                if ($changed & 49) {
-                  $$updateNode($node0, null, 49);
-                }
-              };
-              $node0 = $$Comp(For_2, {
-                "x": x,
-                "y": y,
-                "index": index
-              });
-              return [$node0];
-            });
-            $$insertNode($node0, $node2, 1);
-            $node0._$nodes = [$node1, $node2];
-            return [[$node0], $changed => {
-              if ($changed & 2) {
-                $node1 && $$updateNode($node1, arr, null);
-                $node2 && $$updateNode($node2, arr, null);
-              }
-              $node1 && $$updateChildren($node1, $changed);
-              $node2 && $$updateChildren($node2, $changed);
-              return [$node0];
-            }];
-          }
-        });
-        return $$initCompNode(self);
+            } = newItem);
+            index = newIdx;
+          };
+          return [$$createCompNode(For_2({
+            "x": x,
+            "y": y,
+            "index": index
+          }), node => {
+            node.updateProp("x", () => x, [x], 1);
+            node.updateProp("y", () => y, [y], 1);
+          })];
+        }, 1)));
       }"
     `);
   });

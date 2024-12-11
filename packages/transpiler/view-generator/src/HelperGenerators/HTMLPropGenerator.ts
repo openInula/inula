@@ -1,5 +1,3 @@
-import { DLError } from '../error';
-import { Bitmap } from '@openinula/reactivity-parser';
 import { types as t } from '@openInula/babel-api';
 import { elementAttributeMap, importMap } from './BaseGenerator';
 
@@ -28,8 +26,7 @@ export const DelegatedEvents = new Set([
   'touchstart',
 ]);
 
-export const commonHTMLPropKeys = ['style', 'dataset', 'props', 'ref', 'attrs', 'forwardProps'];
-
+const commonHTMLPropKeys = ['ref', 'style', 'dataset'];
 export function insertNode(nodeName: string, childNodeName: string, position: number): t.ExpressionStatement {
   return t.expressionStatement(
     t.callExpression(t.identifier('insertNode'), [
@@ -59,18 +56,22 @@ export function setHTMLDataset(nodeName: string, value: t.Expression, check: boo
   );
 }
 
-export function setHTMLProp(nodeName: string, key: string, value: t.Expression): t.Statement {
-  return t.expressionStatement(
-    t.assignmentExpression('=', t.memberExpression(t.identifier(nodeName), t.identifier(key)), value)
-  );
-}
-
 export function setHTMLAttr(nodeName: string, key: string, value: t.Expression): t.Statement {
   return t.expressionStatement(
     t.callExpression(t.memberExpression(t.identifier(nodeName), t.identifier('setAttribute')), [
       t.stringLiteral(key),
       value,
     ])
+  );
+}
+
+/**
+ * @example
+ * ${nodeName}.${key} = ${value}
+ */
+export function setHTMLProperty(nodeName: string, key: string, value: t.Expression): t.Statement {
+  return t.expressionStatement(
+    t.assignmentExpression('=', t.memberExpression(t.identifier(nodeName), t.identifier(key)), value)
   );
 }
 
@@ -95,15 +96,17 @@ export function setCachedProp(
   key: string,
   value: t.Expression,
   dependenciesNode: t.ArrayExpression,
+  reactBits: number,
   check: boolean
 ): t.Statement {
   return setPropWithCheck(
     nodeName,
-    t.callExpression(t.identifier('setHTMLProp'), [
+    t.callExpression(t.identifier(importMap.setHTMLProp), [
       t.identifier(nodeName),
       t.stringLiteral(key),
       t.arrowFunctionExpression([], value),
       dependenciesNode,
+      t.numericLiteral(reactBits),
     ]),
     check
   );
@@ -115,12 +118,9 @@ export function setDynamicHTMLProp(
   attrName: string,
   value: t.Expression,
   dependenciesNode: t.ArrayExpression,
+  reactBits: number,
   check: boolean
 ): t.Statement {
-  if (commonHTMLPropKeys.includes(attrName)) {
-    return setHTMLPropObject(nodeName, value, check);
-  }
-
   if (attrName.startsWith('on')) {
     const eventName = attrName.slice(2).toLowerCase();
     if (DelegatedEvents.has(eventName)) {
@@ -129,7 +129,7 @@ export function setDynamicHTMLProp(
     return setEvent(nodeName, eventName, value, check);
   }
 
-  return setCachedProp(nodeName, attrName, value, dependenciesNode, check);
+  return setCachedProp(nodeName, attrName, value, dependenciesNode, reactBits, check);
 }
 
 /**
@@ -163,7 +163,7 @@ export function setStaticHTMLProp(nodeName: string, tag: string, attrName: strin
   if (isInternalAttribute(tag, attrName)) {
     if (attrName === 'class') attrName = 'className';
     else if (attrName === 'for') attrName = 'htmlFor';
-    return setHTMLProp(nodeName, attrName, value);
+    return setHTMLProperty(nodeName, attrName, value);
   }
   return setHTMLAttr(nodeName, attrName, value);
 }
@@ -185,12 +185,12 @@ export function setHTMLProp(
   tag: string,
   key: string,
   value: t.Expression,
-  reactBits: Bitmap | undefined,
+  reactBits: number | undefined,
   dependenciesNode: t.ArrayExpression | null
 ): t.Statement {
   // ---- Dynamic HTML prop with init and update
   if (reactBits && key !== 'ref') {
-    return setDynamicHTMLProp(name, tag, key, value, dependenciesNode ?? t.arrayExpression([]), false);
+    return setDynamicHTMLProp(name, tag, key, value, dependenciesNode ?? t.arrayExpression([]), reactBits, false);
   }
   // ---- Static HTML prop with init only
   return setStaticHTMLProp(name, tag, key, value);

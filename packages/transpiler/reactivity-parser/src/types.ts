@@ -18,6 +18,11 @@ export interface TemplateProp extends DependencyValue<t.Expression> {
 
 export type MutableParticle = ViewParticle & { path: number[] };
 
+export interface FragmentParticle {
+  type: 'fragment';
+  children: ViewParticle[];
+}
+
 export interface TemplateParticle {
   type: 'template';
   template: HTMLParticle;
@@ -83,11 +88,12 @@ export type ViewParticle =
   | ForParticle
   | IfParticle
   | ContextParticle
-  | ExpParticle;
+  | ExpParticle
+  | FragmentParticle;
 
 export interface ReactivityParserConfig {
   babelApi: typeof Babel;
-  reactiveIndexMap: ReactiveBitMap;
+  reactiveMap: ReactiveBitMap;
   dependencyParseType?: 'property' | 'identifier';
   parseTemplate?: boolean;
   reactivityFuncNames?: string[];

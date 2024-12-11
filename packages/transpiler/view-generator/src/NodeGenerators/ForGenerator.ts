@@ -1,6 +1,6 @@
 import { importMap } from '../HelperGenerators/BaseGenerator';
 import { DependencyValue, type ForParticle } from '@openinula/reactivity-parser';
-import { ViewContext, ViewGenerator } from '../../index';
+import { ViewContext, ViewGenerator } from '../index';
 import { types as t } from '@openinula/babel-api';
 
 /**

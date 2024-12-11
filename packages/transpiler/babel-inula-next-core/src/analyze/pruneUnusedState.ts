@@ -14,7 +14,6 @@
  */
 
 import { ComponentNode, HookNode } from './types';
-import { Bitmap, ViewParticle } from '@openinula/reactivity-parser';
 
 /**
  * To prune the bitmap of unused properties
@@ -35,16 +34,15 @@ export function pruneUnusedState(
   const usedIdBits = comp.scope.usedIdBits;
 
   let preId: number;
-  Array.from(reactiveMap).forEach(([name, id]) => {
-    const bit = 1 << id;
-    if (usedIdBits & bit) {
-      if (preId !== id) {
+  Array.from(reactiveMap).forEach(([, idBit]) => {
+    if (usedIdBits & idBit) {
+      if (preId !== idBit) {
         // the reactive shared same id with previous one, we should not change the index
         bitIndex++;
       }
-      idMap.set(id, 1 << bitIndex);
+      idMap.set(idBit, 1 << bitIndex);
     }
-    preId = bitIndex;
+    preId = idBit;
   });
 
   for (const stmt of comp.body) {

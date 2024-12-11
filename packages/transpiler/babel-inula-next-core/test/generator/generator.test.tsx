@@ -13,12 +13,9 @@ describe('generate', () => {
 
     expect(code).toMatchInlineSnapshot(`
       "function Comp() {
-        let self;
+        const self = $$compBuilder();
         let count = 1;
-        self = $$createComponent({
-          updateState: changed => {}
-        });
-        return $$initCompNode(self);
+        return self.prepare().init($$createFragmentNode());
       }"
     `);
   });
@@ -52,32 +49,22 @@ describe('generate', () => {
 
     expect(code).toMatchInlineSnapshot(`
       "function Comp() {
-        let self;
+        const self = $$compBuilder();
         let count = 1;
-        self = $$createComponent({
-          didMount: () => {
-            {
-              console.log('mounted');
-            }
-          },
-          willUnmount: () => {
-            {
-              console.log('unmounted');
-            }
-          },
-          updateState: changed => {},
-          getUpdateViews: () => {
-            {
-              console.log('will mount');
-            }
-            console.log(count);
-            {
-              console.log('will mount2');
-            }
-            return [[],,];
-          }
+        self.willMount(() => {
+          console.log('will mount');
         });
-        return $$initCompNode(self);
+        console.log(count);
+        self.willMount(() => {
+          console.log('will mount2');
+        });
+        self.didMount(() => {
+          console.log('mounted');
+        });
+        self.willUnmount(() => {
+          console.log('unmounted');
+        });
+        return self.prepare().init($$createFragmentNode());
       }"
     `);
   });
@@ -94,19 +81,11 @@ describe('generate', () => {
 
     expect(code).toMatchInlineSnapshot(`
       "function Comp() {
-        let self;
+        const self = $$compBuilder();
         let count = 1;
         let doubleCount;
-        self = $$createComponent({
-          updateState: changed => {
-            if (changed & 1) {
-              if ($$notCached(self, "cache0", [count])) {
-                doubleCount = count * 2;
-              }
-            }
-          }
-        });
-        return $$initCompNode(self);
+        self.deriveState(() => (doubleCount = count * 2), () => [count], 1);
+        return self.prepare().init($$createFragmentNode());
       }"
     `);
   });
@@ -128,9 +107,9 @@ describe('generate', () => {
           let nono = 2
           console.log(count)
         })
-        nn.push("jj")
+        nn.push("jj");
 
-        ;[count, doubleCount] = (() => {nn.push("nn")})
+        let _ = nn[0];
 
         return <></>
       })
@@ -138,110 +117,76 @@ describe('generate', () => {
 
     expect(code).toMatchInlineSnapshot(`
       "function Comp() {
-        let self;
+        const self = $$compBuilder();
         let count = 1;
         let doubleCount;
+        self.deriveState(() => (doubleCount = count * 2), () => [count], 1);
         let ff;
+        self.deriveState(() => (ff = count * 2), () => [count], 1);
         let nn = [];
         let kk;
-        self = $$createComponent({
-          updateState: changed => {
-            if (changed & 1) {
-              if ($$notCached(self, "cache0", [count])) {
-                $$updateNode(self, doubleCount = count * 2, 2 /*0b10*/);
-                ff = count * 2;
-                {
-                  let nono = 1;
-                  console.log(count);
-                }
-                {
-                  let nono = 2;
-                  console.log(count);
-                }
-              }
-            }
-            if (changed & 7) {
-              if ($$notCached(self, "cache1", [count, doubleCount, nn])) {
-                kk = count * doubleCount + 100 + nn[1];
-              }
-            }
-          },
-          getUpdateViews: () => {
-            $$updateNode(self, nn.push("jj"), 4 /*0b100*/);
-            $$updateNode(self, [count, doubleCount] = () => {
-              $$updateNode(self, nn.push("nn"), 4 /*0b100*/);
-            }, 3 /*0b11*/);
-            return [[],,];
-          }
-        });
-        return $$initCompNode(self);
+        self.deriveState(() => (kk = count * doubleCount + 100 + nn[1]), () => [count, doubleCount, nn], 7);
+        self.watch(() => {
+          let nono = 1;
+          console.log(count);
+        }, () => [count], 1);
+        self.watch(() => {
+          let nono = 2;
+          console.log(count);
+        }, () => [count], 1);
+        self.wave(self, nn.push("jj"), 4 /*0b100*/);
+        let _;
+        self.deriveState(() => (_ = nn[0]), () => [nn], 4);
+        return self.prepare().init($$createFragmentNode());
       }"
     `);
   });
 
   it('should generate updateProp', () => {
     const code = transform(/*js*/ `
-      const Comp = Component(() => {
-        let prop1_$p$_ = 1
+      const Comp = Component(({ prop1 }) => {
 
-        return <></>
+        return <div>{prop1}</div>
       })
     `);
 
     expect(code).toMatchInlineSnapshot(`
-      "function Comp() {
-        let self;
-        let prop1_$p$_ = 1;
-        self = $$createComponent({
-          updateState: changed => {},
-          updateProp: (propName, newValue) => {
-            if (propName === "prop1") {
-              prop1_$p$_ = newValue;
-            }
-          }
-        });
-        return $$initCompNode(self);
+      "function Comp({
+        prop1
+      }) {
+        const self = $$compBuilder();
+        self.addProp("prop1", value => prop1 = value, 1);
+        return self.prepare().init($$createHTMLNode("div", null, $$createExpNode(() => prop1, [prop1], 1)));
       }"
     `);
   });
 
   it('should generate updateProp with multiple props', () => {
     const code = transform(/*js*/ `
-      const Comp = Component(() => {
-        let prop1_$p$_ = 1
-        let prop2_$p$_ = 1
-
-        return <></>
+      const Comp = Component(({ prop1, prop2 }) => {
+        return <>{prop1 + prop2}</>
       })
     `);
 
     expect(code).toMatchInlineSnapshot(`
-      "function Comp() {
-        let self;
-        let prop1_$p$_ = 1;
-        let prop2_$p$_ = 1;
-        self = $$createComponent({
-          updateState: changed => {},
-          updateProp: (propName, newValue) => {
-            if (propName === "prop2") {
-              prop2_$p$_ = newValue;
-            } else if (propName === "prop1") {
-              prop1_$p$_ = newValue;
-            }
-          }
-        });
-        return $$initCompNode(self);
+      "function Comp({
+        prop1,
+        prop2
+      }) {
+        const self = $$compBuilder();
+        self.addProp("prop1", value => prop1 = value, 1);
+        self.addProp("prop2", value => prop2 = value, 2);
+        return self.prepare().init($$createFragmentNode($$createExpNode(() => prop1 + prop2, [prop1, prop2], 3)));
       }"
     `);
   });
 
   it('should generate updateProp with updateDerived', () => {
     const code = transform(/*js*/ `
-      const Comp = Component(() => {
-        let prop1_$p$_ = 1
-        let derived = prop1_$p$_ * 2
+      const Comp = Component(({ prop1 }) => {
+        let derived = prop1 * 2
         watch(() => {
-          console.log(prop1_$p$_)
+          console.log(prop1)
         })
 
         return <></>
@@ -249,28 +194,17 @@ describe('generate', () => {
     `);
 
     expect(code).toMatchInlineSnapshot(`
-      "function Comp() {
-        let self;
-        let prop1_$p$_ = 1;
+      "function Comp({
+        prop1
+      }) {
+        const self = $$compBuilder();
+        self.addProp("prop1", value => prop1 = value, 1);
         let derived;
-        self = $$createComponent({
-          updateState: changed => {
-            if (changed & 1) {
-              if ($$notCached(self, "cache0", [prop1_$p$_])) {
-                derived = prop1_$p$_ * 2;
-                {
-                  console.log(prop1_$p$_);
-                }
-              }
-            }
-          },
-          updateProp: (propName, newValue) => {
-            if (propName === "prop1") {
-              $$updateNode(self, prop1_$p$_ = newValue, 1 /*0b1*/);
-            }
-          }
-        });
-        return $$initCompNode(self);
+        self.deriveState(() => (derived = prop1 * 2), () => [prop1], 1);
+        self.watch(() => {
+          console.log(prop1);
+        }, () => [prop1], 1);
+        return self.prepare().init($$createFragmentNode());
       }"
     `);
   });

@@ -1,98 +1,92 @@
-import { type types as t } from '@babel/core';
-import { type IfParticle, type IfBranch, Bitmap } from '@openinula/reactivity-parser';
-import CondGenerator from '../HelperGenerators/CondGenerator';
+import { type IfParticle, Bitmap, ViewParticle, DependencyValue } from '@openinula/reactivity-parser';
+import { ViewContext, ViewGenerator } from '../index';
+import { types as t } from '@openinula/babel-api';
+import { importMap } from '../HelperGenerators/BaseGenerator';
 
-export default class IfGenerator extends CondGenerator {
-  run() {
-    const { branches } = this.viewParticle as IfParticle;
-    const deps = branches.reduce((acc, { condition }) => {
-      return condition.depMask ? acc | condition.depMask : acc;
-    }, 0);
+/**
+ * @View
+ * if (node.branch(${idx})) return []
+ */
+function geneCondCheck(node: t.Identifier, idx: number): t.IfStatement {
+  return t.ifStatement(
+    t.callExpression(t.memberExpression(node, t.identifier('branch')), [t.numericLiteral(idx)]),
+    t.returnStatement(t.arrayExpression([]))
+  );
+}
+/**
+ * @View
+ * return ${children}
+ */
+function geneIfStatement(test: t.Expression, body: t.Statement[], alternate: t.Statement): t.IfStatement {
+  return t.ifStatement(test, t.blockStatement(body), alternate);
+}
 
-    // ---- declareIfNode
-    const nodeName = this.generateNodeName();
-    this.addInitStatement(this.declareIfNode(nodeName, branches, deps));
+function geneCondReturnStatement(children: ViewParticle[], ctx: ViewContext): t.Statement {
+  return t.returnStatement(t.arrayExpression(children.map(p => ctx.next(p))));
+}
 
-    this.addUpdateStatements(deps, this.updateCondNodeCond(nodeName));
-    this.addUpdateStatementsWithoutDep(this.updateCondNode(nodeName));
+/**
+ * @example
+ * node.cachedCondition(0, () => show, [show])
+ */
+function geneCondition(node: t.Identifier, idx: number, condition: DependencyValue<t.Expression>) {
+  return t.callExpression(t.memberExpression(node, t.identifier('cachedCondition')), [
+    t.numericLiteral(idx),
+    t.arrowFunctionExpression([], condition.value),
+    condition.dependenciesNode,
+  ]);
+}
 
-    return nodeName;
-  }
+/**
+ * @example
+ * ```ts
+ * createConditionalNode(
+ *   node => {
+ *      if (node.cachedCondition(0, () => show, [show])) {
+ *        if (node.branch(0)) return [];
+ *        return ${children}
+ *      } else {
+ *        if (node.branch(1)) return [];
+ *        return ${children}
+ *      }
+ *   },
+ *   0b0001
+ * )
+ * ```
+ */
+export const ifGenerator: ViewGenerator = {
+  if: ({ branches }: IfParticle, ctx: ViewContext) => {
+    const node = t.identifier('node');
 
-  /**
-   * @View
-   * if (${test}) { ${body} } else { ${alternate} }
-   */
-  geneIfStatement(test: t.Expression, body: t.Statement[], alternate: t.Statement): t.IfStatement {
-    return this.t.ifStatement(test, this.t.blockStatement(body), alternate);
-  }
-
-  /**
-   * @View
-   * const ${nodeName} = new IfNode(($thisCond) => {
-   *   if (cond1) {
-   *    if ($thisCond.cond === 0) return
-   *    ${children}
-   *    $thisCond.cond = 0
-   *    return [nodes]
-   *   } else if (cond2) {
-   *    if ($thisCond.cond === 1) return
-   *    ${children}
-   *    $thisCond.cond = 1
-   *    return [nodes]
-   *   }
-   * })
-   */
-  private declareIfNode(nodeName: string, branches: IfBranch[], depMask: Bitmap): t.Statement {
     // ---- If no else statement, add one
     if (
-      !this.t.isBooleanLiteral(branches[branches.length - 1].condition.value, {
+      !t.isBooleanLiteral(branches[branches.length - 1].condition.value, {
         value: true,
       })
     ) {
       branches.push({
         condition: {
-          value: this.t.booleanLiteral(true),
-          depMask: 0,
-          allDepBits: [],
-          dependenciesNode: this.t.arrayExpression([]),
+          value: t.booleanLiteral(true),
+          depIdBitmap: 0,
+          dependenciesNode: t.arrayExpression([]),
         },
         children: [],
       });
     }
+
     const ifStatement = branches.reverse().reduce<any>((acc, { condition, children }, i) => {
       const idx = branches.length - i - 1;
       // ---- Generate children
-      const [childStatements, topLevelNodes, updateStatements, nodeIdx] = this.generateChildren(children, false, true);
-
-      // ---- Even if no updateStatements, we still need reassign an empty updateFunc
-      //      to overwrite the previous one
-      /**
-       * $thisCond.updateFunc = (changed) => { ${updateStatements} }
-       */
-      const updateNode = this.t.expressionStatement(
-        this.t.assignmentExpression(
-          '=',
-          this.t.memberExpression(this.t.identifier('$thisCond'), this.t.identifier('updateFunc')),
-          this.t.arrowFunctionExpression(this.updateParams, this.geneUpdateBody(updateStatements))
-        )
-      );
-
-      // ---- Update func
-      childStatements.unshift(...this.declareNodes(nodeIdx), updateNode);
-
-      // ---- Check cond and update cond
-      childStatements.unshift(this.geneCondCheck(idx), this.geneCondIdx(idx));
-
-      // ---- Return statement
-      childStatements.push(this.geneCondReturnStatement(topLevelNodes, idx));
+      const childStatements = [geneCondCheck(node, idx), geneCondReturnStatement(children, ctx)];
 
       // ---- else statement
-      if (i === 0) return this.t.blockStatement(childStatements);
+      if (i === 0) return t.blockStatement(childStatements);
 
-      return this.geneIfStatement(condition.value, childStatements, acc);
+      return geneIfStatement(geneCondition(node, idx, condition), childStatements, acc);
     }, undefined);
 
-    return this.declareCondNode(nodeName, this.t.blockStatement([ifStatement]), depMask);
-  }
-}
+    return t.callExpression(t.identifier(importMap.createConditionalNode), [
+      t.arrowFunctionExpression([node], t.blockStatement([ifStatement])),
+    ]);
+  },
+};

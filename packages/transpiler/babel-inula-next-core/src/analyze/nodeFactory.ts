@@ -14,7 +14,7 @@
  */
 
 import { NodePath } from '@babel/core';
-import { ComponentNode, FunctionalExpression, ReactiveVariable, CompOrHook, HookNode, IRScope } from './types';
+import { ComponentNode, FunctionalExpression, CompOrHook, HookNode, IRScope } from './types';
 import { COMPONENT } from '../constants';
 
 export function createIRNode<T extends CompOrHook>(

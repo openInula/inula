@@ -1,6 +1,6 @@
 import { type HTMLParticle } from '@openinula/reactivity-parser';
 import { setHTMLProp } from '../HelperGenerators/HTMLPropGenerator';
-import { ViewGenerator, ViewContext } from '../../index';
+import { ViewGenerator, ViewContext } from '../index';
 import { types as t } from '@openInula/babel-api';
 import { nodeNameInUpdate } from '../HelperGenerators/BaseGenerator';
 
@@ -8,12 +8,9 @@ import { nodeNameInUpdate } from '../HelperGenerators/BaseGenerator';
  * HTMLGenerator
  * create html node (static / reactive)
  * template:
- *
- *    createReactiveHTMLNode('h4', node => {
- *      setReactiveHTMLProp(node, 'textContent', () => result, [result], 0b1000);
- *    }, [children])
  *    createHTMLNode('button', node => {
  *      setHTMLProp(node, 'textContent', 'Increment');
+ *      setHTMLProp(node, 'textContent', () => result, [result], 0b1000);
  *      delegateEvent(node, 'click', increment);
  *    }, [children])
  */
@@ -31,14 +28,15 @@ export const htmlGenerator: ViewGenerator = {
       if (reactBits) isDynamic = true;
       propStmts.push(setHTMLProp(nodeNameInUpdate, tagName, key, value, reactBits, dependenciesNode));
     });
+    const propsUpdater =
+      propStmts.length > 0 ? t.arrowFunctionExpression([], t.blockStatement(propStmts)) : t.nullLiteral();
 
     // ---- Resolve children
     const childrenNodes: t.Expression[] = children.map(child => ctx.next(child));
 
-    const apiName = isDynamic ? 'createReactiveHTMLNode' : 'createHTMLNode';
-    const nodeCreationExpr = t.callExpression(t.identifier(apiName), [
+    const nodeCreationExpr = t.callExpression(t.identifier(importMap.createHTMLNode), [
       t.stringLiteral(tagName),
-      t.arrowFunctionExpression([], t.blockStatement(propStmts)),
+      propsUpdater,
       ...childrenNodes,
     ]);
 

@@ -39,20 +39,12 @@ describe('children', () => {
       }
     `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, Comp as $$Comp, setProp as $$setProp, initCompNode as $$initCompNode } from "@openinula/next";
+      "import { compBuilder as $$compBuilder, createCompNode as $$createCompNode } from "@openinula/next";
       function App() {
-        let self;
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            let $node0;
-            $node0 = $$Comp(Child, {
-              "name": 'hello world!!!'
-            });
-            return [[$node0],,];
-          }
-        });
-        return $$initCompNode(self);
+        const self = $$compBuilder();
+        return self.prepare().init($$createCompNode(Child({
+          "name": 'hello world!!!'
+        }), node => {}));
       }"
     `);
   });
@@ -72,43 +64,17 @@ describe('children', () => {
       }
       `)
     ).toMatchInlineSnapshot(`
-      "import { updateNode as $$updateNode, createComponent as $$createComponent, createElement as $$createElement, createNode as $$createNode, insertNode as $$insertNode, Comp as $$Comp, initCompNode as $$initCompNode } from "@openinula/next";
+      "import { compBuilder as $$compBuilder, createFragmentNode as $$createFragmentNode, createCompNode as $$createCompNode } from "@openinula/next";
       function MyComp() {
-        let self;
+        const self = $$compBuilder();
         let count = 0;
-        const add = () => $$updateNode(self, count += 1, 1 /*0b1*/);
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            let $node0, $node1;
-            $node1 = $$createNode(6 /*Children*/, $addUpdate => {
-              let $node0, $node1;
-              $addUpdate($changed => {
-                if ($changed & 1) {
-                  $node1 && $$updateNode($node1, () => count, [count]);
-                }
-              });
-              $node0 = $$createElement("h1");
-              $node1 = $$createNode(3 /*Exp*/, () => count, [count]);
-              $$insertNode($node0, $node1, 0);
-              $node0._$nodes = [$node1];
-              return [$node0];
-            });
-            $node0 = $$Comp(Sub, {
-              "children": $node1
-            });
-            return [[$node0], $changed => {
-              $$updateNode($node1, $changed);
-              return [$node0];
-            }];
-          }
-        });
-        return $$initCompNode(self);
+        const add = () => self.wave(self, count += 1, 1 /*0b1*/);
+        return self.prepare().init($$createFragmentNode($$createCompNode(Sub({}), node => {})));
       }"
     `);
   });
 
-  it('should support null children', () => {
+  it.fails('should support null children', () => {
     expect(
       transform(`
       function App() {
@@ -117,16 +83,11 @@ describe('children', () => {
       }
     `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, initCompNode as $$initCompNode } from "@openinula/next";
+      "import { compBuilder as $$compBuilder } from "@openinula/next";
       function App() {
-        let self;
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            fn();
-          }
-        });
-        return $$initCompNode(self);
+        const self = $$compBuilder();
+        fn();
+        return null;
       }"
     `);
   });

@@ -31,20 +31,13 @@ describe('fragment', () => {
         );
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, createElement as $$createElement, initCompNode as $$initCompNode } from "@openinula/next";
+      "import { compBuilder as $$compBuilder, createFragmentNode as $$createFragmentNode, createHTMLNode as $$createHTMLNode } from "@openinula/next";
       import { render } from '@openinula/next';
       function App() {
-        let self;
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            let $node0;
-            $node0 = $$createElement("div");
-            $node0.textContent = "xxx";
-            return [[$node0],,];
-          }
-        });
-        return $$initCompNode(self);
+        const self = $$compBuilder();
+        return self.prepare().init($$createFragmentNode($$createHTMLNode("div", () => {
+          node.setAttribute("textContent", "xxx");
+        })));
       }
       render(App, document.getElementById('app'));"
     `);

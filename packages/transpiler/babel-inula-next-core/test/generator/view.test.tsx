@@ -27,26 +27,10 @@ describe('view generation', () => {
 
     expect(code).toMatchInlineSnapshot(`
       "function Comp() {
-        let self;
+        const self = $$compBuilder();
         let text = 'hello world';
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            console.log(text);
-            let $node0, $node1;
-            $node0 = $$createElement("div");
-            $node1 = $$createNode(3 /*Exp*/, () => text, [text]);
-            $$insertNode($node0, $node1, 0);
-            $node0._$nodes = [$node1];
-            return [[$node0], $changed => {
-              if ($changed & 1) {
-                $node1 && $$updateNode($node1, () => text, [text]);
-              }
-              return [$node0];
-            }];
-          }
-        });
-        return $$initCompNode(self);
+        console.log(text);
+        return self.prepare().init($$createHTMLNode("div", null, $$createExpNode(() => text, [text], 1)));
       }"
     `);
   });
@@ -56,46 +40,22 @@ describe('view generation', () => {
       const Comp = Component(() => {
         let text = 'hello world';
         let color = 'red';
-
-
         return <div className={text} id={text} style={{color}}>{text}</div>
       })
     `);
 
     expect(code).toMatchInlineSnapshot(`
       "function Comp() {
-        let self;
+        const self = $$compBuilder();
         let text = 'hello world';
         let color = 'red';
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            let $node0, $node1;
-            $node0 = $$createElement("div");
-            $$setHTMLProp($node0, "className", () => text, [text]);
-            $$setHTMLProp($node0, "id", () => text, [text]);
-            $$setStyle($node0, {
-              color
-            });
-            $node1 = $$createNode(3 /*Exp*/, () => text, [text]);
-            $$insertNode($node0, $node1, 0);
-            $node0._$nodes = [$node1];
-            return [[$node0], $changed => {
-              if ($changed & 1) {
-                $node0 && $$setHTMLProp($node0, "className", () => text, [text]);
-                $node0 && $$setHTMLProp($node0, "id", () => text, [text]);
-                $node1 && $$updateNode($node1, () => text, [text]);
-              }
-              if ($changed & 2) {
-                $node0 && $$setStyle($node0, {
-                  color
-                });
-              }
-              return [$node0];
-            }];
-          }
-        });
-        return $$initCompNode(self);
+        return self.prepare().init($$createHTMLNode("div", () => {
+          $$setHTMLProp(node, "className", () => text, [text], 1);
+          $$setHTMLProp(node, "id", () => text, [text], 1);
+          $$setHTMLProp(node, "style", () => ({
+            color
+          }), [color], 2);
+        }, $$createExpNode(() => text, [text], 1)));
       }"
     `);
   });
@@ -114,39 +74,17 @@ describe('view generation', () => {
     `);
 
     expect(code).toMatchInlineSnapshot(`
-      "const _$t = (() => {
-        let $node0, $node1, $node2;
-        $node0 = $$createElement("div");
+      "const $t0 = function () {
         $node1 = $$createElement("div");
-        $$appendNode($node0, $node1);
         $node2 = $$createElement("div");
-        $$appendNode($node0, $node2);
-        return $node0;
-      })();
+        $$appendNode($node1, $node2);
+        $node3 = $$createElement("div");
+        $$appendNode($node1, $node3);
+      }();
       function Comp() {
-        let self;
+        const self = $$compBuilder();
         let text = 'hello world';
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            let $node0, $node1, $node2, $node3, $node4;
-            $node0 = _$t.cloneNode(true);
-            $node1 = $node0.firstChild;
-            $node2 = $node1.nextSibling;
-            $node3 = $$createNode(3 /*Exp*/, () => text, [text]);
-            $$insertNode($node1, $node3, 0);
-            $node4 = $$createNode(3 /*Exp*/, () => text, [text]);
-            $$insertNode($node2, $node4, 0);
-            return [[$node0], $changed => {
-              if ($changed & 1) {
-                $node3 && $$updateNode($node3, () => text, [text]);
-                $node4 && $$updateNode($node4, () => text, [text]);
-              }
-              return [$node0];
-            }];
-          }
-        });
-        return $$initCompNode(self);
+        return self.prepare().init($$createTemplateNode($t0, null, [0, $$createExpNode(() => text, [text], 1), 0], [0, $$createExpNode(() => text, [text], 1), 1]));
       }"
     `);
   });
@@ -165,30 +103,9 @@ describe('view generation', () => {
     `);
     expect(code).toMatchInlineSnapshot(`
       "function Comp() {
-        let self;
+        const self = $$compBuilder();
         let text = 'hello world';
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            let $node0, $node1, $node2, $node3;
-            $node0 = $$createElement("div");
-            $node1 = $$createNode(3 /*Exp*/, () => text, [text]);
-            $$insertNode($node0, $node1, 0);
-            $node0._$nodes = [$node1];
-            $node2 = $$createElement("div");
-            $node3 = $$createNode(3 /*Exp*/, () => text, [text]);
-            $$insertNode($node2, $node3, 0);
-            $node2._$nodes = [$node3];
-            return [[$node0, $node2], $changed => {
-              if ($changed & 1) {
-                $node1 && $$updateNode($node1, () => text, [text]);
-                $node3 && $$updateNode($node3, () => text, [text]);
-              }
-              return [$node0, $node2];
-            }];
-          }
-        });
-        return $$initCompNode(self);
+        return self.prepare().init($$createFragmentNode($$createHTMLNode("div", null, $$createExpNode(() => text, [text], 1)), $$createHTMLNode("div", null, $$createExpNode(() => text, [text], 1))));
       }"
     `);
   });
@@ -212,57 +129,20 @@ describe('view generation', () => {
 
     expect(code).toMatchInlineSnapshot(`
       "function Comp() {
-        let self;
+        const self = $$compBuilder();
         let text = 'hello world';
         let show = true;
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            let $node0, $node1;
-            $node0 = $$createElement("div");
-            $node1 = $$createNode(2 /*Cond*/, 2, $thisCond => {
-              if (show) {
-                if ($thisCond.cond === 0) {
-                  $thisCond.didntChange = true;
-                  return [];
-                }
-                $thisCond.cond = 0;
-                let $node0, $node1;
-                $thisCond.updateFunc = $changed => {
-                  if ($changed & 1) {
-                    $node1 && $$updateNode($node1, () => text, [text]);
-                  }
-                };
-                $node0 = $$createElement("div");
-                $node1 = $$createNode(3 /*Exp*/, () => text, [text]);
-                $$insertNode($node0, $node1, 0);
-                $node0._$nodes = [$node1];
-                return $thisCond.cond === 0 ? [$node0] : $$updateNode($thisCond);
-              } else {
-                if ($thisCond.cond === 1) {
-                  $thisCond.didntChange = true;
-                  return [];
-                }
-                $thisCond.cond = 1;
-                let $node0;
-                $thisCond.updateFunc = $changed => {};
-                $node0 = $$createElement("h1");
-                $node0.textContent = "else";
-                return $thisCond.cond === 1 ? [$node0] : $$updateNode($thisCond);
-              }
-            });
-            $$insertNode($node0, $node1, 0);
-            $node0._$nodes = [$node1];
-            return [[$node0], $changed => {
-              if ($changed & 2) {
-                $node1 && $$updateNode($node1);
-              }
-              $node1 && $$updateChildren($node1, $changed);
-              return [$node0];
-            }];
+        return self.prepare().init($$createHTMLNode("div", null, $$createConditionalNode(node => {
+          if (node.cachedCondition(0, () => show, [show])) {
+            if (node.branch(0)) return [];
+            return [$$createHTMLNode("div", null, $$createExpNode(() => text, [text], 1))];
+          } else {
+            if (node.branch(1)) return [];
+            return [$$createHTMLNode("h1", () => {
+              node.setAttribute("textContent", "else");
+            })];
           }
-        });
-        return $$initCompNode(self);
+        })));
       }"
     `);
   });
@@ -282,40 +162,17 @@ describe('view generation', () => {
     `);
     expect(code).toMatchInlineSnapshot(`
       "function Comp() {
-        let self;
+        const self = $$compBuilder();
         let list = ['hello', 'world'];
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            let $node0, $node1;
-            $node0 = $$createElement("div");
-            $node1 = $$createNode(1 /*For*/, list, 1, list.map(item => index), (item, index, $updateArr) => {
-              let $node0, $node1;
-              $updateArr[index] = ($changed, $item) => {
-                item = $item;
-                if ($changed & 1) {
-                  $node1 && $$updateNode($node1, () => item, [item]);
-                }
-              };
-              $node0 = $$createElement("div");
-              $node0.setAttribute("key", index);
-              $node1 = $$createNode(3 /*Exp*/, () => item, [item]);
-              $$insertNode($node0, $node1, 0);
-              $node0._$nodes = [$node1];
-              return [$node0];
-            });
-            $$insertNode($node0, $node1, 0);
-            $node0._$nodes = [$node1];
-            return [[$node0], $changed => {
-              if ($changed & 1) {
-                $node1 && $$updateNode($node1, list, list.map(item => index));
-              }
-              $node1 && $$updateChildren($node1, $changed);
-              return [$node0];
-            }];
-          }
-        });
-        return $$initCompNode(self);
+        return self.prepare().init($$createHTMLNode("div", null, $$createForNode(() => list, () => list.map(item => index), (node, updateItemFuncArr, item, key, index) => {
+          updateItemFuncArr.index = (newItem, newIdx) => {
+            item = newItem;
+            index = newIdx;
+          };
+          return [$$createHTMLNode("div", () => {
+            node.setAttribute("key", index);
+          }, $$createExpNode(() => item, [item], 1))];
+        }, 1)));
       }"
     `);
   });

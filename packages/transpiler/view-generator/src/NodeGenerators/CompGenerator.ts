@@ -1,13 +1,7 @@
 import { types as t } from '@openInula/babel-api';
-import {
-  type DependencyProp,
-  type CompParticle,
-  type ViewParticle,
-  Bitmap,
-  TemplateParticle,
-} from '@openinula/reactivity-parser';
-import BaseGenerator, { importMap } from '../HelperGenerators/BaseGenerator';
-import { ViewContext, ViewGenerator } from '../../index';
+import { type CompParticle } from '@openinula/reactivity-parser';
+import { importMap } from '../HelperGenerators/BaseGenerator';
+import { ViewContext, ViewGenerator } from '../index';
 
 function genUpdateProp(
   nodeId: t.Identifier,
@@ -51,13 +45,15 @@ function genUpdateProp(
  *  })
  */
 export const compGenerator: ViewGenerator = {
-  comp: ({ tag, props, children }: CompParticle, ctx: ViewContext) => {
+  comp: ({ tag, props }: CompParticle, ctx: ViewContext) => {
     const updateProps: t.Statement[] = [];
     const node = t.identifier('node');
 
     const comp = t.callExpression(tag, [
       t.objectExpression(
         Object.entries(props).map(([key, value]) => {
+          ctx.wrapUpdate(value.value);
+
           if (value.depIdBitmap) {
             updateProps.push(
               genUpdateProp(node, key, value.value, ctx.getReactBits(value.depIdBitmap), value.dependenciesNode)
