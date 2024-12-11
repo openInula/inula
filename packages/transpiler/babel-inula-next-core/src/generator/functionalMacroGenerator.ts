@@ -2,7 +2,7 @@ import { Generator } from './index';
 import { getBabelApi, types as t } from '@openinula/babel-api';
 import { wrapUpdate } from './utils';
 
-export function stateGenerator(): Generator {
+export function functionalMacroGenerator(): Generator {
   return {
     /**
      * self.watch(() => {
@@ -14,12 +14,11 @@ export function stateGenerator(): Generator {
     watch(stmt, { selfId, getWaveBits, getReactBits }) {
       const watchFnBody = stmt.callback.node;
       wrapUpdate(selfId, watchFnBody, getWaveBits);
-
       return t.expressionStatement(
         t.callExpression(t.memberExpression(selfId, t.identifier('watch')), [
           watchFnBody,
-          stmt.dependency.dependenciesNode,
-          t.numericLiteral(getReactBits(stmt.dependency.depIdBitmap)),
+          stmt.dependency ? t.arrowFunctionExpression([], stmt.dependency.dependenciesNode) : t.nullLiteral(),
+          t.numericLiteral(getReactBits(stmt.dependency?.depIdBitmap ?? 0)),
         ])
       );
     },

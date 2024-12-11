@@ -1,12 +1,6 @@
-import {
-  Bitmap,
-  MutableParticle,
-  TemplateProp,
-  type HTMLParticle,
-  type TemplateParticle,
-} from '@openinula/reactivity-parser';
-import HTMLPropGenerator, { setHTMLProp } from '../HelperGenerators/HTMLPropGenerator';
-import { ViewGenerator, ViewContext } from '../../index';
+import { MutableParticle, TemplateProp, type TemplateParticle } from '@openinula/reactivity-parser';
+import { setHTMLProp } from '../HelperGenerators/HTMLPropGenerator';
+import { ViewGenerator, ViewContext } from '../index';
 import { types as t } from '@openInula/babel-api';
 import { importMap, prefixMap } from '../HelperGenerators/BaseGenerator';
 import { genTemplateContent } from '../TemplateContentGenerator/ImperativeTemplateGenerator';
@@ -29,15 +23,19 @@ function generateTemplateName(templateIdx: number): string {
  * @returns
  */
 function genPropsUpdater(props: TemplateProp[], ctx: ViewContext): t.Expression {
+  if (props.length === 0) {
+    return t.nullLiteral();
+  }
+
   const nodeMap: Record<string, string> = {};
   const nodeDeclareStatements: t.Statement[] = [];
   let nodeIdx = 0;
   const propsAssignments = props.map(({ tag, path, key, value, depIdBitmap, dependenciesNode }) => {
-    const nodeName = generateNodeName(nodeIdx++);
     const pathString = path.join('.');
-    if (!nodeMap[pathString]) {
+    let nodeName = nodeMap[pathString];
+    if (!nodeName) {
+      nodeName = generateNodeName(nodeIdx++, tag);
       // locate the node
-      const nodeName = generateNodeName(nodeIdx++);
       nodeDeclareStatements.push(
         t.variableDeclaration('const', [
           t.variableDeclarator(
@@ -85,7 +83,7 @@ function genMutableParticlesUpdater(mutableParticles: MutableParticle[], ctx: Vi
  * create template node with mutable particles and props
  * @example
  *
- * const TEMPLATE = createTemplate(`<div s><span></span></div>`)
+ * const TEMPLATE = createTemplate(`<div><span></span></div>`)
  * createTemplateNode(
  *   TEMPLATE,                    // First param: template definition
  *   node => {                   // Second param: update function for node
@@ -107,6 +105,10 @@ export const templateGenerator: ViewGenerator = {
     const propsUpdater = genPropsUpdater(props, ctx);
     const mutableParticlesUpdater = genMutableParticlesUpdater(mutableParticles, ctx);
 
-    return t.callExpression(t.identifier(importMap.createTemplateNode), [t.identifier(templateName), propsUpdater]);
+    return t.callExpression(t.identifier(importMap.createTemplateNode), [
+      t.identifier(templateName),
+      propsUpdater,
+      ...mutableParticlesUpdater,
+    ]);
   },
 };

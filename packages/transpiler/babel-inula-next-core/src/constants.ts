@@ -1,3 +1,5 @@
+import { IRStmt, RestPropStmt, SinglePropStmt, WholePropStmt } from './analyze/types';
+
 export const COMPONENT = 'Component';
 export const HOOK = 'Hook';
 export const WILL_MOUNT = 'willMount';
@@ -11,6 +13,10 @@ export enum PropType {
   REST = 'restProp',
   SINGLE = 'singleProp',
   WHOLE = 'wholeProp',
+}
+
+export function isPropStmt(stmt: IRStmt): stmt is SinglePropStmt | WholePropStmt | RestPropStmt {
+  return (Object.values(PropType) as string[]).includes(stmt.type);
 }
 
 export const reactivityFuncNames = [
@@ -32,6 +38,9 @@ export const reactivityFuncNames = [
   'clear',
 ];
 
+// --- api for users
+export const USE_CONTEXT = 'useContext';
+// --- api for compiler
 const API_NAMES = [
   'createElement',
   'createComponent',
@@ -62,6 +71,19 @@ const API_NAMES = [
   'initCompNode',
   'emitUpdate',
   'compBuilder',
+  'createCompNode',
+  'createHTMLNode',
+  'createFragmentNode',
+  'createForNode',
+  'createConditionalNode',
+  'templateGetElement',
+  'createTemplateNode',
+  'createTextNode',
+  'createExpNode',
+  'createContextNode',
+  'setText',
+  'withDefault',
+  'useContext',
 ] as const;
 
 export const originalImportMap = Object.fromEntries(API_NAMES.map(name => [name, `$$${name}`])) as ImportMapType;

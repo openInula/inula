@@ -26,6 +26,8 @@ export function viewAnalyze(): Visitor {
       const returnedPath = path.get('argument');
       if (returnedPath.isJSXElement() || returnedPath.isJSXFragment()) {
         builder.setViewChild(returnedPath.node);
+      } else {
+        builder.addRawStmt(path);
       }
     },
   };

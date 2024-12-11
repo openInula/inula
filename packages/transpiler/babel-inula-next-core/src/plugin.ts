@@ -2,7 +2,7 @@ import type babel from '@babel/core';
 import type { BabelFile } from '@babel/core';
 import { NodePath, type PluginObj, type types as t } from '@babel/core';
 import { type InulaNextOption } from './types';
-import { defaultAttributeMap, defaultHTMLTags, getAccessedKeys, resetAccessedKeys } from './constants';
+import { defaultAttributeMap, defaultHTMLTags, getAccessedKeys } from './constants';
 import { analyze } from './analyze';
 import { addImport, extractFnFromMacro, fileAllowed, getMacroType, toArray } from './utils';
 import { register } from '@openinula/babel-api';
@@ -17,7 +17,12 @@ interface PluginState {
   file: BabelFile;
 }
 
-function transformNode(path: NodePath<t.CallExpression>, htmlTags: string[], state: PluginState) {
+function transformNode(
+  path: NodePath<t.CallExpression>,
+  htmlTags: string[],
+  state: PluginState,
+  hoist: (node: t.Statement | t.Statement[]) => void
+) {
   if (ALREADY_COMPILED.has(path)) return false;
   const type = getMacroType(path);
   if (type) {
@@ -32,11 +37,11 @@ function transformNode(path: NodePath<t.CallExpression>, htmlTags: string[], sta
         console.error(`${type} macro must be assigned to a variable`);
       }
     }
-    const root = analyze(type, name, componentNode, {
+    const [root, bitManager] = analyze(type, name, componentNode, {
       htmlTags,
     });
 
-    const resultNode = generate(root);
+    const resultNode = generate(root, bitManager, hoist);
 
     recordComponentInState(state, name, root);
 
@@ -77,9 +82,18 @@ export default function (api: typeof babel, options: InulaNextOption): PluginObj
           }
           let transformationHappenedInFile = false;
 
+          const hoistedNodes: t.Statement[] = [];
+          const hoist = (node: t.Statement | t.Statement[]) => {
+            if (Array.isArray(node)) {
+              hoistedNodes.push(...node);
+            } else {
+              hoistedNodes.push(node);
+            }
+          };
+
           program.traverse({
             CallExpression(path) {
-              const transformed = transformNode(path, htmlTags, state);
+              const transformed = transformNode(path, htmlTags, state, hoist);
               if (transformed) {
                 path.skip();
               }
@@ -91,6 +105,8 @@ export default function (api: typeof babel, options: InulaNextOption): PluginObj
           if (transformationHappenedInFile && !options.skipImport) {
             addImport(program.node, getAccessedKeys(), packageName);
           }
+
+          program.node.body.unshift(...hoistedNodes);
         },
       },
     },

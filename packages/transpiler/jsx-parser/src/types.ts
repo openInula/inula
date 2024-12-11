@@ -32,6 +32,11 @@ export interface TemplateUnit {
   props: TemplateProp[];
 }
 
+export interface FragmentUnit {
+  type: 'fragment';
+  children: ViewUnit[];
+}
+
 export interface HTMLUnit {
   type: 'html';
   tag: t.Expression;
@@ -77,7 +82,16 @@ export interface ForUnit {
   index: t.Identifier | null;
   children: ViewUnit[];
 }
-export type ViewUnit = TextUnit | HTMLUnit | CompUnit | IfUnit | ExpUnit | ContextUnit | TemplateUnit | ForUnit;
+export type ViewUnit =
+  | TextUnit
+  | HTMLUnit
+  | CompUnit
+  | IfUnit
+  | ExpUnit
+  | ContextUnit
+  | TemplateUnit
+  | ForUnit
+  | FragmentUnit;
 
 export interface ViewParserConfig {
   babelApi: typeof Babel;

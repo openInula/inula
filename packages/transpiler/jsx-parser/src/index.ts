@@ -7,8 +7,8 @@ import type { ViewUnit, ViewParserConfig, AllowedJSXNode } from './types';
  * @param config
  * @returns ViewUnit[]
  */
-export function parseView(node: AllowedJSXNode, config: ViewParserConfig): ViewUnit[] {
-  return new ViewParser(config).parse(node);
+export function parseView(node: AllowedJSXNode, config: ViewParserConfig): ViewUnit {
+  return new ViewParser(config).parse(node)[0];
 }
 
 export * from './types';

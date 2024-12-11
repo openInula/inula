@@ -17,8 +17,7 @@ import { NodePath } from '@babel/core';
 import { LifeCycle, Visitor } from '../types';
 import { types as t } from '@openinula/babel-api';
 import { DID_MOUNT, DID_UNMOUNT, WATCH, WILL_MOUNT, WILL_UNMOUNT } from '../../constants';
-import { extractFnFromMacro, getFnBodyPath } from '../../utils';
-import { extractFnBody } from '../utils';
+import { extractFnFromMacro } from '../../utils';
 
 function isLifeCycleName(name: string): name is LifeCycle {
   return [WILL_MOUNT, DID_MOUNT, WILL_UNMOUNT, DID_UNMOUNT].includes(name);
@@ -54,17 +53,13 @@ export function functionalMacroAnalyze(): Visitor {
             const depsPath = getWatchDeps(expression);
 
             const dependency = builder.getDependency((depsPath ?? fnPath).node);
-            if (dependency) {
-              builder.addWatch(fnPath, dependency);
-            } else {
-              builder.addLifecycle(WILL_MOUNT, fnPath);
-            }
+            builder.addWatch(fnPath, dependency);
             return;
           }
         }
       }
 
-      builder.addWillMount(path.node);
+      builder.addRawStmt(path.node);
     },
   };
 }

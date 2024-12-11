@@ -1,5 +1,6 @@
 import { Generator } from './index';
-import { getBabelApi, types as t } from '@openinula/babel-api';
+import { types as t } from '@babel/core';
+import { importMap } from '../constants';
 
 export function stateGenerator(): Generator {
   return {
@@ -21,7 +22,7 @@ export function stateGenerator(): Generator {
       );
 
       const updateCall = t.expressionStatement(
-        t.callExpression(selfId, [
+        t.callExpression(t.memberExpression(selfId, t.identifier('deriveState')), [
           // update function
           t.arrowFunctionExpression([], t.parenthesizedExpression(t.assignmentExpression('=', stmt.lVal, stmt.value))),
           // dependencies node
@@ -34,8 +35,3 @@ export function stateGenerator(): Generator {
     },
   };
 }
-
-const props = { a: 1, b: 2, c: 3 };
-let { a, ...rest } = props;
-let value = { a: 1, b: 3, c: 4 };
-rest = { ...rest, ...value };

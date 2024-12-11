@@ -8,6 +8,6 @@ export function typeNode(type: InulaNodeType) {
   return node;
 }
 
-export function generateNodeName(nodeIdx: number): string {
-  return `${prefixMap.node}${nodeIdx}`;
+export function generateNodeName(nodeIdx: number, tag: string): string {
+  return `${tag}${nodeIdx}`;
 }

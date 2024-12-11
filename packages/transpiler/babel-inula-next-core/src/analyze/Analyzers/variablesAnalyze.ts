@@ -13,14 +13,15 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { AnalyzeContext, Visitor } from '../types';
+import { AnalyzeContext, CTX_PROPS, Visitor } from '../types';
 import { isStaticValue, isValidPath } from '../utils';
 import { type NodePath } from '@babel/core';
 import { importMap } from '../../constants';
 import { analyzeUnitOfWork } from '../index';
 import { types as t } from '@openinula/babel-api';
-import { isCompPath } from '../../utils';
+import { assertIdOrDeconstruct, isCompPath, isUseContext } from '../../utils';
 import { IRBuilder } from '../IRBuilder';
+import { parseDeconstructable } from '../parseDeconstructable';
 
 /**
  * collect all properties and methods from the node
@@ -50,11 +51,29 @@ export function variablesAnalyze(): Visitor {
           resolveUninitializedVariable(kind, builder, id, declaration.node);
           return;
         }
+        assertIdOrDeconstruct(id, 'Invalid Variable type when adding variable: ' + id.type);
 
         // Handle the subcomponent, should like Component(() => {})
         if (init.isCallExpression() && isCompPath(init)) {
           assertIdentifier(id);
           resolveSubComponent(init, builder, id, ctx);
+          return;
+        }
+
+        // Handle use context, like const ctx = useContext()
+        if (init.isCallExpression() && isUseContext(init)) {
+          const context = init.get('arguments')[0];
+          assertIdentifier(context);
+          builder.addContext(id, context.node);
+          parseDeconstructable(id, payload => {
+            if (payload.type === 'rest') {
+              builder.addRestProps(payload.name, CTX_PROPS);
+            } else if (payload.type === 'single') {
+              builder.addSingleProp(payload.name, payload.value, payload.node, CTX_PROPS);
+            } else if (payload.type === 'props') {
+              builder.addProps(payload.name, payload.node, CTX_PROPS);
+            }
+          });
           return;
         }
 
@@ -75,7 +94,7 @@ export function variablesAnalyze(): Visitor {
   };
 }
 
-function assertIdentifier(id: NodePath<t.LVal>): asserts id is NodePath<t.Identifier> {
+function assertIdentifier(id: NodePath<t.Node>): asserts id is NodePath<t.Identifier> {
   if (!id.isIdentifier()) {
     throw new Error(`${id.node.type} is not valid initial value type for state`);
   }

@@ -29,39 +29,13 @@ describe('state', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, updateNode as $$updateNode, notCached as $$notCached, createElement as $$createElement, createNode as $$createNode, insertNode as $$insertNode, createTextNode as $$createTextNode, appendNode as $$appendNode, initCompNode as $$initCompNode } from "@openinula/next";
+      "import { Comp as $$Comp, compBuilder as $$compBuilder, createExpNode as $$createExpNode, createTextNode as $$createTextNode, createHTMLNode as $$createHTMLNode } from "@openinula/next";
       function App() {
-        let self;
+        const self = $$compBuilder();
         let x = 0;
-        let count;
-        let setCount;
-        self = $$createComponent({
-          updateState: changed => {
-            if (changed & 1) {
-              if ($$notCached(self, "cache0", [x])) {
-                {
-                  $$updateNode(self, [count, setCount] = genState(x), 2 /*0b10*/);
-                }
-              }
-            }
-          },
-          getUpdateViews: () => {
-            let $node0, $node1, $node2;
-            $node0 = $$createElement("div");
-            $node1 = $$createNode(3 /*Exp*/, () => count, [count]);
-            $$insertNode($node0, $node1, 0);
-            $node2 = $$createTextNode(" is smaller than 1", []);
-            $$appendNode($node0, $node2);
-            $node0._$nodes = [$node1, $node2];
-            return [[$node0], $changed => {
-              if ($changed & 2) {
-                $node1 && $$updateNode($node1, () => count, [count]);
-              }
-              return [$node0];
-            }];
-          }
-        });
-        return $$initCompNode(self);
+        let count, setCount;
+        self.deriveState(() => ([count, setCount] = genState(x)), () => [x], 1);
+        return self.prepare().init($$createHTMLNode("div", null, $$createExpNode(() => count, [count], 2), $$createTextNode(" is smaller than 1")));
       }"
     `);
   });
@@ -79,43 +53,18 @@ describe('state', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { Comp as $$Comp, createComponent as $$createComponent, updateNode as $$updateNode, notCached as $$notCached, createElement as $$createElement, createNode as $$createNode, insertNode as $$insertNode, initCompNode as $$initCompNode } from "@openinula/next";
+      "import { Comp as $$Comp, compBuilder as $$compBuilder, createExpNode as $$createExpNode, createHTMLNode as $$createHTMLNode } from "@openinula/next";
       function App() {
-        let self;
+        const self = $$compBuilder();
         let x = 1;
         let double;
+        self.deriveState(() => (double = x * 2), () => [x], 1);
         let quadruple;
+        self.deriveState(() => (quadruple = double * 2), () => [double], 2);
         const getQuadruple = () => quadruple;
         let y;
-        self = $$createComponent({
-          updateState: changed => {
-            if (changed & 1) {
-              if ($$notCached(self, "cache0", [x])) {
-                $$updateNode(self, double = x * 2, 2 /*0b10*/);
-                $$updateNode(self, y = getQuadruple() + x, 4 /*0b100*/);
-              }
-            }
-            if (changed & 2) {
-              if ($$notCached(self, "cache1", [double])) {
-                quadruple = double * 2;
-              }
-            }
-          },
-          getUpdateViews: () => {
-            let $node0, $node1;
-            $node0 = $$createElement("div");
-            $node1 = $$createNode(3 /*Exp*/, () => y, [y]);
-            $$insertNode($node0, $node1, 0);
-            $node0._$nodes = [$node1];
-            return [[$node0], $changed => {
-              if ($changed & 4) {
-                $node1 && $$updateNode($node1, () => y, [y]);
-              }
-              return [$node0];
-            }];
-          }
-        });
-        return $$initCompNode(self);
+        self.deriveState(() => (y = getQuadruple() + x), () => [x], 1);
+        return self.prepare().init($$createHTMLNode("div", null, $$createExpNode(() => y, [y], 4)));
       }"
     `);
   });

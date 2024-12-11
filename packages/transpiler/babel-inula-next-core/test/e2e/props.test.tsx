@@ -25,18 +25,10 @@ describe('props', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, Comp as $$Comp, initCompNode as $$initCompNode } from "@openinula/next";
+      "import { compBuilder as $$compBuilder, createCompNode as $$createCompNode } from "@openinula/next";
       function App() {
-        let self;
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            let $node0;
-            $node0 = $$Comp(Child, {});
-            return [[$node0],,];
-          }
-        });
-        return $$initCompNode(self);
+        const self = $$compBuilder();
+        return self.prepare().init($$createCompNode(Child({}), node => {}));
       }"
     `);
   });
@@ -50,40 +42,18 @@ describe('props', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, updateNode as $$updateNode, createElement as $$createElement, setHTMLProp as $$setHTMLProp, initCompNode as $$initCompNode } from "@openinula/next";
+      "import { compBuilder as $$compBuilder, withDefault as $$withDefault, setHTMLProp as $$setHTMLProp, createHTMLNode as $$createHTMLNode } from "@openinula/next";
       function App({
         id,
         className = 'default'
       }) {
-        let self;
-        let id_$p$_ = id;
-        let className_$p$_ = className;
-        self = $$createComponent({
-          updateState: changed => {},
-          updateProp: (propName, newValue) => {
-            if (propName === "className") {
-              $$updateNode(self, className_$p$_ = newValue, 2 /*0b10*/);
-            } else if (propName === "id") {
-              $$updateNode(self, id_$p$_ = newValue, 1 /*0b1*/);
-            }
-          },
-          getUpdateViews: () => {
-            let $node0;
-            $node0 = $$createElement("div");
-            $$setHTMLProp($node0, "id", () => id_$p$_, [id_$p$_]);
-            $$setHTMLProp($node0, "className", () => className_$p$_, [className_$p$_]);
-            return [[$node0], $changed => {
-              if ($changed & 1) {
-                $node0 && $$setHTMLProp($node0, "id", () => id_$p$_, [id_$p$_]);
-              }
-              if ($changed & 2) {
-                $node0 && $$setHTMLProp($node0, "className", () => className_$p$_, [className_$p$_]);
-              }
-              return [$node0];
-            }];
-          }
-        });
-        return $$initCompNode(self);
+        const self = $$compBuilder();
+        self.addProp("id", value => id = value, 1);
+        self.addProp("className", value => className = $$withDefault(value, 'default'), 2);
+        return self.prepare().init($$createHTMLNode("div", () => {
+          $$setHTMLProp(node, "id", () => id, [id], 1);
+          $$setHTMLProp(node, "className", () => className, [className], 2);
+        }));
       }"
     `);
   });
@@ -97,62 +67,28 @@ describe('props', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, updateNode as $$updateNode, notCached as $$notCached, createElement as $$createElement, setHTMLProp as $$setHTMLProp, setStyle as $$setStyle, initCompNode as $$initCompNode } from "@openinula/next";
+      "import { compBuilder as $$compBuilder, setHTMLProp as $$setHTMLProp, createHTMLNode as $$createHTMLNode } from "@openinula/next";
       function App({
-        info
+        info: {
+          id,
+          className = 'default',
+          pos: [x, y]
+        }
       }) {
-        let self;
-        let info_$p$_ = info;
-        let id;
-        let className;
-        let x;
-        let y;
-        self = $$createComponent({
-          updateState: changed => {
-            if (changed & 1) {
-              if ($$notCached(self, "cache0", [info_$p$_])) {
-                {
-                  $$updateNode(self, {
-                    id,
-                    className = 'default',
-                    pos: [x, y]
-                  } = info_$p$_, 30 /*0b11110*/);
-                }
-              }
-            }
-          },
-          updateProp: (propName, newValue) => {
-            if (propName === "info") {
-              $$updateNode(self, info_$p$_ = newValue, 1 /*0b1*/);
-            }
-          },
-          getUpdateViews: () => {
-            let $node0;
-            $node0 = $$createElement("div");
-            $$setHTMLProp($node0, "id", () => id, [id]);
-            $$setHTMLProp($node0, "className", () => className, [className]);
-            $$setStyle($node0, {
-              left: x,
-              top: y
-            });
-            return [[$node0], $changed => {
-              if ($changed & 2) {
-                $node0 && $$setHTMLProp($node0, "id", () => id, [id]);
-              }
-              if ($changed & 4) {
-                $node0 && $$setHTMLProp($node0, "className", () => className, [className]);
-              }
-              if ($changed & 24) {
-                $node0 && $$setStyle($node0, {
-                  left: x,
-                  top: y
-                });
-              }
-              return [$node0];
-            }];
-          }
-        });
-        return $$initCompNode(self);
+        const self = $$compBuilder();
+        self.addProp("info", value => ({
+          id,
+          className = 'default',
+          pos: [x, y]
+        } = value), 1);
+        return self.prepare().init($$createHTMLNode("div", () => {
+          $$setHTMLProp(node, "id", () => id, [id], 1);
+          $$setHTMLProp(node, "className", () => className, [className], 1);
+          $$setHTMLProp(node, "style", () => ({
+            left: x,
+            top: y
+          }), [x, y], 1);
+        }));
       }"
     `);
   });
@@ -165,41 +101,13 @@ describe('props', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, updateNode as $$updateNode, notCached as $$notCached, createElement as $$createElement, createNode as $$createNode, insertNode as $$insertNode, initCompNode as $$initCompNode } from "@openinula/next";
+      "import { compBuilder as $$compBuilder, createExpNode as $$createExpNode, createHTMLNode as $$createHTMLNode } from "@openinula/next";
       function Child({
-        name
+        name: alias
       }) {
-        let self;
-        let name_$p$_ = name;
-        let alias;
-        self = $$createComponent({
-          updateState: changed => {
-            if (changed & 1) {
-              if ($$notCached(self, "cache0", [name_$p$_])) {
-                $$updateNode(self, alias = name_$p$_, 2 /*0b10*/);
-              }
-            }
-          },
-          updateProp: (propName, newValue) => {
-            if (propName === "name") {
-              $$updateNode(self, name_$p$_ = newValue, 1 /*0b1*/);
-            }
-          },
-          getUpdateViews: () => {
-            let $node0, $node1;
-            $node0 = $$createElement("h1");
-            $node1 = $$createNode(3 /*Exp*/, () => alias, [alias]);
-            $$insertNode($node0, $node1, 0);
-            $node0._$nodes = [$node1];
-            return [[$node0], $changed => {
-              if ($changed & 2) {
-                $node1 && $$updateNode($node1, () => alias, [alias]);
-              }
-              return [$node0];
-            }];
-          }
-        });
-        return $$initCompNode(self);
+        const self = $$compBuilder();
+        self.addProp("name", value => alias = value, 1);
+        return self.prepare().init($$createHTMLNode("h1", null, $$createExpNode(() => alias, [alias], 1)));
       }"
     `);
   });

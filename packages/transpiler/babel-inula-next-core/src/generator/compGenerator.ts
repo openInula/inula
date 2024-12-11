@@ -10,12 +10,12 @@ export function compGenerator(): Generator {
      * @returns
      */
     init(stmt, { selfId, importMap }) {
-      return t.expressionStatement(
-        t.assignmentExpression('const', selfId, t.callExpression(t.identifier(importMap.compBuilder), []))
-      );
+      return t.variableDeclaration('const', [
+        t.variableDeclarator(selfId, t.callExpression(t.identifier(importMap.compBuilder), [])),
+      ]);
     },
     subComp(stmt, ctx) {
-      return generate(stmt.component, ctx.bitManager);
+      return generate(stmt.component, ctx.bitManager, ctx.hoist);
     },
   };
 }

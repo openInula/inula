@@ -62,12 +62,17 @@ export class ViewParser {
     else if (this.t.isJSXExpressionContainer(node)) this.parseExpression(node.expression);
     else if (this.t.isJSXElement(node)) this.parseElement(node);
     else if (this.t.isJSXFragment(node)) {
-      node.children.forEach(child => {
-        this.parse(child);
-      });
+      this.parseFragment(node);
     }
 
     return this.viewUnits;
+  }
+
+  private parseFragment(node: t.JSXFragment): void {
+    this.viewUnits.push({
+      type: 'fragment',
+      children: node.children.map(child => this.parseView(child)).flat(),
+    });
   }
 
   /**

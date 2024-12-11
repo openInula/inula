@@ -1,0 +1,35 @@
+import { generateView } from '../../../view-generator/dist';
+import { Generator } from './index';
+import { types as t } from '@babel/core';
+import { defaultAttributeMap, alterAttributeMap } from '../constants';
+/**
+ * @example
+ * return self.prepare().init(
+ *   ${view}
+ * )
+ */
+export function viewGenerator(): Generator {
+  return {
+    viewReturn(stmt, ctx) {
+      const templates: [string, t.Expression][] = [];
+      const view = generateView(stmt.value, {
+        attributeMap: defaultAttributeMap,
+        alterAttributeMap,
+        getReactBits: ctx.getReactBits,
+        importMap: ctx.importMap,
+        templates: templates,
+        wrapUpdate: ctx.wrapUpdate,
+      });
+
+      ctx.hoist(
+        templates.map(([name, expr]) =>
+          t.variableDeclaration('const', [t.variableDeclarator(t.identifier(name), expr)])
+        )
+      );
+
+      const prepareCall = t.callExpression(t.memberExpression(ctx.selfId, t.identifier('prepare')), []);
+
+      return t.returnStatement(t.callExpression(t.memberExpression(prepareCall, t.identifier('init')), [view]));
+    },
+  };
+}

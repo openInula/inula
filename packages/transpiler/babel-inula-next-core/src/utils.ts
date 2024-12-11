@@ -1,6 +1,6 @@
 import { NodePath } from '@babel/core';
 import { types as t } from '@openinula/babel-api';
-import { COMPONENT, HOOK, importMap } from './constants';
+import { COMPONENT, HOOK, importMap, USE_CONTEXT } from './constants';
 import { minimatch } from 'minimatch';
 import { AnalyzeContext, Analyzer, SubComponentNode, Variable, Visitor } from './analyze/types';
 
@@ -66,6 +66,12 @@ export function isCompPath(path: NodePath<t.CallExpression>) {
   // find the component, like: Component(() => {})
   const callee = path.get('callee');
   return callee.isIdentifier() && callee.node.name === COMPONENT;
+}
+
+export function isUseContext(path: NodePath<t.CallExpression>) {
+  // find the use context, like: useContext()
+  const callee = path.get('callee');
+  return callee.isIdentifier() && callee.node.name === USE_CONTEXT;
 }
 
 export function isHookPath(path: NodePath<t.CallExpression>) {
@@ -138,7 +144,7 @@ export function bitmapToIndices(bitmap: number) {
   while (bitmap > 0) {
     // Check if current bit is set
     if (bitmap & 1) {
-      indices.push(currentBit);
+      indices.push(1 << currentBit);
     }
 
     // Move to next bit
@@ -152,4 +158,10 @@ export function mergeVisitor<T extends Record<string, any>>(...visitors: Array<(
   return visitors.reduce<T>((acc, cur) => {
     return { ...acc, ...cur() };
   }, {} as T);
+}
+
+export function assertIdOrDeconstruct(id: NodePath<t.LVal>, error: string): asserts id is NodePath<t.Identifier> {
+  if (!id.isIdentifier() && !id.isObjectPattern() && !id.isArrayPattern()) {
+    throw new Error(error);
+  }
 }
