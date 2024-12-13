@@ -1,5 +1,6 @@
 import { types as t } from '@openInula/babel-api';
-import { elementAttributeMap, importMap } from './BaseGenerator';
+import { alterAttributeMap, elementAttributeMap, importMap } from './BaseGenerator';
+import { DLError } from '../error';
 
 export const DelegatedEvents = new Set([
   'beforeinput',
@@ -27,6 +28,7 @@ export const DelegatedEvents = new Set([
 ]);
 
 const commonHTMLPropKeys = ['ref', 'style', 'dataset'];
+
 export function insertNode(nodeName: string, childNodeName: string, position: number): t.ExpressionStatement {
   return t.expressionStatement(
     t.callExpression(t.identifier('insertNode'), [
@@ -37,31 +39,47 @@ export function insertNode(nodeName: string, childNodeName: string, position: nu
   );
 }
 
-export function setPropWithCheck(nodeName: string, expression: t.Expression, check: boolean): t.Statement {
-  if (check) {
-    return optionalExpression(nodeName, expression);
-  }
+export function wrapStmt(nodeName: string, expression: t.Expression): t.Statement {
   return t.expressionStatement(expression);
 }
 
-export function setHTMLStyle(nodeName: string, value: t.Expression, check: boolean): t.Statement {
-  return setPropWithCheck(nodeName, t.callExpression(t.identifier('setStyle'), [t.identifier(nodeName), value]), check);
+export function setHTMLStyle(
+  nodeName: string,
+  value: t.Expression,
+  dependenciesNode?: t.ArrayExpression,
+  reactBits?: number
+): t.Statement {
+  const args = reactBits
+    ? [t.identifier(nodeName), t.arrowFunctionExpression([], value), dependenciesNode!, t.numericLiteral(reactBits)]
+    : [t.identifier(nodeName), value];
+
+  return wrapStmt(nodeName, t.callExpression(t.identifier(importMap.setStyle), args));
 }
 
-export function setHTMLDataset(nodeName: string, value: t.Expression, check: boolean): t.Statement {
-  return setPropWithCheck(
-    nodeName,
-    t.callExpression(t.identifier('setDataset'), [t.identifier(nodeName), value]),
-    check
-  );
+export function setHTMLDataset(
+  nodeName: string,
+  value: t.Expression,
+  dependenciesNode?: t.ArrayExpression,
+  reactBits?: number
+): t.Statement {
+  const args = reactBits
+    ? [t.identifier(nodeName), t.arrowFunctionExpression([], value), dependenciesNode!, t.numericLiteral(reactBits)]
+    : [t.identifier(nodeName), value];
+  return wrapStmt(nodeName, t.callExpression(t.identifier('setDataset'), args));
 }
 
-export function setHTMLAttr(nodeName: string, key: string, value: t.Expression): t.Statement {
+export function setHTMLAttr(
+  nodeName: string,
+  key: string,
+  value: t.Expression,
+  dependenciesNode?: t.ArrayExpression,
+  reactBits?: number
+): t.Statement {
+  const args = reactBits
+    ? [t.stringLiteral(key), t.arrowFunctionExpression([], value), dependenciesNode!, t.numericLiteral(reactBits)]
+    : [t.stringLiteral(key), value];
   return t.expressionStatement(
-    t.callExpression(t.memberExpression(t.identifier(nodeName), t.identifier('setAttribute')), [
-      t.stringLiteral(key),
-      value,
-    ])
+    t.callExpression(t.memberExpression(t.identifier(nodeName), t.identifier('setAttribute')), args)
   );
 }
 
@@ -75,19 +93,17 @@ export function setHTMLProperty(nodeName: string, key: string, value: t.Expressi
   );
 }
 
-export function setEvent(nodeName: string, key: string, value: t.Expression, check: boolean): t.Statement {
-  return setPropWithCheck(
+export function setEvent(nodeName: string, key: string, value: t.Expression): t.Statement {
+  return wrapStmt(
     nodeName,
-    t.callExpression(t.identifier('setEvent'), [t.identifier(nodeName), t.stringLiteral(key), value]),
-    check
+    t.callExpression(t.identifier(importMap.setEvent), [t.identifier(nodeName), t.stringLiteral(key), value])
   );
 }
 
-export function delegateEvent(nodeName: string, key: string, value: t.Expression, check: boolean): t.Statement {
-  return setPropWithCheck(
+export function delegateEvent(nodeName: string, key: string, value: t.Expression): t.Statement {
+  return wrapStmt(
     nodeName,
-    t.callExpression(t.identifier(importMap['delegateEvent']), [t.identifier(nodeName), t.stringLiteral(key), value]),
-    check
+    t.callExpression(t.identifier(importMap['delegateEvent']), [t.identifier(nodeName), t.stringLiteral(key), value])
   );
 }
 
@@ -96,10 +112,9 @@ export function setCachedProp(
   key: string,
   value: t.Expression,
   dependenciesNode: t.ArrayExpression,
-  reactBits: number,
-  check: boolean
+  reactBits: number
 ): t.Statement {
-  return setPropWithCheck(
+  return wrapStmt(
     nodeName,
     t.callExpression(t.identifier(importMap.setHTMLProp), [
       t.identifier(nodeName),
@@ -107,8 +122,30 @@ export function setCachedProp(
       t.arrowFunctionExpression([], value),
       dependenciesNode,
       t.numericLiteral(reactBits),
-    ]),
-    check
+    ])
+  );
+}
+
+/**
+ * @View
+ * setHTMLAttr(${nodeName}, ${key}, ${valueFunc}, ${dependenciesNode}, ${reactBits})
+ */
+function setCachedAttr(
+  nodeName: string,
+  key: string,
+  value: t.Expression,
+  dependenciesNode: t.ArrayExpression,
+  reactBits: number
+): t.Statement {
+  return wrapStmt(
+    nodeName,
+    t.callExpression(t.identifier(importMap.setHTMLAttr), [
+      t.identifier(nodeName),
+      t.stringLiteral(key),
+      t.arrowFunctionExpression([], value),
+      dependenciesNode,
+      t.numericLiteral(reactBits),
+    ])
   );
 }
 
@@ -118,18 +155,45 @@ export function setDynamicHTMLProp(
   attrName: string,
   value: t.Expression,
   dependenciesNode: t.ArrayExpression,
-  reactBits: number,
-  check: boolean
-): t.Statement {
+  reactBits: number
+): t.Statement | null {
+  if (commonHTMLPropKeys.includes(attrName))
+    return addCommonHTMLProp(nodeName, attrName, value, dependenciesNode, reactBits);
   if (attrName.startsWith('on')) {
     const eventName = attrName.slice(2).toLowerCase();
     if (DelegatedEvents.has(eventName)) {
-      return delegateEvent(nodeName, eventName, value, check);
+      return delegateEvent(nodeName, eventName, value);
     }
-    return setEvent(nodeName, eventName, value, check);
+    return setEvent(nodeName, eventName, value);
   }
 
-  return setCachedProp(nodeName, attrName, value, dependenciesNode, reactBits, check);
+  if (alterAttributeMap[attrName]) {
+    attrName = alterAttributeMap[attrName];
+  }
+  if (isInternalAttribute(tag, attrName)) {
+    return setCachedProp(nodeName, attrName, value, dependenciesNode, reactBits);
+  }
+  return setCachedAttr(nodeName, attrName, value, dependenciesNode, reactBits);
+}
+
+/**
+ * For style/dataset/ref/attr/prop
+ */
+function addCommonHTMLProp(
+  nodeName: string,
+  attrName: string,
+  value: t.Expression,
+  dependenciesNode?: t.ArrayExpression,
+  reactBits?: number
+): t.Statement | null {
+  if (attrName === 'ref') {
+    // if (!check) return initElement(nodeName, value);
+    return null;
+  }
+  if (attrName === 'style') return setHTMLStyle(nodeName, value, dependenciesNode, reactBits);
+  if (attrName === 'dataset') return setHTMLDataset(nodeName, value, dependenciesNode, reactBits);
+  if (attrName === 'props') return setHTMLPropObject(nodeName, value);
+  return DLError.throw2();
 }
 
 /**
@@ -151,14 +215,21 @@ function isInternalAttribute(tag: string, attribute: string): boolean {
  * 3. HTML custom attribute
  *  - ${nodeName}.setAttribute(${key}, ${value})
  */
-export function setStaticHTMLProp(nodeName: string, tag: string, attrName: string, value: t.Expression): t.Statement {
-  if (commonHTMLPropKeys.includes(attrName)) return setHTMLPropObject(nodeName, value, false);
+export function setStaticHTMLProp(
+  nodeName: string,
+  tag: string,
+  attrName: string,
+  value: t.Expression
+): t.Statement | null {
+  if (commonHTMLPropKeys.includes(attrName)) {
+    return addCommonHTMLProp(nodeName, attrName, value);
+  }
   if (attrName.startsWith('on')) {
     const eventName = attrName.slice(2).toLowerCase();
     if (DelegatedEvents.has(eventName)) {
-      return delegateEvent(nodeName, eventName, value, false);
+      return delegateEvent(nodeName, eventName, value);
     }
-    return setEvent(nodeName, eventName, value, false);
+    return setEvent(nodeName, eventName, value);
   }
   if (isInternalAttribute(tag, attrName)) {
     if (attrName === 'class') attrName = 'className';
@@ -172,12 +243,8 @@ function optionalExpression(nodeName: string, expression: t.Expression): t.State
   return t.expressionStatement(t.logicalExpression('&&', t.identifier(nodeName), expression));
 }
 
-export function setHTMLPropObject(nodeName: string, value: t.Expression, check: boolean): t.Statement {
-  return setPropWithCheck(
-    nodeName,
-    t.callExpression(t.identifier(importMap['setHTMLProps']), [t.identifier(nodeName), value]),
-    check
-  );
+export function setHTMLPropObject(nodeName: string, value: t.Expression): t.Statement {
+  return wrapStmt(nodeName, t.callExpression(t.identifier(importMap['setHTMLProps']), [t.identifier(nodeName), value]));
 }
 
 export function setHTMLProp(
@@ -187,10 +254,10 @@ export function setHTMLProp(
   value: t.Expression,
   reactBits: number | undefined,
   dependenciesNode: t.ArrayExpression | null
-): t.Statement {
+): t.Statement | null {
   // ---- Dynamic HTML prop with init and update
   if (reactBits && key !== 'ref') {
-    return setDynamicHTMLProp(name, tag, key, value, dependenciesNode ?? t.arrayExpression([]), reactBits, false);
+    return setDynamicHTMLProp(name, tag, key, value, dependenciesNode ?? t.arrayExpression([]), reactBits);
   }
   // ---- Static HTML prop with init only
   return setStaticHTMLProp(name, tag, key, value);

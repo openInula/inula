@@ -59,7 +59,7 @@ export function wrapUpdate(
     // add a call to wave and comment show the bit
     const bitNode = t.numericLiteral(bit);
     t.addComment(bitNode, 'trailing', `0b${bit.toString(2)}`, false);
-    return t.callExpression(t.memberExpression(selfId, t.identifier('wave')), [selfId, node, bitNode]);
+    return t.callExpression(t.memberExpression(selfId, t.identifier('wave')), [node, bitNode]);
   };
   traverse(nodeWrapFile(node), {
     Identifier: (path: NodePath<t.Identifier>) => {

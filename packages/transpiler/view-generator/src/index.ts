@@ -1,7 +1,6 @@
 import { Bitmap, IfParticle, ViewParticle } from '@openinula/reactivity-parser';
 import { types as t } from '@openInula/babel-api';
 import { ViewGeneratorConfig } from './types';
-import MainViewGenerator from './MainViewGenerator';
 import { htmlGenerator } from './NodeGenerators/HTMLGenerator';
 import { forGenerator } from './NodeGenerators/ForGenerator';
 import { templateGenerator } from './NodeGenerators/TemplateGenerator';

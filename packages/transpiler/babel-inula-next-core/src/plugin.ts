@@ -102,11 +102,11 @@ export default function (api: typeof babel, options: InulaNextOption): PluginObj
             },
           });
 
+          program.node.body.unshift(...hoistedNodes);
+
           if (transformationHappenedInFile && !options.skipImport) {
             addImport(program.node, getAccessedKeys(), packageName);
           }
-
-          program.node.body.unshift(...hoistedNodes);
         },
       },
     },

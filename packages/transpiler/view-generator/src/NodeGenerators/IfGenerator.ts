@@ -73,7 +73,7 @@ export const ifGenerator: ViewGenerator = {
         children: [],
       });
     }
-
+    let reactBits = 0;
     const ifStatement = branches.reverse().reduce<any>((acc, { condition, children }, i) => {
       const idx = branches.length - i - 1;
       // ---- Generate children
@@ -82,11 +82,13 @@ export const ifGenerator: ViewGenerator = {
       // ---- else statement
       if (i === 0) return t.blockStatement(childStatements);
 
+      reactBits |= ctx.getReactBits(condition.depIdBitmap);
       return geneIfStatement(geneCondition(node, idx, condition), childStatements, acc);
     }, undefined);
 
     return t.callExpression(t.identifier(importMap.createConditionalNode), [
       t.arrowFunctionExpression([node], t.blockStatement([ifStatement])),
+      t.numericLiteral(reactBits),
     ]);
   },
 };

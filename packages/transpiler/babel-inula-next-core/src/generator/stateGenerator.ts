@@ -1,6 +1,5 @@
 import { Generator } from './index';
-import { types as t } from '@babel/core';
-import { importMap } from '../constants';
+import { types as t } from '@openinula/babel-api';
 
 export function stateGenerator(): Generator {
   return {

@@ -33,6 +33,7 @@
     "entry": [
       "src/index.ts"
     ],
+    "external": ["@openinula/babel-api"],
     "format": [
       "cjs",
       "esm"

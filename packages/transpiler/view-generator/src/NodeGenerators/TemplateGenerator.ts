@@ -30,6 +30,7 @@ function genPropsUpdater(props: TemplateProp[], ctx: ViewContext): t.Expression 
   const nodeMap: Record<string, string> = {};
   const nodeDeclareStatements: t.Statement[] = [];
   let nodeIdx = 0;
+  const templateNodeId = t.identifier('tpl');
   const propsAssignments = props.map(({ tag, path, key, value, depIdBitmap, dependenciesNode }) => {
     const pathString = path.join('.');
     let nodeName = nodeMap[pathString];
@@ -41,7 +42,7 @@ function genPropsUpdater(props: TemplateProp[], ctx: ViewContext): t.Expression 
           t.variableDeclarator(
             t.identifier(nodeName),
             t.callExpression(t.identifier(importMap.templateGetElement), [
-              t.identifier('node'),
+              templateNodeId,
               ...path.map(p => t.numericLiteral(p)),
             ])
           ),
@@ -54,7 +55,7 @@ function genPropsUpdater(props: TemplateProp[], ctx: ViewContext): t.Expression 
     return setHTMLProp(nodeName, tag, key, value, ctx.getReactBits(depIdBitmap), dependenciesNode);
   });
   return t.arrowFunctionExpression(
-    [],
+    [templateNodeId],
     t.blockStatement([
       ...nodeDeclareStatements,
       t.returnStatement(t.arrowFunctionExpression([], t.blockStatement(propsAssignments))),

@@ -58,7 +58,6 @@ const API_NAMES = [
   'appendNode',
   'render',
   'notCached',
-  'Comp',
   'useHook',
   'createHook',
   'untrack',

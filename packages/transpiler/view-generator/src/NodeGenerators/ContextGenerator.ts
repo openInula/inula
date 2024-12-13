@@ -32,7 +32,7 @@ export const contextGenerator: ViewGenerator = {
             t.expressionStatement(
               t.callExpression(t.memberExpression(nodeId, t.identifier('updateContext')), [
                 t.stringLiteral(key),
-                prop.value,
+                t.arrowFunctionExpression([], prop.value),
                 prop.dependenciesNode,
                 t.numericLiteral(prop.depIdBitmap),
               ])

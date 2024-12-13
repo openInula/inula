@@ -1,6 +1,6 @@
-import { generateView } from '../../../view-generator/dist';
+import { generateView } from '@openinula/view-generator';
 import { Generator } from './index';
-import { types as t } from '@babel/core';
+import { types as t } from '@openinula/babel-api';
 import { defaultAttributeMap, alterAttributeMap } from '../constants';
 /**
  * @example

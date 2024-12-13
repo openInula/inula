@@ -1,4 +1,4 @@
-import { NodePath } from '@babel/core';
+import { type NodePath } from '@babel/core';
 import { types as t } from '@openinula/babel-api';
 import { COMPONENT, HOOK, importMap, USE_CONTEXT } from './constants';
 import { minimatch } from 'minimatch';

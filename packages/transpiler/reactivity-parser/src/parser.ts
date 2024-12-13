@@ -259,7 +259,7 @@ export class ReactivityParser {
               path: [...path, idx],
               value: child.content,
               dependenciesNode: this.t.arrayExpression([]),
-              dependencies: [],
+              depIdBitmap: 0,
             });
           }
         });
