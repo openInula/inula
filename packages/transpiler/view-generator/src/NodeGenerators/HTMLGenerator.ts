@@ -29,7 +29,9 @@ export const htmlGenerator: ViewGenerator = {
       propStmts.push(setHTMLProp(nodeNameInUpdate, tagName, key, value, reactBits, dependenciesNode));
     });
     const propsUpdater =
-      propStmts.length > 0 ? t.arrowFunctionExpression([], t.blockStatement(propStmts)) : t.nullLiteral();
+      propStmts.length > 0
+        ? t.arrowFunctionExpression([t.identifier('node')], t.blockStatement(propStmts))
+        : t.nullLiteral();
 
     // ---- Resolve children
     const childrenNodes: t.Expression[] = children.map(child => ctx.next(child));

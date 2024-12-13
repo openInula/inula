@@ -45,7 +45,7 @@ function genUpdateProp(
  *  })
  */
 export const compGenerator: ViewGenerator = {
-  comp: ({ tag, props }: CompParticle, ctx: ViewContext) => {
+  comp: ({ tag, props, children }: CompParticle, ctx: ViewContext) => {
     const updateProps: t.Statement[] = [];
     const node = t.identifier('node');
 
@@ -64,8 +64,11 @@ export const compGenerator: ViewGenerator = {
       ),
     ]);
 
-    const updater = t.arrowFunctionExpression([node], t.blockStatement(updateProps));
+    const updater = updateProps.length
+      ? t.arrowFunctionExpression([node], t.blockStatement(updateProps))
+      : t.nullLiteral();
 
-    return t.callExpression(t.identifier(importMap.createCompNode), [comp, updater]);
+    const childrenNode = children.map(child => ctx.next(child));
+    return t.callExpression(t.identifier(importMap.createCompNode), [comp, updater, ...childrenNode]);
   },
 };

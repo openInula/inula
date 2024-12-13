@@ -48,7 +48,7 @@ export function analyzeUnitOfWork(name: string, fnNode: NodePath<FunctionalExpre
       // TODO: More type safe way to handle this
       visit(path as unknown as any, context);
     } else {
-      throw new Error(`Unsupported type to analyze: ${type}`);
+      builder.addRawStmt(path.node);
     }
   }
 }

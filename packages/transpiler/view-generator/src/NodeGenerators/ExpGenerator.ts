@@ -11,7 +11,7 @@ export const expGenerator: ViewGenerator = {
   exp: ({ content }: ExpParticle, ctx: ViewContext) => {
     return t.callExpression(t.identifier(importMap.createExpNode), [
       t.arrowFunctionExpression([], content.value),
-      content.dependenciesNode,
+      t.arrowFunctionExpression([], content.dependenciesNode),
       t.numericLiteral(ctx.getReactBits(content.depIdBitmap)),
     ]);
   },

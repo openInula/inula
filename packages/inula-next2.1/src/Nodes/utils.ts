@@ -12,6 +12,10 @@ export const getDOMElements = (node: InulaBaseNode): Array<HTMLElement | Text> =
   return toDOMElements(node.nodes ?? []);
 };
 
+// --- Imperative template
+export function createElement(tagName: string) {
+  return document.createElement(tagName);
+}
 /**
  * @brief Get all DOM elements of the first level of an array of nodes
  * @param nodes Array of nodes to get elements from

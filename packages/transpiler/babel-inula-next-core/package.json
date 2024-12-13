@@ -31,7 +31,7 @@
     "@babel/generator": "^7.23.6",
     "@babel/parser": "^7.24.4",
     "@babel/plugin-syntax-decorators": "^7.23.3",
-    "@babel/plugin-syntax-jsx": "7.16.7",
+    "@babel/plugin-syntax-jsx": "7.23.3",
     "@babel/plugin-syntax-typescript": "^7.23.3",
     "@babel/traverse": "^7.24.1",
     "@babel/types": "^7.24.0",
@@ -54,7 +54,6 @@
       "cjs",
       "esm"
     ],
-    "clean": true,
-    "dts": true
+    "clean": true
   }
 }

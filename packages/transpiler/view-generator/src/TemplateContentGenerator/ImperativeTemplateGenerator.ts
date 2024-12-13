@@ -10,18 +10,22 @@ interface Context {
   next: (particle: ViewParticle) => void;
   parentStack: string[];
 }
+
 function generateNodeName(ctx: Context, idx?: number): string {
-  return `${prefixMap.node}${idx ?? ++ctx.nodeIdx}`;
+  return `${prefixMap.node}${idx ?? ctx.nodeIdx++}`;
 }
+
 /**
  * @example
  * ```js
- * appendNode(${nodeName}, ${childNodeName})
+ * ${nodeName}.appendChild(${childNodeName})
  * ```
  */
 function appendChild(nodeName: string, childNodeName: string): t.Statement {
   return t.expressionStatement(
-    t.callExpression(t.identifier(importMap.appendNode), [t.identifier(nodeName), t.identifier(childNodeName)])
+    t.callExpression(t.memberExpression(t.identifier(nodeName), t.identifier('appendChild')), [
+      t.identifier(childNodeName),
+    ])
   );
 }
 
@@ -32,13 +36,9 @@ function appendChild(nodeName: string, childNodeName: string): t.Statement {
  * ```
  */
 function declareHTMLNode(dlNodeName: string, tag: t.Expression): t.Statement {
-  return t.expressionStatement(
-    t.assignmentExpression(
-      '=',
-      t.identifier(dlNodeName),
-      t.callExpression(t.identifier(importMap.createElement), [tag])
-    )
-  );
+  return t.variableDeclaration('const', [
+    t.variableDeclarator(t.identifier(dlNodeName), t.callExpression(t.identifier(importMap.createElement), [tag])),
+  ]);
 }
 
 export const genTemplateContent: GenTemplateContent = (template: ViewParticle) => {
@@ -60,6 +60,7 @@ export const genTemplateContent: GenTemplateContent = (template: ViewParticle) =
   };
 
   visit(template);
+  statements.push(t.returnStatement(t.identifier(generateNodeName(ctx, 0))));
 
   return t.callExpression(t.functionExpression(null, [], t.blockStatement(statements)), []);
 };
@@ -71,13 +72,12 @@ export const genTemplateContent: GenTemplateContent = (template: ViewParticle) =
  * ```
  */
 function declareTextNode(nodeName: string, value: t.Expression, dependenciesNode: t.Expression): t.Statement {
-  return t.expressionStatement(
-    t.assignmentExpression(
-      '=',
+  return t.variableDeclaration('const', [
+    t.variableDeclarator(
       t.identifier(nodeName),
       t.callExpression(t.identifier(importMap.createTextNode), [value, dependenciesNode])
-    )
-  );
+    ),
+  ]);
 }
 
 /**

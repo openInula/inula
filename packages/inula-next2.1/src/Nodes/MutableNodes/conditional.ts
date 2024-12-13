@@ -1,7 +1,7 @@
 import { InulaNodeType } from '../../consts';
 import { runDidMount } from '../../lifecycle';
 import { Bits, InulaBaseNode, Value } from '../../types';
-import { appendNodesWithSibling, cached, getFlowIndexFromNodes, init, update } from '../utils';
+import { appendNodesWithSibling, cached, getFlowIndexFromNodes, init, InitDirtyBitsMask, update } from '../utils';
 import { MutableLifecycleNode } from './lifecycle';
 
 class ConditionalNode extends MutableLifecycleNode implements InulaBaseNode {
@@ -21,6 +21,7 @@ class ConditionalNode extends MutableLifecycleNode implements InulaBaseNode {
     super();
     this.updater = updater;
     this.reactBits = reactBits;
+    this.init();
   }
 
   conditionCacheMap?: Record<string, [boolean, Value[]]>;
@@ -38,6 +39,12 @@ class ConditionalNode extends MutableLifecycleNode implements InulaBaseNode {
     const value = valueFunc();
     this.conditionCacheMap[branchNum] = [value, dependencies];
     return value;
+  }
+
+  init() {
+    this.dirtyBits = InitDirtyBitsMask;
+    this.update();
+    delete this.dirtyBits;
   }
 
   update() {
