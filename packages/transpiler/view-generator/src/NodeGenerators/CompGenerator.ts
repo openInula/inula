@@ -1,6 +1,6 @@
 import { types as t } from '@openInula/babel-api';
 import { type CompParticle } from '@openinula/reactivity-parser';
-import { importMap } from '../HelperGenerators/BaseGenerator';
+import { importMap } from '../utils/config';
 import { ViewContext, ViewGenerator } from '../index';
 
 function genUpdateProp(
@@ -49,26 +49,24 @@ export const compGenerator: ViewGenerator = {
     const updateProps: t.Statement[] = [];
     const node = t.identifier('node');
 
-    const comp = t.callExpression(tag, [
-      t.objectExpression(
-        Object.entries(props).map(([key, value]) => {
-          ctx.wrapUpdate(value.value);
+    const propsNode = t.objectExpression(
+      Object.entries(props).map(([key, value]) => {
+        ctx.wrapUpdate(value.value);
 
-          if (value.depIdBitmap) {
-            updateProps.push(
-              genUpdateProp(node, key, value.value, ctx.getReactBits(value.depIdBitmap), value.dependenciesNode)
-            );
-          }
-          return t.objectProperty(t.stringLiteral(key), value.value);
-        })
-      ),
-    ]);
+        if (value.depIdBitmap) {
+          updateProps.push(
+            genUpdateProp(node, key, value.value, ctx.getReactBits(value.depIdBitmap), value.dependenciesNode)
+          );
+        }
+        return t.objectProperty(t.stringLiteral(key), value.value);
+      })
+    );
 
     const updater = updateProps.length
       ? t.arrowFunctionExpression([node], t.blockStatement(updateProps))
       : t.nullLiteral();
 
     const childrenNode = children.map(child => ctx.next(child));
-    return t.callExpression(t.identifier(importMap.createCompNode), [comp, updater, ...childrenNode]);
+    return t.callExpression(t.identifier(importMap.createCompNode), [tag, propsNode, updater, ...childrenNode]);
   },
 };

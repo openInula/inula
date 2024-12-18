@@ -5,7 +5,7 @@ import { htmlGenerator } from './NodeGenerators/HTMLGenerator';
 import { forGenerator } from './NodeGenerators/ForGenerator';
 import { templateGenerator } from './NodeGenerators/TemplateGenerator';
 import { compGenerator } from './NodeGenerators/CompGenerator';
-import { runWithConfig } from './HelperGenerators/BaseGenerator';
+import { runWithConfig } from './utils/BaseGenerator';
 import { expGenerator } from './NodeGenerators/ExpGenerator';
 import { fragmentGenerator } from './NodeGenerators/FragmentGenerator';
 import { textGenerator } from './NodeGenerators/TextGenerator';

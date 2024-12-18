@@ -1,8 +1,8 @@
 import { HTMLParticle, TextParticle, ViewParticle } from '@openinula/reactivity-parser';
 import { GenTemplateContent, TemplateContentGenerator } from './interface';
-import { importMap, prefixMap } from '../HelperGenerators/BaseGenerator';
+import { importMap, prefixMap } from '../utils/config';
 import { types as t } from '@openInula/babel-api';
-import { setHTMLProp } from '../HelperGenerators/HTMLPropGenerator';
+import { setHTMLProp } from '../utils/props';
 
 interface Context {
   nodeIdx: number;
@@ -46,7 +46,7 @@ export const genTemplateContent: GenTemplateContent = (template: ViewParticle) =
 
   const visit = (particle: ViewParticle) => {
     if (particle.type === 'html' || particle.type === 'text') {
-      ImperativeTemplateGenerator[particle.type](particle, ctx);
+      ImperativeTemplateGenerator[particle.type](particle as any, ctx);
       return;
     }
     throw new Error(`InstructionalTemplateGenerator: Unknown particle type: ${particle.type}`);
@@ -101,9 +101,11 @@ export const ImperativeTemplateGenerator: TemplateContentGenerator<Context> = {
     const nodeDeclareStatement = declareHTMLNode(nodeName, tag);
 
     // assign props
-    const propsAssignStatements = Object.entries(props).map(([key, { value }]) => {
-      return setHTMLProp(nodeName, tagName, key, value, 0, null);
-    });
+    const propsAssignStatements = Object.entries(props)
+      .map(([key, { value }]) => {
+        return setHTMLProp(nodeName, tagName, key, value, 0, null);
+      })
+      .filter(Boolean) as t.Statement[];
     ctx.addStmts([nodeDeclareStatement, ...propsAssignStatements]);
 
     // append node to parent

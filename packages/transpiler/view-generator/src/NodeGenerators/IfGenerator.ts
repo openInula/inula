@@ -1,7 +1,7 @@
-import { type IfParticle, Bitmap, ViewParticle, DependencyValue } from '@openinula/reactivity-parser';
+import { type IfParticle, ViewParticle, DependencyValue } from '@openinula/reactivity-parser';
 import { ViewContext, ViewGenerator } from '../index';
 import { types as t } from '@openinula/babel-api';
-import { importMap } from '../HelperGenerators/BaseGenerator';
+import { importMap } from '../utils/config';
 
 /**
  * @View

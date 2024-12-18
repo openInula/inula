@@ -1,5 +1,5 @@
 import { type TextParticle } from '@openinula/reactivity-parser';
-import { importMap } from '../HelperGenerators/BaseGenerator';
+import { importMap } from '../utils/config';
 import { types as t } from '@openinula/babel-api';
 import { ViewContext, ViewGenerator } from '../index';
 
