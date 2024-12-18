@@ -43,7 +43,6 @@ export const USE_CONTEXT = 'useContext';
 // --- api for compiler
 const API_NAMES = [
   'createElement',
-  'createComponent',
   'setStyle',
   'setDataset',
   'setEvent',
@@ -104,7 +103,7 @@ export const importMap: ImportMapType = new Proxy(originalImportMap, {
 // 函数用于获取被访问过的键
 export function getAccessedKeys() {
   return Array.from(accessedKeys).reduce<Record<string, string>>((map, key) => {
-    map[key] = originalImportMap[key];
+    map[key] = (originalImportMap as Record<string, string>)[key];
     return map;
   }, {});
 }

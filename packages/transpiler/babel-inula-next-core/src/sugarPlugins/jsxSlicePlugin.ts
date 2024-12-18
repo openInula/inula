@@ -17,7 +17,7 @@ import babel, { NodePath, PluginObj } from '@babel/core';
 import { types as t } from '@openinula/babel-api';
 import type { InulaNextOption } from '../types';
 import { register } from '@openinula/babel-api';
-import { importMap, COMPONENT } from '../constants';
+import { COMPONENT, importMap } from '../constants';
 
 function transformJSXSlice(path: NodePath<t.JSXElement> | NodePath<t.JSXFragment>) {
   // don't handle the jsx in three cases:
@@ -76,7 +76,7 @@ function transformJSXSlice(path: NodePath<t.JSXElement> | NodePath<t.JSXFragment
   //   const Span$$ = Component(() => {
   //     return <span></span>
   //   });
-  //   const a = type?  $$Comp(Div$$) : $$Comp(Span$$);
+  //   const a = type?  $$createComponentNode(Div$$) : $$createComponentNode(Span$$);
   // ```
   const sliceId = path.scope.generateUidIdentifier(genName(path.node));
   sliceId.name = 'JSX' + sliceId.name;
@@ -87,7 +87,7 @@ function transformJSXSlice(path: NodePath<t.JSXElement> | NodePath<t.JSXFragment
   if (path.parentPath.isArrowFunctionExpression()) {
     const block = t.blockStatement([
       sliceComp,
-      t.returnStatement(t.callExpression(t.identifier(importMap.Comp), [sliceId])),
+      t.returnStatement(t.callExpression(t.identifier(importMap.createCompNode), [sliceId])),
     ]);
     path.replaceWith(block);
   } else {
@@ -97,7 +97,7 @@ function transformJSXSlice(path: NodePath<t.JSXElement> | NodePath<t.JSXFragment
       throw new Error('Cannot find the statement parent');
     }
     stmt.insertBefore(sliceComp);
-    path.replaceWith(t.callExpression(t.identifier(importMap.Comp), [sliceId]));
+    path.replaceWith(t.callExpression(t.identifier(importMap.createCompNode), [sliceId]));
   }
 }
 

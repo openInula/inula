@@ -39,7 +39,7 @@ export interface SinglePropStmt {
   value: t.LVal;
   reactiveId: number;
   type: PropType.SINGLE;
-  isDesctructured: boolean;
+  isDestructured: boolean;
   node: t.ObjectProperty;
   defaultValue?: t.Expression | null;
   source: PropsSource;

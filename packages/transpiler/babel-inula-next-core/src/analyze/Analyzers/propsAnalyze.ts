@@ -1,12 +1,12 @@
 import type { NodePath } from '@babel/core';
 import { types as t } from '@openinula/babel-api';
 import { AnalyzeContext, Visitor } from '../types';
-import { DeconstruingPayload, parseDeconstructable } from '../parseDeconstructable';
+import { DestructuringPayload, parseDestructuring } from '../parseDestructuring';
 
 export function propsAnalyze(): Visitor {
   return {
     Props: (path: NodePath<t.RestElement | t.Identifier | t.Pattern>, { builder }: AnalyzeContext) => {
-      const reduer = (payload: DeconstruingPayload) => {
+      const reducer = (payload: DestructuringPayload) => {
         if (payload.type === 'rest') {
           builder.addRestProps(payload.name);
         } else if (payload.type === 'single') {
@@ -15,7 +15,7 @@ export function propsAnalyze(): Visitor {
           builder.addProps(payload.name, payload.node);
         }
       };
-      parseDeconstructable(path, reduer);
+      parseDestructuring(path, reducer);
     },
   };
 }

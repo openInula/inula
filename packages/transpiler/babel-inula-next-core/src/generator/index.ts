@@ -20,6 +20,7 @@ interface GeneratorContext {
   getWaveBits: (name: string) => number;
   getWaveBitsById: (id: number) => number;
   importMap: ImportMapType;
+  parentId?: t.Identifier;
 }
 
 // according to the type of IRStmt
@@ -40,7 +41,8 @@ const builtinGenerators: Array<() => Generator> = [
 export function generate(
   root: ComponentNode | SubComponentNode | HookNode,
   bitManager: BitManager,
-  hoist: (node: t.Statement | t.Statement[]) => void
+  hoist: (node: t.Statement | t.Statement[]) => void,
+  parentId?: t.Identifier
 ): t.FunctionDeclaration {
   const ctx: GeneratorContext = {
     selfId: generateSelfId(root.scope.level),
@@ -53,6 +55,7 @@ export function generate(
     getWaveBits: bitManager.getWaveBits.bind(null, root),
     getWaveBitsById: bitManager.getWaveBitsById,
     importMap,
+    parentId,
   };
 
   const visitor = mergeVisitor(...builtinGenerators);
