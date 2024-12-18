@@ -9,13 +9,15 @@ export function compGenerator(): Generator {
      * @param ctx
      * @returns
      */
-    init(stmt, { selfId, importMap }) {
+    init(stmt, { selfId, importMap, parentId }) {
+      const params = parentId ? [parentId] : [];
+
       return t.variableDeclaration('const', [
-        t.variableDeclarator(selfId, t.callExpression(t.identifier(importMap.compBuilder), [])),
+        t.variableDeclarator(selfId, t.callExpression(t.identifier(importMap.compBuilder), params)),
       ]);
     },
     subComp(stmt, ctx) {
-      return generate(stmt.component, ctx.bitManager, ctx.hoist);
+      return generate(stmt.component, ctx.bitManager, ctx.hoist, ctx.selfId);
     },
   };
 }

@@ -21,7 +21,7 @@ import { analyzeUnitOfWork } from '../index';
 import { types as t } from '@openinula/babel-api';
 import { assertIdOrDeconstruct, isCompPath, isUseContext } from '../../utils';
 import { IRBuilder } from '../IRBuilder';
-import { parseDeconstructable } from '../parseDeconstructable';
+import { parseDestructuring } from '../parseDestructuring';
 
 /**
  * collect all properties and methods from the node
@@ -65,7 +65,7 @@ export function variablesAnalyze(): Visitor {
           const context = init.get('arguments')[0];
           assertIdentifier(context);
           builder.addContext(id, context.node);
-          parseDeconstructable(id, payload => {
+          parseDestructuring(id, payload => {
             if (payload.type === 'rest') {
               builder.addRestProps(payload.name, CTX_PROPS);
             } else if (payload.type === 'single') {
@@ -104,7 +104,7 @@ function assertJSXSliceIsValid(path: NodePath<t.VariableDeclaration>, checker: (
   path.traverse({
     CallExpression(callPath) {
       const callee = callPath.node.callee;
-      if (t.isIdentifier(callee) && callee.name === importMap.Comp) {
+      if (t.isIdentifier(callee) && callee.name === importMap.createCompNode) {
         const subCompIdPath = callPath.get('arguments')[0];
         if (!subCompIdPath.isIdentifier()) {
           throw Error('invalid jsx slice');

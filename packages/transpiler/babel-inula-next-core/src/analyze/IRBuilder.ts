@@ -20,7 +20,6 @@ import {
   FunctionalExpression,
   HookNode,
   IRBlock,
-  IRScope,
   IRStmt,
   LifeCycle,
   PARAM_PROPS,
@@ -29,14 +28,12 @@ import {
 import { createIRNode } from './nodeFactory';
 import type { NodePath } from '@babel/core';
 import { getBabelApi, types as t } from '@openinula/babel-api';
-import { COMPONENT, isPropStmt, PropType, reactivityFuncNames, WILL_MOUNT } from '../constants';
+import { COMPONENT, isPropStmt, PropType, reactivityFuncNames } from '../constants';
 import { Dependency, getDependenciesFromNode, parseReactivity } from '@openinula/reactivity-parser';
 import { assertComponentNode, assertHookNode } from './utils';
 import { parseView as parseJSX } from '@openinula/jsx-view-parser';
 import { pruneUnusedState } from './pruneUnusedState';
 import { assertIdOrDeconstruct, bitmapToIndices } from '../utils';
-import { assert } from 'console';
-import { DeconstruingPayload } from './parseDeconstructable';
 
 export class IRBuilder {
   #current: HookNode | ComponentNode;
@@ -60,7 +57,10 @@ export class IRBuilder {
     this.#current.scope.reactiveMap.set(name, id ?? this.getNextId());
   }
 
-  getDependency(node: t.Expression | t.Statement) {
+  /**
+   * Get tree level global reactive map
+   */
+  getGlobalReactiveMap() {
     const fullReactiveMap = new Map(this.#current.scope.reactiveMap);
     let next = this.#current.parent;
     while (next) {
@@ -72,7 +72,11 @@ export class IRBuilder {
       next = next.parent;
     }
 
-    return getDependenciesFromNode(node, fullReactiveMap, reactivityFuncNames);
+    return fullReactiveMap;
+  }
+
+  getDependency(node: t.Expression | t.Statement) {
+    return getDependenciesFromNode(node, this.getGlobalReactiveMap(), reactivityFuncNames);
   }
 
   addRawStmt(stmt: t.Statement) {
@@ -144,7 +148,7 @@ export class IRBuilder {
       reactiveId,
       value,
       type: PropType.SINGLE,
-      isDesctructured: !!destructured,
+      isDestructured: !!destructured,
       defaultValue,
       node,
       source,
@@ -260,7 +264,7 @@ export class IRBuilder {
 
     const [viewParticle, useIdBits] = parseReactivity(viewUnits, {
       babelApi: getBabelApi(),
-      reactiveMap: this.#current.scope.reactiveMap,
+      reactiveMap: this.getGlobalReactiveMap(),
       reactivityFuncNames,
     });
 
@@ -315,7 +319,7 @@ export class IRBuilder {
             // which means it is not used and has been pruned
             continue;
           }
-          // Then, we need to find the wave bits(other derived reactive dependcy on it) of the derived reactive id
+          // Then, we need to find the wave bits(other derived reactive dependency on it) of the derived reactive id
           const derivedWavesBits = waveBitsMap.get(stmt.reactiveId);
 
           const derivedWaves = derivedWavesBits ? derivedWavesBits | ownBit : ownBit;
@@ -333,8 +337,8 @@ export class IRBuilder {
     }
 
     // post order traverse to build wave map because
-    // e.g. a = b, b = c, a need to know c's wave bit
-    // so we need to travese bottom up
+    // e.g. a = b, b = c, a need to know c's wave bit,
+    // so we need to traverse bottom up
     function traverse(node: ComponentNode | HookNode) {
       node.body.forEach(stmt => {
         if (stmt.type === 'subComp') {

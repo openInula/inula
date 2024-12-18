@@ -2,7 +2,6 @@ import { type NodePath } from '@babel/core';
 import { types as t } from '@openinula/babel-api';
 import { COMPONENT, HOOK, importMap, USE_CONTEXT } from './constants';
 import { minimatch } from 'minimatch';
-import { AnalyzeContext, Analyzer, SubComponentNode, Variable, Visitor } from './analyze/types';
 
 export function fileAllowed(fileName: string | undefined, includes: string[], excludes: string[]): boolean {
   if (includes.includes('*')) return true;
@@ -124,15 +123,12 @@ export function wrapUntrack(node: t.Expression) {
   return t.callExpression(t.identifier(importMap.untrack), [t.arrowFunctionExpression([], node)]);
 }
 
-export function getSubComp(variables: Variable[]) {
-  return variables.filter((v): v is SubComponentNode => v.type === 'subComp');
-}
 /**
  * Convert a bitmap to an array of indices where bits are set to 1
  * @param {number} bitmap - The bitmap to convert
  * @returns {number[]} Array of indices where bits are set
  */
-export function bitmapToIndices(bitmap: number) {
+export function bitmapToIndices(bitmap: number): number[] {
   // Handle edge cases
   if (bitmap === 0) return [];
   if (bitmap < 0) throw new Error('Negative numbers are not supported');
