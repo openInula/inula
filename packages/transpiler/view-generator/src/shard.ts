@@ -1,6 +1,6 @@
 import { getTypeName, InulaNodeType } from '@openinula/next-shared';
 import { types as t } from '@openinula/babel-api';
-import { prefixMap } from './HelperGenerators/BaseGenerator';
+import { prefixMap } from './utils/BaseGenerator';
 
 export function typeNode(type: InulaNodeType) {
   const node = t.numericLiteral(type);

@@ -1,6 +1,6 @@
 import { types as t } from '@openInula/babel-api';
 import { type ContextParticle } from '@openinula/reactivity-parser';
-import { importMap } from '../HelperGenerators/BaseGenerator';
+import { importMap } from '../utils/config';
 import { ViewContext, ViewGenerator } from '../index';
 
 /**

@@ -1,7 +1,7 @@
 import type { NodePath } from '@babel/core';
 import { types as t } from '@openinula/babel-api';
 
-export type DeconstruingPayload =
+export type DestructuringPayload =
   | {
       type: 'rest';
       name: string;
@@ -18,10 +18,10 @@ export type DeconstruingPayload =
       node: t.Identifier;
     };
 
-type DeconstruingDispatch = (payload: DeconstruingPayload) => void;
-export function parseDeconstructable(
+type DestructuringDispatch = (payload: DestructuringPayload) => void;
+export function parseDestructuring(
   path: NodePath<t.RestElement | t.Identifier | t.Pattern>,
-  dispatch: DeconstruingDispatch
+  dispatch: DestructuringDispatch
 ) {
   if (path.isObjectPattern()) {
     path.get('properties').forEach(prop => {

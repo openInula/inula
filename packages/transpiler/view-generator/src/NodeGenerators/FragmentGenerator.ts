@@ -1,7 +1,7 @@
 import { type FragmentParticle } from '@openinula/reactivity-parser';
 import { types as t } from '@openinula/babel-api';
 import { ViewContext, ViewGenerator } from '../index';
-import { importMap } from '../HelperGenerators/BaseGenerator';
+import { importMap } from '../utils/config';
 
 /**
  * @example
