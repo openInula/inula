@@ -86,7 +86,7 @@ export class IRBuilder {
     });
   }
 
-  addProps(name: string, value: t.Identifier, source: PropsSource = PARAM_PROPS) {
+  addProps(name: string, value: t.Identifier, source: PropsSource = PARAM_PROPS, ctxName?: string) {
     this.addDeclaredReactive(name);
     const reactiveId = this.getNextId();
     this.addStmt({
@@ -95,10 +95,11 @@ export class IRBuilder {
       type: PropType.WHOLE,
       reactiveId,
       source,
+      ctxName,
     });
   }
 
-  addRestProps(name: string, source: PropsSource = PARAM_PROPS) {
+  addRestProps(name: string, source: PropsSource = PARAM_PROPS, ctxName?: string) {
     // check if the props is initialized
     this.addDeclaredReactive(name);
     this.addStmt({
@@ -106,6 +107,7 @@ export class IRBuilder {
       type: PropType.REST,
       reactiveId: this.getNextId(),
       source,
+      ctxName,
     });
   }
 
@@ -113,7 +115,8 @@ export class IRBuilder {
     key: string,
     valPath: NodePath<t.Expression | t.PatternLike>,
     node: t.ObjectProperty,
-    source: PropsSource = PARAM_PROPS
+    source: PropsSource = PARAM_PROPS,
+    ctxName?: string
   ) {
     if (!valPath.isLVal()) {
       throw new Error('Invalid Prop Value type: ' + valPath.type);
@@ -152,6 +155,7 @@ export class IRBuilder {
       defaultValue,
       node,
       source,
+      ctxName,
     });
   }
 

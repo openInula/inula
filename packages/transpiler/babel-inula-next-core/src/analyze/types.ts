@@ -43,12 +43,14 @@ export interface SinglePropStmt {
   node: t.ObjectProperty;
   defaultValue?: t.Expression | null;
   source: PropsSource;
+  ctxName?: string;
 }
 export interface RestPropStmt {
   name: string;
   type: PropType.REST;
   reactiveId: number;
   source: PropsSource;
+  ctxName?: string;
 }
 
 export interface WholePropStmt {
@@ -57,6 +59,7 @@ export interface WholePropStmt {
   reactiveId: number;
   type: PropType.WHOLE;
   source: PropsSource;
+  ctxName?: string;
 }
 
 export type RawStmt = {
@@ -178,8 +181,7 @@ export interface AnalyzeContext {
 export type Visitor<S = AnalyzeContext> = {
   [Type in t.Statement['type']]?: (path: NodePath<Extract<t.Statement, { type: Type }>>, state: S) => void;
 } & {
-  Prop?: (path: NodePath<t.RestElement | t.ObjectProperty>, state: S) => void;
-  Props?: (path: NodePath<t.Identifier>, state: S) => void;
+  Props?: (path: NodePath<t.RestElement | t.Identifier | t.Pattern>, state: S) => void;
 };
 export type Analyzer = () => Visitor;
 
