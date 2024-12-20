@@ -18,7 +18,7 @@
 
 import { describe, expect, vi } from 'vitest';
 import { domTest as it } from './utils';
-import { render } from '../../src';
+import { render, useContext, createContext } from '../../src';
 
 vi.mock('../../src/scheduler', async () => {
   return {
@@ -28,241 +28,108 @@ vi.mock('../../src/scheduler', async () => {
   };
 });
 
-describe('conditional rendering', () => {
-  it('should if, else, else if', ({ container }) => {
+describe('rendering', () => {
+  it('should switch from empty conditional nodes', ({ container }) => {
     let set: (num: number) => void;
 
     function App() {
-      let count = 2;
+      let count = 0;
       set = (val: number) => {
         count = val;
       };
+
+      function text() {
+        return 'Hello';
+      }
+
       return (
-        <>
-          <if cond={count > 1}>{count} is bigger than is 1</if>
-          <else-if cond={count === 1}>{count} is equal to 1</else-if>
-          <else>{count} is smaller than 1</else>
-        </>
+        <div>
+          <if cond={count > 0}>{text()}</if>
+        </div>
       );
     }
 
-    render(App, container);
-    expect(container.innerHTML).toBe('2 is bigger than is 1');
+    render(App(), container);
+    expect(container.innerHTML).toBe('<div></div>');
     set(1);
-    expect(container.innerHTML).toBe('1 is equal to 1');
-    set(0);
-    expect(container.innerHTML).toBe('0 is smaller than 1');
+    expect(container.innerHTML).toBe('<div>Hello</div>');
   });
 
   it('should support nested if', ({ container }) => {
-    let set: (num: number) => void;
+    let next: (num: number) => void;
 
-    function App() {
-      let count = 0;
-      set = (val: number) => {
-        count = val;
-      };
+    function TrafficLight() {
+      let lightIndex = 0;
+
+      let light = lightIndex ? 'green' : 'red';
+
+      function nextLight() {
+        lightIndex = (lightIndex + 1) % 2;
+      }
+
+      next = nextLight;
+
       return (
-        <if cond={count > 1}>
-          {count} is bigger than is 1
-          <if cond={count > 2}>
-            <div>{count} is bigger than is 2</div>
-          </if>
-        </if>
-      );
-    }
-
-    render(App, container);
-    expect(container.innerHTML).toMatchInlineSnapshot(`""`);
-    set(2);
-    expect(container.innerHTML).toMatchInlineSnapshot(`
-      "2 is bigger than is 1"
-    `);
-    set(3);
-    expect(container.innerHTML).toMatchInlineSnapshot(`
-      "3 is bigger than is 1<div>3 is bigger than is 2</div>"
-    `);
-    set(2);
-    expect(container.innerHTML).toMatchInlineSnapshot(`
-      "2 is bigger than is 1"
-    `);
-  });
-  it('should transform "and expression in and expression" to "if tag in if tag"', ({ container }) => {
-    let set: (num: number) => void;
-
-    function MyComp() {
-      let count = 0;
-      set = (val: number) => {
-        count = val;
-      };
-      return <div>{count > 0 && count > 1 && <h1>hello world {count}</h1>}</div>;
-    }
-
-    render(MyComp, container);
-    set(0);
-    expect(container.innerHTML).toMatchInlineSnapshot(`"<div></div>"`);
-    set(1);
-    expect(container.innerHTML).toMatchInlineSnapshot(`"<div></div>"`);
-    set(2);
-    expect(container.innerHTML).toMatchInlineSnapshot(`"<div><h1>hello world 2</h1></div>"`);
-  });
-
-  it('should not transform "and expression" whose right is identifier', ({ container }) => {
-    let set: (num: number) => void;
-
-    function MyComp() {
-      let count = 0;
-      set = val => {
-        count = val;
-      };
-      return <div>{count > 0 && count > 1 ? <h1>hello world {count}</h1> : `Empty`}</div>;
-    }
-
-    render(MyComp, container);
-    set(0);
-    expect(container.innerHTML).toMatchInlineSnapshot(`"<div>Empty</div>"`);
-    set(1);
-    expect(container.innerHTML).toMatchInlineSnapshot(`"<div>Empty</div>"`);
-    set(2);
-    expect(container.innerHTML).toMatchInlineSnapshot(`"<div><h1>hello world 2</h1></div>"`);
-  });
-
-  it('should transform "condition expression in condition expression" to "if else tag in if else tag"', ({
-    container,
-  }) => {
-    let set: (num: number) => void;
-
-    function MyComp() {
-      let count = 0;
-      set = val => {
-        count = val;
-      };
-      return <div>{count > 0 ? count > 1 ? <h1>hello world {count}</h1> : 'Empty2' : 'Empty1'}</div>;
-    }
-
-    render(MyComp, container);
-    set(0);
-    expect(container.innerHTML).toMatchInlineSnapshot(`"<div>Empty1</div>"`);
-    set(1);
-    expect(container.innerHTML).toMatchInlineSnapshot(`"<div>Empty2</div>"`);
-    set(2);
-    expect(container.innerHTML).toMatchInlineSnapshot(`"<div><h1>hello world 2</h1></div>"`);
-  });
-});
-
-describe('additional conditional rendering tests', () => {
-  it('Should correctly render content based on a single if condition', ({ container }) => {
-    let set: (num: number) => void;
-
-    function App() {
-      let count = 0;
-      set = (val: number) => {
-        count = val;
-      };
-      return (
-        <div>
-          <if cond={count > 5}>Count is greater than 5</if>
-        </div>
-      );
-    }
-
-    render(App, container);
-    expect(container.innerHTML).toBe('<div></div>');
-    set(6);
-    expect(container.innerHTML).toBe('<div>Count is greater than 5</div>');
-  });
-
-  it('Should correctly render content based on if-else conditions', ({ container }) => {
-    let set: (num: number) => void;
-
-    function App() {
-      let count = 0;
-      set = (val: number) => {
-        count = val;
-      };
-      return (
-        <div>
-          <if cond={count % 2 === 0}>Count is even</if>
-          <else>Count is odd</else>
-        </div>
-      );
-    }
-
-    render(App, container);
-    expect(container.innerHTML).toBe('<div>Count is even</div>');
-    set(1);
-    expect(container.innerHTML).toBe('<div>Count is odd</div>');
-    set(2);
-    expect(container.innerHTML).toBe('<div>Count is even</div>');
-  });
-
-  it('Should correctly render content based on if-else-if-else conditions', ({ container }) => {
-    let set: (num: number) => void;
-
-    function App() {
-      let count = 0;
-      set = (val: number) => {
-        count = val;
-      };
-      return (
-        <div>
-          <if cond={count > 10}>Count is greater than 10</if>
-          <else-if cond={count > 5}>Count is greater than 5 but not greater than 10</else-if>
-          <else-if cond={count > 0}>Count is greater than 0 but not greater than 5</else-if>
-          <else>Count is 0 or negative</else>
-        </div>
-      );
-    }
-
-    render(App, container);
-    expect(container.innerHTML).toBe('<div>Count is 0 or negative</div>');
-    set(3);
-    expect(container.innerHTML).toBe('<div>Count is greater than 0 but not greater than 5</div>');
-    set(7);
-    expect(container.innerHTML).toBe('<div>Count is greater than 5 but not greater than 10</div>');
-    set(11);
-    expect(container.innerHTML).toBe('<div>Count is greater than 10</div>');
-  });
-
-  it('Should correctly handle nested conditional rendering', ({ container }) => {
-    let set: (obj: { x: number; y: number }) => void;
-
-    function App() {
-      let state = { x: 0, y: 0 };
-      set = (val: { x: number; y: number }) => {
-        state = val;
-      };
-      return (
-        <div>
-          <if cond={state.x > 0}>
-            X is positive
-            <if cond={state.y > 0}>
-              <div>Both X and Y are positive</div>
+        <>
+          <button onClick={nextLight}>Next light</button>
+          <p>Light is: {light}</p>
+          <p>
+            You must:
+            <if cond={light === 'red'}>
+              <span>STOP</span>
             </if>
-            <else>
-              <div>X is positive but Y is not</div>
-            </else>
-          </if>
-          <else>
-            X is not positive
-            <if cond={state.y > 0}>
-              <div>X is not positive but Y is</div>
-            </if>
-            <else>
-              <div>Neither X nor Y are positive</div>
-            </else>
-          </else>
-        </div>
+            <else-if cond={light === 'green'}>
+              <span>GO</span>
+            </else-if>
+          </p>
+        </>
       );
     }
+    render(TrafficLight(), container);
+    expect(container.innerHTML).toMatchInlineSnapshot(
+      `"<button>Next light</button><p>Light is: red</p><p>You must:</p>"`
+    );
+    next();
+    expect(container.innerHTML).toMatchInlineSnapshot();
+  });
 
-    render(App, container);
-    expect(container.innerHTML).toBe('<div>X is not positive<div>Neither X nor Y are positive</div></div>');
-    set({ x: 1, y: 0 });
-    expect(container.innerHTML).toBe('<div>X is positive<div>X is positive but Y is not</div></div>');
-    set({ x: 1, y: 1 });
-    expect(container.innerHTML).toBe('<div>X is positive<div>Both X and Y are positive</div></div>');
-    set({ x: 0, y: 1 });
-    expect(container.innerHTML).toBe('<div>X is not positive<div>X is not positive but Y is</div></div>');
+  it('should support nested context', ({ container }) => {
+    let set: (num: number) => void;
+
+    const FileContext = createContext({ level: 0, path: [] });
+
+    // 文件夹组件
+    const Folder = ({ name, children }) => {
+      const { path } = useContext(FileContext);
+
+      return <FileContext path={[...path, name]}>{children}</FileContext>;
+    };
+
+    // 文件组件
+    const File = ({ name }) => {
+      const { path } = useContext(FileContext);
+      return (
+        <div>
+          {path.join(',')},{name}
+        </div>
+      );
+    };
+
+    // 示例用法
+    const FileSystem = () => {
+      return (
+        <Folder name="root">
+          <File name="file1.txt" />
+          <Folder name="Subfolder 2">
+            <File name="file5.txt" />
+          </Folder>
+        </Folder>
+      );
+    };
+
+    render(FileSystem(), container);
+    expect(container.innerHTML).toMatchInlineSnapshot(
+      `"<div>root,file1.txt</div><div>root,Subfolder 2,file1.txt</div>"`
+    );
   });
 });

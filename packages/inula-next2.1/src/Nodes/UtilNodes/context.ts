@@ -88,13 +88,8 @@ const removeConsumer = (contextNode: ContextNode, compNode: CompNode) => {
 };
 
 export const useContext = (context: Context, compNode: CompNode) => {
-  const contextStore = InulaStore.global.CurrentContextStore;
-  if (!contextStore) {
-    return context.defaultValue ?? {};
-  }
-
-  for (let i = contextStore.length - 1; i >= 0; i--) {
-    const currentContext = contextStore[i];
+  for (let i = InulaStore.global.CurrentContextStore.length - 1; i >= 0; i--) {
+    const currentContext = InulaStore.global.CurrentContextStore[i];
     if (currentContext.contextId === context.id) {
       currentContext.consumers.push(compNode);
       // ---- Remove the consumer from the context when the component unmounts

@@ -1,6 +1,6 @@
 import { InulaStore } from '../../store';
 import { Bits, InulaBaseNode, Updater, Value } from '../../types';
-import { addParentElement, appendNodes, update } from '../utils';
+import { addParentElement, appendNodes, cached, update } from '../utils';
 import { HTMLAttrsObject, InulaHTMLNode } from './types';
 import { shouldUpdate } from './utils';
 
@@ -212,12 +212,8 @@ export const setHTMLProp = (
   dependencies: Value[],
   reactBits: Bits
 ) => {
-  if (reactBits) {
-    if (!shouldUpdate(node, key, dependencies, reactBits)) return;
-    _setHTMLProp(node, key, valueFunc());
-  } else {
-    _setHTMLProp(node, key, valueFunc);
-  }
+  if (!shouldUpdate(node, key, dependencies, reactBits)) return;
+  _setHTMLProp(node, key, valueFunc());
 };
 
 /**
@@ -229,16 +225,12 @@ export const setHTMLProp = (
  */
 export const setStyle = (
   node: InulaHTMLNode,
-  newStyleFunc: (() => CSSStyleDeclaration) | CSSStyleDeclaration,
+  newStyleFunc: () => CSSStyleDeclaration,
   dependencies: Value[],
   reactBits: Bits
 ) => {
-  if (reactBits) {
-    if (!shouldUpdate(node, 'style', dependencies, reactBits)) return;
-    _setStyle(node, newStyleFunc());
-  } else {
-    _setStyle(node, newStyleFunc as CSSStyleDeclaration);
-  }
+  if (!shouldUpdate(node, 'style', dependencies, reactBits)) return;
+  _setStyle(node, newStyleFunc());
 };
 
 /**
@@ -288,18 +280,9 @@ export const setHTMLAttrs = (
   dependencies: Value[],
   reactBits: Bits
 ) => {
-  if (reactBits) {
-    if (!shouldUpdate(node, 'htmlAttrs', dependencies, reactBits)) return;
-    _setHTMLAttrs(node, valueFunc());
-  } else {
-    _setHTMLAttrs(node, valueFunc);
-  }
-};
-
-export function setHTMLAttr(node: InulaHTMLNode, valueFunc: () => Value, dependencies: Value[], reactBits: Bits) {
   if (!shouldUpdate(node, 'htmlAttrs', dependencies, reactBits)) return;
   _setHTMLAttrs(node, valueFunc());
-}
+};
 
 /**
  * @brief Set an event handler on a node

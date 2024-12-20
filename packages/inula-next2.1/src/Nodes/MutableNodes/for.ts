@@ -7,7 +7,6 @@ import {
   appendNodesWithSibling,
   arrayEqual,
   getFlowIndexFromNodes,
-  InitDirtyBitsMask,
   insertNodesBefore,
   toDOMElements,
   update,
@@ -78,13 +77,6 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
     if (keysFunc) this.keys = [...keysFunc()];
 
     this.dataReactBits = dataReactBits;
-    this.init();
-  }
-
-  init() {
-    this.dirtyBits = InitDirtyBitsMask;
-    this.update();
-    delete this.dirtyBits;
   }
 
   updateItemFuncArr: UpdateItemFunc[] = [];
