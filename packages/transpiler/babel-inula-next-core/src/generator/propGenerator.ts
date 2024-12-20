@@ -24,7 +24,15 @@ export function propGenerator(): Generator {
         valueAssign = t.parenthesizedExpression(valueAssign);
       }
 
-      return genAddPropStmt(selfId, stmt.name, valueId, valueAssign, getWaveBitsById(stmt.reactiveId), stmt.source);
+      return genAddPropStmt(
+        selfId,
+        stmt.name,
+        valueId,
+        valueAssign,
+        getWaveBitsById(stmt.reactiveId),
+        stmt.source,
+        stmt.ctxName
+      );
     },
     /**
      * self.addProp('$rest$', value => rest = value, 0b0010)
@@ -39,7 +47,8 @@ export function propGenerator(): Generator {
         valueId,
         t.assignmentExpression('=', t.identifier('$rest$'), valueId),
         getWaveBitsById(stmt.reactiveId),
-        stmt.source
+        stmt.source,
+        stmt.ctxName
       );
     },
     /**
@@ -55,7 +64,8 @@ export function propGenerator(): Generator {
         valueId,
         t.assignmentExpression('=', t.identifier('$whole$'), valueId),
         getWaveBitsById(stmt.reactiveId),
-        stmt.source
+        stmt.source,
+        stmt.ctxName
       );
     },
     /**
@@ -81,14 +91,18 @@ function genAddPropStmt(
   valueId: t.Identifier,
   valueAssign: t.Expression,
   waveBits: number,
-  source: PropsSource
+  source: PropsSource,
+  ctxName?: string
 ): t.Statement | t.Statement[] {
   const apiName = source === CTX_PROPS ? 'addContext' : 'addProp';
-  return t.expressionStatement(
-    t.callExpression(t.memberExpression(selfId, t.identifier(apiName)), [
-      t.stringLiteral(key),
-      t.arrowFunctionExpression([valueId], valueAssign),
-      t.numericLiteral(waveBits),
-    ])
-  );
+  const args: t.Expression[] = [
+    t.stringLiteral(key),
+    t.arrowFunctionExpression([valueId], valueAssign),
+    t.numericLiteral(waveBits),
+  ];
+
+  if (ctxName) {
+    args.unshift(t.identifier(ctxName));
+  }
+  return t.expressionStatement(t.callExpression(t.memberExpression(selfId, t.identifier(apiName)), args));
 }
