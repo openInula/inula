@@ -23,17 +23,7 @@ export function analyzeUnitOfWork(name: string, fnNode: NodePath<FunctionalExpre
   const params = fnNode.get('params');
   const props = params[0];
   if (props) {
-    if (props.isObjectPattern()) {
-      props.get('properties').forEach(prop => {
-        visitor.Prop?.(prop, context);
-      });
-    } else if (props.isIdentifier()) {
-      visitor.Props?.(props, context);
-    } else {
-      throw new Error(
-        `Component ${name}: The first parameter of the function component must be an object pattern or identifier`
-      );
-    }
+    visitor.Props?.(props, context);
   }
 
   // --- analyze the function body ---
