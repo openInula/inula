@@ -113,7 +113,6 @@ export type ViewReturnStmt = {
 
 export type UseContextStmt = {
   type: 'useContext';
-  ids: string[];
   lVal: t.Identifier | t.ArrayPattern | t.ObjectPattern;
   context: t.Identifier;
 };

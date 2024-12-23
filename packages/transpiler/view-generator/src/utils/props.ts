@@ -1,5 +1,5 @@
 import { types as t } from '@openInula/babel-api';
-import { alterAttributeMap, elementAttributeMap, importMap } from './BaseGenerator';
+import { alterAttributeMap, elementAttributeMap, importMap } from './config';
 import { DLError } from '../error';
 
 export const DelegatedEvents = new Set([

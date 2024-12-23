@@ -82,6 +82,7 @@ const API_NAMES = [
   'setText',
   'withDefault',
   'useContext',
+  'slice',
 ] as const;
 
 export const originalImportMap = Object.fromEntries(API_NAMES.map(name => [name, `$$${name}`])) as ImportMapType;

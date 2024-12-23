@@ -1,5 +1,5 @@
 import { MutableParticle, TemplateProp, type TemplateParticle } from '@openinula/reactivity-parser';
-import { setHTMLProp } from '../utils/HTMLPropGenerator';
+import { setHTMLProp } from '../utils/props';
 import { ViewGenerator, ViewContext } from '../index';
 import { types as t } from '@openInula/babel-api';
 import { importMap, prefixMap } from '../utils/config';

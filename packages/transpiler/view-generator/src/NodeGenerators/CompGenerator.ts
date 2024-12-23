@@ -49,24 +49,35 @@ export const compGenerator: ViewGenerator = {
     const updateProps: t.Statement[] = [];
     const node = t.identifier('node');
 
-    const propsNode = t.objectExpression(
-      Object.entries(props).map(([key, value]) => {
-        ctx.wrapUpdate(value.value);
+    const properties = Object.entries(props).map(([key, value]) => {
+      ctx.wrapUpdate(value.value);
 
-        if (value.depIdBitmap) {
-          updateProps.push(
-            genUpdateProp(node, key, value.value, ctx.getReactBits(value.depIdBitmap), value.dependenciesNode)
-          );
-        }
-        return t.objectProperty(t.stringLiteral(key), value.value);
-      })
-    );
+      if (value.depIdBitmap) {
+        updateProps.push(
+          genUpdateProp(node, key, value.value, ctx.getReactBits(value.depIdBitmap), value.dependenciesNode)
+        );
+      }
+      return t.objectProperty(t.stringLiteral(key), value.value);
+    });
+
+    if (children.length) {
+      const childrenNode = children.map(child => ctx.next(child));
+      properties.push(
+        t.objectProperty(
+          t.stringLiteral('children'),
+          t.callExpression(t.identifier(importMap.slice), [
+            t.arrowFunctionExpression([], t.arrayExpression(childrenNode)),
+            t.identifier('self'),
+          ])
+        )
+      );
+    }
+    const compNode = t.callExpression(tag, [t.objectExpression(properties)]);
 
     const updater = updateProps.length
       ? t.arrowFunctionExpression([node], t.blockStatement(updateProps))
       : t.nullLiteral();
 
-    const childrenNode = children.map(child => ctx.next(child));
-    return t.callExpression(t.identifier(importMap.createCompNode), [tag, propsNode, updater, ...childrenNode]);
+    return t.callExpression(t.identifier(importMap.createCompNode), [compNode, updater]);
   },
 };
