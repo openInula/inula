@@ -234,3 +234,18 @@ export const createCompNode = (compNode: CompNode, updater: Updater<CompNode> | 
   compNode.childNodes = nodes;
   return compNode;
 };
+
+export function slice(nodesFn: () => InulaBaseNode[], compNode: CompNode) {
+  const getter = () => {
+    const children = nodesFn();
+    if (compNode.childNodes) {
+      compNode.childNodes.push(...children);
+    } else {
+      compNode.childNodes = children;
+    }
+    return children;
+  };
+  getter.$$isSlice = true;
+
+  return getter;
+}
