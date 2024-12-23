@@ -192,7 +192,7 @@ export class IRBuilder {
     });
   }
 
-  private parseIdInLVal(id: NodePath<t.LVal>, reactiveId: number) {
+  private parseIdInLVal(id: NodePath<t.LVal>, reactiveId?: number) {
     let varIds: string[] = [];
     if (id.isIdentifier()) {
       const name = id.node.name;
@@ -211,12 +211,8 @@ export class IRBuilder {
   addContext(id: NodePath<t.LVal>, context: t.Identifier) {
     assertIdOrDeconstruct(id, 'Invalid Variable type when using context: ' + id.type);
 
-    const reactiveId = this.getNextId();
-
-    const varIds = this.parseIdInLVal(id, reactiveId);
     this.addStmt({
       type: 'useContext',
-      ids: varIds,
       lVal: id.node,
       context,
     });
@@ -323,11 +319,14 @@ export class IRBuilder {
             // which means it is not used and has been pruned
             continue;
           }
+          waveBitsMap.set(stmt.reactiveId, ownBit);
+
           // Then, we need to find the wave bits(other derived reactive dependency on it) of the derived reactive id
           const derivedWavesBits = waveBitsMap.get(stmt.reactiveId);
 
           const derivedWaves = derivedWavesBits ? derivedWavesBits | ownBit : ownBit;
 
+          // At last, add the derived wave bit to the source
           bitmapToIndices(stmt.dependency.depIdBitmap).forEach(id => {
             const waveBits = waveBitsMap.get(id);
             if (waveBits) {
