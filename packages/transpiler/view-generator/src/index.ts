@@ -5,7 +5,7 @@ import { htmlGenerator } from './NodeGenerators/HTMLGenerator';
 import { forGenerator } from './NodeGenerators/ForGenerator';
 import { templateGenerator } from './NodeGenerators/TemplateGenerator';
 import { compGenerator } from './NodeGenerators/CompGenerator';
-import { runWithConfig } from './utils/config';
+import { prefixMap, runWithConfig } from './utils/config';
 import { expGenerator } from './NodeGenerators/ExpGenerator';
 import { fragmentGenerator } from './NodeGenerators/FragmentGenerator';
 import { textGenerator } from './NodeGenerators/TextGenerator';
@@ -18,7 +18,7 @@ export type ViewContext = {
   wrapUpdate: (node: t.Statement | t.Expression | null) => void;
   next: (viewParticle: ViewParticle) => t.Expression;
   addTemplate: (templateName: string, value: t.Expression) => void;
-  getNextTemplateIdx: () => number;
+  genTemplateKey: () => string;
 };
 
 export type ViewGenerator = {
@@ -56,7 +56,7 @@ export function generateView(viewParticle: ViewParticle, config: ViewGeneratorCo
       addTemplate: (templateName: string, value: t.Expression) => {
         config.templates.push([templateName, value]);
       },
-      getNextTemplateIdx: () => config.templates.length,
+      genTemplateKey: () => config.genTemplateKey(prefixMap.template),
       next: visit,
     });
   };

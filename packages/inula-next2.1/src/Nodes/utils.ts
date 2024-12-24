@@ -195,3 +195,7 @@ export const init = (nodes: InulaBaseNode[]) => {
     update(nodes[i], InitDirtyBitsMask);
   }
 };
+
+export function withDefault(value: any, defaultValue: any) {
+  return value === undefined ? defaultValue : value;
+}

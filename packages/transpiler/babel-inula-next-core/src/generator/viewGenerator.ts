@@ -19,6 +19,10 @@ export function viewGenerator(): Generator {
         importMap: ctx.importMap,
         templates: templates,
         wrapUpdate: ctx.wrapUpdate,
+        genTemplateKey: (name: string) => {
+          const programScope = ctx.current.fnNode.scope.getProgramParent();
+          return programScope.generateUid(name);
+        },
       });
 
       ctx.hoist(

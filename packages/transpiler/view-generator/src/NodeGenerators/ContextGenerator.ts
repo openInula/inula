@@ -1,6 +1,6 @@
 import { types as t } from '@openInula/babel-api';
 import { type ContextParticle } from '@openinula/reactivity-parser';
-import { importMap } from '../utils/config';
+import { importMap, nodeNameInUpdate } from '../utils/config';
 import { ViewContext, ViewGenerator } from '../index';
 
 /**
@@ -24,7 +24,7 @@ export const contextGenerator: ViewGenerator = {
     let contextNode = t.callExpression(t.identifier(importMap.createContextNode), [t.identifier(contextName)]);
 
     if (Object.keys(props).length > 0) {
-      const nodeId = t.identifier('node');
+      const nodeId = t.identifier(nodeNameInUpdate);
       const updateFunction = t.arrowFunctionExpression(
         [nodeId],
         t.blockStatement(

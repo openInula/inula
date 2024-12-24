@@ -13,6 +13,7 @@ import { propGenerator } from './propGenerator';
 
 interface GeneratorContext {
   selfId: t.Identifier;
+  current: ComponentNode | SubComponentNode | HookNode;
   bitManager: BitManager;
   hoist: (node: t.Statement | t.Statement[]) => void;
   wrapUpdate: (node: t.Statement | t.Expression | null) => void;
@@ -21,6 +22,7 @@ interface GeneratorContext {
   getWaveBitsById: (id: number) => number;
   importMap: ImportMapType;
   parentId?: t.Identifier;
+  templates: Array<[string, t.Expression]>;
 }
 
 // according to the type of IRStmt
@@ -46,6 +48,7 @@ export function generate(
 ): t.FunctionDeclaration {
   const ctx: GeneratorContext = {
     selfId: generateSelfId(root.scope.level),
+    current: root,
     bitManager,
     hoist,
     wrapUpdate: (node: t.Statement | t.Expression | null) => {
@@ -54,6 +57,7 @@ export function generate(
     getReactBits: bitManager.getReactBits,
     getWaveBits: bitManager.getWaveBits.bind(null, root),
     getWaveBitsById: bitManager.getWaveBitsById,
+    templates: [],
     importMap,
     parentId,
   };

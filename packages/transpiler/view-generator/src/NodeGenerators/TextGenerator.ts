@@ -1,5 +1,5 @@
 import { type TextParticle } from '@openinula/reactivity-parser';
-import { importMap } from '../utils/config';
+import { importMap, nodeNameInUpdate } from '../utils/config';
 import { types as t } from '@openinula/babel-api';
 import { ViewContext, ViewGenerator } from '../index';
 
@@ -16,7 +16,7 @@ import { ViewContext, ViewGenerator } from '../index';
  */
 export const textGenerator: ViewGenerator = {
   text: ({ content }: TextParticle, ctx: ViewContext) => {
-    const node = t.identifier('node');
+    const node = t.identifier(nodeNameInUpdate);
     function textUpdater(): t.Expression | t.SpreadElement | t.ArgumentPlaceholder {
       return t.arrowFunctionExpression(
         [],

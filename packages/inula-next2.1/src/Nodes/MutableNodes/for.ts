@@ -75,6 +75,7 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
     this.nodeFunc = nodeFunc;
     this.data = [...dataFunc()];
     if (keysFunc) this.keys = [...keysFunc()];
+    this.update();
 
     this.dataReactBits = dataReactBits;
   }
