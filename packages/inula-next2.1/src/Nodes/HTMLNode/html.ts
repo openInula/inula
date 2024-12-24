@@ -13,6 +13,8 @@ export const createHTMLNode = (tag: string, update: Updater<InulaHTMLNode>, ...c
   const node = InulaStore.document.createElement(tag) as InulaHTMLNode;
   node.update = _update.bind(null, node, update);
 
+  update?.(node);
+
   node.nodes = childrenNodes;
 
   // ---- Append nodes' elements
@@ -229,8 +231,13 @@ export const setStyle = (
   dependencies: Value[],
   reactBits: Bits
 ) => {
-  if (!shouldUpdate(node, 'style', dependencies, reactBits)) return;
-  _setStyle(node, newStyleFunc());
+  // TODO Need to refactor
+  if (reactBits) {
+    if (!shouldUpdate(node, 'style', dependencies, reactBits)) return;
+    _setStyle(node, newStyleFunc());
+  } else {
+    _setStyle(node, newStyleFunc);
+  }
 };
 
 /**
@@ -263,8 +270,13 @@ export const setHTMLProps = (
   dependencies: Value[],
   reactBits: Bits
 ) => {
-  if (!shouldUpdate(node, 'htmlProps', dependencies, reactBits)) return;
-  _setHTMLProps(node, valueFunc());
+  // TODO Need to refactor
+  if (reactBits) {
+    if (!shouldUpdate(node, 'htmlProps', dependencies, reactBits)) return;
+    _setHTMLProps(node, valueFunc());
+  } else {
+    _setHTMLProps(node, valueFunc);
+  }
 };
 
 /**

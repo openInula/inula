@@ -21,6 +21,7 @@ class ConditionalNode extends MutableLifecycleNode implements InulaBaseNode {
     super();
     this.updater = updater;
     this.reactBits = reactBits;
+    this.nodes = updater(this);
   }
 
   conditionCacheMap?: Record<string, [boolean, Value[]]>;
@@ -41,14 +42,10 @@ class ConditionalNode extends MutableLifecycleNode implements InulaBaseNode {
   }
 
   update() {
-    if (this.currentBranch === -1) {
-      this.nodes = this.updater?.(this);
-      init(this.nodes!);
-      return;
-    }
+    // if (this.dirtyBits === InitDirtyBitsMask) return;
     const prevBranch = this.currentBranch;
     const prevFuncs = [this.willUnmountScopedStore, this.didUnmountScopedStore];
-    const newNodes = this.newNodesInContext(() => this.updater(this));
+    const newNodes = this.currentBranch === -1 ? this.updater(this) : this.newNodesInContext(() => this.updater(this));
 
     if (prevBranch === this.currentBranch) {
       // ---- Same condition return

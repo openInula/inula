@@ -1,7 +1,7 @@
 import { InulaNodeType } from '../../consts';
 import { runDidMount } from '../../lifecycle';
 import { Bits, InulaBaseNode, Value } from '../../types';
-import { appendNodesWithSibling, cached, getFlowIndexFromNodes, init, update } from '../utils';
+import { appendNodesWithSibling, cached, getFlowIndexFromNodes, init } from '../utils';
 import { MutableLifecycleNode } from './lifecycle';
 import { createTextNode } from '../HTMLNode';
 
@@ -24,6 +24,7 @@ class ExpNode extends MutableLifecycleNode implements InulaBaseNode {
     this.updater = updater;
     this.reactBits = reactBits;
     this.dependenciesFunc = dependenciesFunc;
+    this.nodes = this.getExpressionResult();
   }
 
   update() {
@@ -55,14 +56,19 @@ class ExpNode extends MutableLifecycleNode implements InulaBaseNode {
     let nodes = this.updater();
     if (!Array.isArray(nodes)) nodes = [nodes];
     return nodes
+      .flat(1)
       .filter(node => node !== undefined && node !== null && typeof node !== 'boolean')
       .map(node => {
         if (typeof node === 'string' || typeof node === 'number' || typeof node === 'bigint') {
           // TODO DO
           return createTextNode(`${node}`, () => {});
         }
+        if (typeof node === 'function' && node.$$isSlice) {
+          return node();
+        }
         return node;
-      });
+      })
+      .flat(1);
   }
 }
 

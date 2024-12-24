@@ -148,7 +148,6 @@ export class CompNode implements InulaBaseNode {
 
   init(node: InulaBaseNode) {
     this.nodes = [node];
-    init(this.nodes);
 
     return this;
   }

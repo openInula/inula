@@ -3,7 +3,7 @@ import { InulaNodeType } from '../../consts';
 import { CompNode } from '../CompNode';
 import { addWillUnmount } from '../../lifecycle';
 import { InulaStore } from '../../store';
-import { InitDirtyBitsMask, willReact } from '../utils';
+import { InitDirtyBitsMask, update, willReact } from '../utils';
 import { cached } from '../utils';
 
 export type ContextID = Symbol;
@@ -51,6 +51,9 @@ export class ContextNode implements InulaBaseNode {
   }
 
   update() {
+    for (let i = 0; i < (this.nodes?.length ?? 0); i++) {
+      update(this.nodes![i], this.dirtyBits!);
+    }
     if (this.firstUpdate) {
       delete this.firstUpdate;
       return;
@@ -88,6 +91,10 @@ const removeConsumer = (contextNode: ContextNode, compNode: CompNode) => {
 };
 
 export const useContext = (context: Context, compNode: CompNode) => {
+  if (!InulaStore.global.CurrentContextStore) {
+    return context.defaultValue ?? {};
+  }
+
   for (let i = InulaStore.global.CurrentContextStore.length - 1; i >= 0; i--) {
     const currentContext = InulaStore.global.CurrentContextStore[i];
     if (currentContext.contextId === context.id) {
