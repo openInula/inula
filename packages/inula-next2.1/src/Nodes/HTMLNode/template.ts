@@ -17,8 +17,9 @@ export const createTemplateNode = (
 ) => {
   const node = template.cloneNode(true) as InulaHTMLTemplateNode;
 
-  node.update = _update.bind(null, node, getUpdater?.(node) ?? null);
-
+  const updater = getUpdater?.(node) ?? null;
+  node.update = _update.bind(null, node, updater);
+  const tasks = [];
   // ---- Insert nodes
   if (nodesToInsert.length > 0) {
     node.nodesInserted = [];
@@ -29,6 +30,12 @@ export const createTemplateNode = (
       addParentElement([nodeToInsert], parentElement);
       node.nodesInserted.push(nodeToInsert);
     }
+  }
+
+  // --- append lately cause DOM should be stable to find the anchor element
+  tasks.forEach(t => t());
+  if (updater) {
+    updater(node);
   }
 
   return node;
