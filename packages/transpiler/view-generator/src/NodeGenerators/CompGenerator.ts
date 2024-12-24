@@ -1,6 +1,6 @@
 import { types as t } from '@openInula/babel-api';
 import { type CompParticle } from '@openinula/reactivity-parser';
-import { importMap } from '../utils/config';
+import { importMap, nodeNameInUpdate } from '../utils/config';
 import { ViewContext, ViewGenerator } from '../index';
 
 function genUpdateProp(
@@ -47,7 +47,7 @@ function genUpdateProp(
 export const compGenerator: ViewGenerator = {
   comp: ({ tag, props, children }: CompParticle, ctx: ViewContext) => {
     const updateProps: t.Statement[] = [];
-    const node = t.identifier('node');
+    const node = t.identifier(nodeNameInUpdate);
 
     const properties = Object.entries(props).map(([key, value]) => {
       ctx.wrapUpdate(value.value);

@@ -1,7 +1,7 @@
 import { type IfParticle, ViewParticle, DependencyValue } from '@openinula/reactivity-parser';
 import { ViewContext, ViewGenerator } from '../index';
 import { types as t } from '@openinula/babel-api';
-import { importMap } from '../utils/config';
+import { importMap, nodeNameInUpdate } from '../utils/config';
 
 /**
  * @View
@@ -56,7 +56,7 @@ function geneCondition(node: t.Identifier, idx: number, condition: DependencyVal
  */
 export const ifGenerator: ViewGenerator = {
   if: ({ branches }: IfParticle, ctx: ViewContext) => {
-    const node = t.identifier('node');
+    const node = t.identifier(nodeNameInUpdate);
 
     // ---- If no else statement, add one
     if (

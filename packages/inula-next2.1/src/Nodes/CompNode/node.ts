@@ -2,7 +2,7 @@ import { Bits, Lifecycle, Value, Updater, InulaBaseNode } from '../../types';
 import { InulaNodeType } from '../../consts';
 import { addDidMount, addDidUnmount, addWillUnmount } from '../../lifecycle';
 import { schedule } from '../../scheduler';
-import { cached, init, InitDirtyBitsMask, update } from '../utils';
+import { cached, update } from '../utils';
 import { Context, ContextID } from '../UtilNodes';
 
 // TODO - We'll see if this is necessary - unmounted

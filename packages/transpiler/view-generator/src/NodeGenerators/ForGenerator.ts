@@ -3,6 +3,10 @@ import { DependencyValue, type ForParticle } from '@openinula/reactivity-parser'
 import { ViewContext, ViewGenerator } from '../index';
 import { types as t } from '@openinula/babel-api';
 
+const PARAM_NODE = '$$n';
+const PARAM_INDEX = '$$i';
+const PARAM_KEY = '$$key';
+
 /**
  * @example
  * ```jsx
@@ -22,10 +26,10 @@ import { types as t } from '@openinula/babel-api';
  */
 export const forGenerator: ViewGenerator = {
   for: ({ item, index: indexParam, array, key, children }: ForParticle, ctx: ViewContext) => {
-    if (t.isMemberExpression(item)) {
+    if (!t.isIdentifier(item) && !t.isObjectPattern(item) && !t.isArrayPattern(item)) {
       throw new Error('ForGenerator: item cannot be a member expression');
     }
-    const index = indexParam ?? t.identifier('idx');
+    const index = indexParam ?? t.identifier(PARAM_INDEX);
     const updateItemFuncArr = t.identifier('updateItemFuncArr');
 
     return t.callExpression(t.identifier(importMap.createForNode), [
@@ -35,13 +39,7 @@ export const forGenerator: ViewGenerator = {
       keyMappingFn(array, item, key),
       // Update func
       t.arrowFunctionExpression(
-        [
-          t.identifier('node'), // TODO
-          updateItemFuncArr,
-          item,
-          t.identifier('key'),
-          index,
-        ],
+        [t.identifier(PARAM_NODE), updateItemFuncArr, item, t.identifier(PARAM_KEY), index],
         t.blockStatement([
           t.expressionStatement(
             t.assignmentExpression('=', t.memberExpression(updateItemFuncArr, index), itemUpdater(item, indexParam))

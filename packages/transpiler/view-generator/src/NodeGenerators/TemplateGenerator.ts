@@ -99,7 +99,7 @@ function genMutableParticlesUpdater(mutableParticles: MutableParticle[], ctx: Vi
  */
 export const templateGenerator: ViewGenerator = {
   template: ({ template, props, mutableParticles }: TemplateParticle, ctx: ViewContext) => {
-    const templateName = generateTemplateName(ctx.getNextTemplateIdx());
+    const templateName = ctx.genTemplateKey();
     const templateContent = genTemplateContent(template);
     ctx.addTemplate(templateName, templateContent);
 

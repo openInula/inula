@@ -5,7 +5,7 @@ export const prefixMap = { template: '$t', node: '$node' };
 export let elementAttributeMap: Record<string, string[]> = {};
 export let alterAttributeMap: Record<string, string> = {};
 export let importMap: Record<string, string> = {};
-export const nodeNameInUpdate = 'node';
+export const nodeNameInUpdate = '$$node';
 
 export function runWithConfig<T>(config: ViewGeneratorConfig, fn: () => T) {
   elementAttributeMap = config.attributeMap

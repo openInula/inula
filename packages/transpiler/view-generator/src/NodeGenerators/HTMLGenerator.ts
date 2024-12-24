@@ -32,7 +32,7 @@ export const htmlGenerator: ViewGenerator = {
     });
     const propsUpdater =
       propStmts.length > 0
-        ? t.arrowFunctionExpression([t.identifier('node')], t.blockStatement(propStmts))
+        ? t.arrowFunctionExpression([t.identifier(nodeNameInUpdate)], t.blockStatement(propStmts))
         : t.nullLiteral();
 
     // ---- Resolve children

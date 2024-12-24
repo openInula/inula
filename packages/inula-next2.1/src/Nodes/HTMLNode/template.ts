@@ -26,7 +26,7 @@ export const createTemplateNode = (
     for (let i = 0; i < nodesToInsert.length; i++) {
       const [lastPos, nodeToInsert, ...position] = nodesToInsert[i];
       const parentElement = getElementByPosition(node, ...position);
-      insertNode(parentElement as InulaHTMLNode, nodeToInsert, lastPos);
+      tasks.push(() => insertNode(parentElement as InulaHTMLNode, nodeToInsert, lastPos));
       addParentElement([nodeToInsert], parentElement);
       node.nodesInserted.push(nodeToInsert);
     }

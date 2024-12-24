@@ -11,4 +11,5 @@ export interface ViewGeneratorConfig {
    */
   templates: [string, t.Expression][];
   getReactBits: (depIdBitmap: Bitmap) => Bitmap;
+  genTemplateKey: (name: string) => string;
 }
