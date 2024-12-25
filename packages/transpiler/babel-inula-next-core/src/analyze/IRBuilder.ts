@@ -17,6 +17,7 @@ import {
   BaseVariable,
   ComponentNode,
   CompOrHook,
+  DerivedStmt,
   FunctionalExpression,
   HookNode,
   IRBlock,
@@ -24,6 +25,10 @@ import {
   LifeCycle,
   PARAM_PROPS,
   PropsSource,
+  RestPropStmt,
+  SinglePropStmt,
+  StateStmt,
+  WholePropStmt,
 } from './types';
 import { createIRNode } from './nodeFactory';
 import type { NodePath } from '@babel/core';
@@ -34,6 +39,38 @@ import { assertComponentNode, assertHookNode } from './utils';
 import { parseView as parseJSX } from '@openinula/jsx-view-parser';
 import { pruneUnusedState } from './pruneUnusedState';
 import { assertIdOrDeconstruct, bitmapToIndices } from '../utils';
+
+function trackSource(waveBitsMap: Map<number, number>, stmt: DerivedStmt, ownBit: number) {
+  // Then, we need to find the wave bits(other derived reactive dependency on it) of the derived reactive id
+  const downstreamWaveBits = waveBitsMap.get(stmt.reactiveId);
+
+  const derivedWaves = downstreamWaveBits ? downstreamWaveBits | ownBit : ownBit;
+
+  // At last, add the derived wave bit to the source
+  bitmapToIndices(stmt.dependency.depIdBitmap).forEach(id => {
+    const waveBits = waveBitsMap.get(id);
+    if (waveBits) {
+      waveBitsMap.set(id, waveBits | derivedWaves);
+    } else {
+      waveBitsMap.set(id, derivedWaves);
+    }
+  });
+}
+
+function getWaveBits(
+  idToWaveBitMap: Map<number, number>,
+  stmt: StateStmt | DerivedStmt | SinglePropStmt | RestPropStmt | WholePropStmt,
+  waveBitsMap: Map<number, number>
+) {
+  const ownBit = idToWaveBitMap.get(stmt.reactiveId);
+  let waveBits = ownBit;
+  if (ownBit) {
+    // if ownBit exist, means the state was used. Try to find derivedState using the state
+    const downstreamWaveBits = waveBitsMap.get(stmt.reactiveId) ?? 0;
+    waveBits = ownBit | downstreamWaveBits;
+  }
+  return waveBits;
+}
 
 export class IRBuilder {
   #current: HookNode | ComponentNode;
@@ -309,32 +346,14 @@ export class IRBuilder {
     function buildWaveMap(block: IRBlock) {
       for (let i = block.body.length - 1; i >= 0; i--) {
         const stmt = block.body[i];
-        if (stmt.type === 'state' || isPropStmt(stmt)) {
-          waveBitsMap.set(stmt.reactiveId, idToWaveBitMap.get(stmt.reactiveId) ?? 0);
-        } else if (stmt.type === 'derived') {
-          // First, we need to find the own wave bit of the reactive id
-          const ownBit = idToWaveBitMap.get(stmt.reactiveId);
-          if (!ownBit) {
-            // The derived reactive id is not found in the wave map,
-            // which means it is not used and has been pruned
-            continue;
-          }
-          waveBitsMap.set(stmt.reactiveId, ownBit);
-
-          // Then, we need to find the wave bits(other derived reactive dependency on it) of the derived reactive id
-          const derivedWavesBits = waveBitsMap.get(stmt.reactiveId);
-
-          const derivedWaves = derivedWavesBits ? derivedWavesBits | ownBit : ownBit;
-
-          // At last, add the derived wave bit to the source
-          bitmapToIndices(stmt.dependency.depIdBitmap).forEach(id => {
-            const waveBits = waveBitsMap.get(id);
-            if (waveBits) {
-              waveBitsMap.set(id, waveBits | derivedWaves);
-            } else {
-              waveBitsMap.set(id, derivedWaves);
+        if (stmt.type === 'state' || stmt.type === 'derived' || isPropStmt(stmt)) {
+          const waveBits = getWaveBits(idToWaveBitMap, stmt, waveBitsMap);
+          if (waveBits) {
+            waveBitsMap.set(stmt.reactiveId, waveBits);
+            if (stmt.type === 'derived') {
+              trackSource(waveBitsMap, stmt, waveBits);
             }
-          });
+          }
         }
       }
     }

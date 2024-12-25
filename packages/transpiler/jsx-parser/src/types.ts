@@ -78,7 +78,7 @@ export interface ForUnit {
   type: 'for';
   item: t.Identifier | t.RestElement | t.Pattern;
   array: t.Expression;
-  key: t.Expression;
+  key: t.Expression | null;
   index: t.Identifier | null;
   children: ViewUnit[];
 }
