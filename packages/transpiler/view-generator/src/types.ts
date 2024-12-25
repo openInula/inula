@@ -1,4 +1,4 @@
-import { types as t } from '@openInula/babel-api';
+import { types as t } from '@openinula/babel-api';
 import { Bitmap } from '@openinula/reactivity-parser';
 
 export interface ViewGeneratorConfig {
