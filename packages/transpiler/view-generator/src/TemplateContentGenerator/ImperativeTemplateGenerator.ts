@@ -1,7 +1,7 @@
 import { HTMLParticle, TextParticle, ViewParticle } from '@openinula/reactivity-parser';
 import { GenTemplateContent, TemplateContentGenerator } from './interface';
 import { importMap, prefixMap } from '../utils/config';
-import { types as t } from '@openInula/babel-api';
+import { types as t } from '@openinula/babel-api';
 import { setHTMLProp } from '../utils/props';
 
 interface Context {

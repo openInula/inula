@@ -1,7 +1,7 @@
 import { MutableParticle, TemplateProp, type TemplateParticle } from '@openinula/reactivity-parser';
 import { setHTMLProp } from '../utils/props';
 import { ViewGenerator, ViewContext } from '../index';
-import { types as t } from '@openInula/babel-api';
+import { types as t } from '@openinula/babel-api';
 import { importMap, prefixMap } from '../utils/config';
 import { genTemplateContent } from '../TemplateContentGenerator/ImperativeTemplateGenerator';
 import { generateNodeName } from '../shard';

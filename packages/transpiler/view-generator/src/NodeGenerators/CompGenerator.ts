@@ -1,4 +1,4 @@
-import { types as t } from '@openInula/babel-api';
+import { types as t } from '@openinula/babel-api';
 import { type CompParticle } from '@openinula/reactivity-parser';
 import { importMap, nodeNameInUpdate } from '../utils/config';
 import { ViewContext, ViewGenerator } from '../index';

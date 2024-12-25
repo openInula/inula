@@ -1,7 +1,7 @@
 import { type HTMLParticle } from '@openinula/reactivity-parser';
 import { setHTMLProp } from '../utils/props';
 import { ViewContext, ViewGenerator } from '../index';
-import { types as t } from '@openInula/babel-api';
+import { types as t } from '@openinula/babel-api';
 import { nodeNameInUpdate } from '../utils/config';
 
 /**

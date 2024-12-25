@@ -1,4 +1,4 @@
-import { types as t } from '@openInula/babel-api';
+import { types as t } from '@openinula/babel-api';
 import { alterAttributeMap, elementAttributeMap, importMap } from './config';
 import { DLError } from '../error';
 
