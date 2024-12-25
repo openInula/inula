@@ -64,6 +64,10 @@ function keyMappingFn(
   item: t.Identifier | t.Pattern | t.RestElement,
   key: t.Expression
 ): t.Expression | t.SpreadElement | t.ArgumentPlaceholder {
+  if (!key) {
+    return t.nullLiteral();
+  }
+
   return t.arrowFunctionExpression(
     [],
     t.callExpression(t.memberExpression(array.value, t.identifier('map')), [t.arrowFunctionExpression([item], key)])

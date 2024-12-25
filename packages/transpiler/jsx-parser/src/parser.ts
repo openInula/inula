@@ -560,7 +560,7 @@ export class ViewParser {
 
     // ---- Get key
     const keyProp = this.findProp(node, 'key');
-    let key: t.Expression = this.t.nullLiteral();
+    let key: t.Expression | null = null;
     if (keyProp) {
       if (!this.t.isJSXExpressionContainer(keyProp.value)) throw new Error('Expected expression container');
       if (this.t.isJSXEmptyExpression(keyProp.value.expression)) throw new Error('Expected expression not empty');

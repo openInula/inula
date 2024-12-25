@@ -1,6 +1,6 @@
 import { InulaStore } from '../../store';
 import { Bits, InulaBaseNode, Updater, Value } from '../../types';
-import { addParentElement, appendNodes, cached, update } from '../utils';
+import { addParentElement, appendNodes, cached, InitDirtyBitsMask, update } from '../utils';
 import { HTMLAttrsObject, InulaHTMLNode } from './types';
 import { shouldUpdate } from './utils';
 
@@ -13,7 +13,9 @@ export const createHTMLNode = (tag: string, update: Updater<InulaHTMLNode>, ...c
   const node = InulaStore.document.createElement(tag) as InulaHTMLNode;
   node.update = _update.bind(null, node, update);
 
+  node.dirtyBits = InitDirtyBitsMask;
   update?.(node);
+  delete node.dirtyBits;
 
   node.nodes = childrenNodes;
 
@@ -294,6 +296,30 @@ export const setHTMLAttrs = (
 ) => {
   if (!shouldUpdate(node, 'htmlAttrs', dependencies, reactBits)) return;
   _setHTMLAttrs(node, valueFunc());
+};
+
+/**
+ * @brief Set single HTML attribute
+ * @param node The HTML node to update
+ * @param key
+ * @param valueFunc Function that returns HTML attribute
+ * @param dependencies Values these attributes depend on
+ * @param reactBits Bits indicating which attributes should react to changes
+ */
+export const setHTMLAttr = (
+  node: InulaHTMLNode,
+  key: string,
+  valueFunc: () => HTMLAttrsObject,
+  dependencies: Value[],
+  reactBits: Bits
+) => {
+  // TODO Need to refactor
+  if (reactBits) {
+    if (!shouldUpdate(node, 'htmlAttrs', dependencies, reactBits)) return;
+    _setHTMLAttr(node, key, valueFunc());
+  } else {
+    _setHTMLProps(node, valueFunc);
+  }
 };
 
 /**

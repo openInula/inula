@@ -5,6 +5,7 @@ import { schedule } from '../../scheduler';
 import { cached, update } from '../utils';
 import { Context, ContextID } from '../UtilNodes';
 
+const BUILTIN_PROPS = ['ref', 'key'];
 // TODO - We'll see if this is necessary - unmounted
 
 /**
@@ -34,9 +35,6 @@ export class CompNode implements InulaBaseNode {
 
   // ---- Lifecycles
   willMount?: Lifecycle;
-  didMount?: Lifecycle;
-  willUnmount?: Lifecycle;
-  didUnmount?: Lifecycle;
 
   subComponents?: InulaBaseNode[];
 
@@ -137,11 +135,20 @@ export class CompNode implements InulaBaseNode {
     }
   }
 
+  didMount(fn: Lifecycle) {
+    addDidMount(fn);
+  }
+
+  willUnmount(fn: Lifecycle) {
+    addWillUnmount(fn);
+  }
+
+  didUnmount(fn: Lifecycle) {
+    addDidUnmount(fn);
+  }
+
   prepare() {
     if (this.willMount) this.willMount(this);
-    if (this.didMount) addDidMount(this.didMount);
-    if (this.willUnmount) addWillUnmount(this.willUnmount);
-    if (this.didUnmount) addDidUnmount(this.didUnmount);
 
     return this;
   }
@@ -161,6 +168,9 @@ export class CompNode implements InulaBaseNode {
   }
 
   updateProp(propName: string, valueFunc: () => Value, dependencies: Value[], reactBits: Bits) {
+    if (BUILTIN_PROPS.includes(propName)) {
+      return;
+    }
     // ---- Not event rest props is defined
     if (!this.updatePropMap) return;
     // ---- If not reacting to the change
@@ -204,14 +214,8 @@ export class CompNode implements InulaBaseNode {
 
   // ---- CONTEXT END ----
 
-  firstTimeUpdate? = true;
   dirtyBits?: Bits;
   update() {
-    if (this.firstTimeUpdate) {
-      delete this.firstTimeUpdate;
-      return;
-    }
-
     this.updater?.(this);
 
     for (let i = 0; i < (this.childNodes?.length ?? 0); i++) {
