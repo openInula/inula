@@ -36,7 +36,7 @@ export const forGenerator: ViewGenerator = {
       // Array
       t.arrowFunctionExpression([], array.value),
       // Key
-      keyMappingFn(array, item, key),
+      keyMappingFn(array, item, indexParam, key),
       // Update func
       t.arrowFunctionExpression(
         [t.identifier(PARAM_NODE), updateItemFuncArr, item, t.identifier(PARAM_KEY), index],
@@ -62,15 +62,19 @@ export const forGenerator: ViewGenerator = {
 function keyMappingFn(
   array: DependencyValue<t.Expression>,
   item: t.Identifier | t.Pattern | t.RestElement,
+  index: t.Identifier | null,
   key: t.Expression
 ): t.Expression | t.SpreadElement | t.ArgumentPlaceholder {
   if (!key) {
     return t.nullLiteral();
   }
-
+  const params = [item];
+  if (index) {
+    params.push(index);
+  }
   return t.arrowFunctionExpression(
     [],
-    t.callExpression(t.memberExpression(array.value, t.identifier('map')), [t.arrowFunctionExpression([item], key)])
+    t.callExpression(t.memberExpression(array.value, t.identifier('map')), [t.arrowFunctionExpression(params, key)])
   );
 }
 

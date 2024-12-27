@@ -102,6 +102,8 @@ const _setStyle = (node: InulaHTMLNode, newStyle: CSSStyleDeclaration) => {
         style.setProperty(key, newValue);
       } else if (key === 'float') {
         style.cssFloat = newValue;
+      } else if (typeof newValue === 'number') {
+        node.style[key] = newValue + 'px';
       } else {
         node.style[key] = newValue;
       }
@@ -331,3 +333,9 @@ export const setEvent = _setEvent;
  * @brief Delegate an event handler through event bubbling
  */
 export const delegateEvent = _delegateEvent;
+
+export function setRef(node: InulaHTMLNode, refFn: () => void) {
+  if (node.dirtyBits === InitDirtyBitsMask) {
+    refFn();
+  }
+}

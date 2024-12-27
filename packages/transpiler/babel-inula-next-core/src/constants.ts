@@ -9,6 +9,7 @@ export const DID_UNMOUNT = 'didUnmount';
 
 export const WATCH = 'watch';
 
+export const CURRENT_COMPONENT = '$$self';
 export enum PropType {
   REST = 'restProp',
   SINGLE = 'singleProp',
@@ -65,6 +66,7 @@ const API_NAMES = [
   'updateNode',
   'updateChildren',
   'setProp',
+  'setRef',
   'initContextChildren',
   'initCompNode',
   'emitUpdate',

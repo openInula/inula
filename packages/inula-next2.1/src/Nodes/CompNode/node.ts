@@ -36,7 +36,9 @@ export class CompNode implements InulaBaseNode {
   // ---- Lifecycles
   willMount?: Lifecycle;
 
-  subComponents?: InulaBaseNode[];
+  subComponents?: CompNode[];
+
+  slices?: InulaBaseNode[];
 
   constructor(parentComponents: CompNode[]) {
     for (let i = 0; i < parentComponents.length; i++) {
@@ -58,6 +60,7 @@ export class CompNode implements InulaBaseNode {
   //      in one updateView call, i.e., in one microtask.
   dirtyBitsArrToUpdate?: number[];
 
+  dirtyBitsToUpdate?: number;
   /**
    * @brief Update view asynchronously
    * @param dirty
@@ -82,7 +85,20 @@ export class CompNode implements InulaBaseNode {
       }
       //       2. All the sub components
       for (let i = 0; i < (this.subComponents?.length ?? 0); i++) {
-        update(this.subComponents![i], dirty);
+        if (this.subComponents![i].inulaType === InulaNodeType.Comp) {
+          this.subComponents![i].wave(null, dirty);
+        } else {
+          // TODO: identify sub comp whith slice
+          update(this.subComponents![i], dirty);
+        }
+      }
+      for (let i = 0; i < (this.slices?.length ?? 0); i++) {
+        if (this.slices![i].inulaType === InulaNodeType.Comp) {
+          this.slices![i].wave(null, dirty);
+        } else {
+          // TODO: identify sub comp whith slice
+          update(this.slices![i], dirty);
+        }
       }
       // ---- Clear the dirtyBitsArrToUpdate after the updateView is called
       delete this.dirtyBitsArrToUpdate;
@@ -155,7 +171,7 @@ export class CompNode implements InulaBaseNode {
 
   init(node: InulaBaseNode) {
     this.nodes = [node];
-
+    // init(this.nodes)
     return this;
   }
 
@@ -208,19 +224,11 @@ export class CompNode implements InulaBaseNode {
     this.wave(updateContextFunc(value), waveBits);
   }
 
-  // ---- CHILDREN START ----
-  // ---- Not child nodes in tree, but <CompNode><...nodes...></CompNode>
-  childNodes?: InulaBaseNode[];
-
   // ---- CONTEXT END ----
 
   dirtyBits?: Bits;
   update() {
     this.updater?.(this);
-
-    for (let i = 0; i < (this.childNodes?.length ?? 0); i++) {
-      update(this.childNodes![i], this.dirtyBits!);
-    }
   }
 }
 
@@ -232,19 +240,21 @@ export const compBuilder = (...parentComponents: CompNode[]) => {
   return new CompNode(parentComponents);
 };
 
-export const createCompNode = (compNode: CompNode, updater: Updater<CompNode> | null, ...nodes: InulaBaseNode[]) => {
+export const createCompNode = (compNode: CompNode, updater: Updater<CompNode> | null) => {
   if (updater) compNode.updater = updater;
-  compNode.childNodes = nodes;
   return compNode;
 };
 
 export function slice(nodesFn: () => InulaBaseNode[], compNode: CompNode) {
   const getter = () => {
-    const children = nodesFn();
-    if (compNode.childNodes) {
-      compNode.childNodes.push(...children);
+    let children = nodesFn();
+    if (!Array.isArray(children)) {
+      children = [children];
+    }
+    if (compNode.slices) {
+      compNode.slices.push(...children);
     } else {
-      compNode.childNodes = children;
+      compNode.slices = children;
     }
     return children;
   };

@@ -1,6 +1,6 @@
 import { ComponentNode, HookNode, IRStmt, SubComponentNode } from '../analyze/types';
 import { types as t } from '@openinula/babel-api';
-import { importMap, type ImportMapType } from '../constants';
+import { CURRENT_COMPONENT, importMap, type ImportMapType } from '../constants';
 import { stateGenerator } from './stateGenerator';
 import { mergeVisitor } from '../utils';
 import { BitManager } from '../analyze/IRBuilder';
@@ -78,5 +78,5 @@ export function generate(
 }
 
 export function generateSelfId(level: number) {
-  return t.identifier(`self${level ? level : ''}`);
+  return t.identifier(`${CURRENT_COMPONENT}${level ? level : ''}`);
 }

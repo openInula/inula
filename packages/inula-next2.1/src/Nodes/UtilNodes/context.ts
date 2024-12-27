@@ -37,7 +37,6 @@ export class ContextNode implements InulaBaseNode {
     InulaStore.global.CurrentContextStore.push(this);
   }
 
-  firstUpdate? = true;
   init() {
     this.dirtyBits = InitDirtyBitsMask;
     this.updater?.(this);
@@ -53,10 +52,6 @@ export class ContextNode implements InulaBaseNode {
   update() {
     for (let i = 0; i < (this.nodes?.length ?? 0); i++) {
       update(this.nodes![i], this.dirtyBits!);
-    }
-    if (this.firstUpdate) {
-      delete this.firstUpdate;
-      return;
     }
     this.updater(this);
   }

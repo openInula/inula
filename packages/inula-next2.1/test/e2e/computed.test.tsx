@@ -303,7 +303,7 @@ describe('Computed Properties', () => {
       expect(resultElement!.textContent).toBe('52');
     });
 
-    it.fails('should compute correctly with functional dependencies', ({ container }) => {
+    it('should compute correctly with functional dependencies', ({ container }) => {
       function App() {
         let x = 1;
         const double = x * 2;

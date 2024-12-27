@@ -44,7 +44,7 @@ class ConditionalNode extends MutableLifecycleNode implements InulaBaseNode {
   update() {
     const prevBranch = this.currentBranch;
     const prevFuncs = [this.willUnmountScopedStore, this.didUnmountScopedStore];
-    const newNodes = this.currentBranch === -1 ? this.updater(this) : this.newNodesInContext(() => this.updater(this));
+    const newNodes = this.newNodesInContext(() => this.updater(this));
 
     if (prevBranch === this.currentBranch) {
       // ---- Same condition return

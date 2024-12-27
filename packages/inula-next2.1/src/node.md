@@ -32,3 +32,6 @@ node.update = (dirtyBits: Bits) => {
 
 node.update = node => {}
 ```
+
+
+3. 子树的建立在createXXXNode()

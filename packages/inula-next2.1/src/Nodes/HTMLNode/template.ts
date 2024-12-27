@@ -19,21 +19,27 @@ export const createTemplateNode = (
 
   const updater = getUpdater?.(node) ?? null;
   node.update = _update.bind(null, node, updater);
-  const tasks = [];
   // ---- Insert nodes
   if (nodesToInsert.length > 0) {
-    node.nodesInserted = [];
+    // we need to find the parent element first, cause the position would be changed after insert
+    const insertOperations: Array<[InulaHTMLNode, InulaBaseNode, number]> = [];
     for (let i = 0; i < nodesToInsert.length; i++) {
       const [lastPos, nodeToInsert, ...position] = nodesToInsert[i];
       const parentElement = getElementByPosition(node, ...position);
-      tasks.push(() => insertNode(parentElement as InulaHTMLNode, nodeToInsert, lastPos));
+      insertOperations.push([parentElement as InulaHTMLNode, nodeToInsert, lastPos]);
+    }
+
+    node.nodesInserted = [];
+    // insert nodes
+    for (let i = 0; i < insertOperations.length; i++) {
+      const [parentElement, nodeToInsert, lastPos] = insertOperations[i];
+      insertNode(parentElement as InulaHTMLNode, nodeToInsert, lastPos);
       addParentElement([nodeToInsert], parentElement);
       node.nodesInserted.push(nodeToInsert);
     }
   }
 
   // --- append lately cause DOM should be stable to find the anchor element
-  tasks.forEach(t => t());
   if (updater) {
     updater(node);
   }
