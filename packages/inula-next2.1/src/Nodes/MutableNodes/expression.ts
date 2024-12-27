@@ -28,6 +28,7 @@ class ExpNode extends MutableLifecycleNode implements InulaBaseNode {
   }
 
   update() {
+    if (!(this.reactBits & this.dirtyBits!)) return;
     if (cached(this.dependenciesFunc(), this.cachedDeps)) return;
     const prevFuncs = [this.willUnmountScopedStore, this.didUnmountScopedStore];
     const newNodes = this.newNodesInContext(() => this.getExpressionResult());

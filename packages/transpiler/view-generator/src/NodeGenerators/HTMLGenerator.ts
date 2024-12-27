@@ -24,6 +24,7 @@ export const htmlGenerator: ViewGenerator = {
     const tagName = t.isStringLiteral(tag) ? tag.value : 'ANY';
     Object.entries(props).forEach(([key, { value, depIdBitmap, dependenciesNode }]) => {
       const reactBits = getReactBits(depIdBitmap);
+      ctx.wrapUpdate(value);
       const propStmt = setHTMLProp(nodeNameInUpdate, tagName, key, value, reactBits, dependenciesNode);
       if (propStmt) {
         // ref may return null

@@ -216,7 +216,7 @@ describe('context', () => {
       );
     }
 
-    render(App(), container);
+    render(App({}), container);
     expect(container.querySelector('div').textContent).toBe('Count: 0');
 
     container.querySelector('button').click();

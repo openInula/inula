@@ -49,15 +49,17 @@ export const compGenerator: ViewGenerator = {
     const updateProps: t.Statement[] = [];
     const node = t.identifier(nodeNameInUpdate);
 
-    const properties = Object.entries(props).map(([key, value]) => {
-      ctx.wrapUpdate(value.value);
-
-      if (value.depIdBitmap) {
-        updateProps.push(
-          genUpdateProp(node, key, value.value, ctx.getReactBits(value.depIdBitmap), value.dependenciesNode)
-        );
+    const properties = Object.entries(props).map(([key, { value, depIdBitmap, dependenciesNode }]) => {
+      let initValue = value;
+      if (key === 'ref') {
+        initValue = wrapRefHandler(value);
       }
-      return t.objectProperty(t.stringLiteral(key), value.value);
+      ctx.wrapUpdate(value);
+
+      if (depIdBitmap) {
+        updateProps.push(genUpdateProp(node, key, value, ctx.getReactBits(depIdBitmap), dependenciesNode));
+      }
+      return t.objectProperty(t.stringLiteral(key), initValue);
     });
 
     if (children.length) {
@@ -67,7 +69,7 @@ export const compGenerator: ViewGenerator = {
           t.stringLiteral('children'),
           t.callExpression(t.identifier(importMap.slice), [
             t.arrowFunctionExpression([], t.arrayExpression(childrenNode)),
-            t.identifier('self'),
+            t.identifier('$$self'),
           ])
         )
       );
@@ -81,3 +83,29 @@ export const compGenerator: ViewGenerator = {
     return t.callExpression(t.identifier(importMap.createCompNode), [compNode, updater]);
   },
 };
+
+/**
+ * @examples
+ * ````js
+ * function ($el) {
+ *  typeof ref === "function" ? ref($el) : ref = $el;
+ * }
+ *```
+ * @param refVal
+ */
+function wrapRefHandler(refVal: t.Expression) {
+  const refInput = t.identifier('$el');
+  return t.functionExpression(
+    null,
+    [refInput],
+    t.blockStatement([
+      t.expressionStatement(
+        t.conditionalExpression(
+          t.binaryExpression('===', t.unaryExpression('typeof', refVal, true), t.stringLiteral('function')),
+          t.callExpression(refVal, [refInput]),
+          t.assignmentExpression('=', refVal as t.LVal, refInput)
+        )
+      ),
+    ])
+  );
+}

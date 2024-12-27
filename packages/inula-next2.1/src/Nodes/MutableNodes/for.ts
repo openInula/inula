@@ -94,6 +94,7 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
    * @param changed
    */
   update() {
+    // TODO: extract
     if (this.notInitialized) {
       for (let idx = 0; idx < this.data.length; idx++) {
         let item = this.data[idx]

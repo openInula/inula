@@ -177,6 +177,26 @@ export function setDynamicHTMLProp(
 }
 
 /**
+ * @View
+ * setRef($nodeEl, () => typeof ${value} === "function" ? ${value}($nodeEl) : ${value} = $nodeEl)
+ * @param nodeName
+ * @param value
+ */
+function setRef(nodeName: string, value: t.Expression): t.Statement {
+  const elNode = t.identifier(nodeName);
+
+  const elementNode = t.conditionalExpression(
+    t.binaryExpression('===', t.unaryExpression('typeof', value, true), t.stringLiteral('function')),
+    t.callExpression(value, [elNode]),
+    t.assignmentExpression('=', value as t.LVal, elNode)
+  );
+
+  return t.expressionStatement(
+    t.callExpression(t.identifier(importMap.setRef), [elNode, t.arrowFunctionExpression([], elementNode)])
+  );
+}
+
+/**
  * For style/dataset/ref/attr/prop
  */
 function addCommonHTMLProp(
@@ -187,8 +207,7 @@ function addCommonHTMLProp(
   reactBits?: number
 ): t.Statement | null {
   if (attrName === 'ref') {
-    // if (!check) return initElement(nodeName, value);
-    return null;
+    return setRef(nodeName, value);
   }
   if (attrName === 'style') return setHTMLStyle(nodeName, value, dependenciesNode, reactBits);
   if (attrName === 'dataset') return setHTMLDataset(nodeName, value, dependenciesNode, reactBits);

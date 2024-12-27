@@ -178,7 +178,7 @@ export interface AnalyzeContext {
 }
 
 export type Visitor<S = AnalyzeContext> = {
-  [Type in t.Statement['type']]?: (path: NodePath<Extract<t.Statement, { type: Type }>>, state: S) => void;
+  [Type in t.Node['type']]?: (path: NodePath<Extract<t.Statement, { type: Type }>>, state: S) => void;
 } & {
   Props?: (path: NodePath<t.RestElement | t.Identifier | t.Pattern>, state: S) => void;
 };

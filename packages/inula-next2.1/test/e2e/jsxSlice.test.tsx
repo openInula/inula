@@ -90,7 +90,7 @@ describe('JSX Element Usage in Various Contexts', () => {
         );
       }
 
-      render(App(), container);
+      render(App({}), container);
       expect(container.innerHTML).toBe('<div>True</div><div>Conditional</div>');
     });
 

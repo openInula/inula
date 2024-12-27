@@ -78,7 +78,7 @@ export function variablesAnalyze(): Visitor {
         }
 
         // ensure evert jsx slice call expression can found responding sub-component
-        assertJSXSliceIsValid(path, builder.checkSubComponent.bind(builder));
+        // assertJSXSliceIsValid(path, builder.checkSubComponent.bind(builder));
 
         builder.addVariable({
           id,
