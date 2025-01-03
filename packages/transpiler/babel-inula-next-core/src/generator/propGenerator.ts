@@ -19,7 +19,7 @@ export function propGenerator(): Generator {
         : valueId;
 
       let valueAssign: t.Expression = t.assignmentExpression('=', stmt.value, right);
-      if (stmt.isDesctructured) {
+      if (stmt.isDestructured) {
         // destructure assignment should be wrapped with parentheses
         valueAssign = t.parenthesizedExpression(valueAssign);
       }
@@ -35,34 +35,44 @@ export function propGenerator(): Generator {
       );
     },
     /**
-     * self.addProp('$rest$', value => rest = value, 0b0010)
+     * self.addProp('$rest$', value => rest = { ...rest, ...value }, 0b0010)
      * @param stmt
      * @returns prop statement
      */
     [PropType.REST](stmt, { selfId, getWaveBitsById }) {
       const valueId = t.identifier('value');
+      const valueAssign = t.assignmentExpression(
+        '=',
+        t.identifier(stmt.name),
+        t.objectExpression([t.spreadElement(t.identifier(stmt.name)), t.spreadElement(valueId)])
+      );
       return genAddPropStmt(
         selfId,
         '$rest$',
         valueId,
-        t.assignmentExpression('=', t.identifier('$rest$'), valueId),
+        valueAssign,
         getWaveBitsById(stmt.reactiveId),
         stmt.source,
         stmt.ctxName
       );
     },
     /**
-     * self.addProp('$whole$', value => whole = value, 0b0010)
+     * self.addProp('$whole$', value => whole = { ...whole, ...value }, 0b0010)
      * @param stmt
      * @returns prop statement
      */
     [PropType.WHOLE](stmt, { selfId, getWaveBitsById }) {
       const valueId = t.identifier('value');
+      const valueAssign = t.assignmentExpression(
+        '=',
+        t.identifier(stmt.name),
+        t.objectExpression([t.spreadElement(t.identifier(stmt.name)), t.spreadElement(valueId)])
+      );
       return genAddPropStmt(
         selfId,
         '$whole$',
         valueId,
-        t.assignmentExpression('=', t.identifier('$whole$'), valueId),
+        valueAssign,
         getWaveBitsById(stmt.reactiveId),
         stmt.source,
         stmt.ctxName
@@ -87,7 +97,7 @@ export function propGenerator(): Generator {
 
 function genAddPropStmt(
   selfId: t.Identifier,
-  key: string,
+  key: string | number,
   valueId: t.Identifier,
   valueAssign: t.Expression,
   waveBits: number,
@@ -96,7 +106,7 @@ function genAddPropStmt(
 ): t.Statement | t.Statement[] {
   const apiName = source === CTX_PROPS ? 'addContext' : 'addProp';
   const args: t.Expression[] = [
-    t.stringLiteral(key),
+    typeof key === 'string' ? t.stringLiteral(key) : t.numericLiteral(key),
     t.arrowFunctionExpression([valueId], valueAssign),
     t.numericLiteral(waveBits),
   ];

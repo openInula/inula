@@ -27,7 +27,7 @@ export const DelegatedEvents = new Set([
   'touchstart',
 ]);
 
-const commonHTMLPropKeys = ['ref', 'style', 'dataset'];
+const commonHTMLPropKeys = ['ref', 'style', 'dataset', '*spread*'];
 
 export function insertNode(nodeName: string, childNodeName: string, position: number): t.ExpressionStatement {
   return t.expressionStatement(
@@ -212,7 +212,20 @@ function addCommonHTMLProp(
   if (attrName === 'style') return setHTMLStyle(nodeName, value, dependenciesNode, reactBits);
   if (attrName === 'dataset') return setHTMLDataset(nodeName, value, dependenciesNode, reactBits);
   if (attrName === 'props') return setHTMLPropObject(nodeName, value);
+  if (attrName === '*spread*') return setHTMLSpread(nodeName, value, dependenciesNode, reactBits);
   return DLError.throw2();
+}
+
+function setHTMLSpread(
+  nodeName: string,
+  value: t.Expression,
+  dependenciesNode?: t.ArrayExpression,
+  reactBits?: number
+): t.Statement | null {
+  const args = reactBits
+    ? [t.identifier(nodeName), t.arrowFunctionExpression([], value), dependenciesNode!, t.numericLiteral(reactBits)]
+    : [t.identifier(nodeName), value];
+  return t.expressionStatement(t.callExpression(t.identifier(importMap.setHTMLAttrs), args));
 }
 
 /**

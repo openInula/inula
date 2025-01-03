@@ -71,12 +71,15 @@ function transformJSXSlice(path: NodePath<t.JSXElement> | NodePath<t.JSXFragment
   // transform it into:
   // ```jsx
   //   const Div$$ = (() => {
-  //     return <div></div>
+  //     return <div>{count}</div>
   //   });
   //   const Span$$ = Component(() => {
   //     return <span></span>
   //   });
   //   const a = type?  $$createComponentNode(Div$$) : $$createComponentNode(Span$$);
+  //  const a = type ? slice(()=>createHTMLNode(div, () => {xxx(count})) : createHTMLNode(span)
+
+  //   <div>{a}</div>
   // ```
   const sliceId = path.scope.generateUidIdentifier(genName(path.node));
   sliceId.name = 'JSX' + sliceId.name;
@@ -87,7 +90,7 @@ function transformJSXSlice(path: NodePath<t.JSXElement> | NodePath<t.JSXFragment
   if (path.parentPath.isArrowFunctionExpression()) {
     const block = t.blockStatement([
       sliceComp,
-      t.returnStatement(t.callExpression(t.identifier(importMap.createCompNode), [t.callExpression(sliceId, [])])),
+      t.returnStatement(t.callExpression(t.identifier(importMap.createCompNode), [sliceId])),
     ]);
     path.replaceWith(block);
   } else {
@@ -97,15 +100,7 @@ function transformJSXSlice(path: NodePath<t.JSXElement> | NodePath<t.JSXFragment
       throw new Error('Cannot find the statement parent');
     }
     stmt.insertBefore(sliceComp);
-    path.replaceWith(
-      t.callExpression(t.identifier(importMap.slice), [
-        t.arrowFunctionExpression(
-          [],
-          t.callExpression(t.identifier(importMap.createCompNode), [t.callExpression(sliceId, [])])
-        ),
-        t.identifier(CURRENT_COMPONENT),
-      ])
-    );
+    path.replaceWith(t.callExpression(t.identifier(importMap.createCompNode), [sliceId]));
   }
 }
 

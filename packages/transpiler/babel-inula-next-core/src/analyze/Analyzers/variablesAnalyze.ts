@@ -69,7 +69,7 @@ export function variablesAnalyze(): Visitor {
             if (payload.type === 'rest') {
               builder.addRestProps(payload.name, CTX_PROPS, context.node.name);
             } else if (payload.type === 'single') {
-              builder.addSingleProp(payload.name, payload.value, payload.node, CTX_PROPS, context.node.name);
+              builder.addSingleProp(payload.name, payload.value, CTX_PROPS, context.node.name);
             } else if (payload.type === 'props') {
               builder.addProps(payload.name, payload.node, CTX_PROPS, context.node.name);
             }

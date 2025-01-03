@@ -2,7 +2,6 @@ import { CompNode } from './Nodes/CompNode/node';
 import { InulaHTMLNode } from './Nodes/HTMLNode/types';
 import { insertNode } from './Nodes/HTMLNode';
 import { runDidMount } from './lifecycle';
-import { init } from './Nodes';
 
 /**
  * @brief Render the component node to the container

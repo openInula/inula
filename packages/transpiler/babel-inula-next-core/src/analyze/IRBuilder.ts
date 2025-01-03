@@ -17,6 +17,7 @@ import {
   BaseVariable,
   ComponentNode,
   CompOrHook,
+  DerivedSource,
   DerivedStmt,
   FunctionalExpression,
   HookNode,
@@ -35,7 +36,7 @@ import type { NodePath } from '@babel/core';
 import { getBabelApi, types as t } from '@openinula/babel-api';
 import { COMPONENT, isPropStmt, PropType, reactivityFuncNames } from '../constants';
 import { Dependency, getDependenciesFromNode, parseReactivity } from '@openinula/reactivity-parser';
-import { assertComponentNode, assertHookNode } from './utils';
+import { assertComponentNode, assertHookNode, isUseHook } from './utils';
 import { parseView as parseJSX } from '@openinula/jsx-view-parser';
 import { pruneUnusedState } from './pruneUnusedState';
 import { assertIdOrDeconstruct, bitmapToIndices } from '../utils';
@@ -47,14 +48,16 @@ function trackSource(waveBitsMap: Map<number, number>, stmt: DerivedStmt, ownBit
   const derivedWaves = downstreamWaveBits ? downstreamWaveBits | ownBit : ownBit;
 
   // At last, add the derived wave bit to the source
-  bitmapToIndices(stmt.dependency.depIdBitmap).forEach(id => {
-    const waveBits = waveBitsMap.get(id);
-    if (waveBits) {
-      waveBitsMap.set(id, waveBits | derivedWaves);
-    } else {
-      waveBitsMap.set(id, derivedWaves);
-    }
-  });
+  if (stmt.dependency) {
+    bitmapToIndices(stmt.dependency.depIdBitmap).forEach(id => {
+      const waveBits = waveBitsMap.get(id);
+      if (waveBits) {
+        waveBitsMap.set(id, waveBits | derivedWaves);
+      } else {
+        waveBitsMap.set(id, derivedWaves);
+      }
+    });
+  }
 }
 
 function getWaveBits(
@@ -91,7 +94,9 @@ export class IRBuilder {
   }
 
   addDeclaredReactive(name: string, id?: number) {
-    this.#current.scope.reactiveMap.set(name, id ?? this.getNextId());
+    const reactiveId = id ?? this.getNextId();
+    this.#current.scope.reactiveMap.set(name, reactiveId);
+    return reactiveId;
   }
 
   /**
@@ -112,9 +117,9 @@ export class IRBuilder {
     return fullReactiveMap;
   }
 
-  getDependency(node: t.Expression | t.Statement) {
+  getDependency = (node: t.Expression | t.Statement) => {
     return getDependenciesFromNode(node, this.getGlobalReactiveMap(), reactivityFuncNames);
-  }
+  };
 
   addRawStmt(stmt: t.Statement) {
     this.addStmt({
@@ -124,8 +129,7 @@ export class IRBuilder {
   }
 
   addProps(name: string, value: t.Identifier, source: PropsSource = PARAM_PROPS, ctxName?: string) {
-    this.addDeclaredReactive(name);
-    const reactiveId = this.getNextId();
+    const reactiveId = this.addDeclaredReactive(name);
     this.addStmt({
       name,
       value,
@@ -138,20 +142,19 @@ export class IRBuilder {
 
   addRestProps(name: string, source: PropsSource = PARAM_PROPS, ctxName?: string) {
     // check if the props is initialized
-    this.addDeclaredReactive(name);
+    const reactiveId = this.addDeclaredReactive(name);
     this.addStmt({
       name,
       type: PropType.REST,
-      reactiveId: this.getNextId(),
+      reactiveId,
       source,
       ctxName,
     });
   }
 
   addSingleProp(
-    key: string,
+    key: string | number,
     valPath: NodePath<t.Expression | t.PatternLike>,
-    node: t.ObjectProperty,
     source: PropsSource = PARAM_PROPS,
     ctxName?: string
   ) {
@@ -181,7 +184,7 @@ export class IRBuilder {
         value = left;
         defaultValue = valPath.node.right;
       }
-      this.addDeclaredReactive(propName, reactiveId);
+      this.addDeclaredReactive(propName as string, reactiveId);
     }
     this.addStmt({
       name: key,
@@ -190,7 +193,6 @@ export class IRBuilder {
       type: PropType.SINGLE,
       isDestructured: !!destructured,
       defaultValue,
-      node,
       source,
       ctxName,
     });
@@ -200,10 +202,26 @@ export class IRBuilder {
     const id = varInfo.id;
     const reactiveId = this.getNextId();
     const varIds = this.parseIdInLVal(id, reactiveId);
-
     const value = varInfo.value;
     if (value) {
       const dependency = this.getDependency(value);
+
+      if (isUseHook(value)) {
+        if (dependency) {
+          this.addUsedReactives(dependency.depIdBitmap);
+        }
+        this.addStmt({
+          type: 'derived',
+          ids: varIds,
+          lVal: id.node,
+          reactiveId: reactiveId,
+          value,
+          source: DerivedSource.HOOK,
+          dependency,
+          hookArgDependencies: getHookProps(value, this.getDependency),
+        });
+        return;
+      }
 
       if (dependency) {
         this.addUsedReactives(dependency.depIdBitmap);
@@ -213,6 +231,7 @@ export class IRBuilder {
           lVal: id.node,
           reactiveId: reactiveId,
           value,
+          source: DerivedSource.STATE,
           dependency,
         });
 
@@ -314,12 +333,16 @@ export class IRBuilder {
 
   setReturnValue(expression: t.Expression) {
     assertHookNode(this.#current);
-    const dependency = getDependenciesFromNode(expression, this.#current.scope.reactiveMap, reactivityFuncNames);
+    const dependency = this.getDependency(expression);
 
     if (dependency) {
       this.addUsedReactives(dependency.depIdBitmap);
     }
-    (this.#current as HookNode).children = { value: expression, ...dependency };
+    this.addStmt({
+      type: 'hookReturn',
+      value: expression,
+      ...dependency,
+    });
   }
 
   checkSubComponent(subCompName: string) {
@@ -454,4 +477,18 @@ function getDestructure(path: NodePath<t.LVal>) {
     return path;
   }
   return null;
+}
+
+function getHookProps(value: t.CallExpression, getDependency: (node: t.Expression | t.Statement) => Dependency | null) {
+  const params = value.arguments;
+
+  return params.map(param => {
+    if (t.isSpreadElement(param)) {
+      return getDependency(param.argument);
+    }
+    if (t.isArgumentPlaceholder(param)) {
+      return null;
+    }
+    return getDependency(param);
+  });
 }

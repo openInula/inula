@@ -14,7 +14,6 @@ export type ScopedLifecycle = Lifecycle[];
 
 export type InulaBaseNode = {
   inulaType?: InulaNodeType;
-  dirtyBits?: Bits;
   update?: Updater<any>;
   nodes?: InulaBaseNode[];
   parentEl?: HTMLElement;

@@ -35,12 +35,11 @@ export const CTX_PROPS = 'ctx';
 export type PropsSource = typeof PARAM_PROPS | typeof CTX_PROPS;
 
 export interface SinglePropStmt {
-  name: string;
+  name: string | number;
   value: t.LVal;
   reactiveId: number;
   type: PropType.SINGLE;
   isDestructured: boolean;
-  node: t.ObjectProperty;
   defaultValue?: t.Expression | null;
   source: PropsSource;
   ctxName?: string;
@@ -97,14 +96,29 @@ export type StateStmt = {
   node: t.VariableDeclarator;
 };
 
+export enum DerivedSource {
+  HOOK = 'hook',
+  STATE = 'state',
+}
+
 export type DerivedStmt = {
   type: 'derived';
   ids: string[];
   lVal: t.Identifier | t.ArrayPattern | t.ObjectPattern;
   reactiveId: number;
-  dependency: Dependency;
-  value: t.Expression;
-};
+} & (
+  | {
+      source: DerivedSource.HOOK;
+      value: t.CallExpression;
+      dependency: Dependency | null;
+      hookArgDependencies: Array<Dependency | null>;
+    }
+  | {
+      value: t.Expression;
+      dependency: Dependency;
+      source: DerivedSource.STATE;
+    }
+);
 
 export type ViewReturnStmt = {
   type: 'viewReturn';
@@ -115,6 +129,17 @@ export type UseContextStmt = {
   type: 'useContext';
   lVal: t.Identifier | t.ArrayPattern | t.ObjectPattern;
   context: t.Identifier;
+};
+
+export type HookReturnStmt = {
+  type: 'hookReturn';
+  value: t.Expression;
+} & Partial<Dependency>;
+
+export type UseHookStmt = {
+  type: 'useHook';
+  name: string;
+  hook: HookNode;
 };
 
 export type IRStmt =
@@ -129,7 +154,8 @@ export type IRStmt =
   | RestPropStmt
   | WholePropStmt
   | ViewReturnStmt
-  | UseContextStmt;
+  | UseContextStmt
+  | HookReturnStmt;
 
 export interface IRScope {
   waveMap: Map<string, number>;
@@ -158,18 +184,11 @@ export interface IRBlock {
 
 export interface ComponentNode<Type = 'comp'> extends IRBlock {
   type: Type;
-  children?: ViewParticle[];
   parent?: ComponentNode;
 }
-export type SubComponentNode = ComponentNode<'subComp'>;
 export interface HookNode extends IRBlock {
   type: 'hook';
   parent?: ComponentNode | HookNode;
-  children?: {
-    value: t.Expression;
-    dependencies?: string[];
-    dependenciesNode?: t.ArrayExpression;
-  };
 }
 
 export interface AnalyzeContext {
@@ -180,7 +199,7 @@ export interface AnalyzeContext {
 export type Visitor<S = AnalyzeContext> = {
   [Type in t.Node['type']]?: (path: NodePath<Extract<t.Statement, { type: Type }>>, state: S) => void;
 } & {
-  Props?: (path: NodePath<t.RestElement | t.Identifier | t.Pattern>, state: S) => void;
+  Props?: (path: NodePath<t.RestElement | t.Identifier | t.Pattern>[], state: S) => void;
 };
 export type Analyzer = () => Visitor;
 

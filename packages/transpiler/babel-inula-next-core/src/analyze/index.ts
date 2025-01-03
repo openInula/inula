@@ -8,11 +8,16 @@ import { COMPONENT, HOOK } from '../constants';
 import { types as t } from '@openinula/babel-api';
 import { hookReturnAnalyze } from './Analyzers/hookAnalyze';
 import { IRBuilder } from './IRBuilder';
-import { propsAnalyze } from './Analyzers/propsAnalyze';
+import { compPropsAnalyze, hookPropsAnalyze } from './Analyzers/propsAnalyze';
 import { mergeVisitor } from '../utils';
 
-const compBuiltinAnalyzers = [variablesAnalyze, functionalMacroAnalyze, viewAnalyze, propsAnalyze] as Analyzer[];
-const hookBuiltinAnalyzers = [variablesAnalyze, functionalMacroAnalyze, hookReturnAnalyze, propsAnalyze] as Analyzer[];
+const compBuiltinAnalyzers = [variablesAnalyze, functionalMacroAnalyze, viewAnalyze, compPropsAnalyze] as Analyzer[];
+const hookBuiltinAnalyzers = [
+  variablesAnalyze,
+  functionalMacroAnalyze,
+  hookReturnAnalyze,
+  hookPropsAnalyze,
+] as Analyzer[];
 
 // walk through the body a function (maybe a component or a hook)
 export function analyzeUnitOfWork(name: string, fnNode: NodePath<FunctionalExpression>, context: AnalyzeContext) {
@@ -21,9 +26,8 @@ export function analyzeUnitOfWork(name: string, fnNode: NodePath<FunctionalExpre
 
   // --- analyze the function props ---
   const params = fnNode.get('params');
-  const props = params[0];
-  if (props) {
-    visitor.Props?.(props, context);
+  if (params.length > 0) {
+    visitor.Props?.(params, context);
   }
 
   // --- analyze the function body ---

@@ -8,10 +8,22 @@ import { DomRef } from './templating/domRef';
 import { PageTitle } from './lifecycle/onMount';
 import { Time } from './lifecycle/onUnmount';
 import { App } from './component-composition/props';
-// import { Counter4 } from './Test-context';
+import {
+  compBuilder,
+  createFragmentNode,
+  createHTMLNode,
+  createCompNode,
+  createTextNode,
+  setHTMLProp,
+  delegateEvent,
+  createExpNode,
+} from '../src';
+import { createConditionalNode } from '../src/Nodes/MutableNodes/conditional';
+
+import { Counter4 } from './Test-context';
 import { CondTest } from './CondTest';
 import { ForTest } from './ForTest';
-import { Counter4 } from './Test';
+// import {Counter4} from './Test';
 
 import { TemplateTest } from './TemplateTest';
 // const componentPartyList = {
@@ -58,7 +70,7 @@ import { TemplateTest } from './TemplateTest';
 
 // buildComponentList();
 
-render(TemplateTest(), document.getElementById('main')!);
+render(Counter4(), document.getElementById('main')!);
 
 
 // let jj = []

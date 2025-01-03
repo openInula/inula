@@ -67,20 +67,20 @@ export const compGenerator: ViewGenerator = {
       properties.push(
         t.objectProperty(
           t.stringLiteral('children'),
-          t.callExpression(t.identifier(importMap.slice), [
+          t.callExpression(t.identifier(importMap.createChildren), [
             t.arrowFunctionExpression([], t.arrayExpression(childrenNode)),
             t.identifier('$$self'),
           ])
         )
       );
     }
-    const compNode = t.callExpression(tag, [t.objectExpression(properties)]);
+    const propsNode = t.objectExpression(properties);
 
     const updater = updateProps.length
       ? t.arrowFunctionExpression([node], t.blockStatement(updateProps))
       : t.nullLiteral();
 
-    return t.callExpression(t.identifier(importMap.createCompNode), [compNode, updater]);
+    return t.callExpression(t.identifier(importMap.createCompNode), [tag, propsNode, updater]);
   },
 };
 
