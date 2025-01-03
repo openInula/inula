@@ -2,116 +2,46 @@ import { Bits, Lifecycle, Value, Updater, InulaBaseNode } from '../../types';
 import { InulaNodeType } from '../../consts';
 import { addDidMount, addDidUnmount, addWillUnmount } from '../../lifecycle';
 import { schedule } from '../../scheduler';
-import { cached, update } from '../utils';
+import { cached, InitDirtyBitsMask, update } from '../utils';
 import { Context, ContextID } from '../UtilNodes';
+import { HookNode } from '../HookNode';
 
 const BUILTIN_PROPS = ['ref', 'key'];
 // TODO - We'll see if this is necessary - unmounted
 
-/**
- * @brief Component Node
- * @description
- * ---- Extract CompNode as a class especially for function 'updateDerived',
- *      because if we assign a default function to an object,
- *      it'll be counted in memory usage for each object.
- *      But if we assign a function to a class, it'll be counted only once.
- * ---- Also, for some must-use functions, we can assign them to the class prototype.
- *      Other helper functions will be coded as separate functions with
- *      a CompNode instance as the first parameter.
- * ---- Updating:
- *     - updateState: parameter is an dirty
- *        because we need to maintain the order of the state updates
- *     - updateView: parameter is a merged dirty
- *        because we need to update the view only once in the next microtask
- */
-export class CompNode implements InulaBaseNode {
-  inulaType = InulaNodeType.Comp;
+const compStack: CompNode[] = [];
+export function getCurrentCompNode() {
+  return compStack[compStack.length - 1];
+}
 
-  // ---- All children nodes
-  nodes?: InulaBaseNode[];
+export function enterCompNode(compNode: CompNode) {
+  compStack.push(compNode);
+}
 
-  // ---- Update functions
-  updater?: Updater<CompNode>;
+export function leaveCompNode() {
+  compStack.pop();
+}
 
-  // ---- Lifecycles
-  willMount?: Lifecycle;
+type DerivedStateComputation = [() => Value, () => Value[], Bits, string];
+type HookComputation = [() => void];
 
-  subComponents?: CompNode[];
-
-  slices?: InulaBaseNode[];
-
-  constructor(parentComponents: CompNode[]) {
-    for (let i = 0; i < parentComponents.length; i++) {
-      if (parentComponents[i].subComponents) {
-        parentComponents[i].subComponents!.push(this);
-      } else {
-        parentComponents[i].subComponents = [this];
-      }
-    }
-  }
-
-  // ---- In component update START----
-  wave(_: Value, dirty: Bits) {
-    this.updateState(dirty);
-    this.updateViewAsync(dirty);
-  }
-
-  // ---- This is a temporary variable to store the dirty that need to be updated
-  //      in one updateView call, i.e., in one microtask.
-  dirtyBitsArrToUpdate?: number[];
-
-  dirtyBitsToUpdate?: number;
-  /**
-   * @brief Update view asynchronously
-   * @param dirty
-   * @returns
-   */
-  updateViewAsync(dirty: Bits) {
-    if (this.dirtyBitsArrToUpdate) {
-      // ---- If there's already a dirtyBitsArrToUpdate, push the dirty to the array
-      this.dirtyBitsArrToUpdate.push(dirty);
-      return;
-    }
-    this.dirtyBitsArrToUpdate = [dirty];
-    // ---- Schedule the updateView in the next microtask
-    schedule(() => {
-      // ---- Merge all the dirtyBitsArrToUpdate to one single dirty
-      // ---- e.g. [0b0101, 0b0010] -> 0b0111
-      const dirty = this.dirtyBitsArrToUpdate!.reduce((acc, cur) => acc | cur, 0);
-      // ---- Call the updateView with the merged dirty bits to update
-      //       1. All the returning nodes
-      for (let i = 0; i < (this.nodes?.length ?? 0); i++) {
-        update(this.nodes![i], dirty);
-      }
-      //       2. All the sub components
-      for (let i = 0; i < (this.subComponents?.length ?? 0); i++) {
-        if (this.subComponents![i].inulaType === InulaNodeType.Comp) {
-          this.subComponents![i].wave(null, dirty);
-        } else {
-          // TODO: identify sub comp whith slice
-          update(this.subComponents![i], dirty);
-        }
-      }
-      for (let i = 0; i < (this.slices?.length ?? 0); i++) {
-        if (this.slices![i].inulaType === InulaNodeType.Comp) {
-          this.slices![i].wave(null, dirty);
-        } else {
-          // TODO: identify sub comp whith slice
-          update(this.slices![i], dirty);
-        }
-      }
-      // ---- Clear the dirtyBitsArrToUpdate after the updateView is called
-      delete this.dirtyBitsArrToUpdate;
-    });
-  }
-
+export abstract class ReactiveNode {
   cachedDependenciesMap?: Record<string, Value[]>;
 
-  derivedStateMap?: Array<[() => Value, () => Value[], Bits, string]>;
+  computations?: Array<DerivedStateComputation | HookComputation>;
 
   derivedCount?: number;
+
+  owner?: CompNode;
+
+  abstract wave(_: Value, dirty: Bits): void;
+
+  constructor() {
+    this.owner = getCurrentCompNode();
+  }
+
   deriveState(updateDerivedFunc: () => Value, dependenciesFunc: () => Value[], reactBits: Bits) {
-    if (!this.derivedStateMap) this.derivedStateMap = [];
+    if (!this.computations) this.computations = [];
     // ---- Run the updateDerivedFunc to get the initial value
     updateDerivedFunc();
     // ---- Add to cachedDependenciesMap
@@ -119,17 +49,8 @@ export class CompNode implements InulaBaseNode {
     if (this.derivedCount === undefined) this.derivedCount = 0;
     const cacheKey = `derived$${this.derivedCount}`;
     this.cachedDependenciesMap[cacheKey] = dependenciesFunc();
-    this.derivedStateMap.push([updateDerivedFunc, dependenciesFunc, reactBits, cacheKey]);
+    this.computations.push([updateDerivedFunc, dependenciesFunc, reactBits, cacheKey]);
     this.derivedCount++;
-    // TODO Make a flat array to save memory and improve performance
-    // e.g. this.derivedStateMap = []
-    // this.derivedStateMap.push(updateDerivedFunc, dependenciesFunc, reactBits);
-    // for (let i = 0; i < this.derivedStateMap.length; i+=3) {
-    //   const updateDerivedFunc = this.derivedStateMap[i]
-    //   const dependenciesFunc = this.derivedStateMap[i + 1]
-    //   const reactBits = this.derivedStateMap[i + 2]
-    // }
-    // TODO Extract it as a function for reuse purpose
   }
 
   watch(updateDerivedFunc: () => Value, dependenciesFunc: () => Value[], reactBits: Bits) {
@@ -137,9 +58,21 @@ export class CompNode implements InulaBaseNode {
   }
 
   updateState(dirty: Bits) {
-    if (!this.derivedStateMap) return;
-    for (let i = 0; i < this.derivedStateMap.length; i++) {
-      const [updateDerivedFunc, dependenciesFunc, reactBits, cacheKey] = this.derivedStateMap[i];
+    if (!this.computations) return;
+    for (let i = 0; i < this.computations.length; i++) {
+      const computation = this.computations[i];
+      if (computation.length === 1) {
+        const [updateFn] = computation;
+        updateFn();
+        continue;
+      }
+
+      const [updateDerivedFunc, dependenciesFunc, reactBits, cacheKey] = computation;
+      // ---- Hooks
+      if (!reactBits) {
+        updateDerivedFunc();
+        continue;
+      }
       // ---- If the state is not dirty, skip the update
       if (!(dirty & reactBits)) continue;
       const dependencies = dependenciesFunc();
@@ -149,30 +82,6 @@ export class CompNode implements InulaBaseNode {
       updateDerivedFunc();
       this.cachedDependenciesMap![cacheKey] = dependencies;
     }
-  }
-
-  didMount(fn: Lifecycle) {
-    addDidMount(fn);
-  }
-
-  willUnmount(fn: Lifecycle) {
-    addWillUnmount(fn);
-  }
-
-  didUnmount(fn: Lifecycle) {
-    addDidUnmount(fn);
-  }
-
-  prepare() {
-    if (this.willMount) this.willMount(this);
-
-    return this;
-  }
-
-  init(node: InulaBaseNode) {
-    this.nodes = [node];
-    // init(this.nodes)
-    return this;
   }
 
   // ---- Out of component update START ----
@@ -190,19 +99,26 @@ export class CompNode implements InulaBaseNode {
     // ---- Not event rest props is defined
     if (!this.updatePropMap) return;
     // ---- If not reacting to the change
-    if (!(reactBits & this.dirtyBits!)) return;
+    if (!(reactBits & this.owner!.dirtyBits!)) return;
     const cacheKey = `prop$${propName}`;
     const cachedDeps = this.cachedDependenciesMap?.[cacheKey];
     // ---- If the dependencies are the same, skip the update
     if (cached(dependencies, cachedDeps)) return;
 
-    if (!this.updatePropMap[propName]) {
+    if (this.updatePropMap['$whole$']) {
+      const [updatePropFunc, waveBits] = this.updatePropMap['$whole$'];
+      if (propName === '*spread*') {
+        this.wave(updatePropFunc(valueFunc()), waveBits);
+      } else {
+        this.wave(updatePropFunc({ [propName]: valueFunc() }), waveBits);
+      }
+    } else if (this.updatePropMap[propName]) {
+      const [updatePropFunc, waveBits] = this.updatePropMap[propName];
+      this.wave(updatePropFunc(valueFunc()), waveBits);
+    } else {
       // ---- Rest props
       const [updatePropFunc, waveBits] = this.updatePropMap['$rest$'];
       this.wave(updatePropFunc({ [propName]: valueFunc() }), waveBits);
-    } else {
-      const [updatePropFunc, waveBits] = this.updatePropMap[propName];
-      this.wave(updatePropFunc(valueFunc()), waveBits);
     }
 
     if (!this.cachedDependenciesMap) this.cachedDependenciesMap = {};
@@ -223,10 +139,134 @@ export class CompNode implements InulaBaseNode {
     if (contextId !== expectedContextId) return;
     this.wave(updateContextFunc(value), waveBits);
   }
-
   // ---- CONTEXT END ----
 
+  // ---- HOOKS START ----
+  useHook(hookNode: HookNode, updateHookReturn: (value: Value) => void, hookUpdater: (hookNode: HookNode) => void) {
+    updateHookReturn(hookNode.value!());
+    hookNode.triggerUpdate = () => {
+      updateHookReturn(hookNode.value!());
+    };
+    hookUpdater(hookNode);
+
+    if (!this.computations) this.computations = [];
+    if (this.derivedCount === undefined) this.derivedCount = 0;
+    this.computations.push([
+      () => {
+        hookUpdater(hookNode);
+      },
+    ]);
+  }
+  // ---- HOOKS END ----
+
+  // ---- Lifecycles
+  didMount(fn: Lifecycle) {
+    addDidMount(fn);
+  }
+
+  willUnmount(fn: Lifecycle) {
+    addWillUnmount(fn);
+  }
+
+  didUnmount(fn: Lifecycle) {
+    addDidUnmount(fn);
+  }
+}
+
+/**
+ * @brief Component Node
+ * @description
+ * ---- Extract CompNode as a class especially for function 'updateDerived',
+ *      because if we assign a default function to an object,
+ *      it'll be counted in memory usage for each object.
+ *      But if we assign a function to a class, it'll be counted only once.
+ * ---- Also, for some must-use functions, we can assign them to the class prototype.
+ *      Other helper functions will be coded as separate functions with
+ *      a CompNode instance as the first parameter.
+ * ---- Updating:
+ *     - updateState: parameter is an dirty
+ *        because we need to maintain the order of the state updates
+ *     - updateView: parameter is a merged dirty
+ *        because we need to update the view only once in the next microtask
+ */
+export class CompNode extends ReactiveNode implements InulaBaseNode {
+  inulaType = InulaNodeType.Comp;
+
+  // ---- All children nodes
+  nodes?: InulaBaseNode[];
+
+  // ---- Update functions
+  updater?: Updater<CompNode>;
+
+  subComponents?: CompNode[];
+
+  slices?: InulaBaseNode[];
+
+  constructor(parentComponents: CompNode[]) {
+    super();
+    for (let i = 0; i < parentComponents.length; i++) {
+      if (parentComponents[i].subComponents) {
+        parentComponents[i].subComponents!.push(this);
+      } else {
+        parentComponents[i].subComponents = [this];
+      }
+    }
+
+    this.dirtyBits = InitDirtyBitsMask;
+  }
+
+  // ---- In component update START----
+  wave(_: Value, dirty: Bits) {
+    if (this.dirtyBits) {
+      // ---- If there's already a dirtyBitsArrToUpdate, push the dirty to the array
+      this.dirtyBits |= dirty;
+      return;
+    }
+    this.dirtyBits = dirty;
+    this.updateState(dirty);
+    this.updateViewAsync(dirty);
+  }
+
   dirtyBits?: Bits;
+  /**
+   * @brief Update view asynchronously
+   * @param dirty
+   * @returns
+   */
+  updateViewAsync(dirty: Bits) {
+    // ---- Schedule the updateView in the next microtask
+    schedule(() => {
+      // ---- Merge all the dirtyBitsArrToUpdate to one single dirty
+      // ---- e.g. [0b0101, 0b0010] -> 0b0111
+      // ---- Call the updateView with the merged dirty bits to update
+      //       1. All the returning nodes
+      for (let i = 0; i < (this.nodes?.length ?? 0); i++) {
+        update(this.nodes![i]);
+      }
+      //       2. All the sub components
+      for (let i = 0; i < (this.subComponents?.length ?? 0); i++) {
+        this.subComponents![i].wave(null, dirty);
+      }
+      for (let i = 0; i < (this.slices?.length ?? 0); i++) {
+        update(this.slices![i]);
+      }
+      // ---- Clear the dirtyBits after the updateView is called
+      delete this.dirtyBits;
+    });
+  }
+
+  prepare() {
+    return this;
+  }
+
+  init(node: InulaBaseNode) {
+    this.nodes = [node];
+    compStack.pop();
+    delete this.dirtyBits;
+
+    return this;
+  }
+
   update() {
     this.updater?.(this);
   }
@@ -237,28 +277,55 @@ export class CompNode implements InulaBaseNode {
  * @returns
  */
 export const compBuilder = (...parentComponents: CompNode[]) => {
-  return new CompNode(parentComponents);
+  const comp = new CompNode(parentComponents);
+  enterCompNode(comp);
+  return comp;
 };
 
-export const createCompNode = (compNode: CompNode, updater: Updater<CompNode> | null) => {
+export const createCompNode = (
+  compFn: (props: Record<string, Value>) => CompNode,
+  props: Record<string, Value>,
+  updater: Updater<CompNode> | null
+) => {
+  if (props && props['*spread*']) {
+    const spreadProps = props['*spread*'];
+    delete props['*spread*'];
+    Object.assign(props, spreadProps);
+  }
+  const compNode = compFn(props);
   if (updater) compNode.updater = updater;
   return compNode;
 };
 
-export function slice(nodesFn: () => InulaBaseNode[], compNode: CompNode) {
+/**
+ * Handle children nodes, like:
+ * <Button><Child /></Button>
+ * will be transformed to
+ * <Button>{createChildren(() => <Child />)}</Button>
+ *
+ * We need bind the children nodes to the current compNode,
+ * so that the children nodes can be updated when the compNode is updated.
+ * @param nodesFn
+ * @param compNode
+ * @returns
+ */
+export function createChildren(nodesFn: () => InulaBaseNode[], compNode: CompNode) {
   const getter = () => {
+    enterCompNode(compNode);
     let children = nodesFn();
+    leaveCompNode();
+
     if (!Array.isArray(children)) {
       children = [children];
     }
     if (compNode.slices) {
       compNode.slices.push(...children);
     } else {
-      compNode.slices = children;
+      compNode.slices = [...children];
     }
     return children;
   };
-  getter.$$isSlice = true;
+  getter.$$isChildren = true;
 
   return getter;
 }

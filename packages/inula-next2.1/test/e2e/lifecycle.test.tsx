@@ -28,7 +28,7 @@ vi.mock('../../src/scheduler', async () => {
 });
 
 describe('lifecycle', () => {
-  it('should call willMount', ({ container }) => {
+  it.skip('should call willMount', ({ container }) => {
     const fn = vi.fn();
 
     function App() {

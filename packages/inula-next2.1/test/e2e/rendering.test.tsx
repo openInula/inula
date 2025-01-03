@@ -63,7 +63,7 @@ describe('rendering', () => {
             Header
             <h1>hello world!!!</h1>
             <section>
-              <button>Add, Now is{count}</button>
+              <button className={`btn-${count}`}>Add, Now is{count}</button>
             </section>
             Footer
           </div>
@@ -79,7 +79,9 @@ describe('rendering', () => {
               hello world!!!
             </h1>
             <section>
-              <button>
+              <button
+                class="btn-0"
+              >
                 Add, Now is
                 0
               </button>
@@ -113,6 +115,23 @@ describe('rendering', () => {
               world
             </button>
           </section>
+        </div>
+      `);
+    });
+
+    it('should support classname', ({ container }) => {
+      function App() {
+        return <div className="test">hello world!!!</div>;
+      }
+
+      render(App(), container);
+      expect(container).toMatchInlineSnapshot(`
+        <div>
+          <div
+            class="test"
+          >
+            hello world!!!
+          </div>
         </div>
       `);
     });

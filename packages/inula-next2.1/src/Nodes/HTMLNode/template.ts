@@ -1,6 +1,7 @@
 import { InulaStore } from '../../store';
 import { InulaBaseNode, Updater } from '../../types';
-import { addParentElement, update } from '../utils';
+import { getCurrentCompNode } from '../CompNode/node';
+import { addParentElement, InitDirtyBitsMask, update } from '../utils';
 import { InulaHTMLNode, InulaHTMLTemplateNode, InulaTextNode } from './types';
 import { getElementByPosition, insertNode } from './utils';
 
@@ -16,9 +17,12 @@ export const createTemplateNode = (
   ...nodesToInsert: [number, InulaBaseNode, ...number[]][]
 ) => {
   const node = template.cloneNode(true) as InulaHTMLTemplateNode;
+  node.__$owner = getCurrentCompNode();
 
   const updater = getUpdater?.(node) ?? null;
   node.update = _update.bind(null, node, updater);
+  // TODO: remove this
+  node.dirtyBits = InitDirtyBitsMask;
   // ---- Insert nodes
   if (nodesToInsert.length > 0) {
     // we need to find the parent element first, cause the position would be changed after insert
@@ -49,15 +53,11 @@ export const createTemplateNode = (
 
 const _update = (node: InulaHTMLTemplateNode, updater: Updater<InulaHTMLTemplateNode> | null) => {
   if (updater) {
-    for (let i = 0; i < (node.elementsRetrieved?.length ?? 0); i++) {
-      const element = node.elementsRetrieved![i];
-      element.dirtyBits = node.dirtyBits;
-    }
     updater(node);
   }
 
   for (let i = 0; i < (node.nodesInserted?.length ?? 0); i++) {
-    update(node.nodesInserted![i], node.dirtyBits!);
+    update(node.nodesInserted![i]);
   }
 };
 
@@ -70,6 +70,8 @@ export const templateAddNodeToUpdate = (node: InulaHTMLTemplateNode, nodeToAdd: 
 
 export const templateGetElement = (templateNode: InulaHTMLTemplateNode, ...positions: number[]) => {
   const node = getElementByPosition(templateNode, ...positions) as InulaHTMLNode;
+  node.__$owner = getCurrentCompNode();
   templateAddNodeToUpdate(templateNode, node);
+
   return node;
 };

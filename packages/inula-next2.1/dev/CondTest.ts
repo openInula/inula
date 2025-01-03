@@ -16,7 +16,9 @@ export const CondTest = () => {
   };
 
   return self.prepare().init(
-    createFragmentNode(
+    createHTMLNode(
+      'div',
+      null,
       createHTMLNode('button', node => {
         setHTMLProp(node, 'textContent', () => 'Toggle', [show], 0b0001);
         delegateEvent(node, 'click', toggle);
@@ -38,6 +40,26 @@ export const CondTest = () => {
             createHTMLNode('h2', node => {
               setHTMLProp(node, 'textContent', () => 'Hidden2', [], 0b0000);
             }),
+            createConditionalNode(node => {
+              if (node.cachedCondition(0, () => show, [show])) {
+                if (node.branch(0)) return [];
+                return [
+                  createHTMLNode('div', node => {
+                    setHTMLProp(node, 'textContent', () => `Count is: ${count}`, [count], 0b0010);
+                  }),
+                ];
+              } else {
+                if (node.branch(1)) return [];
+                return [
+                  createHTMLNode('h1', node => {
+                    setHTMLProp(node, 'textContent', () => 'Hidden', [], 0b0000);
+                  }),
+                  createHTMLNode('h2', node => {
+                    setHTMLProp(node, 'textContent', () => 'Hidden2', [], 0b0000);
+                  }),
+                ];
+              }
+            }, 0b0001),
           ];
         }
       }, 0b0001),

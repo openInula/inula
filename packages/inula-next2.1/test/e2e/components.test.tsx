@@ -177,6 +177,34 @@ describe('components', () => {
       expect(container.innerHTML).toBe('<div>Count: 5</div>');
     });
 
+    it('should update nested child  when parent state changes', ({ container }) => {
+      function Parent({ children }) {
+        return <div className="parent">{children}</div>;
+      }
+
+      function Child({ name }: { name: string }) {
+        return <div className="child">Hello, {name}!</div>;
+      }
+
+      let update: (name: string) => void;
+      function App() {
+        let name = 'Alice';
+        update = (val: string) => {
+          name = val;
+        };
+        return (
+          <Parent>
+            <Child name={name} />
+          </Parent>
+        );
+      }
+
+      render(App(), container);
+      expect(container.innerHTML).toBe('<div class="parent"><div class="child">Hello, Alice!</div></div>');
+      update('Bob');
+      expect(container.innerHTML).toBe('<div class="parent"><div class="child">Hello, Bob!</div></div>');
+    });
+
     it('should pass props through multiple levels of nesting', ({ container }) => {
       function App() {
         let name = 'Alice';

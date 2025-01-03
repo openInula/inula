@@ -30,7 +30,6 @@ export default function (_: ConfigAPI, options: InulaNextOption): TransformOptio
       [forSubComponentPlugin, options],
       [mapping2ForPlugin, options],
       [jsxSlicePlugin, options],
-      [hookPlugin, options],
       [earlyReturnPlugin, options],
       [inulaNext, options],
     ],

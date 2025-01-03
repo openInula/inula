@@ -178,10 +178,8 @@ export const InitDirtyBitsMask = 0xffffffff;
  * @param node Node to update
  * @param dirtyBits Dirty bits indicating what needs updating
  */
-export const update = (node: InulaBaseNode, dirtyBits: Bits) => {
-  node.dirtyBits = dirtyBits;
+export const update = (node: InulaBaseNode) => {
   node.update?.(node);
-  delete node.dirtyBits;
 };
 
 export const willReact = (dirtyBits: Bits, reactBits: Bits) => {

@@ -1,6 +1,7 @@
 import { InulaNodeType } from '../../consts';
 import { runDidMount } from '../../lifecycle';
 import { Bits, InulaBaseNode, Value } from '../../types';
+import { getCurrentCompNode } from '../CompNode/node';
 import { appendNodesWithSibling, cached, getFlowIndexFromNodes, init, update } from '../utils';
 import { MutableLifecycleNode } from './lifecycle';
 
@@ -8,8 +9,6 @@ class ConditionalNode extends MutableLifecycleNode implements InulaBaseNode {
   inulaType = InulaNodeType.Cond;
 
   nodes?: InulaBaseNode[];
-
-  dirtyBits?: Bits;
 
   currentBranch = -1;
 
@@ -21,7 +20,9 @@ class ConditionalNode extends MutableLifecycleNode implements InulaBaseNode {
     super();
     this.updater = updater;
     this.reactBits = reactBits;
+    this.initUnmountStore();
     this.nodes = updater(this);
+    this.setUnmountFuncs();
   }
 
   conditionCacheMap?: Record<string, [boolean, Value[]]>;
@@ -50,16 +51,16 @@ class ConditionalNode extends MutableLifecycleNode implements InulaBaseNode {
       // ---- Same condition return
       [this.willUnmountScopedStore, this.didUnmountScopedStore] = prevFuncs;
       for (let i = 0; i < this.nodes!.length; i++) {
-        update(this.nodes![i], this.dirtyBits!);
+        update(this.nodes![i]);
       }
       return;
     }
     const newFuncs = [this.willUnmountScopedStore, this.didUnmountScopedStore];
-    [this.willUnmountScopedStore, this.didUnmountScopedStore] = newFuncs;
+    [this.willUnmountScopedStore, this.didUnmountScopedStore] = prevFuncs;
     if (this.nodes && this.nodes.length > 0) {
       this.removeNodes(this.nodes);
     }
-    [this.willUnmountScopedStore, this.didUnmountScopedStore] = prevFuncs;
+    [this.willUnmountScopedStore, this.didUnmountScopedStore] = newFuncs;
 
     this.nodes = newNodes;
     if (this.nodes.length === 0) return;

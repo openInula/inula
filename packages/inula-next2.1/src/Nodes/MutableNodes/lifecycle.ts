@@ -1,6 +1,8 @@
 import { InulaBaseNode } from '../../types';
 import { InulaStore } from '../../store';
 import { MutableContextNode } from './context';
+import { enterCompNode } from '../CompNode/node';
+import { leaveCompNode } from '../CompNode/node';
 
 export class MutableLifecycleNode extends MutableContextNode {
   willUnmountScopedStore?: (() => void)[];
@@ -28,9 +30,11 @@ export class MutableLifecycleNode extends MutableContextNode {
   }
 
   newNodesInContext(newNodesFunc: () => InulaBaseNode[]) {
+    enterCompNode(this.owner);
     this.initUnmountStore();
     const newNodes = super.newNodesInContext(newNodesFunc);
     this.setUnmountFuncs();
+    leaveCompNode();
     return newNodes;
   }
 }

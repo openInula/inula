@@ -20,6 +20,14 @@ import { describe, expect, vi } from 'vitest';
 import { domTest as it } from './utils';
 import { render, View } from '../../src';
 
+vi.mock('../../src/scheduler', async () => {
+  return {
+    schedule: (task: () => void) => {
+      task();
+    },
+  };
+});
+
 describe('props', () => {
   describe('normal props', () => {
     it('should support prop', ({ container }) => {
@@ -262,6 +270,31 @@ describe('extended prop tests', () => {
     `);
   });
 
+  it('should correctly pass object props and render destructuring', ({ container }) => {
+    function Child({ person: { name, age } }) {
+      return (
+        <div>
+          {name},{age}
+        </div>
+      );
+    }
+
+    function App() {
+      return <Child person={{ name: 'Alice', age: 30 }} />;
+    }
+
+    render(App(), container);
+    expect(container).toMatchInlineSnapshot(`
+      <div>
+        <div>
+          Alice
+          ,
+          30
+        </div>
+      </div>
+    `);
+  });
+
   it('should correctly handle default prop values', ({ container }) => {
     function Child({ message = 'Default message' }) {
       return <h2>{message}</h2>;
@@ -281,6 +314,47 @@ describe('extended prop tests', () => {
       `);
   });
 
+  it('should support rest props and update', ({ container }) => {
+    let update;
+    function Child({ a, ...rest }) {
+      return (
+        <div>
+          {a} {rest.b}
+        </div>
+      );
+    }
+
+    function App() {
+      const a = 'Hello';
+      let b = 'World';
+      update = () => {
+        b = 'Inula';
+      };
+      return <Child a={a} b={b} />;
+    }
+
+    render(App(), container);
+    expect(container).toMatchInlineSnapshot(`
+      <div>
+        <div>
+          Hello
+           
+          World
+        </div>
+      </div>
+    `);
+    update!();
+    expect(container).toMatchInlineSnapshot(`
+      <div>
+        <div>
+          Hello
+           
+          Inula
+        </div>
+      </div>
+    `);
+  });
+
   it('should correctly spread props', ({ container }) => {
     function Child(props) {
       return (
@@ -292,8 +366,13 @@ describe('extended prop tests', () => {
       );
     }
 
+    let update;
     function App() {
       const extraProps = { b: 'World', c: '!' };
+      update = () => {
+        extraProps.b = 'World2';
+        extraProps.c = '!!';
+      };
       return <Child a="Hello" {...extraProps} />;
     }
 
@@ -307,6 +386,16 @@ describe('extended prop tests', () => {
           </div>
         </div>
       `);
+    update!();
+    expect(container).toMatchInlineSnapshot(`
+      <div>
+        <div>
+          Hello
+          World2
+          !!
+        </div>
+      </div>
+    `);
   });
 
   it('should support member prop', ({ container }) => {

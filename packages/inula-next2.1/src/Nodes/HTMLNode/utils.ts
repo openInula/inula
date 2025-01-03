@@ -16,6 +16,7 @@ import { InulaHTMLNode, InulaTextNode } from './types';
  * @param position
  */
 export const insertNode = (el: InulaHTMLNode, node: InulaBaseNode, position: number) => {
+  if (node == null) return;
   // ---- Set nodes
   if (!el.nodes) el.nodes = Array.from(el.childNodes) as InulaHTMLNode[];
   el.nodes.splice(position, 0, node);
@@ -42,7 +43,7 @@ export const shouldUpdate = (
   reactBits: Bits
 ) => {
   // ---- If not reacting to the change
-  if (!willReact(node.dirtyBits!, reactBits)) return false;
+  if (!willReact(node.__$owner!.dirtyBits!, reactBits)) return false;
   // ---- If not cached
   if (cached(dependencies, node[`c$${key}`])) return false;
   node[`c$${key}`] = dependencies;

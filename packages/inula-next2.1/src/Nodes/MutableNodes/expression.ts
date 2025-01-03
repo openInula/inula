@@ -10,8 +10,6 @@ class ExpNode extends MutableLifecycleNode implements InulaBaseNode {
 
   nodes?: InulaBaseNode[];
 
-  dirtyBits?: Bits;
-
   updater;
 
   reactBits: Bits;
@@ -24,21 +22,23 @@ class ExpNode extends MutableLifecycleNode implements InulaBaseNode {
     this.updater = updater;
     this.reactBits = reactBits;
     this.dependenciesFunc = dependenciesFunc;
+    this.initUnmountStore();
     this.nodes = this.getExpressionResult();
+    this.setUnmountFuncs();
   }
 
   update() {
-    if (!(this.reactBits & this.dirtyBits!)) return;
+    if (!(this.reactBits & this.owner.dirtyBits!)) return;
     if (cached(this.dependenciesFunc(), this.cachedDeps)) return;
     const prevFuncs = [this.willUnmountScopedStore, this.didUnmountScopedStore];
     const newNodes = this.newNodesInContext(() => this.getExpressionResult());
 
     const newFuncs = [this.willUnmountScopedStore, this.didUnmountScopedStore];
-    [this.willUnmountScopedStore, this.didUnmountScopedStore] = newFuncs;
+    [this.willUnmountScopedStore, this.didUnmountScopedStore] = prevFuncs;
     if (this.nodes && this.nodes.length > 0) {
       this.removeNodes(this.nodes);
     }
-    [this.willUnmountScopedStore, this.didUnmountScopedStore] = prevFuncs;
+    [this.willUnmountScopedStore, this.didUnmountScopedStore] = newFuncs;
 
     this.nodes = newNodes;
     if (this.nodes.length === 0) return;
@@ -64,7 +64,7 @@ class ExpNode extends MutableLifecycleNode implements InulaBaseNode {
           // TODO DO
           return createTextNode(`${node}`, () => {});
         }
-        if (typeof node === 'function' && node.$$isSlice) {
+        if (typeof node === 'function' && node.$$isChildren) {
           return node();
         }
         return node;

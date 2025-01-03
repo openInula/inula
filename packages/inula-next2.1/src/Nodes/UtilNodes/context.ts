@@ -1,6 +1,6 @@
 import { Bits, Value, InulaBaseNode, Updater } from '../../types';
 import { InulaNodeType } from '../../consts';
-import { CompNode } from '../CompNode';
+import { CompNode, getCurrentCompNode } from '../CompNode';
 import { addWillUnmount } from '../../lifecycle';
 import { InulaStore } from '../../store';
 import { InitDirtyBitsMask, update, willReact } from '../utils';
@@ -16,11 +16,11 @@ export type Context = {
 export class ContextNode implements InulaBaseNode {
   inulaType = InulaNodeType.Context;
 
+  owner: CompNode;
+
   nodes?: InulaBaseNode[];
 
-  dirtyBits?: Bits;
-
-  updater;
+  updater?: Updater<ContextNode>;
 
   contextId: ContextID;
 
@@ -28,19 +28,18 @@ export class ContextNode implements InulaBaseNode {
 
   consumers: CompNode[] = [];
 
-  constructor(contextId: ContextID, updater: Updater<ContextNode>) {
+  constructor(contextId: ContextID, updater?: Updater<ContextNode>) {
     if (!InulaStore.global.CurrentContextStore) InulaStore.global.CurrentContextStore = [];
     // TODO Check if same context is already in the store (can't allow nested same contexts)
     this.contextId = contextId;
     this.updater = updater;
+    this.owner = getCurrentCompNode();
     this.init();
     InulaStore.global.CurrentContextStore.push(this);
   }
 
   init() {
-    this.dirtyBits = InitDirtyBitsMask;
     this.updater?.(this);
-    delete this.dirtyBits;
   }
 
   with(...children: InulaBaseNode[]) {
@@ -51,14 +50,14 @@ export class ContextNode implements InulaBaseNode {
 
   update() {
     for (let i = 0; i < (this.nodes?.length ?? 0); i++) {
-      update(this.nodes![i], this.dirtyBits!);
+      update(this.nodes![i]);
     }
-    this.updater(this);
+    this.updater?.(this);
   }
 
   cachedDependenciesMap?: Record<string, Value[]>;
   updateContext(contextName: string, valueFunc: () => Value, deps: Value[], reactBits: Bits) {
-    if (!willReact(this.dirtyBits!, reactBits)) return;
+    if (!willReact(this.owner.dirtyBits!, reactBits)) return;
     if (!this.cachedDependenciesMap) this.cachedDependenciesMap = {};
     const cachedDeps = this.cachedDependenciesMap![contextName];
     if (cached(deps, cachedDeps)) return;
@@ -69,7 +68,7 @@ export class ContextNode implements InulaBaseNode {
   }
 }
 
-export const createContextNode = (context: Context, updater: (node: ContextNode) => void) => {
+export const createContextNode = (context: Context, updater?: (node: ContextNode) => void) => {
   return new ContextNode(context.id, updater);
 };
 

@@ -1,8 +1,7 @@
 import { InulaBaseNode, Value, Bits } from '../../types';
-
+import { CompNode } from '../CompNode/node';
 // ---- InulaHTMLNode ----
 export interface InulaHTMLNode extends HTMLElement, InulaBaseNode {
-  dirtyBits?: Bits;
   // ---- Used for style caching
   prevStyle?: CSSStyleDeclaration;
   // ---- Used for caching
@@ -11,6 +10,8 @@ export interface InulaHTMLNode extends HTMLElement, InulaBaseNode {
   [key: `me$${string}`]: EventListener;
   // ---- Used for delegated event
   [key: `de$${string}`]: EventListener;
+  // ---- Used for memorizing the owner CompNode
+  __$owner?: CompNode;
 }
 
 export interface InulaHTMLTemplateNode extends InulaHTMLNode {
@@ -25,6 +26,7 @@ export interface HTMLAttrsObject {
 }
 
 export interface InulaTextNode extends Text, InulaBaseNode {
+  __$owner?: CompNode;
   dirtyBits?: Bits;
   [key: `c$${string}`]: Value[];
 }

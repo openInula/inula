@@ -1,3 +1,4 @@
+import { CompNode, getCurrentCompNode } from '../..';
 import { InulaStore } from '../../store';
 import { InulaBaseNode } from '../../types';
 import { InulaHTMLNode } from '../HTMLNode/types';
@@ -8,6 +9,7 @@ export class MutableContextNode {
   savedContextNodes: ContextNode[] = [];
 
   parentEl?: InulaHTMLNode;
+  owner: CompNode;
 
   /**
    * @brief Mutable node is a node that this._$nodes can be changed, things need to pay attention:
@@ -17,6 +19,8 @@ export class MutableContextNode {
    * @param type
    */
   constructor() {
+    this.owner = getCurrentCompNode();
+
     // ---- Save the current environment nodes, must be a new reference
     if (InulaStore.global.CurrentContextStore && InulaStore.global.CurrentContextStore.length > 0) {
       this.savedContextNodes = [...InulaStore.global.CurrentContextStore];

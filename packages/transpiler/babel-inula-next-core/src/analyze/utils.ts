@@ -16,6 +16,7 @@
 import { types as t } from '@openinula/babel-api';
 import { NodePath } from '@babel/core';
 import { ComponentNode, FnComponentDeclaration, HookNode } from './types';
+import { builtinHooks, HOOK_USING_PREFIX } from '../constants';
 
 export function isValidPath<T>(path: NodePath<T>): path is NodePath<Exclude<T, undefined | null>> {
   return !!path.node;
@@ -75,4 +76,17 @@ export function assertHookNode(node: any): asserts node is HookNode {
   if (node.type !== 'hook') {
     throw new Error('Analyze: Should be hook node');
   }
+}
+
+/**
+ * Check if the node is a useXXX call expression
+ * @param node
+ * @returns
+ */
+export function isUseHook(node: t.Node): node is t.CallExpression {
+  if (t.isCallExpression(node)) {
+    const callee = node.callee;
+    return t.isIdentifier(callee) && callee.name.startsWith(HOOK_USING_PREFIX) && !builtinHooks.includes(callee.name);
+  }
+  return false;
 }

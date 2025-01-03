@@ -2,6 +2,7 @@ import { InulaNodeType } from '../../consts';
 import { addWillUnmount, addDidUnmount, runDidMount } from '../../lifecycle';
 import { InulaStore } from '../../store';
 import { Bits, InulaBaseNode, Value } from '../../types';
+import { enterCompNode, getCurrentCompNode, leaveCompNode } from '../CompNode/node';
 import {
   appendNodesWithIndex,
   appendNodesWithSibling,
@@ -26,8 +27,6 @@ type UpdateItemFunc = (item: Value, idx: number) => void;
 
 class ForNode extends MutableContextNode implements InulaBaseNode {
   inulaType = InulaNodeType.For;
-
-  dirtyBits?: Bits;
 
   dataReactBits: Bits;
 
@@ -92,7 +91,7 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
     this.updateItemFuncArr[idx]?.(data[idx], idx);
     // ---- Update the nodes
     for (const node of this.nodesMap.get(this.keys?.[idx] ?? idx)) {
-      update(node, this.dirtyBits!);
+      update(node);
     }
   }
 
@@ -126,7 +125,7 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
 
       for (const nodes of this.nodesMap.values()) {
         for (const node of nodes) {
-          update(node, this.dirtyBits!);
+          update(node);
         }
       }
       runDidMount();
@@ -139,7 +138,7 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
     // ---- e.g. this.depNum -> 1110 changed-> 1101
     //      ~this.depNum & changed -> ~1110 & 1101 -> 0001
     //      update because depNum doesn't contain all the changed
-    if (!(~this.dataReactBits & this.dirtyBits!)) {
+    if (!(~this.dataReactBits & this.owner.dirtyBits!)) {
       this.updateArray();
       return;
     }
@@ -164,12 +163,16 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
    */
   getNewNodes(idx: number, key: Value, data: Value[], updateItemFuncArr?: UpdateItemFunc[]) {
     this.initUnmountStore();
+    enterCompNode(this.owner);
+
     const nodes = this.newNodesInContext(() =>
       this.nodeFunc(this, updateItemFuncArr ?? this.updateItemFuncArr, data[idx], key, idx)
     );
     for (const node of nodes) {
-      update(node, this.dirtyBits!);
+      update(node);
     }
+
+    leaveCompNode();
     this.setUnmountMap(key);
     this.setNodesMap(key, nodes);
     return nodes;
@@ -391,7 +394,7 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
         // ---- These nodes are already in the parentEl,
         //      and we need to keep track of their flowIndex
         newFlowIndex += getFlowIndexFromNodes(this.nodesMap.get(key));
-        newUpdateArr[prevIdx]?.(this.dirtyBits, newData[idx]);
+        newUpdateArr[prevIdx]?.(this.owner.dirtyBits, newData[idx]);
         continue;
       }
       // ---- Insert updateItemFuncArr first because in getNewNode the updateFunc will replace this null

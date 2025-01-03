@@ -38,7 +38,7 @@ function useCounter(initialValue = 0) {
   return { count, setCount };
 }
 
-describe.skip('Custom Hook Tests', () => {
+describe('Custom Hook Tests', () => {
   // 1. Basic Functionality
   describe('Basic Functionality', () => {
     it('should initialize with the correct value', ({ container }) => {
@@ -383,7 +383,7 @@ describe.skip('Custom Hook Tests', () => {
   });
 });
 
-describe.skip('Hook and Watch Combined Tests', () => {
+describe('Hook and Watch Combined Tests', () => {
   it('should update watched value when hook state changes', ({ container }) => {
     let setCount;
     function useCounter(initial = 0) {
@@ -490,7 +490,7 @@ describe.skip('Hook and Watch Combined Tests', () => {
   });
 });
 
-describe.skip('Advanced Hook Tests', () => {
+describe('Advanced Hook Tests', () => {
   // Hook return tests
   describe('Hook Return Tests', () => {
     it('should handle expression return', ({ container }) => {

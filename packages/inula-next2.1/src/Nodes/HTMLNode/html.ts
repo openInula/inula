@@ -1,5 +1,6 @@
 import { InulaStore } from '../../store';
 import { Bits, InulaBaseNode, Updater, Value } from '../../types';
+import { getCurrentCompNode } from '../CompNode/node';
 import { addParentElement, appendNodes, cached, InitDirtyBitsMask, update } from '../utils';
 import { HTMLAttrsObject, InulaHTMLNode } from './types';
 import { shouldUpdate } from './utils';
@@ -12,10 +13,9 @@ import { shouldUpdate } from './utils';
 export const createHTMLNode = (tag: string, update: Updater<InulaHTMLNode>, ...childrenNodes: InulaBaseNode[]) => {
   const node = InulaStore.document.createElement(tag) as InulaHTMLNode;
   node.update = _update.bind(null, node, update);
+  node.__$owner = getCurrentCompNode();
 
-  node.dirtyBits = InitDirtyBitsMask;
   update?.(node);
-  delete node.dirtyBits;
 
   node.nodes = childrenNodes;
 
@@ -36,7 +36,7 @@ export const createHTMLNode = (tag: string, update: Updater<InulaHTMLNode>, ...c
 const _update = (node: InulaHTMLNode, htmlUpdate: Updater<InulaHTMLNode> | null) => {
   htmlUpdate?.(node);
   for (let i = 0; i < (node.nodes?.length ?? 0); i++) {
-    update(node.nodes![i], node.dirtyBits!);
+    update(node.nodes![i]);
   }
 };
 
@@ -143,7 +143,11 @@ const _setHTMLProps = (node: InulaHTMLNode, value: HTMLAttrsObject) => {
  * @param value
  */
 const _setHTMLAttr = (node: InulaHTMLNode, key: string, value: string) => {
-  node.setAttribute(key, value);
+  if (key === 'className') {
+    node.setAttribute('class', value);
+  } else {
+    node.setAttribute(key, value);
+  }
 };
 
 /**
@@ -153,6 +157,8 @@ const _setHTMLAttr = (node: InulaHTMLNode, key: string, value: string) => {
  */
 const _setHTMLAttrs = (node: InulaHTMLNode, value: HTMLAttrsObject) => {
   Object.entries(value).forEach(([key, v]) => {
+    if (key === 'style') return _setStyle(node, v);
+    if (key === 'ref') return setRef(node, v);
     _setHTMLAttr(node, key, v);
   });
 };
@@ -335,7 +341,7 @@ export const setEvent = _setEvent;
 export const delegateEvent = _delegateEvent;
 
 export function setRef(node: InulaHTMLNode, refFn: () => void) {
-  if (node.dirtyBits === InitDirtyBitsMask) {
+  if (node.__$owner!.dirtyBits === InitDirtyBitsMask) {
     refFn();
   }
 }

@@ -71,6 +71,7 @@ const API_NAMES = [
   'initCompNode',
   'emitUpdate',
   'compBuilder',
+  'hookBuilder',
   'createCompNode',
   'createHTMLNode',
   'createFragmentNode',
@@ -84,7 +85,8 @@ const API_NAMES = [
   'setText',
   'withDefault',
   'useContext',
-  'slice',
+  'createChildren',
+  'setHTMLAttrs',
 ] as const;
 
 export const originalImportMap = Object.fromEntries(API_NAMES.map(name => [name, `$$${name}`])) as ImportMapType;
@@ -547,3 +549,4 @@ export const SPECIFIC_CTX_SUFFIX = '_$c$_';
 // The suffix means to bind to whole context
 export const WHOLE_CTX_SUFFIX = '_$ctx$_';
 export const builtinHooks = ['useContext'];
+export const HOOK_USING_PREFIX = 'use';

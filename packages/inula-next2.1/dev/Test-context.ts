@@ -82,7 +82,9 @@ export const Counter4 = () => {
   };
 
   return self.prepare().init(
-    createFragmentNode(
+    createHTMLNode(
+      'div',
+      () => {},
       createHTMLNode('h1', node => {
         setHTMLProp(node, 'textContent', () => count, [count], 0b0001);
       }),
@@ -106,7 +108,7 @@ export const Counter4 = () => {
           node.updateContext('name', () => 'John', [], 0b0000);
           node.updateContext('age', () => 20, [], 0b0000);
           node.updateContext('contact', () => ({ phone: `1234567890+${count}` }), [count], 0b0001);
-        }).with(createCompNode(UserProfile(), node => {}))
+        }).with(createCompNode(UserProfile, {}, node => {}))
       )
     )
   );
