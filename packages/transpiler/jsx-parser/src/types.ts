@@ -74,6 +74,12 @@ export interface ContextUnit {
   contextName: string;
 }
 
+export interface SuspenseUnit {
+  type: 'suspense';
+  children: ViewUnit[];
+  fallback: UnitProp | null;
+}
+
 export interface ForUnit {
   type: 'for';
   item: t.Identifier | t.RestElement | t.Pattern;
@@ -91,7 +97,8 @@ export type ViewUnit =
   | ContextUnit
   | TemplateUnit
   | ForUnit
-  | FragmentUnit;
+  | FragmentUnit
+  | SuspenseUnit;
 
 export interface ViewParserConfig {
   babelApi: typeof Babel;

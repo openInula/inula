@@ -17,7 +17,7 @@ class ExpNode extends MutableLifecycleNode implements InulaBaseNode {
   dependenciesFunc: () => Value[];
   cachedDeps?: Value[];
 
-  constructor(updater: () => InulaBaseNode[], dependenciesFunc: () => Value[], reactBits: Bits) {
+  constructor(updater: () => Value, dependenciesFunc: () => Value[], reactBits: Bits) {
     super();
     this.updater = updater;
     this.reactBits = reactBits;
@@ -58,7 +58,6 @@ class ExpNode extends MutableLifecycleNode implements InulaBaseNode {
     if (!Array.isArray(nodes)) nodes = [nodes];
     return nodes
       .flat(1)
-      .filter(node => node !== undefined && node !== null && typeof node !== 'boolean')
       .map(node => {
         if (typeof node === 'string' || typeof node === 'number' || typeof node === 'bigint') {
           // TODO DO
@@ -69,10 +68,11 @@ class ExpNode extends MutableLifecycleNode implements InulaBaseNode {
         }
         return node;
       })
-      .flat(1);
+      .flat(1)
+      .filter(node => node !== undefined && node !== null && typeof node !== 'boolean');
   }
 }
 
-export const createExpNode = (updater: () => InulaBaseNode[], dependenciesFunc: () => Value[], reactBits: Bits) => {
+export const createExpNode = (updater: () => Value, dependenciesFunc: () => Value[], reactBits: Bits) => {
   return new ExpNode(updater, dependenciesFunc, reactBits);
 };

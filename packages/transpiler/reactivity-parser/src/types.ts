@@ -1,6 +1,7 @@
 import { type types as t } from '@babel/core';
 import type Babel from '@babel/core';
 import { Dependency } from './getDependencies';
+import { UnitProp } from '@openinula/jsx-view-parser';
 
 export interface DependencyValue<T> extends Dependency {
   value: T;
@@ -75,6 +76,12 @@ export interface ContextParticle {
   contextName: string;
 }
 
+export interface SuspenseParticle {
+  type: 'suspense';
+  children: ViewParticle[];
+  fallback: UnitProp | null;
+}
+
 export interface ExpParticle {
   type: 'exp';
   content: DependencyProp;
@@ -89,7 +96,8 @@ export type ViewParticle =
   | IfParticle
   | ContextParticle
   | ExpParticle
-  | FragmentParticle;
+  | FragmentParticle
+  | SuspenseParticle;
 
 export interface ReactivityParserConfig {
   babelApi: typeof Babel;

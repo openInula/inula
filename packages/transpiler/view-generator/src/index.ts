@@ -11,7 +11,7 @@ import { fragmentGenerator } from './NodeGenerators/FragmentGenerator';
 import { textGenerator } from './NodeGenerators/TextGenerator';
 import { ifGenerator } from './NodeGenerators/IfGenerator';
 import { contextGenerator } from './NodeGenerators/ContextGenerator';
-
+import { suspenseGenerator } from './NodeGenerators/SuspenseGenerator';
 export type ViewContext = {
   getReactBits: (depIdBitmap: Bitmap) => Bitmap;
   importMap: Record<string, string>;
@@ -37,6 +37,7 @@ const generators = [
   expGenerator,
   fragmentGenerator,
   contextGenerator,
+  suspenseGenerator,
 ];
 
 function mergeViewGenerators(generators: ViewGenerator[]) {

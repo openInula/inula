@@ -38,6 +38,7 @@ export const loopShallowElements = (nodes: InulaBaseNode[], runFunc: (el: HTMLEl
   const stack: Array<InulaBaseNode> = [...nodes].reverse();
   while (stack.length > 0) {
     const node = stack.pop()!;
+    if (node == null) continue;
     if (node instanceof HTMLElement || node instanceof Text) {
       runFunc(node as InulaHTMLNode | TextNode);
     } else if (node.nodes) {

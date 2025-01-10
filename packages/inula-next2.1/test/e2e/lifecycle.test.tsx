@@ -166,6 +166,26 @@ describe('lifecycle', () => {
       expect(fn).toHaveBeenCalled();
     });
 
+    it('should call willUnmount in nested if', ({ container }) => {
+      let setCond: (cond: boolean) => void;
+      function App() {
+        let cond = true;
+        setCond = (value: boolean) => {
+          cond = value;
+        };
+        return (
+          <if cond={cond}>
+            <if cond={true}>
+              <Child />
+            </if>
+          </if>
+        );
+      }
+      render(App(), container);
+      setCond!(false);
+      expect(fn).toHaveBeenCalled();
+    });
+
     it('should call willUnmount in expression updated', ({ container }) => {
       let setCond: (cond: boolean) => void;
       function App() {
