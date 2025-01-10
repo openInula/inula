@@ -23,7 +23,7 @@ export function leaveCompNode() {
 }
 
 type DerivedStateComputation = [() => Value, () => Value[], Bits, string];
-type HookComputation = [() => void];
+type HookComputation = [(dirty: Bits) => void];
 
 export abstract class ReactiveNode {
   cachedDependenciesMap?: Record<string, Value[]>;
@@ -63,7 +63,7 @@ export abstract class ReactiveNode {
       const computation = this.computations[i];
       if (computation.length === 1) {
         const [updateFn] = computation;
-        updateFn();
+        updateFn(dirty);
         continue;
       }
 
@@ -92,42 +92,32 @@ export abstract class ReactiveNode {
     this.updatePropMap[propName] = [updatePropFunc, waveBits];
   }
 
-  updateProp(propName: string, valueFunc: () => Value, dependencies: Value[], reactBits: Bits) {
-    if (BUILTIN_PROPS.includes(propName)) {
-      return;
-    }
-    // ---- Not event rest props is defined
-    if (!this.updatePropMap) return;
-    // ---- If not reacting to the change
-    if (!(reactBits & this.owner!.dirtyBits!)) return;
-    const cacheKey = `prop$${propName}`;
-    const cachedDeps = this.cachedDependenciesMap?.[cacheKey];
-    // ---- If the dependencies are the same, skip the update
-    if (cached(dependencies, cachedDeps)) return;
-
-    if (this.updatePropMap['$whole$']) {
-      const [updatePropFunc, waveBits] = this.updatePropMap['$whole$'];
+  executePropUpdate(
+    updatePropMap: Record<string, [(value: Value) => void, Bits]>,
+    propName: string,
+    valueFunc: () => Value
+  ) {
+    if (updatePropMap['$whole$']) {
+      const [updatePropFunc, waveBits] = updatePropMap['$whole$'];
       if (propName === '*spread*') {
         this.wave(updatePropFunc(valueFunc()), waveBits);
       } else {
         this.wave(updatePropFunc({ [propName]: valueFunc() }), waveBits);
       }
-    } else if (this.updatePropMap[propName]) {
-      const [updatePropFunc, waveBits] = this.updatePropMap[propName];
+    } else if (updatePropMap[propName]) {
+      const [updatePropFunc, waveBits] = updatePropMap[propName];
       this.wave(updatePropFunc(valueFunc()), waveBits);
     } else {
       // ---- Rest props
-      const [updatePropFunc, waveBits] = this.updatePropMap['$rest$'];
+      const [updatePropFunc, waveBits] = updatePropMap['$rest$'];
       this.wave(updatePropFunc({ [propName]: valueFunc() }), waveBits);
     }
-
-    if (!this.cachedDependenciesMap) this.cachedDependenciesMap = {};
-    this.cachedDependenciesMap[cacheKey] = dependencies;
   }
   // ---- PROP END ----
 
   // ---- CONTEXT START ----
   updateContextMap?: Record<string, [ContextID, (value: Value) => void, Bits]>;
+
   addContext(context: Context, contextName: string, updateContextFunc: (value: Value) => void, waveBits: Bits) {
     if (!this.updateContextMap) this.updateContextMap = {};
     this.updateContextMap[contextName] = [context.id, updateContextFunc, waveBits];
@@ -142,17 +132,17 @@ export abstract class ReactiveNode {
   // ---- CONTEXT END ----
 
   // ---- HOOKS START ----
-  useHook(hookNode: HookNode, updateHookReturn: (value: Value) => void, hookUpdater: (hookNode: HookNode) => void) {
-    updateHookReturn(hookNode.value!());
+  useHook(hookNode: HookNode, emit: (value: Value) => void, hookUpdater: (hookNode: HookNode) => void) {
+    emit(hookNode.value!());
     hookNode.triggerUpdate = () => {
-      updateHookReturn(hookNode.value!());
+      emit(hookNode.value!());
     };
-    hookUpdater(hookNode);
 
     if (!this.computations) this.computations = [];
     if (this.derivedCount === undefined) this.derivedCount = 0;
     this.computations.push([
-      () => {
+      dirty => {
+        hookNode.propDirtyBits = dirty;
         hookUpdater(hookNode);
       },
     ]);
@@ -202,6 +192,11 @@ export class CompNode extends ReactiveNode implements InulaBaseNode {
 
   slices?: InulaBaseNode[];
 
+  unmounted = false;
+  setUnmounted = () => {
+    this.unmounted = true;
+  };
+
   constructor(parentComponents: CompNode[]) {
     super();
     for (let i = 0; i < parentComponents.length; i++) {
@@ -212,13 +207,42 @@ export class CompNode extends ReactiveNode implements InulaBaseNode {
       }
     }
 
+    this.willUnmount(() => {
+      this.unmounted = true;
+      if (parentComponents) {
+        parentComponents.forEach(parent => {
+          parent.subComponents = parent.subComponents!.filter(component => component !== this);
+        });
+      }
+    });
+    this.didMount(() => {
+      this.unmounted = false;
+    });
     this.dirtyBits = InitDirtyBitsMask;
+  }
+
+  updateProp(propName: string, valueFunc: () => Value, dependencies: Value[], reactBits: Bits) {
+    if (BUILTIN_PROPS.includes(propName)) {
+      return;
+    }
+    // ---- Not event rest props is defined
+    if (!this.updatePropMap) return;
+    // ---- If not reacting to the change
+    if (!(reactBits & this.owner!.dirtyBits!)) return;
+    const cacheKey = `prop$${propName}`;
+    const cachedDeps = this.cachedDependenciesMap?.[cacheKey];
+    // ---- If the dependencies are the same, skip the update
+    if (cached(dependencies, cachedDeps)) return;
+
+    this.executePropUpdate(this.updatePropMap, propName, valueFunc);
+
+    if (!this.cachedDependenciesMap) this.cachedDependenciesMap = {};
+    this.cachedDependenciesMap[cacheKey] = dependencies;
   }
 
   // ---- In component update START----
   wave(_: Value, dirty: Bits) {
-    if (this.dirtyBits) {
-      // ---- If there's already a dirtyBitsArrToUpdate, push the dirty to the array
+    if (this.dirtyBits && this.dirtyBits !== InitDirtyBitsMask) {
       this.dirtyBits |= dirty;
       return;
     }
@@ -236,6 +260,9 @@ export class CompNode extends ReactiveNode implements InulaBaseNode {
   updateViewAsync(dirty: Bits) {
     // ---- Schedule the updateView in the next microtask
     schedule(() => {
+      if (this.unmounted) {
+        return;
+      }
       // ---- Merge all the dirtyBitsArrToUpdate to one single dirty
       // ---- e.g. [0b0101, 0b0010] -> 0b0111
       // ---- Call the updateView with the merged dirty bits to update

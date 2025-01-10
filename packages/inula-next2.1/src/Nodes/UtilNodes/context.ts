@@ -84,7 +84,7 @@ const removeConsumer = (contextNode: ContextNode, compNode: CompNode) => {
   if (index > -1) contextNode.consumers.splice(index, 1);
 };
 
-export const useContext = (context: Context, compNode: CompNode) => {
+export const useContext = (context: Context, compNode?: CompNode) => {
   if (!InulaStore.global.CurrentContextStore) {
     return context.defaultValue ?? {};
   }
@@ -92,9 +92,11 @@ export const useContext = (context: Context, compNode: CompNode) => {
   for (let i = InulaStore.global.CurrentContextStore.length - 1; i >= 0; i--) {
     const currentContext = InulaStore.global.CurrentContextStore[i];
     if (currentContext.contextId === context.id) {
-      currentContext.consumers.push(compNode);
-      // ---- Remove the consumer from the context when the component unmounts
-      addWillUnmount(removeConsumer.bind(null, currentContext, compNode));
+      if (compNode) {
+        currentContext.consumers.push(compNode);
+        // ---- Remove the consumer from the context when the component unmounts
+        addWillUnmount(removeConsumer.bind(null, currentContext, compNode));
+      }
       return currentContext.contexts;
     }
   }

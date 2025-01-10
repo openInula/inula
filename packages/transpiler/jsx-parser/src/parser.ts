@@ -16,6 +16,10 @@ function isContext(str: string) {
   return /^[A-Z][a-zA-Z0-9]*Context/.test(str);
 }
 
+function isSuspense(str: string) {
+  return str === 'Suspense';
+}
+
 export class ViewParser {
   // ---- Namespace and tag name
   private readonly htmlNamespace: string = 'html';
@@ -129,6 +133,8 @@ export class ViewParser {
       // ---- Specially parse if and env
       if ([this.ifTagName, this.elseIfTagName, this.elseTagName].includes(name)) return this.parseIf(node);
       if (isContext(name)) return this.parseContext(node, name);
+      if (isSuspense(name)) return this.parseSuspense(node, name);
+
       if (name === this.forTagName) return this.parseFor(node);
       else if (this.htmlTags.includes(name)) {
         type = 'html';
@@ -230,6 +236,22 @@ export class ViewParser {
       props: propMap,
       contextName,
       children,
+    });
+  }
+
+  private parseSuspense(node: t.JSXElement, name: string): void {
+    const children = node.children.map(child => this.parseView(child)).flat();
+    const props = node.openingElement.attributes;
+    const fallbackProp = props.find(
+      (prop): prop is t.JSXAttribute => this.t.isJSXAttribute(prop) && prop.name.name === 'fallback'
+    );
+
+    const fallback = fallbackProp ? this.parseJSXProp(fallbackProp)[1] : null;
+
+    this.viewUnits.push({
+      type: 'suspense',
+      children,
+      fallback,
     });
   }
 

@@ -1,4 +1,5 @@
 import { CompNode, getCurrentCompNode } from '../..';
+import { InulaNodeType } from '../../consts';
 import { InulaStore } from '../../store';
 import { InulaBaseNode } from '../../types';
 import { InulaHTMLNode } from '../HTMLNode/types';
@@ -68,9 +69,19 @@ export class MutableContextNode {
    * @param removeEl Only remove outermost element
    */
   removeNodes(nodes: InulaBaseNode[]) {
-    loopShallowElements(nodes, node => {
-      this.parentEl!.removeChild(node);
-    });
+    const stack: Array<InulaBaseNode> = [...nodes].reverse();
+    while (stack.length > 0) {
+      const node = stack.pop()!;
+      if (node == null) continue;
+      if (node instanceof HTMLElement || node instanceof Text) {
+        this.parentEl!.removeChild(node);
+      } else if (node.nodes) {
+        if (node.willUnmountScopedStore?.length > 0) {
+          node.runWillUnmount();
+        }
+        stack.push(...[...node.nodes].reverse());
+      }
+    }
   }
 
   initUnmountStore() {

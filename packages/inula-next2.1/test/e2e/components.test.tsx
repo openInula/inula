@@ -138,6 +138,7 @@ describe('components', () => {
       expect(container.innerHTML).toBe('<div>name is new</div>');
     });
   });
+
   describe('nested component', () => {
     it('should render sub component using parent state', ({ container }) => {
       function App() {

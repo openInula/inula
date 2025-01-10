@@ -18,6 +18,7 @@ import {
 import { type NodePath, type traverse, type types as t } from '@babel/core';
 import {
   FragmentUnit,
+  SuspenseUnit,
   type CompUnit,
   type ContextUnit,
   type ExpUnit,
@@ -103,6 +104,7 @@ export class ReactivityParser {
     if (viewUnit.type === 'context') return this.parseContext(viewUnit);
     if (viewUnit.type === 'exp') return this.parseExp(viewUnit);
     if (viewUnit.type === 'fragment') return this.parseFragment(viewUnit);
+    if (viewUnit.type === 'suspense') return this.parseSuspense(viewUnit);
     return DLError.throw1();
   }
 
@@ -409,6 +411,14 @@ export class ReactivityParser {
         Object.entries(contextProviderUnit.props).map(([key, prop]) => [key, this.generateDependencyProp(prop)])
       ),
       children: contextProviderUnit.children.map(this.parseViewParticle.bind(this)),
+    };
+  }
+
+  parseSuspense(viewUnit: SuspenseUnit): ViewParticle {
+    return {
+      type: 'suspense',
+      children: viewUnit.children.map(this.parseViewParticle.bind(this)),
+      fallback: viewUnit.fallback,
     };
   }
 

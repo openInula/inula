@@ -3,25 +3,30 @@ import { InulaStore } from '../../store';
 import { MutableContextNode } from './context';
 import { enterCompNode } from '../CompNode/node';
 import { leaveCompNode } from '../CompNode/node';
+import { addDidUnmount, addWillUnmount } from '../../lifecycle';
 
 export class MutableLifecycleNode extends MutableContextNode {
   willUnmountScopedStore?: (() => void)[];
   didUnmountScopedStore?: (() => void)[];
+
+  constructor() {
+    super();
+  }
 
   setUnmountFuncs() {
     this.willUnmountScopedStore = InulaStore.global.WillUnmountScopedStore.pop();
     this.didUnmountScopedStore = InulaStore.global.WillUnmountScopedStore.pop();
   }
 
-  runWillUnmount() {
+  runWillUnmount = () => {
     if (!this.willUnmountScopedStore) return;
     for (let i = 0; i < this.willUnmountScopedStore.length; i++) this.willUnmountScopedStore[i]();
-  }
+  };
 
-  runDidUnmount() {
+  runDidUnmount = () => {
     if (!this.didUnmountScopedStore) return;
     for (let i = this.didUnmountScopedStore.length - 1; i >= 0; i--) this.didUnmountScopedStore[i]();
-  }
+  };
 
   removeNodes(nodes: InulaBaseNode[]) {
     this.runWillUnmount();
