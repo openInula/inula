@@ -1,3 +1,5 @@
+import { types as t } from '@openinula/babel-api';
+
 type InulaNextErrMap = Record<number, string>;
 type ErrorMethod<T extends InulaNextErrMap, G extends string> = {
   [K in keyof T as `${G}${K & number}`]: (...args: string[]) => any;
@@ -59,4 +61,25 @@ export function createErrorHandler<A extends InulaNextErrMap, B extends InulaNex
     errorUnknown: notDescribed('error'),
     warnUnknown: notDescribed('warn'),
   };
+}
+
+export class CompilerError extends Error {
+  constructor(
+    public message: string,
+    public loc: t.SourceLocation | null | undefined,
+    public suggestion?: string
+  ) {
+    super(message);
+  }
+
+  static invariant(
+    condition: boolean,
+    message: string,
+    loc: t.SourceLocation | null | undefined,
+    suggestion?: string
+  ): asserts condition {
+    if (!condition) {
+      throw new CompilerError(message, loc, suggestion);
+    }
+  }
 }

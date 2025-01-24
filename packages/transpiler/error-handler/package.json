@@ -17,7 +17,8 @@
   },
   "devDependencies": {
     "tsup": "^6.7.0",
-    "typescript": "^5.3.2"
+    "typescript": "^5.3.2",
+    "@openinula/babel-api": "workspace:*"
   },
   "tsup": {
     "entry": [
@@ -28,7 +29,6 @@
       "esm"
     ],
     "clean": true,
-    "dts": true,
-    "minify": true
+    "dts": true
   }
 }

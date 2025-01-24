@@ -100,11 +100,27 @@ export function setEvent(nodeName: string, key: string, value: t.Expression): t.
   );
 }
 
-export function delegateEvent(nodeName: string, key: string, value: t.Expression): t.Statement {
-  return wrapStmt(
-    nodeName,
-    t.callExpression(t.identifier(importMap['delegateEvent']), [t.identifier(nodeName), t.stringLiteral(key), value])
-  );
+/**
+ * @View
+ * delegateEvent(${nodeName}, ${key}, ${value}, ${dependenciesNode}, ${reactBits})
+ */
+export function delegateEvent(
+  nodeName: string,
+  key: string,
+  value: t.Expression,
+  dependenciesNode?: t.ArrayExpression,
+  reactBits?: number
+): t.Statement {
+  const args = reactBits
+    ? [
+        t.identifier(nodeName),
+        t.stringLiteral(key),
+        t.arrowFunctionExpression([], value),
+        dependenciesNode!,
+        t.numericLiteral(reactBits),
+      ]
+    : [t.identifier(nodeName), t.stringLiteral(key), value];
+  return wrapStmt(nodeName, t.callExpression(t.identifier(importMap['delegateEvent']), args));
 }
 
 export function setCachedProp(
@@ -162,7 +178,7 @@ export function setDynamicHTMLProp(
   if (attrName.startsWith('on')) {
     const eventName = attrName.slice(2).toLowerCase();
     if (DelegatedEvents.has(eventName)) {
-      return delegateEvent(nodeName, eventName, value);
+      return delegateEvent(nodeName, eventName, value, dependenciesNode, reactBits);
     }
     return setEvent(nodeName, eventName, value);
   }

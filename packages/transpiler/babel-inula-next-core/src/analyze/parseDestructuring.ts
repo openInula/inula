@@ -1,5 +1,6 @@
 import type { NodePath } from '@babel/core';
 import { types as t } from '@openinula/babel-api';
+import { CompilerError } from '@openinula/error-handler';
 
 export type DestructuringPayload =
   | {
@@ -32,7 +33,7 @@ export function parseDestructuring(
           dispatch({ type: 'rest', name: arg.node.name });
           return;
         }
-        throw Error('Unsupported rest element type in object destructuring');
+        throw new CompilerError('Unsupported rest element type in object destructuring', prop.node.loc);
       } else if (prop.isObjectProperty()) {
         // --- normal property ---
         const key = prop.node.key;
@@ -42,15 +43,16 @@ export function parseDestructuring(
           return;
         }
 
-        throw Error(`Unsupported key type in object destructuring: ${key.type}`);
+        throw new CompilerError(`Unsupported key type in object destructuring: ${key.type}`, prop.node.loc);
       }
     });
   } else if (path.isIdentifier()) {
     // --- props identifier ---
     dispatch({ type: 'props', name: path.node.name, node: path.node });
   } else {
-    throw new Error(
-      `Component ${name}: The first parameter of the function component must be an object pattern or identifier`
+    throw new CompilerError(
+      `Component ${name}: The first parameter of the function component must be an object pattern or identifier`,
+      path.node.loc
     );
   }
 }

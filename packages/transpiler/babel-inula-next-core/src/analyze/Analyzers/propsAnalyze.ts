@@ -2,6 +2,7 @@ import type { NodePath } from '@babel/core';
 import { types as t } from '@openinula/babel-api';
 import { AnalyzeContext, Visitor } from '../types';
 import { DestructuringPayload, parseDestructuring } from '../parseDestructuring';
+import { CompilerError } from '@openinula/error-handler';
 
 export function compPropsAnalyze(): Visitor {
   return {
@@ -33,7 +34,7 @@ export function hookPropsAnalyze(): Visitor {
             builder.addRestProps(arg.node.name);
             return;
           }
-          throw new Error('Unsupported rest element type in hook props destructuring');
+          throw new CompilerError('Unsupported rest element type in hook props destructuring', prop.node.loc);
         } else {
           builder.addSingleProp(idx, prop);
         }

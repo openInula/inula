@@ -22,6 +22,7 @@ import { types as t } from '@openinula/babel-api';
 import { assertIdOrDeconstruct, isCompPath, isUseContext } from '../../utils';
 import { IRBuilder } from '../IRBuilder';
 import { parseDestructuring } from '../parseDestructuring';
+import { CompilerError } from '@openinula/error-handler';
 
 /**
  * collect all properties and methods from the node
@@ -96,7 +97,7 @@ export function variablesAnalyze(): Visitor {
 
 function assertIdentifier(id: NodePath<t.Node>): asserts id is NodePath<t.Identifier> {
   if (!id.isIdentifier()) {
-    throw new Error(`${id.node.type} is not valid initial value type for state`);
+    throw new CompilerError(`${id.node.type} is not valid initial value type for state`, id.node.loc);
   }
 }
 
@@ -107,11 +108,11 @@ function assertJSXSliceIsValid(path: NodePath<t.VariableDeclaration>, checker: (
       if (t.isIdentifier(callee) && callee.name === importMap.createCompNode) {
         const subCompIdPath = callPath.get('arguments')[0];
         if (!subCompIdPath.isIdentifier()) {
-          throw Error('invalid jsx slice');
+          throw new CompilerError('invalid jsx slice', subCompIdPath.node.loc);
         }
         const subCompName = subCompIdPath.node.name;
         if (!checker(subCompName)) {
-          throw Error(`Sub component not found: ${subCompName}`);
+          throw new CompilerError(`Sub component not found: ${subCompName}`, subCompIdPath.node.loc);
         }
       }
     },

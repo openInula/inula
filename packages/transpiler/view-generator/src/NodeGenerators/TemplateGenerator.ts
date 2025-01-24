@@ -51,6 +51,7 @@ function genPropsUpdater(props: TemplateProp[], ctx: ViewContext): t.Expression 
       nodeMap[pathString] = nodeName;
     }
 
+    ctx.wrapUpdate(value);
     // declare the prop
     return setHTMLProp(nodeName, tag, key, value, ctx.getReactBits(depIdBitmap), dependenciesNode);
   });
