@@ -46,6 +46,10 @@ function genUpdateProp(
  */
 export const compGenerator: ViewGenerator = {
   comp: ({ tag, props, children }: CompParticle, ctx: ViewContext) => {
+    if (t.isIdentifier(tag) && tag.name === 'Portal') {
+      return createPortal(props, children, ctx);
+    }
+
     const updateProps: t.Statement[] = [];
     const node = t.identifier(nodeNameInUpdate);
 
@@ -83,6 +87,30 @@ export const compGenerator: ViewGenerator = {
     return t.callExpression(t.identifier(importMap.createCompNode), [tag, propsNode, updater]);
   },
 };
+
+/**
+ * @example
+ * ```js
+ * createPortal({
+ *  target: document.body,
+ *  ...${children}
+ * })
+ * ```
+ */
+function createPortal(
+  props: Record<string, import('C:/workspace/inula/packages/transpiler/reactivity-parser/dist/index').DependencyProp>,
+  children: import('C:/workspace/inula/packages/transpiler/reactivity-parser/dist/index').ViewParticle[],
+  ctx: ViewContext
+): t.Expression {
+  return t.callExpression(t.identifier(importMap.createPortal), [
+    t.objectExpression(
+      Object.entries(props).map(([key, { value }]) => {
+        return t.objectProperty(t.stringLiteral(key), value);
+      })
+    ),
+    ...children.map(child => ctx.next(child)),
+  ]);
+}
 
 /**
  * @examples
