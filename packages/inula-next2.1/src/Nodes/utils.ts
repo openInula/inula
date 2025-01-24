@@ -1,4 +1,3 @@
-import { TextNode } from '../../backs/src1/types';
 import { InulaNodeType } from '../consts';
 import { Bits, InulaBaseNode, Value } from '../types';
 import { InulaHTMLNode } from './HTMLNode/types';
@@ -40,8 +39,8 @@ export const loopShallowElements = (nodes: InulaBaseNode[], runFunc: (el: HTMLEl
     const node = stack.pop()!;
     if (node == null) continue;
     if (node instanceof HTMLElement || node instanceof Text) {
-      runFunc(node as InulaHTMLNode | TextNode);
-    } else if (node.nodes) {
+      runFunc(node as InulaHTMLNode | Text);
+    } else if (node.nodes && node.inulaType !== InulaNodeType.Portal) {
       stack.push(...[...node.nodes].reverse());
     }
   }

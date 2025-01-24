@@ -207,14 +207,6 @@ export class CompNode extends ReactiveNode implements InulaBaseNode {
       }
     }
 
-    this.willUnmount(() => {
-      this.unmounted = true;
-      if (parentComponents) {
-        parentComponents.forEach(parent => {
-          parent.subComponents = parent.subComponents!.filter(component => component !== this);
-        });
-      }
-    });
     this.didMount(() => {
       this.unmounted = false;
     });
@@ -242,11 +234,6 @@ export class CompNode extends ReactiveNode implements InulaBaseNode {
 
   // ---- In component update START----
   wave(_: Value, dirty: Bits) {
-    if (this.dirtyBits && this.dirtyBits !== InitDirtyBitsMask) {
-      this.dirtyBits |= dirty;
-      return;
-    }
-    this.dirtyBits = dirty;
     this.updateState(dirty);
     this.updateViewAsync(dirty);
   }
@@ -258,6 +245,11 @@ export class CompNode extends ReactiveNode implements InulaBaseNode {
    * @returns
    */
   updateViewAsync(dirty: Bits) {
+    if (this.dirtyBits && this.dirtyBits !== InitDirtyBitsMask) {
+      this.dirtyBits |= dirty;
+      return;
+    }
+    this.dirtyBits = dirty;
     // ---- Schedule the updateView in the next microtask
     schedule(() => {
       if (this.unmounted) {
