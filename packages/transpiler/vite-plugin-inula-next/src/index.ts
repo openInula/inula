@@ -2,6 +2,7 @@ import { transform } from '@babel/core';
 import InulaNext, { type InulaNextOption } from '@openinula/babel-preset-inula-next';
 import { minimatch } from 'minimatch';
 import { Plugin, TransformResult } from 'vite';
+import { codeFrameColumns } from '@babel/code-frame';
 
 export default function (options: Partial<InulaNextOption> = {}): Plugin {
   const {
@@ -38,9 +39,17 @@ export default function (options: Partial<InulaNextOption> = {}): Plugin {
           filename: id,
         }) as TransformResult;
       } catch (err) {
-        console.error('Error:', err);
+        let errorMsg = err;
+        if (typeof err === 'object' && err !== null && 'loc' in err && 'message' in err) {
+          errorMsg = codeFrameColumns(code, err.loc, {
+            highlightCode: true,
+            message: err.message,
+          });
+        }
+        console.error(errorMsg);
+
+        return '';
       }
-      return '';
     },
   };
 }
