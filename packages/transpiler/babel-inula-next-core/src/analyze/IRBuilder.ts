@@ -40,6 +40,7 @@ import { assertComponentNode, assertHookNode, isUseHook } from './utils';
 import { parseView as parseJSX } from '@openinula/jsx-view-parser';
 import { pruneUnusedState } from './pruneUnusedState';
 import { assertIdOrDeconstruct, bitmapToIndices } from '../utils';
+import { CompilerError } from '@openinula/error-handler';
 
 function trackSource(waveBitsMap: Map<number, number>, stmt: DerivedStmt, ownBit: number) {
   // Then, we need to find the wave bits(other derived reactive dependency on it) of the derived reactive id
@@ -159,7 +160,7 @@ export class IRBuilder {
     ctxName?: string
   ) {
     if (!valPath.isLVal()) {
-      throw new Error('Invalid Prop Value type: ' + valPath.type);
+      throw new CompilerError('Invalid Prop Value type: ' + valPath.type, valPath.node.loc);
     }
     const reactiveId = this.getNextId();
     const destructured = getDestructure(valPath);

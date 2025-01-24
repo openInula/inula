@@ -11,6 +11,7 @@ import type {
   Context,
 } from './types';
 import { cleanJSXText } from './utils';
+import { CompilerError } from '@openinula/error-handler';
 
 function isContext(str: string) {
   return /^[A-Z][a-zA-Z0-9]*Context/.test(str);
@@ -260,7 +261,7 @@ export class ViewParser {
     // ---- else
     if (name === this.elseTagName) {
       const lastUnit = this.context.ifElseStack[this.context.ifElseStack.length - 1];
-      if (!lastUnit || lastUnit.type !== 'if') throw new Error(`Missing if for ${name}`);
+      if (!lastUnit || lastUnit.type !== 'if') throw new CompilerError(`Missing if for ${name}`, node.loc);
       lastUnit.branches.push({
         condition: this.t.booleanLiteral(true),
         children: node.children.map(child => this.parseView(child)).flat(),
@@ -272,10 +273,17 @@ export class ViewParser {
     const condition = node.openingElement.attributes.filter(
       attr => this.t.isJSXAttribute(attr) && attr.name.name === 'cond'
     )[0];
-    if (!condition) throw new Error(`Missing condition for ${name}`);
-    if (!this.t.isJSXAttribute(condition)) throw new Error(`JSXSpreadAttribute is not supported for ${name} condition`);
-    if (!this.t.isJSXExpressionContainer(condition.value) || !this.t.isExpression(condition.value.expression))
-      throw new Error(`Invalid condition for ${name}`);
+    CompilerError.invariant(!!condition, `Missing condition for ${name}`, node.openingElement.loc);
+    CompilerError.invariant(
+      this.t.isJSXAttribute(condition),
+      `JSXSpreadAttribute is not supported for ${name} condition`,
+      condition.loc
+    );
+    CompilerError.invariant(
+      this.t.isJSXExpressionContainer(condition.value) && this.t.isExpression(condition.value.expression),
+      `Invalid condition for ${name}, condition must be a JSXExpressionContainer`,
+      condition.loc
+    );
 
     // ---- if
     if (name === this.ifTagName) {
@@ -295,7 +303,7 @@ export class ViewParser {
 
     // ---- else-if
     const lastUnit = this.context.ifElseStack[this.context.ifElseStack.length - 1];
-    if (!lastUnit || lastUnit.type !== 'if') throw new Error(`Missing if for ${name}`);
+    CompilerError.invariant(lastUnit && lastUnit.type === 'if', `Missing if for ${name}`, node.loc);
 
     lastUnit.branches.push({
       condition: condition.value.expression,
@@ -574,18 +582,29 @@ export class ViewParser {
   private parseFor(node: t.JSXElement) {
     // ---- Get array
     const arrayContainer = this.findProp(node, 'each');
-    if (!arrayContainer) throw new Error('Missing [each] prop in for loop');
-    if (!this.t.isJSXExpressionContainer(arrayContainer.value))
-      throw new Error('Expected expression container for [array] prop');
+    CompilerError.invariant(!!arrayContainer, 'Missing [each] prop in for loop', node.openingElement.loc);
+    CompilerError.invariant(
+      this.t.isJSXExpressionContainer(arrayContainer.value),
+      'Expected expression container for [array] prop',
+      arrayContainer.loc
+    );
     const array = arrayContainer.value.expression;
-    if (this.t.isJSXEmptyExpression(array)) throw new Error('Expected [array] expression not empty');
+    CompilerError.invariant(!this.t.isJSXEmptyExpression(array), 'Expected [array] expression not empty', array.loc);
 
     // ---- Get key
     const keyProp = this.findProp(node, 'key');
     let key: t.Expression | null = null;
     if (keyProp) {
-      if (!this.t.isJSXExpressionContainer(keyProp.value)) throw new Error('Expected expression container');
-      if (this.t.isJSXEmptyExpression(keyProp.value.expression)) throw new Error('Expected expression not empty');
+      CompilerError.invariant(
+        this.t.isJSXExpressionContainer(keyProp.value),
+        'Expected expression container for [key] prop',
+        keyProp.loc
+      );
+      CompilerError.invariant(
+        !this.t.isJSXEmptyExpression(keyProp.value.expression),
+        'Expected [key] expression not empty',
+        keyProp.loc
+      );
       key = keyProp.value.expression;
     }
 
@@ -594,19 +613,21 @@ export class ViewParser {
     //   {(item, idx)=>（<Comp_$id1$item={item}idx={idx}/>)}
     // </for>
     const jsxChildren = node.children.find(child => this.t.isJSXExpressionContainer(child)) as t.JSXExpressionContainer;
-    if (!jsxChildren) throw new Error('Expected expression container');
+    if (!jsxChildren) throw new CompilerError('Expected expression container', node.loc);
     const itemFnNode = jsxChildren.expression;
-    if (this.t.isJSXEmptyExpression(itemFnNode)) throw new Error('Expected expression not empty');
+    if (this.t.isJSXEmptyExpression(itemFnNode))
+      throw new CompilerError('Expected expression not empty', itemFnNode.loc);
 
     let children;
     if (!this.t.isFunctionExpression(itemFnNode) && !this.t.isArrowFunctionExpression(itemFnNode)) {
-      throw new Error('For: Expected function expression');
+      throw new CompilerError('For: Expected function expression', itemFnNode.loc);
     }
     // get the return value
     if (this.t.isBlockStatement(itemFnNode.body)) {
-      if (itemFnNode.body.body.length !== 1) throw new Error('For: Expected 1 statement in block statement');
+      if (itemFnNode.body.body.length !== 1)
+        throw new CompilerError('For: Expected 1 statement in block statement', node.loc);
       if (!this.t.isReturnStatement(itemFnNode.body.body[0]))
-        throw new Error('For: Expected return statement in block statement');
+        throw new CompilerError('For: Expected return statement in block statement', node.loc);
       children = itemFnNode.body.body[0].argument;
     } else {
       children = itemFnNode.body;
@@ -628,8 +649,9 @@ export class ViewParser {
     const item = itemFnNode.params[0];
     const index = itemFnNode.params[1] || null;
     if (index && !this.t.isIdentifier(index))
-      throw new Error('For: Expected identifier in function second parameter as index');
-    if (!this.t.isJSXElement(children)) throw new Error('For: Expected jsx element in return statement');
+      throw new CompilerError('For: Expected identifier in function second parameter as index', index.loc);
+    if (!this.t.isJSXElement(children))
+      throw new CompilerError('For: Expected jsx element in return statement', (children ?? node).loc);
 
     this.viewUnits.push({
       type: 'for',

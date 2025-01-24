@@ -16,6 +16,7 @@
 import type { NodePath } from '@babel/core';
 import { getBabelApi, types as t } from '@openinula/babel-api';
 import { Bitmap } from './types';
+import { CompilerError } from '@openinula/babel-parser';
 
 export type Dependency = {
   dependenciesNode: t.ArrayExpression;
@@ -71,7 +72,7 @@ export function getDependenciesFromNode(
   //      this will cause infinite loop
   //      so we eliminate "count" from deps
   if (writingBits & readingBits) {
-    // TODO: We should throw an error here to indicate the user that there is a loop
+    throw new CompilerError('Detected a loop dependency', node.loc);
   }
 
   if (readingBits === 0) return null;

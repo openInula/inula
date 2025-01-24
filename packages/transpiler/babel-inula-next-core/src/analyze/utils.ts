@@ -17,6 +17,7 @@ import { types as t } from '@openinula/babel-api';
 import { NodePath } from '@babel/core';
 import { ComponentNode, FnComponentDeclaration, HookNode } from './types';
 import { builtinHooks, HOOK_USING_PREFIX } from '../constants';
+import { CompilerError } from '@openinula/error-handler';
 
 export function isValidPath<T>(path: NodePath<T>): path is NodePath<Exclude<T, undefined | null>> {
   return !!path.node;
@@ -68,13 +69,13 @@ export function isStaticValue(node: t.VariableDeclarator['init']) {
 
 export function assertComponentNode(node: any): asserts node is ComponentNode {
   if (node.type !== 'comp' && node.type !== 'subComp') {
-    throw new Error('Analyze: Should be component node');
+    throw new CompilerError('Analyze: Should be component node', node.loc);
   }
 }
 
 export function assertHookNode(node: any): asserts node is HookNode {
   if (node.type !== 'hook') {
-    throw new Error('Analyze: Should be hook node');
+    throw new CompilerError('Analyze: Should be hook node', node.loc);
   }
 }
 

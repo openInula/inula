@@ -2,6 +2,7 @@ import { type NodePath } from '@babel/core';
 import { types as t } from '@openinula/babel-api';
 import { COMPONENT, HOOK, importMap, USE_CONTEXT } from './constants';
 import { minimatch } from 'minimatch';
+import { CompilerError } from '@openinula/error-handler';
 
 export function fileAllowed(fileName: string | undefined, includes: string[], excludes: string[]): boolean {
   if (includes.includes('*')) return true;
@@ -34,7 +35,7 @@ export function extractFnFromMacro(
     return fnNode;
   }
 
-  throw new Error(`${macroName} macro must have a function argument`);
+  throw new CompilerError(`${macroName} macro must have a function argument`, path.node.loc);
 }
 
 export function isFnExp(node: t.Node | null | undefined): node is t.FunctionExpression | t.ArrowFunctionExpression {
