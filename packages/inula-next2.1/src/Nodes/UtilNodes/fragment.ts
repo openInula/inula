@@ -7,15 +7,13 @@ class FragmentNode implements InulaBaseNode {
 
   nodes;
 
-  dirtyBits?: Bits;
-
   constructor(nodes: InulaBaseNode[]) {
     this.nodes = nodes;
   }
 
   update() {
     for (let i = 0; i < this.nodes!.length; i++) {
-      update(this.nodes![i], this.dirtyBits!);
+      update(this.nodes![i]);
     }
   }
 }

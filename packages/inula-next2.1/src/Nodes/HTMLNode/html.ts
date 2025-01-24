@@ -199,12 +199,13 @@ const eventHandler = (e: Event) => {
  * @returns
  */
 const _delegateEvent = (node: InulaHTMLNode, key: string, value: EventListener) => {
-  if (node[`de$${key}`]) return;
-  node[`de$${key}`] = value;
-  if (!InulaStore.delegatedEvents.has(key)) {
-    InulaStore.delegatedEvents.add(key);
-    InulaStore.document.addEventListener(key, eventHandler);
+  if (!node[`de$${key}`]) {
+    if (!InulaStore.delegatedEvents.has(key)) {
+      InulaStore.delegatedEvents.add(key);
+      InulaStore.document.addEventListener(key, eventHandler);
+    }
   }
+  node[`de$${key}`] = value;
 };
 
 // ---- With dependencies ----
@@ -338,7 +339,20 @@ export const setEvent = _setEvent;
 /**
  * @brief Delegate an event handler through event bubbling
  */
-export const delegateEvent = _delegateEvent;
+export const delegateEvent = (
+  node: InulaHTMLNode,
+  key: string,
+  valueFunc: () => EventListener,
+  dependencies: Value[],
+  reactBits: Bits
+) => {
+  if (reactBits) {
+    if (!shouldUpdate(node, key, dependencies, reactBits)) return;
+    _delegateEvent(node, key, valueFunc());
+  } else {
+    _delegateEvent(node, key, valueFunc);
+  }
+};
 
 export function setRef(node: InulaHTMLNode, refFn: () => void) {
   if (node.__$owner!.dirtyBits === InitDirtyBitsMask) {

@@ -1,4 +1,5 @@
 import { InulaNodeType } from '../consts';
+import type { CompNode } from '../Nodes/CompNode/node';
 
 export type Value = any;
 export type Props = Record<PropertyKey, Value>;
@@ -20,3 +21,4 @@ export type InulaBaseNode = {
 };
 
 export type Updater<T> = (node: T) => void;
+export type Component<T = Props> = (props: T) => CompNode;

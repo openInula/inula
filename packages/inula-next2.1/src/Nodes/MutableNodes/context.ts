@@ -3,7 +3,7 @@ import { InulaNodeType } from '../../consts';
 import { InulaStore } from '../../store';
 import { InulaBaseNode } from '../../types';
 import { InulaHTMLNode } from '../HTMLNode/types';
-import { ContextNode } from '../UtilNodes';
+import { ContextNode, PortalNode } from '../UtilNodes';
 import { addParentElement, loopShallowElements } from '../utils';
 
 export class MutableContextNode {
@@ -68,20 +68,9 @@ export class MutableContextNode {
    * @param nodes
    * @param removeEl Only remove outermost element
    */
-  removeNodes(nodes: InulaBaseNode[]) {
-    const stack: Array<InulaBaseNode> = [...nodes].reverse();
-    while (stack.length > 0) {
-      const node = stack.pop()!;
-      if (node == null) continue;
-      if (node instanceof HTMLElement || node instanceof Text) {
-        this.parentEl!.removeChild(node);
-      } else if (node.nodes) {
-        if (node.willUnmountScopedStore?.length > 0) {
-          node.runWillUnmount();
-        }
-        stack.push(...[...node.nodes].reverse());
-      }
-    }
+  removeNodes(nodes: InulaBaseNode[], parentEl?: InulaHTMLNode) {
+    if (!parentEl) parentEl = this.parentEl!;
+    removeNodes(nodes, parentEl);
   }
 
   initUnmountStore() {
@@ -89,5 +78,26 @@ export class MutableContextNode {
     if (!InulaStore.global.DidUnmountScopedStore) InulaStore.global.DidUnmountScopedStore = [];
     InulaStore.global.WillUnmountScopedStore.push([]);
     InulaStore.global.DidUnmountScopedStore.push([]);
+  }
+}
+
+function removeNodes(nodes: InulaBaseNode[], parentEl: InulaHTMLNode) {
+  const stack: Array<InulaBaseNode> = [...nodes].reverse();
+  while (stack.length > 0) {
+    const node = stack.pop()!;
+    if (node == null) continue;
+    if (node instanceof HTMLElement || node instanceof Text) {
+      parentEl.removeChild(node);
+    } else if (node.inulaType === InulaNodeType.Portal) {
+      const portalNode = node as PortalNode;
+      removeNodes(portalNode.nodes, portalNode.target);
+    } else if (node.nodes) {
+      // @ts-expect-error to be removed
+      if (node.willUnmountScopedStore?.length > 0) {
+        // @ts-expect-error to be removed
+        node.runWillUnmount();
+      }
+      stack.push(...[...node.nodes].reverse());
+    }
   }
 }

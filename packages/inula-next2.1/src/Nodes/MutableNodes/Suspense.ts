@@ -1,4 +1,4 @@
-import { InulaBaseNode } from '../../types';
+import { Component, InulaBaseNode } from '../../types';
 import { createExpNode } from './expression';
 import { createConditionalNode } from './conditional';
 import { Context, ContextNode, createContext, createContextNode, useContext } from '../UtilNodes/context';
@@ -15,12 +15,12 @@ function getSuspenseContext() {
   return suspenseContext;
 }
 
-type FC<T = Record<string, any>> = (props: T) => InulaBaseNode[];
 class SuspenseNode extends MutableLifecycleNode {
+  inulaType = 'Suspense';
   didSuspend = false;
-  promiseSet = new Set<PromiseType<{ default: FC }>>();
-  fallbackNode: InulaBaseNode;
-  children: InulaBaseNode[];
+  promiseSet = new Set<PromiseType<{ default: Component }>>();
+  fallbackNode!: InulaBaseNode;
+  children!: InulaBaseNode[];
   contextNode: ContextNode;
   nodes: InulaBaseNode[] = [];
   constructor() {
@@ -45,7 +45,7 @@ class SuspenseNode extends MutableLifecycleNode {
     return this;
   }
 
-  clearPromise(promise: PromiseType<{ default: FC }>) {
+  clearPromise(promise: PromiseType<{ default: Component }>) {
     this.promiseSet.delete(promise);
     if (this.promiseSet.size === 0) {
       this.didSuspend = false;
@@ -53,7 +53,7 @@ class SuspenseNode extends MutableLifecycleNode {
     }
   }
 
-  handlePromise(promise: PromiseType<{ default: FC }>) {
+  handlePromise(promise: PromiseType<{ default: Component }>) {
     if (this.promiseSet.has(promise)) return;
     if (this.didSuspend === false) {
       this.didSuspend = true;
@@ -124,11 +124,11 @@ export interface PromiseType<R> {
   ): void | PromiseType<U>;
 }
 
-export function lazy<T>(promiseConstructor: () => PromiseType<{ default: T }>) {
+export function lazy<T extends Component>(promiseConstructor: () => PromiseType<{ default: T }>) {
   let value: T | null = null;
   let promise: PromiseType<{ default: T }> | null = null;
   let status = 'init';
-  const instance = {
+  const instance: InulaBaseNode = {
     nodes: [],
   };
   return function (props: Record<string, any>) {
