@@ -164,13 +164,13 @@ describe('early return', () => {
         return <div>senior vip user</div>;
       }
 
-      // if (user.isVip || user.isSenior) {
-      //   return <div>privileged user</div>;
-      // }
-      //
-      // if (!user.age || user.age < 18) {
-      //   return <div>restricted user</div>;
-      // }
+      if (user.isVip || user.isSenior) {
+        return <div>privileged user</div>;
+      }
+
+      if (!user.age || user.age < 18) {
+        return <div>restricted user</div>;
+      }
 
       return <div>normal user</div>;
     };
@@ -178,14 +178,14 @@ describe('early return', () => {
     render(App(), container);
     expect(container.innerHTML).toBe('<div>senior vip user</div>');
 
-    // updateUser!({ isSenior: false });
-    // expect(container.innerHTML).toBe('<div>privileged user</div>');
-    //
-    // updateUser!({ isVip: false, isSenior: true });
-    // expect(container.innerHTML).toBe('<div>privileged user</div>');
-    //
-    // updateUser!({ isVip: false, isSenior: false, age: 16 });
-    // expect(container.innerHTML).toBe('<div>restricted user</div>');
+    updateUser!({ isSenior: false });
+    expect(container.innerHTML).toBe('<div>privileged user</div>');
+
+    updateUser!({ isVip: false, isSenior: true });
+    expect(container.innerHTML).toBe('<div>privileged user</div>');
+
+    updateUser!({ isVip: false, isSenior: false, age: 16 });
+    expect(container.innerHTML).toBe('<div>restricted user</div>');
 
     updateUser!({ age: 20 });
     expect(container.innerHTML).toBe('<div>normal user</div>');
