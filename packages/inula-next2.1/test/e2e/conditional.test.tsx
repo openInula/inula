@@ -29,7 +29,7 @@ vi.mock('../../src/scheduler', async () => {
 });
 
 describe('conditional rendering', () => {
-  it('should if, else, else if', ({ container }) => {
+  it('should support if, else, else if', ({ container }) => {
     let set: (num: number) => void;
 
     function App() {
@@ -87,6 +87,7 @@ describe('conditional rendering', () => {
       "2 is bigger than is 1"
     `);
   });
+
   it('should transform "and expression in and expression" to "if tag in if tag"', ({ container }) => {
     let set: (num: number) => void;
 

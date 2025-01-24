@@ -18,7 +18,7 @@
 
 import { describe, expect, vi } from 'vitest';
 import { domTest as it } from './utils';
-import { render } from '../../src';
+import { render, didMount, Component } from '../../src';
 
 vi.mock('../../src/scheduler', async () => {
   return {
@@ -35,19 +35,18 @@ describe('components', () => {
 
       function App() {
         let count = 0;
-        let _ref: HTMLElement;
-        const div = <div></div>;
+        let _ref: HTMLDivElement;
 
         didMount(() => {
           ref = _ref;
         });
 
-        return <div ref={_ref}>test</div>;
+        return <div ref={_ref!}>test</div>;
       }
 
       render(App(), container);
 
-      expect(ref).toBeInstanceOf(HTMLElement);
+      expect(ref!).toBeInstanceOf(HTMLElement);
     });
 
     it('should support ref forwarding', ({ container }) => {
@@ -61,7 +60,7 @@ describe('components', () => {
           ref = _ref;
         });
 
-        return <Input ref={_ref}>test</Input>;
+        return <Input ref={_ref!}>test</Input>;
       }
 
       function Input({ ref }) {
@@ -69,7 +68,7 @@ describe('components', () => {
       }
 
       render(App(), container);
-      expect(ref).toBeInstanceOf(HTMLInputElement);
+      expect(ref!).toBeInstanceOf(HTMLInputElement);
     });
 
     it('should support ref with function', ({ container }) => {

@@ -290,6 +290,24 @@ describe('rendering', () => {
       expect(container.innerHTML).toEqual('<button>add:1</button>');
     });
 
+    it('should support inline event for dom in template', ({ container }) => {
+      function App() {
+        let count = 0;
+
+        return (
+          <div>
+            <button onClick={() => (count += 1)}>add:{count}</button>
+          </div>
+        );
+      }
+
+      render(App(), container);
+      expect(container.innerHTML).toEqual('<div><button>add:0</button></div>');
+      const button = container.querySelector('button');
+      button.click();
+      expect(container.innerHTML).toEqual('<div><button>add:1</button></div>');
+    });
+
     it('should support inline event for component props', ({ container }) => {
       function Button({ onClick, children }) {
         return <button onClick={onClick}>{children}</button>;
