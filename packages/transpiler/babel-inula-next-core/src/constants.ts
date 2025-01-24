@@ -83,6 +83,7 @@ const API_NAMES = [
   'createExpNode',
   'createContextNode',
   'createSuspenseNode',
+  'createPortal',
   'setText',
   'withDefault',
   'useContext',
