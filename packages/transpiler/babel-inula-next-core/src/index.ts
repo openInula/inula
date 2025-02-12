@@ -8,7 +8,6 @@ import forSubComponentPlugin from './sugarPlugins/forSubComponentPlugin';
 import mapping2ForPlugin from './sugarPlugins/mapping2ForPlugin';
 import jsxSlicePlugin from './sugarPlugins/jsxSlicePlugin';
 import earlyReturnPlugin from './sugarPlugins/earlyReturnPlugin';
-import hookPlugin from './sugarPlugins/hookPlugin';
 import { resetAccessedKeys } from './constants';
 
 const resetImport = {
