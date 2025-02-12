@@ -236,20 +236,19 @@ export const setHTMLProp = (
  * @param dependencies
  * @param reactBits
  */
-export const setStyle = (
+export function setStyle(
   node: InulaHTMLNode,
-  newStyleFunc: () => CSSStyleDeclaration,
-  dependencies: Value[],
-  reactBits: Bits
-) => {
-  // TODO Need to refactor
+  newStyleFunc: (() => CSSStyleDeclaration) | CSSStyleDeclaration,
+  dependencies?: Value[],
+  reactBits?: Bits
+): void {
   if (reactBits) {
-    if (!shouldUpdate(node, 'style', dependencies, reactBits)) return;
-    _setStyle(node, newStyleFunc());
+    if (!shouldUpdate(node, 'style', dependencies!, reactBits)) return;
+    _setStyle(node, (newStyleFunc as () => CSSStyleDeclaration)());
   } else {
-    _setStyle(node, newStyleFunc);
+    _setStyle(node, newStyleFunc as CSSStyleDeclaration);
   }
-};
+}
 
 /**
  * @brief Set dataset properties
@@ -318,7 +317,7 @@ export const setHTMLAttrs = (
 export const setHTMLAttr = (
   node: InulaHTMLNode,
   key: string,
-  valueFunc: () => HTMLAttrsObject,
+  valueFunc: (() => Value) | Value,
   dependencies: Value[],
   reactBits: Bits
 ) => {
@@ -327,7 +326,7 @@ export const setHTMLAttr = (
     if (!shouldUpdate(node, 'htmlAttrs', dependencies, reactBits)) return;
     _setHTMLAttr(node, key, valueFunc());
   } else {
-    _setHTMLProps(node, valueFunc);
+    _setHTMLAttr(node, key, valueFunc);
   }
 };
 

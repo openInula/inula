@@ -21,8 +21,6 @@ export const createTemplateNode = (
 
   const updater = getUpdater?.(node) ?? null;
   node.update = _update.bind(null, node, updater);
-  // TODO: remove this
-  node.dirtyBits = InitDirtyBitsMask;
   // ---- Insert nodes
   if (nodesToInsert.length > 0) {
     // we need to find the parent element first, cause the position would be changed after insert

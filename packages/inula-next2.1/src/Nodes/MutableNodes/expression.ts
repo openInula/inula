@@ -58,7 +58,7 @@ class ExpNode extends MutableLifecycleNode implements InulaBaseNode {
     if (!Array.isArray(nodes)) nodes = [nodes];
     return nodes
       .flat(1)
-      .map(node => {
+      .map((node: Value) => {
         if (typeof node === 'string' || typeof node === 'number' || typeof node === 'bigint') {
           // TODO DO
           return createTextNode(`${node}`, () => {});
@@ -69,7 +69,7 @@ class ExpNode extends MutableLifecycleNode implements InulaBaseNode {
         return node;
       })
       .flat(1)
-      .filter(node => node !== undefined && node !== null && typeof node !== 'boolean');
+      .filter((node: Value) => node !== undefined && node !== null && typeof node !== 'boolean');
   }
 }
 

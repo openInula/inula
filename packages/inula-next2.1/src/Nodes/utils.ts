@@ -190,7 +190,7 @@ export const willReact = (dirtyBits: Bits, reactBits: Bits) => {
 
 export const init = (nodes: InulaBaseNode[]) => {
   for (let i = 0; i < nodes.length; i++) {
-    update(nodes[i], InitDirtyBitsMask);
+    update(nodes[i]);
   }
 };
 

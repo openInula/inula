@@ -7,6 +7,8 @@ export enum InulaNodeType {
   Context = 5,
   Children = 6,
   Fragment = 7,
+  Portal = 8,
+  Suspense = 9,
   // ---- Not adding these 2 types because we're using the raw dom nodes and
   //      we don't want to increase memory usage by adding these types to the nodes.
   // HTML = 8,
