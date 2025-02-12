@@ -26,7 +26,7 @@ export interface GeneratorContext {
   templates: Array<[string, t.Expression]>;
 }
 
-// according to the type of IRStmt
+// Generator type of IRStmt
 export type Generator<S = GeneratorContext> = {
   [type in IRStmt['type']]?: (stmt: Extract<IRStmt, { type: type }>, state: S) => t.Statement | t.Statement[];
 };
