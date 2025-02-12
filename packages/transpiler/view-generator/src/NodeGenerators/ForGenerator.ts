@@ -42,7 +42,11 @@ export const forGenerator: ViewGenerator = {
         [t.identifier(PARAM_NODE), updateItemFuncArr, item, t.identifier(PARAM_KEY), index],
         t.blockStatement([
           t.expressionStatement(
-            t.assignmentExpression('=', t.memberExpression(updateItemFuncArr, index), itemUpdater(item, indexParam))
+            t.assignmentExpression(
+              '=',
+              t.memberExpression(updateItemFuncArr, index, true),
+              itemUpdater(item, indexParam)
+            )
           ),
           t.returnStatement(t.arrayExpression(children.map(child => ctx.next(child)))),
         ])
