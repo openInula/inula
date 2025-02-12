@@ -6,6 +6,7 @@ import { compBuilder, getCurrentCompNode } from '../CompNode/node';
 import { MutableLifecycleNode } from './lifecycle';
 import { appendNodesWithSibling, getFlowIndexFromNodes, init, InitDirtyBitsMask, update } from '../utils';
 import { runDidMount } from '../../lifecycle';
+import { InulaNodeType } from '../../consts';
 
 let suspenseContext: Context | null = null;
 function getSuspenseContext() {
@@ -15,8 +16,8 @@ function getSuspenseContext() {
   return suspenseContext;
 }
 
-class SuspenseNode extends MutableLifecycleNode {
-  inulaType = 'Suspense';
+class SuspenseNode extends MutableLifecycleNode implements InulaBaseNode {
+  inulaType = InulaNodeType.Suspense;
   didSuspend = false;
   promiseSet = new Set<PromiseType<{ default: Component }>>();
   fallbackNode!: InulaBaseNode;
