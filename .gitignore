@@ -1,6 +1,7 @@
 /node_modules
 .idea
 .vscode
+.turbo
 package-lock.json
 /packages/**/node_modules
 /packages/inula-cli/lib
