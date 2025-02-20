@@ -8,3 +8,4 @@ package-lock.json
 build
 /packages/inula-router/connectRouter
 /packages/inula-router/router
+coverage
