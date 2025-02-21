@@ -7,7 +7,7 @@
  *
  *          http://license.coscl.org.cn/MulanPSL2
  *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * THIS SOFTWARE IS PROVIDED ON AN 'AS IS' BASIS, WITHOUT WARRANTIES OF ANY KIND,
  * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
@@ -22,7 +22,7 @@ interface DomTestContext {
 // Define a new test type that extends the default test type and adds the container fixture.
 export const domTest = test.extend<DomTestContext>({
   container: async ({ task }, use) => {
-    const container = document.createElement('div');
+    const container = document.createHTMLNode('div');
     document.body.appendChild(container);
     await use(container);
     container.remove();
