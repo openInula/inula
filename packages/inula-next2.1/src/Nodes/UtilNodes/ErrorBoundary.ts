@@ -23,7 +23,7 @@ export function ErrorBoundary({
   children,
 }: {
   fallback: (error: Error) => InulaBaseNode[];
-  children: InulaBaseNode[];
+  children: () => InulaBaseNode[];
 }) {
   const $$self = compBuilder();
 

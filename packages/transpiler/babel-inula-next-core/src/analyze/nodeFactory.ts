@@ -45,7 +45,6 @@ function createScope(parentScope: IRScope | undefined) {
   return {
     level: parentScope ? parentScope.level + 1 : 0,
     reactiveMap: new Map<string, number>(),
-    waveMap: new Map<string, number>(),
     usedIdBits: 0,
   };
 }
