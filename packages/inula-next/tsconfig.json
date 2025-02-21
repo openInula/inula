@@ -1,18 +1,14 @@
 {
   "compilerOptions": {
-    "declaration": true,
+    "jsx": "preserve",
     "target": "ESNext",
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
     "moduleResolution": "Node",
     "strict": true,
-    "esModuleInterop": true,
-    "types": []  // 不包含 node 类型
+    "esModuleInterop": true
   },
   "ts-node": {
     "esm": true
-  },
-  "include": ["src",
-    "types"
-  ]
+  }
 }
