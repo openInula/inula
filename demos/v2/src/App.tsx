@@ -21,7 +21,7 @@ const TreeNode = ({ node, onToggle }) => {
       </div>
       <if cond={isExpanded}>
         <div className="tree-node-children">
-          <if cond={node.children}>
+          <if>
             <for each={node.children}>
               {child => {
                 return <TreeNode key={child.id} node={child} onToggle={onToggle} />;
@@ -92,4 +92,4 @@ function App() {
   );
 }
 
-render(App, document.getElementById('main'));
+render(App(), document.getElementById('main'));
