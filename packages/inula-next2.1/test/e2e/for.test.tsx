@@ -35,7 +35,7 @@ describe('for', () => {
     }
 
     render(App(), container);
-    expect(container.innerHTML).toMatchInlineSnapshot(`"<div>0</div><div>1</div><div>2</div>"`);
+    expect(container.innerHTML).toMatchInlineSnapshot('"<div>0</div><div>1</div><div>2</div>"');
   });
 
   it('should update item when arr changed', ({ container }) => {
@@ -53,7 +53,7 @@ describe('for', () => {
     expect(container.children.length).toEqual(3);
     updateArr(3);
     expect(container.children.length).toEqual(4);
-    expect(container.innerHTML).toMatchInlineSnapshot(`"<div>0</div><div>1</div><div>2</div><div>3</div>"`);
+    expect(container.innerHTML).toMatchInlineSnapshot('"<div>0</div><div>1</div><div>2</div><div>3</div>"');
   });
 
   it('should get index', ({ container }) => {
@@ -67,9 +67,9 @@ describe('for', () => {
     }
 
     render(App(), container);
-    expect(container.innerHTML).toMatchInlineSnapshot(`"<div>0</div><div>1</div><div>2</div>"`);
+    expect(container.innerHTML).toMatchInlineSnapshot('"<div>0</div><div>1</div><div>2</div>"');
     update(3);
-    expect(container.innerHTML).toMatchInlineSnapshot(`"<div>0</div><div>1</div><div>2</div><div>3</div>"`);
+    expect(container.innerHTML).toMatchInlineSnapshot('"<div>0</div><div>1</div><div>2</div><div>3</div>"');
   });
   // Compile Error
   // it.fails('should transform for loop', ({ container }) => {
@@ -162,7 +162,7 @@ describe('for', () => {
     }
 
     render(App(), container);
-    expect(container.innerHTML).toMatchInlineSnapshot(`"<li>Apple</li><li>Banana</li><li>Cherry</li>"`);
+    expect(container.innerHTML).toMatchInlineSnapshot('"<li>Apple</li><li>Banana</li><li>Cherry</li>"');
   });
 
   it('Should correctly render nested loops of elements', ({ container }) => {
@@ -185,7 +185,7 @@ describe('for', () => {
 
     render(App(), container);
     expect(container.innerHTML).toMatchInlineSnapshot(
-      `"<div><span>1</span><span>2</span></div><div><span>3</span><span>4</span></div><div><span>5</span><span>6</span></div>"`
+      '"<div><span>1</span><span>2</span></div><div><span>3</span><span>4</span></div><div><span>5</span><span>6</span></div>"'
     );
   });
 
@@ -211,7 +211,7 @@ describe('for', () => {
 
     render(App(), container);
     expect(container.innerHTML).toMatchInlineSnapshot(
-      `"<div><h2>Alice</h2><ul><li>reading</li><li>gaming</li></ul></div><div><h2>Bob</h2><ul><li>cycling</li><li>photography</li></ul></div>"`
+      '"<div><h2>Alice</h2><ul><li>reading</li><li>gaming</li></ul></div><div><h2>Bob</h2><ul><li>cycling</li><li>photography</li></ul></div>"'
     );
   });
 
@@ -223,7 +223,24 @@ describe('for', () => {
 
     render(App(), container);
     expect(container.innerHTML).toMatchInlineSnapshot(
-      `"<span>2</span><span>4</span><span>6</span><span>8</span><span>10</span>"`
+      '"<span>2</span><span>4</span><span>6</span><span>8</span><span>10</span>"'
     );
+  });
+
+  it('Should update single item', ({ container }) => {
+    let updateNumber: (n: number) => void;
+
+    function App() {
+      const numbers = [1, 2, 3];
+      updateNumber = n => {
+        numbers[0] = n;
+      };
+      return <for each={numbers}>{number => <span>{number}</span>}</for>;
+    }
+
+    render(App(), container);
+    expect(container.innerHTML).toMatchInlineSnapshot('"<span>1</span><span>2</span><span>3</span>"');
+    updateNumber!(4);
+    expect(container.innerHTML).toMatchInlineSnapshot('"<span>4</span><span>2</span><span>3</span>"');
   });
 });

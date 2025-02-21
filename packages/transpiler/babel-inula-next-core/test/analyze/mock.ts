@@ -19,10 +19,11 @@ import syntaxJSX from '@babel/plugin-syntax-jsx';
 import { register } from '@openinula/babel-api';
 import { analyze } from '../../src/analyze';
 import { COMPONENT, defaultHTMLTags } from '../../src/constants';
+import { BitManager } from '../../src/analyze/IRBuilder';
 
-export function mockAnalyze(code: string, analyzers?: Analyzer[]): [ComponentNode, Map<number, number>] {
+export function mockAnalyze(code: string, analyzers?: Analyzer[]): [ComponentNode, BitManager] {
   let root: ComponentNode | HookNode | null = null;
-  let waveBitsMap: Map<number, number>;
+  let bitManager: BitManager;
   transformWithBabel(code, {
     plugins: [
       syntaxJSX.default ?? syntaxJSX,
@@ -35,7 +36,7 @@ export function mockAnalyze(code: string, analyzers?: Analyzer[]): [ComponentNod
               if (seen.has(path)) {
                 return;
               }
-              [root, waveBitsMap] = analyze(COMPONENT, 'test', path, {
+              [root, bitManager] = analyze(COMPONENT, 'test', path, {
                 customAnalyzers: analyzers,
                 htmlTags: defaultHTMLTags,
               });
@@ -48,7 +49,7 @@ export function mockAnalyze(code: string, analyzers?: Analyzer[]): [ComponentNod
               if (seen.has(path)) {
                 return;
               }
-              [root, waveBitsMap] = analyze(COMPONENT, 'test', path, {
+              [root, bitManager] = analyze(COMPONENT, 'test', path, {
                 customAnalyzers: analyzers,
                 htmlTags: defaultHTMLTags,
               });
@@ -68,5 +69,5 @@ export function mockAnalyze(code: string, analyzers?: Analyzer[]): [ComponentNod
     throw new Error('root is null');
   }
 
-  return [root, waveBitsMap] as const;
+  return [root, bitManager] as const;
 }
