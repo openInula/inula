@@ -1,6 +1,7 @@
 {
-  "name": "@openinula/next",
+  "name": "@openinula/next-deprecated",
   "version": "0.0.2",
+  "private": true,
   "keywords": [
     "inula"
   ],

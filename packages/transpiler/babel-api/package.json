@@ -1,6 +1,6 @@
 {
   "name": "@openinula/babel-api",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "",
   "type": "module",
   "main": "src/index.mjs",

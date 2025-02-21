@@ -1,6 +1,6 @@
 {
   "name": "@openinula/jsx-view-parser",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "Inula jsx parser",
   "keywords": [
     "inula"
@@ -37,5 +37,8 @@
     "clean": true,
     "dts": true,
     "sourceMap": true
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

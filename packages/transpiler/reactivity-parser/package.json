@@ -1,6 +1,6 @@
 {
   "name": "@openinula/reactivity-parser",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "keywords": [
     "Inula-Next"
   ],
@@ -40,5 +40,8 @@
     "clean": true,
     "dts": true,
     "sourcemap": true
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

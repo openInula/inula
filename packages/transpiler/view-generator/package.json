@@ -1,6 +1,6 @@
 {
   "name": "@openinula/view-generator",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "description": "InulaNext View Generator given different types of reactivity units",
   "keywords": [
     "Inula-Next"
@@ -33,7 +33,9 @@
     "entry": [
       "src/index.ts"
     ],
-    "external": ["@openinula/babel-api"],
+    "external": [
+      "@openinula/babel-api"
+    ],
     "format": [
       "cjs",
       "esm"
@@ -41,5 +43,8 @@
     "clean": true,
     "dts": true,
     "sourceMap": true
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
