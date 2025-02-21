@@ -1,6 +1,6 @@
 {
   "name": "@openinula/error-handler",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "keywords": [
     "Inula-Next"
   ],
@@ -30,5 +30,8 @@
     ],
     "clean": true,
     "dts": true
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

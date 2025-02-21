@@ -1,18 +1,29 @@
 {
   "name": "@openinula/next",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "keywords": [
     "inula"
   ],
   "license": "MIT",
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "jsx-runtime.d.ts",
+    "types"
   ],
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./jsx-runtime": {
+      "types": "./jsx-runtime.d.ts"
+    }
+  },
   "scripts": {
     "build": "tsup --sourcemap",
     "test": "vitest --ui",
@@ -29,6 +40,7 @@
     "entry": [
       "src/index.ts"
     ],
+    "dts": true,
     "format": [
       "cjs",
       "esm"
