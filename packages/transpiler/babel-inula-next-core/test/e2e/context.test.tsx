@@ -31,15 +31,15 @@ describe('context', () => {
       ).toMatchInlineSnapshot(`
         "import { compBuilder as $$compBuilder, useContext as $$useContext, createExpNode as $$createExpNode, createTextNode as $$createTextNode, createHTMLNode as $$createHTMLNode } from "@openinula/next";
         function App() {
-          const self = $$compBuilder();
+          const $$self = $$compBuilder();
           let {
             level,
             path
-          } = $$useContext(UserContext, self);
-          self.addContext("level", value => level = value, 1);
-          self.addContext("path", value => path = value, 2);
+          } = $$useContext(UserContext, $$self);
+          $$self.addContext(UserContext, "level", value => level = value, 1);
+          $$self.addContext(UserContext, "path", value => path = value, 2);
           console.log(level, path);
-          return self.prepare().init($$createHTMLNode("div", null, $$createExpNode(() => level, [level], 1), $$createTextNode("-"), $$createExpNode(() => path, [path], 2)));
+          return $$self.prepare().init($$createHTMLNode("div", null, $$createExpNode(() => level, () => [level], 1), $$createTextNode("-"), $$createExpNode(() => path, () => [path], 2)));
         }"
       `);
     });
@@ -57,10 +57,10 @@ describe('context', () => {
       ).toMatchInlineSnapshot(`
         "import { compBuilder as $$compBuilder, createContextNode as $$createContextNode } from "@openinula/next";
         function App() {
-          const self = $$compBuilder();
+          const $$self = $$compBuilder();
           let level;
-          return self.prepare().init($$createContextNode(FileContext, node => {
-            node.updateContext("level", level, [level], 1);
+          return $$self.prepare().init($$createContextNode(FileContext, $$node => {
+            $$node.updateContext("level", () => level, [level], 1);
           }));
         }"
       `);

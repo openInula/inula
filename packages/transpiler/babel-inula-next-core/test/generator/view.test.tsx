@@ -27,10 +27,10 @@ describe('view generation', () => {
 
     expect(code).toMatchInlineSnapshot(`
       "function Comp() {
-        const self = $$compBuilder();
+        const $$self = $$compBuilder();
         let text = 'hello world';
         console.log(text);
-        return self.prepare().init($$createHTMLNode("div", null, $$createExpNode(() => text, [text], 1)));
+        return $$self.prepare().init($$createHTMLNode("div", null, $$createExpNode(() => text, () => [text], 1)));
       }"
     `);
   });
@@ -46,16 +46,16 @@ describe('view generation', () => {
 
     expect(code).toMatchInlineSnapshot(`
       "function Comp() {
-        const self = $$compBuilder();
+        const $$self = $$compBuilder();
         let text = 'hello world';
         let color = 'red';
-        return self.prepare().init($$createHTMLNode("div", () => {
-          $$setHTMLProp(node, "className", () => text, [text], 1);
-          $$setHTMLProp(node, "id", () => text, [text], 1);
-          $$setHTMLProp(node, "style", () => ({
+        return $$self.prepare().init($$createHTMLNode("div", $$node => {
+          $$setHTMLProp($$node, "className", () => text, [text], 1);
+          $$setHTMLProp($$node, "id", () => text, [text], 1);
+          $$setStyle($$node, () => ({
             color
           }), [color], 2);
-        }, $$createExpNode(() => text, [text], 1)));
+        }, $$createExpNode(() => text, () => [text], 1)));
       }"
     `);
   });
@@ -74,17 +74,18 @@ describe('view generation', () => {
     `);
 
     expect(code).toMatchInlineSnapshot(`
-      "const $t0 = function () {
-        $node1 = $$createElement("div");
-        $node2 = $$createElement("div");
-        $$appendNode($node1, $node2);
-        $node3 = $$createElement("div");
-        $$appendNode($node1, $node3);
+      "const _$t = function () {
+        const $node0 = $$createElement("div");
+        const $node1 = $$createElement("div");
+        $node0.appendChild($node1);
+        const $node2 = $$createElement("div");
+        $node0.appendChild($node2);
+        return $node0;
       }();
       function Comp() {
-        const self = $$compBuilder();
+        const $$self = $$compBuilder();
         let text = 'hello world';
-        return self.prepare().init($$createTemplateNode($t0, null, [0, $$createExpNode(() => text, [text], 1), 0], [0, $$createExpNode(() => text, [text], 1), 1]));
+        return $$self.prepare().init($$createTemplateNode(_$t, null, [0, $$createExpNode(() => text, () => [text], 1), 0], [0, $$createExpNode(() => text, () => [text], 1), 1]));
       }"
     `);
   });
@@ -103,9 +104,9 @@ describe('view generation', () => {
     `);
     expect(code).toMatchInlineSnapshot(`
       "function Comp() {
-        const self = $$compBuilder();
+        const $$self = $$compBuilder();
         let text = 'hello world';
-        return self.prepare().init($$createFragmentNode($$createHTMLNode("div", null, $$createExpNode(() => text, [text], 1)), $$createHTMLNode("div", null, $$createExpNode(() => text, [text], 1))));
+        return $$self.prepare().init($$createFragmentNode($$createHTMLNode("div", null, $$createExpNode(() => text, () => [text], 1)), $$createHTMLNode("div", null, $$createExpNode(() => text, () => [text], 1))));
       }"
     `);
   });
@@ -129,20 +130,20 @@ describe('view generation', () => {
 
     expect(code).toMatchInlineSnapshot(`
       "function Comp() {
-        const self = $$compBuilder();
+        const $$self = $$compBuilder();
         let text = 'hello world';
         let show = true;
-        return self.prepare().init($$createHTMLNode("div", null, $$createConditionalNode(node => {
-          if (node.cachedCondition(0, () => show, [show])) {
-            if (node.branch(0)) return [];
-            return [$$createHTMLNode("div", null, $$createExpNode(() => text, [text], 1))];
+        return $$self.prepare().init($$createHTMLNode("div", null, $$createConditionalNode($$node => {
+          if ($$node.cachedCondition(0, () => show, [show])) {
+            if ($$node.branch(0)) return [];
+            return [$$createHTMLNode("div", null, $$createExpNode(() => text, () => [text], 1))];
           } else {
-            if (node.branch(1)) return [];
-            return [$$createHTMLNode("h1", () => {
-              node.setAttribute("textContent", "else");
+            if ($$node.branch(1)) return [];
+            return [$$createHTMLNode("h1", $$node => {
+              $$node.textContent = "else";
             })];
           }
-        })));
+        }, 2)));
       }"
     `);
   });
@@ -162,16 +163,16 @@ describe('view generation', () => {
     `);
     expect(code).toMatchInlineSnapshot(`
       "function Comp() {
-        const self = $$compBuilder();
+        const $$self = $$compBuilder();
         let list = ['hello', 'world'];
-        return self.prepare().init($$createHTMLNode("div", null, $$createForNode(() => list, () => list.map(item => index), (node, updateItemFuncArr, item, key, index) => {
-          updateItemFuncArr.index = (newItem, newIdx) => {
+        return $$self.prepare().init($$createHTMLNode("div", null, $$createForNode(() => list, () => list.map((item, index) => index), ($$n, updateItemFuncArr, item, $$key, index) => {
+          updateItemFuncArr[index] = (newItem, newIdx) => {
             item = newItem;
             index = newIdx;
           };
-          return [$$createHTMLNode("div", () => {
-            node.setAttribute("key", index);
-          }, $$createExpNode(() => item, [item], 1))];
+          return [$$createHTMLNode("div", $$node => {
+            $$node.setAttribute("key", index);
+          }, $$createExpNode(() => item, () => [item], 1))];
         }, 1)));
       }"
     `);

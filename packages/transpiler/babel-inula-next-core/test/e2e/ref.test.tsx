@@ -32,54 +32,28 @@ describe('ref', () => {
 
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, createTextNode as $$createTextNode, createNode as $$createNode, updateNode as $$updateNode, Comp as $$Comp, initCompNode as $$initCompNode, createElement as $$createElement } from "@openinula/next";
+      "import { compBuilder as $$compBuilder, createTextNode as $$createTextNode, createChildren as $$createChildren, createCompNode as $$createCompNode, setRef as $$setRef, createHTMLNode as $$createHTMLNode } from "@openinula/next";
       function App() {
-        let self;
+        const $$self = $$compBuilder();
         let count = 0;
         let ref;
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            let $node0, $node1;
-            $node1 = $$createNode(6 /*Children*/, $addUpdate => {
-              let $node0;
-              $node0 = $$createTextNode("test", []);
-              return [$node0];
-            });
-            $node0 = $$Comp(Input, {
-              "ref": function ($el) {
-                typeof ref === "function" ? ref($el) : $$updateNode(self, ref = $el, 1 /*0b1*/);
-              },
-              "children": $node1
-            });
-            return [[$node0], $changed => {
-              $$updateNode($node1, $changed);
-              return [$node0];
-            }];
-          }
-        });
-        return $$initCompNode(self);
+        return $$self.prepare().init($$createCompNode(Input, {
+          "ref": function ($el) {
+            typeof ref === "function" ? ref($el) : ref = $el;
+          },
+          "children": $$createChildren(() => [$$createTextNode("test")], $$self)
+        }, $$node => {
+          $$node.updateProp("ref", () => ref, [ref], 1);
+        }));
       }
       function Input({
         ref
       }) {
-        let self;
-        let ref_$p$_ = ref;
-        self = $$createComponent({
-          updateState: changed => {},
-          updateProp: (propName, newValue) => {
-            if (propName === "ref") {
-              $$updateNode(self, ref_$p$_ = newValue, 1 /*0b1*/);
-            }
-          },
-          getUpdateViews: () => {
-            let $node0;
-            $node0 = $$createElement("input");
-            typeof ref_$p$_ === "function" ? ref_$p$_($node0) : ref_$p$_ = $node0;
-            return [[$node0],,];
-          }
-        });
-        return $$initCompNode(self);
+        const $$self = $$compBuilder();
+        $$self.addProp("ref", value => ref = value, 1);
+        return $$self.prepare().init($$createHTMLNode("input", $$node => {
+          $$setRef($$node, () => typeof ref === "function" ? ref($$node) : ref = $$node);
+        }));
       }"
     `);
   });

@@ -33,18 +33,21 @@ describe('generate', () => {
 
     expect(code).toMatchInlineSnapshot(`
       "function Comp() {
-        const self = $$compBuilder();
+        const $$self = $$compBuilder();
         let count = 1;
         function Child() {
-          const self1 = $$compBuilder();
-          return self1.prepare().init($$createHTMLNode("h1", () => {
-            node.setAttribute("textContent", "SubComp");
+          const $$self1 = $$compBuilder($$self);
+          return $$self1.prepare().init($$createHTMLNode("h1", $$node => {
+            $$node.textContent = "SubComp";
           }));
         }
-        return self.prepare().init($$createCompNode(Child({
-          "className": count
-        }), node => {
-          node.updateProp("className", () => count, [count], 1);
+        return $$self.prepare().init($$createCompNode(Child, {
+          "className": count,
+          "children": $$createChildren(() => [$$createHTMLNode("div", $$node => {
+            $$node.textContent = "1";
+          })], $$self)
+        }, $$node => {
+          $$node.updateProp("className", () => count, [count], 1);
         }));
       }"
     `);

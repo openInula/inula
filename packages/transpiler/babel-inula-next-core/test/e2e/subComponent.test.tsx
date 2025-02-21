@@ -30,52 +30,19 @@ describe('nested component', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, updateNode as $$updateNode, notCached as $$notCached, createElement as $$createElement, setHTMLProp as $$setHTMLProp, initCompNode as $$initCompNode, Comp as $$Comp, insertNode as $$insertNode } from "@openinula/next";
+      "import { compBuilder as $$compBuilder, setHTMLProp as $$setHTMLProp, createHTMLNode as $$createHTMLNode, createCompNode as $$createCompNode } from "@openinula/next";
       function App() {
-        let self;
+        const $$self = $$compBuilder();
         let val = 123;
         function Input() {
-          let self1;
+          const $$self1 = $$compBuilder($$self);
           let double;
-          self1 = $$createComponent({
-            updateState: changed => {
-              if (changed & 1) {
-                if ($$notCached(self1, "cache0", [val])) {
-                  $$updateNode(self1, double = val * 2, 2 /*0b10*/);
-                }
-              }
-            },
-            getUpdateViews: () => {
-              let $node0;
-              $node0 = $$createElement("input");
-              $$setHTMLProp($node0, "value", () => double, [double]);
-              return [[$node0], $changed => {
-                if ($changed & 2) {
-                  $node0 && $$setHTMLProp($node0, "value", () => double, [double]);
-                }
-                return [$node0];
-              }];
-            }
-          });
-          return $$initCompNode(self1);
+          $$self1.deriveState(() => (double = val * 2), () => [val], 1);
+          return $$self1.prepare().init($$createHTMLNode("input", $$node => {
+            $$setHTMLProp($$node, "value", () => double, [double], 2);
+          }));
         }
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            let $node0, $node1;
-            $node0 = $$createElement("div");
-            $node1 = $$Comp(Input, {});
-            $$insertNode($node0, $node1, 0);
-            $node0._$nodes = [$node1];
-            return [[$node0], $changed => {
-              if ($changed & 3) {
-                $$updateNode($node1, null, 3);
-              }
-              return [$node0];
-            }];
-          }
-        });
-        return $$initCompNode(self);
+        return $$self.prepare().init($$createHTMLNode("div", null, $$createCompNode(Input, {}, null)));
       }"
     `);
   });
@@ -90,46 +57,18 @@ describe('nested component', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { Comp as $$Comp, createComponent as $$createComponent, createElement as $$createElement, setHTMLProp as $$setHTMLProp, initCompNode as $$initCompNode, createNode as $$createNode, updateNode as $$updateNode, insertNode as $$insertNode } from "@openinula/next";
+      "import { createCompNode as $$createCompNode, compBuilder as $$compBuilder, setHTMLProp as $$setHTMLProp, createHTMLNode as $$createHTMLNode, createExpNode as $$createExpNode } from "@openinula/next";
       function App() {
-        let self;
+        const $$self = $$compBuilder();
         let val = 123;
         function JSX_input() {
-          let self1;
-          self1 = $$createComponent({
-            updateState: changed => {},
-            getUpdateViews: () => {
-              let $node0;
-              $node0 = $$createElement("input");
-              $$setHTMLProp($node0, "value", () => val, [val]);
-              return [[$node0], $changed => {
-                if ($changed & 1) {
-                  $node0 && $$setHTMLProp($node0, "value", () => val, [val]);
-                }
-                return [$node0];
-              }];
-            }
-          });
-          return $$initCompNode(self1);
+          const $$self1 = $$compBuilder($$self);
+          return $$self1.prepare().init($$createHTMLNode("input", $$node => {
+            $$setHTMLProp($$node, "value", () => val, [val], 1);
+          }));
         }
-        const input = $$Comp(JSX_input);
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            let $node0, $node1;
-            $node0 = $$createElement("div");
-            $node1 = $$createNode(3 /*Exp*/, () => input, [input]);
-            $$insertNode($node0, $node1, 0);
-            $node0._$nodes = [$node1];
-            return [[$node0], $changed => {
-              if ($changed & 2) {
-                $node1 && $$updateNode($node1, () => input, [input]);
-              }
-              return [$node0];
-            }];
-          }
-        });
-        return $$initCompNode(self);
+        let input = $$createCompNode(JSX_input);
+        return $$self.prepare().init($$createHTMLNode("div", null, $$createExpNode(() => input, () => [input], 2)));
       }"
     `);
   });

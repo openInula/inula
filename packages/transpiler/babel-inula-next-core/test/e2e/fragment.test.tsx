@@ -34,9 +34,9 @@ describe('fragment', () => {
       "import { compBuilder as $$compBuilder, createFragmentNode as $$createFragmentNode, createHTMLNode as $$createHTMLNode } from "@openinula/next";
       import { render } from '@openinula/next';
       function App() {
-        const self = $$compBuilder();
-        return self.prepare().init($$createFragmentNode($$createHTMLNode("div", () => {
-          node.setAttribute("textContent", "xxx");
+        const $$self = $$compBuilder();
+        return $$self.prepare().init($$createFragmentNode($$createHTMLNode("div", $$node => {
+          $$node.textContent = "xxx";
         })));
       }
       render(App, document.getElementById('app'));"

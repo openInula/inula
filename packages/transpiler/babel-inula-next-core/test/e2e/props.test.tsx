@@ -27,8 +27,8 @@ describe('props', () => {
     ).toMatchInlineSnapshot(`
       "import { compBuilder as $$compBuilder, createCompNode as $$createCompNode } from "@openinula/next";
       function App() {
-        const self = $$compBuilder();
-        return self.prepare().init($$createCompNode(Child({}), node => {}));
+        const $$self = $$compBuilder();
+        return $$self.prepare().init($$createCompNode(Child, {}, null));
       }"
     `);
   });
@@ -47,12 +47,12 @@ describe('props', () => {
         id,
         className = 'default'
       }) {
-        const self = $$compBuilder();
-        self.addProp("id", value => id = value, 1);
-        self.addProp("className", value => className = $$withDefault(value, 'default'), 2);
-        return self.prepare().init($$createHTMLNode("div", () => {
-          $$setHTMLProp(node, "id", () => id, [id], 1);
-          $$setHTMLProp(node, "className", () => className, [className], 2);
+        const $$self = $$compBuilder();
+        $$self.addProp("id", value => id = value, 1);
+        $$self.addProp("className", value => className = $$withDefault(value, 'default'), 2);
+        return $$self.prepare().init($$createHTMLNode("div", $$node => {
+          $$setHTMLProp($$node, "id", () => id, [id], 1);
+          $$setHTMLProp($$node, "className", () => className, [className], 2);
         }));
       }"
     `);
@@ -67,7 +67,7 @@ describe('props', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { compBuilder as $$compBuilder, setHTMLProp as $$setHTMLProp, createHTMLNode as $$createHTMLNode } from "@openinula/next";
+      "import { compBuilder as $$compBuilder, setHTMLProp as $$setHTMLProp, setStyle as $$setStyle, createHTMLNode as $$createHTMLNode } from "@openinula/next";
       function App({
         info: {
           id,
@@ -75,16 +75,16 @@ describe('props', () => {
           pos: [x, y]
         }
       }) {
-        const self = $$compBuilder();
-        self.addProp("info", value => ({
+        const $$self = $$compBuilder();
+        $$self.addProp("info", value => ({
           id,
           className = 'default',
           pos: [x, y]
         } = value), 1);
-        return self.prepare().init($$createHTMLNode("div", () => {
-          $$setHTMLProp(node, "id", () => id, [id], 1);
-          $$setHTMLProp(node, "className", () => className, [className], 1);
-          $$setHTMLProp(node, "style", () => ({
+        return $$self.prepare().init($$createHTMLNode("div", $$node => {
+          $$setHTMLProp($$node, "id", () => id, [id], 1);
+          $$setHTMLProp($$node, "className", () => className, [className], 1);
+          $$setStyle($$node, () => ({
             left: x,
             top: y
           }), [x, y], 1);
@@ -105,9 +105,9 @@ describe('props', () => {
       function Child({
         name: alias
       }) {
-        const self = $$compBuilder();
-        self.addProp("name", value => alias = value, 1);
-        return self.prepare().init($$createHTMLNode("h1", null, $$createExpNode(() => alias, [alias], 1)));
+        const $$self = $$compBuilder();
+        $$self.addProp("name", value => alias = value, 1);
+        return $$self.prepare().init($$createHTMLNode("h1", null, $$createExpNode(() => alias, () => [alias], 1)));
       }"
     `);
   });
