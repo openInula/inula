@@ -25,26 +25,17 @@ describe('template', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, createElement as $$createElement, appendNode as $$appendNode, initCompNode as $$initCompNode } from "@openinula/next";
-      const _$t = (() => {
-        let $node0, $node1;
-        $node0 = $$createElement("div");
-        $node1 = $$createElement("div");
+      "import { compBuilder as $$compBuilder, createElement as $$createElement, createTemplateNode as $$createTemplateNode } from "@openinula/next";
+      const _$t = function () {
+        const $node0 = $$createElement("div");
+        const $node1 = $$createElement("div");
         $node1.textContent = "test";
-        $$appendNode($node0, $node1);
+        $node0.appendChild($node1);
         return $node0;
-      })();
+      }();
       function App() {
-        let self;
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            let $node0;
-            $node0 = _$t.cloneNode(true);
-            return [[$node0],,];
-          }
-        });
-        return $$initCompNode(self);
+        const $$self = $$compBuilder();
+        return $$self.prepare().init($$createTemplateNode(_$t, null));
       }"
     `);
   });
@@ -60,46 +51,28 @@ describe('template', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, createElement as $$createElement, appendNode as $$appendNode, initCompNode as $$initCompNode } from "@openinula/next";
-      const _$t2 = (() => {
-        let $node0, $node1;
-        $node0 = $$createElement("div");
-        $node1 = $$createElement("h1");
-        $node1.textContent = "Title";
-        $$appendNode($node0, $node1);
-        return $node0;
-      })();
-      const _$t = (() => {
-        let $node0, $node1;
-        $node0 = $$createElement("div");
-        $node1 = $$createElement("div");
+      "import { compBuilder as $$compBuilder, createElement as $$createElement, createTemplateNode as $$createTemplateNode } from "@openinula/next";
+      const _$t = function () {
+        const $node0 = $$createElement("div");
+        const $node1 = $$createElement("div");
         $node1.textContent = "test";
-        $$appendNode($node0, $node1);
+        $node0.appendChild($node1);
         return $node0;
-      })();
+      }();
+      const _$t2 = function () {
+        const $node0 = $$createElement("div");
+        const $node1 = $$createElement("h1");
+        $node1.textContent = "Title";
+        $node0.appendChild($node1);
+        return $node0;
+      }();
       function App() {
-        let self;
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            let $node0;
-            $node0 = _$t.cloneNode(true);
-            return [[$node0],,];
-          }
-        });
-        return $$initCompNode(self);
+        const $$self = $$compBuilder();
+        return $$self.prepare().init($$createTemplateNode(_$t, null));
       }
       function Title() {
-        let self;
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            let $node0;
-            $node0 = _$t2.cloneNode(true);
-            return [[$node0],,];
-          }
-        });
-        return $$initCompNode(self);
+        const $$self = $$compBuilder();
+        return $$self.prepare().init($$createTemplateNode(_$t2, null));
       }"
     `);
   });
@@ -130,117 +103,43 @@ describe('template', () => {
       }
       `)
     ).toMatchInlineSnapshot(`
-      "import { createComponent as $$createComponent, updateNode as $$updateNode, createElement as $$createElement, appendNode as $$appendNode, createNode as $$createNode, insertNode as $$insertNode, initCompNode as $$initCompNode, notCached as $$notCached, createTextNode as $$createTextNode, Comp as $$Comp, setProp as $$setProp } from "@openinula/next";
-      const _$t = (() => {
-        let $node0, $node1;
-        $node0 = $$createElement("div");
+      "import { compBuilder as $$compBuilder, createElement as $$createElement, createExpNode as $$createExpNode, createTemplateNode as $$createTemplateNode, createTextNode as $$createTextNode, createHTMLNode as $$createHTMLNode, createCompNode as $$createCompNode, createChildren as $$createChildren } from "@openinula/next";
+      const _$t = function () {
+        const $node0 = $$createElement("div");
         $node0.className = "parent";
-        $node1 = $$createElement("h2");
+        const $node1 = $$createElement("h2");
         $node1.textContent = "Parent";
-        $$appendNode($node0, $node1);
+        $node0.appendChild($node1);
         return $node0;
-      })();
+      }();
       function App() {
-        let self;
+        const $$self = $$compBuilder();
         let name = 'Alice';
         function Parent({
           children
         }) {
-          let self1;
-          let children_$p$_ = children;
-          self1 = $$createComponent({
-            updateState: changed => {},
-            updateProp: (propName, newValue) => {
-              if (propName === "children") {
-                $$updateNode(self1, children_$p$_ = newValue, 2 /*0b10*/);
-              }
-            },
-            getUpdateViews: () => {
-              let $node0, $node1;
-              $node0 = _$t.cloneNode(true);
-              $node1 = $$createNode(3 /*Exp*/, () => children_$p$_, [children_$p$_]);
-              $$insertNode($node0, $node1, 1);
-              return [[$node0], $changed => {
-                if ($changed & 2) {
-                  $node1 && $$updateNode($node1, () => children_$p$_, [children_$p$_]);
-                }
-                return [$node0];
-              }];
-            }
-          });
-          return $$initCompNode(self1);
+          const $$self1 = $$compBuilder($$self);
+          $$self1.addProp("children", value => children = value, 2);
+          return $$self1.prepare().init($$createTemplateNode(_$t, null, [1, $$createExpNode(() => children, () => [children], 2)]));
         }
         function Child({
           name
+        }: {
+          name: string;
         }) {
-          let self1;
-          let name_$p$_;
-          self1 = $$createComponent({
-            updateState: changed => {
-              if (changed & 1) {
-                if ($$notCached(self1, "cache0", [name])) {
-                  $$updateNode(self1, name_$p$_ = name, 2 /*0b10*/);
-                }
-              }
-            },
-            updateProp: (propName, newValue) => {
-              if (propName === "name") {
-                $$updateNode(self1, name_$p$_ = newValue, 2 /*0b10*/);
-              }
-            },
-            getUpdateViews: () => {
-              let $node0, $node1, $node2, $node3;
-              $node0 = $$createElement("div");
-              $node0.className = "child";
-              $node1 = $$createTextNode("Hello, ", []);
-              $$appendNode($node0, $node1);
-              $node2 = $$createNode(3 /*Exp*/, () => name_$p$_, [name_$p$_]);
-              $$insertNode($node0, $node2, 1);
-              $node3 = $$createTextNode("!", []);
-              $$appendNode($node0, $node3);
-              $node0._$nodes = [$node1, $node2, $node3];
-              return [[$node0], $changed => {
-                if ($changed & 2) {
-                  $node2 && $$updateNode($node2, () => name_$p$_, [name_$p$_]);
-                }
-                return [$node0];
-              }];
-            }
-          });
-          return $$initCompNode(self1);
+          const $$self1 = $$compBuilder($$self);
+          $$self1.addProp("name", value => name = value, 4);
+          return $$self1.prepare().init($$createHTMLNode("div", $$node => {
+            $$node.className = "child";
+          }, $$createTextNode("Hello, "), $$createExpNode(() => name, () => [name], 4), $$createTextNode("!")));
         }
-        self = $$createComponent({
-          updateState: changed => {},
-          getUpdateViews: () => {
-            let $node0, $node1;
-            $node1 = $$createNode(6 /*Children*/, $addUpdate => {
-              let $node0;
-              $addUpdate($changed => {
-                if ($changed & 1) {
-                  $node0 && $$setProp($node0, "name", () => name, [name]);
-                }
-                if ($changed & 3) {
-                  $$updateNode($node0, null, 3);
-                }
-              });
-              $node0 = $$Comp(Child, {
-                "name": name
-              });
-              return [$node0];
-            });
-            $node0 = $$Comp(Parent, {
-              "children": $node1
-            });
-            return [[$node0], $changed => {
-              if ($changed & 2) {
-                $$updateNode($node0, null, 2);
-              }
-              $$updateNode($node1, $changed);
-              return [$node0];
-            }];
-          }
-        });
-        return $$initCompNode(self);
+        return $$self.prepare().init($$createCompNode(Parent, {
+          "children": $$createChildren(() => [$$createCompNode(Child, {
+            "name": name
+          }, $$node => {
+            $$node.updateProp("name", () => name, [name], 1);
+          })], $$self)
+        }, null));
       }"
     `);
   });

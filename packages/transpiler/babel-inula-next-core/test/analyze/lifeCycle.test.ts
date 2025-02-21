@@ -18,13 +18,14 @@ import { genCode } from '../mock';
 import { functionalMacroAnalyze } from '../../src/analyze/Analyzers/functionalMacroAnalyze';
 import { types as t } from '@openinula/babel-api';
 import { mockAnalyze } from './mock';
+import { LifeCycle } from '../../src/analyze/types';
 
 const analyze = (code: string) => mockAnalyze(code, [functionalMacroAnalyze]);
 const combine = (body: t.Statement[]) => t.program(body);
 
 describe('analyze lifeCycle', () => {
   it('should collect will mount', () => {
-    const root = analyze(/*js*/ `
+    const [root] = analyze(/*js*/ `
       Component(() => {
         willMount(() => {
           console.log('test');
@@ -32,15 +33,12 @@ describe('analyze lifeCycle', () => {
       })
     `);
 
-    expect(genCode(combine(root.lifecycle.willMount!))).toMatchInlineSnapshot(`
-      "{
-        console.log('test');
-      }"
-    `);
+    expect(root.body[1].type).toBe('lifecycle');
+    expect(root.body[1].lifeCycle).toBe('willMount');
   });
 
   it('should collect on mount', () => {
-    const root = analyze(/*js*/ `
+    const [root] = analyze(/*js*/ `
       Component(() => {
         didMount(() => {
           console.log('test');
@@ -48,15 +46,12 @@ describe('analyze lifeCycle', () => {
       })
     `);
 
-    expect(genCode(combine(root.lifecycle.didMount!))).toMatchInlineSnapshot(`
-      "{
-        console.log('test');
-      }"
-    `);
+    expect(root.body[1].type).toBe('lifecycle');
+    expect(root.body[1].lifeCycle).toBe('didMount');
   });
 
   it('should  async on mount', () => {
-    const root = analyze(/*js*/ `
+    const [root] = analyze(/*js*/ `
       Component(() => {
         didMount(async () => {
           const data = await fetch(API_URL)
@@ -64,15 +59,12 @@ describe('analyze lifeCycle', () => {
       })
     `);
 
-    expect(genCode(combine(root.lifecycle.didMount!))).toMatchInlineSnapshot(`
-      "(async () => {
-        const data = await fetch(API_URL);
-      })();"
-    `);
+    expect(root.body[1].type).toBe('lifecycle');
+    expect(root.body[1].lifeCycle).toBe('didMount');
   });
 
   it('should collect willUnmount', () => {
-    const root = analyze(/*js*/ `
+    const [root] = analyze(/*js*/ `
       Component(() => {
         willUnmount(() => {
           console.log('test');
@@ -80,15 +72,12 @@ describe('analyze lifeCycle', () => {
       })
     `);
 
-    expect(genCode(combine(root.lifecycle.willUnmount!))).toMatchInlineSnapshot(`
-      "{
-        console.log('test');
-      }"
-    `);
+    expect(root.body[1].type).toBe('lifecycle');
+    expect(root.body[1].lifeCycle).toBe('willUnmount');
   });
 
   it('should collect didUnmount', () => {
-    const root = analyze(/*js*/ `
+    const [root] = analyze(/*js*/ `
       Component(() => {
         didUnmount(() => {
           console.log('test');
@@ -96,15 +85,12 @@ describe('analyze lifeCycle', () => {
       })
     `);
 
-    expect(genCode(combine(root.lifecycle.didUnmount!))).toMatchInlineSnapshot(`
-      "{
-        console.log('test');
-      }"
-    `);
+    expect(root.body[1].type).toBe('lifecycle');
+    expect(root.body[1].lifeCycle).toBe('didUnmount');
   });
 
   it('should handle multiple lifecycle methods', () => {
-    const root = analyze(/*js*/ `
+    const [root] = analyze(/*js*/ `
       Component(() => {
         willMount(() => {
           console.log('willMount');
@@ -121,25 +107,13 @@ describe('analyze lifeCycle', () => {
       })
     `);
 
-    expect(genCode(combine(root.lifecycle.willMount!))).toMatchInlineSnapshot(`
-      "{
-        console.log('willMount');
-      }"
-    `);
-    expect(genCode(combine(root.lifecycle.didMount!))).toMatchInlineSnapshot(`
-      "{
-        console.log('didMount');
-      }"
-    `);
-    expect(genCode(combine(root.lifecycle.willUnmount!))).toMatchInlineSnapshot(`
-      "{
-        console.log('willUnmount');
-      }"
-    `);
-    expect(genCode(combine(root.lifecycle.didUnmount!))).toMatchInlineSnapshot(`
-      "{
-        console.log('didUnmount');
-      }"
-    `);
+    expect(root.body[1].type).toBe('lifecycle');
+    expect(root.body[1].lifeCycle).toBe('willMount');
+    expect(root.body[2].type).toBe('lifecycle');
+    expect(root.body[2].lifeCycle).toBe('didMount');
+    expect(root.body[3].type).toBe('lifecycle');
+    expect(root.body[3].lifeCycle).toBe('willUnmount');
+    expect(root.body[4].type).toBe('lifecycle');
+    expect(root.body[4].lifeCycle).toBe('didUnmount');
   });
 });

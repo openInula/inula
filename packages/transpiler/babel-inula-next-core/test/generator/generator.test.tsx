@@ -13,9 +13,9 @@ describe('generate', () => {
 
     expect(code).toMatchInlineSnapshot(`
       "function Comp() {
-        const self = $$compBuilder();
+        const $$self = $$compBuilder();
         let count = 1;
-        return self.prepare().init($$createFragmentNode());
+        return $$self.prepare().init($$createFragmentNode());
       }"
     `);
   });
@@ -49,22 +49,22 @@ describe('generate', () => {
 
     expect(code).toMatchInlineSnapshot(`
       "function Comp() {
-        const self = $$compBuilder();
+        const $$self = $$compBuilder();
         let count = 1;
-        self.willMount(() => {
+        $$self.willMount(() => {
           console.log('will mount');
         });
         console.log(count);
-        self.willMount(() => {
+        $$self.willMount(() => {
           console.log('will mount2');
         });
-        self.didMount(() => {
+        $$self.didMount(() => {
           console.log('mounted');
         });
-        self.willUnmount(() => {
+        $$self.willUnmount(() => {
           console.log('unmounted');
         });
-        return self.prepare().init($$createFragmentNode());
+        return $$self.prepare().init($$createFragmentNode());
       }"
     `);
   });
@@ -81,11 +81,11 @@ describe('generate', () => {
 
     expect(code).toMatchInlineSnapshot(`
       "function Comp() {
-        const self = $$compBuilder();
+        const $$self = $$compBuilder();
         let count = 1;
         let doubleCount;
-        self.deriveState(() => (doubleCount = count * 2), () => [count], 1);
-        return self.prepare().init($$createFragmentNode());
+        $$self.deriveState(() => (doubleCount = count * 2), () => [count], 1);
+        return $$self.prepare().init($$createFragmentNode());
       }"
     `);
   });
@@ -117,27 +117,27 @@ describe('generate', () => {
 
     expect(code).toMatchInlineSnapshot(`
       "function Comp() {
-        const self = $$compBuilder();
+        const $$self = $$compBuilder();
         let count = 1;
         let doubleCount;
-        self.deriveState(() => (doubleCount = count * 2), () => [count], 1);
+        $$self.deriveState(() => (doubleCount = count * 2), () => [count], 1);
         let ff;
-        self.deriveState(() => (ff = count * 2), () => [count], 1);
+        $$self.deriveState(() => (ff = count * 2), () => [count], 1);
         let nn = [];
         let kk;
-        self.deriveState(() => (kk = count * doubleCount + 100 + nn[1]), () => [count, doubleCount, nn], 7);
-        self.watch(() => {
+        $$self.deriveState(() => (kk = count * doubleCount + 100 + nn[1]), () => [count, doubleCount, nn], 7);
+        $$self.watch(() => {
           let nono = 1;
           console.log(count);
         }, () => [count], 1);
-        self.watch(() => {
+        $$self.watch(() => {
           let nono = 2;
           console.log(count);
         }, () => [count], 1);
-        self.wave(self, nn.push("jj"), 4 /*0b100*/);
+        $$self.wave(nn.push("jj"), 4 /*0b100*/);
         let _;
-        self.deriveState(() => (_ = nn[0]), () => [nn], 4);
-        return self.prepare().init($$createFragmentNode());
+        $$self.deriveState(() => (_ = nn[0]), () => [nn], 4);
+        return $$self.prepare().init($$createFragmentNode());
       }"
     `);
   });
@@ -154,9 +154,9 @@ describe('generate', () => {
       "function Comp({
         prop1
       }) {
-        const self = $$compBuilder();
-        self.addProp("prop1", value => prop1 = value, 1);
-        return self.prepare().init($$createHTMLNode("div", null, $$createExpNode(() => prop1, [prop1], 1)));
+        const $$self = $$compBuilder();
+        $$self.addProp("prop1", value => prop1 = value, 1);
+        return $$self.prepare().init($$createHTMLNode("div", null, $$createExpNode(() => prop1, () => [prop1], 1)));
       }"
     `);
   });
@@ -173,10 +173,10 @@ describe('generate', () => {
         prop1,
         prop2
       }) {
-        const self = $$compBuilder();
-        self.addProp("prop1", value => prop1 = value, 1);
-        self.addProp("prop2", value => prop2 = value, 2);
-        return self.prepare().init($$createFragmentNode($$createExpNode(() => prop1 + prop2, [prop1, prop2], 3)));
+        const $$self = $$compBuilder();
+        $$self.addProp("prop1", value => prop1 = value, 1);
+        $$self.addProp("prop2", value => prop2 = value, 2);
+        return $$self.prepare().init($$createFragmentNode($$createExpNode(() => prop1 + prop2, () => [prop1, prop2], 3)));
       }"
     `);
   });
@@ -197,14 +197,14 @@ describe('generate', () => {
       "function Comp({
         prop1
       }) {
-        const self = $$compBuilder();
-        self.addProp("prop1", value => prop1 = value, 1);
+        const $$self = $$compBuilder();
+        $$self.addProp("prop1", value => prop1 = value, 1);
         let derived;
-        self.deriveState(() => (derived = prop1 * 2), () => [prop1], 1);
-        self.watch(() => {
+        $$self.deriveState(() => (derived = prop1 * 2), () => [prop1], 1);
+        $$self.watch(() => {
           console.log(prop1);
         }, () => [prop1], 1);
-        return self.prepare().init($$createFragmentNode());
+        return $$self.prepare().init($$createFragmentNode());
       }"
     `);
   });

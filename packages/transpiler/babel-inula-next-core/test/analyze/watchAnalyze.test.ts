@@ -9,7 +9,7 @@ const analyze = (code: string) => mockAnalyze(code, [functionalMacroAnalyze, var
 
 describe('watchAnalyze', () => {
   it('should analyze watch expressions', () => {
-    const root = analyze(/*js*/ `
+    const [root] = analyze(/*js*/ `
       Comp(() => {
         let a = 0;
         let b = 0;
@@ -18,23 +18,23 @@ describe('watchAnalyze', () => {
         });
       })
     `);
-    expect(root.watch).toHaveLength(1);
-    if (!root?.watch?.[0].callback) {
+    const watchStmt = root.body[3]; // watch is the 4th node
+    if (!(watchStmt.type === 'watch')) {
       throw new Error('watch callback not found');
     }
-    expect(genCode(root.watch[0].callback.node)).toMatchInlineSnapshot(`
+    expect(genCode(watchStmt.callback.node)).toMatchInlineSnapshot(`
       "() => {
         console.log(a, b);
       }"
     `);
-    if (!root.watch[0].dependency) {
+    if (!watchStmt.dependency) {
       throw new Error('watch deps not found');
     }
-    expect(root.watch[0].dependency.depMask).toBe(0b11);
+    expect(watchStmt.dependency.depIdBitmap).toBe(0b11);
   });
 
   it('should support untrack', () => {
-    const root = analyze(/*js*/ `
+    const [root] = analyze(/*js*/ `
       Comp(() => {
         let a = 0;
         let b = 0;
@@ -43,20 +43,25 @@ describe('watchAnalyze', () => {
         })
       })
     `);
-    if (!root?.watch?.[0].callback) {
+
+    const watchStmt = root.body[3]; // watch is the 4th node
+    if (!(watchStmt.type === 'watch')) {
       throw new Error('watch callback not found');
     }
-    if (!root.watch[0].dependency) {
+    if (!watchStmt.callback) {
+      throw new Error('watch callback not found');
+    }
+    if (!watchStmt.dependency) {
       throw new Error('watch deps not found');
     }
+    expect(findVarByName(root, 'a').reactiveId).toBe(1);
+    expect(findVarByName(root, 'b').reactiveId).toBe(2);
     // a is untrack, so it should not be tracked
-    expect(findVarByName(root, 'a').bit).toBe(0);
-    expect(findVarByName(root, 'b').bit).toBe(1);
-    expect(root.watch[0].dependency.depMask).toBe(0b1);
+    expect(watchStmt.dependency.depIdBitmap).toBe(0b10);
   });
 
   it('should analyze watch expressions with dependency array', () => {
-    const root = analyze(/*js*/ `
+    const [root] = analyze(/*js*/ `
       Comp(() => {
         let a = 0;
         let b = 0;
@@ -65,18 +70,18 @@ describe('watchAnalyze', () => {
         }, [a, b]);
       })
     `);
-    expect(root.watch).toHaveLength(1);
-    if (!root?.watch?.[0].callback) {
+    const watchStmt = root.body[3]; // watch is the 4th node
+    if (!(watchStmt.type === 'watch')) {
       throw new Error('watch callback not found');
     }
-    expect(genCode(root.watch[0].callback.node)).toMatchInlineSnapshot(`
+    expect(genCode(watchStmt.callback.node)).toMatchInlineSnapshot(`
       "() => {
         // watch expression
       }"
     `);
-    if (!root.watch[0].dependency) {
+    if (!watchStmt.dependency) {
       throw new Error('watch deps not found');
     }
-    expect(root.watch[0].dependency.depMask).toBe(0b11);
+    expect(watchStmt.dependency.depIdBitmap).toBe(0b11);
   });
 });

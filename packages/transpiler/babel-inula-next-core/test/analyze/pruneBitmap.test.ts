@@ -56,11 +56,30 @@ describe('prune unused bit', () => {
       });
     `);
     expect(waveBitsMap).toMatchInlineSnapshot(`
-      Map {
-        9 => 16,
-        13 => 64,
-        5 => 4,
-        1 => 6,
+      BitManager {
+        "getReactBits": [Function],
+        "getWaveBits": [Function],
+        "getWaveBitsById": [Function],
+        "idToWaveBitMap": Map {
+          2 => 1,
+          32 => 2,
+          64 => 4,
+          512 => 8,
+          1024 => 16,
+          8192 => 32,
+          16384 => 64,
+          65536 => 128,
+        },
+        "waveBitsMap": Map {
+          1024 => 16,
+          512 => 24,
+          65536 => 128,
+          16384 => 64,
+          8192 => 96,
+          64 => 4,
+          32 => 6,
+          2 => 7,
+        },
       }
     `);
   });

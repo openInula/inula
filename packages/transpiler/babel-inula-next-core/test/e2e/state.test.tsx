@@ -29,13 +29,13 @@ describe('state', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { Comp as $$Comp, compBuilder as $$compBuilder, createExpNode as $$createExpNode, createTextNode as $$createTextNode, createHTMLNode as $$createHTMLNode } from "@openinula/next";
+      "import { compBuilder as $$compBuilder, createExpNode as $$createExpNode, createTextNode as $$createTextNode, createHTMLNode as $$createHTMLNode } from "@openinula/next";
       function App() {
-        const self = $$compBuilder();
+        const $$self = $$compBuilder();
         let x = 0;
         let count, setCount;
-        self.deriveState(() => ([count, setCount] = genState(x)), () => [x], 1);
-        return self.prepare().init($$createHTMLNode("div", null, $$createExpNode(() => count, [count], 2), $$createTextNode(" is smaller than 1")));
+        $$self.deriveState(() => ([count, setCount] = genState(x)), () => [x], 1);
+        return $$self.prepare().init($$createHTMLNode("div", null, $$createExpNode(() => count, () => [count], 2), $$createTextNode(" is smaller than 1")));
       }"
     `);
   });
@@ -53,18 +53,18 @@ describe('state', () => {
         }
       `)
     ).toMatchInlineSnapshot(`
-      "import { Comp as $$Comp, compBuilder as $$compBuilder, createExpNode as $$createExpNode, createHTMLNode as $$createHTMLNode } from "@openinula/next";
+      "import { compBuilder as $$compBuilder, createExpNode as $$createExpNode, createHTMLNode as $$createHTMLNode } from "@openinula/next";
       function App() {
-        const self = $$compBuilder();
+        const $$self = $$compBuilder();
         let x = 1;
         let double;
-        self.deriveState(() => (double = x * 2), () => [x], 1);
+        $$self.deriveState(() => (double = x * 2), () => [x], 1);
         let quadruple;
-        self.deriveState(() => (quadruple = double * 2), () => [double], 2);
+        $$self.deriveState(() => (quadruple = double * 2), () => [double], 2);
         const getQuadruple = () => quadruple;
         let y;
-        self.deriveState(() => (y = getQuadruple() + x), () => [x], 1);
-        return self.prepare().init($$createHTMLNode("div", null, $$createExpNode(() => y, [y], 4)));
+        $$self.deriveState(() => (y = getQuadruple() + x), () => [x], 1);
+        return $$self.prepare().init($$createHTMLNode("div", null, $$createExpNode(() => y, () => [y], 4)));
       }"
     `);
   });

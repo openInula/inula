@@ -20,14 +20,14 @@ import { ComponentNode, StateStmt, DerivedStmt, SubCompStmt } from '../../src/an
 import { findVarByName } from './utils';
 import { viewAnalyze } from '../../src/analyze/Analyzers/viewAnalyze';
 import { mockAnalyze } from './mock';
-import { propsAnalyze } from '../../src/analyze/Analyzers/propsAnalyze';
+import { compPropsAnalyze } from '../../src/analyze/Analyzers/propsAnalyze';
 
-const analyze = (code: string) => mockAnalyze(code, [variablesAnalyze, viewAnalyze, propsAnalyze]);
+const analyze = (code: string) => mockAnalyze(code, [variablesAnalyze, viewAnalyze, compPropsAnalyze]);
 
 const getStates = (root: ComponentNode) => root.body.filter(node => node.type === 'state') as StateStmt[];
 describe('analyze properties', () => {
   it('should work', () => {
-    const [root, waveBitsMap] = analyze(`
+    const [root] = analyze(`
       Component(() => {
         let foo = 1;
         const bar = 1;
@@ -35,18 +35,15 @@ describe('analyze properties', () => {
         return <div>{foo}{bar}</div>;
       })
     `);
-    expect(getStates(root).length).toBe(1);
-    expect(waveBitsMap).toMatchInlineSnapshot(`
-      Map {
-        "foo" => 1,
-        "bar" => 2,
-      }
-    `);
+    const states = getStates(root);
+    expect(states.length).toBe(1);
+    expect(genCode(states[0].name)).toEqual('foo');
+    expect(genCode(states[0].value)).toEqual('1');
   });
 
   describe('state dependency', () => {
     it('should analyze dependency from state', () => {
-      const [root, waveBitsMap] = analyze(`
+      const [root] = analyze(`
         Component(() => {
           let foo = 1;
           let bar = foo;
@@ -55,14 +52,15 @@ describe('analyze properties', () => {
       `);
       expect(root.scope.reactiveMap).toMatchInlineSnapshot(`
         Map {
-          "foo" => 0,
-          "bar" => 1,
+          "foo" => 1,
+          "bar" => 2,
+          "_" => 4,
         }
       `);
     });
 
     it('should analyze dependency from state in different shape', () => {
-      const [root, waveBitsMap] = analyze(`
+      const [root, bit] = analyze(`
         Component(() => {
           let foo = 1;
           let a = 1;
@@ -73,10 +71,11 @@ describe('analyze properties', () => {
       `);
       expect(root.scope.reactiveMap).toMatchInlineSnapshot(`
         Map {
-          "foo" => 0,
-          "a" => 1,
-          "b" => 2,
-          "bar" => 3,
+          "foo" => 1,
+          "a" => 2,
+          "b" => 4,
+          "bar" => 8,
+          "_" => 16,
         }
       `);
     });
@@ -90,8 +89,9 @@ describe('analyze properties', () => {
       `);
       expect(root.scope.reactiveMap).toMatchInlineSnapshot(`
         Map {
-          "foo" => 0,
-          "bar" => 1,
+          "foo" => 1,
+          "bar" => 2,
+          "_" => 4,
         }
       `);
     });
@@ -104,9 +104,10 @@ describe('analyze properties', () => {
       `);
       expect(root.scope.reactiveMap).toMatchInlineSnapshot(`
         Map {
-          "foo1" => 0,
-          "first" => 1,
-          "last" => 1,
+          "foo1" => 1,
+          "first" => 2,
+          "last" => 2,
+          "bar" => 4,
         }
       `);
     });
@@ -121,7 +122,8 @@ describe('analyze properties', () => {
       `);
       expect(root.scope.reactiveMap).toMatchInlineSnapshot(`
         Map {
-          "bar" => 0,
+          "bar" => 1,
+          "_" => 2,
         }
       `);
     });
@@ -140,20 +142,21 @@ describe('analyze properties', () => {
       `);
       expect(root.scope.reactiveMap).toMatchInlineSnapshot(`
         Map {
-          "foo" => 0,
+          "foo" => 1,
         }
       `);
 
-      const subNode = root.body[1] as SubCompStmt;
+      const subNode = root.body[2] as SubCompStmt;
       expect(subNode.component.scope.reactiveMap).toMatchInlineSnapshot(`
         Map {
-          "bar" => 1,
+          "bar" => 2,
+          "_" => 4,
         }
       `);
     });
 
     it('should analyze dependency in parent', () => {
-      const [root, waveBitsMap] = analyze(/*jsx*/ `
+      const [root, bitManager] = analyze(/*jsx*/ `
         Component(() => {
           let lastName;
           let parentFirstName = 'sheldon';
@@ -168,20 +171,21 @@ describe('analyze properties', () => {
           });
         })
       `);
-      const sonNode = root.body[3] as SubCompStmt;
+      const sonNode = root.body[4] as SubCompStmt;
       // Son > middleName
       // Son > name
       expect(sonNode.component.scope.reactiveMap).toMatchInlineSnapshot(`
         Map {
-          "middleName" => 3,
-          "name" => 4,
+          "middleName" => 8,
+          "name" => 16,
         }
       `);
-      const grandSonNode = sonNode.component.body[2] as SubCompStmt;
+      const grandSonNode = sonNode.component.body[3] as SubCompStmt;
       // GrandSon > grandSonName
       expect(grandSonNode.component.scope.reactiveMap).toMatchInlineSnapshot(`
         Map {
-          "grandSonName" => 5,
+          "grandSonName" => 32,
+          "_" => 64,
         }
       `);
     });

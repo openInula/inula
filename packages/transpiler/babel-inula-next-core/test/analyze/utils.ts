@@ -13,19 +13,19 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { ComponentNode, ReactiveVariable, SubCompVariable } from '../../src/analyze/types';
+import { ComponentNode, StateStmt, SubCompStmt } from '../../src/analyze/types';
 
-export function findVarByName(comp: ComponentNode | SubCompVariable, name: string): ReactiveVariable {
-  const result = comp.variables.find(v => v.type === 'reactive' && v.name === name);
+export function findVarByName(comp: ComponentNode, name: string): StateStmt {
+  const result = comp.body.find(v => v.type === 'state' && v.name.name === name);
   if (!result) {
     throw new Error(`Can't find reactive variable ${name}`);
   }
 
-  return result as ReactiveVariable;
+  return result as StateStmt;
 }
 
-export function findSubCompByName(comp: ComponentNode, name: string): SubCompVariable {
-  const result = comp.variables.find(v => v.type === 'subComp' && v.name === name) as SubCompVariable;
+export function findSubCompByName(comp: ComponentNode, name: string): SubCompStmt {
+  const result = comp.body.find(v => v.type === 'subComp' && v.name === name) as SubCompStmt;
   if (!result) {
     throw new Error(`Can't find subComp variable ${name}`);
   }
