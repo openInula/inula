@@ -13,10 +13,17 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { ComponentNode, StateStmt, SubCompStmt } from '../../src/analyze/types';
+import { types as t } from '@openinula/babel-api';
+import { ComponentNode, HookNode, StateStmt, SubCompStmt } from '../../src/analyze/types';
 
-export function findVarByName(comp: ComponentNode, name: string): StateStmt {
-  const result = comp.body.find(v => v.type === 'state' && v.name.name === name);
+export function findVarByName(comp: ComponentNode | HookNode, name: string): StateStmt {
+  const result = comp.body.find(v => {
+    if (v.type === 'state') {
+      const id = v.name as t.Identifier;
+      return id.name === name;
+    }
+    return false;
+  });
   if (!result) {
     throw new Error(`Can't find reactive variable ${name}`);
   }
@@ -24,7 +31,7 @@ export function findVarByName(comp: ComponentNode, name: string): StateStmt {
   return result as StateStmt;
 }
 
-export function findSubCompByName(comp: ComponentNode, name: string): SubCompStmt {
+export function findSubCompByName(comp: ComponentNode | HookNode, name: string): SubCompStmt {
   const result = comp.body.find(v => v.type === 'subComp' && v.name === name) as SubCompStmt;
   if (!result) {
     throw new Error(`Can't find subComp variable ${name}`);

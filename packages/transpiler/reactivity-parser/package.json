@@ -14,6 +14,7 @@
   "typings": "dist/index.d.ts",
   "scripts": {
     "build": "tsup --sourcemap",
+    "type-check": "tsc --noEmit",
     "test": "vitest --ui"
   },
   "devDependencies": {

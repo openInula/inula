@@ -2,13 +2,9 @@ import { MutableParticle, TemplateProp, type TemplateParticle } from '@openinula
 import { setHTMLProp } from '../utils/props';
 import { ViewGenerator, ViewContext } from '../index';
 import { types as t } from '@openinula/babel-api';
-import { importMap, prefixMap } from '../utils/config';
+import { importMap } from '../utils/config';
 import { genTemplateContent } from '../TemplateContentGenerator/ImperativeTemplateGenerator';
 import { generateNodeName } from '../shard';
-
-function generateTemplateName(templateIdx: number): string {
-  return `${prefixMap.template}${templateIdx}`;
-}
 
 /**
  * @example

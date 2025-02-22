@@ -14,6 +14,7 @@
  */
 
 import { type PluginItem, transform as transformWithBabel } from '@babel/core';
+// @ts-expect-error missing type
 import syntaxJSX from '@babel/plugin-syntax-jsx';
 import { register } from '@openinula/babel-api';
 

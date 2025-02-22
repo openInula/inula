@@ -158,7 +158,6 @@ export type IRStmt =
   | HookReturnStmt;
 
 export interface IRScope {
-  waveMap: Map<string, number>;
   /**
    * The map to find the reactive id bit by name
    */

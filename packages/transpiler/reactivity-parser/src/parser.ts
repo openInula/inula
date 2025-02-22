@@ -30,7 +30,7 @@ import {
   type ViewUnit,
 } from '@openinula/jsx-view-parser';
 import { DLError } from './error';
-import { Dependency, genReactiveBitMap, getDependenciesFromNode } from './getDependencies';
+import { Dependency, getDependenciesFromNode } from './getDependencies';
 
 export class ReactivityParser {
   private readonly config: ReactivityParserConfig;

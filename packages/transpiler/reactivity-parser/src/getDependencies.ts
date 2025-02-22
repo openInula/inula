@@ -16,7 +16,7 @@
 import type { NodePath } from '@babel/core';
 import { getBabelApi, types as t } from '@openinula/babel-api';
 import { Bitmap } from './types';
-import { CompilerError } from '@openinula/babel-parser';
+import { CompilerError } from '@openinula/error-handler';
 
 export type Dependency = {
   dependenciesNode: t.ArrayExpression;

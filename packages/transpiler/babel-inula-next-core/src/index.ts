@@ -1,3 +1,4 @@
+// @ts-expect-error missing type
 import syntaxJSX from '@babel/plugin-syntax-jsx';
 import syntaxTypescript from '@babel/plugin-syntax-typescript';
 import inulaNext from './plugin';
