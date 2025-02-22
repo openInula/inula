@@ -16,72 +16,66 @@ describe('ElementUnit', () => {
   // ---- Type
   it('should identify a JSX element with tag in htmlTags as an HTMLUnit', () => {
     const viewUnits = parse('<div></div>');
-    expect(viewUnits.length).toBe(1);
-    expect(viewUnits[0].type).toBe('html');
+    expect(viewUnits.type).toBe('html');
   });
 
   it('should identify a JSX element with tag not in htmlTags as an CompUnit', () => {
     const viewUnits = parse('<Comp></Comp>');
-    expect(viewUnits.length).toBe(1);
-    expect(viewUnits[0].type).toBe('comp');
+    expect(viewUnits.type).toBe('comp');
   });
 
   it('should identify a JSX element with namespaced "html" outside htmlTags as an HTMLUnit', () => {
     const viewUnits = parse('<html:MyWebComponent></html:MyWebComponent>');
-    expect(viewUnits.length).toBe(1);
-    expect(viewUnits[0].type).toBe('html');
+    expect(viewUnits.type).toBe('html');
   });
 
   it('should identify a JSX element with namespaced "tag" outside htmlTags as an HTMLUnit', () => {
     const viewUnits = parse('<tag:variable></tag:variable>');
-    expect(viewUnits.length).toBe(1);
-    expect(viewUnits[0].type).toBe('html');
+    expect(viewUnits.type).toBe('html');
   });
 
   it('should identify a JSX element with namespaced "comp" inside htmlTags as an HTMLUnit', () => {
     const viewUnits = parse('<comp:div></comp:div>');
-    expect(viewUnits.length).toBe(1);
-    expect(viewUnits[0].type).toBe('comp');
+    expect(viewUnits.type).toBe('comp');
   });
 
   it('should identify a JSX element with name equal to "env" as an EnvUnit', () => {
-    const viewUnits = parse('<env></env>');
-    expect(viewUnits.length).toBe(1);
-    expect(viewUnits[0].type).toBe('env');
+    const viewUnits = parse('<SomeContext></SomeContext>');
+    expect(viewUnits.type).toBe('context');
   });
 
   // ---- Tag
   it('should correctly parse the tag of an HTMLUnit', () => {
     const viewUnits = parse('<div></div>');
-    const tag = (viewUnits[0] as HTMLUnit).tag;
+    const tag = (viewUnits as HTMLUnit).tag;
 
     expect(t.isStringLiteral(tag, { value: 'div' })).toBeTruthy();
   });
 
   it('should correctly parse the tag of an HTMLUnit with namespaced "html"', () => {
     const viewUnits = parse('<html:MyWebComponent></html:MyWebComponent>');
-    const tag = (viewUnits[0] as HTMLUnit).tag;
+    const tag = (viewUnits as HTMLUnit).tag;
 
     expect(t.isStringLiteral(tag, { value: 'MyWebComponent' })).toBeTruthy();
   });
 
   it('should correctly parse the tag of an HTMLUnit with namespaced "tag"', () => {
     const viewUnits = parse('<tag:variable></tag:variable>');
-    const tag = (viewUnits[0] as HTMLUnit).tag;
+    const tag = (viewUnits as HTMLUnit).tag;
 
     expect(t.isIdentifier(tag, { name: 'variable' })).toBeTruthy();
   });
 
   it('should correctly parse the tag of an CompUnit', () => {
     const viewUnits = parse('<Comp></Comp>');
-    const tag = (viewUnits[0] as HTMLUnit).tag;
+    const tag = (viewUnits as HTMLUnit).tag;
 
     expect(t.isIdentifier(tag, { name: 'Comp' })).toBeTruthy();
   });
 
   it('should correctly parse the tag of an CompUnit with namespaced "comp"', () => {
     const viewUnits = parse('<comp:div></comp:div>');
-    const tag = (viewUnits[0] as HTMLUnit).tag;
+    const tag = (viewUnits as HTMLUnit).tag;
 
     expect(t.isIdentifier(tag, { name: 'div' })).toBeTruthy();
   });
@@ -90,7 +84,7 @@ describe('ElementUnit', () => {
   it('should correctly parse the props', () => {
     const viewUnits = parse('<div id="myId"></div>');
 
-    const htmlUnit = viewUnits[0] as HTMLUnit;
+    const htmlUnit = viewUnits as HTMLUnit;
     const props = htmlUnit.props!;
     expect(t.isStringLiteral(props.id.value, { value: 'myId' })).toBeTruthy();
   });
@@ -103,14 +97,14 @@ describe('ElementUnit', () => {
       ((ast as t.JSXElement).openingElement.attributes[0] as t.JSXAttribute).value as t.JSXExpressionContainer
     ).expression;
 
-    const htmlUnit = viewUnits[0] as HTMLUnit;
+    const htmlUnit = viewUnits as HTMLUnit;
     expect(htmlUnit.props!.onClick.value).toBe(originalExpression);
   });
 
   it('should correctly parse multiple props', () => {
     const viewUnits = parse('<div id="myId" class="myClass"></div>');
 
-    const htmlUnit = viewUnits[0] as HTMLUnit;
+    const htmlUnit = viewUnits as HTMLUnit;
     const props = htmlUnit.props!;
     expect(Object.keys(props).length).toBe(2);
     expect(t.isStringLiteral(props.id.value, { value: 'myId' })).toBeTruthy();
@@ -119,7 +113,7 @@ describe('ElementUnit', () => {
 
   it('should correctly parse props with namespace as its specifier', () => {
     const viewUnits = parse('<div bind:id="myId"></div>');
-    const htmlUnit = viewUnits[0] as HTMLUnit;
+    const htmlUnit = viewUnits as HTMLUnit;
     const props = htmlUnit.props!;
     expect(props.id.specifier).toBe('bind');
     expect(t.isStringLiteral(props.id.value, { value: 'myId' })).toBeTruthy();
@@ -127,7 +121,7 @@ describe('ElementUnit', () => {
 
   it('should correctly parse spread props', () => {
     const viewUnits = parse('<Comp {...props}></Comp>');
-    const htmlUnit = viewUnits[0] as CompUnit;
+    const htmlUnit = viewUnits as CompUnit;
     const props = htmlUnit.props!;
     expect(t.isIdentifier(props['*spread*'].value, { name: 'props' })).toBeTruthy();
   });
@@ -137,7 +131,7 @@ describe('ElementUnit', () => {
     const ast = parseCode('<Comp sub=<div>Ok</div>></Comp>');
     const viewUnits = parseView(ast);
 
-    const props = (viewUnits[0] as CompUnit).props!;
+    const props = (viewUnits as CompUnit).props!;
     const viewPropMap = props.sub.viewPropMap!;
     expect(Object.keys(viewPropMap).length).toBe(1);
 
@@ -159,7 +153,7 @@ describe('ElementUnit', () => {
       <Comp></Comp>
       <Comp></Comp>
     </div>`);
-    const htmlUnit = viewUnits[0] as HTMLUnit;
+    const htmlUnit = viewUnits as HTMLUnit;
     expect(htmlUnit.children!.length).toBe(4);
   });
 
@@ -170,7 +164,7 @@ describe('ElementUnit', () => {
       {count}
       {count}
     </div>`);
-    const htmlUnit = viewUnits[0] as HTMLUnit;
+    const htmlUnit = viewUnits as HTMLUnit;
     expect(htmlUnit.children!.length).toBe(4);
   });
 
@@ -183,7 +177,7 @@ describe('ElementUnit', () => {
         <Comp></Comp>
       </>
     </div>`);
-    const htmlUnit = viewUnits[0] as HTMLUnit;
-    expect(htmlUnit.children!.length).toBe(4);
+    const htmlUnit = viewUnits as HTMLUnit;
+    expect(htmlUnit.children!.length).toBe(3);
   });
 });

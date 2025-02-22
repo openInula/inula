@@ -1,40 +1,37 @@
 import { describe, expect, it } from 'vitest';
 import { parse } from './mock';
 import { types as t } from '@babel/core';
-import { HTMLUnit, IfUnit } from '../types';
+import { FragmentUnit, HTMLUnit, IfUnit } from '../types';
 
 describe('IfUnit', () => {
   // ---- Type
   it('should identify if unit', () => {
     const viewUnits = parse('<if cond={true}>true</if>');
-    expect(viewUnits.length).toBe(1);
-    expect(viewUnits[0].type).toBe('if');
+    expect(viewUnits.type).toBe('if');
   });
 
   it('should identify if unit with else', () => {
     const viewUnits = parse(`<>
       <if cond={true}>true</if>
       <else>false</else>
-    </>`);
-    expect(viewUnits.length).toBe(1);
-    expect(viewUnits[0].type).toBe('if');
+    </>`) as FragmentUnit;
+    expect(viewUnits.children[0].type).toBe('if');
   });
 
   it('should identify if unit with else-if', () => {
     const viewUnits = parse(`<>
       <if cond={true}>true</if>
       <else-if cond={false}>false</else-if>
-    </>`);
-    expect(viewUnits.length).toBe(1);
-    expect(viewUnits[0].type).toBe('if');
+    </>`) as FragmentUnit;
+    expect(viewUnits.children[0].type).toBe('if');
   });
 
   it('should find matched if in html tag', () => {
     const viewUnits = parse(`<section>
       <if cond={true}>true</if>
       <else>false</else>
-    </section>`) as unknown as HTMLUnit[];
-    expect(viewUnits[0].children[0].type).toBe('if');
+    </section>`) as unknown as HTMLUnit;
+    expect(viewUnits.children[0].type).toBe('if');
   });
 
   it('should identify if unit with else-if and else', () => {
@@ -42,9 +39,8 @@ describe('IfUnit', () => {
       <if cond={true}>true</if>
       <else-if cond={false}>false</else-if>
       <else>else</else>
-    </>`);
-    expect(viewUnits.length).toBe(1);
-    expect(viewUnits[0].type).toBe('if');
+    </>`) as FragmentUnit;
+    expect(viewUnits.children[0].type).toBe('if');
   });
 
   it('should identify if unit with multiple else-if', () => {
@@ -53,9 +49,8 @@ describe('IfUnit', () => {
       <else-if cond={flag1}>flag1</else-if>
       <else-if cond={flag2}>flag2</else-if>
       <else>else</else>
-    </>`);
-    expect(viewUnits.length).toBe(1);
-    expect(viewUnits[0].type).toBe('if');
+    </>`) as FragmentUnit;
+    expect(viewUnits.children[0].type).toBe('if');
   });
 
   // ---- Branches
@@ -65,22 +60,22 @@ describe('IfUnit', () => {
       <else-if cond={flag1}>flag1</else-if>
       <else-if cond={flag2}>flag2</else-if>
       <else>else</else>
-    </>`);
+    </>`) as FragmentUnit;
 
-    const branches = (viewUnits[0] as IfUnit).branches;
+    const branches = (viewUnits.children[0] as IfUnit).branches;
     expect(branches.length).toBe(4);
   });
 
   it("should correctly parse branches' condition for if unit", () => {
     const viewUnits = parse('<if cond={true}>true</if>');
-    const branches = (viewUnits[0] as IfUnit).branches;
+    const branches = (viewUnits as IfUnit).branches;
 
     expect(t.isBooleanLiteral(branches[0].condition, { value: true })).toBeTruthy();
   });
 
   it("should correctly parse branches' children for if unit", () => {
     const viewUnits = parse('<if cond={true}>true</if>');
-    const branches = (viewUnits[0] as IfUnit).branches;
+    const branches = (viewUnits as IfUnit).branches;
 
     expect(branches[0].children.length).toBe(1);
     expect(branches[0].children[0].type).toBe('text');
@@ -90,8 +85,8 @@ describe('IfUnit', () => {
     const viewUnits = parse(`<>
       <if cond={flag1}>1</if>
       <else>2</else>
-    </>`);
-    const branches = (viewUnits[0] as IfUnit).branches;
+    </>`) as FragmentUnit;
+    const branches = (viewUnits.children[0] as IfUnit).branches;
 
     expect(t.isIdentifier(branches[0].condition, { name: 'flag1' })).toBeTruthy();
     expect(t.isBooleanLiteral(branches[1].condition, { value: true })).toBeTruthy();
@@ -101,8 +96,8 @@ describe('IfUnit', () => {
     const viewUnits = parse(`<>
       <if cond={true}>true</if>
       <else>false</else>
-    </>`);
-    const branches = (viewUnits[0] as IfUnit).branches;
+    </>`) as FragmentUnit;
+    const branches = (viewUnits.children[0] as IfUnit).branches;
 
     expect(branches[0].children.length).toBe(1);
     expect(branches[0].children[0].type).toBe('text');
@@ -114,8 +109,8 @@ describe('IfUnit', () => {
     const viewUnits = parse(`<>
       <if cond={flag1}>1</if>
       <else-if cond={flag2}>2</else-if>
-    </>`);
-    const branches = (viewUnits[0] as IfUnit).branches;
+    </>`) as FragmentUnit;
+    const branches = (viewUnits.children[0] as IfUnit).branches;
     /**
      * () => {
      * if (flag1) {
@@ -135,8 +130,8 @@ describe('IfUnit', () => {
     const viewUnits = parse(`<>
       <if cond={true}>true</if>
       <else-if cond={false}>false</else-if>
-    </>`);
-    const branches = (viewUnits[0] as IfUnit).branches;
+    </>`) as FragmentUnit;
+    const branches = (viewUnits.children[0] as IfUnit).branches;
 
     expect(branches[0].children.length).toBe(1);
     expect(branches[0].children[0].type).toBe('text');
@@ -150,8 +145,8 @@ describe('IfUnit', () => {
       <if cond={true}>
         <if cond={true}>true</if>
       </if>
-    </>`);
-    const branches = (viewUnits[0] as IfUnit).branches;
+    </>`) as FragmentUnit;
+    const branches = (viewUnits.children[0] as IfUnit).branches;
 
     expect(branches.length).toBe(1);
     expect(branches[0].children[0].type).toBe('if');
@@ -163,8 +158,8 @@ describe('IfUnit', () => {
         <if cond={true}>true</if>
         <else>false</else>
       </if>
-    </>`);
-    const branches = (viewUnits[0] as IfUnit).branches;
+    </>`) as FragmentUnit;
+    const branches = (viewUnits.children[0] as IfUnit).branches;
 
     expect(branches.length).toBe(1);
     expect(branches[0].children[0].type).toBe('if');

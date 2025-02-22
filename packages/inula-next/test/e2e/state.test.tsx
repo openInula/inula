@@ -18,7 +18,7 @@
 
 import { describe, expect, vi } from 'vitest';
 import { domTest as it } from './utils';
-import { render, View } from '../../src';
+import { render } from '../../src';
 
 vi.mock('../../src/scheduler', async () => {
   return {

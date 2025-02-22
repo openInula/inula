@@ -1,4 +1,4 @@
-import { render, View } from '@openinula/next';
+import { render } from '@openinula/next';
 
 let idCounter = 1;
 

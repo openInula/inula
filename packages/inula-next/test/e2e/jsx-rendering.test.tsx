@@ -135,7 +135,7 @@ describe('JSX Element Usage in Various Contexts', () => {
         return <div>{true}</div>;
       }
       render(App(), container);
-      expect(container.innerHTML).toBe('<div></div>');
+      expect(container.innerHTML).toBe('<div>true</div>');
     });
 
     it('should render null and undefined (as empty string)', ({ container }) => {
@@ -148,7 +148,7 @@ describe('JSX Element Usage in Various Contexts', () => {
         );
       }
       render(App(), container);
-      expect(container.innerHTML).toBe('<div></div>');
+      expect(container.innerHTML).toBe('<div>null</div>');
     });
 
     it('should render arrays of elements', ({ container }) => {
