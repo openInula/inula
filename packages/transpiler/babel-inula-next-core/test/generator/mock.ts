@@ -15,6 +15,7 @@
 
 import Babel from '@babel/core';
 import Plugin from '../../src/plugin';
+// @ts-expect-error missing type
 import syntaxJSX from '@babel/plugin-syntax-jsx';
 export const transform = (code: string) =>
   Babel.transform(code, {

@@ -55,7 +55,7 @@ export interface ForParticle {
   item: t.LVal;
   index: t.Identifier | null;
   array: DependencyValue<t.Expression>;
-  key: t.Expression;
+  key: t.Expression | null; // null means no key
   children: ViewParticle[];
 }
 

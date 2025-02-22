@@ -16,15 +16,14 @@
 import { describe, expect, it } from 'vitest';
 import { genCode } from '../mock';
 import { variablesAnalyze } from '../../src/analyze/Analyzers/variablesAnalyze';
-import { ComponentNode, StateStmt, DerivedStmt, SubCompStmt } from '../../src/analyze/types';
-import { findVarByName } from './utils';
+import { ComponentNode, StateStmt, SubCompStmt, HookNode } from '../../src/analyze/types';
 import { viewAnalyze } from '../../src/analyze/Analyzers/viewAnalyze';
 import { mockAnalyze } from './mock';
 import { compPropsAnalyze } from '../../src/analyze/Analyzers/propsAnalyze';
 
 const analyze = (code: string) => mockAnalyze(code, [variablesAnalyze, viewAnalyze, compPropsAnalyze]);
 
-const getStates = (root: ComponentNode) => root.body.filter(node => node.type === 'state') as StateStmt[];
+const getStates = (root: ComponentNode | HookNode) => root.body.filter(node => node.type === 'state') as StateStmt[];
 describe('analyze properties', () => {
   it('should work', () => {
     const [root] = analyze(`

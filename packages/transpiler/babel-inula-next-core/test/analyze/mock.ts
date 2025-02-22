@@ -15,15 +15,16 @@
 
 import { Analyzer, ComponentNode, HookNode } from '../../src/analyze/types';
 import { type PluginObj, transform as transformWithBabel } from '@babel/core';
+// @ts-expect-error missing type
 import syntaxJSX from '@babel/plugin-syntax-jsx';
 import { register } from '@openinula/babel-api';
 import { analyze } from '../../src/analyze';
 import { COMPONENT, defaultHTMLTags } from '../../src/constants';
 import { BitManager } from '../../src/analyze/IRBuilder';
 
-export function mockAnalyze(code: string, analyzers?: Analyzer[]): [ComponentNode, BitManager] {
+export function mockAnalyze(code: string, analyzers?: Analyzer[]): readonly [ComponentNode | HookNode, BitManager] {
   let root: ComponentNode | HookNode | null = null;
-  let bitManager: BitManager;
+  let bitManager: BitManager | null = null;
   transformWithBabel(code, {
     plugins: [
       syntaxJSX.default ?? syntaxJSX,
@@ -65,8 +66,8 @@ export function mockAnalyze(code: string, analyzers?: Analyzer[]): [ComponentNod
     filename: 'test.tsx',
   });
 
-  if (!root) {
-    throw new Error('root is null');
+  if (!root || !bitManager) {
+    throw new Error('root or bitManager is null');
   }
 
   return [root, bitManager] as const;

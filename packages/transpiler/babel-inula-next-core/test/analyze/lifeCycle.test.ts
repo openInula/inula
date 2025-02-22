@@ -14,14 +14,11 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { genCode } from '../mock';
 import { functionalMacroAnalyze } from '../../src/analyze/Analyzers/functionalMacroAnalyze';
-import { types as t } from '@openinula/babel-api';
 import { mockAnalyze } from './mock';
-import { LifeCycle } from '../../src/analyze/types';
+import { LifecycleStmt } from '../../src/analyze/types';
 
 const analyze = (code: string) => mockAnalyze(code, [functionalMacroAnalyze]);
-const combine = (body: t.Statement[]) => t.program(body);
 
 describe('analyze lifeCycle', () => {
   it('should collect will mount', () => {
@@ -34,7 +31,7 @@ describe('analyze lifeCycle', () => {
     `);
 
     expect(root.body[1].type).toBe('lifecycle');
-    expect(root.body[1].lifeCycle).toBe('willMount');
+    expect((root.body[1] as LifecycleStmt).lifeCycle).toBe('willMount');
   });
 
   it('should collect on mount', () => {
@@ -47,7 +44,7 @@ describe('analyze lifeCycle', () => {
     `);
 
     expect(root.body[1].type).toBe('lifecycle');
-    expect(root.body[1].lifeCycle).toBe('didMount');
+    expect((root.body[1] as LifecycleStmt).lifeCycle).toBe('didMount');
   });
 
   it('should  async on mount', () => {
@@ -60,7 +57,7 @@ describe('analyze lifeCycle', () => {
     `);
 
     expect(root.body[1].type).toBe('lifecycle');
-    expect(root.body[1].lifeCycle).toBe('didMount');
+    expect((root.body[1] as LifecycleStmt).lifeCycle).toBe('didMount');
   });
 
   it('should collect willUnmount', () => {
@@ -73,7 +70,7 @@ describe('analyze lifeCycle', () => {
     `);
 
     expect(root.body[1].type).toBe('lifecycle');
-    expect(root.body[1].lifeCycle).toBe('willUnmount');
+    expect((root.body[1] as LifecycleStmt).lifeCycle).toBe('willUnmount');
   });
 
   it('should collect didUnmount', () => {
@@ -86,7 +83,7 @@ describe('analyze lifeCycle', () => {
     `);
 
     expect(root.body[1].type).toBe('lifecycle');
-    expect(root.body[1].lifeCycle).toBe('didUnmount');
+    expect((root.body[1] as LifecycleStmt).lifeCycle).toBe('didUnmount');
   });
 
   it('should handle multiple lifecycle methods', () => {
@@ -108,12 +105,12 @@ describe('analyze lifeCycle', () => {
     `);
 
     expect(root.body[1].type).toBe('lifecycle');
-    expect(root.body[1].lifeCycle).toBe('willMount');
+    expect((root.body[1] as LifecycleStmt).lifeCycle).toBe('willMount');
     expect(root.body[2].type).toBe('lifecycle');
-    expect(root.body[2].lifeCycle).toBe('didMount');
+    expect((root.body[2] as LifecycleStmt).lifeCycle).toBe('didMount');
     expect(root.body[3].type).toBe('lifecycle');
-    expect(root.body[3].lifeCycle).toBe('willUnmount');
+    expect((root.body[3] as LifecycleStmt).lifeCycle).toBe('willUnmount');
     expect(root.body[4].type).toBe('lifecycle');
-    expect(root.body[4].lifeCycle).toBe('didUnmount');
+    expect((root.body[4] as LifecycleStmt).lifeCycle).toBe('didUnmount');
   });
 });

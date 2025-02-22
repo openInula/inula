@@ -172,7 +172,7 @@ export function setDynamicHTMLProp(
   value: t.Expression,
   dependenciesNode: t.ArrayExpression,
   reactBits: number
-): t.Statement | null {
+): t.Statement {
   if (commonHTMLPropKeys.includes(attrName))
     return addCommonHTMLProp(nodeName, attrName, value, dependenciesNode, reactBits);
   if (attrName.startsWith('on')) {
@@ -221,7 +221,7 @@ function addCommonHTMLProp(
   value: t.Expression,
   dependenciesNode?: t.ArrayExpression,
   reactBits?: number
-): t.Statement | null {
+): t.Statement {
   if (attrName === 'ref') {
     return setRef(nodeName, value);
   }
@@ -237,7 +237,7 @@ function setHTMLSpread(
   value: t.Expression,
   dependenciesNode?: t.ArrayExpression,
   reactBits?: number
-): t.Statement | null {
+): t.Statement {
   const args = reactBits
     ? [t.identifier(nodeName), t.arrowFunctionExpression([], value), dependenciesNode!, t.numericLiteral(reactBits)]
     : [t.identifier(nodeName), value];
@@ -263,12 +263,7 @@ function isInternalAttribute(tag: string, attribute: string): boolean {
  * 3. HTML custom attribute
  *  - ${nodeName}.setAttribute(${key}, ${value})
  */
-export function setStaticHTMLProp(
-  nodeName: string,
-  tag: string,
-  attrName: string,
-  value: t.Expression
-): t.Statement | null {
+export function setStaticHTMLProp(nodeName: string, tag: string, attrName: string, value: t.Expression): t.Statement {
   if (commonHTMLPropKeys.includes(attrName)) {
     return addCommonHTMLProp(nodeName, attrName, value);
   }
@@ -287,10 +282,6 @@ export function setStaticHTMLProp(
   return setHTMLAttr(nodeName, attrName, value);
 }
 
-function optionalExpression(nodeName: string, expression: t.Expression): t.Statement {
-  return t.expressionStatement(t.logicalExpression('&&', t.identifier(nodeName), expression));
-}
-
 export function setHTMLPropObject(nodeName: string, value: t.Expression): t.Statement {
   return wrapStmt(nodeName, t.callExpression(t.identifier(importMap['setHTMLProps']), [t.identifier(nodeName), value]));
 }
@@ -302,7 +293,7 @@ export function setHTMLProp(
   value: t.Expression,
   reactBits: number | undefined,
   dependenciesNode: t.ArrayExpression | null
-): t.Statement | null {
+): t.Statement {
   // ---- Dynamic HTML prop with init and update
   if (reactBits && key !== 'ref') {
     return setDynamicHTMLProp(name, tag, key, value, dependenciesNode ?? t.arrayExpression([]), reactBits);
