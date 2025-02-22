@@ -1,45 +1,43 @@
 import { describe, expect, it } from 'vitest';
 import { parse, parseCode, parseView, wrapWithFile } from './mock';
 import { types as t } from '@babel/core';
-import type { ExpUnit } from '../index';
+import type { ExpUnit, FragmentUnit } from '../index';
 import { traverse } from '@babel/core';
 
 describe('ExpUnit', () => {
   // ---- Type
   it('should identify expression unit', () => {
-    const viewUnits = parse('<>{count}</>');
-    expect(viewUnits.length).toBe(1);
-    expect(viewUnits[0].type).toBe('exp');
+    const viewUnits = parse('<>{count}</>') as FragmentUnit;
+    expect(viewUnits.children[0].type).toBe('exp');
   });
 
   it('should not identify literals as expression unit', () => {
-    const viewUnits = parse('<>{1}</>');
-    expect(viewUnits.length).toBe(1);
-    expect(viewUnits[0].type).not.toBe('exp');
+    const viewUnits = parse('<>{1}</>') as FragmentUnit;
+    expect(viewUnits.children[0].type).not.toBe('exp');
   });
 
   // ---- Content
   it('should correctly parse content for expression unit', () => {
-    const viewUnits = parse('<>{count}</>');
-    const content = (viewUnits[0] as ExpUnit).content;
+    const viewUnits = parse('<>{count}</>') as FragmentUnit;
+    const content = (viewUnits.children[0] as ExpUnit).content;
 
     expect(t.isIdentifier(content.value, { name: 'count' })).toBeTruthy();
   });
 
   it('should correctly parse complex content for expression unit', () => {
     const ast = parseCode('<>{!console.log("hello world") && myComplexFunc(count + 100)}</>');
-    const viewUnits = parseView(ast);
+    const viewUnits = parseView(ast) as FragmentUnit;
 
     const originalExpression = ((ast as t.JSXFragment).children[0] as t.JSXExpressionContainer).expression;
 
-    const content = (viewUnits[0] as ExpUnit).content;
+    const content = (viewUnits.children[0] as ExpUnit).content;
     expect(content.value).toBe(originalExpression);
   });
 
   it('should correctly parse content with view prop for expression unit', () => {
     // ---- <div>Ok</div> will be replaced with a random string and stored in props.viewPropMap
-    const viewUnits = parse('<>{<div>Ok</div>}</>');
-    const content = (viewUnits[0] as ExpUnit).content;
+    const viewUnits = parse('<>{<div>Ok</div>}</>') as FragmentUnit;
+    const content = (viewUnits.children[0] as ExpUnit).content;
     const viewPropMap = content.viewPropMap;
 
     expect(Object.keys(viewPropMap).length).toBe(1);
@@ -65,7 +63,7 @@ describe('ExpUnit', () => {
     }</>`);
     const viewUnits = parseView(ast);
 
-    const content = (viewUnits[0] as ExpUnit).content;
+    const content = ((viewUnits as FragmentUnit).children[0] as ExpUnit).content;
     const viewPropMap = content.viewPropMap;
 
     expect(Object.keys(viewPropMap).length).toBe(1);

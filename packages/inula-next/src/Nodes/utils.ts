@@ -54,7 +54,7 @@ export const loopShallowElements = (nodes: InulaBaseNode[], runFunc: (el: HTMLEl
 export const addParentElement = (nodes: Array<InulaBaseNode>, parentEl: HTMLElement) => {
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
-    if ('inulaType' in node) {
+    if (node && 'inulaType' in node) {
       node.parentEl = parentEl;
       // ---- Recursively add parentEl to all non-html nodes
       //      because they have the same parentEl
