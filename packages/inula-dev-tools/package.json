@@ -14,7 +14,7 @@
   "license": "MulanPSL2",
   "repository": {
     "type": "git",
-    "url": "git+https://gitee.com/openInula/inula.git"
+    "url": "git+https://github.com/openInula/inula.git"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
