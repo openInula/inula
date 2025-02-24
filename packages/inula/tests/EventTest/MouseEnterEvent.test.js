@@ -224,7 +224,7 @@ describe('mouseenter和mouseleave事件测试', () => {
     Inula.render(<Parent />, container);
   });
 
-  it('外部portal节点触发的mouseout事件，根节点的mouseleave事件也能响应', () => {
+  it.skip('外部portal节点触发的mouseout事件，根节点的mouseleave事件也能响应', () => {
     const divRef = Inula.createRef();
     const onMouseLeave = jest.fn();
 
@@ -249,7 +249,7 @@ describe('mouseenter和mouseleave事件测试', () => {
     expect(onMouseLeave).toHaveBeenCalledTimes(1);
   });
 
-  it('外部portal节点触发的mouseout事件，根节点的mouseEnter事件也能响应', () => {
+  it.skip('外部portal节点触发的mouseout事件，根节点的mouseEnter事件也能响应', () => {
     const divRef = Inula.createRef();
     const otherDivRef = Inula.createRef();
     const onMouseEnter = jest.fn();

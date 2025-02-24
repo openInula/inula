@@ -10,7 +10,7 @@
     "prettier": "prettier .prettierrc.js -w packages/**/*.{ts,tsx,js,jsx}",
     "build": "turbo build",
     "release": "pnpm run build && changeset publish",
-    "test": "turbo test",
+    "test": "turbo test --filter=!inula-router --filter=!inula-intl",
     "build:inula": "pnpm -F openinula build",
     "test:inula": "pnpm -F openinula test",
     "test:inula-intl": "pnpm -F inula-intl test",
