@@ -6,6 +6,10 @@
   "bin": {
     "create-inula": "bin/cli.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitee.com/openInula/inula.git"
+  },
   "engines": {
     "node": ">= 18.0.0"
   },

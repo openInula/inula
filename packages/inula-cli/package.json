@@ -18,6 +18,10 @@
     "README.md"
   ],
   "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitee.com/openInula/inula.git"
+  },
   "license": "MulanPSL2",
   "type": "module",
   "devDependencies": {

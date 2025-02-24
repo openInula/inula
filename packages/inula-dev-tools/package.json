@@ -12,6 +12,10 @@
   },
   "keywords": ["inula-dev-tools"],
   "license": "MulanPSL2",
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitee.com/openInula/inula.git"
+  },
   "devDependencies": {
     "@babel/core": "^7.12.3",
     "@babel/plugin-proposal-class-properties": "^7.16.7",

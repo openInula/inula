@@ -11,6 +11,10 @@
     "/router",
     "README.md"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitee.com/openInula/inula.git"
+  },
   "scripts": {
     "test": "jest",
     "build": "rollup -c build.js && npm run build-types",

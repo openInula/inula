@@ -9,7 +9,10 @@
   "bugs": "",
   "license": "MulanPSL2",
   "main": "./build/index.js",
-  "repository": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitee.com/openInula/inula.git"
+  },
   "engines": {
     "node": ">=0.10.0"
   },
