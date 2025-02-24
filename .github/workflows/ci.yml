@@ -25,6 +25,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Print package.json content
+        run: |
+          cat ./packages/create-inula/package.json
       
       - name: Cache turbo build setup
         uses: actions/cache@v4
