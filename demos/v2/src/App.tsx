@@ -1,4 +1,6 @@
 import { render } from '@openinula/next';
+import { Router, Link, Switch, Prompt, Route } from 'inula-router';
+import { createBrowserHistory } from 'inula-router';
 
 const TreeNode = ({ node, onToggle }) => {
   let isExpanded = true;
@@ -21,10 +23,10 @@ const TreeNode = ({ node, onToggle }) => {
       </div>
       <if cond={isExpanded}>
         <div className="tree-node-children">
-          <if>
+          <if cond={node.children}>
             <for each={node.children}>
               {child => {
-                return <TreeNode key={child.id} node={child} onToggle={onToggle} />;
+                return <TreeNode key={child.name} node={child} onToggle={onToggle} />;
               }}
             </for>
           </if>
@@ -47,12 +49,12 @@ const TreeView = ({ data }) => {
 
   return (
     <div className="tree-view">
-      <for each={data}>{node => <TreeNode key={node.id} node={node} onToggle={handleToggle} />}</for>
+      <for each={data}>{node => <TreeNode key={node.name} node={node} onToggle={handleToggle} />}</for>
     </div>
   );
 };
 
-function App() {
+function Doc() {
   const arr = [
     {
       name: '我的文档',
@@ -90,6 +92,46 @@ function App() {
       <TreeView data={arr} />
     </div>
   );
+}
+
+function App() {
+  const history = createBrowserHistory();
+
+  return (
+    <Router history={history}>
+      <div>
+        <Link to="/">Home</Link>
+
+        <Link to="/about">About</Link>
+
+        <Link to="/user">User</Link>
+
+        <Prompt
+          when={true}
+          message={(location, _) => {
+            // location.pathname为about时拦截跳转
+            return location.pathname !== '/about';
+          }}
+        />
+
+        <Switch>
+          <Route exact path="/" component={Doc} />
+
+          <Route path="/about" component={About} />
+
+          <Route path="/user" component={User} />
+        </Switch>
+      </div>
+    </Router>
+  );
+}
+
+function About() {
+  return <div>About</div>;
+}
+
+function User() {
+  return <div>User</div>;
 }
 
 render(App(), document.getElementById('main'));
