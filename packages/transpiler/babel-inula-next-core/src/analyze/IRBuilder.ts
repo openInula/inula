@@ -37,7 +37,7 @@ import { getBabelApi, types as t } from '@openinula/babel-api';
 import { COMPONENT, isPropStmt, PropType, reactivityFuncNames } from '../constants';
 import { Dependency, getDependenciesFromNode, parseReactivity } from '@openinula/reactivity-parser';
 import { assertComponentNode, assertHookNode, isUseHook } from './utils';
-import { parseView as parseJSX } from '@openinula/jsx-view-parser';
+import { AllowedJSXNode, parseView as parseJSX } from '@openinula/jsx-view-parser';
 import { pruneUnusedState } from './pruneUnusedState';
 import { assertIdOrDeconstruct, bitmapToIndices } from '../utils';
 import { CompilerError } from '@openinula/error-handler';
@@ -310,7 +310,7 @@ export class IRBuilder {
     });
   }
 
-  setViewChild(viewNode: t.JSXElement | t.JSXFragment) {
+  setViewChild(viewNode: AllowedJSXNode) {
     assertComponentNode(this.#current);
 
     const viewUnits = parseJSX(viewNode, {
@@ -330,6 +330,13 @@ export class IRBuilder {
       value: viewParticle,
     });
     this.addUsedReactives(useIdBits);
+  }
+
+  setEmptyView() {
+    this.addStmt({
+      type: 'viewReturn',
+      value: null,
+    });
   }
 
   setReturnValue(expression: t.Expression) {
