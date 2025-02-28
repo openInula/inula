@@ -12,7 +12,8 @@
     "@babel/standalone": "^7.22.4",
     "@openinula/next": "workspace:*",
     "@openinula/vite-plugin-inula-next": "workspace:*",
-    "classnames": "^2.5.1"
+    "classnames": "^2.5.1",
+    "inula-router": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.2.2",

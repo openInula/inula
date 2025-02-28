@@ -2,7 +2,8 @@ import { transform } from '@babel/core';
 import InulaNext, { type InulaNextOption } from '@openinula/babel-preset-inula-next';
 import { minimatch } from 'minimatch';
 import { Plugin, TransformResult } from 'vite';
-const codeFrameColumns = await import('@babel/code-frame');
+const mod = await import('@babel/code-frame');
+const { codeFrameColumns } = mod;
 
 export default function (options: Partial<InulaNextOption> = {}): Plugin {
   const {

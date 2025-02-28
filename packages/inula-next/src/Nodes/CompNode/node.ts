@@ -34,6 +34,8 @@ export abstract class ReactiveNode {
 
   owner?: CompNode;
 
+  props: Record<string, Value> = {};
+
   abstract wave(_: Value, dirty: Bits): void;
 
   constructor() {
@@ -97,20 +99,22 @@ export abstract class ReactiveNode {
     propName: string,
     valueFunc: () => Value
   ) {
+    const propValue = valueFunc();
     if (updatePropMap['$whole$']) {
       const [updatePropFunc, waveBits] = updatePropMap['$whole$'];
       if (propName === '*spread*') {
-        this.wave(updatePropFunc(valueFunc()), waveBits);
+        this.wave(updatePropFunc(propValue), waveBits);
       } else {
-        this.wave(updatePropFunc({ [propName]: valueFunc() }), waveBits);
+        this.wave(updatePropFunc({ [propName]: propValue }), waveBits);
       }
     } else if (updatePropMap[propName]) {
       const [updatePropFunc, waveBits] = updatePropMap[propName];
-      this.wave(updatePropFunc(valueFunc()), waveBits);
+      this.wave(updatePropFunc(propValue), waveBits);
+      this.props[propName] = propValue;
     } else {
       // ---- Rest props
       const [updatePropFunc, waveBits] = updatePropMap['$rest$'];
-      this.wave(updatePropFunc({ [propName]: valueFunc() }), waveBits);
+      this.wave(updatePropFunc({ [propName]: propValue }), waveBits);
     }
   }
   // ---- PROP END ----
@@ -124,10 +128,16 @@ export abstract class ReactiveNode {
   }
 
   updateContext(contextId: ContextID, contextName: string, value: Value) {
-    if (!this.updateContextMap || !(contextName in this.updateContextMap)) return;
-    const [expectedContextId, updateContextFunc, waveBits] = this.updateContextMap[contextName];
-    if (contextId !== expectedContextId) return;
-    this.wave(updateContextFunc(value), waveBits);
+    if (this.updateContextMap) {
+      if (Object.keys(this.updateContextMap).length === 1 && '$whole$' in this.updateContextMap) {
+        value = { [contextName]: value };
+        contextName = '$whole$';
+      }
+
+      const [expectedContextId, updateContextFunc, waveBits] = this.updateContextMap[contextName];
+      if (contextId !== expectedContextId) return;
+      this.wave(updateContextFunc(value), waveBits);
+    }
   }
   // ---- CONTEXT END ----
 
@@ -193,6 +203,9 @@ export class CompNode extends ReactiveNode implements InulaBaseNode {
   slices?: InulaBaseNode[];
 
   unmounted = false;
+
+  type?: (props: Record<string, Value>) => CompNode;
+
   setUnmounted = () => {
     this.unmounted = true;
   };
@@ -278,8 +291,10 @@ export class CompNode extends ReactiveNode implements InulaBaseNode {
     return this;
   }
 
-  init(node: InulaBaseNode) {
-    this.nodes = [node];
+  init(node: InulaBaseNode | null) {
+    if (node) {
+      this.nodes = [node];
+    }
     compStack.pop();
     delete this.dirtyBits;
 
@@ -312,7 +327,11 @@ export const createCompNode = (
     Object.assign(props, spreadProps);
   }
   const compNode = compFn(props);
-  if (updater) compNode.updater = updater;
+  if (compNode) {
+    compNode.props = props;
+    compNode.type = compFn;
+    if (updater) compNode.updater = updater;
+  }
   return compNode;
 };
 

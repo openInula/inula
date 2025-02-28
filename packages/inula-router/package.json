@@ -2,8 +2,8 @@
   "name": "inula-router",
   "version": "0.0.4",
   "description": "router for inula framework, a part of inula-ecosystem",
-  "main": "./router/cjs/router.js",
-  "module": "./router/esm/router.js",
+  "main": "./next/cjs/router.js",
+  "module": "./next/esm/router.js",
   "types": "./router/@types/index.d.ts",
   "type": "module",
   "files": [
@@ -28,10 +28,12 @@
     "jest-environment-jsdom": "^29.5.0",
     "jsdom": "^21.1.1",
     "react-redux": "^3.8.1 || ^4.0.0",
-    "redux": "4.2.1"
+    "redux": "4.2.1",
+    "@openinula/babel-preset-inula-next": "workspace:*"
   },
   "peerDependencies": {
-    "openinula": ">=0.1.1"
+    "openinula": ">=0.1.1",
+    "@openinula/next": ">=0.0.5"
   },
   "browserslist": {
     "production": [

@@ -24,6 +24,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const routerEntry = path.join(__dirname, '/src/router/index.ts');
+const nextRouterEntry = path.join(__dirname, '/src/next-router/index.ts');
 const connectRouterEntry = path.join(__dirname, '/src/router/index2.ts');
 
 const output = __dirname;
@@ -33,6 +34,48 @@ const extensions = ['.js', '.ts', '.tsx'];
 if (!fs.existsSync(path.join(output, 'connectRouter'))) {
   fs.mkdirSync(path.join(output, 'connectRouter'), { recursive: true });
 }
+
+const nextRouterBuildConfig = mode => {
+  const prod = mode.startsWith('prod');
+  const outputList = [
+    {
+      file: path.join(output, `next/cjs/router.${prod ? 'min.' : ''}js`),
+      sourcemap: 'true',
+      format: 'cjs',
+    },
+    {
+      file: path.join(output, `next/umd/router.${prod ? 'min.' : ''}js`),
+      name: 'InulaRouter',
+      sourcemap: 'true',
+      format: 'umd',
+    },
+  ];
+  if (!prod) {
+    outputList.push({
+      file: path.join(output, 'next/esm/router.js'),
+      sourcemap: 'true',
+      format: 'esm',
+    });
+  }
+  return {
+    input: nextRouterEntry,
+    output: outputList,
+    external: ['@openinula/next'],
+    plugins: [
+      nodeResolve({
+        extensions,
+        modulesOnly: true,
+      }),
+      babel({
+        exclude: 'node_modules/**',
+        configFile: path.join(__dirname, '/babel.next.config.js'),
+        babelHelpers: 'runtime',
+        extensions,
+      }),
+      prod && terser(),
+    ],
+  };
+};
 
 const routerBuildConfig = mode => {
   const prod = mode.startsWith('prod');
@@ -138,4 +181,6 @@ export default [
   routerBuildConfig('prod'),
   connectRouterConfig('dev'),
   connectRouterConfig('prod'),
+  nextRouterBuildConfig('dev'),
+  nextRouterBuildConfig('prod'),
 ];
