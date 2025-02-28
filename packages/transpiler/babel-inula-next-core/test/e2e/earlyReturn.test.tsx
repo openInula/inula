@@ -49,4 +49,43 @@ describe('analyze early return', () => {
       }"
     `);
   });
+
+  it('should support null children', () => {
+    expect(
+      transform(/*js*/ `
+      const App = () => {
+        let count = 0;
+        if (count > 1) {
+          return <div>1</div>
+        }
+        return null;
+      }
+    `)
+    ).toMatchInlineSnapshot(`
+      "import { compBuilder as $$compBuilder, createHTMLNode as $$createHTMLNode, createFragmentNode as $$createFragmentNode, createCompNode as $$createCompNode, createConditionalNode as $$createConditionalNode } from "@openinula/next";
+      function App() {
+        const $$self = $$compBuilder();
+        let count = 0;
+        function Branch_1() {
+          const $$self1 = $$compBuilder($$self);
+          return $$self1.prepare().init($$createHTMLNode("div", $$node => {
+            $$node.textContent = "1";
+          }));
+        }
+        function Default_1() {
+          const $$self1 = $$compBuilder($$self);
+          return $$self1.prepare().init(null);
+        }
+        return $$self.prepare().init($$createFragmentNode($$createConditionalNode($$node => {
+          if ($$node.cachedCondition(0, () => count > 1, [count])) {
+            if ($$node.branch(0)) return [];
+            return [$$createCompNode(Branch_1, {}, null)];
+          } else {
+            if ($$node.branch(1)) return [];
+            return [$$createCompNode(Default_1, {}, null)];
+          }
+        }, 1)));
+      }"
+    `);
+  });
 });

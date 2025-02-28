@@ -35,7 +35,7 @@ import { Scope } from '@babel/traverse';
  */
 function generateCondNode(branches: Branch[]) {
   const branchNodes = branches.map((branch, idx) => {
-    const tag = idx === 0 ? 'if' : idx === branches.length - 1 ? 'else' : 'elseif';
+    const tag = idx === 0 ? 'if' : idx === branches.length - 1 ? 'else' : 'else-if';
     const conditionAttr = branch.conditions
       ? [t.jSXAttribute(t.jSXIdentifier('cond'), t.jsxExpressionContainer(branch.conditions))]
       : [];
