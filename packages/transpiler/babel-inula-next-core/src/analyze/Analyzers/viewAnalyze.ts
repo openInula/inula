@@ -15,7 +15,8 @@
 
 import { Visitor } from '../types';
 import { type NodePath } from '@babel/core';
-import { types as t } from '@openinula/babel-api';
+import { types as t, traverse } from '@openinula/babel-api';
+import { nodeWrapFile } from '../../generator/utils';
 
 /**
  * Analyze the watch in the function component
@@ -26,9 +27,37 @@ export function viewAnalyze(): Visitor {
       const returnedPath = path.get('argument');
       if (returnedPath.isJSXElement() || returnedPath.isJSXFragment()) {
         builder.setViewChild(returnedPath.node);
-      } else {
-        builder.addRawStmt(path);
+      } else if (returnedPath.isExpression() && hasVariables(returnedPath.node)) {
+        // If the return value is an expression and contains variables, wrap it in a JSX expression container
+        builder.setViewChild(t.jsxExpressionContainer(returnedPath.node));
+      } else if (returnedPath.isStringLiteral() || returnedPath.isNumericLiteral() || returnedPath.isBooleanLiteral()) {
+        // If the return value is a string, number, or boolean, wrap it in a JSX text node
+        builder.setViewChild(t.jsxText(returnedPath.node.value.toString()));
+      } else if (returnedPath.node === null || returnedPath.isNullLiteral()) {
+        builder.setEmptyView();
       }
     },
   };
+}
+
+function hasVariables(expression: t.Expression): boolean {
+  let hasVar = false;
+
+  // 创建访问者对象
+  const visitor = {
+    Identifier(path: NodePath<t.Identifier>) {
+      // 检查这个标识符是否是一个变量引用
+      // isReferencedIdentifier 方法检查标识符是否作为引用使用
+      if (path.isReferencedIdentifier()) {
+        hasVar = true;
+        // 一旦找到变量就停止遍历
+        path.stop();
+      }
+    },
+  };
+
+  // 遍历表达式AST
+  traverse(nodeWrapFile(expression), visitor);
+
+  return hasVar;
 }

@@ -122,7 +122,7 @@ export type DerivedStmt = {
 
 export type ViewReturnStmt = {
   type: 'viewReturn';
-  value: ViewParticle;
+  value: ViewParticle | null;
 };
 
 export type UseContextStmt = {
