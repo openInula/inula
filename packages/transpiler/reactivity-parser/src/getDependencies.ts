@@ -71,9 +71,7 @@ export function getDependenciesFromNode(
   //      e.g. { console.log(count); count = 1 }
   //      this will cause infinite loop
   //      so we eliminate "count" from deps
-  if (writingBits & readingBits) {
-    throw new CompilerError('Detected a loop dependency', node.loc);
-  }
+  preventSelfMutation(writingBits & readingBits, reactiveBitMap, node);
 
   if (readingBits === 0) return null;
 
@@ -89,6 +87,20 @@ export function getDependenciesFromNode(
     dependenciesNode: t.arrayExpression(dependencyNodes as t.Expression[]),
     depIdBitmap: readingBits,
   };
+}
+
+function preventSelfMutation(overlapBits: number, reactiveBitMap: Map<string, number>, node: t.Expression | t.Statement) {
+  if (overlapBits !== 0) {
+    // find the variable of the overlap bits
+    const cyclicDependencies: string[] = [];
+    reactiveBitMap.entries().forEach(([name, bit]) => {
+      if (overlapBits & bit) {
+        cyclicDependencies.push(name);
+      }
+    });
+    const cyclicNamesStr = cyclicDependencies.map(n => `'${n}'`).join(',');
+    throw new CompilerError(`Detected a loop dependency: ${cyclicNamesStr}`, node.loc);
+  }
 }
 
 /**
