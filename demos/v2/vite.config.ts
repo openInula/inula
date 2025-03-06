@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
-import inula from '@openinula/vite-plugin-inula-next';
+import inula from '@openinula/unplugin/vite';
 
 export default defineConfig({
   build: {

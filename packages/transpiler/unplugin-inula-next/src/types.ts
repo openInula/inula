@@ -1,1 +1,1 @@
-export { type Options } from '@openinula/babel-preset-inula-next';
+export { type InulaNextOption as Options } from '@openinula/babel-preset-inula-next';
