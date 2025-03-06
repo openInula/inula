@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
  *
- * openInula is licensed under Mulan PSL v2.
+ * openGauss is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *
@@ -22,7 +22,7 @@ module.exports = {
   ],
   root: true,
 
-  plugins: ['jest', 'no-function-declare-after-return', 'react', '@typescript-eslint'],
+  plugins: ['jest', 'react', '@typescript-eslint'],
 
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -57,8 +57,6 @@ module.exports = {
     'comma-dangle': ['error', 'only-multiline'],
 
     'no-constant-condition': 'off',
-    'no-function-declare-after-return/no-function-declare-after-return': 'error',
-    '@typescript-eslint/ban-ts-comment': 'warn',
   },
   globals: {
     isDev: true,

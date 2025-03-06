@@ -41,24 +41,24 @@ function getType(input: any): string {
 
 /**
  * 输入类型名称构造判断相应类型的函数
- *
- * @param type 需要判断的类型名称
- *
- * @returns {Function} 工厂函数，用以判断输入值是否为当前类型
  */
-const createTypeChecker = (type: string) => (input: any) => getType(input) === type.toLowerCase();
+function createTypeChecker<T extends object>(type: string): (input: unknown) => input is T {
+  return function (input: unknown): input is T {
+    return getType(input) === type.toLowerCase();
+  };
+}
 
-const checkString = createTypeChecker('string');
+const checkString = (value: unknown): value is string => typeof value === 'string';
 
-const checkFunction = createTypeChecker('function');
+const checkFunction = (value: unknown) => typeof value === 'function';
 
-const checkNumber = createTypeChecker('number');
+const checkNumber = (value: unknown): value is number => typeof value === 'number';
 
 const checkObject = (input: any) => input !== null && typeof input === 'object';
 
 const checkBoolean = (input: any) => input === true || input === false;
 
-const checkUndefined = createTypeChecker('undefined');
+const checkUndefined = (value: unknown): value is undefined => typeof value === 'undefined';
 
 /**
  * 判断变量类型是否为纯对象
@@ -67,7 +67,7 @@ const checkUndefined = createTypeChecker('undefined');
  *
  * @returns {boolean} 如果变量为纯对象 则返回 true，否则返回 false
  */
-const checkPlainObject = (input: any) => {
+const checkPlainObject = <T extends object>(input: unknown): input is T => {
   if (Object.prototype.toString.call(input) !== '[object Object]') {
     return false;
   }
@@ -76,23 +76,25 @@ const checkPlainObject = (input: any) => {
   return prototype === null || prototype === Object.prototype;
 };
 
-const checkDate = createTypeChecker('Date');
+const checkDate = createTypeChecker<Date>('Date');
 
-const checkFile = createTypeChecker('File');
+const checkFile = createTypeChecker<File>('File');
 
-const checkBlob = createTypeChecker('Blob');
+const checkBlob = createTypeChecker<Blob>('Blob');
 
 const checkStream = (input: any) => checkObject(input) && checkFunction(input.pipe);
 
-const checkFileList = createTypeChecker('FileList');
+const checkFileList = createTypeChecker<FileList>('FileList');
 
 const checkFormData = (input: any) => input instanceof FormData;
 
-const checkURLSearchParams = createTypeChecker('URLSearchParams');
+const checkURLSearchParams = createTypeChecker<URLSearchParams>('URLSearchParams');
 
-const checkRegExp = createTypeChecker('RegExp');
+const checkRegExp = createTypeChecker<RegExp>('RegExp');
 
-const checkHTMLForm = createTypeChecker('HTMLFormElement');
+const checkHTMLForm = createTypeChecker<HTMLHtmlElement>('HTMLFormElement');
+
+const checkHeaders = createTypeChecker<Headers>('Headers');
 
 /**
  * 对数组或对象中的每个元素执行指定的回调函数
@@ -178,7 +180,6 @@ function extendObject(
       } else {
         target[key as number] = val;
       }
-      // @ts-ignore
     },
     { includeAll: includeAll }
   );
@@ -418,12 +419,14 @@ function spread<T>(callback: Callback<T>): (arr: any[]) => T {
   return (arr: any[]): T => callback.apply(null, arr);
 }
 
-function getNormalizedValue(value: string | any[] | boolean | null | number): string | any[] | boolean | null {
+function getNormalizedValue(
+  value: string | any[] | boolean | null | undefined | number | Record<string, any>
+): string | undefined | any[] | boolean | null | number | Record<string, any> {
   if (value === false || value === null || value === undefined) {
     return value;
   }
 
-  return Array.isArray(value) ? value.map(item => getNormalizedValue(item) as string) : String(value);
+  return Array.isArray(value) ? value.map(getNormalizedValue) : String(value);
 }
 
 function isIE(): boolean {
@@ -467,6 +470,7 @@ const utils = {
   checkURLSearchParams,
   checkFileList,
   checkHTMLForm,
+  checkHeaders,
   forEach,
   extendObject,
   flattenObject,

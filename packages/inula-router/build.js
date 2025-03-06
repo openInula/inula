@@ -44,7 +44,7 @@ const routerBuildConfig = mode => {
     },
     {
       file: path.join(output, `router/umd/router.${prod ? 'min.' : ''}js`),
-      name: 'InulaRouter',
+      name: 'HorizonRouter',
       sourcemap: 'true',
       format: 'umd',
     },
@@ -85,7 +85,7 @@ const connectRouterConfig = mode => {
     },
     {
       file: path.join(output, `connectRouter/umd/connectRouter.${prod ? 'min.' : ''}js`),
-      name: 'InulaRouter',
+      name: 'HorizonRouter',
       sourcemap: 'true',
       format: 'umd',
     },
@@ -127,6 +127,7 @@ function copyFiles(copyPairs) {
     name: 'copy-files',
     generateBundle() {
       copyPairs.forEach(({ from, to }) => {
+        console.log(`copy files: ${from} → ${to}`);
         fs.copyFileSync(from, to);
       });
     },

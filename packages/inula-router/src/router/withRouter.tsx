@@ -13,17 +13,16 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Inula from 'openinula';
-import { useContext, ComponentType } from 'openinula';
+import Inula from '@cloudsop/horizon';
+import { useContext, ComponentType } from '@cloudsop/horizon';
 import RouterContext from './context';
 
 function withRouter<C extends ComponentType>(Component: C) {
   function ComponentWithRouterProp(props: any) {
     const { wrappedComponentRef, ...rest } = props;
-    const { history, location, match } = useContext(RouterContext);
-    const routeProps = { history: history, location: location, match: match };
+    const context = useContext(RouterContext);
 
-    return <Component {...routeProps} {...rest} ref={wrappedComponentRef} />;
+    return <Component {...rest} {...context} ref={wrappedComponentRef} />;
   }
 
   return ComponentWithRouterProp;

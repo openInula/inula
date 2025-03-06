@@ -21,7 +21,7 @@ export default {
       '@babel/plugin-transform-react-jsx',
       {
         runtime: 'automatic',
-        importSource: 'openinula',
+        importSource: '@cloudsop/horizon',
       },
     ],
     ['@babel/plugin-proposal-class-properties', { loose: true }],

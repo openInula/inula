@@ -30,6 +30,7 @@ import { createContext } from './renderer/components/context/CreateContext';
 import { lazy } from './renderer/components/Lazy';
 import { forwardRef } from './renderer/components/ForwardRef';
 import { memo } from './renderer/components/Memo';
+import { version } from './renderer/Version';
 import './external/devtools';
 
 import {
@@ -72,9 +73,7 @@ import {
 import { syncUpdates as flushSync } from './renderer/TreeBuilder';
 import { toRaw } from './inulax/proxy/ProxyHandler';
 
-const version = __VERSION__;
-
-const Inula = {
+const Horizon = {
   Children,
   createRef,
   Component,
@@ -184,4 +183,4 @@ export {
 };
 
 export * from './types';
-export default Inula;
+export default Horizon;

@@ -1,6 +1,6 @@
 {
-  "name": "create-inula",
-  "version": "0.0.8",
+  "name": "@cloudsop/create-horizon",
+  "version": "1.0.22",
   "description": "",
   "main": "index.js",
   "bin": {

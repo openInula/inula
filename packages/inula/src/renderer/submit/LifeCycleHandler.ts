@@ -50,9 +50,10 @@ import {
   callUseLayoutEffectRemove,
 } from './HookEffectHandler';
 import { handleSubmitError } from '../ErrorHandler';
-import { travelVNodeTree, clearVNode, isDomVNode, getSiblingDom } from '../vnode/VNodeUtils';
+import { travelVNodeTree, clearVNode, isDomVNode, getSiblingDom, clearVNodeTree } from '../vnode/VNodeUtils';
 import { shouldAutoFocus } from '../../dom/utils/Common';
 import { BELONG_CLASS_VNODE_KEY } from '../vnode/VNode';
+import { detachUnmountDom } from '../../dom/DOMInternalKeys';
 
 function callComponentWillUnmount(vNode: VNode, instance: any) {
   try {
@@ -277,6 +278,7 @@ function unmountVNode(vNode: VNode): void {
     }
     case DomComponent: {
       detachRef(vNode);
+      detachUnmountDom(vNode.realNode);
       break;
     }
     case DomPortal: {
@@ -393,9 +395,7 @@ function submitClear(vNode: VNode): void {
 function submitDeletion(vNode: VNode): void {
   // 遍历所有子节点：删除dom节点，detach ref 和 调用componentWillUnmount()
   unmountDomComponents(vNode);
-
-  // 置空vNode
-  clearVNode(vNode);
+  clearVNodeTree(vNode);
 }
 
 function submitSuspenseComponent(vNode: VNode) {

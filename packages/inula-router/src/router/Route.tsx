@@ -13,10 +13,10 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Inula from 'openinula';
+import Inula from '@cloudsop/horizon';
 import { History, Location } from './index';
 import { Matched, matchPath } from './matcher/parser';
-import { useContext, Children, createElement, InulaNode, ComponentType } from 'openinula';
+import { useContext, Children, createElement, InulaNode, ComponentType } from '@cloudsop/horizon';
 import RouterContext from './context';
 import { GetURLParams } from './matcher/types';
 

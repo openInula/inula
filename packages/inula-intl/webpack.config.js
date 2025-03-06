@@ -39,7 +39,7 @@ export default {
                 '@babel/preset-react',
                 {
                   runtime: 'automatic', // 新增
-                  importSource: 'openinula', // 新增
+                  importSource: '@cloudsop/horizon', // 新增
                 },
               ],
               '@babel/preset-typescript',

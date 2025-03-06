@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Inula from 'openinula';
+import Inula from '@cloudsop/horizon';
 import IRClient from './IRClient';
 import { IrRequestConfig, QueryOptions } from '../../types/interfaces';
 

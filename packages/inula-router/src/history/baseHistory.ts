@@ -67,7 +67,7 @@ export function getBaseHistory<S>(
       }
       historyProps.length = browserHistory.length;
       // 避免location引用相同时setState不触发
-      const location = Object.assign({}, historyProps.location);
+      const location = { ...historyProps.location };
       const args = { location: location, action: historyProps.action };
       transitionManager.notifyListeners(args);
     };

@@ -30,17 +30,22 @@ import {
   InulaNode,
 } from '../types/types';
 import creatI18nCache from '../format/cache/cache';
-import { isValidElement } from 'openinula';
+import { isValidElement } from '@cloudsop/horizon';
 
 export class I18n extends EventDispatcher<Events> {
   public locale: Locale;
   public locales: Locales;
   public defaultLocale?: Locale;
   public timeZone?: string;
-  private allMessages: AllMessages;
+  public allMessages: AllMessages;
   private readonly _localeConfig: AllLocaleConfig;
   public readonly onError?: Error;
   public readonly cache?: I18nCache;
+  public $t: (
+    id: MessageDescriptor | string,
+    values?: Record<string, unknown> | undefined,
+    { messages, context, formatOptions }?: MessageOptions
+  ) => string | any[];
 
   constructor(props: I18nProps) {
     super();
@@ -64,6 +69,7 @@ export class I18n extends EventDispatcher<Events> {
     if (props.locale || props.locales) {
       this.changeLanguage(props.locale!, props.locales);
     }
+    this.$t = this.formatMessage.bind(this);
     this.formatMessage = this.formatMessage.bind(this);
     this.formatDate = this.formatDate.bind(this);
     this.formatNumber = this.formatNumber.bind(this);
@@ -143,6 +149,10 @@ export class I18n extends EventDispatcher<Events> {
     values: Record<string, unknown> | undefined = {},
     { messages, context, formatOptions }: MessageOptions = {}
   ) {
+    // 防止传入非法id，导致后续逻辑异常
+    if (typeof id !== 'string' && typeof (id as unknown as MessageDescriptor)?.id !== 'string') {
+      return id;
+    }
     // 在多次渲染时，保证存储component不丢失
     const components: { [key: string]: InulaNode } = {};
     const tempValues: Record<string, unknown> = { ...values };

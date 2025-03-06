@@ -144,13 +144,18 @@ export function validateProps(type, props) {
 
   // 对于没有children的元素，设置dangerouslySetInnerHTML会不生效
   if (voidTagElements.includes(type)) {
-    if (props.dangerouslySetInnerHTML != null) {
+    if (props.dangerouslySetInnerHTML !== null && props.dangerouslySetInnerHTML !== undefined) {
       delete props.dangerouslySetInnerHTML;
     }
   }
 
   // dangerouslySetInnerHTML和children同时设置，只渲染children
-  if (props.dangerouslySetInnerHTML != null && props.children != null) {
+  if (
+    props.dangerouslySetInnerHTML !== null &&
+    props.dangerouslySetInnerHTML !== undefined &&
+    props.children !== null &&
+    props.children !== undefined
+  ) {
     delete props.dangerouslySetInnerHTML;
   }
 

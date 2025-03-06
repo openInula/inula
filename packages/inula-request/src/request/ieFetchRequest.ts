@@ -39,7 +39,7 @@ export const ieFetchRequest = (config: IrRequestConfig): Promise<IrResponse> => 
     let signal;
 
     // 兼容处理 IE 浏览器AbortController
-    if (window.AbortController) {
+    if (typeof window !== 'undefined' && window.AbortController) {
       controller = new AbortController();
       signal = controller.signal;
     } else {
@@ -112,32 +112,8 @@ export const ieFetchRequest = (config: IrRequestConfig): Promise<IrResponse> => 
             break;
 
           // text 和 json 服务端返回的都是字符串 统一处理
-          case 'text':
-            parseMethod = response.text();
-            break;
-
-          // 显式指定返回类型
-          case 'json':
-            parseMethod = response.text().then((text: string) => {
-              try {
-                return JSON.parse(text);
-              } catch (e) {
-                // 显式指定返回类型 JSON解析失败报错
-                const error = new IrError('parse error', '', responseData.config, responseData.request, responseData);
-                reject(error);
-              }
-            });
-            break;
-
           default:
-            parseMethod = response.text().then((text: string) => {
-              try {
-                return JSON.parse(text);
-              } catch (e) {
-                // 默认为 JSON 类型，若JSON校验失败则直接返回服务端数据
-                return text;
-              }
-            });
+            parseMethod = response.text();
         }
 
         parseMethod

@@ -13,8 +13,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Inula from 'openinula';
-import { useRef } from 'openinula';
+import Inula from '@cloudsop/horizon';
+import { useRef } from '@cloudsop/horizon';
 import { History } from '../history/types';
 import { BaseRouterProps } from './BrowserRouter';
 import { createHashHistory, urlHashType } from '../history/hashHistory';

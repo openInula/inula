@@ -12,14 +12,15 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import Inula, { createContext, forwardRef } from 'openinula';
+import { createContext, forwardRef } from '@cloudsop/horizon';
 import { isVariantI18n } from '../../utils/utils';
 import copyStaticProps from '../../utils/copyStaticProps';
 import { InjectOptions } from '../../types/interfaces';
 import I18n from '../I18n';
+import VueI18n from '../../vueI18n-adapter/src/VueI18n';
 
 // 创建国际化组件对象上下文
-export const I18nContext: any = createContext<I18n>(null as any);
+export const I18nContext: any = createContext<I18n | VueI18n>(null as any);
 const { Consumer, Provider } = I18nContext;
 export const InjectProvider = Provider;
 
@@ -39,15 +40,10 @@ function injectI18n(Component, options?: InjectOptions): any {
     <Consumer>
       {context => {
         if (ensureContext) {
-          isVariantI18n(context);
+          isVariantI18n(context.i18nInstance);
         }
 
-        const i18nProps = {
-          intl: context,
-          formatMessage: context.formatMessage,
-          formatDate: context.DateTimeFormat,
-          formatNumber: context.NumberFormat,
-        };
+        const i18nProps = { intl: context.i18nInstance };
         return <Component {...props} {...i18nProps} ref={isUsingForwardRef ? props.forwardedRef : null} />;
       }}
     </Consumer>

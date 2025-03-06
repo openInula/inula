@@ -36,7 +36,7 @@ module.exports = {
                 '@babel/preset-react',
                 {
                   runtime: 'automatic',
-                  importSource: 'openinula',
+                  importSource: '@cloudsop/horizon',
                 },
               ],
               '@babel/preset-typescript',

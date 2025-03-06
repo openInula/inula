@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { createContext } from 'openinula';
+import { createContext } from '@cloudsop/horizon';
 import { History, Location } from './index';
 import { Matched } from './matcher/parser';
 

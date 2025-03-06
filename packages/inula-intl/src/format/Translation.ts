@@ -54,9 +54,9 @@ class Translation {
       formatOptions: FormatOptions,
       localeConfig: LocaleConfig
     ) => {
-      const textFormatter = (name: string, type: string, format: any) => {
-        const formatters = generateFormatters(locale, locales, localeConfig, formatOptions, this.cache);
-        const value = values[name];
+      const textFormatter = (valueKey: string, type: string, format: any) => {
+        const formatters = generateFormatters(locale, locales, localeConfig, formatOptions, this.cache, valueKey);
+        const value = values[valueKey];
         const formatter = formatters[type](value, format);
 
         let message: any;

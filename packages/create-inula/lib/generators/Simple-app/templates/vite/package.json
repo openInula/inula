@@ -1,5 +1,5 @@
 {
-  "name": "inula-vite-app",
+  "name": "horizon-vite-app",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "openinula": "^0.1.1"
+    "@cloudsop/horizon": "^0.0.58"
   },
   "devDependencies": {
     "@babel/core": "^7.21.4",

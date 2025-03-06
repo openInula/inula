@@ -14,7 +14,7 @@
  */
 
 import Translation from '../../src/format/Translation';
-import { createIntlCache } from '../../index';
+import creatI18nCache from '../../src/format/cache/cache';
 
 describe('Translation', () => {
   let translation;
@@ -24,7 +24,7 @@ describe('Translation', () => {
     const locale = 'en';
     const locales = {};
     const localeConfig = {};
-    translation = new Translation(compiledMessage, locale, locales, localeConfig, createIntlCache());
+    translation = new Translation(compiledMessage, locale, locales, localeConfig, creatI18nCache());
   });
   describe('formatMessage', () => {
     it('should return the message if it is not an array', () => {

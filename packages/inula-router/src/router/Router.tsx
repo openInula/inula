@@ -13,8 +13,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Inula from 'openinula';
-import { useLayoutEffect, useMemo, useRef, useState, InulaNode } from 'openinula';
+import Inula from '@cloudsop/horizon';
+import { useLayoutEffect, useMemo, useRef, useState, InulaNode } from '@cloudsop/horizon';
 
 import { History, Location } from '../history/types';
 

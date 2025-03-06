@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { useLayoutEffect, useRef } from 'openinula';
+import { useLayoutEffect, useRef } from '@cloudsop/horizon';
 
 export type LifeCycleProps = {
   onMount?: () => void;

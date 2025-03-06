@@ -13,8 +13,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Inula from 'openinula';
-import { useRef, InulaNode } from 'openinula';
+import Inula from '@cloudsop/horizon';
+import { useRef, InulaNode } from '@cloudsop/horizon';
 import Router from './Router';
 import { createBrowserHistory } from '../history/browerHistory';
 import { ConfirmationFunc, History } from '../history/types';
@@ -31,7 +31,7 @@ export type BrowserRouterProps = BaseRouterProps & {
 
 function BrowserRouter<P extends Partial<BrowserRouterProps>>(props: P) {
   // 使用Ref持有History对象，防止重复渲染
-  let historyRef = useRef<History>();
+  const historyRef = useRef<History>();
 
   if (historyRef.current === null || historyRef.current === undefined) {
     historyRef.current = createBrowserHistory({

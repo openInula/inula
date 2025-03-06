@@ -28,7 +28,8 @@ const generateFormatters = (
   locales: Locales,
   localeConfig: Record<string, any> = { plurals: undefined },
   formatOptions: FormatOptions = {}, // 自定义格式对象
-  cache: I18nCache
+  cache: I18nCache,
+  valueKey: string
 ): IntlMessageFormat => {
   const { plurals } = localeConfig;
   /**
@@ -50,27 +51,26 @@ const generateFormatters = (
         locale,
         locales,
         value - offset,
-        rules[value] || rules[(plurals as any)?.(value - offset)] || rules.other,
-        cache
+        rules[value] || rules[(plurals as any)?.(value - offset)] || rules.other
       );
       return pluralFormatter.replaceSymbol.bind(pluralFormatter);
     },
 
     selectordinal: (value: number, { offset = 0, ...rules }) => {
       const message = rules[value] || rules[(plurals as any)?.(value - offset, true)] || rules.other;
-      const pluralFormatter = new PluralFormatter(locale, locales, value - offset, message, cache);
+      const pluralFormatter = new PluralFormatter(locale, locales, value - offset, message);
       return pluralFormatter.replaceSymbol.bind(pluralFormatter);
     },
 
     // 选择规则，如果规则对象中包含与该值相对应的属性，则返回该属性的值；否则，返回 "other" 属性的值。
     select: (value: SelectPool, formatRules: any) => {
-      const selectFormatter = new SelectFormatter(locale, cache);
+      const selectFormatter = new SelectFormatter(locale);
       return selectFormatter.getRule(value, formatRules);
     },
 
     // 用于将数字格式化为字符串，接受一个数字和一个格式化规则。它会根据规则返回格式化后的字符串。
     numberFormat: (value: number, formatOption) => {
-      return new NumberFormatter(locales, getStyleOption(formatOption), cache).numberFormat(value);
+      return new NumberFormatter(locales, getStyleOption(formatOption), cache, valueKey).numberFormat(value);
     },
 
     /**
@@ -83,7 +83,10 @@ const generateFormatters = (
      * @param formatOption { year: 'numeric', month: 'long', day: 'numeric' }
      */
     dateTimeFormat: (value: DatePool, formatOption: any) => {
-      return new DateTimeFormatter(locales, getStyleOption(formatOption), cache).dateTimeFormat(value, formatOption);
+      return new DateTimeFormatter(locales, getStyleOption(formatOption), cache, valueKey).dateTimeFormat(
+        value,
+        formatOption
+      );
     },
 
     // 用于处理未定义的值，接受一个值并直接返回它。

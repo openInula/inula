@@ -26,7 +26,8 @@ import {
 } from './types';
 import I18n from '../core/I18n';
 import Lexer from '../parser/Lexer';
-import { InulaElement, Key } from 'openinula';
+import { InulaElement, Key } from '@cloudsop/horizon';
+import VueI18n from '../vueI18n-adapter/src/VueI18n';
 
 // FormattedMessage的参数定义
 export interface FormattedMessageProps extends MessageDescriptor {
@@ -92,7 +93,7 @@ export interface InjectOptions {
 }
 
 export interface I18nContextProps {
-  i18n?: I18n;
+  i18n?: I18n | VueI18n;
 }
 
 export type configProps = I18nProps & {

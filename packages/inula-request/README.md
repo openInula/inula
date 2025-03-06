@@ -1240,7 +1240,7 @@ ir.get('https://www.example.com/users')
 
 **功能介绍**
 
-`Inula-request`请求组件提供支持动态轮询的实时数据刷新能力，帮助您在使用`openinula`框架进行页面开发时拥有更加便捷的请求体验！
+`Inula-request`请求组件提供支持动态轮询的实时数据刷新能力，帮助您在使用`InulaJS`框架进行页面开发时拥有更加便捷的请求体验！
 
 **接口定义**
 

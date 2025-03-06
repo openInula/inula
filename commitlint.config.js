@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Technologies Co.,Ltd.
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
  *
  * openInula is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.

@@ -23,9 +23,10 @@ import type { Container, Props } from './DOMOperator';
 import { DomComponent, DomText, TreeRoot } from '../renderer/vnode/VNodeTags';
 
 const randomKey = Math.random().toString(16).slice(2);
-const INTERNAL_VNODE = `_inula_VNode_${randomKey}`;
-const INTERNAL_PROPS = `_inula_Props_${randomKey}`;
-const INTERNAL_NONDELEGATEEVENTS = `_inula_nonDelegatedEvents_${randomKey}`;
+export const ROOT_CONTAINER = `_inula_treeRoot_${randomKey}`;
+const INTERNAL_VNODE = `_inula_vNode_${randomKey}`;
+const INTERNAL_PROPS = `_inula_props_${randomKey}`;
+const INTERNAL_NONDELEGATEDEVENTS = `_inula_nonDelegatedEvents_${randomKey}`;
 export const HANDLER_KEY = `_inula_valueChangeHandler_${randomKey}`;
 export const EVENT_KEY = `_inula_ev_${randomKey}`;
 
@@ -45,7 +46,7 @@ export function saveVNode(vNode: VNode, dom: Element | Text | Container): void {
 
 // 用 DOM 节点，来找其对应的 VNode 实例
 export function getVNode(dom: Node | Container): VNode | null {
-  const vNode = dom[INTERNAL_VNODE] || (dom as Container)._treeRoot;
+  const vNode = dom[INTERNAL_VNODE] || (dom as Container)[ROOT_CONTAINER];
   if (vNode) {
     const { tag } = vNode;
     if (tag === DomComponent || tag === DomText || tag === TreeRoot) {
@@ -81,10 +82,18 @@ export function updateVNodeProps(dom: Element | Text, props: Props): void {
 }
 
 export function getNonDelegatedListenerMap(dom: Element | Text): Map<string, EventListener> {
-  let eventsMap = dom[INTERNAL_NONDELEGATEEVENTS];
+  let eventsMap = dom[INTERNAL_NONDELEGATEDEVENTS];
   if (!eventsMap) {
     eventsMap = new Map();
-    dom[INTERNAL_NONDELEGATEEVENTS] = eventsMap;
+    dom[INTERNAL_NONDELEGATEDEVENTS] = eventsMap;
   }
   return eventsMap;
+}
+
+export function detachUnmountDom(element: Element | Text) {
+  delete element[INTERNAL_VNODE];
+  delete element[INTERNAL_PROPS];
+  delete element[INTERNAL_NONDELEGATEDEVENTS];
+  delete element[HANDLER_KEY];
+  delete element[EVENT_KEY];
 }

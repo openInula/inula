@@ -368,7 +368,7 @@ type Location = {
 在该实例中，当用户在`Input`中输入字符后再跳转到其他页面时，`Prompt`组件会阻止路由跳转并询问用户是否执行跳转。
 
 ```tsx
-import { useState } from 'openinula';
+import { useState } from 'inulajs';
 import { BrowserRouter, Link, Switch, Route, Prompt } from 'inula-router';
 
 function PromptDemo() {
