@@ -1,7 +1,7 @@
 {
   "name": "@openinula/unplugin",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.0.2",
   "description": "",
   "keywords": [
     "unplugin",
@@ -87,6 +87,7 @@
     "@babel/code-frame": "^7.26.2",
     "@babel/core": "^7.20.12",
     "@openinula/babel-preset-inula-next": "workspace:*",
+    "@openinula/error-handler": "workspace:*",
     "bumpp": "^10.0.2",
     "minimatch": "^9.0.3",
     "nodemon": "^3.1.9",

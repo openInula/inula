@@ -9,11 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@openinula/next": "^0.0.5",
-    "@openinula/vite-plugin-inula-next": "^0.0.7"
+    "@openinula/next": "^0.0.5"
   },
   "devDependencies": {
-    "vite": "^4.4.9"
+    "vite": "^4.4.9",
+    "@openinula/unplugin": "^0.0.2"
   },
   "keywords": [
     "inula-next"
