@@ -1,6 +1,6 @@
 # @openinula/unplugin
 
-InulaNext unified plugin system for build tools.Based on [unplugin](https://github.com/unjs/unplugin).
+inulaNext unified plugin system for build tools.Based on [unplugin](https://github.com/unjs/unplugin).
 
 ## Install
 
@@ -13,11 +13,11 @@ npm i @openinula/unplugin
 
 ```ts
 // vite.config.ts
-import InulaNext from '@openinula/unplugin/vite'
+import inulaNext from '@openinula/unplugin/vite'
 
 export default defineConfig({
   plugins: [
-    InulaNext({ /* options */ }),
+    inulaNext({ /* options */ }),
   ],
 })
 ```
@@ -31,11 +31,11 @@ Example: [`playground/`](./playground/)
 
 ```ts
 // rollup.config.js
-import InulaNext from '@openinula/unplugin/rollup'
+import inulaNext from '@openinula/unplugin/rollup'
 
 export default {
   plugins: [
-    InulaNext({ /* options */ }),
+    inulaNext({ /* options */ }),
   ],
 }
 ```
@@ -95,10 +95,10 @@ module.exports = {
 ```ts
 // esbuild.config.js
 import { build } from 'esbuild'
-import InulaNext from '@openinula/unplugin/esbuild'
+import inulaNext from '@openinula/unplugin/esbuild'
 
 build({
-  plugins: [InulaNext()],
+  plugins: [inulaNext()],
 })
 ```
 
