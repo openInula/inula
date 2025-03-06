@@ -35,9 +35,6 @@ module.exports = {
               presets: ['@babel/preset-env'],
             },
           },
-          {
-            loader: '@openinula/inula-next-loader',
-          },
         ],
       },
       {
@@ -64,6 +61,7 @@ module.exports = {
     ],
   },
   plugins: [
+    require('@openinula/unplugin/webpack')(),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, './index.html'),
       filename: 'index.html',

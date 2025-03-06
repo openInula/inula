@@ -5,7 +5,6 @@ function App() {
   let count = 0;
 
   const handleCount = () => {
-    debugger;
     count++;
   };
 
