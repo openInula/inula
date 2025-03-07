@@ -43,7 +43,7 @@ const BuildConfig = mode => {
     },
     {
       file: path.join(output, `umd/intl.${prod ? 'min.' : ''}js`),
-      name: 'HorizonI18n',
+      name: 'InulaI18n',
       sourcemap: 'true',
       format: 'umd',
       globals: {
@@ -84,7 +84,7 @@ const BuildConfig = mode => {
         brotliSize: true,
       }),
     ],
-    external: ['openinula', 'react', 'react-dom'],
+    external: ['openinula'],
   };
 };
 export default [BuildConfig('dev'), BuildConfig('prod')];

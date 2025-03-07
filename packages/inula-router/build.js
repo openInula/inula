@@ -85,7 +85,7 @@ const connectRouterConfig = mode => {
     },
     {
       file: path.join(output, `connectRouter/umd/connectRouter.${prod ? 'min.' : ''}js`),
-      name: 'HorizonRouter',
+      name: 'InulaRouter',
       sourcemap: 'true',
       format: 'umd',
     },
