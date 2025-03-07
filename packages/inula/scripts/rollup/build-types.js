@@ -59,10 +59,11 @@ export function cleanUp(folders) {
 /**
  * 获取AST语法树节点的名称
  *
- * @param  node AST语法树节点
+ * @param  astNode AST语法树节点
  * @returns 节点的名称
  */
-function getNodeName(node) {
+function getNodeName(astNode) {
+  let node = astNode;
   if (node.type === 'VariableDeclaration') {
     node = node.declarations[0];
     if (!node.id) {
@@ -308,20 +309,19 @@ function patchNamespaceType() {
       });
       magicCodeStr.append(`export default ${LIB_NAME};`);
 
-      code = magicCodeStr.toString();
-      return code;
+      return magicCodeStr.toString();
     },
   };
 }
 
 function buildTypeConfig() {
   return {
-    input: ['./build/@types/index.d.ts'],
+    input: ['./build/inula/@types/index.d.ts'],
     output: {
-      file: './build/@types/index.d.ts',
+      file: './build/inula/@types/index.d.ts',
       format: 'es',
     },
-    plugins: [dts(), patchNamespaceType(), cleanUp(['./build/@types/'])],
+    plugins: [dts(), patchNamespaceType(), cleanUp(['./build/inula/@types/'])],
   };
 }
 

@@ -26,11 +26,13 @@ class DateTimeFormatter {
   private readonly formatOptions: Intl.DateTimeFormatOptions;
   // 创建一个缓存对象，用于存储DateTimeFormat的对象
   private readonly cache?: I18nCache;
+  private readonly valueKey?: string;
 
-  constructor(locales: Locales, formatOptions?: Intl.DateTimeFormatOptions, cache?: I18nCache) {
+  constructor(locales: Locales, formatOptions?: Intl.DateTimeFormatOptions, cache?: I18nCache, valueKey?: string) {
     this.locales = locales;
     this.formatOptions = formatOptions ?? {};
     this.cache = cache ?? creatI18nCache();
+    this.valueKey = valueKey ?? '';
   }
 
   dateTimeFormat(value: DatePool, formatOptions?: Intl.DateTimeFormatOptions): string {
@@ -44,7 +46,7 @@ class DateTimeFormatter {
     // 如果启用了记忆化且已经有对应的数字格式化器缓存，则直接返回缓存中的格式化结果。否则创建新的格式化数据，并进行缓存
     if (this.cache?.dateTimeFormat) {
       // 造缓存的key，key包含区域设置和日期时间格式选项
-      const cacheKey = utils.generateKey<Intl.DateTimeFormatOptions>(this.locales, options);
+      const cacheKey = utils.generateKey<Intl.DateTimeFormatOptions>(this.locales, options, this.valueKey);
 
       if (this.cache.dateTimeFormat[cacheKey]) {
         return this.cache.dateTimeFormat[cacheKey].format(value);

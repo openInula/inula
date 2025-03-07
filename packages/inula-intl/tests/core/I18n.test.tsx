@@ -26,10 +26,13 @@ describe('I18n', () => {
     };
 
     i18n.loadMessage('en', messages);
-    i18n.changeLanguage('en');
-    expect(i18n.messages).toEqual(messages);
+    i18n.changeLanguage('zh');
+    expect(i18n.locale).toEqual('zh');
     i18n.loadMessage('fr', { Hello: 'Salut' });
-    expect(i18n.messages).toEqual(messages);
+    expect(i18n.messages).toEqual({
+      en: { Hello: 'Hello' },
+      fr: { Hello: 'Salut' },
+    });
     i18n.changeMessage({ Hello: 'Salut' });
     expect(i18n.messages).toEqual({ Hello: 'Salut' });
   });
@@ -266,5 +269,23 @@ describe('I18n', () => {
     const formattedNumber = i18n.formatNumber(123456.789, { style: 'currency', currency: 'USD' });
     expect(typeof formattedNumber).toBe('string');
     expect(formattedNumber).toEqual('$123,456.79');
+  });
+
+  // 复数规则时，多value值
+  it('should return the formatted number', () => {
+    const message = {
+      'threats.eventMgr.common.loadingTipMore':
+        'Loaded {num, plural, =0 {record: #} one {record: #} other {records: #}}' +
+        ', total {total, plural, =0 {record: #} one {record: #} other {records: #}}, pull down to load more...',
+    };
+    const i18n = new I18n({
+      locale: 'en',
+      messages: message,
+    });
+    const messageResult = i18n.formatMessage(
+      { id: `threats.eventMgr.common.loadingTipMore` },
+      { num: 100, total: 29639 }
+    );
+    expect(messageResult).toEqual('Loaded records: 100, total records: 29,639, pull down to load more...');
   });
 });

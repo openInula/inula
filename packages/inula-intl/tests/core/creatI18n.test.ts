@@ -12,11 +12,11 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import createI18n from '../../src/core/createI18n';
+import createIntl from '../../src/core/createIntl';
 
 describe('createI18n', () => {
   it('createIntl', function () {
-    const i18n = createI18n({
+    const i18n = createIntl({
       locale: 'en',
       messages: {
         foo: 'bar',
@@ -30,7 +30,7 @@ describe('createI18n', () => {
   });
 
   it('createIntl', function () {
-    const i18n = createI18n({
+    const i18n = createIntl({
       locale: 'en',
       messages: {
         test: 'test',
@@ -45,7 +45,7 @@ describe('createI18n', () => {
 
   it('should not warn when defaultRichTextElements is not used', function () {
     const onWarn = jest.fn();
-    createI18n({
+    createIntl({
       locale: 'en',
       messages: {
         foo: 'bar',

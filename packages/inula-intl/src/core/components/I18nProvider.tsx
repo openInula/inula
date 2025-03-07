@@ -12,10 +12,11 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import { useRef, useState, useEffect, useMemo } from 'openinula';
+import { useCallback, useEffect, useMemo, useState } from 'openinula';
 import { InjectProvider } from './InjectI18n';
-import I18n, { createI18nInstance } from '../I18n';
-import { AllMessages, I18nProviderProps, Messages } from '../../types/types';
+import { createI18nInstance, I18n } from '../I18n';
+import { I18nProviderProps } from '../../types/types';
+import VueI18n from '../../vueI18n-adapter/src/VueI18n';
 
 /**
  * 用于为应用程序提供国际化的格式化功能，管理程序中的语言文本信息和本地化资源信息
@@ -23,43 +24,50 @@ import { AllMessages, I18nProviderProps, Messages } from '../../types/types';
  * @constructor
  */
 const I18nProvider = (props: I18nProviderProps) => {
-  const { locale, messages, children, i18n } = props;
+  // 使用 useMemo 创建或获取 i18n 实例
+  const { locale, messages, i18n, children } = props;
+  const i18nInstance = useMemo(() => {
+    return i18n || createI18nInstance({ locale, messages });
+  }, [i18n, locale, messages]);
 
-  const i18nInstance =
-    i18n ||
-    useMemo(() => {
-      return createI18nInstance({
-        locale: locale,
-        messages: messages,
-      });
-    }, [locale, messages]);
+  // 监听message和locale的变化
+  const { currentLocale, currentMessages } = useI18nSync(i18nInstance);
 
-  // 使用useRef保存上次的locale值
-  const localeRef = useRef<string | undefined>(i18nInstance.locale);
-  const localeMessage = useRef<string | Messages | AllMessages>(i18nInstance.messages);
-  const [context, setContext] = useState<I18n>(i18nInstance);
+  // 创建一个 memoized 的 context 值
+  const contextValue = useMemo(
+    () => ({
+      ...i18nInstance,
+      i18nInstance,
+      locale: currentLocale,
+      messages: currentMessages,
+      changeLanguage: i18nInstance.changeLanguage,
+      changeMessage: i18nInstance.changeMessage,
+    }),
+    [i18nInstance, currentLocale, currentMessages]
+  );
+  // 提供一个 Provider 组件
+  return <InjectProvider value={contextValue}>{children}</InjectProvider>;
+};
+
+export const useI18nSync = (i18nInstance: VueI18n | I18n) => {
+  const [currentLocale, setCurrentLocale] = useState(i18nInstance.locale);
+  const [currentMessages, setCurrentMessages] = useState(i18nInstance.messages);
+
+  const handleChange = useCallback(() => {
+    if (currentLocale !== i18nInstance.locale) {
+      setCurrentLocale(i18nInstance.locale);
+    }
+    if (currentMessages !== i18nInstance.messages) {
+      setCurrentMessages(i18nInstance.messages);
+    }
+  }, [i18nInstance, currentLocale, currentMessages]);
 
   useEffect(() => {
-    const handleChange = () => {
-      if (localeRef.current !== i18nInstance.locale || localeMessage.current !== i18nInstance.messages) {
-        localeRef.current = i18nInstance.locale;
-        localeMessage.current = i18nInstance.messages;
-        setContext(i18nInstance);
-      }
-    };
-    const removeListener = i18nInstance.on('change', handleChange);
+    // 清理函数
+    return i18nInstance.on('change', handleChange);
+  }, [i18nInstance, handleChange]);
 
-    // 手动触发一次 handleChange，以确保 context 的正确性
-    handleChange();
-
-    // 在组件卸载时取消事件监听
-    return () => {
-      removeListener();
-    };
-  }, [i18nInstance]);
-
-  // 提供一个Provider组件
-  return <InjectProvider value={context}>{children}</InjectProvider>;
+  return { currentLocale, currentMessages };
 };
 
 export default I18nProvider;

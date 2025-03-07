@@ -41,9 +41,9 @@ export function parsePath(url: string): Partial<Path> {
     pathname = pathname.substring(0, hashIdx);
   }
 
-  const searchIdx = url.indexOf('?');
+  const searchIdx = pathname.indexOf('?');
   if (searchIdx > -1) {
-    const search = url.substring(searchIdx);
+    const search = pathname.substring(searchIdx);
     parsedPath.search = search === '?' ? '' : search;
     pathname = pathname.substring(0, searchIdx);
   }

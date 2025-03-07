@@ -14,6 +14,7 @@
  */
 
 import { InulaDom } from './Interface';
+import { Props } from '../DOMOperator';
 
 /**
  * 获取当前聚焦的 input 或者 textarea 元素
@@ -47,4 +48,43 @@ export function getIFrameFocusedDom() {
     }
   }
   return focusedDom;
+}
+
+export function isElement(dom) {
+  return dom.nodeType === 1;
+}
+
+export function isText(dom) {
+  return dom.nodeType === 3;
+}
+
+export function isComment(dom) {
+  return dom.nodeType === 8;
+}
+
+export function isDocument(dom) {
+  return dom.nodeType === 9;
+}
+
+export function isDocumentFragment(dom) {
+  return dom.nodeType === 11;
+}
+
+export function getDomTag(dom) {
+  return dom.nodeName.toLowerCase();
+}
+
+export function isInputElement(dom: Element): dom is HTMLInputElement {
+  return getDomTag(dom) === 'input';
+}
+
+const types = ['button', 'input', 'select', 'textarea'];
+
+// button、input、select、textarea、如果有 autoFocus 属性需要focus
+export function shouldAutoFocus(tagName: string, props: Props): boolean {
+  return types.includes(tagName) ? Boolean(props.autoFocus) : false;
+}
+
+export function isNotNull(object: any): boolean {
+  return object !== null && object !== undefined;
 }

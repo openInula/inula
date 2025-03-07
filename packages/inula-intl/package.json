@@ -1,13 +1,14 @@
 {
   "name": "inula-intl",
-  "version": "0.0.5",
-  "description": "",
-  "main": "build/intl.umd.js",
+  "version": "1.0.34",
+  "description": "intl for intl framework, a part of intl-ecosystem",
+  "main": "./build/cjs/intl.js",
+  "module": "./build/esm/intl.js",
   "type": "module",
   "types": "build/@types/index.d.ts",
   "scripts": {
     "demo-serve": "webpack serve --mode=development",
-    "build": "rollup --config rollup.config.js && npm run build-types ",
+    "build": "rollup --config rollup.config.js && npm run build-types",
     "build-types": "tsc -p tsconfig.json && rollup -c build-type.js",
     "test": "jest --no-cache --config jest.config.js",
     "test-c": "jest --coverage"
@@ -35,8 +36,6 @@
     "html-webpack-plugin": "^5.5.1",
     "jest-environment-jsdom": "^29.5.0",
     "jsdom": "^21.1.1",
-    "react": "18.2.0-h3",
-    "react-dom": "18.2.0-h3",
     "rollup-plugin-livereload": "^2.0.5",
     "rollup-plugin-serve": "^1.1.0",
     "rollup-plugin-visualizer": "^5.10.0",

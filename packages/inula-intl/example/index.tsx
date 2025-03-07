@@ -18,4 +18,5 @@ import App from './App';
 function render() {
   Inula.render(<App />, document.querySelector('#root') as any);
 }
+
 render();

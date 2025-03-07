@@ -40,18 +40,41 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
 
     let { signal, url, data = null } = config;
 
-    const controller = new AbortController();
-    if (!signal) {
-      signal = controller.signal;
+    // GET HEAD 方法不允许设置 body
+    if (method === 'GET' || method === 'HEAD') {
+      data = null;
     }
 
-    // 处理请求取消
-    if (cancelToken) {
-      cancelToken.promise.then((reason: Cancel) => {
-        const cancelError = new CancelError(reason.message, config);
-        controller.abort();
-        reject(cancelError);
-      });
+    const options: RequestInit = {
+      method,
+      headers,
+      body: data || null, // 防止用户在拦截器传入空字符串，引发 fetch 错误
+      credentials: withCredentials ? 'include' : 'omit',
+    };
+
+    if (typeof window !== 'undefined' && window.AbortController) {
+      const controller = new AbortController();
+      signal = config.signal ? config.signal : controller.signal;
+
+      // 处理请求取消
+      if (cancelToken) {
+        cancelToken.promise.then((reason: Cancel) => {
+          const cancelError = new CancelError(reason.message, config);
+          controller.abort();
+          reject(cancelError);
+        });
+      }
+
+      if (timeout) {
+        setTimeout(() => {
+          controller.abort();
+          const errorMsg = timeoutErrorMessage ?? `timeout of ${timeout}ms exceeded`;
+          const error = new IrError(errorMsg, '', config, undefined, undefined);
+          reject(error);
+        }, timeout);
+      }
+
+      options.signal = signal;
     }
 
     // 拼接URL
@@ -67,28 +90,6 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
       }
     }
 
-    // GET HEAD 方法不允许设置 body
-    if (method === 'GET' || method === 'HEAD') {
-      data = null;
-    }
-
-    const options = {
-      method,
-      headers,
-      body: data || null, // 防止用户在拦截器传入空字符串，引发 fetch 错误
-      signal,
-      credentials: withCredentials ? 'include' : 'omit',
-    };
-
-    if (timeout) {
-      setTimeout(() => {
-        controller.abort();
-        const errorMsg = timeoutErrorMessage ?? `timeout of ${timeout}ms exceeded`;
-        const error = new IrError(errorMsg, '', config, undefined, undefined);
-        reject(error);
-      }, timeout);
-    }
-
     if (!url) {
       return Promise.reject('URL is undefined!');
     }
@@ -96,7 +97,7 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
     if (onUploadProgress) {
       processUploadProgress(onUploadProgress, data, reject, resolve, method, url, config);
     } else {
-      fetch(url, options as RequestInit)
+      fetch(url, options)
         .then(response => {
           // 将 Headers 对象转换为普通 JavaScript 对象，可以使用 [] 访问具体响应头
           const headersObj = {};
@@ -122,41 +123,20 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
 
           // 根据 responseType 选择相应的解析方法
           let parseMethod;
+          let contentType = headersObj['content-type'];
+          contentType = utils.checkString(contentType) ? contentType.split(';')[0].trim() : '';
 
           switch (responseType as ResponseType) {
             case 'arraybuffer':
-              parseMethod = new Response(responseBody).arrayBuffer();
+              parseMethod = readStream(responseBody, 'arraybuffer');
               break;
 
             case 'blob':
-              parseMethod = new Response(responseBody).blob();
+              parseMethod = readStream(responseBody, 'blob', contentType);
               break;
-
             // text 和 json 服务端返回的都是字符串 统一处理
-            case 'text':
-              parseMethod = new Response(responseBody).text();
-              break;
-
-            case 'json':
-              parseMethod = new Response(responseBody).text().then((text: string) => {
-                try {
-                  return text ? JSON.parse(text) : ''; // 如果服务端请求成功但不返回响应值，默认返回空字符串
-                } catch (e) {
-                  // 显式指定返回类型 JSON解析失败报错
-                  const error = new IrError('parse error', '', responseData.config, responseData.request, responseData);
-                  reject(error);
-                }
-              });
-              break;
             default:
-              parseMethod = new Response(responseBody).text().then((text: string) => {
-                try {
-                  return text ? JSON.parse(text) : '';
-                } catch (e) {
-                  // 默认为 JSON 类型，若JSON校验失败则直接返回服务端数据
-                  return text;
-                }
-              });
+              parseMethod = readStream(responseBody, 'text');
           }
 
           parseMethod
@@ -204,3 +184,58 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
     }
   });
 };
+
+async function readStream(stream: ReadableStream<Uint8Array> | null, type: 'arraybuffer'): Promise<ArrayBuffer>;
+async function readStream(stream: ReadableStream<Uint8Array> | null, type: 'blob', contentType: string): Promise<Blob>;
+async function readStream(stream: ReadableStream<Uint8Array> | null, type: 'text'): Promise<string>;
+async function readStream(
+  stream: ReadableStream<Uint8Array> | null,
+  type: 'arraybuffer' | 'blob' | 'text',
+  contentType?: string
+): Promise<ArrayBuffer | Blob | string> {
+  if (stream === null) {
+    if (type === 'arraybuffer') {
+      return new ArrayBuffer(0);
+    } else if (type === 'blob') {
+      return new Blob();
+    } else {
+      return '';
+    }
+  }
+  const reader = stream.getReader();
+  const chunks: Uint8Array[] = [];
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) {
+      break;
+    }
+    chunks.push(value);
+  }
+
+  if (type === 'arraybuffer') {
+    return concatenateArrayBuffers(chunks);
+  } else if (type === 'blob') {
+    return new Blob(chunks, { type: contentType });
+  } else {
+    const decoder = new TextDecoder();
+    let result = '';
+    for (const chunk of chunks) {
+      result += decoder.decode(chunk, { stream: true });
+    }
+    result += decoder.decode();
+    return result;
+  }
+}
+
+function concatenateArrayBuffers(chunks: Uint8Array[]): ArrayBuffer {
+  const totalLength = chunks.reduce((sum, chunk) => sum + chunk.byteLength, 0);
+  const result = new Uint8Array(totalLength);
+  let offset = 0;
+
+  for (const chunk of chunks) {
+    result.set(new Uint8Array(chunk), offset);
+    offset += chunk.byteLength;
+  }
+  return result.buffer;
+}

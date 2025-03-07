@@ -20,13 +20,13 @@ import {
   TreeRoot,
   FunctionComponent,
   ClassComponent,
-  Portal,
-  Text,
+  DomPortal,
+  DomText,
   ContextConsumer,
   ForwardRef,
   SuspenseComponent,
   LazyComponent,
-  Component,
+  DomComponent,
   Fragment,
   ContextProvider,
   Profiler,
@@ -153,19 +153,19 @@ export class VNode {
         this.classComponentWillUnmount = null;
         this.src = null;
         break;
-      case Portal:
+      case DomPortal:
         this.realNode = null;
         this.context = null;
         this.delegatedEvents = new Set<string>();
         this.src = null;
         break;
-      case Component:
+      case DomComponent:
         this.realNode = null;
         this.changeList = null;
         this.context = null;
         this.src = null;
         break;
-      case Text:
+      case DomText:
         this.realNode = null;
         break;
       case SuspenseComponent:

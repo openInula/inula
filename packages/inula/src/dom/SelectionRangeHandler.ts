@@ -17,8 +17,8 @@
  * 处理文本框、输入框中框选范围内的数据
  */
 
-import { getIFrameFocusedDom } from './utils/Common';
-import { isElement, isText } from '../renderer/utils/common';
+import { getIFrameFocusedDom, isText } from './utils/Common';
+import { isElement } from './utils/Common';
 
 type SelectionRange = {
   start: number | null;

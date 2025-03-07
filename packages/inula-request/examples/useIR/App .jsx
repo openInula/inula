@@ -12,7 +12,6 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-
 import Inula, { useState } from 'openinula';
 import { useIR } from '../../index';
 

@@ -4,7 +4,7 @@
   "keywords": [
     "openinula"
   ],
-  "version": "0.0.4",
+  "version": "0.1.13",
   "homepage": "",
   "bugs": "",
   "license": "MulanPSL2",
@@ -14,7 +14,7 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "build": "rollup --config ./scripts/rollup/rollup.config.js",
+    "build": "npm run build-types && rollup --config ./scripts/rollup/rollup.config.js",
     "build-types": "tsc -p tsconfig.build.json || echo \"WARNING: TSC exited with status $?\" && rollup -c ./scripts/rollup/build-types.js",
     "build:inula3rdLib-dev": "npm run build & node ./scripts/gen3rdLib.js build:horizon3rdLib-dev",
     "build:watch": "rollup --watch --config ./scripts/rollup/rollup.config.js",
@@ -23,12 +23,13 @@
     "test": "jest --config=jest.config.js",
     "watch-test": "yarn test --watch --dev"
   },
-  "types": "./build/@types/index.d.ts",
+  "types": "@types/index.d.ts",
   "exports": {
     ".": {
+      "types": "./@types/index.d.ts",
       "default": "./index.js"
     },
-    "./package.json":"./package.json",
+    "./package.json": "./package.json",
     "./jsx-runtime": "./jsx-runtime.js",
     "./jsx-dev-runtime": "./jsx-dev-runtime.js"
   }

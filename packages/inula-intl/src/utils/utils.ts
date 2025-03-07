@@ -23,9 +23,9 @@ export function isVariantI18n(i18n?: I18n) {
   }
 }
 
-function generateKey<T>(locales?: string | string[], options: T = {} as T) {
+function generateKey<T>(locales?: string | string[], options?: T, valueKey?: string | undefined) {
   const localeKey = Array.isArray(locales) ? locales.sort().join('-') : locales;
-  return `${localeKey}:${JSON.stringify(options)}`;
+  return `${localeKey}:${JSON.stringify(options ?? {})}_${valueKey ?? ''}`;
 }
 
 function compile(message: string): CompiledMessage {
@@ -42,5 +42,20 @@ const utils = {
   generateKey,
   compile,
 };
+
+export function createI18nProps(source) {
+  return {
+    intl: source,
+    locale: source.locale,
+    messages: source.messages,
+    defaultLocale: source.defaultLocale,
+    timeZone: source.timeZone,
+    onError: source.onError,
+    formatMessage: source.formatMessage.bind(source),
+    formatDate: source.formatDate ? source.formatDate.bind(source) : source.DateTimeFormat,
+    formatNumber: source.formatNumber ? source.formatNumber.bind(source) : source.NumberFormat,
+    $t: source.$t || source.formatMessage.bind(source),
+  };
+}
 
 export default utils;

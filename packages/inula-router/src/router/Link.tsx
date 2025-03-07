@@ -44,7 +44,7 @@ function Link<P extends LinkProps>(props: P) {
   const context = useContext(RouterContext);
   const history = context.history;
 
-  let location = typeof to === 'function' ? to(context.location) : to;
+  const location = typeof to === 'function' ? to(context.location) : to;
 
   let state: any;
   let path: Partial<Path>;
@@ -55,7 +55,7 @@ function Link<P extends LinkProps>(props: P) {
     path = { pathname, hash, search };
     state = location.state;
   }
-  const href = history.createHref(path);
+  const href = location ? history.createHref(path) : '';
 
   const linkClickEvent = (event: MouseEvent<HTMLAnchorElement>) => {
     try {

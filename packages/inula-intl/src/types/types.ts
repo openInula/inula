@@ -24,6 +24,9 @@ import {
   configProps,
   InjectedIntl,
   InulaPortal,
+  MessageDescriptor,
+  MessageOptions,
+  I18nCache,
 } from './interfaces';
 import { InulaElement } from 'openinula';
 
@@ -33,7 +36,9 @@ export type Locale = string;
 
 export type Locales = Locale | Locale[];
 
-export type LocaleConfig = { plurals?: (...args: any[]) => any };
+type MyFunctionType<T extends (...args: any[]) => any> = T;
+
+export type LocaleConfig = { plurals?: MyFunctionType<any> };
 
 export type AllLocaleConfig = Record<Locale, LocaleConfig>;
 
@@ -75,19 +80,25 @@ export type RawToken = {
 
 export type I18nProviderProps = I18nContextProps & configProps;
 
+type ErrorHandler = string | ((message: any, id: any, context: any) => string) | Error | undefined;
+
 export type IntlType = I18nContextProps & {
-  defaultLocale?: string | undefined;
-  onError?: Error | undefined;
-  messages?:
-    | string
-    | Record<string, string>
-    | Record<string, string | CompiledMessagePart[]>
-    | Record<string, Record<string, string> | Record<string, string | CompiledMessagePart[]>>;
-  locale?: string;
-  formatMessage: (...args: any[]) => any;
-  formatNumber: (...args: any[]) => any;
-  formatDate: (...args: any[]) => any;
-  $t?: (...args: any[]) => any;
+  defaultLocale?: string;
+  formatDate: (value: string | Date, formatOptions?: Intl.DateTimeFormatOptions) => string;
+  $t: (id: MessageDescriptor | string, values?: object, options?: MessageOptions) => string | Array<any>;
+  formatMessage: (id: MessageDescriptor | string, values?: object, options?: MessageOptions) => string | Array<any>;
+  onError?: ErrorHandler;
+  onWarn?: Error;
+  messages?: string | Messages | AllMessages;
+  timeZone?: string;
+  formatNumber: (value: number, formatOptions?: Intl.NumberFormatOptions) => string;
+  locale: string;
+  components?: { [key: string]: InulaNode };
+  cache?: I18nCache;
+  locales?: Locales;
+  localeConfig?: AllLocaleConfig;
+  children?: any;
+  RenderOnLocaleChange?: boolean;
 };
 
 export type InjectedIntlProps = {
