@@ -20,4 +20,7 @@ export default {
   text3: 'Welcome to the Inula-Intl component!',
   text4: 'Welcome to the Inula-Intl component!',
   text5: 'Render a component {testComponent1} {testComponent2}!',
+  text6:
+    'Loaded {num, plural, =0 {record: #} one {record: #} other {records: #}}, total {total, plural, =0 {record: #} one {record: #} other {records: #}}, list {list, plural, =0 {record: #} one {record: #} other {records: #}}pull down to load more...',
+  text7: 'test select funcion ,{value, select, female {She} other {They}} is gril',
 };

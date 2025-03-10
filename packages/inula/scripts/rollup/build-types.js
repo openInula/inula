@@ -59,10 +59,11 @@ export function cleanUp(folders) {
 /**
  * 获取AST语法树节点的名称
  *
- * @param  node AST语法树节点
+ * @param  astNode AST语法树节点
  * @returns 节点的名称
  */
-function getNodeName(node) {
+function getNodeName(astNode) {
+  let node = astNode;
   if (node.type === 'VariableDeclaration') {
     node = node.declarations[0];
     if (!node.id) {
@@ -86,7 +87,7 @@ function getNodeName(node) {
 }
 
 /**
- * 判断AST语法树节点是否是Horizon变量节点
+ * 判断AST语法树节点是否是Inula变量节点
  *
  * @param  node AST语法树节点
  * @returns true 是 false 不是
@@ -194,7 +195,7 @@ function patchNamespaceType() {
       }
 
       /**
-       * 第二部分：遍历AST语法树 ，去除最后的export声明部分，并且删除Horizon变量的声明
+       * 第二部分：遍历AST语法树 ，去除最后的export声明部分，并且删除Inula变量的声明
        * 将除了namespace的导出声明外的所有导出类型放入exportTypeArr
        * 将所有被重名的导出类型的名称放入aliasTypeArr
        * 将所有被重名的导出类型的名称和别名放入hasAliasExport，key是类型的名称 value是导出类型的别名
@@ -202,7 +203,7 @@ function patchNamespaceType() {
       for (const node of ast.program.body) {
         if (node.type === 'VariableDeclaration') {
           if (isHorizonVariable(node)) {
-            // 不导出Horizon变量，需要将Horizon的变量重命名为namespace
+            // 不导出Inula变量，需要将Inula的变量重命名为namespace
             assert(typeof node.start === 'number');
             assert(typeof node.end === 'number');
             magicCodeStr.remove(node.start, node.end);
@@ -290,7 +291,7 @@ function patchNamespaceType() {
        * 结果示例如下
        * export typeof foo
        * export typeof foo$1
-       * declare namespace Horizon {
+       * declare namespace Inula {
        *  export {typeof foo}
        *  export {typeof foo$1 as fooalias}
        * }
@@ -308,20 +309,19 @@ function patchNamespaceType() {
       });
       magicCodeStr.append(`export default ${LIB_NAME};`);
 
-      code = magicCodeStr.toString();
-      return code;
+      return magicCodeStr.toString();
     },
   };
 }
 
 function buildTypeConfig() {
   return {
-    input: ['./build/@types/index.d.ts'],
+    input: ['./build/inula/@types/index.d.ts'],
     output: {
-      file: './build/@types/index.d.ts',
+      file: './build/inula/@types/index.d.ts',
       format: 'es',
     },
-    plugins: [dts(), patchNamespaceType(), cleanUp(['./build/@types/'])],
+    plugins: [dts(), patchNamespaceType(), cleanUp(['./build/inula/@types/'])],
   };
 }
 

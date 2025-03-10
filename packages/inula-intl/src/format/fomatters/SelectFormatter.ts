@@ -24,27 +24,12 @@ import { I18nCache } from '../../types/interfaces';
  */
 class SelectFormatter {
   private readonly locale: Locale;
-  private readonly cache: I18nCache;
 
-  constructor(locale: Locale, cache: I18nCache) {
+  constructor(locale: Locale) {
     this.locale = locale;
-    this.cache = cache;
   }
 
   getRule(value: SelectPool, rules: any) {
-    if (this.cache.select) {
-      // 创建key，用于唯一标识
-      const cacheKey = utils.generateKey<Intl.NumberFormatOptions>(this.locale, rules);
-
-      // 如果key存在，则使用缓存中的替代
-      if (this.cache.select[cacheKey]) {
-        return this.cache.select[cacheKey][value] || this.cache.select[cacheKey].other;
-      }
-
-      // 如果不存在，则进行缓存
-      this.cache.select[cacheKey] = rules;
-    }
-
     return rules[value] || rules.other;
   }
 }

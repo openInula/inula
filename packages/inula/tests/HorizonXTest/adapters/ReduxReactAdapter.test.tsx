@@ -470,4 +470,86 @@ describe('Redux/React binding adapter', () => {
     expect(getE('child').innerHTML).toBe('1');
     expect(getE('parent').innerHTML).toBe('0');
   });
+
+  it('Nested use of useSelector', () => {
+    const parentRenderFn = jest.fn();
+    const childRenderFn = jest.fn();
+    let dispatch: ReturnType<typeof useDispatch>;
+
+    const ParentComponent = () => {
+      parentRenderFn();
+      dispatch = useDispatch();
+      const handleButtonClick = () => {
+        dispatch({ type: 'UPDATE_STATE' });
+      };
+
+      return (
+        <div>
+          <button onClick={handleButtonClick}>Dispatch</button>
+          <ChildComponent />
+        </div>
+      );
+    };
+
+    const ChildComponent = () => {
+      childRenderFn();
+      const state = useSelector(state => state.someState);
+      return <div>{state}</div>;
+    };
+
+    const initialState = { someState: 'initial state' };
+
+    const reducer = (state = initialState, action) => {
+      switch (action.type) {
+        case 'UPDATE_STATE':
+          return { ...state, someState: 'updated state' };
+        default:
+          return state;
+      }
+    };
+
+    const store = createStore(reducer);
+
+    Inula.render(
+      <Provider store={store}>
+        <ParentComponent />
+      </Provider>,
+      getE(CONTAINER)
+    );
+
+    expect(parentRenderFn).toHaveBeenCalledTimes(1);
+    expect(childRenderFn).toHaveBeenCalledTimes(1);
+
+    Inula.act(() => {
+      dispatch({ type: 'UPDATE_STATE' });
+    });
+
+    // Ensure ParentComponent did not re-render
+    expect(parentRenderFn).toHaveBeenCalledTimes(1);
+    expect(childRenderFn).toHaveBeenCalledTimes(2);
+  });
+
+  it('connect should transfer static property and static method', () => {
+    // 定义一个组件，包含静态属性
+    class TestComponent extends Inula.Component {
+      static staticProperty = 'some value';
+
+      static getName() {
+        return 'TestComponent';
+      }
+
+      render() {
+        return <div>Test Component</div>;
+      }
+    }
+
+    // 连接组件
+    const mapStateToProps = (state: any) => ({});
+    const ConnectedComponent = connect(mapStateToProps)(TestComponent);
+
+    // 检查连接的组件是否包含静态属性
+    expect(ConnectedComponent.staticProperty).toBe(TestComponent.staticProperty);
+    expect(typeof ConnectedComponent.getName).toBe('function');
+    expect(ConnectedComponent.getName()).toBe('TestComponent');
+  });
 });

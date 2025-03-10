@@ -13,10 +13,12 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { getVNodeProps } from '../renderer/utils/InternalKeys';
-import { getTag } from '../renderer/utils/common';
-import { InulaReconciler } from '../renderer';
-import { ElementType } from '../renderer/Types';
+import { getVNodeProps } from '../dom/DOMInternalKeys';
+import { getDomTag, isNotNull } from '../dom/utils/Common';
+import { Props } from '../dom/utils/Interface';
+import { updateTextareaValue } from '../dom/valueHandler/TextareaValueHandler';
+import { updateInputHandlerIfChanged } from '../dom/valueHandler/ValueChangeHandler';
+import { updateInputValue } from '../dom/valueHandler/InputValueHandler';
 
 // 记录表单控件 input/textarea/select的onChange事件的targets
 let changeEventTargets: Array<any> | null = null;
@@ -35,12 +37,43 @@ export function shouldControlValue(): boolean {
   return changeEventTargets !== null && changeEventTargets.length > 0;
 }
 
+function controlInputValue(inputDom: HTMLInputElement, props: Props) {
+  const { name, type } = props;
+
+  // 如果是 radio，找出同一form内，name相同的Radio，更新它们Handler的Value
+  if (type === 'radio' && isNotNull(name)) {
+    const radioList = document.querySelectorAll<HTMLInputElement>(`input[type="radio"][name="${name}"]`);
+    for (let i = 0; i < radioList.length; i++) {
+      const radio = radioList[i];
+      if (radio === inputDom) {
+        continue;
+      }
+      if (isNotNull(radio.form) && isNotNull(inputDom.form) && radio.form !== inputDom.form) {
+        continue;
+      }
+
+      updateInputHandlerIfChanged(radio);
+    }
+  } else {
+    updateInputValue(inputDom, props);
+  }
+}
+
 // 受控组件值重新赋值
-function controlValue(target: ElementType) {
+function controlValue(target: Element) {
   const props = getVNodeProps(target);
   if (props) {
-    const type = getTag(target);
-    InulaReconciler.hostConfig.handleControledInputElements(target, type ?? '', props);
+    const type = getDomTag(target);
+    switch (type) {
+      case 'input':
+        controlInputValue(<HTMLInputElement>target, props);
+        break;
+      case 'textarea':
+        updateTextareaValue(<HTMLTextAreaElement>target, props);
+        break;
+      default:
+        break;
+    }
   }
 }
 

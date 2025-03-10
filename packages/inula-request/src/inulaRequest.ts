@@ -24,7 +24,6 @@ import IrError, { isIrError } from './core/IrError';
 import buildInstance from './utils/instanceUtils/buildInstance';
 import IrHeaders from './core/IrHeaders';
 import CancelError from './cancel/CancelError';
-import 'core-js/stable';
 
 // 使用默认配置创建 ir 对象实例
 const inulaRequest = buildInstance(defaultConfig as IrRequestConfig);

@@ -56,7 +56,7 @@ export function calculateTransRate(samplesNum: number, interval: number) {
     }
 
     if (now - firstTimestamp < minInterval) {
-      return;
+      return undefined;
     }
 
     const totalTime = start && now - start;

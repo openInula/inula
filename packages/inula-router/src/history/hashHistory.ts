@@ -58,10 +58,10 @@ export function createHashHistory<S = DefaultStateType>(option: HashHistoryOptio
   const pathEncoder = hashType === 'slash' ? addHeadSlash : stripHeadSlash;
 
   const startLocation = getHashContent(window.location.href);
-  const encodeLocation = pathEncoder(startLocation);
+  const encodedLocation = pathEncoder(startLocation);
   // 初始化hash格式不合法时会重定向
-  if (startLocation !== encodeLocation) {
-    window.location.replace(stripHash(window.location.href) + '#' + encodeLocation);
+  if (startLocation !== encodedLocation) {
+    window.location.replace(stripHash(window.location.href) + '#' + encodedLocation);
   }
 
   function getLocation() {

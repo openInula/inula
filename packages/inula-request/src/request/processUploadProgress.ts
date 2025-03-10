@@ -19,7 +19,7 @@ import CancelError from '../cancel/CancelError';
 import { calculateTransRate } from '../utils/dataUtils/calculateTransRate';
 
 function processUploadProgress(
-  onUploadProgress: (progressEvent: IrProgressEvent) => void | null,
+  onUploadProgress: (progressEvent: IrProgressEvent) => void,
   data: FormData,
   reject: (reason?: any) => void,
   resolve: (value: PromiseLike<IrResponse<any>> | IrResponse<any>) => void,

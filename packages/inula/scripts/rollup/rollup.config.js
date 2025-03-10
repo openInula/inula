@@ -19,7 +19,6 @@ import path from 'path';
 import fs from 'fs';
 import replace from '@rollup/plugin-replace';
 import copy from './copy-plugin';
-import execute from 'rollup-plugin-execute';
 import { terser } from 'rollup-plugin-terser';
 import { version as inulaVersion } from '../../package.json';
 
@@ -27,7 +26,7 @@ const extensions = ['.js', '.ts'];
 
 const libDir = path.join(__dirname, '../..');
 const rootDir = path.join(__dirname, '../..');
-const outDir = path.join(rootDir, 'build');
+const outDir = path.join(rootDir, 'build', 'inula');
 
 if (!fs.existsSync(path.join(rootDir, 'build'))) {
   fs.mkdirSync(path.join(rootDir, 'build'));
@@ -94,7 +93,6 @@ function genConfig(mode) {
     ],
     plugins: [
       ...getBasicPlugins(mode),
-      execute('npm run build-types', true),
       mode === 'production' && terser(),
       copy([
         {

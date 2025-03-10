@@ -17,11 +17,11 @@ import { injectIntl } from '../../index';
 
 const Example5 = ({ intl }) => {
   // 使用intl.formatMessage来获取国际化消息
-  console.log(intl + '------------intl-------------');
   return (
     <div className="card">
       <h2>injectIntl方式测试Demo</h2>
       <pre>{intl.formatMessage({ id: 'text4' })}</pre>
+      <pre>{intl.formatMessage({ id: 'text6' }, { num: 100, total: 29639, list: 44 })}</pre>
     </div>
   );
 };

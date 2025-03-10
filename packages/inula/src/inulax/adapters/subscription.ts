@@ -13,8 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { unstable_batchedUpdates } from '../../renderer/External';
-import { ReduxStoreHandler } from './redux';
+import { batch, ReduxStoreHandler } from './redux';
 
 type LinkListNode<T> = {
   next: LinkListNode<T>;
@@ -30,10 +29,6 @@ interface ListenerManager {
   trigger(): void;
 
   subscribe(cb: Callback): () => void;
-}
-
-function batchUpdate(callback: () => any) {
-  unstable_batchedUpdates(callback);
 }
 
 function getLinkedList<T>() {
@@ -108,7 +103,7 @@ function getListenerManager(): ListenerManager {
 
   function trigger() {
     const listeners = linkedList.getIterator();
-    batchUpdate(() => {
+    batch(() => {
       for (const listener of listeners) {
         listener();
       }
@@ -161,7 +156,7 @@ function createSubscription(store: ReduxStoreHandler, parentSub: Subscription | 
 
   function trySubscribe() {
     if (!unsubscribe) {
-      // ���Զ���store�ı仯������Ѿ�����һ�����ģ���ô��������һ��Ƕ�׵Ķ��ġ���������ֱ�Ӷ���store��
+      // 尝试订阅store的变化。如果已经存在一个订阅，那么它会添加一个嵌套的订阅。否则，它会直接订阅store。
       unsubscribe = parentSub ? parentSub.addNestedSub(storeChangeHandler) : store.subscribe(storeChangeHandler);
       listenerStore = getListenerManager();
     }

@@ -14,7 +14,7 @@
  */
 
 function checkHeaderName(str: string) {
-  return /^[-_a-zA-Z]+$/.test(str.trim());
+  return /^[-_a-zA-Z0-9^`|~,!#$%&'*+.]+$/.test(str.trim());
 }
 
 export default checkHeaderName;
