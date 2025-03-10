@@ -43,8 +43,7 @@ interface InulaErrorInfo {
   componentStack: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type KVObject = {};
+export type KVObject = Record<any, any>;
 
 export type InulaFragment = Iterable<InulaNode>;
 
@@ -73,7 +72,6 @@ export interface Context<T> {
 
 export interface FunctionComponent<P = KVObject> {
   (props: P, context?: any): InulaElement<any, any> | null;
-
   displayName?: string;
 }
 
@@ -145,15 +143,19 @@ export type Attributes = {
   key?: Key | null | undefined;
 };
 
+export type { RefObject, RefCallBack };
+
 export type Ref<T> = RefCallBack<T> | RefObject<T> | null;
 
 export type RefAttributes<T> = Attributes & {
   ref?: Ref<T> | null;
 };
 
-export type ComponentPropsWithRef<T extends any> = T extends new (props: infer P) => Component<any, any>
+export type ComponentPropsWithRef<T> = T extends new (props: infer P) => Component<any, any>
   ? PropsOmitRef<P> & RefAttributes<InstanceType<T>>
-  : PropsWithRef<any>;
+  : T extends (props: infer P, legacyContext?: any) => InulaNode
+    ? PropsWithRef<P>
+    : never;
 
 export type LazyComponent<T extends ComponentType<any>> = ExoticComponent<ComponentPropsWithRef<T>> & {
   readonly _result: T;

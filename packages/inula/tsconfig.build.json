@@ -6,6 +6,7 @@
     "declaration": true,
     "skipLibCheck": true,
     "emitDeclarationOnly": true,
-    "declarationDir": "./build/@types"
+    "declarationDir": "./build/inula/@types",
+    "stripInternal": true
   }
 }

@@ -14,10 +14,10 @@
  */
 
 import type { VNode } from '../Types';
-import { saveVNode } from '../utils/InternalKeys';
+
 import { throwIfTrue } from '../utils/throwIfTrue';
+import { newTextDom } from '../../dom/DOMOperator';
 import { FlagUtils } from '../vnode/VNodeFlags';
-import { InulaReconciler } from '..';
 
 export function captureRender(): VNode | null {
   return null;
@@ -44,8 +44,6 @@ export function bubbleRender(processing: VNode) {
       );
     }
     // 获得对应节点
-    const newTextNode = InulaReconciler.hostConfig.createText(newText);
-    saveVNode(processing, newTextNode);
-    processing.realNode = newTextNode;
+    processing.realNode = newTextDom(newText, processing);
   }
 }

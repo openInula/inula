@@ -17,7 +17,7 @@ import { useLayoutEffectImpl } from './UseEffectHook';
 import { getHookStage } from './HookStage';
 import { throwNotInFuncError } from './BaseHook';
 import type { MutableRef } from './HookType';
-import { isNotNull } from '../../renderer/utils/common';
+import { isNotNull } from '../../dom/utils/Common';
 
 function effectFunc<R>(func: () => R, ref: MutableRef<R> | ((any) => any) | null): (() => void) | void {
   if (typeof ref === 'function') {

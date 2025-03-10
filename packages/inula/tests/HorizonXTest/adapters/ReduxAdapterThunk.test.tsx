@@ -31,16 +31,12 @@ describe('Redux thunk', () => {
       };
     }
 
-    const todoStore = createStore(
-      (state = { todos: [] }, action) => {
-        if (action.type === 'ADD_TODO') {
-          return { todos: state.todos?.concat(action.text) };
-        }
-        return state;
-      },
-      null,
-      applyMiddleware(thunk)
-    );
+    const todoStore = createStore((state = { todos: [] }, action) => {
+      if (action.type === 'ADD_TODO') {
+        return { todos: state.todos?.concat(action.text) };
+      }
+      return state;
+    }, applyMiddleware(thunk));
 
     for (let i = 0; i < 10; i++) {
       //TODO: resolve thunk problems

@@ -13,17 +13,15 @@
  * See the Mulan PSL v2 for more details.
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { asyncUpdates, getFirstCustomElement, syncUpdates, startUpdate, createTreeRootVNode } from './Renderer';
-import { createPortal } from './components/CreatePortal';
-import type { Container, ElementType } from './Types';
-import { isElement } from './utils/common';
-import { findElementByClassInst } from './utils/InternalKeys';
+import { asyncUpdates, getFirstCustomDom, syncUpdates, startUpdate, createTreeRootVNode } from '../renderer/Renderer';
+import { createPortal } from '../renderer/components/CreatePortal';
+import type { Container } from './DOMOperator';
+import { isElement } from './utils/Common';
+import { findDOMByClassInst } from '../renderer/vnode/VNodeUtils';
 import { listenSimulatedDelegatedEvents } from '../event/EventBinding';
-import { Callback } from './Types';
+import { Callback } from '../renderer/Types';
 import { InulaNode } from '../types';
-import { EVENT_KEY } from './utils/InternalKeys';
-import { InulaReconciler } from '.';
+import { EVENT_KEY, ROOT_CONTAINER } from './DOMInternalKeys';
 
 function createRoot(children: any, container: Container, callback?: Callback) {
   // 清空容器
@@ -35,14 +33,14 @@ function createRoot(children: any, container: Container, callback?: Callback) {
 
   // 调度器创建根节点，并给容器dom赋vNode结构体
   const treeRoot = createTreeRootVNode(container);
-  container._treeRoot = treeRoot;
+  container[ROOT_CONTAINER] = treeRoot;
   listenSimulatedDelegatedEvents(treeRoot);
 
   // 执行回调
   if (typeof callback === 'function') {
     const cb = callback;
     callback = function () {
-      const instance = getFirstCustomElement(treeRoot);
+      const instance = getFirstCustomDom(treeRoot);
       cb.call(instance);
     };
   }
@@ -56,7 +54,7 @@ function createRoot(children: any, container: Container, callback?: Callback) {
 }
 
 function executeRender(children: any, container: Container, callback?: Callback) {
-  let treeRoot = container._treeRoot;
+  let treeRoot = container[ROOT_CONTAINER];
 
   if (!treeRoot) {
     treeRoot = createRoot(children, container, callback);
@@ -65,7 +63,7 @@ function executeRender(children: any, container: Container, callback?: Callback)
     if (typeof callback === 'function') {
       const cb = callback;
       callback = function () {
-        const instance = getFirstCustomElement(treeRoot);
+        const instance = getFirstCustomDom(treeRoot);
         cb.call(instance);
       };
     }
@@ -73,21 +71,21 @@ function executeRender(children: any, container: Container, callback?: Callback)
     startUpdate(children, treeRoot, callback);
   }
 
-  return getFirstCustomElement(treeRoot);
+  return getFirstCustomDom(treeRoot);
 }
 
-function findNode(Ele?: Element): null | Element | Text {
-  if (Ele === null || Ele === undefined) {
+function findDOMNode(domOrEle?: Element): null | Element | Text {
+  if (domOrEle === null || domOrEle === undefined) {
     return null;
   }
 
   // 普通节点
-  if (isElement(Ele as ElementType)) {
-    return Ele;
+  if (isElement(domOrEle)) {
+    return domOrEle;
   }
 
   // class的实例
-  return findElementByClassInst(Ele);
+  return findDOMByClassInst(domOrEle);
 }
 
 // 情况根节点监听器
@@ -98,7 +96,7 @@ function removeRootEventLister(container: Container) {
       const listener = events[event];
 
       if (listener) {
-        InulaReconciler.hostConfig.removeEventListener(container, event, listener);
+        container.removeEventListener(event, listener);
         events[event] = null;
       }
     });
@@ -108,11 +106,11 @@ function removeRootEventLister(container: Container) {
 // 卸载入口
 function destroy(container: Element | DocumentFragment | Document): boolean;
 function destroy(container: Container): boolean {
-  if (container._treeRoot) {
+  if (container[ROOT_CONTAINER]) {
     syncUpdates(() => {
       executeRender(null, container, () => {
         removeRootEventLister(container);
-        container._treeRoot = null;
+        container[ROOT_CONTAINER] = null;
       });
     });
 
@@ -142,7 +140,7 @@ function createRootElement(container: Container, option?: Record<string, any>): 
 export {
   createPortal,
   asyncUpdates as unstable_batchedUpdates,
-  findNode,
+  findDOMNode,
   executeRender as render,
   createRootElement as createRoot,
   destroy as unmountComponentAtNode,

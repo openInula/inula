@@ -508,6 +508,9 @@ export interface SVGAttributes<T> extends AriaAttributes, DOMAttributes<T> {
   colorRendering?: number | string;
   contentScriptType?: number | string;
   contentStyleType?: number | string;
+  cx?: number | string | undefined;
+  cy?: number | string | undefined;
+  d?: string | undefined;
   diffuseConstant?: number | string;
   direction?: number | string;
   divisor?: number | string;

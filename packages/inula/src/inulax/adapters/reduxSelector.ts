@@ -89,7 +89,7 @@ function handleMapDispatchToProps<DispatchProps, OwnProps>(
       const mappedDispatch = {};
       Object.entries(mapDispatchToProps).forEach(([key, value]) => {
         mappedDispatch[key] = (...args: ReduxAction[]) => {
-          dispatch(value(...args));
+          return dispatch(value(...args));
         };
       });
       return mappedDispatch;

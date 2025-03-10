@@ -1,0 +1,9 @@
+/node_modules
+.idea
+.vscode
+package-lock.json
+pnpm-lock.yaml
+/packages/**/node_modules
+/packages/inula-intl/node_modules
+/coverage/*
+/build/*

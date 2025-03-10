@@ -22,10 +22,7 @@ function transformData(inputConfig: IrRequestConfig, func: (...arg: any) => any,
   const context = response || config;
   const headers = IrHeaders.from(context.headers);
 
-  const transformedData = func.call(config, context.data, headers.normalize(), response ? response.status : undefined);
-  headers.normalize();
-
-  return transformedData;
+  return func.call(config, context.data, headers.normalize());
 }
 
 export default transformData;

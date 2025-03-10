@@ -15,7 +15,7 @@
 
 import type { VNode } from '../Types';
 
-import { ContextProvider, Component, Portal, TreeRoot, SuspenseComponent } from '../vnode/VNodeTags';
+import { ContextProvider, DomComponent, DomPortal, TreeRoot, SuspenseComponent } from '../vnode/VNodeTags';
 import { setContext, setNamespaceCtx } from '../ContextSaver';
 import { FlagUtils } from '../vnode/VNodeFlags';
 import { onlyUpdateChildVNodes } from '../vnode/VNodeCreator';
@@ -30,10 +30,10 @@ function setTreeContextValue(processing: VNode) {
     case TreeRoot:
       setNamespaceCtx(processing, processing.realNode);
       break;
-    case Component:
+    case DomComponent:
       setNamespaceCtx(processing);
       break;
-    case Portal:
+    case DomPortal:
       setNamespaceCtx(processing, processing.realNode);
       pushCurrentRoot(processing);
       break;

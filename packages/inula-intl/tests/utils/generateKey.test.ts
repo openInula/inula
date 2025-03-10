@@ -17,31 +17,31 @@ import utils from '../../src/utils/utils';
 describe('generateKey', () => {
   it('should generate a key for a single locale without options', () => {
     const result = utils.generateKey('en');
-    expect(result).toBe('en:{}');
+    expect(result).toBe('en:{}_');
   });
 
   it('should generate a key for multiple locales without options', () => {
     const result = utils.generateKey(['en', 'fr']);
-    expect(result).toBe('en-fr:{}');
+    expect(result).toBe('en-fr:{}_');
   });
 
   it('should sort multiple locales before generating the key', () => {
     const result = utils.generateKey(['fr', 'en']);
-    expect(result).toBe('en-fr:{}');
+    expect(result).toBe('en-fr:{}_');
   });
 
   it('should generate a key with options for a single locale', () => {
-    const result = utils.generateKey('en', { foo: 'bar' });
-    expect(result).toBe('en:{"foo":"bar"}');
+    const result = utils.generateKey('en', { foo: 'bar' }, 'num');
+    expect(result).toBe('en:{"foo":"bar"}_num');
   });
 
   it('should generate a key with options for multiple locales', () => {
-    const result = utils.generateKey(['en', 'fr'], { foo: 'bar' });
-    expect(result).toBe('en-fr:{"foo":"bar"}');
+    const result = utils.generateKey(['en', 'fr'], { foo: 'bar' }, 'num');
+    expect(result).toBe('en-fr:{"foo":"bar"}_num');
   });
 
   it('should sort multiple locales and consider options before generating the key', () => {
-    const result = utils.generateKey(['fr', 'en'], { foo: 'bar' });
-    expect(result).toBe('en-fr:{"foo":"bar"}');
+    const result = utils.generateKey(['fr', 'en'], { foo: 'bar' }, 'total');
+    expect(result).toBe('en-fr:{"foo":"bar"}_total');
   });
 });

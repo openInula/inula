@@ -1,13 +1,14 @@
 {
   "name": "inula-intl",
-  "version": "0.0.5",
-  "description": "",
-  "main": "build/intl.umd.js",
+  "version": "1.0.34",
+  "description": "intl for inula framework, a part of intl-ecosystem",
+  "main": "./build/cjs/intl.js",
+  "module": "./build/esm/intl.js",
   "type": "module",
   "types": "build/@types/index.d.ts",
   "scripts": {
     "demo-serve": "webpack serve --mode=development",
-    "build": "rollup --config rollup.config.js && npm run build-types ",
+    "rollup-build": "rollup --config rollup.config.js && npm run build-types ",
     "build-types": "tsc -p tsconfig.json && rollup -c build-type.js",
     "test": "jest --no-cache --config jest.config.js",
     "test-c": "jest --coverage"
@@ -21,12 +22,13 @@
   ],
   "keywords": [],
   "author": "",
-  "license": "MulanPSL2",
+  "license": "ISC",
   "peerDependencies": {
-    "openinula": ">=0.1.1"
+    "openinula": ">=0.0.10"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.9.4",
+    "openinula": "^0.0.58",
     "@rollup/plugin-typescript": "^11.0.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",

@@ -18,12 +18,14 @@ import { createIntl } from '../../index';
 const Example4 = props => {
   // 受渲染时机影响，createIntl方式需控制时序，否则慢一拍
   const intl = createIntl({ ...props });
-  const msg = intl.formatMessage({ id: 'text3' });
+  const msg1 = intl.formatMessage({ id: 'text3' });
+  const msg2 = intl.formatMessage({ id: 'text6' }, { num: 100, total: 253, list: 456 });
 
   return (
     <div className="card">
       <h2>createIntl方式测试Demo</h2>
-      <pre>{msg}</pre>
+      <pre>{msg1}</pre>
+      <pre>{msg2}</pre>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 {
   "name": "inula-router",
-  "version": "0.0.4",
+  "version": "1.0.16",
   "description": "router for inula framework, a part of inula-ecosystem",
   "main": "./router/cjs/router.js",
   "module": "./router/esm/router.js",
@@ -16,23 +16,23 @@
     "build": "rollup -c build.js && npm run build-types",
     "build-types": "tsc -p tsconfig.build.json && tsc -p tsconfig.cbuild.json && rollup -c build-types.js"
   },
-  "keywords": [
-    "inula-router"
-  ],
-  "license": "MulanPSL2",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
   "devDependencies": {
-    "@cloudsop/horizon": "^0.0.58",
+    "openinula": "^0.0.58",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
-    "@types/react-redux": "7.0.0",
-    "jest-environment-jsdom": "^29.5.0",
-    "jsdom": "^21.1.1",
-    "react-redux": "^3.8.1 || ^4.0.0",
+    "@types/react-redux": "7.1.33",
+    "jest-environment-jsdom": "29.5.0",
+    "jsdom": "24.0.0",
+    "react-redux": "^4.0.0",
     "redux": "4.2.1"
   },
   "peerDependencies": {
-    "openinula": ">=0.1.1"
+    "openinula": ">=0.0.10"
   },
   "browserslist": {
     "production": [

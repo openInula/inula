@@ -19,8 +19,8 @@
 
 import type { VNode } from '../Types';
 
-import { Component, Portal, Text, TreeRoot } from './VNodeTags';
-import { getNearestVNode } from '../../renderer/utils/InternalKeys';
+import { DomComponent, DomPortal, DomText, TreeRoot } from './VNodeTags';
+import { getNearestVNode } from '../../dom/DOMInternalKeys';
 import { Addition, InitFlag } from './VNodeFlags';
 import { BELONG_CLASS_VNODE_KEY } from './VNode';
 
@@ -45,10 +45,10 @@ export function travelChildren(
 // 从beginVNode开始深度遍历vNode树，对每个vNode调用handleVNode方法
 export function travelVNodeTree(
   beginVNode: VNode,
-  handleVNode: (node: VNode) => VNode | boolean | null | void,
-  childFilter: ((node: VNode) => boolean) | null, // 返回true不处理child
+  handleVNode: (node: Readonly<VNode>) => VNode | boolean | null | void,
+  childFilter: ((node: Readonly<VNode>) => boolean) | null, // 返回true不处理child
   finishVNode: VNode, // 结束遍历节点，有时候和beginVNode不相同
-  handleWhenToParent: ((node: VNode) => void) | null
+  handleWhenToParent: ((node: Readonly<VNode>) => void) | null
 ): VNode | boolean | null | void {
   let node = beginVNode;
 
@@ -74,7 +74,6 @@ export function travelVNodeTree(
     }
 
     const isFun = typeof handleWhenToParent === 'function';
-
     // 找兄弟，没有就往上再找兄弟
     while (node.next === null) {
       if (node.parent === null || node.parent === finishVNode) {
@@ -93,21 +92,45 @@ export function travelVNodeTree(
   }
 }
 
+// 遍历置空VNode
+export function clearVNodeTree(vNode: VNode) {
+  let node: VNode | null = vNode;
+  while (node !== null) {
+    const childVNode = node.child;
+    if (childVNode !== null) {
+      childVNode.parent = node;
+      node = childVNode;
+    } else {
+      while (node !== null) {
+        // 回到开始节点,置空自身,退出遍历
+        if (node === vNode) {
+          clearVNode(vNode);
+          return;
+        }
+        const nextNode = node.next;
+        const parentNode = node.parent;
+        clearVNode(node);
+        if (nextNode !== null) {
+          nextNode.parent = parentNode;
+          node = nextNode;
+          break;
+        }
+        node = parentNode;
+      }
+    }
+  }
+}
+
 // 置空vNode
 export function clearVNode(vNode: VNode) {
   vNode.isCleared = true;
-
-  // 孩子节点的parent也置空
-  travelChildren(vNode.child, node => {
-    node.parent = null;
-  });
   vNode.child = null;
-
   vNode.parent = null;
   vNode.next = null;
   vNode.depContexts = null;
   vNode.dirtyNodes = null;
   vNode.state = null;
+  vNode.ref = null;
   vNode.hooks = null;
   vNode.props = null;
   vNode.suspenseState = null;
@@ -122,6 +145,8 @@ export function clearVNode(vNode: VNode) {
   vNode.oldRef = null;
   vNode.oldChild = null;
 
+  vNode.path = '';
+
   vNode.toUpdateNodes = null;
 
   vNode[BELONG_CLASS_VNODE_KEY] = null;
@@ -133,19 +158,19 @@ export function clearVNode(vNode: VNode) {
 
 // 是dom类型的vNode
 export function isDomVNode(node: VNode) {
-  return node.tag === Component || node.tag === Text;
+  return node.tag === DomComponent || node.tag === DomText;
 }
 
 // 是容器类型的vNode
 function isDomContainer(vNode: VNode): boolean {
-  return vNode.tag === Component || vNode.tag === TreeRoot || vNode.tag === Portal;
+  return vNode.tag === DomComponent || vNode.tag === TreeRoot || vNode.tag === DomPortal;
 }
 
 export function findDomVNode(vNode: VNode): VNode | null {
   const ret = travelVNodeTree(
     vNode,
     node => {
-      if (node.tag === Component || node.tag === Text) {
+      if (node.tag === DomComponent || node.tag === DomText) {
         return node;
       }
       return null;
@@ -210,7 +235,7 @@ export function getSiblingDom(vNode: VNode): Element | null {
       }
 
       // 没有子节点，或是DomPortal
-      if (!node.child || node.tag === Portal) {
+      if (!node.child || node.tag === DomPortal) {
         continue findSibling;
       } else {
         const childVNode = node.child;
@@ -227,11 +252,11 @@ export function getSiblingDom(vNode: VNode): Element | null {
 }
 
 function isPortalRoot(vNode, targetContainer) {
-  if (vNode.tag === Portal) {
+  if (vNode.tag === DomPortal) {
     let topVNode = vNode.parent;
     while (topVNode !== null) {
       const grandTag = topVNode.tag;
-      if (grandTag === TreeRoot || grandTag === Portal) {
+      if (grandTag === TreeRoot || grandTag === DomPortal) {
         const topContainer = topVNode.realNode;
         // 如果topContainer是targetContainer，不需要在这里处理
         if (topContainer === targetContainer) {
@@ -250,7 +275,7 @@ export function findRoot(targetVNode, targetDom) {
   // 确认vNode节点是否准确，portal场景下可能祖先节点不准确
   let vNode = targetVNode;
   while (vNode !== null) {
-    if (vNode.tag === TreeRoot || vNode.tag === Portal) {
+    if (vNode.tag === TreeRoot || vNode.tag === DomPortal) {
       let dom = vNode.realNode;
       if (dom === targetDom) {
         break;
@@ -264,7 +289,7 @@ export function findRoot(targetVNode, targetDom) {
         if (parentNode === null) {
           return null;
         }
-        if (parentNode.tag === Component || parentNode.tag === Text) {
+        if (parentNode.tag === DomComponent || parentNode.tag === DomText) {
           return findRoot(parentNode, targetDom);
         }
         dom = dom.parentNode;

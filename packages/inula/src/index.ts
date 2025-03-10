@@ -30,6 +30,7 @@ import { createContext } from './renderer/components/context/CreateContext';
 import { lazy } from './renderer/components/Lazy';
 import { forwardRef } from './renderer/components/ForwardRef';
 import { memo } from './renderer/components/Memo';
+import { version } from './renderer/Version';
 import './external/devtools';
 
 import {
@@ -59,23 +60,18 @@ import { createStore, useStore, clearStore } from './inulax/store/StoreHandler';
 import * as reduxAdapter from './inulax/adapters/redux';
 import { watch } from './inulax/proxy/watch';
 import { act } from './external/TestUtil';
-import { defaultHostConfig } from './dom';
+
 import {
   render,
   createPortal,
   unstable_batchedUpdates,
-  findNode as findDOMNode,
+  findDOMNode,
   unmountComponentAtNode,
   createRoot,
-} from './renderer/External';
+} from './dom/DOMExternal';
 
 import { syncUpdates as flushSync } from './renderer/TreeBuilder';
 import { toRaw } from './inulax/proxy/ProxyHandler';
-import { InulaReconciler } from './renderer';
-
-const version = __VERSION__;
-// 使用默认renderer
-InulaReconciler.setHostConfig(defaultHostConfig);
 
 const Inula = {
   Children,
@@ -188,4 +184,3 @@ export {
 
 export * from './types';
 export default Inula;
-export { InulaReconciler };

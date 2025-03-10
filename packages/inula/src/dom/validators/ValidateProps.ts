@@ -14,7 +14,7 @@
  */
 
 import { getPropDetails, PropDetails, PROPERTY_TYPE } from './PropertiesData';
-import { isNativeElement } from './PropHandler';
+
 const INVALID_EVENT_NAME_REGEX = /^on[^A-Z]/;
 
 const voidTagElements = [
@@ -35,6 +35,11 @@ const voidTagElements = [
   'wbr',
   'menuitem',
 ];
+
+// 是内置元素
+export function isNativeElement(tagName: string, props: Record<string, any>) {
+  return !tagName.includes('-') && props.is === undefined;
+}
 
 function isInvalidBoolean(attributeName: string, value: any, propDetails: PropDetails): boolean {
   if (propDetails.type === PROPERTY_TYPE.SPECIAL) {
@@ -139,13 +144,18 @@ export function validateProps(type, props) {
 
   // 对于没有children的元素，设置dangerouslySetInnerHTML会不生效
   if (voidTagElements.includes(type)) {
-    if (props.dangerouslySetInnerHTML != null) {
+    if (props.dangerouslySetInnerHTML !== null && props.dangerouslySetInnerHTML !== undefined) {
       delete props.dangerouslySetInnerHTML;
     }
   }
 
   // dangerouslySetInnerHTML和children同时设置，只渲染children
-  if (props.dangerouslySetInnerHTML != null && props.children != null) {
+  if (
+    props.dangerouslySetInnerHTML !== null &&
+    props.dangerouslySetInnerHTML !== undefined &&
+    props.children !== null &&
+    props.children !== undefined
+  ) {
     delete props.dangerouslySetInnerHTML;
   }
 

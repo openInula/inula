@@ -32,6 +32,105 @@ export type PropDetails = {
 
 type PropData = string | PROPERTY_TYPE | undefined | null;
 
+function convertAttrName(attributeName: string): string {
+  return attributeName.replace(/[-:]([a-z])/g, (s: string) => s[1].toUpperCase());
+}
+
+function SvgAttributes(): (string | undefined)[][] {
+  const attributes: (string | undefined)[][] = [];
+
+  // SVG 属性
+  [
+    'accent-height',
+    'alignment-baseline',
+    'arabic-form',
+    'baseline-shift',
+    'cap-height',
+    'clip-path',
+    'clip-rule',
+    'color-interpolation',
+    'color-interpolation-filters',
+    'color-profile',
+    'color-rendering',
+    'dominant-baseline',
+    'enable-background',
+    'fill-opacity',
+    'fill-rule',
+    'flood-color',
+    'flood-opacity',
+    'font-family',
+    'font-size',
+    'font-size-adjust',
+    'font-stretch',
+    'font-style',
+    'font-variant',
+    'font-weight',
+    'glyph-name',
+    'glyph-orientation-horizontal',
+    'glyph-orientation-vertical',
+    'horiz-adv-x',
+    'horiz-origin-x',
+    'image-rendering',
+    'letter-spacing',
+    'lighting-color',
+    'marker-end',
+    'marker-mid',
+    'marker-start',
+    'overline-position',
+    'overline-thickness',
+    'paint-order',
+    'panose-1',
+    'pointer-events',
+    'rendering-intent',
+    'shape-rendering',
+    'stop-color',
+    'stop-opacity',
+    'strikethrough-position',
+    'strikethrough-thickness',
+    'stroke-dasharray',
+    'stroke-dashoffset',
+    'stroke-linecap',
+    'stroke-linejoin',
+    'stroke-miterlimit',
+    'stroke-opacity',
+    'stroke-width',
+    'text-anchor',
+    'text-decoration',
+    'text-rendering',
+    'underline-position',
+    'underline-thickness',
+    'unicode-bidi',
+    'unicode-range',
+    'units-per-em',
+    'v-alphabetic',
+    'v-hanging',
+    'v-ideographic',
+    'v-mathematical',
+    'vector-effect',
+    'vert-adv-y',
+    'vert-origin-x',
+    'vert-origin-y',
+    'word-spacing',
+    'writing-mode',
+    'xmlns:xlink',
+    'x-height',
+  ].forEach(name => {
+    attributes.push([convertAttrName(name), , name]);
+  });
+
+  // xlink namespace 的 SVG 属性
+  ['xlink:actuate', 'xlink:arcrole', 'xlink:role', 'xlink:show', 'xlink:title', 'xlink:type'].forEach(name => {
+    attributes.push([convertAttrName(name), , name, 'http://www.w3.org/1999/xlink']);
+  });
+
+  // xml namespace 的 SVG 属性
+  ['xml:base', 'xml:lang', 'xml:space'].forEach(name => {
+    attributes.push([convertAttrName(name), , name, 'http://www.w3.org/XML/1998/namespace']);
+  });
+
+  return attributes;
+}
+
 // 属性相关数据
 // 依次为 propertyName、type、attributeName、attributeNamespace，不填则使用默认值
 // type 默认 STRING
@@ -91,24 +190,14 @@ const propertiesData = [
   ['muted', PROPERTY_TYPE.BOOLEAN],
   ['selected', PROPERTY_TYPE.BOOLEAN],
 
-  // SVG 属性
-  // xlink namespace 的 SVG 属性
-  ['xlinkActuate', , 'xlink:actuate', 'http://www.w3.org/1999/xlink'],
-  ['xlinkArcrole', , 'xlink:arcrole', 'http://www.w3.org/1999/xlink'],
-  ['xlinkRole', , 'xlink:role', 'http://www.w3.org/1999/xlink'],
-  ['xlinkShow', , 'xlink:show', 'http://www.w3.org/1999/xlink'],
-  ['xlinkTitle', , 'xlink:title', 'http://www.w3.org/1999/xlink'],
-  ['xlinkType', , 'xlink:type', 'http://www.w3.org/1999/xlink'],
-  // xml namespace 的 SVG 属性
-  ['xmlBase', , 'xml:base', 'http://www.w3.org/XML/1998/namespace'],
-  ['xmlLang', , 'xml:lang', 'http://www.w3.org/XML/1998/namespace'],
-  ['xmlSpace', , 'xml:space', 'http://www.w3.org/XML/1998/namespace'],
   // HTML and SVG 中都有的属性，大小写敏感
   ['tabIndex', , 'tabindex'],
   ['crossOrigin', , 'crossorigin'],
   // 接受 URL 的属性
   ['xlinkHref', , 'xlink:href', 'http://www.w3.org/1999/xlink'],
   ['formAction', , 'formaction'],
+
+  ...SvgAttributes(),
 ];
 
 const propsDetailData = {};

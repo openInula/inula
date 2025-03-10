@@ -14,7 +14,10 @@
  */
 
 const body: Record<string, any> = {
-  doubleapos: { match: "''", value: () => "'" },
+  doubleapos: {
+    match: "''",
+    value: () => "'",
+  },
   quoted: {
     lineBreaks: true,
     match: /'[{}#](?:[^]*?[^'])?'(?!')/u, // 用以匹配单引号、花括号{}以及井号# 如'Hello' 、{name}、{}#
@@ -29,7 +32,10 @@ const body: Record<string, any> = {
     value: (src: string) => src.substring(1).trim(),
   },
   octothorpe: '#',
-  end: { match: '}', pop: 1 },
+  end: {
+    match: '}',
+    pop: 1,
+  },
   content: {
     lineBreaks: true,
     match: /[^][^{}#]*/u, // 主要匹配不包含[]任何字符（除了换行符）、不包含{}、#的任何个字符
@@ -56,7 +62,10 @@ const arg: Record<string, any> = {
     match: /,\s*[^\p{Pat_Syn}\p{Pat_WS}]+\s*/u,
     value: (src: string) => src.substring(1).trim(),
   },
-  end: { match: '}', pop: 1 },
+  end: {
+    match: '}',
+    pop: 1,
+  },
 };
 
 const select: Record<string, any> = {
@@ -74,7 +83,10 @@ const select: Record<string, any> = {
     push: 'body', // 匹配成功，则会push到body栈中
     value: (src: string) => src.substring(0, src.indexOf('{')).trim(),
   },
-  end: { match: /\s*\}/u, pop: 1 },
+  end: {
+    match: /\s*\}/u,
+    pop: 1,
+  },
 };
 
 export const mappingRule: Record<string, any> = {

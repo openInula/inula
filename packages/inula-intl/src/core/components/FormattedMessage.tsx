@@ -14,7 +14,7 @@
  */
 import { Children, Fragment } from 'openinula';
 import { FormattedMessageProps } from '../../types/interfaces';
-import useI18n from '../hook/useI18n';
+import { useIntl } from '../../../index';
 
 /**
  * FormattedMessage组件,接收一个消息键作为属性，并根据当前选择的语言环境，从对应的翻译资源中获取相应的消息文本，并可选地对文本进行格式化。
@@ -22,7 +22,7 @@ import useI18n from '../hook/useI18n';
  * @constructor
  */
 function FormattedMessage(props: FormattedMessageProps) {
-  const { formatMessage } = useI18n();
+  const { formatMessage } = useIntl();
   const { id, values, messages, formatOptions, context, tagName: TagName = Fragment, children, comment }: any = props;
 
   const formatMessageOptions = {

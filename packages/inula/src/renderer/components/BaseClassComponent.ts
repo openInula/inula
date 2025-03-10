@@ -20,14 +20,12 @@ import type { ComponentLifecycle, KVObject, InulaNode, Context, CSSProperties } 
  * Component的api setState和forceUpdate在实例生成阶段实现
  */
 
-// eslint-disable-next-line
 interface Component<P = KVObject, S = KVObject, SS = any, C = any> extends ComponentLifecycle<P, S, SS> {
   forceUpdate(callback?: () => void): void;
 
   render(): InulaNode;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class Component<P = KVObject, S = KVObject, SS = any, C = any> {
   static contextType?: Context<any> | undefined;
   context: C | undefined;
@@ -38,6 +36,9 @@ class Component<P = KVObject, S = KVObject, SS = any, C = any> {
   refs: {
     [key: string]: Component<any>;
   };
+  /**
+   * @internal
+   */
   isReactComponent: boolean;
 
   constructor(props: P, context?: C) {

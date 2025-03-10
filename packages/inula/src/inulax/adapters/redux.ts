@@ -13,7 +13,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { createStore as createStoreX } from '../store/StoreHandler';
+import { getRandomStr } from '../CommonUtils';
+import { unstable_batchedUpdates } from '../../dom/DOMExternal';
 
 export { thunk } from './reduxThunk';
 
@@ -29,7 +30,6 @@ export {
 } from './reduxReact';
 
 export type ReduxStoreHandler<T = any> = {
-  reducer(state: T, action: { type: string }): any;
   dispatch(action: { type: string }): void;
   getState(): T;
   subscribe(listener: () => void): () => void;
@@ -57,108 +57,125 @@ type Reducer = (state: any, action: ReduxAction) => any;
 type StoreCreator = (reducer: Reducer, preloadedState?: any) => ReduxStoreHandler;
 type StoreEnhancer = (next: StoreCreator) => StoreCreator;
 
-function mergeData(state, data) {
-  if (!data) {
-    state.stateWrapper = data;
-    return;
-  }
+const BuildInAction = {
+  INIT: `@@reduxAdapter/INIT${getRandomStr()}`,
+  REPLACE: `@@reduxAdapter/REPLACE${getRandomStr()}`,
+};
 
-  if (Array.isArray(data) && Array.isArray(state?.stateWrapper)) {
-    state.stateWrapper.length = data.length;
-    data.forEach((item, idx) => {
-      if (item != state.stateWrapper[idx]) {
-        state.stateWrapper[idx] = item;
-      }
-    });
-    return;
-  }
-
-  if (typeof data === 'object' && typeof state?.stateWrapper === 'object') {
-    Object.keys(state.stateWrapper).forEach(key => {
-      if (!Object.prototype.hasOwnProperty.call(data, key)) {
-        delete state.stateWrapper[key];
-      }
-    });
-
-    Object.entries(data).forEach(([key, value]) => {
-      if (state.stateWrapper[key] !== value) {
-        state.stateWrapper[key] = value;
-      }
-    });
-    return;
-  }
-
-  state.stateWrapper = data;
-}
-
-export function createStore(reducer: Reducer, preloadedState?: any, enhancers?: StoreEnhancer): ReduxStoreHandler {
-  // 兼容redux可以不输入第二个参数preloadedState
-  if (typeof preloadedState === 'function' && typeof enhancers === 'undefined') {
-    enhancers = preloadedState;
+export function createStore(reducer: Reducer, preloadedState?: any, enhancer?: StoreEnhancer): ReduxStoreHandler {
+  if (typeof preloadedState === 'function' && typeof enhancer === 'undefined') {
+    enhancer = preloadedState;
     preloadedState = undefined;
   }
-  const store = createStoreX({
-    id: 'defaultStore',
-    state: { stateWrapper: preloadedState },
-    actions: {
-      dispatch: (state: { stateWrapper?: any }, action) => {
-        let result;
-        if (state.stateWrapper !== undefined && state.stateWrapper !== null) {
-          result = reducer(state.stateWrapper, action);
-        } else {
-          result = reducer(undefined, action);
-        }
-
-        if (result === undefined) {
-          return;
-        } // NOTE: reducer should never return undefined, in this case, do not change state
-        state.stateWrapper = result;
-        return action;
-      },
-    },
-    options: {
-      isReduxAdapter: true,
-    },
-  })();
-
-  const result: Record<string, any> = {
-    reducer,
-    getState: function () {
-      return store.$s.stateWrapper;
-    },
-    subscribe: listener => {
-      store.$subscribe(listener);
-
-      return () => {
-        store.$unsubscribe(listener);
-      };
-    },
-    replaceReducer: newReducer => {
-      reducer = newReducer;
-    },
-    _inulaXstore: store,
-    dispatch: store.$a.dispatch,
-  };
-
-  result.dispatch({ type: 'InulaX' });
-
-  store.reduxHandler = result;
-
-  if (typeof enhancers === 'function') {
-    return enhancers(createStore)(reducer, preloadedState);
+  if (typeof enhancer !== 'undefined') {
+    return enhancer(createStore)(reducer, preloadedState);
   }
 
-  return result as ReduxStoreHandler;
+  let currentReducer = reducer;
+  let currentState = preloadedState;
+  let currentListeners: Record<number, () => void> | null = {};
+  let nextListeners = currentListeners;
+  let listenerId = 0;
+  let inDispatching = false;
+
+  function getState(): any {
+    if (inDispatching) {
+      throw new Error('Avoid calling store.getState() in reducers. Use the provided state parameter directly.');
+    }
+    return currentState;
+  }
+
+  // 确保nextListeners在当前的操作中可被安全的修改，不影响currentListeners
+  function safelyMutateNextListener() {
+    if (nextListeners === currentListeners) {
+      nextListeners = { ...currentListeners };
+    }
+  }
+
+  function dispatch(action: ReduxAction) {
+    try {
+      inDispatching = true;
+      currentState = currentReducer(currentState, action);
+    } finally {
+      inDispatching = false;
+    }
+    currentListeners = nextListeners;
+    Object.values(currentListeners).forEach(cb => {
+      cb();
+    });
+  }
+
+  function replaceReducer(nextReducer: Reducer): void {
+    currentReducer = nextReducer;
+    dispatch({ type: BuildInAction.REPLACE });
+  }
+
+  function subscribe(listener: () => void) {
+    if (inDispatching) {
+      throw new Error(
+        'Avoid store.subscribe() in reducers. Subscribe in components and use store.getState() in the callback instead.'
+      );
+    }
+
+    let subscribed = true;
+    safelyMutateNextListener();
+    const id = listenerId++;
+    nextListeners[id] = listener;
+
+    return function () {
+      if (!subscribed) {
+        return;
+      }
+      if (inDispatching) {
+        throw new Error("Don't unsubscribe from store listeners during reducer execution.");
+      }
+      subscribed = false;
+      safelyMutateNextListener();
+      delete nextListeners[id];
+      currentListeners = null;
+    };
+  }
+
+  dispatch({ type: BuildInAction.INIT });
+
+  return {
+    getState,
+    dispatch,
+    subscribe,
+    replaceReducer,
+  };
 }
 
-export function combineReducers(reducers: { [key: string]: Reducer }): Reducer {
-  return (state, action) => {
-    state = state || {};
+export function combineReducers(reducers: Record<string, Reducer>): Reducer {
+  const finalReducers = Object.keys(reducers).reduce<Record<string, Reducer>>((final, key) => {
+    if (typeof reducers[key] === 'function') {
+      final[key] = reducers[key];
+    }
+    return final;
+  }, {});
+
+  const finalReducerKeys = Object.keys(finalReducers);
+
+  return (state = {}, action) => {
+    let changed = false;
     const newState = {};
-    Object.entries(reducers).forEach(([key, reducer]) => {
-      newState[key] = reducer(state[key], action);
-    });
-    return newState;
+    for (const reducerKey of finalReducerKeys) {
+      const reducer = finalReducers[reducerKey];
+      const previousReducerState = state[reducerKey];
+      const nextReducerState = reducer(previousReducerState, action);
+      if (typeof nextReducerState === 'undefined') {
+        const actionType = action?.type;
+        throw new Error(
+          `Reducer for key "${reducerKey}" returned undefined on action ${
+            actionType ? `"${String(actionType)}"` : '(unknown type)'
+          }. Return the previous state or null instead.`
+        );
+      }
+      newState[reducerKey] = nextReducerState;
+      changed = changed || nextReducerState !== previousReducerState;
+    }
+    changed = changed || finalReducerKeys.length !== Object.keys(state).length;
+    return changed ? newState : state;
   };
 }
 
@@ -192,7 +209,7 @@ export function bindActionCreators(actionCreators: ActionCreators, dispatch: Dis
   const boundActionCreators = {};
   Object.entries(actionCreators).forEach(([key, value]) => {
     boundActionCreators[key] = (...args) => {
-      dispatch(value(...args));
+      return dispatch(value(...args));
     };
   });
 
@@ -202,18 +219,21 @@ export function bindActionCreators(actionCreators: ActionCreators, dispatch: Dis
 export function compose<T = StoreCreator>(...middlewares: ((...args: any[]) => any)[]): (...args: any[]) => T {
   return (...args) => {
     let val: any;
-    middlewares.reverse().forEach((middleware, index) => {
-      if (!index) {
-        val = middleware(...args);
-        return;
-      }
-      val = middleware(val);
-    });
+    middlewares
+      .slice()
+      .reverse()
+      .forEach((middleware, index) => {
+        if (!index) {
+          val = middleware(...args);
+          return;
+        }
+        val = middleware(val);
+      });
     return val;
   };
 }
 
 // InulaX batches updates by default, this function is only for backwards compatibility
 export function batch(fn: () => void) {
-  fn();
+  unstable_batchedUpdates(fn);
 }
