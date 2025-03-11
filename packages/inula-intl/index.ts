@@ -20,17 +20,22 @@ import createI18nCache from './src/format/cache/cache';
 import FormattedMessage from './src/core/components/FormattedMessage';
 import I18nProvider from './src/core/components/I18nProvider';
 import injectIntl, { I18nContext, InjectProvider } from './src/core/components/InjectI18n';
-import useI18n from './src/core/hook/useI18n';
-import createI18n from './src/core/createI18n';
+import useIntl from './src/core/hook/useIntl';
+import createIntl from './src/core/createIntl';
 import { MessageDescriptor } from './src/types/interfaces';
+import VueI18n from './src/vueI18n-adapter/src/VueI18n';
+import { createI18n, useI18n } from './src/vueI18n-adapter';
 // 函数API
 export {
   I18n,
   createI18nCache as createIntlCache,
-  createI18n as createIntl,
+  createIntl,
   DateTimeFormatter,
   NumberFormatter,
-  useI18n as useIntl,
+  useIntl,
+  I18nProvider,
+  createI18n,
+  useI18n,
 };
 
 // 组件
@@ -45,15 +50,16 @@ export {
 export default {
   I18n,
   createIntlCache: createI18nCache,
-  createIntl: createI18n,
+  createIntl,
   DateTimeFormatter,
   NumberFormatter,
-  useIntl: useI18n,
+  useIntl,
   FormattedMessage,
   I18nContext,
   IntlProvider: I18nProvider,
   injectIntl: injectIntl,
   RawIntlProvider: InjectProvider,
+  VueI18n,
 };
 
 // 用于定义文本

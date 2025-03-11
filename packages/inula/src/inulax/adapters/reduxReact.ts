@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { useContext, useEffect, useLayoutEffect, useMemo, useReducer, useRef } from '../../renderer/hooks/HookExternal';
+import { useContext, useLayoutEffect, useMemo, useReducer, useRef } from '../../renderer/hooks/HookExternal';
 import { createContext } from '../../renderer/components/context/CreateContext';
 import { createElement } from '../../external/JSXElement';
 import type { BoundActionCreator, ReduxAction, ReduxStoreHandler } from './redux';
@@ -22,7 +22,8 @@ import createSubscription from './subscription';
 import type { Subscription } from './subscription';
 import { isContextConsumer } from '../../external/InulaIs';
 import { getSelector } from './reduxSelector';
-import { ForwardRef } from '../../types';
+import { ComponentType, ForwardRef } from '../../types';
+import transferNonInulaStatics from './utils';
 
 export const ReduxAdapterContext = createContext<{ store: ReduxStoreHandler; subscription: Subscription }>(null as any);
 type Context = typeof ReduxAdapterContext;
@@ -53,7 +54,9 @@ export function Provider({
       subscription,
     };
   }, [store]);
+
   const prevStoreValue = useMemo(() => store.getState(), [store]);
+
   useLayoutEffect(() => {
     const subscription = ctxValue.subscription;
     subscription.stateChange = subscription.triggerNestedSubs;
@@ -78,9 +81,9 @@ export function createStoreHook(context: Context): () => ReduxStoreHandler {
 }
 
 export function createSelectorHook(context: Context) {
-  const store = createStoreHook(context)();
+  const { store, subscription } = useContext(context);
   return function useSelector(selector: Selector = state => state) {
-    return useSelectorWithStore(store, selector);
+    return useSelectorWithStore(store, selector, subscription);
   };
 }
 
@@ -115,7 +118,7 @@ export type MergePropsP<StateProps, DispatchProps, OwnProps, MergedProps> = (
 
 type WrappedComponent<OwnProps> = (props: OwnProps & WrapperInnerProps) => ReturnType<typeof createElement>;
 type OriginalComponent<MergedProps> = (props: MergedProps) => ReturnType<typeof createElement>;
-type Connector<OwnProps, MergedProps> = (Component: OriginalComponent<MergedProps>) => WrappedComponent<OwnProps>;
+type Connector<OwnProps, MergedProps> = (Component: OriginalComponent<MergedProps>) => ComponentType<OwnProps>;
 export type ConnectOption<State, StateProps, OwnProps> = {
   /** @deprecated */
   prue?: boolean;
@@ -143,7 +146,7 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
 
   const { context: storeContext = ReduxAdapterContext } = options;
 
-  return (Component: OriginalComponent<MergedProps>): WrappedComponent<OwnProps> => {
+  return (Component: OriginalComponent<MergedProps>): ComponentType<any> => {
     // this component should mimic original type of component used
     const Wrapper: WrappedComponent<OwnProps> = (props: OwnProps & ConnectProps & WrapperInnerProps) => {
       const [, forceUpdate] = useReducer(s => s + 1, 0);
@@ -191,7 +194,7 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
           : selector(store.getState(), wrappedProps as OwnProps);
       }, [store, wrappedProps, latestWrappedProps]);
 
-      useEffect(() => {
+      useLayoutEffect(() => {
         latestChildProps.current = childProps;
         latestWrappedProps.current = wrappedProps;
         isRendering.current = false;
@@ -201,7 +204,7 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
         }
       });
 
-      useEffect(() => {
+      useLayoutEffect(() => {
         let isUnsubscribe = false;
 
         const update = () => {
@@ -244,15 +247,17 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
       const forwarded = forwardRef(function (props, ref) {
         return Wrapper({ ...props, reduxAdapterRef: ref });
       });
-      return forwarded as WrappedComponent<OwnProps>;
+      return transferNonInulaStatics(forwarded as WrappedComponent<OwnProps>, Component);
     }
 
-    return Wrapper;
+    return transferNonInulaStatics(Wrapper, Component);
   };
 }
 
-function useSelectorWithStore(store: ReduxStoreHandler, selector: Selector) {
+function useSelectorWithStore(store: ReduxStoreHandler, selector: Selector, subContext: Subscription) {
   const [, forceUpdate] = useReducer(s => s + 1, 0);
+
+  const subscription = useMemo(() => createSubscription(store, subContext), [store, subContext]);
 
   const latestSelector = useRef<(state: any) => unknown>();
   const latestState = useRef<any>();
@@ -298,10 +303,12 @@ function useSelectorWithStore(store: ReduxStoreHandler, selector: Selector) {
       forceUpdate();
     };
 
+    subscription.stateChange = update;
+    subscription.trySubscribe();
+
     update();
 
-    const unsubscribe = store.subscribe(() => update());
-    return () => unsubscribe();
+    return () => subscription.tryUnsubscribe();
   }, [store]);
 
   return selectedState;

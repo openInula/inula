@@ -22,7 +22,7 @@ module.exports = {
   ],
   root: true,
 
-  plugins: ['jest', 'no-function-declare-after-return', 'react', '@typescript-eslint'],
+  plugins: ['jest', 'react', '@typescript-eslint'],
 
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -57,8 +57,6 @@ module.exports = {
     'comma-dangle': ['error', 'only-multiline'],
 
     'no-constant-condition': 'off',
-    'no-function-declare-after-return/no-function-declare-after-return': 'error',
-    '@typescript-eslint/ban-ts-comment': 'warn',
   },
   globals: {
     isDev: true,

@@ -77,6 +77,12 @@ const BuildConfig = mode => {
         include: ['./**/*.ts', './**/*.tsx'],
       }),
       terser(),
+      visualizer({
+        filename: 'report.html',
+        open: true,
+        gzipSize: true,
+        brotliSize: true,
+      }),
     ],
     external: ['openinula', 'react', 'react-dom'],
   };

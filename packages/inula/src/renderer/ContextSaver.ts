@@ -19,7 +19,7 @@
  */
 
 import type { VNode, ContextType } from './Types';
-import { Container } from './Types';
+import type { Container } from '../dom/DOMOperator';
 
 import { getNSCtx } from '../dom/DOMOperator';
 

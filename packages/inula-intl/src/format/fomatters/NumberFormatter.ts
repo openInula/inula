@@ -25,11 +25,13 @@ class NumberFormatter {
   private readonly locales: Locales;
   private readonly formatOption?: Intl.NumberFormatOptions;
   private cache?: I18nCache; // 创建一个缓存对象，用于缓存已经创建的数字格式化器
+  private readonly valueKey?: string;
 
-  constructor(locales: Locales, formatOption?: Intl.NumberFormatOptions, cache?: I18nCache) {
+  constructor(locales: Locales, formatOption?: Intl.NumberFormatOptions, cache?: I18nCache, valueKey?: string) {
     this.locales = locales;
     this.formatOption = formatOption ?? {};
     this.cache = cache ?? creatI18nCache();
+    this.valueKey = valueKey ?? '';
   }
 
   numberFormat(value: number, formatOption?: Intl.NumberFormatOptions): string {
@@ -39,7 +41,7 @@ class NumberFormatter {
     // 如果启用了记忆化且已经有对应的数字格式化器缓存，则直接返回缓存中的格式化结果。否则创建新的格式化数据，并进行缓存
     if (this.cache?.numberFormat) {
       // 造缓存的key，key包含区域设置数字格式选项
-      const cacheKey = utils.generateKey<Intl.NumberFormatOptions>(this.locales, options);
+      const cacheKey = utils.generateKey<Intl.NumberFormatOptions>(this.locales, options, this.valueKey);
 
       if (this.cache.numberFormat[cacheKey]) {
         return this.cache.numberFormat[cacheKey].format(value);

@@ -46,7 +46,6 @@ function getMocksFile() {
         ...mocks,
         ...file,
       };
-      console.log('mockFile', file);
     }
 
     return mocks;

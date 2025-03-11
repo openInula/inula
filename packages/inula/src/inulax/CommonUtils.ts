@@ -12,7 +12,6 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-
 export function isObject(obj: any): boolean {
   const type = typeof obj;
   return (obj !== null || obj !== undefined) && (type === 'object' || type === 'function');
@@ -72,17 +71,16 @@ export function isSame(obj1: unknown, obj2: unknown) {
   if (obj1 === obj2) {
     return true;
   }
-  // 如果两个对象的类型不同，直接返回false
-  if (typeof obj1 !== typeof obj2) {
+  if (kindOf(obj1) !== kindOf(obj2)) {
     return false;
   }
   // 此时obj1和obj2类型一致，若都为undefined或null返回true，但也有可能此时为一个对象和null，这种情况直接比较对象
   // typeof null === 'object'
-  if (obj1 == null || obj2 == null) {
+  if (obj1 === null || obj1 === undefined || obj2 === null || obj2 === undefined) {
     return obj1 === obj2;
   }
   // 如果两个对象都是基本类型，比较它们的值是否相等
-  if (typeof obj1 !== 'object') {
+  if (kindOf(obj1) !== 'object') {
     return obj1 === obj2;
   }
   // 如果两个对象都是数组，比较它们的长度是否相等，然后递归比较每个元素是否相等
@@ -98,7 +96,7 @@ export function isSame(obj1: unknown, obj2: unknown) {
     return true;
   }
   // 如果两个对象都是普通对象，比较它们的属性数量是否相等，然后递归比较每个属性的值是否相等
-  if (typeof obj1 === 'object') {
+  if (kindOf(obj1) === 'object') {
     const keys1 = Object.keys(obj1).sort();
     const keys2 = Object.keys(obj2).sort();
     if (keys1.length !== keys2.length) {
@@ -115,7 +113,12 @@ export function isSame(obj1: unknown, obj2: unknown) {
   return false;
 }
 
-export function getDetailedType(val: any) {
+export function kindOf(object: unknown): string {
+  const valType = Object.prototype.toString.call(object);
+  return valType.slice(8, -1).toLowerCase();
+}
+
+export function getDetailedType(val: any): string {
   if (val === undefined) return 'undefined';
   if (val === null) return 'null';
   if (isPromise(val)) return 'promise';
@@ -205,4 +208,8 @@ export function omit(obj, ...attrs) {
   const res = { ...obj };
   attrs.forEach(attr => delete res[attr]);
   return res;
+}
+
+export function getRandomStr(): string {
+  return Math.random().toString(36).substring(8);
 }

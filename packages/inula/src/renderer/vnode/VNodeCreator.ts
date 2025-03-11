@@ -22,10 +22,10 @@ import {
   ForwardRef,
   Fragment,
   FunctionComponent,
-  Component,
-  Portal,
+  DomComponent,
+  DomPortal,
   TreeRoot,
-  Text,
+  DomText,
   LazyComponent,
   MemoComponent,
   SuspenseComponent,
@@ -108,14 +108,14 @@ export function createFragmentVNode(fragmentKey, fragmentProps) {
 }
 
 export function createDomTextVNode(content) {
-  const vNode = newVirtualNode(Text, null, content);
+  const vNode = newVirtualNode(DomText, null, content);
   vNode.shouldUpdate = true;
   return vNode;
 }
 
 export function createPortalVNode(portal) {
   const children = portal.children ?? [];
-  const vNode = newVirtualNode(Portal, portal.key, children);
+  const vNode = newVirtualNode(DomPortal, portal.key, children);
   vNode.shouldUpdate = true;
   vNode.realNode = portal.realNode;
   return vNode;
@@ -130,7 +130,7 @@ export function createUndeterminedVNode(type, key, props, source: Source | null)
       vNodeTag = ClassComponent;
     }
   } else if (componentType === 'string') {
-    vNodeTag = Component;
+    vNodeTag = DomComponent;
   } else if (type === TYPE_SUSPENSE) {
     vNodeTag = SuspenseComponent;
   } else if (componentType === 'object' && type !== null && typeMap[type.vtype]) {
@@ -166,7 +166,7 @@ export function getElementTag(element: JSXElement): string {
         vNodeTag = ClassComponent;
       }
     } else if (componentType === 'string') {
-      vNodeTag = Component;
+      vNodeTag = DomComponent;
     } else if (type === TYPE_SUSPENSE) {
       vNodeTag = SuspenseComponent;
     } else if (componentType === 'object' && type !== null && typeMap[type.vtype]) {

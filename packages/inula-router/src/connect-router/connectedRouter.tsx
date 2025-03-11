@@ -113,12 +113,12 @@ function ConnectedRouterWithoutMemo<S>(props: ConnectedRouter<S>) {
   return <Router history={history}>{childrenNode}</Router>;
 }
 
-function getConnectedRouter(type: StoreType) {
+function getConnectedRouter<S = DefaultStateType>(type: StoreType) {
   const mapDispatchToProps = (dispatch: any) => ({
     onLocationChanged: (location: Location, action: Action, isFirstRendering: boolean) =>
       dispatch(onLocationChanged(location, action, isFirstRendering)),
   });
-  const ConnectedRouter = Inula.memo(ConnectedRouterWithoutMemo as any);
+  const ConnectedRouter = Inula.memo(ConnectedRouterWithoutMemo<S>);
 
   const ConnectedRouterWithContext = (props: any) => {
     const Context = props.context || ReactReduxContext;

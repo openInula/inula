@@ -19,4 +19,6 @@ export default {
   text3: '欢迎使用国际化组件！',
   text4: '欢迎使用国际化组件！',
   text5: '渲染一个组件 {testComponent1} {testComponent2}!',
+  text6: '已加载 {num} 条，共 {total} 条数据，{list}下拉加载更多...',
+  text7: '测试select方法, {value} 是女孩',
 };

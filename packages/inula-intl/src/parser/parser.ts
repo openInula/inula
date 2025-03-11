@@ -185,12 +185,10 @@ class Parser {
           }
           value = token.text;
         }
-        if (content) {
-          content = value;
-        } else {
-          content = value;
-          tokens.push(content);
+        if (!content || token.type === 'end') {
+          tokens.push(value);
         }
+        content = value;
       }
     }
 

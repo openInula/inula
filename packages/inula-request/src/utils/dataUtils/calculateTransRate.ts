@@ -56,11 +56,11 @@ export function calculateTransRate(samplesNum: number, interval: number) {
     }
 
     if (now - firstTimestamp < minInterval) {
-      return;
+      return undefined;
     }
 
     const totalTime = start && now - start;
 
-    return totalTime ? Math.round(totalSize * 1000 / totalTime) : undefined;
+    return totalTime ? Math.round((totalSize * 1000) / totalTime) : undefined;
   };
 }

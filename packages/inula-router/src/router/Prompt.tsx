@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Inula from 'openinula';
+import Inula, { useRef } from 'openinula';
 import { useContext } from 'openinula';
 import { LifeCycle, LifeCycleProps } from './lifeCycleHook';
 import { Location } from './index';
@@ -36,26 +36,26 @@ function Prompt<P extends PromptProps>(props: P) {
 
   const navigate = context.history.block;
 
-  let release: (() => void) | null = null;
+  const release = useRef<(() => void) | null>(null);
 
   const onMountFunc = () => {
-    release = message ? navigate(message) : null;
+    release.current = message ? navigate(message) : null;
   };
 
   const onUpdateFunc = (prevProps?: LifeCycleProps) => {
     if (prevProps && prevProps.data !== message) {
-      if (release) {
-        release();
+      if (release.current) {
+        release.current();
       }
-      release = message ? navigate(message) : null;
+      release.current = message ? navigate(message) : null;
     }
   };
 
   const onUnmountFunc = () => {
-    if (release) {
-      release();
+    if (release.current) {
+      release.current();
     }
-    release = null;
+    release.current = null;
   };
 
   return <LifeCycle onMount={onMountFunc} onUpdate={onUpdateFunc} onUnmount={onUnmountFunc} data={message} />;

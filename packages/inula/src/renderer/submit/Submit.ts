@@ -16,6 +16,7 @@
 import type { VNode } from '../Types';
 
 import { FlagUtils, Addition, Snapshot, ResetText, Ref, Update, Deletion, Clear, Callback } from '../vnode/VNodeFlags';
+import { prepareForSubmit, resetAfterSubmit } from '../../dom/DOMOperator';
 import { handleSubmitError } from '../ErrorHandler';
 import {
   attachRef,
@@ -32,7 +33,6 @@ import { tryRenderFromRoot } from '../TreeBuilder';
 import { InRender, copyExecuteMode, setExecuteMode, changeMode } from '../ExecuteMode';
 import { isSchedulingEffects, setSchedulingEffects } from './HookEffectHandler';
 import { getStartVNode } from '../GlobalVar';
-import { InulaReconciler } from '..';
 
 let rootThrowError = null;
 
@@ -179,14 +179,14 @@ export function submitToRender(treeRoot) {
     const preMode = copyExecuteMode();
     changeMode(InRender, true);
 
-    InulaReconciler.hostConfig.prepareForSubmit();
+    prepareForSubmit();
     // before submit阶段
     beforeSubmit(dirtyNodes);
 
     // submit阶段
     submit(dirtyNodes);
 
-    InulaReconciler.hostConfig.resetAfterSubmit();
+    resetAfterSubmit();
 
     // after submit阶段
     afterSubmit(dirtyNodes);

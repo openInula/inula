@@ -24,6 +24,7 @@ import handleSyncInterceptor from '../interceptor/handleSyncInterceptor';
 import defaultConfig from '../config/defaultConfig';
 import { Method } from '../types/types';
 import { IrRequestConfig, IrResponse, IrInterface, IrInstance, Interceptors } from '../types/interfaces';
+import buildInstance from '../utils/instanceUtils/buildInstance';
 
 class InulaRequest implements IrInterface {
   defaultConfig: IrRequestConfig;
@@ -218,7 +219,7 @@ class InulaRequest implements IrInterface {
   static create(instanceConfig?: IrRequestConfig): IrInstance {
     const config = getMergedConfig(defaultConfig, instanceConfig || {});
 
-    return new InulaRequest(config) as unknown as IrInstance;
+    return buildInstance(config);
   }
 }
 

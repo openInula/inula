@@ -16,26 +16,20 @@ import { configProps, I18nCache } from '../types/interfaces';
 import { createI18nInstance } from './I18n';
 import creatI18nCache from '../format/cache/cache';
 import { IntlType } from '../types/types';
+import { createI18nProps } from '../utils/utils';
 
 /**
- * createI18n hook函数，用于创建国际化i8n实例，以进行相关的数据操作
+ * createIntl hook函数，用于创建国际化i8n实例，以进行相关的数据操作
  */
 
-export const createI18n = (config: configProps, cache?: I18nCache): IntlType => {
+export const createIntl = (config: configProps, cache?: I18nCache): any => {
   const { locale, defaultLocale, messages } = config;
-  const i18n = createI18nInstance({
+  const i18nInstance = createI18nInstance({
     locale: locale || defaultLocale || 'en',
     messages: messages,
     cache: cache ?? creatI18nCache(),
   });
-  return {
-    i18n,
-    ...config,
-    formatMessage: i18n.formatMessage.bind(i18n),
-    formatNumber: i18n.formatNumber.bind(i18n),
-    formatDate: i18n.formatDate.bind(i18n),
-    $t: i18n.formatMessage.bind(i18n),
-  };
+  return createI18nProps(i18nInstance);
 };
 
-export default createI18n;
+export default createIntl;

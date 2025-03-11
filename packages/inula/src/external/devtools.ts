@@ -17,15 +17,18 @@ import { travelVNodeTree } from '../renderer/vnode/VNodeUtils';
 import { Hook, Reducer, MutableRef, Effect, CallBack, Memo } from '../renderer/hooks/HookType';
 import { VNode } from '../renderer/vnode/VNode';
 import { launchUpdateFromVNode } from '../renderer/TreeBuilder';
-import { Component } from '../renderer/vnode/VNodeTags';
+import { DomComponent } from '../renderer/vnode/VNodeTags';
 import { getElementTag } from '../renderer/vnode/VNodeCreator';
 import { JSXElement } from '../renderer/Types';
 import { EffectConstant } from '../renderer/hooks/EffectConstant';
+import { version } from '../renderer/Version';
 
 const isEffectHook = (state: any): state is Effect => !!state.effect;
 const isRefHook = (state: any): state is MutableRef<any> => Object.prototype.hasOwnProperty.call(state, 'current');
 const isCallbackHook = (state: any): state is CallBack<any> => Object.prototype.hasOwnProperty.call(state, 'func');
 const isMemoHook = (state: any): state is Memo<any> => Object.prototype.hasOwnProperty.call(state, 'result');
+
+export let rendererId: number | null = null;
 
 const HookName = {
   StateHook: 'State',
@@ -108,7 +111,7 @@ export const helper = {
     travelVNodeTree(
       vNode,
       (node: VNode) => {
-        if (node.tag === Component) {
+        if (node.tag === DomComponent) {
           // 找到组件的第一个dom元素，返回它所在父节点的全部子节点
           const dom = node.realNode;
           info['Nodes'] = dom?.parentNode?.childNodes;
@@ -125,13 +128,15 @@ export const helper = {
   getElementTag: (element: JSXElement) => {
     return getElementTag(element);
   },
+  version: version,
 };
 
-export function injectUpdater() {
+export function injectUpdater(): number | null {
   const hook = window.__INULA_DEV_HOOK__;
   if (hook) {
-    hook.init(helper);
+    rendererId = hook.init(helper);
   }
+  return rendererId;
 }
 
 injectUpdater();
