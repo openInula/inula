@@ -16,6 +16,10 @@
     "build": "rollup -c build.js && npm run build-types",
     "build-types": "tsc -p tsconfig.build.json && tsc -p tsconfig.cbuild.json && rollup -c build-types.js"
   },
+  "keywords": [
+    "inula-router"
+  ],
+  "license": "MulanPSL2",
   "repository": {
     "type": "git",
     "url": ""

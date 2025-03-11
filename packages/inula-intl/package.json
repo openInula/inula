@@ -22,7 +22,7 @@
   ],
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MulanPSL2",
   "peerDependencies": {
     "openinula": ">=0.0.10"
   },
