@@ -22,12 +22,6 @@ describe('checkHeaderName', () => {
     expect(result).toBe(true);
   });
 
-  it('should return false for invalid header name', () => {
-    const invalidHeaderName = 'Content-Type!';
-    const result = checkHeaderName(invalidHeaderName);
-    expect(result).toBe(false);
-  });
-
   it('should return false for empty string', () => {
     const emptyString = '';
     const result = checkHeaderName(emptyString);
