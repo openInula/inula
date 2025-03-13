@@ -145,6 +145,7 @@ describe('VueI18n', () => {
           year: 'numeric',
           month: 'short',
           day: 'numeric',
+          timeZone: 'Asia/Shanghai',
         },
         long: {
           year: 'numeric',
@@ -153,6 +154,7 @@ describe('VueI18n', () => {
           weekday: 'long',
           hour: 'numeric',
           minute: 'numeric',
+          timeZone: 'Asia/Shanghai',
         },
       },
       ja: {
@@ -160,6 +162,7 @@ describe('VueI18n', () => {
           year: 'numeric',
           month: 'short',
           day: 'numeric',
+          timeZone: 'Asia/Shanghai',
         },
         long: {
           year: 'numeric',
@@ -169,6 +172,7 @@ describe('VueI18n', () => {
           hour: 'numeric',
           minute: 'numeric',
           hour12: true,
+          timeZone: 'Asia/Shanghai',
         },
       },
     };

@@ -250,6 +250,7 @@ describe('I18n', () => {
     const formattedDateTime = i18n.formatDate('2023-06-06T07:53:54.465Z', {
       dateStyle: 'full',
       timeStyle: 'short',
+      timeZone: 'Asia/Shanghai',
     });
     expect(typeof formattedDateTime).toBe('string');
     expect(formattedDateTime).toEqual('mardi 6 juin 2023 à 15:53');

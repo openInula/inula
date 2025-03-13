@@ -23,7 +23,6 @@
     "moduleResolution": "node",
     "target": "es5",
     "jsx": "preserve",
-    "jsxImportSource": "openinula",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": true,
@@ -56,9 +55,7 @@
     }
   },
   "include": [
-    "./index.ts",
-    "./global.d.ts",
-    "./tests/**/*"
+    "./index.ts"
   ],
   "exclude": [
     "node_modules",

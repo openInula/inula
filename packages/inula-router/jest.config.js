@@ -14,6 +14,9 @@
  */
 
 export default {
+  transform: {
+    '^.+\\.(ts|js|jsx|tsx)$': 'babel-jest',
+  },
   testMatch: ['**/__tests__/*.test.[jt]s?(x)'],
   globals: {
     __DEV__: true,
