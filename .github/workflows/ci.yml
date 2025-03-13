@@ -1,0 +1,57 @@
+name: 'ci'
+on:
+  push:
+    branches:
+      - '**'
+    tags:
+      - '!**'
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: wagoid/commitlint-github-action@v6
+
+  test:
+    if: ${{ ! startsWith(github.event.head_commit.message, 'release:') }}
+    uses: ./.github/workflows/test.yml
+
+  continuous-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Print package.json content
+        run: |
+          cat ./packages/create-inula/package.json
+      
+      - name: Cache turbo build setup
+        uses: actions/cache@v4
+        with: 
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm build
+
+      - name: Release
+        run: pnpx pkg-pr-new publish --compact --pnpm './packages/*'

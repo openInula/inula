@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`useIntl() hooks should work when switching locale on provider 1`] = `"<span>$10,000.00</span>"`;
+
+exports[`useIntl() hooks should work when switching locale on provider 2`] = `"<span>10.000,00&nbsp;US$</span>"`;
+
+exports[`useIntl() hooks should work when switching locale on provider 3`] = `"<span>$10,000.00</span>"`;
