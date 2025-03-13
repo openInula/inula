@@ -8,3 +8,5 @@ pnpm-lock.yaml
 build
 /packages/inula-router/connectRouter
 /packages/inula-router/router
+.turbo
+coverage
