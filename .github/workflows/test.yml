@@ -1,0 +1,29 @@
+name: 'test'
+
+on: workflow_call
+
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4.1.0
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run unit tests
+        run: |
+         pnpm run test
