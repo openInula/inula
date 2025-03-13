@@ -69,7 +69,7 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
         setTimeout(() => {
           controller.abort();
           const errorMsg = timeoutErrorMessage ?? `timeout of ${timeout}ms exceeded`;
-          const error = new IrError(errorMsg, '', config, undefined, undefined);
+          const error = new IrError(errorMsg, 'ECONNABORTED', config);
           reject(error);
         }, timeout);
       }
