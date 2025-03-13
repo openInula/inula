@@ -66,7 +66,7 @@ const routerBuildConfig = mode => {
       }),
       babel({
         exclude: 'node_modules/**',
-        configFile: path.join(__dirname, '/babel.config.js'),
+        configFile: path.join(__dirname, '/babel.config.cjs'),
         babelHelpers: 'runtime',
         extensions,
       }),
@@ -107,7 +107,7 @@ const connectRouterConfig = mode => {
       }),
       babel({
         exclude: 'node_modules/**',
-        configFile: path.join(__dirname, '/babel.config.js'),
+        configFile: path.join(__dirname, '/babel.config.cjs'),
         babelHelpers: 'runtime',
         extensions,
       }),
