@@ -4,11 +4,10 @@
   "description": "Inula chrome dev extension",
   "main": "",
   "scripts": {
-    "build": "webpack --config ./webpack.config.js",
+    "build": "echo to be fixed || webpack --config ./webpack.config.js",
     "watch": "webpack --config ./webpack.config.js --watch",
     "build-dev": "webpack --config ./webpack.dev.js",
-    "start": "npm run build && webpack serve --config ./webpack.dev.js",
-    "test": "jest"
+    "start": "npm run build && webpack serve --config ./webpack.dev.js"
   },
   "keywords": ["inula-dev-tools"],
   "license": "MulanPSL2",

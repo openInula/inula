@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
+ * Copyright (c) 2025 Huawei Technologies Co.,Ltd.
  *
  * openInula is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
@@ -13,10 +13,17 @@
  * See the Mulan PSL v2 for more details.
  */
 
-export default {
-  testMatch: ['**/__tests__/*.test.[jt]s?(x)'],
-  globals: {
-    __DEV__: true,
-  },
-  testEnvironment: 'jsdom',
-};
+import { unmountComponentAtNode } from 'openinula';
+
+global.container = null;
+global.beforeEach(() => {
+  // 创建一个 DOM 元素作为渲染目标
+  global.container = document.createElement('div');
+  document.body.appendChild(global.container);
+});
+
+global.afterEach(() => {
+  unmountComponentAtNode(global.container);
+  global.container.remove();
+  global.container = null;
+});
