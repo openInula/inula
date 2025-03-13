@@ -24,6 +24,7 @@ export default {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/tests/$1',
   },
+  setupFilesAfterEnv: ['./tests/jestSetting.js'],
   transform: {
     '^.+\\.(ts|js|jsx|tsx)$': 'babel-jest',
   },

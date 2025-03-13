@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-export default {
+module.exports =  {
   presets: ['@babel/preset-typescript', ['@babel/preset-env', { targets: { node: 'current' } }]],
   plugins: [
     '@babel/plugin-syntax-jsx',

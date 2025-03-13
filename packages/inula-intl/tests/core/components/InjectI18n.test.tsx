@@ -13,18 +13,16 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as React from 'react';
+import { render } from 'openinula';
 import { injectIntl, IntlProvider } from '../../../index';
-import { render } from '@testing-library/react';
-import '@testing-library/jest-dom';
 
-const mountWithProvider = (el: JSX.Element) => render(<IntlProvider locale="en">{el}</IntlProvider>);
+const mountWithProvider = (el: JSX.Element) => render(<IntlProvider locale="en">{el}</IntlProvider>, container);
 
 describe('InjectIntl', () => {
   let Wrapped;
 
   beforeEach(() => {
-    Wrapped = ({ i18n }: { i18n }) => <div data-testid="test">{JSON.stringify(i18n)}</div>;
+    Wrapped = ({ intl }: { intl }) => <div data-testid="test">{JSON.stringify(intl)}</div>;
     Wrapped.someStatic = {
       type: true,
     };
@@ -34,7 +32,7 @@ describe('InjectIntl', () => {
     expect((injectIntl(Wrapped) as any).WrappedComponent).toBe(Wrapped);
   });
 
-  it(' should copy statics', () => {
+  it('should copy statics', () => {
     expect((injectIntl(Wrapped) as any).someStatic.type).toBe(true);
   });
 
@@ -42,7 +40,7 @@ describe('InjectIntl', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     const Injected = injectIntl(Wrapped);
 
-    expect(() => render(<Injected />)).toThrow("Cannot read properties of null (reading 'i18n')");
+    expect(() => render(<Injected />, container)).toThrow("Cannot read properties of null (reading 'i18nInstance')");
   });
 
   it('should contain all props in WrappedComponent when use InjectI18n', () => {
@@ -51,9 +49,11 @@ describe('InjectIntl', () => {
       foo: 'bar',
     };
 
-    const { getByTestId } = mountWithProvider(<Injected {...props} />);
-    expect(JSON.stringify(getByTestId('test'))).toEqual(
-      '{"_events":{},"locale":"en","locales":["en"],"allMessages":{},"_localeData":{}}'
+    mountWithProvider(<Injected {...props} />);
+    const testElement = container.querySelector('[data-testid="test"]')!;
+
+    expect(testElement.innerHTML).toEqual(
+      '{"_events":{},"locale":"en","locales":"en","defaultLocale":"en","timeZone":"","allMessages":{},"_localeConfig":{},"cache":{"dateTimeFormat":{},"numberFormat":{},"plurals":{},"select":{},"octothorpe":{}}}'
     );
   });
 });

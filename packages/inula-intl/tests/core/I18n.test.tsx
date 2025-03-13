@@ -1,9 +1,8 @@
 /*
  * Copyright (c) Huawei Technologies Co., Ltd. 2023-2023. All rights reserved.
  */
+import { render } from 'openinula';
 import I18n from '../../src/core/I18n';
-import { render } from '@testing-library/react';
-import '@testing-library/jest-dom/';
 
 // 测试组件
 const IndividualCustomComponent = () => {
@@ -160,13 +159,10 @@ describe('I18n', () => {
     };
     const formattedMessage = i18n.formatMessage({ id: 'richText' }, values);
 
-    // 渲染格式化后的文本内容
-    const { getByText } = render(<div>{formattedMessage}</div>);
+    render(<div data-testid="message">{formattedMessage}</div>, container);
 
-    // 检查文本内容中是否包含自定义组件的内容
-    expect(getByText('This is a rich text with a custom component')).toContain(
-      'This is a rich text with a custom component'
-    );
+    const messageElement = container.querySelector('[data-testid="message"]')!;
+    expect(messageElement.textContent).toContain('This is a rich text with a custom component');
   });
 
   it('Should return information for nested scenes with dom elements', () => {
@@ -187,11 +183,10 @@ describe('I18n', () => {
     };
     const formattedMessage = i18n.formatMessage({ id: 'richText' }, values);
 
-    // 渲染格式化后的文本内容
-    const { getByText } = render(<div>{formattedMessage}</div>);
+    render(<div data-testid="message">{formattedMessage}</div>, container);
 
-    // 检查文本内容中是否包含自定义组件的内容
-    expect(getByText('test')).toBeTruthy();
+    const messageElement = container.querySelector('[data-testid="message"]')!;
+    expect(messageElement.textContent).toContain('test');
   });
 
   it('Should return information for nested scenes with dom elements', () => {
@@ -212,14 +207,13 @@ describe('I18n', () => {
     };
     const formattedMessage = i18n.formatMessage({ id: 'richText' }, values);
 
-    // 渲染格式化后的文本内容
-    const { getByText } = render(<div>{formattedMessage}</div>);
+    render(<div data-testid="message">{formattedMessage}</div>, container);
 
-    // 检查文本内容中是否包含自定义组件的内容
-    expect(getByText('test')).toBeTruthy();
+    const messageElement = container.querySelector('[data-testid="message"]')!;
+    expect(messageElement.textContent).toContain('test');
   });
 
-  it('should be returned as value when Multiple dom elements\n', () => {
+  it('should be returned as value when Multiple dom elements', () => {
     const messages = {
       richText: '{today}, my name is {name}, and {age} years old!',
     };
@@ -243,11 +237,10 @@ describe('I18n', () => {
     };
     const formattedMessage = i18n.formatMessage({ id: 'richText' }, values);
 
-    // 渲染格式化后的文本内容
-    const { getByText } = render(<div>{formattedMessage}</div>);
+    render(<div data-testid="message">{formattedMessage}</div>, container);
 
-    // 检查文本内容中是否包含自定义组件的内容
-    expect(getByText('my name is tom, and 16 years old!')).toBeTruthy();
+    const messageElement = container.querySelector('[data-testid="message"]')!;
+    expect(messageElement.textContent).toContain('my name is tom, and 16 years old!');
   });
 
   it('should return the formatted date and time', () => {
