@@ -18,7 +18,7 @@ jobs:
 
   changelog:
     name: Changelog PR or Release
-    # if: ${{ github.repository_owner == 'openInula' }}
+    if: ${{ github.repository_owner == 'openInula' }}
     needs: test
     runs-on: ubuntu-latest
     permissions:

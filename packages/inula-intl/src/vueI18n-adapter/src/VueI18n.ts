@@ -81,6 +81,7 @@ class VueI18n extends I18n {
     super.changeMessage(messages);
   };
 
+  // @ts-expect-error VueI18n 的 $t 方法的参数类型与 I18n 的 $t 方法的参数类型不同
   $t = (msgKey: string, values?: any, componentId?: string) => {
     const messages = componentId ? this.getComponentMessages(componentId) : this.messages;
 

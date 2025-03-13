@@ -45,7 +45,7 @@ export class I18n extends EventDispatcher<Events> {
     id: MessageDescriptor | string,
     values?: Record<string, unknown> | undefined,
     { messages, context, formatOptions }?: MessageOptions
-  ) => string | any[];
+  ) => string | any[] | MessageDescriptor;
 
   constructor(props: I18nProps) {
     super();
