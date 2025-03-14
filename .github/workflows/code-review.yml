@@ -1,0 +1,102 @@
+name: TS/JS Clean Code Review
+on:
+  pull_request_target:
+    types:
+      - opened      # Triggers when a PR is opened
+      - reopened    # Triggers when a PR is reopened
+      - synchronize # Triggers when a commit is pushed to the PR
+    paths:
+      - '**.ts'     # Only trigger on TypeScript files
+      - '**.tsx'    # Include TSX files
+      - '**.js'     # Include JavaScript files
+      - '**.jsx'    # Include JSX files
+
+# Permissions needed for commenting on PRs
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  setup-deepseek-review:
+    runs-on: ubuntu-latest
+    name: Code Review
+    # Make sure the code review happens only when the PR has the label 'ai review'
+    if: contains(github.event.pull_request.labels.*.name, 'ai review')
+    steps:
+      - name: DeepSeek Code Review
+        uses: hustcer/deepseek-review@v1
+        with:
+          chat-token: ${{ secrets.CHAT_TOKEN }}
+          max-length: 50000
+          sys-prompt: >
+            As a senior TypeScript/JavaScript engineer, perform a comprehensive code review with focus on:
+
+            ### 1. Clean Code Assessment:
+            - Meaningful naming (variables, functions, classes)
+            - Function/method design (single responsibility, appropriate length)
+            - Code organization and modularity
+            - Comment quality and necessity
+            - DRY principle application
+            - SOLID principles adherence
+
+            ### 2. Security Analysis:
+            - XSS vulnerabilities
+            - Injection risks
+            - Input validation
+            - API security
+            - Authentication/authorization issues
+            - Sensitive data handling
+            - Dependency vulnerabilities
+
+            ### 3. Performance Optimization:
+            - Render efficiency
+            - Memory usage patterns 
+            - Resource loading optimization
+            - Algorithm complexity
+            - Unnecessary re-renders
+            - Asynchronous code patterns
+            - Bundle size considerations
+
+            ### 4. TypeScript/JavaScript Specifics:
+            - Type accuracy and effectiveness
+            - Modern language features usage
+            - Framework-specific best practices
+            - Browser compatibility considerations
+            - Build configuration issues
+
+            **Overall Quality:** Rating (1-5)
+
+            ```yaml
+            checklist:
+              - CleanCode: ["Naming", "Function design", "Modularity", "Comments", "SOLID principles"]
+              - Security: ["XSS prevention", "Input validation", "Auth checks", "Data exposure"]
+              - Performance: ["Render optimization", "Memory management", "Async patterns", "Bundle efficiency"]
+              - TypeScript: ["Type definitions", "Interface design", "Generic usage", "Type guards"]
+
+            examples:
+              - issue: "❗ Potential XSS vulnerability in line 42 through dangerouslySetInnerHTML"
+              - issue: "⚠️ Any type used extensively, reducing type safety benefits"
+              - suggestion: "Extract repeated logic in functions X, Y, Z into shared utility"
+              - suggestion: "Implement React.memo to prevent unnecessary re-renders"
+
+            response_template: |
+              #### Clean Code Assessment
+              - {{clean_code_observations}}
+
+              {{#security_issues}}
+              #### Security Issues
+              - {{security_issues}}
+              {{/security_issues}}
+
+              {{#performance_issues}}
+              #### Performance Optimizations
+              - {{performance_issues}}
+              {{/performance_issues}}
+
+              {{#typescript_issues}}
+              #### TypeScript/JavaScript Specifics
+              - {{typescript_issues}}
+              {{/typescript_issues}}
+
+              **Overall Quality:** {{rating}}
+            ```
