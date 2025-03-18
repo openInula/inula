@@ -56,6 +56,7 @@ class ConditionalNode extends MutableLifecycleNode implements InulaBaseNode {
       return;
     }
     const newFuncs = [this.willUnmountScopedStore, this.didUnmountScopedStore];
+    // change the unmount hooks to the previous state for removeNodes to invoke them
     [this.willUnmountScopedStore, this.didUnmountScopedStore] = prevFuncs;
     if (this.nodes && this.nodes.length > 0) {
       this.removeNodes(this.nodes);

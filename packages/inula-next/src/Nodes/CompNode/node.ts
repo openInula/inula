@@ -129,15 +129,32 @@ export abstract class ReactiveNode {
 
   updateContext(contextId: ContextID, contextName: string, value: Value) {
     if (this.updateContextMap) {
-      if (Object.keys(this.updateContextMap).length === 1 && '$whole$' in this.updateContextMap) {
-        value = { [contextName]: value };
-        contextName = '$whole$';
-      }
+      if (contextName === '*spread*') {
+        for (const key in this.updateContextMap) {
+          if (key in value) {
+            this.doUpdateContext(contextId, key, value);
+          }
+        }
 
-      const [expectedContextId, updateContextFunc, waveBits] = this.updateContextMap[contextName];
-      if (contextId !== expectedContextId) return;
-      this.wave(updateContextFunc(value), waveBits);
+        if ('$whole$' in this.updateContextMap) {
+          this.doUpdateContext(contextId, '$whole$', value);
+        }
+      } else {
+        if (this.updateContextMap[contextName]) {
+          this.doUpdateContext(contextId, contextName, value);
+        }
+
+        if ('$whole$' in this.updateContextMap) {
+          this.doUpdateContext(contextId, '$whole$', { [contextName]: value });
+        }
+      }
     }
+  }
+
+  doUpdateContext(contextId: ContextID, contextName: string, value: Value) {
+    const [expectedContextId, updateContextFunc, waveBits] = this.updateContextMap![contextName];
+    if (contextId !== expectedContextId) return;
+    this.wave(updateContextFunc(value), waveBits);
   }
   // ---- CONTEXT END ----
 
