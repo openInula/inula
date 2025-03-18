@@ -64,7 +64,14 @@ export class ContextNode implements InulaBaseNode {
     const cachedDeps = this.cachedDependenciesMap![contextName];
     if (cached(deps, cachedDeps)) return;
     const value = valueFunc();
-    this.contexts[contextName] = value;
+    if (contextName === '*spread*') {
+      this.contexts = {
+        ...this.contexts,
+        ...value,
+      };
+    } else {
+      this.contexts[contextName] = value;
+    }
     this.consumers.forEach(consumer => consumer.updateContext(this.contextId, contextName, value));
     this.cachedDependenciesMap![contextName] = deps;
   }
