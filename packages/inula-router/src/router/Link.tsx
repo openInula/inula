@@ -36,7 +36,7 @@ const checkTarget = (target?: any) => {
   return !target || target === '_self';
 };
 
-function Link<P extends LinkProps>(props: P) {
+function Link<P extends LinkProps>(props: P): JSX.Element {
   const { to, replace, component, onClick, target, ...other } = props;
 
   const tag = props.tag || 'a';
