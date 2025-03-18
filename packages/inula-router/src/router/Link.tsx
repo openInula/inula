@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Inula from 'openinula';
+import Inula, { InulaElement } from 'openinula';
 import { useContext, MouseEvent, ComponentType, Ref } from 'openinula';
 import RouterContext from './context';
 import { Location } from './index';
@@ -36,7 +36,7 @@ const checkTarget = (target?: any) => {
   return !target || target === '_self';
 };
 
-function Link<P extends LinkProps>(props: P): JSX.Element {
+function Link<P extends LinkProps>(props: P): InulaElement {
   const { to, replace, component, onClick, target, ...other } = props;
 
   const tag = props.tag || 'a';
