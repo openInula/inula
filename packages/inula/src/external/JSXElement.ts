@@ -25,6 +25,7 @@ import {
   ClassicComponentClass,
   ComponentClass,
   ComponentState,
+  FunctionComponent,
   FunctionComponentElement,
   InulaCElement,
   InulaElement,
@@ -157,10 +158,17 @@ export function createElement<P extends DOMAttributes<T>, T extends Element>(
 ): DOMElement<P, T>;
 
 export function createElement<P extends KVObject>(
+  type: FunctionComponent<P>,
+  props?: (Attributes & P) | null,
+  ...children: InulaNode[]
+): FunctionComponentElement<P>;
+
+export function createElement<P extends KVObject>(
   type: ClassType<P, ClassicComponent<P, ComponentState>, ClassicComponentClass<P>>,
   props?: (ClassAttributes<ClassicComponent<P, ComponentState>> & P) | null,
   ...children: InulaNode[]
 ): InulaCElement<P, ClassicComponent<P, ComponentState>>;
+
 export function createElement<P extends KVObject, T extends Component<P, ComponentState>, C extends ComponentClass<P>>(
   type: ClassType<P, T, C>,
   props?: (ClassAttributes<T> & P) | null,
@@ -168,8 +176,12 @@ export function createElement<P extends KVObject, T extends Component<P, Compone
 ): InulaCElement<P, T>;
 
 // 创建Element结构体，供JSX编译时调用
-export function createElement(type, setting, ...children) {
-  return buildElement(false, type, setting, children);
+export function createElement<P extends {}>(
+  type: FunctionComponent<P> | ComponentClass<P> | string,
+  props?: (Attributes & P) | null,
+  ...children: InulaNode[]
+): InulaElement<P> {
+  return buildElement(false, type, props, children);
 }
 
 export function cloneElement<P extends HTMLAttributes<T>, T extends HTMLElement>(
@@ -213,8 +225,8 @@ export function cloneElement(element, setting, ...children) {
 }
 
 // 检测结构体是否为合法的Element
-export function isValidElement<P>(element: KVObject | null | undefined): element is InulaElement<P> {
-  return !!(element && element.vtype === TYPE_COMMON_ELEMENT);
+export function isValidElement<P>(element: {} | null | undefined): element is InulaElement<P> {
+  return typeof element === 'object' && element !== null && 'vtype' in element && element.vtype === TYPE_COMMON_ELEMENT;
 }
 
 // 兼容高版本的babel编译方式

@@ -8,10 +8,13 @@
   "homepage": "",
   "bugs": "",
   "license": "MulanPSL2",
-  "main": "index.js",
+  "main": "./build/inula/index.js",
   "repository": {},
   "engines": {
     "node": ">=0.10.0"
+  },
+  "publishConfig": {
+    "directory": "./build/inula"
   },
   "scripts": {
     "build": "npm run build-types && rollup --config ./scripts/rollup/rollup.config.js",
@@ -23,14 +26,14 @@
     "test": "jest --config=jest.config.js",
     "watch-test": "yarn test --watch --dev"
   },
-  "types": "@types/index.d.ts",
+  "types": "./build/inula/@types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./@types/index.d.ts",
-      "default": "./index.js"
+      "types": "./build/inula/@types/index.d.ts",
+      "default": "./build/inula/index.js"
     },
     "./package.json": "./package.json",
-    "./jsx-runtime": "./jsx-runtime.js",
-    "./jsx-dev-runtime": "./jsx-dev-runtime.js"
+    "./jsx-runtime": "./build/inula/jsx-runtime.js",
+    "./jsx-dev-runtime": "./build/inula/jsx-dev-runtime.js"
   }
 }
