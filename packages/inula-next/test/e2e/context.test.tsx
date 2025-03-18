@@ -305,6 +305,40 @@ describe('context', () => {
     expect(container.querySelector('div').textContent).toBe('Count: 1');
   });
 
+  it('Should correctly update children using context', ({ container }) => {
+    const NumContext = createContext({ num: null });
+
+    let updateNum: () => void;
+    function Parent({ children }) {
+      let num = 1;
+      updateNum = () => {
+        num++;
+      };
+      return <NumContext num={num}>{children}</NumContext>;
+    }
+
+    function Son() {
+      const { num } = useContext(NumContext);
+      return <h1>{num}</h1>;
+    }
+
+    function App() {
+      return (
+        <Parent>
+          <Son />
+        </Parent>
+      );
+    }
+
+    render(App(), container);
+    expect(container.innerHTML).toBe('<h1>1</h1>');
+    updateNum!();
+    expect(container.innerHTML).toBe('<h1>2</h1>');
+    updateNum!();
+    expect(container.innerHTML).toBe('<h1>3</h1>');
+    updateNum!();
+  });
+
   it('Should handle nested contexts correctly', ({ container }) => {
     const ThemeContext = createContext('light');
     const LanguageContext = createContext('en');
@@ -347,5 +381,101 @@ describe('context', () => {
 
     render(App(), container);
     expect(container.innerHTML).toBe('<div>Default message</div>');
+  });
+
+  it('Should support whole context object as value', ({ container }) => {
+    const AppContext = createContext('en');
+    let updateContext;
+
+    function App() {
+      let context = { language: 'en', theme: 'light' };
+      updateContext = () => {
+        context = { language: 'fr', theme: 'dark' };
+      };
+      return (
+        <AppContext language={context.language} theme={context.theme}>
+          <Child />
+        </AppContext>
+      );
+    }
+
+    function Child() {
+      const context = useContext(AppContext);
+      return (
+        <div>
+          Theme: {context.theme}, Language: {context.language}
+        </div>
+      );
+    }
+
+    render(App(), container);
+    expect(container.innerHTML).toBe('<div>Theme: light, Language: en</div>');
+    updateContext();
+    expect(container.innerHTML).toBe('<div>Theme: dark, Language: fr</div>');
+  });
+
+  it('Should support partial context', ({ container }) => {
+    const AppContext = createContext({
+      theme: 'light',
+      language: 'en',
+    });
+    let updateContext: () => void;
+
+    function App() {
+      let theme = 'light';
+      const language = 'en';
+      updateContext = () => {
+        theme = 'dark';
+      };
+      return (
+        <AppContext language={language} theme={theme}>
+          <Child />
+        </AppContext>
+      );
+    }
+
+    function Child() {
+      const { language } = useContext(AppContext);
+      return <div>Language: {language}</div>;
+    }
+
+    render(App(), container);
+    expect(container.innerHTML).toBe('<div>Language: en</div>');
+    updateContext!();
+    expect(container.innerHTML).toBe('<div>Language: en</div>');
+  });
+
+  it('Should support object spread in provider', ({ container }) => {
+    const AppContext = createContext({
+      theme: 'light',
+      language: 'en',
+    });
+    let updateContext: () => void;
+
+    function App() {
+      let context = { language: 'en', theme: 'light' };
+      updateContext = () => {
+        context = { language: 'fr', theme: 'dark' };
+      };
+      return (
+        <AppContext {...context}>
+          <Child />
+        </AppContext>
+      );
+    }
+
+    function Child() {
+      const context = useContext(AppContext);
+      return (
+        <div>
+          Theme: {context.theme}, Language: {context.language}
+        </div>
+      );
+    }
+
+    render(App(), container);
+    expect(container.innerHTML).toBe('<div>Theme: light, Language: en</div>');
+    updateContext!();
+    expect(container.innerHTML).toBe('<div>Theme: dark, Language: fr</div>');
   });
 });

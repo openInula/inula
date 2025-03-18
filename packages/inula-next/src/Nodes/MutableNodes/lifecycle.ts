@@ -15,7 +15,7 @@ export class MutableLifecycleNode extends MutableContextNode {
 
   setUnmountFuncs() {
     this.willUnmountScopedStore = InulaStore.global.WillUnmountScopedStore.pop();
-    this.didUnmountScopedStore = InulaStore.global.WillUnmountScopedStore.pop();
+    this.didUnmountScopedStore = InulaStore.global.DidUnmountScopedStore.pop();
   }
 
   runWillUnmount = () => {
