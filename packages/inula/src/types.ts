@@ -55,7 +55,7 @@ export interface ExoticComponent<P = KVObject> {
   (props: P): InulaElement | null;
 }
 
-interface ProviderProps<T> {
+export interface ProviderProps<T> {
   value: T;
   children?: InulaNode | undefined;
 }
