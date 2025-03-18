@@ -182,8 +182,12 @@ export function createElement<P extends KVObject>(
 ): InulaElement<P>;
 
 // 创建Element结构体，供JSX编译时调用
-export function createElement(type, setting, ...children) {
-  return buildElement(false, type, setting, children);
+export function createElement<P extends {}>(
+  type: FunctionComponent<P> | ComponentClass<P> | string,
+  props?: (Attributes & P) | null,
+  ...children: InulaNode[]
+): InulaElement<P> {
+  return buildElement(false, type, props, children);
 }
 
 export function cloneElement<P extends HTMLAttributes<T>, T extends HTMLElement>(
