@@ -1,0 +1,25 @@
+{
+  "name": "openinula",
+  "description": "Inula is a JavaScript framework library.",
+  "keywords": [
+    "inula"
+  ],
+  "version": "0.1.13",
+  "homepage": "",
+  "bugs": "",
+  "license": "MulanPSL2",
+  "main": "./index.js",
+  "repository": {},
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "types": "./@types/index.d.ts",
+  "exports": {
+    ".": {
+      "default": "./index.js"
+    },
+    "./package.json":"./package.json",
+    "./jsx-runtime": "./jsx-runtime.js",
+    "./jsx-dev-runtime": "./jsx-dev-runtime.js"
+  }
+}

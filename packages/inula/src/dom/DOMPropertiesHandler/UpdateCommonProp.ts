@@ -13,12 +13,11 @@
  * See the Mulan PSL v2 for more details.
  */
 
-//kb-tag
-import { getPropDetails, PROPERTY_TYPE } from '../../renderer/props/PropertiesData';
-import { isInvalidValue } from '../../renderer/props/ValidateProps';
+import { getPropDetails, PROPERTY_TYPE } from '../validators/PropertiesData';
+import { isInvalidValue } from '../validators/ValidateProps';
 import { getNamespaceCtx } from '../../renderer/ContextSaver';
 import { NSS } from '../utils/DomCreator';
-import { getTag } from '../../renderer/utils/common';
+import { getDomTag } from '../utils/Common';
 
 // 不需要装换的svg属性集合
 const svgHumpAttr = new Set();
@@ -112,7 +111,7 @@ export function updateCommonProp(dom: Element, attrName: string, value: any, isN
 
   if (!isNativeTag || propDetails === null) {
     // 特殊处理svg的属性，把驼峰式的属性名称转成'-'
-    if (getTag(dom) === 'svg' || getNamespaceCtx() === NSS.svg) {
+    if (getDomTag(dom) === 'svg' || getNamespaceCtx() === NSS.svg) {
       if (!svgHumpAttr.has(attrName)) {
         attrName = convertToLowerCase(attrName);
       }

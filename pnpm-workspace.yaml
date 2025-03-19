@@ -1,5 +1,6 @@
 packages:
   # all packages in direct subdirs of packages/
   - 'packages/*'
-  - 'packages/**/*'
-  - 'demos/*'
+  - 'next-packages/*'
+  - 'next-packages/compiler/*'
+
