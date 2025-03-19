@@ -53,10 +53,7 @@ export function getDependenciesFromNode(
         if (isAssignmentExpressionLeft(innerPath) || isAssignmentFunction(innerPath, reactivityFuncNames)) {
           // write
           writingBits |= bit;
-        } else if (
-          (isStandAloneIdentifier(innerPath) && !isMemberInUntrackFunction(innerPath)) ||
-          isMemberOfMemberExpression(innerPath)
-        ) {
+        } else if (isStandAloneIdentifier(innerPath) && !isMemberInUntrackFunction(innerPath)) {
           // read
           readingBits |= bit;
 
@@ -69,7 +66,7 @@ export function getDependenciesFromNode(
 
   // ---- Eliminate deps that are assigned in the same method
   //      e.g. { console.log(count); count = 1 }
-  //      this will cause infinite loop
+  //      this will cause infinite loop,
   //      so we eliminate "count" from deps
   preventSelfMutation(writingBits & readingBits, reactiveBitMap, node);
 
@@ -89,11 +86,15 @@ export function getDependenciesFromNode(
   };
 }
 
-function preventSelfMutation(overlapBits: number, reactiveBitMap: Map<string, number>, node: t.Expression | t.Statement) {
+function preventSelfMutation(
+  overlapBits: number,
+  reactiveBitMap: Map<string, number>,
+  node: t.Expression | t.Statement
+) {
   if (overlapBits !== 0) {
     // find the variable of the overlap bits
     const cyclicDependencies: string[] = [];
-    reactiveBitMap.entries().forEach(([name, bit]) => {
+    Array.from(reactiveBitMap.entries()).forEach(([name, bit]) => {
       if (overlapBits & bit) {
         cyclicDependencies.push(name);
       }
@@ -215,9 +216,7 @@ function isMemberOfMemberExpression(innerPath: NodePath): boolean {
  */
 function isStandAloneIdentifier(path: NodePath<t.Identifier>): boolean {
   const node = path.node;
-  const parentNode = path.parentPath?.node;
-  const isMemberExpression = t.isMemberExpression(parentNode) && parentNode.property === node;
-  if (isMemberExpression) return false;
+  if (isIdentifierProperty(path)) return false;
   const isFunctionParam = isAttrFromFunction(path, node.name);
   if (isFunctionParam) return false;
   while (path.parentPath) {
@@ -233,6 +232,18 @@ function isStandAloneIdentifier(path: NodePath<t.Identifier>): boolean {
   return true;
 }
 
+/**
+ * Check if the identifier is a property string of a member expression.
+ * e.g. `info.name`, name is a property of info
+ * but `arr[index]`, index is not a property string
+ * @param path
+ */
+function isIdentifierProperty(path: NodePath<t.Identifier>): boolean {
+  const parentNode = path.parentPath?.node;
+  const node = path.node;
+
+  return t.isMemberExpression(parentNode) && parentNode.property === node && !parentNode.computed;
+}
 /**
  * @brief check if the identifier is from a function param till the stopNode
  *  e.g:
