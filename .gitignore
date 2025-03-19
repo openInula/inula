@@ -5,6 +5,7 @@ package-lock.json
 /packages/**/node_modules
 /packages/inula-cli/lib
 build
+dist
 /packages/inula-router/connectRouter
 /packages/inula-router/router
 .turbo
