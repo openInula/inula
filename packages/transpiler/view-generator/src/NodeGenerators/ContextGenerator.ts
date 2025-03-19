@@ -34,7 +34,7 @@ export const contextGenerator: ViewGenerator = {
                 t.stringLiteral(key),
                 t.arrowFunctionExpression([], prop.value),
                 prop.dependenciesNode,
-                t.numericLiteral(prop.depIdBitmap),
+                t.numericLiteral(ctx.getReactBits(prop.depIdBitmap)),
               ])
             )
           )
