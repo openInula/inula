@@ -14,7 +14,7 @@
  */
 
 import { Location as HLocation } from '../history/types';
-import { getConnectedRouter } from '../connect-router';
+export { ConnectedHRouter, ConnectedRouter } from '../connect-router';
 
 type Location<S = unknown> = Omit<HLocation<S>, 'key'>;
 
@@ -56,5 +56,3 @@ export type { RouteComponentProps, RouteChildrenProps, RouteProps } from './Rout
 // ============================ Connect-router ============================
 
 export { connectRouter, routerMiddleware, push, go, replace } from '../connect-router';
-export const ConnectedRouter = getConnectedRouter('Redux');
-export const ConnectedHRouter = getConnectedRouter('InulaXCompat');
