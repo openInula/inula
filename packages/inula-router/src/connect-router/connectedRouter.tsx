@@ -146,4 +146,5 @@ function getConnectedRouter<S = DefaultStateType>(type: StoreType) {
   }
 }
 
-export { getConnectedRouter };
+export const ConnectedRouter = getConnectedRouter('Redux');
+export const ConnectedHRouter = getConnectedRouter('InulaXCompat');
