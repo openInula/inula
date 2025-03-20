@@ -334,25 +334,9 @@ describe('extended prop tests', () => {
     }
 
     render(App(), container);
-    expect(container).toMatchInlineSnapshot(`
-      <div>
-        <div>
-          Hello
-
-          World
-        </div>
-      </div>
-    `);
+    expect(container.innerHTML).toMatchInlineSnapshot(`"<div>Hello World</div>"`);
     update!();
-    expect(container).toMatchInlineSnapshot(`
-      <div>
-        <div>
-          Hello
-
-          Inula
-        </div>
-      </div>
-    `);
+    expect(container.innerHTML).toMatchInlineSnapshot(`"<div>Hello Inula</div>"`);
   });
 
   it('should correctly spread props', ({ container }) => {
