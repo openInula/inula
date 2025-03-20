@@ -30,6 +30,11 @@
       "dependsOn": [
         "openinula#build"
       ]
+    },
+    "inula-request#build": {
+      "dependsOn": [
+        "openinula#build"
+      ]
     }
   }
 }
