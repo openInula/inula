@@ -58,8 +58,7 @@
     "play": "npm -C playground run dev",
     "prepublishOnly": "npm run build",
     "release": "bumpp && pnpm publish",
-    "start": "tsx src/index.ts",
-    "test": "vitest"
+    "start": "tsx src/index.ts"
   },
   "peerDependencies": {
     "rollup": "^3",
