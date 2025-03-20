@@ -100,7 +100,7 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
       fetch(url, options)
         .then(response => {
           // 将 Headers 对象转换为普通 JavaScript 对象，可以使用 [] 访问具体响应头
-          const headersObj = {};
+          const headersObj: Record<string, string> = {};
           response.headers.forEach((value, name) => {
             headersObj[name] = value;
           });

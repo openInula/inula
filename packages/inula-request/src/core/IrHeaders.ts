@@ -197,7 +197,7 @@ class IrHeaders {
 
   defineAccessor() {
     // 用于标记当前响应头访问器是否已添加
-    const accessors = {};
+    const accessors: Record<string, any> = {};
 
     // 定义默认头部
     const defaultHeaders = ['Content-Type', 'Content-Length', 'Accept', 'Accept-Encoding', 'User-Agent'];

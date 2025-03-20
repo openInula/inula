@@ -443,8 +443,8 @@ function getObjectByArray(arr: any[]): Record<string, any> {
   }, {});
 }
 
-function filterUndefinedValues(obj: Record<any, any>) {
-  return Object.keys(obj).reduce((result, key) => {
+function filterUndefinedValues<T extends Record<string, any>>(obj: T): Partial<T> {
+  return Object.keys(obj).reduce((result: Partial<T>, key: keyof T) => {
     if (obj[key] !== undefined && obj[key] !== null) {
       result[key] = obj[key];
     }

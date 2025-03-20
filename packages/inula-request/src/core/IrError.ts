@@ -104,7 +104,7 @@ const errorTypes = [
 const descriptors: PropertyDescriptorMap = errorTypes.reduce((acc, code) => {
   acc[code] = { value: code };
   return acc;
-}, {});
+}, {} as PropertyDescriptorMap);
 
 // 将 descriptors 对象中定义的属性添加到 IrError 类上
 Object.defineProperties(IrError, descriptors);
