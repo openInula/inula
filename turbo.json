@@ -20,6 +20,18 @@
         "^typecheck"
       ],
       "outputs": []
+    },
+    "inula-router#build": {
+      "dependsOn": [
+        "openinula#build"
+      ],
+      "outputs": []
+    },
+    "inula-intl#build": {
+      "dependsOn": [
+        "openinula#build"
+      ],
+      "outputs": []
     }
   }
 }
