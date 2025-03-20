@@ -16,7 +16,6 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsup --sourcemap",
-    "test": "vitest run",
     "dev": "vite",
     "dev:build": "vite build"
   },
