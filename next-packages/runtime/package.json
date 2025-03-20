@@ -26,7 +26,7 @@
   },
   "scripts": {
     "build": "tsup --sourcemap",
-    "test": "vitest --ui",
+    "test": "vitest run",
     "dev": "vite",
     "build:dev": "vite build --outDir dev/dist"
   },
