@@ -6,11 +6,13 @@
         "^build"
       ],
       "outputs": [
-        "dist/**"
+        "dist/**",
+        "build/**"
       ]
     },
     "test": {
       "dependsOn": [
+        "build",
         "^test"
       ],
       "outputs": []
