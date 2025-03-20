@@ -19,6 +19,42 @@ import { searchNestedProps } from './stateDestructuringPlugin';
 import { genUid } from './earlyReturnPlugin';
 
 /**
+ * Iterate identifier in nested destructuring, collect the identifier that can be used
+ * e.g. function ({prop1, prop2: [p20X, {p211, p212: p212X}]}
+ * we should collect prop1, p20X, p211, p212X
+ * @param idPath
+ */
+export function searchNestedProps(idPath: NodePath<t.ArrayPattern | t.ObjectPattern>) {
+  const nestedProps: string[] | null = [];
+
+  if (idPath.isObjectPattern() || idPath.isArrayPattern()) {
+    idPath.traverse({
+      Identifier(path) {
+        // judge if the identifier is a prop
+        // 1. is the key of the object property and doesn't have alias
+        // 2. is the item of the array pattern and doesn't have alias
+        // 3. is alias of the object property
+        const parentPath = path.parentPath;
+        if (parentPath.isObjectProperty() && path.parentKey === 'value') {
+          // collect alias of the object property
+          nestedProps.push(path.node.name);
+        } else if (
+          parentPath.isArrayPattern() ||
+          parentPath.isObjectPattern() ||
+          parentPath.isRestElement() ||
+          (parentPath.isAssignmentPattern() && path.key === 'left')
+        ) {
+          // collect the key of the object property or the item of the array pattern
+          nestedProps.push(path.node.name);
+        }
+      },
+    });
+  }
+
+  return nestedProps;
+}
+
+/**
  * For Sub Component Plugin
  * Find For element and convert
  *
