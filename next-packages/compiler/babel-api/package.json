@@ -1,0 +1,19 @@
+{
+  "name": "@openinula/babel-api",
+  "version": "0.0.2",
+  "description": "",
+  "type": "module",
+  "main": "src/index.mjs",
+  "typings": "src/index.d.ts",
+  "files": [
+    "src"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/core": "^7.23.3",
+    "@babel/types": "^7.24.0",
+    "@types/babel__core": "^7.20.5"
+  }
+}

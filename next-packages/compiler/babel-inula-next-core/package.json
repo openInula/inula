@@ -1,0 +1,63 @@
+{
+  "name": "@openinula/babel-preset-inula-next",
+  "version": "0.0.5",
+  "keywords": [
+    "Inula-Next",
+    "babel-preset"
+  ],
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup --sourcemap",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/babel__core": "^7.20.5",
+    "@types/node": "^20.10.5",
+    "@vitest/coverage-v8": "^1.6.0",
+    "sinon": "^18.0.0",
+    "tsup": "^6.7.0",
+    "typescript": "^5.3.2"
+  },
+  "dependencies": {
+    "@babel/core": "^7.23.3",
+    "@babel/generator": "^7.23.6",
+    "@babel/parser": "^7.24.4",
+    "@babel/plugin-syntax-decorators": "^7.23.3",
+    "@babel/plugin-syntax-jsx": "7.23.3",
+    "@babel/plugin-syntax-typescript": "^7.23.3",
+    "@babel/traverse": "^7.24.1",
+    "@babel/types": "^7.24.0",
+    "@openinula/babel-api": "workspace:*",
+    "@openinula/jsx-view-parser": "workspace:*",
+    "@openinula/reactivity-parser": "workspace:*",
+    "@openinula/view-generator": "workspace:*",
+    "@openinula/error-handler": "workspace:*",
+    "@types/babel-types": "^7.0.15",
+    "@types/babel__generator": "^7.6.8",
+    "@types/babel__traverse": "^7.6.8",
+    "minimatch": "^9.0.3",
+    "vitest": "^1.4.0"
+  },
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "format": [
+      "cjs",
+      "esm"
+    ],
+    "clean": true,
+    "dts": true
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

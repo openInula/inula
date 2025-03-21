@@ -1,0 +1,51 @@
+{
+  "name": "@openinula/next",
+  "version": "0.0.5",
+  "keywords": [
+    "inula"
+  ],
+  "license": "MIT",
+  "files": [
+    "dist",
+    "README.md",
+    "jsx-runtime.d.ts",
+    "types"
+  ],
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./jsx-runtime": {
+      "types": "./jsx-runtime.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup --sourcemap",
+    "test": "vitest run",
+    "dev": "vite",
+    "build:dev": "vite build --outDir dev/dist"
+  },
+  "devDependencies": {
+    "tsup": "^6.5.0",
+    "vitest": "2.0.5",
+    "vite": "^5.4.10",
+    "@openinula/unplugin": "workspace:*"
+  },
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "dts": true,
+    "format": [
+      "cjs",
+      "esm"
+    ],
+    "clean": true,
+    "minify": false
+  }
+}

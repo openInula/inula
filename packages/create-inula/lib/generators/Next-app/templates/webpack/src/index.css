@@ -1,0 +1,141 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: #f0f4f8;
+  color: #333;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.hero-title {
+  font-size: 3rem;
+  color: #1a73e8;
+  margin-bottom: 10px;
+}
+
+.hero-subtitle {
+  font-size: 1.5rem;
+  color: #666;
+}
+
+.content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 300px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card h2 {
+  font-size: 1.5rem;
+  color: #1a73e8;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 1rem;
+  color: #555;
+}
+
+.card a {
+  color: #1a73e8;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.card a:hover {
+  text-decoration: underline;
+}
+
+/* Animation delays */
+.animate__animated.animate__fadeInDown {
+  animation-delay: 0.2s;
+}
+
+.animate__animated.animate__fadeInUp {
+  animation-delay: 0.4s;
+}
+
+.animate__animated.animate__fadeInLeft {
+  animation-delay: 0.6s;
+}
+
+.animate__animated.animate__fadeInRight {
+  animation-delay: 0.8s;
+}
+
+/* 修改计数器相关的样式 */
+.counter-wrapper {
+  margin-top: 32px;
+  text-align: center;
+  animation-delay: 0.6s;
+}
+
+.counter-display {
+  font-size: 48px;
+  font-weight: 700;
+  color: #1a73e8;
+  margin-bottom: 16px;
+}
+
+.counter-display span {
+  display: inline-block;
+  min-width: 60px;
+}
+
+.counter-btn {
+  background: #1a73e8;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.counter-btn:hover {
+  background: #1557b0;
+  transform: translateY(-2px);
+}
+
+.counter-btn:active {
+  transform: translateY(0);
+}
+
+@keyframes numberPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.number-pop {
+  animation: numberPop 0.3s ease-out;
+}

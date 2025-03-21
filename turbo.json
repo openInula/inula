@@ -6,11 +6,13 @@
         "^build"
       ],
       "outputs": [
-        "dist/**"
+        "dist/**",
+        "build/**"
       ]
     },
     "test": {
       "dependsOn": [
+        "build",
         "^test"
       ],
       "outputs": []
@@ -27,6 +29,11 @@
       ]
     },
     "inula-intl#build": {
+      "dependsOn": [
+        "openinula#build"
+      ]
+    },
+    "inula-request#build": {
       "dependsOn": [
         "openinula#build"
       ]
