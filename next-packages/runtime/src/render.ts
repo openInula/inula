@@ -5,8 +5,8 @@ import { runDidMount } from './lifecycle';
 
 /**
  * @brief Render the component node to the container
- * @param compNode 
- * @param container 
+ * @param compNode
+ * @param container
  */
 export const render = (compNode: CompNode, container: HTMLElement) => {
   if (container == null) {
@@ -15,4 +15,4 @@ export const render = (compNode: CompNode, container: HTMLElement) => {
   container.innerHTML = '';
   insertNode(container as InulaHTMLNode, compNode, 0);
   runDidMount();
-}
+};

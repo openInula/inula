@@ -1,5 +1,12 @@
 import { Bits, InulaBaseNode, Value } from '../../types';
-import { getFlowIndexFromNodes, appendNodesWithIndex, addParentElement, appendNodes, cached, willReact } from '../utils';
+import {
+  getFlowIndexFromNodes,
+  appendNodesWithIndex,
+  addParentElement,
+  appendNodes,
+  cached,
+  willReact,
+} from '../utils';
 import { InulaHTMLNode, InulaTextNode } from './types';
 
 /**
@@ -19,8 +26,7 @@ export const insertNode = (el: InulaHTMLNode, node: InulaBaseNode, position: num
   appendNodesWithIndex([node], el, flowIdx);
   // ---- Set parentEl
   addParentElement([node], el);
-}
-
+};
 
 /**
  * @brief Check if the node should update
@@ -30,7 +36,12 @@ export const insertNode = (el: InulaHTMLNode, node: InulaBaseNode, position: num
  * @param reactBits
  * @returns
  */
-export const shouldUpdate = (node: InulaHTMLNode | InulaTextNode, key: string, dependencies: Value[], reactBits: Bits) => {
+export const shouldUpdate = (
+  node: InulaHTMLNode | InulaTextNode,
+  key: string,
+  dependencies: Value[],
+  reactBits: Bits
+) => {
   // ---- If not reacting to the change
   if (!willReact(node.__$owner!.dirtyBits!, reactBits)) return false;
   // ---- If not cached
@@ -38,12 +49,11 @@ export const shouldUpdate = (node: InulaHTMLNode | InulaTextNode, key: string, d
   node[`c$${key}`] = dependencies;
 
   return true;
-}
-
+};
 
 export const getElementByPosition = (element: HTMLElement, ...positions: number[]) => {
   let current = element;
-  
+
   for (let i = 0; i < positions.length; i++) {
     const pos = positions[i];
     if (i < 2) {
@@ -62,6 +72,6 @@ export const getElementByPosition = (element: HTMLElement, ...positions: number[
       current = current.childNodes[pos] as HTMLElement;
     }
   }
-  
+
   return current;
-}
+};

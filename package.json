@@ -19,7 +19,6 @@
     "build:inula-intl": "pnpm -F inula-intl rollup-build",
     "build:inula-request": "pnpm -F inula-request build",
     "build:inula-router": "pnpm -F inula-router build",
-    "build:transpiler": "pnpm --filter './packages/transpiler/*' run build",
     "commitlint": "commitlint --config commitlint.config.js -e",
     "postinstall": "husky install"
   },
@@ -90,9 +89,5 @@
   "engines": {
     "node": ">=10.x",
     "npm": ">=7.x"
-  },
-  "dependencies": {
-    "@changesets/cli": "^2.27.1",
-    "changeset": "^0.2.6"
   }
 }

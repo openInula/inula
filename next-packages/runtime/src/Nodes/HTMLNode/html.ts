@@ -1,6 +1,7 @@
 import { InulaStore } from '../../store';
 import { Bits, InulaBaseNode, Updater, Value } from '../../types';
-import { addParentElement, appendNodes, cached, update } from '../utils';
+import { getCurrentCompNode } from '../CompNode/node';
+import { addParentElement, appendNodes, cached, InitDirtyBitsMask, update } from '../utils';
 import { HTMLAttrsObject, InulaHTMLNode } from './types';
 import { shouldUpdate } from './utils';
 
@@ -12,6 +13,9 @@ import { shouldUpdate } from './utils';
 export const createHTMLNode = (tag: string, update: Updater<InulaHTMLNode>, ...childrenNodes: InulaBaseNode[]) => {
   const node = InulaStore.document.createElement(tag) as InulaHTMLNode;
   node.update = _update.bind(null, node, update);
+  node.__$owner = getCurrentCompNode();
+
+  update?.(node);
 
   node.nodes = childrenNodes;
 
@@ -21,20 +25,20 @@ export const createHTMLNode = (tag: string, update: Updater<InulaHTMLNode>, ...c
   // ---- Set parentEl
   addParentElement(childrenNodes, node);
 
-  return node
-}
+  return node;
+};
 
 /**
  * @brief Update the HTML node and its children
- * @param node 
- * @param htmlUpdate 
+ * @param node
+ * @param htmlUpdate
  */
 const _update = (node: InulaHTMLNode, htmlUpdate: Updater<InulaHTMLNode> | null) => {
-  htmlUpdate?.(node)
+  htmlUpdate?.(node);
   for (let i = 0; i < (node.nodes?.length ?? 0); i++) {
-    update(node.nodes![i], node.dirtyBits!)
+    update(node.nodes![i]);
   }
-}
+};
 
 // ---- Without dependencies ----
 /**
@@ -45,26 +49,26 @@ const _update = (node: InulaHTMLNode, htmlUpdate: Updater<InulaHTMLNode> | null)
  */
 const _setHTMLProp = (node: InulaHTMLNode, key: string, value: Value) => {
   (node as Record<string, Value>)[key] = value;
-}
+};
 
 /**
  * @brief Check if it's a custom property, i.e. starts with '--'
- * @param name 
- * @returns 
+ * @param name
+ * @returns
  */
 const isCustomProperty = (name: string): boolean => name.startsWith('--');
 
 /**
  * @brief Set style
- * @param node 
- * @param newStyle 
- * @returns 
+ * @param node
+ * @param newStyle
+ * @returns
  */
 const _setStyle = (node: InulaHTMLNode, newStyle: CSSStyleDeclaration) => {
   const style = node.style;
-  const prevStyle = node.prevStyle ?? {} as CSSStyleDeclaration;
+  const prevStyle = node.prevStyle ?? ({} as CSSStyleDeclaration);
 
-  // ---- Instead of resigning the whole style object, 
+  // ---- Instead of resigning the whole style object,
   //      we will compare the previous style with the new style
   //      to reduce the number of operations
 
@@ -98,6 +102,8 @@ const _setStyle = (node: InulaHTMLNode, newStyle: CSSStyleDeclaration) => {
         style.setProperty(key, newValue);
       } else if (key === 'float') {
         style.cssFloat = newValue;
+      } else if (typeof newValue === 'number') {
+        node.style[key] = newValue + 'px';
       } else {
         node.style[key] = newValue;
       }
@@ -106,8 +112,7 @@ const _setStyle = (node: InulaHTMLNode, newStyle: CSSStyleDeclaration) => {
 
   // ---- Store the new style for future comparisons
   node.prevStyle = { ...newStyle };
-}
-
+};
 
 /**
  * @brief Set dataset
@@ -116,7 +121,7 @@ const _setStyle = (node: InulaHTMLNode, newStyle: CSSStyleDeclaration) => {
  */
 const _setDataset = (node: InulaHTMLNode, value: Record<string, string>) => {
   Object.assign(node.dataset, value);
-}
+};
 
 /**
  * @brief Set HTML properties
@@ -129,7 +134,7 @@ const _setHTMLProps = (node: InulaHTMLNode, value: HTMLAttrsObject) => {
     if (key === 'dataset') return _setDataset(node, v);
     _setHTMLProp(node, key, v);
   });
-}
+};
 
 /**
  * @brief Set HTML attribute
@@ -138,8 +143,12 @@ const _setHTMLProps = (node: InulaHTMLNode, value: HTMLAttrsObject) => {
  * @param value
  */
 const _setHTMLAttr = (node: InulaHTMLNode, key: string, value: string) => {
-  node.setAttribute(key, value);
-}
+  if (key === 'className') {
+    node.setAttribute('class', value);
+  } else {
+    node.setAttribute(key, value);
+  }
+};
 
 /**
  * @brief Set HTML attributes
@@ -148,9 +157,11 @@ const _setHTMLAttr = (node: InulaHTMLNode, key: string, value: string) => {
  */
 const _setHTMLAttrs = (node: InulaHTMLNode, value: HTMLAttrsObject) => {
   Object.entries(value).forEach(([key, v]) => {
+    if (key === 'style') return _setStyle(node, v);
+    if (key === 'ref') return setRef(node, v);
     _setHTMLAttr(node, key, v);
   });
-}
+};
 
 /**
  * @brief Set memorized event, store the previous event in node[`$on${key}`], if it exists, remove it first
@@ -164,37 +175,38 @@ const _setEvent = (node: InulaHTMLNode, key: string, value: EventListener) => {
   if (prevEvent) node.removeEventListener(key, prevEvent);
   node.addEventListener(key, value);
   node[`me$${key}`] = value;
-}
+};
 
 /**
  * @brief Event handler by checking if $$${key} exists in the path
- * @param e 
+ * @param e
  */
 const eventHandler = (e: Event) => {
   const key = `de$${e.type}`;
   for (const node of e.composedPath()) {
     if ((node as any)[key]) (node as any)[key](e);
-    // ---- Even though it's deprecated, 
+    // ---- Even though it's deprecated,
     //      we still need it to manually stop the propagation in our event handler
     if (e.cancelBubble) return;
   }
-}
+};
 
 /**
  * @brief Delegate event to the document instead of the element
- * @param node 
- * @param key 
- * @param value 
- * @returns 
+ * @param node
+ * @param key
+ * @param value
+ * @returns
  */
 const _delegateEvent = (node: InulaHTMLNode, key: string, value: EventListener) => {
-  if (node[`de$${key}`]) return;
-  node[`de$${key}`] = value;
-  if (!InulaStore.delegatedEvents.has(key)) {
-    InulaStore.delegatedEvents.add(key);
-    InulaStore.document.addEventListener(key, eventHandler);
+  if (!node[`de$${key}`]) {
+    if (!InulaStore.delegatedEvents.has(key)) {
+      InulaStore.delegatedEvents.add(key);
+      InulaStore.document.addEventListener(key, eventHandler);
+    }
   }
-}
+  node[`de$${key}`] = value;
+};
 
 // ---- With dependencies ----
 
@@ -206,10 +218,16 @@ const _delegateEvent = (node: InulaHTMLNode, key: string, value: EventListener) 
  * @param dependencies
  * @param reactBits
  */
-export const setHTMLProp = (node: InulaHTMLNode, key: string, valueFunc: () => Value, dependencies: Value[], reactBits: Bits) => {
+export const setHTMLProp = (
+  node: InulaHTMLNode,
+  key: string,
+  valueFunc: () => Value,
+  dependencies: Value[],
+  reactBits: Bits
+) => {
   if (!shouldUpdate(node, key, dependencies, reactBits)) return;
   _setHTMLProp(node, key, valueFunc());
-}
+};
 
 /**
  * @brief Set style
@@ -217,10 +235,19 @@ export const setHTMLProp = (node: InulaHTMLNode, key: string, valueFunc: () => V
  * @param newStyleFunc
  * @param dependencies
  * @param reactBits
- */ 
-export const setStyle = (node: InulaHTMLNode, newStyleFunc: () => CSSStyleDeclaration, dependencies: Value[], reactBits: Bits) => {
-  if (!shouldUpdate(node, 'style', dependencies, reactBits)) return;
-  _setStyle(node, newStyleFunc());
+ */
+export function setStyle(
+  node: InulaHTMLNode,
+  newStyleFunc: (() => CSSStyleDeclaration) | CSSStyleDeclaration,
+  dependencies?: Value[],
+  reactBits?: Bits
+): void {
+  if (reactBits) {
+    if (!shouldUpdate(node, 'style', dependencies!, reactBits)) return;
+    _setStyle(node, (newStyleFunc as () => CSSStyleDeclaration)());
+  } else {
+    _setStyle(node, newStyleFunc as CSSStyleDeclaration);
+  }
 }
 
 /**
@@ -230,10 +257,15 @@ export const setStyle = (node: InulaHTMLNode, newStyleFunc: () => CSSStyleDeclar
  * @param dependencies Values this dataset depends on
  * @param reactBits Bits indicating which properties should react to changes
  */
-export const setDataset = (node: InulaHTMLNode, valueFunc: () => Record<string, string>, dependencies: Value[], reactBits: Bits) => {
+export const setDataset = (
+  node: InulaHTMLNode,
+  valueFunc: () => Record<string, string>,
+  dependencies: Value[],
+  reactBits: Bits
+) => {
   if (!shouldUpdate(node, 'dataset', dependencies, reactBits)) return;
   _setDataset(node, valueFunc());
-}
+};
 
 /**
  * @brief Set multiple HTML properties at once
@@ -242,10 +274,20 @@ export const setDataset = (node: InulaHTMLNode, valueFunc: () => Record<string, 
  * @param dependencies Values these properties depend on
  * @param reactBits Bits indicating which properties should react to changes
  */
-export const setHTMLProps = (node: InulaHTMLNode, valueFunc: () => HTMLAttrsObject, dependencies: Value[], reactBits: Bits) => {
-  if (!shouldUpdate(node, 'htmlProps', dependencies, reactBits)) return;
-  _setHTMLProps(node, valueFunc());
-}
+export const setHTMLProps = (
+  node: InulaHTMLNode,
+  valueFunc: () => HTMLAttrsObject,
+  dependencies: Value[],
+  reactBits: Bits
+) => {
+  // TODO Need to refactor
+  if (reactBits) {
+    if (!shouldUpdate(node, 'htmlProps', dependencies, reactBits)) return;
+    _setHTMLProps(node, valueFunc());
+  } else {
+    _setHTMLProps(node, valueFunc);
+  }
+};
 
 /**
  * @brief Set multiple HTML attributes at once
@@ -254,10 +296,39 @@ export const setHTMLProps = (node: InulaHTMLNode, valueFunc: () => HTMLAttrsObje
  * @param dependencies Values these attributes depend on
  * @param reactBits Bits indicating which attributes should react to changes
  */
-export const setHTMLAttrs = (node: InulaHTMLNode, valueFunc: () => HTMLAttrsObject, dependencies: Value[], reactBits: Bits) => {
+export const setHTMLAttrs = (
+  node: InulaHTMLNode,
+  valueFunc: () => HTMLAttrsObject,
+  dependencies: Value[],
+  reactBits: Bits
+) => {
   if (!shouldUpdate(node, 'htmlAttrs', dependencies, reactBits)) return;
   _setHTMLAttrs(node, valueFunc());
-}
+};
+
+/**
+ * @brief Set single HTML attribute
+ * @param node The HTML node to update
+ * @param key
+ * @param valueFunc Function that returns HTML attribute
+ * @param dependencies Values these attributes depend on
+ * @param reactBits Bits indicating which attributes should react to changes
+ */
+export const setHTMLAttr = (
+  node: InulaHTMLNode,
+  key: string,
+  valueFunc: (() => Value) | Value,
+  dependencies: Value[],
+  reactBits: Bits
+) => {
+  // TODO Need to refactor
+  if (reactBits) {
+    if (!shouldUpdate(node, 'htmlAttrs', dependencies, reactBits)) return;
+    _setHTMLAttr(node, key, valueFunc());
+  } else {
+    _setHTMLAttr(node, key, valueFunc);
+  }
+};
 
 /**
  * @brief Set an event handler on a node
@@ -267,6 +338,23 @@ export const setEvent = _setEvent;
 /**
  * @brief Delegate an event handler through event bubbling
  */
-export const delegateEvent = _delegateEvent;
+export const delegateEvent = (
+  node: InulaHTMLNode,
+  key: string,
+  valueFunc: () => EventListener,
+  dependencies: Value[],
+  reactBits: Bits
+) => {
+  if (reactBits) {
+    if (!shouldUpdate(node, key, dependencies, reactBits)) return;
+    _delegateEvent(node, key, valueFunc());
+  } else {
+    _delegateEvent(node, key, valueFunc);
+  }
+};
 
-
+export function setRef(node: InulaHTMLNode, refFn: () => void) {
+  if (node.__$owner!.dirtyBits === InitDirtyBitsMask) {
+    refFn();
+  }
+}

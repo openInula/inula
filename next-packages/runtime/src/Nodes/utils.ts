@@ -53,8 +53,8 @@ export const loopShallowElements = (nodes: InulaBaseNode[], runFunc: (el: HTMLEl
  */
 export const addParentElement = (nodes: Array<InulaBaseNode>, parentEl: HTMLElement) => {
   for (let i = 0; i < nodes.length; i++) {
-    const node = nodes[i]
-    if ('inulaType' in node) {
+    const node = nodes[i];
+    if (node && 'inulaType' in node) {
       node.parentEl = parentEl;
       // ---- Recursively add parentEl to all non-html nodes
       //      because they have the same parentEl
@@ -149,9 +149,9 @@ export const appendNodes = (nodes: InulaBaseNode[], parentEl: HTMLElement) => {
  * @returns True if arrays are equal, false otherwise
  */
 export const arrayEqual = (arr1: Value[], arr2: Value[]) => {
-  if (arr1.length !== arr2.length) return false
-  return arr1.every((item, idx) => item === arr2[idx])
-}
+  if (arr1.length !== arr2.length) return false;
+  return arr1.every((item, idx) => item === arr2[idx]);
+};
 
 /**
  * @brief Check if dependencies have changed from previous values
@@ -160,39 +160,40 @@ export const arrayEqual = (arr1: Value[], arr2: Value[]) => {
  * @returns True if dependencies are cached (unchanged), false otherwise
  */
 export const cached = (deps: Value[], prevDeps?: Value[]) => {
-  if (prevDeps && prevDeps.length === 0) return false
-  if (!prevDeps || deps.length !== prevDeps.length) return false
+  if (prevDeps && prevDeps.length === 0) return false;
+  if (!prevDeps || deps.length !== prevDeps.length) return false;
   // ---- Check if all deps are the same
   //      if any dep is an object, we can't compare it with the previous one
   //      because the reference is the same but the content may be different
   // ---- Q: Why not use a deep comparison?
   //      A: Because it's slow compared to regarding the cache as invalid
-  return deps.every((dep, i) => !(dep instanceof Object) && prevDeps[i] === dep)
-}
+  return deps.every((dep, i) => !(dep instanceof Object) && prevDeps[i] === dep);
+};
 
 // ---- All ones
-export const InitDirtyBitsMask = 0xFFFFFFFF
+export const InitDirtyBitsMask = 0xffffffff;
 
 /**
  * @brief Update a node and all its children with dirty bits
  * @param node Node to update
  * @param dirtyBits Dirty bits indicating what needs updating
  */
-export const update = (node: InulaBaseNode, dirtyBits: Bits) => {
-  node.dirtyBits = dirtyBits
-  node.update?.(node)
-  delete node.dirtyBits
-}
-
+export const update = (node: InulaBaseNode) => {
+  node.update?.(node);
+};
 
 export const willReact = (dirtyBits: Bits, reactBits: Bits) => {
   // ---- 1. reactBits & dirtyBits means the node will react to the change
   //      2. reactBits === 0 means it's a one time update, will be blocked by cached()
-  return reactBits === 0 || reactBits & dirtyBits
-}
+  return reactBits === 0 || reactBits & dirtyBits;
+};
 
 export const init = (nodes: InulaBaseNode[]) => {
   for (let i = 0; i < nodes.length; i++) {
-    update(nodes[i], InitDirtyBitsMask)
+    update(nodes[i]);
   }
+};
+
+export function withDefault(value: any, defaultValue: any) {
+  return value === undefined ? defaultValue : value;
 }

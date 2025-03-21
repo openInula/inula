@@ -1,53 +1,65 @@
-import { InulaNodeType } from "../../consts"
-import { addWillUnmount, addDidUnmount, runDidMount } from "../../lifecycle"
-import { InulaStore } from "../../store"
-import { Bits, InulaBaseNode, Value } from "../../types"
-import { appendNodesWithIndex, appendNodesWithSibling, arrayEqual, getFlowIndexFromNodes, insertNodesBefore, toDOMElements, update } from "../utils"
-import { MutableContextNode } from "./context"
+import { InulaNodeType } from '../../consts';
+import { addWillUnmount, addDidUnmount, runDidMount } from '../../lifecycle';
+import { InulaStore } from '../../store';
+import { Bits, InulaBaseNode, Value } from '../../types';
+import { enterCompNode, getCurrentCompNode, leaveCompNode } from '../CompNode/node';
+import {
+  appendNodesWithIndex,
+  appendNodesWithSibling,
+  arrayEqual,
+  getFlowIndexFromNodes,
+  insertNodesBefore,
+  toDOMElements,
+  update,
+} from '../utils';
+import { MutableContextNode } from './context';
 
-type ForNodeFunc = (node: ForNode, updateItemFuncArr: UpdateItemFunc[], item: Value, key: Value, idx: number) => InulaBaseNode[]
-type UpdateItemFunc = (item: Value, idx: number) => void
+type ForNodeFunc = (
+  node: ForNode,
+  updateItemFuncArr: UpdateItemFunc[],
+  item: Value,
+  key: Value,
+  idx: number
+) => InulaBaseNode[];
+type UpdateItemFunc = (item: Value, idx: number) => void;
 
 // TODO For node with only one child node
 
 class ForNode extends MutableContextNode implements InulaBaseNode {
-  inulaType = InulaNodeType.For
+  inulaType = InulaNodeType.For;
 
-  dirtyBits?: Bits
+  dataReactBits: Bits;
 
-  dataReactBits: Bits
+  nodesMap = new Map();
 
-  nodesMap = new Map()
+  nodeFunc;
 
-  nodeFunc
+  dataFunc;
+  data;
 
-  dataFunc
-  data
-
-  keysFunc
-  keys?: Value[]
+  keysFunc;
+  keys?: Value[];
 
   /**
    * @brief Getter for nodes
    */
-  cachedNodes?: InulaBaseNode[]
-  nodesDirty = true
+  cachedNodes?: InulaBaseNode[];
+  nodesDirty = true;
   get nodes() {
-    if (!this.nodesDirty) return this.cachedNodes
-    const nodes = []
+    if (!this.nodesDirty) return this.cachedNodes;
+    const nodes = [];
     for (let idx = 0; idx < this.data.length; idx++) {
-      nodes.push(...this.nodesMap.get(this.keys?.[idx] ?? idx))
+      nodes.push(...this.nodesMap.get(this.keys?.[idx] ?? idx));
     }
-    this.cachedNodes = nodes
-    this.nodesDirty = false
-    return nodes
+    this.cachedNodes = nodes;
+    this.nodesDirty = false;
+    return nodes;
   }
 
   setNodesMap(key: Value, nodes: InulaBaseNode[]) {
-    this.nodesMap.set(key, nodes)
-    this.nodesDirty = true
+    this.nodesMap.set(key, nodes);
+    this.nodesDirty = true;
   }
-
 
   /**
    * @brief Constructor, For type
@@ -56,17 +68,18 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
    * @param keys
    */
   constructor(dataFunc: () => Value[], keysFunc: null | (() => Value[]), nodeFunc: ForNodeFunc, dataReactBits: Bits) {
-    super()
-    this.dataFunc = dataFunc
-    this.keysFunc = keysFunc
-    this.nodeFunc = nodeFunc
-    this.data = [...dataFunc()]
-    if (keysFunc) this.keys = [...keysFunc()]
+    super();
+    this.dataFunc = dataFunc;
+    this.keysFunc = keysFunc;
+    this.nodeFunc = nodeFunc;
+    this.data = [...dataFunc()];
+    if (keysFunc) this.keys = [...keysFunc()];
+    this.update();
 
-    this.dataReactBits = dataReactBits
+    this.dataReactBits = dataReactBits;
   }
 
-  updateItemFuncArr: UpdateItemFunc[] = []
+  updateItemFuncArr: UpdateItemFunc[] = [];
 
   /**
    * @brief Update the view related to one item in the data
@@ -75,20 +88,20 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
    */
   updateItem(idx: number, data: Value[]) {
     // ---- The update function of ForNode's childNodes is stored in the first child node
-    this.updateItemFuncArr[idx]?.(data[idx], idx)
+    this.updateItemFuncArr[idx]?.(data[idx], idx);
     // ---- Update the nodes
     for (const node of this.nodesMap.get(this.keys?.[idx] ?? idx)) {
-      update(node, this.dirtyBits!)
+      update(node);
     }
   }
 
   updateItems() {
     for (let idx = 0; idx < this.data.length; idx++) {
-      this.updateItem(idx, this.data)
+      this.updateItem(idx, this.data);
     }
   }
 
-  notInitialized? = true
+  notInitialized? = true;
   /**
    * @brief Non-data update function
    * @param changed
@@ -97,26 +110,26 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
     // TODO: extract
     if (this.notInitialized) {
       for (let idx = 0; idx < this.data.length; idx++) {
-        let item = this.data[idx]
-        this.initUnmountStore()
-        const key = this.keys?.[idx] ?? idx
-        const nodes = this.nodeFunc(this, this.updateItemFuncArr, item, key, idx)
-        this.setNodesMap(key, nodes)
-        this.setUnmountMap(key)
+        let item = this.data[idx];
+        this.initUnmountStore();
+        const key = this.keys?.[idx] ?? idx;
+        const nodes = this.nodeFunc(this, this.updateItemFuncArr, item, key, idx);
+        this.setNodesMap(key, nodes);
+        this.setUnmountMap(key);
       }
       // ---- For nested ForNode, the whole strategy is just like EnvStore
       //      we use data of function data to create "environment", popping and pushing
-      addWillUnmount(this.runAllWillUnmount.bind(this))
-      addDidUnmount(this.runAllDidUnmount.bind(this))
-      delete this.notInitialized
+      addWillUnmount(this.runAllWillUnmount.bind(this));
+      addDidUnmount(this.runAllDidUnmount.bind(this));
+      delete this.notInitialized;
 
       for (const nodes of this.nodesMap.values()) {
         for (const node of nodes) {
-          update(node, this.dirtyBits!)
+          update(node);
         }
       }
-      runDidMount()
-      return
+      runDidMount();
+      return;
     }
 
     // ---- e.g. this.depNum -> 1110 changed-> 1010
@@ -125,14 +138,12 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
     // ---- e.g. this.depNum -> 1110 changed-> 1101
     //      ~this.depNum & changed -> ~1110 & 1101 -> 0001
     //      update because depNum doesn't contain all the changed
-    if (!(~this.dataReactBits & this.dirtyBits!)) {
-      this.updateArray()
-      return
+    if (!(~this.dataReactBits & this.owner.dirtyBits!)) {
+      this.updateArray();
+      return;
     }
-    this.updateItems()
+    this.updateItems();
   }
-
-
 
   /**
    * @brief Array-related update function
@@ -141,45 +152,49 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
    */
   updateArray() {
     if (this.keysFunc) {
-      this.updateWithKey()
-      return
+      this.updateWithKey();
+      return;
     }
-    this.updateWithOutKey()
+    this.updateWithOutKey();
   }
 
   /**
    * @brief Shortcut to generate new nodes with idx and key
    */
   getNewNodes(idx: number, key: Value, data: Value[], updateItemFuncArr?: UpdateItemFunc[]) {
-    this.initUnmountStore()
+    this.initUnmountStore();
+    enterCompNode(this.owner);
+
     const nodes = this.newNodesInContext(() =>
       this.nodeFunc(this, updateItemFuncArr ?? this.updateItemFuncArr, data[idx], key, idx)
-    )
+    );
     for (const node of nodes) {
-      update(node, this.dirtyBits!)
+      update(node);
     }
-    this.setUnmountMap(key)
-    this.setNodesMap(key, nodes)
-    return nodes
+
+    leaveCompNode();
+    this.setUnmountMap(key);
+    this.setNodesMap(key, nodes);
+    return nodes;
   }
 
-  willUnmountMap = new Map()
-  didUnmountMap = new Map()
+  willUnmountMap = new Map();
+  didUnmountMap = new Map();
 
   /**
    * @brief Set the unmount map by getting the last unmount map from the global store
    * @param key
    */
   setUnmountMap(key: Value) {
-    const willUnmountStore = InulaStore.global.WillUnmountScopedStore.pop()
+    const willUnmountStore = InulaStore.global.WillUnmountScopedStore.pop();
     if (willUnmountStore && willUnmountStore.length > 0) {
-      if (!this.willUnmountMap) this.willUnmountMap = new Map()
-      this.willUnmountMap.set(key, willUnmountStore)
+      if (!this.willUnmountMap) this.willUnmountMap = new Map();
+      this.willUnmountMap.set(key, willUnmountStore);
     }
-    const didUnmountStore = InulaStore.global.DidUnmountScopedStore.pop()
+    const didUnmountStore = InulaStore.global.DidUnmountScopedStore.pop();
     if (didUnmountStore && didUnmountStore.length > 0) {
-      if (!this.didUnmountMap) this.didUnmountMap = new Map()
-      this.didUnmountMap.set(key, didUnmountStore)
+      if (!this.didUnmountMap) this.didUnmountMap = new Map();
+      this.didUnmountMap.set(key, didUnmountStore);
     }
   }
 
@@ -187,22 +202,22 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
    * @brief Run all the unmount functions and clear the unmount map
    */
   runAllWillUnmount() {
-    if (!this.willUnmountMap || this.willUnmountMap.size === 0) return
+    if (!this.willUnmountMap || this.willUnmountMap.size === 0) return;
     this.willUnmountMap.forEach(funcs => {
-      for (let i = 0; i < funcs.length; i++) funcs[i]?.()
-    })
-    this.willUnmountMap.clear()
+      for (let i = 0; i < funcs.length; i++) funcs[i]?.();
+    });
+    this.willUnmountMap.clear();
   }
 
   /**
    * @brief Run all the unmount functions and clear the unmount map
    */
   runAllDidUnmount() {
-    if (!this.didUnmountMap || this.didUnmountMap.size === 0) return
+    if (!this.didUnmountMap || this.didUnmountMap.size === 0) return;
     this.didUnmountMap.forEach(funcs => {
-      for (let i = funcs.length - 1; i >= 0; i--) funcs[i]?.()
-    })
-    this.didUnmountMap.clear()
+      for (let i = funcs.length - 1; i >= 0; i--) funcs[i]?.();
+    });
+    this.didUnmountMap.clear();
   }
 
   /**
@@ -210,22 +225,22 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
    * @param key
    */
   runWillUnmount(key: Value) {
-    if (!this.willUnmountMap || this.willUnmountMap.size === 0) return
-    const funcs = this.willUnmountMap.get(key)
-    if (!funcs) return
-    for (let i = 0; i < funcs.length; i++) funcs[i]?.()
-    this.willUnmountMap.delete(key)
+    if (!this.willUnmountMap || this.willUnmountMap.size === 0) return;
+    const funcs = this.willUnmountMap.get(key);
+    if (!funcs) return;
+    for (let i = 0; i < funcs.length; i++) funcs[i]?.();
+    this.willUnmountMap.delete(key);
   }
 
   /**
    * @brief Run the unmount functions of the given key
    */
   runDidUnmount(key: Value) {
-    if (!this.didUnmountMap || this.didUnmountMap.size === 0) return
-    const funcs = this.didUnmountMap.get(key)
-    if (!funcs) return
-    for (let i = funcs.length - 1; i >= 0; i--) funcs[i]?.()
-    this.didUnmountMap.delete(key)
+    if (!this.didUnmountMap || this.didUnmountMap.size === 0) return;
+    const funcs = this.didUnmountMap.get(key);
+    if (!funcs) return;
+    for (let i = funcs.length - 1; i >= 0; i--) funcs[i]?.();
+    this.didUnmountMap.delete(key);
   }
 
   /**
@@ -234,10 +249,10 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
    * @param key
    */
   removeNodesInLifeCycle(nodes: InulaBaseNode[], key: Value) {
-    this.runWillUnmount(key)
-    super.removeNodes(nodes)
-    this.runDidUnmount(key)
-    this.nodesMap.delete(key)
+    this.runWillUnmount(key);
+    super.removeNodes(nodes);
+    this.runDidUnmount(key);
+    this.nodesMap.delete(key);
   }
 
   /**
@@ -245,50 +260,50 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
    * @param newData
    */
   updateWithOutKey() {
-    const newData = this.dataFunc()
-    const preLength = this.data.length
-    const currLength = newData.length
+    const newData = this.dataFunc();
+    const preLength = this.data.length;
+    const currLength = newData.length;
 
     if (preLength === currLength) {
       // ---- If the length is the same, we only need to update the nodes
       for (let idx = 0; idx < this.data.length; idx++) {
-        this.updateItem(idx, newData)
+        this.updateItem(idx, newData);
       }
-      this.data = [...newData]
-      return
+      this.data = [...newData];
+      return;
     }
-    const parentEl = this.parentEl!
+    const parentEl = this.parentEl!;
     // ---- If the new data is longer, add new nodes directly
     if (preLength < currLength) {
-      let flowIndex = getFlowIndexFromNodes(parentEl.nodes!, this)
+      let flowIndex = getFlowIndexFromNodes(parentEl.nodes!, this);
       // ---- Calling parentEl.childNodes.length is time-consuming,
       //      so we use a length variable to store the length
-      const length = parentEl.childNodes.length
+      const length = parentEl.childNodes.length;
       for (let idx = 0; idx < currLength; idx++) {
         if (idx < preLength) {
-          flowIndex += getFlowIndexFromNodes(this.nodesMap.get(idx))
-          this.updateItem(idx, newData)
-          continue
+          flowIndex += getFlowIndexFromNodes(this.nodesMap.get(idx));
+          this.updateItem(idx, newData);
+          continue;
         }
-        const newNodes = this.getNewNodes(idx, idx, newData)
-        appendNodesWithIndex(newNodes, parentEl, flowIndex, length)
+        const newNodes = this.getNewNodes(idx, idx, newData);
+        appendNodesWithIndex(newNodes, parentEl, flowIndex, length);
       }
-      runDidMount()
-      this.data = [...newData]
-      return
+      runDidMount();
+      this.data = [...newData];
+      return;
     }
 
     // ---- Update the nodes first
     for (let idx = 0; idx < currLength; idx++) {
-      this.updateItem(idx, newData)
+      this.updateItem(idx, newData);
     }
     // ---- If the new data is shorter, remove the extra nodes
     for (let idx = currLength; idx < preLength; idx++) {
-      const nodes = this.nodesMap.get(idx)
-      this.removeNodesInLifeCycle(nodes, idx)
+      const nodes = this.nodesMap.get(idx);
+      this.removeNodesInLifeCycle(nodes, idx);
     }
-    this.updateItemFuncArr.splice(currLength, preLength - currLength)
-    this.data = [...newData]
+    this.updateItemFuncArr.splice(currLength, preLength - currLength);
+    this.data = [...newData];
   }
 
   /**
@@ -297,173 +312,168 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
    * @param newKeys
    */
   updateWithKey() {
-    const newData = this.dataFunc()
-    const newKeys = this.keysFunc!()
+    const newData = this.dataFunc();
+    const newKeys = this.keysFunc!();
     if (newKeys.length !== new Set(newKeys).size) {
-      throw new Error("Inula: Duplicate keys in for loop are not allowed")
+      throw new Error('Inula: Duplicate keys in for loop are not allowed');
     }
-    const prevKeys = this.keys!
-    this.keys = newKeys
+    const prevKeys = this.keys!;
+    this.keys = newKeys;
 
     if (arrayEqual(prevKeys, this.keys)) {
       // ---- If the keys are the same, we only need to update the nodes
       for (let idx = 0; idx < newData.length; idx++) {
-        this.updateItem(idx, newData)
+        this.updateItem(idx, newData);
       }
-      this.data = [...newData]
-      return
+      this.data = [...newData];
+      return;
     }
 
-    const parentEl = this.parentEl!
+    const parentEl = this.parentEl!;
 
     // ---- No nodes after, delete all nodes
     if (this.keys.length === 0) {
-      const parentNodes = parentEl.nodes ?? []
+      const parentNodes = parentEl.nodes ?? [];
       if (parentNodes.length === 1 && parentNodes[0] === this) {
         // ---- ForNode is the only node in the parent node
         //      Frequently used in real life scenarios because we tend to always wrap for with a div element,
         //      so we optimize it here
-        this.runAllWillUnmount()
-        parentEl.innerHTML = ""
-        this.runAllDidUnmount()
+        this.runAllWillUnmount();
+        parentEl.innerHTML = '';
+        this.runAllDidUnmount();
       } else {
         for (let prevIdx = 0; prevIdx < prevKeys.length; prevIdx++) {
-          const prevKey = prevKeys[prevIdx]
-          this.removeNodesInLifeCycle(this.nodesMap.get(prevKey), prevKey)
+          const prevKey = prevKeys[prevIdx];
+          this.removeNodesInLifeCycle(this.nodesMap.get(prevKey), prevKey);
         }
       }
-      this.nodesMap.clear()
-      this.updateItemFuncArr = []
-      this.data = []
-      return
+      this.nodesMap.clear();
+      this.updateItemFuncArr = [];
+      this.data = [];
+      return;
     }
 
     // ---- Record how many nodes are before this ForNode with the same parentNode
-    const flowIndex = getFlowIndexFromNodes(parentEl.nodes!, this)
+    const flowIndex = getFlowIndexFromNodes(parentEl.nodes!, this);
 
     // ---- No nodes before, append all nodes
     if (prevKeys.length === 0) {
-      const nextSibling = parentEl.childNodes[flowIndex]
+      const nextSibling = parentEl.childNodes[flowIndex];
       for (let idx = 0; idx < this.keys.length; idx++) {
-        const newNodes = this.getNewNodes(idx, this.keys[idx], newData)
-        appendNodesWithSibling(newNodes, parentEl, nextSibling)
+        const newNodes = this.getNewNodes(idx, this.keys[idx], newData);
+        appendNodesWithSibling(newNodes, parentEl, nextSibling);
       }
-      runDidMount()
-      this.data = [...newData]
-      return
+      runDidMount();
+      this.data = [...newData];
+      return;
     }
 
-    const shuffleKeys = []
-    const newUpdateArr = []
+    const shuffleKeys = [];
+    const newUpdateArr = [];
 
     // ---- 1. Delete the nodes that are no longer in the data
     for (let prevIdx = 0; prevIdx < prevKeys.length; prevIdx++) {
-      const prevKey = prevKeys[prevIdx]
+      const prevKey = prevKeys[prevIdx];
       if (this.keys.includes(prevKey)) {
-        shuffleKeys.push(prevKey)
-        newUpdateArr.push(this.updateItemFuncArr[prevIdx])
-        continue
+        shuffleKeys.push(prevKey);
+        newUpdateArr.push(this.updateItemFuncArr[prevIdx]);
+        continue;
       }
-      this.removeNodesInLifeCycle(this.nodesMap.get(prevKey), prevKey)
+      this.removeNodesInLifeCycle(this.nodesMap.get(prevKey), prevKey);
     }
 
     // ---- 2. Add the nodes that are not in the data but in the new data
     // ---- Calling parentEl.childNodes.length is time-consuming,
     //      so we use a length variable to store the length
-    let length = parentEl.childNodes.length
-    let newFlowIndex = flowIndex
+    let length = parentEl.childNodes.length;
+    let newFlowIndex = flowIndex;
     for (let idx = 0; idx < this.keys.length; idx++) {
-      const key = this.keys[idx]
-      const prevIdx = shuffleKeys.indexOf(key)
+      const key = this.keys[idx];
+      const prevIdx = shuffleKeys.indexOf(key);
       if (prevIdx !== -1) {
         // ---- These nodes are already in the parentEl,
         //      and we need to keep track of their flowIndex
-        newFlowIndex += getFlowIndexFromNodes(this.nodesMap.get(key))
-        newUpdateArr[prevIdx]?.(this.dirtyBits, newData[idx])
-        continue
+        newFlowIndex += getFlowIndexFromNodes(this.nodesMap.get(key));
+        newUpdateArr[prevIdx]?.(this.owner.dirtyBits, newData[idx]);
+        continue;
       }
       // ---- Insert updateItemFuncArr first because in getNewNode the updateFunc will replace this null
-      newUpdateArr.splice(idx, 0, null as Value)
-      const newNodes = this.getNewNodes(idx, key, newData, newUpdateArr)
+      newUpdateArr.splice(idx, 0, null as Value);
+      const newNodes = this.getNewNodes(idx, key, newData, newUpdateArr);
       // ---- Add the new nodes
-      shuffleKeys.splice(idx, 0, key)
+      shuffleKeys.splice(idx, 0, key);
 
-      const count = appendNodesWithIndex(
-        newNodes,
-        parentEl,
-        newFlowIndex,
-        length
-      )
-      newFlowIndex += count
-      length += count
+      const count = appendNodesWithIndex(newNodes, parentEl, newFlowIndex, length);
+      newFlowIndex += count;
+      length += count;
     }
-    runDidMount()
+    runDidMount();
 
     // ---- After adding and deleting, the only thing left is to reorder the nodes,
     //      but if the keys are the same, we don't need to reorder
     if (arrayEqual(this.keys, shuffleKeys)) {
-      this.data = [...newData]
-      this.updateItemFuncArr = newUpdateArr
-      return
+      this.data = [...newData];
+      this.updateItemFuncArr = newUpdateArr;
+      return;
     }
 
-    newFlowIndex = flowIndex
-    const bufferNodes = new Map()
+    newFlowIndex = flowIndex;
+    const bufferNodes = new Map();
     // ---- 3. Replace the nodes in the same position using Fisher-Yates shuffle algorithm
     for (let idx = 0; idx < this.keys.length; idx++) {
-      const key = this.keys[idx]
-      const prevIdx = shuffleKeys.indexOf(key)
+      const key = this.keys[idx];
+      const prevIdx = shuffleKeys.indexOf(key);
 
-      const bufferedNode = bufferNodes.get(key)
+      const bufferedNode = bufferNodes.get(key);
       if (bufferedNode) {
         // ---- We need to add the flowIndex of the bufferedNode,
         //      because the bufferedNode is in the parentEl and the new position is ahead of the previous position
-        const bufferedFlowIndex = getFlowIndexFromNodes(bufferedNode)
-        const lastEl = toDOMElements(bufferedNode).pop()
-        const nextSibling =
-          parentEl.childNodes[newFlowIndex + bufferedFlowIndex]
+        const bufferedFlowIndex = getFlowIndexFromNodes(bufferedNode);
+        const lastEl = toDOMElements(bufferedNode).pop();
+        const nextSibling = parentEl.childNodes[newFlowIndex + bufferedFlowIndex];
         if (lastEl !== nextSibling && lastEl!.nextSibling !== nextSibling) {
           // ---- If the node is buffered, we need to add it to the parentEl
-          insertNodesBefore(bufferedNode, parentEl, nextSibling)
+          insertNodesBefore(bufferedNode, parentEl, nextSibling);
         }
         // ---- So the added length is the length of the bufferedNode
-        newFlowIndex += bufferedFlowIndex
-        bufferNodes.delete(key)
+        newFlowIndex += bufferedFlowIndex;
+        bufferNodes.delete(key);
       } else if (prevIdx === idx) {
         // ---- If the node is in the same position, we don't need to do anything
-        newFlowIndex += getFlowIndexFromNodes(this.nodesMap.get(key))
-        continue
+        newFlowIndex += getFlowIndexFromNodes(this.nodesMap.get(key));
+        continue;
       } else {
         // ---- If the node is not in the same position, we need to buffer it
         //      We buffer the node of the previous position, and then replace it with the node of the current position
-        const prevKey = shuffleKeys[idx]
-        bufferNodes.set(prevKey, this.nodesMap.get(prevKey))
+        const prevKey = shuffleKeys[idx];
+        bufferNodes.set(prevKey, this.nodesMap.get(prevKey));
         // ---- Length would never change, and the last will always be in the same position,
         //      so it'll always be insertBefore instead of appendChild
-        const childNodes = this.nodesMap.get(key)
-        const lastEl = toDOMElements(childNodes).pop()
-        const nextSibling = parentEl.childNodes[newFlowIndex]
+        const childNodes = this.nodesMap.get(key);
+        const lastEl = toDOMElements(childNodes).pop();
+        const nextSibling = parentEl.childNodes[newFlowIndex];
         if (lastEl !== nextSibling && lastEl!.nextSibling !== nextSibling) {
-          newFlowIndex += insertNodesBefore(
-            childNodes,
-            parentEl,
-            nextSibling
-          )
+          newFlowIndex += insertNodesBefore(childNodes, parentEl, nextSibling);
         }
       }
       // ---- Swap the keys
-      const tempKey: Value = shuffleKeys[idx]
-      shuffleKeys[idx] = shuffleKeys[prevIdx]
-      shuffleKeys[prevIdx] = tempKey
-      const tempUpdateFunc: UpdateItemFunc = newUpdateArr[idx]
-      newUpdateArr[idx] = newUpdateArr[prevIdx]
-      newUpdateArr[prevIdx] = tempUpdateFunc
+      const tempKey: Value = shuffleKeys[idx];
+      shuffleKeys[idx] = shuffleKeys[prevIdx];
+      shuffleKeys[prevIdx] = tempKey;
+      const tempUpdateFunc: UpdateItemFunc = newUpdateArr[idx];
+      newUpdateArr[idx] = newUpdateArr[prevIdx];
+      newUpdateArr[prevIdx] = tempUpdateFunc;
     }
-    this.data = [...newData]
-    this.updateItemFuncArr = newUpdateArr
+    this.data = [...newData];
+    this.updateItemFuncArr = newUpdateArr;
   }
 }
 
-export const createForNode = (dataFunc: () => Value[], keysFunc: null | (() => Value[]), nodeFunc: ForNodeFunc, dataReactBits: Bits) => {
-  return new ForNode(dataFunc, keysFunc, nodeFunc, dataReactBits)
-}
+export const createForNode = (
+  dataFunc: () => Value[],
+  keysFunc: null | (() => Value[]),
+  nodeFunc: ForNodeFunc,
+  dataReactBits: Bits
+) => {
+  return new ForNode(dataFunc, keysFunc, nodeFunc, dataReactBits);
+};
