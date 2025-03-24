@@ -478,4 +478,37 @@ describe('context', () => {
     updateContext!();
     expect(container.innerHTML).toBe('<div>Theme: dark, Language: fr</div>');
   });
+
+  it('Should support object spread in provider and consume by key', ({ container }) => {
+    const AppContext = createContext({
+      language: 'en',
+    });
+    let updateContext: () => void;
+
+    function App() {
+      let context = { language: 'en', theme: 'light' };
+      updateContext = () => {
+        context = { language: 'fr', theme: 'dark' };
+      };
+      return (
+        <AppContext {...context}>
+          <Child />
+        </AppContext>
+      );
+    }
+
+    function Child() {
+      const { language, theme } = useContext(AppContext);
+      return (
+        <div>
+          Theme: {theme}, Language: {language}
+        </div>
+      );
+    }
+
+    render(App(), container);
+    expect(container.innerHTML).toBe('<div>Theme: light, Language: en</div>');
+    updateContext!();
+    expect(container.innerHTML).toBe('<div>Theme: dark, Language: fr</div>');
+  });
 });

@@ -132,7 +132,7 @@ export abstract class ReactiveNode {
       if (contextName === '*spread*') {
         for (const key in this.updateContextMap) {
           if (key in value) {
-            this.doUpdateContext(contextId, key, value);
+            this.doUpdateContext(contextId, key, value[key]);
           }
         }
 
