@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function watch(effect: () => void) {
+export function watch(effect: () => void, deps?: any[]) {
   throw new Error('Watch should not be called directly, please check the docs for more information');
 }
 
