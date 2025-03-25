@@ -275,8 +275,10 @@ export class CompNode extends ReactiveNode implements InulaBaseNode {
    * @returns
    */
   updateViewAsync(dirty: Bits) {
-    if (this.dirtyBits && this.dirtyBits !== InitDirtyBitsMask) {
-      this.dirtyBits |= dirty;
+    if (this.dirtyBits) {
+      if (this.dirtyBits !== InitDirtyBitsMask) {
+        this.dirtyBits |= dirty;
+      }
       return;
     }
     this.dirtyBits = dirty;
