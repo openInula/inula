@@ -12,7 +12,7 @@ export const unpluginFactory: UnpluginFactory<Options | undefined> = options => 
   enforce: 'pre',
   transformInclude(id) {
     const {
-      files: preFiles = '**/*.{jsx,tsx}',
+      files: preFiles = '**/*.{jsx,tsx,ts,js}',
       excludeFiles: preExcludeFiles = '**/{dist,node_modules,lib}/**/*.{js,ts}',
     } = options ?? {};
     const normalizedId = id.split('?')[0].split('#')[0];
