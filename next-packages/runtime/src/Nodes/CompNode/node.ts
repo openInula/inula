@@ -114,7 +114,11 @@ export abstract class ReactiveNode {
     } else {
       // ---- Rest props
       const [updatePropFunc, waveBits] = updatePropMap['$rest$'];
-      this.wave(updatePropFunc({ [propName]: propValue }), waveBits);
+      if (propName === '*spread*') {
+        this.wave(updatePropFunc(propValue), waveBits);
+      } else {
+        this.wave(updatePropFunc({ [propName]: propValue }), waveBits);
+      }
     }
   }
   // ---- PROP END ----
