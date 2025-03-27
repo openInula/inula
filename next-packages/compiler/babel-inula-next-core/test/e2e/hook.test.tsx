@@ -113,12 +113,12 @@ describe('hook', () => {
           id
         }) {
           const $$self = $$hookBuilder();
-          $$self.addProp(0, value => baseX = value, 0);
-          $$self.addProp(1, value => baseY = value, 0);
-          $$self.addProp(2, value => ({
+          $$self.addProp(0, $$value => baseX = $$value, 0);
+          $$self.addProp(1, $$value => baseY = $$value, 0);
+          $$self.addProp(2, $$value => ({
             settings,
             id
-          } = value), 0);
+          } = $$value), 0);
           let x;
           let y;
           let name;

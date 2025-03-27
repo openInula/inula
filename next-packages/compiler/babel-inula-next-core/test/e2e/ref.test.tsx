@@ -50,7 +50,7 @@ describe('ref', () => {
         ref
       }) {
         const $$self = $$compBuilder();
-        $$self.addProp("ref", value => ref = value, 1);
+        $$self.addProp("ref", $$value => ref = $$value, 1);
         return $$self.prepare().init($$createHTMLNode("input", $$node => {
           $$setRef($$node, () => typeof ref === "function" ? ref($$node) : ref = $$node);
         }));

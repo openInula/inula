@@ -3,6 +3,8 @@ import { types as t } from '@openinula/babel-api';
 import { PropType, importMap } from '../constants';
 import { CTX_PROPS, PARAM_PROPS, PropsSource } from '../analyze/types';
 
+const VAULE_INPUT = '$$value';
+
 export function propGenerator(): Generator {
   return {
     /**
@@ -13,7 +15,7 @@ export function propGenerator(): Generator {
      * @returns prop statement
      */
     [PropType.SINGLE](stmt, { selfId, getWaveBitsById }) {
-      const valueId = t.identifier('value');
+      const valueId = t.identifier(VAULE_INPUT);
       const right = stmt.defaultValue
         ? t.callExpression(t.identifier(importMap.withDefault), [valueId, stmt.defaultValue])
         : valueId;
@@ -40,7 +42,7 @@ export function propGenerator(): Generator {
      * @returns prop statement
      */
     [PropType.REST](stmt, { selfId, getWaveBitsById }) {
-      const valueId = t.identifier('value');
+      const valueId = t.identifier(VAULE_INPUT);
       const valueAssign = t.assignmentExpression(
         '=',
         t.identifier(stmt.name),
@@ -62,7 +64,7 @@ export function propGenerator(): Generator {
      * @returns prop statement
      */
     [PropType.WHOLE](stmt, { selfId, getWaveBitsById }) {
-      const valueId = t.identifier('value');
+      const valueId = t.identifier(VAULE_INPUT);
       const valueAssign = t.assignmentExpression(
         '=',
         t.identifier(stmt.name),

@@ -48,8 +48,8 @@ describe('props', () => {
         className = 'default'
       }) {
         const $$self = $$compBuilder();
-        $$self.addProp("id", value => id = value, 1);
-        $$self.addProp("className", value => className = $$withDefault(value, 'default'), 2);
+        $$self.addProp("id", $$value => id = $$value, 1);
+        $$self.addProp("className", $$value => className = $$withDefault($$value, 'default'), 2);
         return $$self.prepare().init($$createHTMLNode("div", $$node => {
           $$setHTMLProp($$node, "id", () => id, [id], 1);
           $$setHTMLProp($$node, "className", () => className, [className], 2);
@@ -76,11 +76,11 @@ describe('props', () => {
         }
       }) {
         const $$self = $$compBuilder();
-        $$self.addProp("info", value => ({
+        $$self.addProp("info", $$value => ({
           id,
           className = 'default',
           pos: [x, y]
-        } = value), 1);
+        } = $$value), 1);
         return $$self.prepare().init($$createHTMLNode("div", $$node => {
           $$setHTMLProp($$node, "id", () => id, [id], 1);
           $$setHTMLProp($$node, "className", () => className, [className], 1);
@@ -106,7 +106,7 @@ describe('props', () => {
         name: alias
       }) {
         const $$self = $$compBuilder();
-        $$self.addProp("name", value => alias = value, 1);
+        $$self.addProp("name", $$value => alias = $$value, 1);
         return $$self.prepare().init($$createHTMLNode("h1", null, $$createExpNode(() => alias, () => [alias], 1)));
       }"
     `);
