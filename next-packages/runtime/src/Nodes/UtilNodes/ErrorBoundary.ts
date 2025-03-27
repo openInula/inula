@@ -1,5 +1,5 @@
 import { compBuilder } from '../CompNode/node';
-import { createContextNode, createConditionalNode, createExpNode, InulaBaseNode, createContext, Context } from '../..';
+import { createConditionalNode, createExpNode, InulaBaseNode, createContext, Context, InitDirtyBitsMask } from '../..';
 
 let errorBoundaryContext: Context | null = null;
 function getSuspenseContext() {
@@ -29,6 +29,9 @@ export function ErrorBoundary({
 
   let error: Error | null = null;
   function handler(err: Error) {
+    if ($$self.dirtyBits === InitDirtyBitsMask) {
+      $$self.dirtyBits = 0;
+    }
     $$self.wave((error = err), 4 /*0b100*/);
   }
   return $$self.prepare().init(
