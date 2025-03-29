@@ -10,3 +10,4 @@ dist
 /packages/inula-router/router
 .turbo
 coverage
+report.html
