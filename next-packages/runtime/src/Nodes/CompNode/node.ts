@@ -114,7 +114,11 @@ export abstract class ReactiveNode {
     } else {
       // ---- Rest props
       const [updatePropFunc, waveBits] = updatePropMap['$rest$'];
-      this.wave(updatePropFunc({ [propName]: propValue }), waveBits);
+      if (propName === '*spread*') {
+        this.wave(updatePropFunc(propValue), waveBits);
+      } else {
+        this.wave(updatePropFunc({ [propName]: propValue }), waveBits);
+      }
     }
   }
   // ---- PROP END ----
@@ -132,7 +136,7 @@ export abstract class ReactiveNode {
       if (contextName === '*spread*') {
         for (const key in this.updateContextMap) {
           if (key in value) {
-            this.doUpdateContext(contextId, key, value);
+            this.doUpdateContext(contextId, key, value[key]);
           }
         }
 
@@ -275,8 +279,10 @@ export class CompNode extends ReactiveNode implements InulaBaseNode {
    * @returns
    */
   updateViewAsync(dirty: Bits) {
-    if (this.dirtyBits && this.dirtyBits !== InitDirtyBitsMask) {
-      this.dirtyBits |= dirty;
+    if (this.dirtyBits) {
+      if (this.dirtyBits !== InitDirtyBitsMask) {
+        this.dirtyBits |= dirty;
+      }
       return;
     }
     this.dirtyBits = dirty;

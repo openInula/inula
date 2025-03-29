@@ -478,7 +478,7 @@ describe('context', () => {
     updateContext!();
     expect(container.innerHTML).toBe('<div>Theme: dark, Language: fr</div>');
   });
-  
+
   it('Should support object spread in provider and consume by key', ({ container }) => {
     const AppContext = createContext({
       language: 'en',

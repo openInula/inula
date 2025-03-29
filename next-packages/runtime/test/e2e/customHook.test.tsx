@@ -490,7 +490,7 @@ describe('Hook and Watch Combined Tests', () => {
   });
 });
 
-describe('Advanced Hook Tests', () => {
+describe('Hook IO Type Tests', () => {
   // Hook return tests
   describe('Hook Return Tests', () => {
     it('should handle expression return', ({ container }) => {
@@ -703,38 +703,35 @@ describe('Advanced Hook Tests', () => {
     });
   });
 
-  // Additional tests
-  describe('Additional Hook Tests', () => {
-    it('should handle input based on other variables', ({ container }) => {
-      function useComputed(value: number) {
-        return value * 2;
-      }
+  it('should handle input based on other variables', ({ container }) => {
+    function useComputed(value: number) {
+      return value * 2;
+    }
 
-      function TestComponent() {
-        let baseValue = 5;
-        let multiplier = 3;
-        const result = useComputed(baseValue * multiplier);
-        return <div>{result}</div>;
-      }
+    function TestComponent() {
+      let baseValue = 5;
+      let multiplier = 3;
+      const result = useComputed(baseValue * multiplier);
+      return <div>{result}</div>;
+    }
 
-      render(TestComponent(), container);
-      expect(container.innerHTML).toBe('<div>30</div>');
-    });
+    render(TestComponent(), container);
+    expect(container.innerHTML).toBe('<div>30</div>');
+  });
 
-    it('should handle function input and output', ({ container }) => {
-      function useFunction(fn: (x: number) => number) {
-        return (y: number) => fn(y) * 2;
-      }
+  it('should handle function input and output', ({ container }) => {
+    function useFunction(fn: (x: number) => number) {
+      return (y: number) => fn(y) * 2;
+    }
 
-      function TestComponent() {
-        const inputFn = (x: number) => x + 1;
-        const resultFn = useFunction(inputFn);
-        const result = resultFn(5);
-        return <div>{result}</div>;
-      }
+    function TestComponent() {
+      const inputFn = (x: number) => x + 1;
+      const resultFn = useFunction(inputFn);
+      const result = resultFn(5);
+      return <div>{result}</div>;
+    }
 
-      render(TestComponent(), container);
-      expect(container.innerHTML).toBe('<div>12</div>');
-    });
+    render(TestComponent(), container);
+    expect(container.innerHTML).toBe('<div>12</div>');
   });
 });

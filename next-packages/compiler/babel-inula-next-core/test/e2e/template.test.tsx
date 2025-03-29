@@ -119,7 +119,7 @@ describe('template', () => {
           children
         }) {
           const $$self1 = $$compBuilder($$self);
-          $$self1.addProp("children", value => children = value, 2);
+          $$self1.addProp("children", $$value => children = $$value, 2);
           return $$self1.prepare().init($$createTemplateNode(_$t, null, [1, $$createExpNode(() => children, () => [children], 2)]));
         }
         function Child({
@@ -128,7 +128,7 @@ describe('template', () => {
           name: string;
         }) {
           const $$self1 = $$compBuilder($$self);
-          $$self1.addProp("name", value => name = value, 4);
+          $$self1.addProp("name", $$value => name = $$value, 4);
           return $$self1.prepare().init($$createHTMLNode("div", $$node => {
             $$node.className = "child";
           }, $$createTextNode("Hello, "), $$createExpNode(() => name, () => [name], 4), $$createTextNode("!")));

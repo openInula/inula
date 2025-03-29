@@ -155,7 +155,7 @@ describe('generate', () => {
         prop1
       }) {
         const $$self = $$compBuilder();
-        $$self.addProp("prop1", value => prop1 = value, 1);
+        $$self.addProp("prop1", $$value => prop1 = $$value, 1);
         return $$self.prepare().init($$createHTMLNode("div", null, $$createExpNode(() => prop1, () => [prop1], 1)));
       }"
     `);
@@ -174,8 +174,8 @@ describe('generate', () => {
         prop2
       }) {
         const $$self = $$compBuilder();
-        $$self.addProp("prop1", value => prop1 = value, 1);
-        $$self.addProp("prop2", value => prop2 = value, 2);
+        $$self.addProp("prop1", $$value => prop1 = $$value, 1);
+        $$self.addProp("prop2", $$value => prop2 = $$value, 2);
         return $$self.prepare().init($$createFragmentNode($$createExpNode(() => prop1 + prop2, () => [prop1, prop2], 3)));
       }"
     `);
@@ -198,7 +198,7 @@ describe('generate', () => {
         prop1
       }) {
         const $$self = $$compBuilder();
-        $$self.addProp("prop1", value => prop1 = value, 1);
+        $$self.addProp("prop1", $$value => prop1 = $$value, 1);
         let derived;
         $$self.deriveState(() => (derived = prop1 * 2), () => [prop1], 1);
         $$self.watch(() => {
