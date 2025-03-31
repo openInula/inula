@@ -1,5 +1,11 @@
 # babel-preset-inula-next
 
+## 0.0.6
+
+### Patch Changes
+
+- 3d57278: fix: props updater can not update key with "value"
+
 ## 0.0.5
 
 ### Patch Changes
@@ -7,6 +13,7 @@
 - fix: index access issues
   - @openinula/babel-preset-inula-next@0.0.4
   -
+
 ## 0.0.4
 
 ### Patch Changes
