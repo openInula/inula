@@ -46,8 +46,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          # Run `pnpm install` to update the lockfile after versioning
-          version: pnpm run version
+          version: pnpm exec changeset version
           publish: pnpm exec changeset publish --access public
           commit: "chore(release): release in ci"
           title: "chore(release): release in ci"
@@ -56,3 +55,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
           # Needs access to publish to npm
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # 只在成功发布后更新锁文件
+      - name: Update lockfile after publish
+        if: steps.changesets.outputs.published == 'true'
+        run: |
+          # 更新锁文件
+          pnpm install --no-frozen-lockfile
+          
+          # 提交变更
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add pnpm-lock.yaml
+          git commit -m "chore(release): update lockfile after publish" || echo "No lockfile changes to commit"
+          git push
