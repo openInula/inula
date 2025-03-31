@@ -4,7 +4,7 @@
   "keywords": [
     "inula"
   ],
-  "version": "0.1.13",
+  "version": "0.1.14",
   "homepage": "",
   "bugs": "",
   "license": "MulanPSL2",
@@ -18,7 +18,7 @@
     ".": {
       "default": "./index.js"
     },
-    "./package.json":"./package.json",
+    "./package.json": "./package.json",
     "./jsx-runtime": "./jsx-runtime.js",
     "./jsx-dev-runtime": "./jsx-dev-runtime.js"
   }
