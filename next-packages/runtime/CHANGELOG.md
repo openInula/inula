@@ -1,5 +1,11 @@
 # @openinula/next
 
+## 0.0.6
+
+### Patch Changes
+
+- 3d57278: feat: add dynamic
+
 ## 0.0.5
 
 ### Patch Changes

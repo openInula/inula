@@ -1,6 +1,6 @@
 {
   "name": "inula-intl",
-  "version": "1.0.34",
+  "version": "1.0.35",
   "description": "intl for inula framework, a part of intl-ecosystem",
   "main": "./build/cjs/intl.js",
   "module": "./build/esm/intl.js",
@@ -24,7 +24,7 @@
   "author": "",
   "license": "MulanPSL2",
   "peerDependencies": {
-    "openinula": ">=0.0.10"
+    "openinula": ">=0.1.14"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.9.4",
