@@ -1,5 +1,8 @@
 ---
 'openinula': major
+'inula-intl': patch
+'inula-request': patch
+'inula-router': patch
 ---
 
-feat: first major version
+feat: release openinula first major version
