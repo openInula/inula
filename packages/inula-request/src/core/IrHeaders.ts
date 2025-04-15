@@ -31,9 +31,6 @@ class IrHeaders {
   [key: string]: any;
 
   constructor(headers?: RawIrHeaders | IrHeaders | string) {
-    // 将默认响应头加入 IrHeaders
-    this.defineAccessor();
-
     if (headers) {
       this.set(headers);
     }
@@ -167,53 +164,30 @@ class IrHeaders {
     const headers: Record<string, boolean> = {};
 
     for (const header in this) {
-      if (Object.prototype.hasOwnProperty.call(this, header)) {
-        const value = this[header];
-        const key = utils.getObjectKey(headers, header);
+      const value = this[header];
+      const key = utils.getObjectKey(headers, header);
 
-        // 若 key 存在，说明当前遍历到的 header 已经被处理过
-        if (key) {
-          this[key] = utils.getNormalizedValue(value);
+      // 若 key 存在，说明当前遍历到的 header 已经被处理过
+      if (key) {
+        this[key] = utils.getNormalizedValue(value);
 
-          // header 和 key 不相等，key 是忽略大小写的，所以需要删除处理前的 header
-          delete this[header];
-          continue;
-        }
-
-        const normalizedHeader = header.trim();
-
-        if (normalizedHeader !== header) {
-          delete this[header];
-        }
-
-        this[normalizedHeader] = utils.getNormalizedValue(value);
-
-        headers[normalizedHeader] = true;
+        // header 和 key 不相等，key 是忽略大小写的，所以需要删除处理前的 header
+        delete this[header];
+        continue;
       }
+
+      const normalizedHeader = header.trim();
+
+      if (normalizedHeader !== header) {
+        delete this[header];
+      }
+
+      this[normalizedHeader] = utils.getNormalizedValue(value);
+
+      headers[normalizedHeader] = true;
     }
 
     return this;
-  }
-
-  defineAccessor() {
-    // 用于标记当前响应头访问器是否已添加
-    const accessors: Record<string, any> = {};
-
-    // 定义默认头部
-    const defaultHeaders = ['Content-Type', 'Content-Length', 'Accept', 'Accept-Encoding', 'User-Agent'];
-
-    // 将默认响应头加入 IrHeaders
-    defaultHeaders.forEach(header => {
-      if (!accessors[header]) {
-        Object.defineProperty(this, header, {
-          writable: true,
-          enumerable: true,
-          configurable: true,
-        });
-
-        accessors[header] = true;
-      }
-    });
   }
 
   static from(thing: Record<string, string | string[]> | IrHeaders): IrHeaders {
@@ -238,23 +212,18 @@ class IrHeaders {
     ...otherItems: (Record<string, string | string[]> | IrHeaders)[]
   ): IrHeaders {
     // 初始化一个 IrHeaders 对象实例
-    const newInstance = new IrHeaders(firstItem);
-    const mergedObject = Object.assign({}, newInstance, ...otherItems);
-
-    for (const key in mergedObject) {
-      if (Object.prototype.hasOwnProperty.call(mergedObject, key)) {
-        newInstance[key] = mergedObject[key];
-      }
-    }
+    const newHeaders = new IrHeaders(firstItem);
+    otherItems.forEach(item => newHeaders.set(item));
 
     // 删除值为 undefined 请求头， fetch 进行自动配置
-    for (const key in newInstance) {
-      if (newInstance[key] === undefined) {
-        delete newInstance[key];
+    for (const key in Object.keys(newHeaders)) {
+      const headerValue = newHeaders[key];
+      if (headerValue === undefined || headerValue === null) {
+        newHeaders.delete(key);
       }
     }
 
-    return newInstance;
+    return newHeaders;
   }
 }
 
