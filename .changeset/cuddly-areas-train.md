@@ -6,3 +6,4 @@
 ---
 
 feat: release openinula first major version
+
