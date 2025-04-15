@@ -1,5 +1,9 @@
 # openinula
 
+## 1.0.0
+
+- feat: first major version
+
 ## 0.1.14
 
 ### Patch Changes
