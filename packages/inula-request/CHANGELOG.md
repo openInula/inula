@@ -1,5 +1,11 @@
 # 0.0.10 版本
 
+## 1.1.8
+
+### Patch Changes
+
+- 9030693: fix: 修复inula-request请求头重复添加Content—Type的问题
+
 ## 1.1.5
 
 ### Patch Changes
