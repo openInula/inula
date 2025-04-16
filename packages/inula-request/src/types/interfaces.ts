@@ -15,7 +15,7 @@
 
 import IrError from '../core/IrError';
 import IrHeaders from '../core/IrHeaders';
-import { Method, ResponseType, IrTransformer, FulfilledFn, RejectedFn, Callback } from './types';
+import { Method, ResponseType, FulfilledFn, RejectedFn, Callback } from './types';
 import CancelError from '../cancel/CancelError';
 import { CanceledError } from '../../index';
 

@@ -145,7 +145,7 @@ function forEach<T>(
 function getObjectKey<T>(obj: Record<string, T>, key: string): string | null {
   const _key = key.toLowerCase();
   const keys = Object.keys(obj);
-  for (let i = 0; i < keys.length; i++) {
+  for (let i = keys.length - 1; i >= 0; i--) {
     const k = keys[i];
     if (k.toLowerCase() === _key) {
       return k;
