@@ -16,7 +16,7 @@
     "test:inula-request": "pnpm -F inula-request test",
     "test:inula-router": "pnpm -F inula-router test",
     "build:inula-cli": "pnpm -F inula-cli build",
-    "build:inula-intl": "pnpm -F inula-intl rollup-build",
+    "build:inula-intl": "pnpm -F inula-intl build",
     "build:inula-request": "pnpm -F inula-request build",
     "build:inula-router": "pnpm -F inula-router build",
     "commitlint": "commitlint --config commitlint.config.js -e",
