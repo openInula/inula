@@ -1,5 +1,11 @@
 # 0.0.10 版本
 
+## 1.1.9
+
+### Patch Changes
+
+- 52b7f52: feat: inula-request add redirect support; tweak openinula peerDependencies version
+
 ## 1.1.8
 
 ### Patch Changes
