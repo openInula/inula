@@ -2,7 +2,7 @@
   "name": "inula",
   "description": "Inula is a JavaScript framework library.",
   "private": true,
-  "packageManager": "pnpm@10.4.1",
+  "packageManager": "pnpm@10.9.0",
   "scripts": {
     "lint": "eslint . --ext .ts --fix",
     "lint-commit": "lint-staged",
