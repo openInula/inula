@@ -63,6 +63,9 @@ export interface IrRequestConfig {
 
   // 自定义解析请求参数
   paramsSerializer?: ParamsSerializer;
+
+  // fetch选项
+  fetchOption?: Pick<RequestInit, 'redirect' | 'priority' | 'keepalive' | 'referrer' | 'integrity'>;
 }
 
 interface ParamsSerializer {
@@ -82,6 +85,9 @@ export interface TransitionalOptions {
 
 // 请求响应
 export type IrResponse<T = any> = {
+  // 相应类型
+  type: Response['type'];
+
   // 响应数据
   data: T;
 
