@@ -91,6 +91,7 @@ export const ieFetchRequest = (config: IrRequestConfig): Promise<IrResponse> => 
         config.method = config.method!.toLowerCase() as Method;
 
         const responseData: IrResponse = {
+          type: 'default',
           data: '',
           status: response.status,
           statusText: response.statusText,

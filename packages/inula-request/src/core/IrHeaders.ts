@@ -216,7 +216,7 @@ class IrHeaders {
     otherItems.forEach(item => newHeaders.set(item));
 
     // 删除值为 undefined 请求头， fetch 进行自动配置
-    for (const key in Object.keys(newHeaders)) {
+    for (const key of Object.keys(newHeaders)) {
       const headerValue = newHeaders[key];
       if (headerValue === undefined || headerValue === null) {
         newHeaders.delete(key);

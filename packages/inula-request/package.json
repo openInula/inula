@@ -53,7 +53,7 @@
     "webpack-dev-server": "^4.13.3"
   },
   "peerDependencies": {
-    "openinula": ">=0.1.14"
+    "openinula": ">=0.0.1"
   },
   "exclude": [
     "node_modules"
