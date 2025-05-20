@@ -104,7 +104,7 @@ describe('I18n', () => {
       locale: 'es',
       messages: { es: messages },
     });
-    expect(i18n.formatMessage("My ''name'' is '{name}'")).toEqual("Mi ''nombre'' es '{name}'");
+    expect(i18n.formatMessage("My ''name'' is '{name}'")).toEqual("Mi ''nombre'' es {name}");
   });
 
   it('._ should format message from catalog', function () {
@@ -133,16 +133,31 @@ describe('I18n', () => {
     expect(i18n.formatMessage({ id: 'id' }, { name: value })).toEqual('hello, <strong>Jane</strong>');
   });
 
-  it('test demo from product', () => {
+  it('test for Message without curly brackets in single quote', () => {
     const messages = {
-      id: "服务商名称长度不能超过64个字符，允许输入中文、字母、数字、字符_-!@#$^.+'}{'，且不能为关键字null(不区分大小写)。",
+      'i18n.key':
+        "服务商名称长度不能超过64个字符，允许输入中文、字母、数字、字符_-!@#$^.+'}{'，且不能为关键字null(不区分大小写)。",
     };
     const i18n = new I18n({
       locale: 'zh',
       messages: { zh: messages },
     });
-    expect(i18n.formatMessage('id')).toEqual(
+    expect(i18n.formatMessage('i18n.key')).toEqual(
       "服务商名称长度不能超过64个字符，允许输入中文、字母、数字、字符_-!@#$^.+'}{'，且不能为关键字null(不区分大小写)。"
+    );
+  });
+
+  it('test for Message with curly brackets in single quote', () => {
+    const messages = {
+      'i18n.key':
+        "服务商名称长度不能超过64个字符，允许输入中文、字母、数字、字符_-!@#$^.+'{}'，且不能为关键字null(不区分大小写)。",
+    };
+    const i18n = new I18n({
+      locale: 'zh',
+      messages: { zh: messages },
+    });
+    expect(i18n.formatMessage('i18n.key')).toEqual(
+      '服务商名称长度不能超过64个字符，允许输入中文、字母、数字、字符_-!@#$^.+{}，且不能为关键字null(不区分大小写)。'
     );
   });
 
@@ -277,7 +292,7 @@ describe('I18n', () => {
       messages: message,
     });
     const messageResult = i18n.formatMessage(
-      { id: `threats.eventMgr.common.loadingTipMore` },
+      { id: 'threats.eventMgr.common.loadingTipMore' },
       { num: 100, total: 29639 }
     );
     expect(messageResult).toEqual('Loaded records: 100, total records: 29,639, pull down to load more...');
