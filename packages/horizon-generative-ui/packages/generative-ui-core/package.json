@@ -1,0 +1,12 @@
+{
+  "name": "generative-ui-core",
+  "scripts": {
+    "start": "npx tsx ./src/index.ts"
+  },
+  "main": "src/index.ts",
+  "dependencies": {
+    "@cloudsop/horizon": "^0.1.0",
+    "@cloudsop/horizon-request": "^1.0.0",
+    "openai": "^4.91.1"
+  }
+}

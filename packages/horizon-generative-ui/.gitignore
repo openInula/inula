@@ -1,0 +1,23 @@
+# 排除不需要提交的文件
+*.exe
+*.dll
+*.pak
+*.bin
+*.log
+locales/
+resources/
+chrome_*
+d3dcompiler_*
+ffmpeg.dll
+icudtl.dat
+libEGL.dll
+libGLESv2.dll
+snapshot_blob.bin
+squirrel.exe
+v8_context_snapshot.bin
+vk_swiftshader*
+vulkan-1.dll
+Squirrel-UpdateSelf.log
+
+.env
+.idea

@@ -1,0 +1,13 @@
+@echo off
+echo Starting PostgreSQL container...
+docker-compose up -d
+
+echo Waiting for PostgreSQL to start...
+timeout /t 5
+
+echo Running Prisma migrations...
+echo Note: This command may fail if Prisma is not properly installed. You can continue without it for development.
+npx prisma migrate dev --name init
+
+echo Starting NestJS application on port 3001...
+npm run start:dev
