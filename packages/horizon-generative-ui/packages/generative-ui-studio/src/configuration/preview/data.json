@@ -1,0 +1,1346 @@
+[
+  {
+    "url": "/api/tunnel/pending-tasks",
+    "data": {
+      "code": 200,
+      "message": "success",
+      "data": {
+        "taskList": [
+          {
+            "taskId": "TK20240522001",
+            "stationName": "溪村柳堡站",
+            "stationId": "STA_XC_LB_001",
+            "faultType": "不规律掉站",
+            "severity": "严重",
+            "occurTime": "2024-05-22 14:30:25",
+            "duration": "25分钟",
+            "affectedStations": [
+              "B地",
+              "C地",
+              "F地",
+              "G地站",
+              "中集园",
+              "溪村公寓",
+              "中心站",
+              "新区站"
+            ],
+            "affectedStationCount": 8,
+            "currentStatus": "待接管",
+            "description": "溪村柳堡站附近8个站出现不规律掉站现象"
+          }
+        ],
+        "totalCount": 1,
+        "stationStatus": {
+          "total": {
+            "2G基站": 1573,
+            "4G基站": 4086,
+            "5G基站": 1350
+          },
+          "locations": [
+            {
+              "name": "B地",
+              "2G": 23,
+              "4G": 43,
+              "5G": 15,
+              "status": "正常",
+              "progressColor": "#00ff88"
+            },
+            {
+              "name": "C地",
+              "2G": 14,
+              "4G": 68,
+              "5G": 17,
+              "status": "告警",
+              "progressColor": "#ffaa00"
+            },
+            {
+              "name": "F地",
+              "2G": 273,
+              "4G": 542,
+              "5G": 181,
+              "status": "故障",
+              "progressColor": "#ff4444"
+            },
+            {
+              "name": "G地",
+              "2G": 1249,
+              "4G": 3386,
+              "5G": 1131,
+              "status": "严重故障",
+              "progressColor": "#cc0000"
+            },
+            {
+              "name": "中集团",
+              "2G": 23,
+              "4G": 43,
+              "5G": 15,
+              "status": "正常",
+              "progressColor": "#00ff88"
+            },
+            {
+              "name": "溪村公寓",
+              "2G": 14,
+              "4G": 68,
+              "5G": 17,
+              "status": "告警",
+              "progressColor": "#ffaa00"
+            }
+          ]
+        },
+        "wirelessService": {
+          "title": "无线基站退服",
+          "timeData": [
+            { "time": "00:00", "4G": 3000, "5G": 1800 },
+            { "time": "02:00", "4G": 4200, "5G": 2200 },
+            { "time": "04:00", "4G": 4400, "5G": 2800 },
+            { "time": "06:00", "4G": 3800, "5G": 2200 },
+            { "time": "08:00", "4G": 5600, "5G": 3500 },
+            { "time": "10:00", "4G": 8000, "5G": 4600 }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "url": "/api/station/topology-alarms",
+    "data": {
+      "code": 200,
+      "message": "success",
+      "data": {
+        "stationId": "STA_XC_LB_001",
+        "alarmInfo": {
+          "totalAlarms": 12,
+          "criticalAlarms": 4,
+          "majorAlarms": 5,
+          "minorAlarms": 3
+        },
+        "stationNodes": [
+          {
+            "nodeId": "STA_XC_001",
+            "nodeName": "溪村站",
+            "nodeType": "车站通信设备",
+            "status": "掉站",
+            "alarmCount": 3,
+            "lastOnlineTime": "2024-05-22 14:25:15",
+            "position": { "x": 100, "y": 150 }
+          },
+          {
+            "nodeId": "STA_LB_001",
+            "nodeName": "柳堡站",
+            "nodeType": "车站通信设备",
+            "status": "掉站",
+            "alarmCount": 4,
+            "lastOnlineTime": "2024-05-22 14:30:20",
+            "position": { "x": 200, "y": 150 }
+          },
+          {
+            "nodeId": "STA_DH_001",
+            "nodeName": "东湖站",
+            "nodeType": "车站通信设备",
+            "status": "间歇掉站",
+            "alarmCount": 2,
+            "lastOnlineTime": "2024-05-22 14:40:10",
+            "position": { "x": 300, "y": 100 }
+          },
+          {
+            "nodeId": "STA_XY_001",
+            "nodeName": "西园站",
+            "nodeType": "车站通信设备",
+            "status": "掉站",
+            "alarmCount": 1,
+            "lastOnlineTime": "2024-05-22 14:35:05",
+            "position": { "x": 300, "y": 200 }
+          },
+          {
+            "nodeId": "COMM_CENTER_001",
+            "nodeName": "通信中心",
+            "nodeType": "中心通信设备",
+            "status": "告警",
+            "alarmCount": 2,
+            "lastOnlineTime": "2024-05-22 14:50:00",
+            "position": { "x": 150, "y": 250 }
+          }
+        ],
+        "communicationLinks": [
+          {
+            "linkId": "COMM_LINK_001",
+            "sourceNode": "COMM_CENTER_001",
+            "targetNode": "STA_XC_001",
+            "status": "中断",
+            "signalStrength": 0,
+            "linkType": "主通信链路"
+          },
+          {
+            "linkId": "COMM_LINK_002",
+            "sourceNode": "COMM_CENTER_001",
+            "targetNode": "STA_LB_001",
+            "status": "中断",
+            "signalStrength": 0,
+            "linkType": "主通信链路"
+          },
+          {
+            "linkId": "COMM_LINK_003",
+            "sourceNode": "COMM_CENTER_001",
+            "targetNode": "STA_DH_001",
+            "status": "不稳定",
+            "signalStrength": -75,
+            "linkType": "主通信链路"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "url": "/api/tunnel/start-diagnosis",
+    "data": {
+      "code": 200,
+      "message": "诊断已启动",
+      "data": {
+        "diagnosisId": "DIAG20240522001",
+        "tunnelId": "TUN_BJ_SH_001",
+        "startTime": "2024-05-22 14:35:00",
+        "status": "进行中"
+      }
+    }
+  },
+
+  {
+    "url": "/api/station/diagnosis-chain",
+    "data": {
+      "code": 200,
+      "message": "success",
+      "data": {
+        "stationId": "STA_XC_LB_001",
+        "diagnosisSteps": [
+          {
+            "stepId": 1,
+            "stepName": "检查各站点通信连通性",
+            "status": "完成",
+            "result": "多站点连通性异常",
+            "details": "溪村站、柳堡站、东湖站、西园站等8个站点均出现间歇性通信中断",
+            "timestamp": "2024-05-22 14:35:10",
+            "data": {
+              "normalStations": 45,
+              "abnormalStations": 8,
+              "offlineStations": 3,
+              "connectivity": "62%"
+            }
+          },
+          {
+            "stepId": 2,
+            "stepName": "检查动环设备告警",
+            "status": "完成",
+            "result": "动环状态正常",
+            "details": "3102主隧道沿线动环状态正常",
+            "timestamp": "2024-05-22 14:35:25",
+            "data": {
+              "temperatureAlarms": 5,
+              "powerAlarms": 3,
+              "ventilationAlarms": 2,
+              "criticalLocation": "3102主隧道K15+200-K18+500段"
+            }
+          },
+          {
+            "stepId": 3,
+            "stepName": "检查传输设备状态",
+            "status": "完成",
+            "result": "发现传输中断",
+            "details": "3102主隧道内光缆传输设备出现大面积故障，导致沿线基站失联",
+            "timestamp": "2024-05-22 14:35:40",
+            "data": {
+              "fiberOpticCables": {
+                "total": 24,
+                "normal": 16,
+                "faulty": 8,
+                "location": "3102主隧道"
+              },
+              "transmissionDevices": {
+                "total": 12,
+                "online": 4,
+                "offline": 8,
+                "faultyLocation": "K16+800中继站"
+              }
+            }
+          }
+        ],
+        "diagnosticData": {
+          "tunnelInfo": {
+            "tunnelName": "3102主隧道",
+            "tunnelLength": "3.3公里",
+            "faultLocation": "K16+800中继站",
+            "faultType": "传输设备硬件故障"
+          },
+          "communicationStats": {
+            "totalStations": 56,
+            "normalStations": 45,
+            "faultyStations": 8,
+            "offlineStations": 3,
+            "overallHealth": "80%"
+          },
+          "signalQuality": {
+            "beforeFault": {
+              "signalStrength": "-45dBm",
+              "packetLoss": "0.1%",
+              "latency": "15ms"
+            },
+            "afterFault": {
+              "signalStrength": "无信号",
+              "packetLoss": "100%",
+              "latency": "超时"
+            }
+          },
+          "equipmentStatus": {
+            "3102TunnelDevices": {
+              "total": 12,
+              "normal": 4,
+              "faulty": 8,
+              "criticalDevice": "K16+800中继站主设备"
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "url": "/api/station/path-loss-analysis",
+    "data": {
+      "code": 200,
+      "message": "success",
+      "data": {
+        "stationId": "STA_TUNNEL_COMM",
+        "pathAnalysis": [
+          {
+            "pathId": "PATH_TUNNEL_001",
+            "pathName": "隧道通信路径",
+            "segments": [
+              {
+                "segmentId": "SEG_001",
+                "source": "USG252-169",
+                "target": "出口层",
+                "connectionStatus": "严重异常",
+                "status": "严重告警",
+                "latency": "245ms",
+                "packetLoss": "83.2%"
+              },
+              {
+                "segmentId": "SEG_002",
+                "source": "出口层",
+                "target": "隧道中断",
+                "connectionStatus": "中断",
+                "status": "通信中断",
+                "latency": "超时",
+                "packetLoss": "100%"
+              }
+            ],
+            "overallStatus": "严重告警",
+            "totalPacketLoss": "86.7%",
+            "thresholdExceeded": true,
+            "thresholdValue": "80%"
+          }
+        ],
+        "deviceInfo": {
+          "USG252_169": {
+            "deviceName": "USG252-169通信设备",
+            "status": "严重告警",
+            "latency": "245ms",
+            "packetLoss": "83.2%",
+            "cpuUsage": "89%"
+          },
+          "TUNNEL_EXIT": {
+            "deviceName": "出口层通信设备",
+            "status": "离线",
+            "latency": "超时",
+            "packetLoss": "100%"
+          }
+        },
+        "packetLoss": [
+          { "time": "14:00", "value": 0.002 },
+          { "time": "14:15", "value": 0.003 },
+          { "time": "14:30", "value": 0.004 },
+          { "time": "14:45", "value": 0.006 },
+          { "time": "15:00", "value": 0.008 },
+          { "time": "15:15", "value": 0.012 },
+          { "time": "15:30", "value": 0.865 },
+          { "time": "15:45", "value": 0.867 }
+        ],
+        "latency": [
+          { "time": "14:00", "value": 12 },
+          { "time": "14:15", "value": 15 },
+          { "time": "14:30", "value": 45 },
+          { "time": "14:45", "value": 28 },
+          { "time": "15:00", "value": 67 },
+          { "time": "15:15", "value": 89 },
+          { "time": "15:30", "value": 156 },
+          { "time": "15:45", "value": 245 }
+        ]
+      }
+    }
+  },
+  {
+    "url": "/api/tunnel/backup-status",
+    "data": {
+      "code": 200,
+      "message": "success",
+      "data": {
+        "backupTunnels": [
+          {
+            "tunnelId": "TUN_BJ_SH_BACKUP_001",
+            "tunnelName": "柳堡对外备用隧道1",
+            "status": "可用",
+            "capacity": "10Gbps",
+            "currentUsage": "2.1Gbps",
+            "utilization": "21%",
+            "packetLoss": "0.01%",
+            "latency": "35ms",
+            "path": "柳堡S01-柳堡S03-柳堡S04",
+            "readyForSwitchover": true
+          },
+          {
+            "tunnelId": "TUN_BJ_SH_BACKUP_002",
+            "tunnelName": "柳堡对外备用隧道2",
+            "status": "维护中",
+            "capacity": "5Gbps",
+            "currentUsage": "0Gbps",
+            "utilization": "0%",
+            "packetLoss": "N/A",
+            "latency": "N/A",
+            "path": "柳堡S01-柳堡S02-柳堡S04",
+            "readyForSwitchover": false
+          }
+        ],
+        "recommendedBackup": "TUN_BJ_SH_BACKUP_001",
+        "switchoverRisk": "低",
+        "estimatedDowntime": "30秒"
+      }
+    }
+  },
+  {
+    "url": "/api/tunnel/switch-backup",
+    "data": {
+      "code": 200,
+      "message": "切换成功",
+      "data": {
+        "switchId": "SW20240522001",
+        "originalTunnel": "TUN_BJ_SH_001",
+        "backupTunnel": "TUN_BJ_SH_BACKUP_001",
+        "switchStatus": "成功",
+        "switchTime": "2024-05-22 14:45:30",
+        "actualDowntime": "25秒",
+        "postSwitchMetrics": {
+          "packetLoss": "0.01%",
+          "latency": "35ms",
+          "throughput": "1.2Gbps",
+          "serviceStatus": "正常"
+        }
+      }
+    }
+  },
+  {
+    "url": "/api/tunnel/create-repair-order",
+    "data": {
+      "code": 200,
+      "message": "工单创建成功",
+      "data": {
+        "orderId": "WO20240522001",
+        "orderType": "端口修复工单",
+        "priority": "紧急",
+        "createTime": "2024-05-22 14:46:00",
+        "targetDevice": "中继节点1",
+        "faultDescription": "传输设备硬件故障导致丢包率85.7%",
+        "repairPlan": ["更换故障传输模块", "检查电源系统", "优化机房温度控制", "进行端口测试"],
+        "estimatedRepairTime": "2小时",
+        "assignedTechnician": "张工程师",
+        "contactInfo": "13800138000"
+      }
+    }
+  },
+  {
+    "url": "/api/tunnel/repair-result",
+    "data": {
+      "code": 200,
+      "message": "success",
+      "data": {
+        "repairSummary": {
+          "orderId": "WO20240522001",
+          "repairStatus": "进行中",
+          "startTime": "2024-05-22 14:46:00",
+          "currentPhase": "执行修复建议",
+          "completionRate": "60%"
+        },
+        "executionSteps": [
+          {
+            "stepId": 1,
+            "stepName": "切换至备用隧道",
+            "status": "已完成",
+            "result": "成功",
+            "executionTime": "2024-05-22 14:45:30"
+          },
+          {
+            "stepId": 2,
+            "stepName": "生成端口修复工单",
+            "status": "已完成",
+            "result": "工单已创建：WO20240522001",
+            "executionTime": "2024-05-22 14:46:00"
+          },
+          {
+            "stepId": 3,
+            "stepName": "监控服务恢复情况",
+            "status": "已完成",
+            "result": "完成倒换，服务已恢复",
+            "executionTime": "2024-05-22 14:46:30"
+          }
+        ],
+        "beforeAfterComparison": {
+          "before": {
+            "tunnelStatus": "故障",
+            "packetLoss": "85.7%",
+            "latency": "250ms",
+            "serviceAvailability": "15%",
+            "affectedUsers": 1250
+          },
+          "after": {
+            "tunnelStatus": "正常",
+            "packetLoss": "0.01%",
+            "latency": "35ms",
+            "serviceAvailability": "99.9%",
+            "affectedUsers": 0
+          }
+        }
+      }
+    }
+  },
+  {
+    "url": "/api/topology",
+    "data": {
+      "nodes": [
+        {
+          "id": "educationnet",
+          "label": "专线网",
+          "data": {},
+          "image": "edu_internet",
+          "width": 51,
+          "height": 51
+        },
+        {
+          "id": "extranet",
+          "label": "互联网",
+          "data": {},
+          "image": "internet",
+          "width": 51,
+          "height": 51
+        },
+        {
+          "id": "c02a2d27-930d-3a56-a14d-6d30a342e5cd",
+          "label": "USG252-169",
+          "comboId": "eff8b1df-9d2b-4420-8e34-63cc3780a72e",
+          "data": {
+            "ip": "10.136.252.188",
+            "nodeResId": "c02a2d27-930d-3a56-a14d-6d30a342e5cd",
+            "className": "EntNetworkElement",
+            "nodeType": "ne.category.firewall",
+            "ipAddress": "10.136.252.188",
+            "status": 0,
+            "name": "USG252-169",
+            "mac": "EC-A1-D1-28-9F-B1",
+            "sn": null,
+            "subnetResId": "eff8b1df-9d2b-4420-8e34-63cc3780a72e",
+            "subnetName": null,
+            "vendor": "Huawei",
+            "model": "USG6565E-AC",
+            "version": "V600R007C20",
+            "additionalInfo": null,
+            "location": "China",
+            "nativeId": null,
+            "parentResId": null,
+            "subnetFullPath": null,
+            "subnetIdFullPath": null,
+            "mergeNodeId": null,
+            "deviceRole": "default"
+          },
+          "image": "firewall",
+          "width": 60,
+          "height": 60,
+          "option": {
+            "status": 0
+          }
+        },
+        {
+          "id": "1640e4d6-66d9-382b-aea5-64457cdfd91a",
+          "label": "O-01-16",
+          "comboId": "48f06431-448d-4ded-90e2-1c7ff1409c5e",
+          "data": {
+            "ip": "10.136.252.159",
+            "nodeResId": "1640e4d6-66d9-382b-aea5-64457cdfd91a",
+            "className": "EntNetworkElement",
+            "nodeType": "ne.category.switch",
+            "ipAddress": "10.136.252.159",
+            "status": 0,
+            "name": "O-01-16",
+            "mac": "44-6A-2E-2F-10-21",
+            "sn": null,
+            "subnetResId": "48f06431-448d-4ded-90e2-1c7ff1409c5e",
+            "subnetName": null,
+            "vendor": "Huawei",
+            "model": "CE5850-48T4S2Q-EI",
+            "version": "V200R019C10",
+            "additionalInfo": null,
+            "location": "Beijing China",
+            "nativeId": null,
+            "parentResId": null,
+            "subnetFullPath": null,
+            "subnetIdFullPath": null,
+            "mergeNodeId": null,
+            "deviceRole": "core"
+          },
+          "image": "coreSwitch",
+          "width": 60,
+          "height": 60,
+          "option": {
+            "status": 0
+          }
+        },
+        {
+          "id": "c5c1a7fd-84c3-492f-bda1-8d18178fc20e",
+          "label": "溪村柳堡站核心交换机",
+          "comboId": "48f06431-448d-4ded-90e2-1c7ff1409c5e",
+          "data": {
+            "ip": "10.136.105.83",
+            "nodeResId": "c5c1a7fd-84c3-492f-bda1-8d18178fc20e",
+            "className": "EntPonElement",
+            "nodeType": "ponOlt",
+            "ipAddress": "10.136.105.83",
+            "status": 0,
+            "name": "溪村柳堡站核心交换机",
+            "mac": "A0-A7-EF-F0-AB-D3",
+            "sn": null,
+            "subnetResId": "48f06431-448d-4ded-90e2-1c7ff1409c5e",
+            "subnetName": null,
+            "vendor": "Huawei",
+            "model": "EA5800-X2",
+            "version": "EA5800V100R019C00",
+            "additionalInfo": null,
+            "location": null,
+            "nativeId": "c5c1a7fd-84c3-492f-bda1-8d18178fc20e",
+            "parentResId": null,
+            "subnetFullPath": null,
+            "subnetIdFullPath": null,
+            "mergeNodeId": null,
+            "deviceRole": "default"
+          },
+          "image": "olt",
+          "width": 60,
+          "height": 60,
+          "option": {
+            "status": 0
+          }
+        },
+        {
+          "id": "22cded8c-28b3-4457-a2d0-f2e70ce69014",
+          "label": "ONU",
+          "comboId": "42c2adfb-c463-49d9-a57b-eb747ce96675",
+          "data": {
+            "nodeId": "22cded8c-28b3-4457-a2d0-f2e70ce69014",
+            "total": 20,
+            "offlineTotal": 0,
+            "subnetResId": "42c2adfb-c463-49d9-a57b-eb747ce96675",
+            "className": "EntPonElement",
+            "nodeType": "ponOnu",
+            "deviceRole": "default"
+          },
+          "image": "onu",
+          "width": 60,
+          "height": 60,
+          "option": {
+            "sub": {
+              "offline": 0,
+              "total": 20
+            }
+          }
+        },
+        {
+          "id": "91343244-2d18-45e3-9cc5-8e364e18a58d",
+          "label": "ONU",
+          "comboId": "81a2a61a-8255-490b-8b63-23984dd89e51",
+          "data": {
+            "nodeId": "91343244-2d18-45e3-9cc5-8e364e18a58d",
+            "total": 20,
+            "offlineTotal": 0,
+            "subnetResId": "81a2a61a-8255-490b-8b63-23984dd89e51",
+            "className": "EntPonElement",
+            "nodeType": "ponOnu",
+            "deviceRole": "default"
+          },
+          "image": "onu",
+          "width": 60,
+          "height": 60,
+          "option": {
+            "sub": {
+              "offline": 0,
+              "total": 20
+            }
+          }
+        },
+        {
+          "id": "a4e4daec-c1cc-459e-870f-0ec05d832e42",
+          "label": "ONU",
+          "comboId": "943097cb-e7c7-4edc-9c2a-4d4fc8095a58",
+          "data": {
+            "nodeId": "a4e4daec-c1cc-459e-870f-0ec05d832e42",
+            "total": 20,
+            "offlineTotal": 0,
+            "childNodes": [],
+            "subnetResId": "943097cb-e7c7-4edc-9c2a-4d4fc8095a58",
+            "className": "EntPonElement",
+            "nodeType": "ponOnu",
+            "deviceRole": "default"
+          },
+          "image": "onu",
+          "width": 60,
+          "height": 60,
+          "option": {
+            "sub": {
+              "offline": 0,
+              "total": 20
+            }
+          }
+        },
+        {
+          "id": "c02a2d27-930d-3a56-a14d-6d30a342e5c1",
+          "label": "溪村站",
+          "comboId": "42c2adfb-c463-49d9-a57b-eb747ce96675",
+          "data": {
+            "ip": "10.136.252.181",
+            "nodeResId": "c02a2d27-930d-3a56-a14d-6d30a342e5c1",
+            "className": "EntNetworkElement",
+            "nodeType": "ne.category.firewall",
+            "ipAddress": "10.136.252.181",
+            "status": 0,
+            "name": "溪村站",
+            "mac": "EC-A1-D1-28-9F-B2",
+            "sn": null,
+            "subnetResId": "eff8b1df-9d2b-4420-8e34-63cc3780a721",
+            "subnetName": null,
+            "vendor": "Huawei",
+            "model": "USG6565E-AC",
+            "version": "V600R007C20",
+            "additionalInfo": null,
+            "location": "溪村",
+            "nativeId": null,
+            "parentResId": null,
+            "subnetFullPath": null,
+            "subnetIdFullPath": null,
+            "mergeNodeId": null,
+            "deviceRole": "default"
+          },
+          "image": "firewall",
+          "width": 60,
+          "height": 60,
+          "option": {
+            "status": 0
+          }
+        },
+        {
+          "id": "c02a2d27-930d-3a56-a14d-6d30a342e5c2",
+          "label": "柳堡站",
+          "comboId": "42c2adfb-c463-49d9-a57b-eb747ce96675",
+          "data": {
+            "ip": "10.136.252.182",
+            "nodeResId": "c02a2d27-930d-3a56-a14d-6d30a342e5c2",
+            "className": "EntNetworkElement",
+            "nodeType": "ne.category.firewall",
+            "ipAddress": "10.136.252.182",
+            "status": 0,
+            "name": "柳堡站",
+            "mac": "EC-A1-D1-28-9F-B3",
+            "sn": null,
+            "subnetResId": "eff8b1df-9d2b-4420-8e34-63cc3780a722",
+            "subnetName": null,
+            "vendor": "Huawei",
+            "model": "USG6565E-AC",
+            "version": "V600R007C20",
+            "additionalInfo": null,
+            "location": "柳堡",
+            "nativeId": null,
+            "parentResId": null,
+            "subnetFullPath": null,
+            "subnetIdFullPath": null,
+            "mergeNodeId": null,
+            "deviceRole": "default"
+          },
+          "image": "firewall",
+          "width": 60,
+          "height": 60,
+          "option": {
+            "status": 0
+          }
+        },
+        {
+          "id": "c02a2d27-930d-3a56-a14d-6d30a342e5c3",
+          "label": "东湖站",
+          "comboId": "42c2adfb-c463-49d9-a57b-eb747ce96675",
+          "data": {
+            "ip": "10.136.252.183",
+            "nodeResId": "c02a2d27-930d-3a56-a14d-6d30a342e5c3",
+            "className": "EntNetworkElement",
+            "nodeType": "ne.category.firewall",
+            "ipAddress": "10.136.252.183",
+            "status": 0,
+            "name": "东湖站",
+            "mac": "EC-A1-D1-28-9F-B4",
+            "sn": null,
+            "subnetResId": "eff8b1df-9d2b-4420-8e34-63cc3780a723",
+            "subnetName": null,
+            "vendor": "Huawei",
+            "model": "USG6565E-AC",
+            "version": "V600R007C20",
+            "additionalInfo": null,
+            "location": "东湖",
+            "nativeId": null,
+            "parentResId": null,
+            "subnetFullPath": null,
+            "subnetIdFullPath": null,
+            "mergeNodeId": null,
+            "deviceRole": "default"
+          },
+          "image": "firewall",
+          "width": 60,
+          "height": 60,
+          "option": {
+            "status": 0
+          }
+        },
+        {
+          "id": "c02a2d27-930d-3a56-a14d-6d30a342e5c4",
+          "label": "西园站",
+          "comboId": "81a2a61a-8255-490b-8b63-23984dd89e51",
+          "data": {
+            "ip": "10.136.252.184",
+            "nodeResId": "c02a2d27-930d-3a56-a14d-6d30a342e5c4",
+            "className": "EntNetworkElement",
+            "nodeType": "ne.category.firewall",
+            "ipAddress": "10.136.252.184",
+            "status": 0,
+            "name": "西园站",
+            "mac": "EC-A1-D1-28-9F-B5",
+            "sn": null,
+            "subnetResId": "eff8b1df-9d2b-4420-8e34-63cc3780a724",
+            "subnetName": null,
+            "vendor": "Huawei",
+            "model": "USG6565E-AC",
+            "version": "V600R007C20",
+            "additionalInfo": null,
+            "location": "西园",
+            "nativeId": null,
+            "parentResId": null,
+            "subnetFullPath": null,
+            "subnetIdFullPath": null,
+            "mergeNodeId": null,
+            "deviceRole": "default"
+          },
+          "image": "firewall",
+          "width": 60,
+          "height": 60,
+          "option": {
+            "status": 0
+          }
+        },
+        {
+          "id": "c02a2d27-930d-3a56-a14d-6d30a342e5c5",
+          "label": "南山站",
+          "comboId": "81a2a61a-8255-490b-8b63-23984dd89e51",
+          "data": {
+            "ip": "10.136.252.185",
+            "nodeResId": "c02a2d27-930d-3a56-a14d-6d30a342e5c5",
+            "className": "EntNetworkElement",
+            "nodeType": "ne.category.firewall",
+            "ipAddress": "10.136.252.185",
+            "status": 0,
+            "name": "南山站",
+            "mac": "EC-A1-D1-28-9F-B6",
+            "sn": null,
+            "subnetResId": "eff8b1df-9d2b-4420-8e34-63cc3780a725",
+            "subnetName": null,
+            "vendor": "Huawei",
+            "model": "USG6565E-AC",
+            "version": "V600R007C20",
+            "additionalInfo": null,
+            "location": "南山",
+            "nativeId": null,
+            "parentResId": null,
+            "subnetFullPath": null,
+            "subnetIdFullPath": null,
+            "mergeNodeId": null,
+            "deviceRole": "default"
+          },
+          "image": "firewall",
+          "width": 60,
+          "height": 60,
+          "option": {
+            "status": 0
+          }
+        },
+        {
+          "id": "c02a2d27-930d-3a56-a14d-6d30a342e5c6",
+          "label": "北岭站",
+          "comboId": "943097cb-e7c7-4edc-9c2a-4d4fc8095a58",
+          "data": {
+            "ip": "10.136.252.186",
+            "nodeResId": "c02a2d27-930d-3a56-a14d-6d30a342e5c6",
+            "className": "EntNetworkElement",
+            "nodeType": "ne.category.firewall",
+            "ipAddress": "10.136.252.186",
+            "status": 0,
+            "name": "北岭站",
+            "mac": "EC-A1-D1-28-9F-B7",
+            "sn": null,
+            "subnetResId": "eff8b1df-9d2b-4420-8e34-63cc3780a726",
+            "subnetName": null,
+            "vendor": "Huawei",
+            "model": "USG6565E-AC",
+            "version": "V600R007C20",
+            "additionalInfo": null,
+            "location": "北岭",
+            "nativeId": null,
+            "parentResId": null,
+            "subnetFullPath": null,
+            "subnetIdFullPath": null,
+            "mergeNodeId": null,
+            "deviceRole": "default"
+          },
+          "image": "firewall",
+          "width": 60,
+          "height": 60,
+          "option": {
+            "status": 0
+          }
+        },
+        {
+          "id": "c02a2d27-930d-3a56-a14d-6d30a342e5c7",
+          "label": "中心站",
+          "comboId": "943097cb-e7c7-4edc-9c2a-4d4fc8095a58",
+          "data": {
+            "ip": "10.136.252.187",
+            "nodeResId": "c02a2d27-930d-3a56-a14d-6d30a342e5c7",
+            "className": "EntNetworkElement",
+            "nodeType": "ne.category.firewall",
+            "ipAddress": "10.136.252.187",
+            "status": 0,
+            "name": "中心站",
+            "mac": "EC-A1-D1-28-9F-B8",
+            "sn": null,
+            "subnetResId": "eff8b1df-9d2b-4420-8e34-63cc3780a727",
+            "subnetName": null,
+            "vendor": "Huawei",
+            "model": "USG6565E-AC",
+            "version": "V600R007C20",
+            "additionalInfo": null,
+            "location": "中心区",
+            "nativeId": null,
+            "parentResId": null,
+            "subnetFullPath": null,
+            "subnetIdFullPath": null,
+            "mergeNodeId": null,
+            "deviceRole": "default"
+          },
+          "image": "firewall",
+          "width": 60,
+          "height": 60,
+          "option": {
+            "status": 0
+          }
+        },
+        {
+          "id": "c02a2d27-930d-3a56-a14d-6d30a342e5c8",
+          "label": "新区站",
+          "comboId": "943097cb-e7c7-4edc-9c2a-4d4fc8095a58",
+          "data": {
+            "ip": "10.136.252.188",
+            "nodeResId": "c02a2d27-930d-3a56-a14d-6d30a342e5c8",
+            "className": "EntNetworkElement",
+            "nodeType": "ne.category.firewall",
+            "ipAddress": "10.136.252.188",
+            "status": 0,
+            "name": "新区站",
+            "mac": "EC-A1-D1-28-9F-B9",
+            "sn": null,
+            "subnetResId": "eff8b1df-9d2b-4420-8e34-63cc3780a728",
+            "subnetName": null,
+            "vendor": "Huawei",
+            "model": "USG6565E-AC",
+            "version": "V600R007C20",
+            "additionalInfo": null,
+            "location": "新区",
+            "nativeId": null,
+            "parentResId": null,
+            "subnetFullPath": null,
+            "subnetIdFullPath": null,
+            "mergeNodeId": null,
+            "deviceRole": "default"
+          },
+          "image": "firewall",
+          "width": 60,
+          "height": 60,
+          "option": {
+            "status": 0
+          }
+        }
+      ],
+      "combos": [
+        {
+          "id": "eff8b1df-9d2b-4420-8e34-63cc3780a72e",
+          "label": "出口层",
+          "parentId": null,
+          "data": {
+            "name": "出口层",
+            "typeId": "200",
+            "category": "Subnet",
+            "nativeId": "SN=34603024",
+            "ownerId": "0",
+            "resId": "eff8b1df-9d2b-4420-8e34-63cc3780a72e",
+            "parentResId": "3",
+            "parentNativeId": "/",
+            "sync": 1,
+            "drill": false,
+            "networkLayer": "network",
+            "layerId": 0
+          },
+          "padding": [20, 30, 30, 30],
+          "option": {
+            "fixX": 250.5,
+            "drill": false
+          },
+          "fixSize": [321, 60]
+        },
+        {
+          "id": "48f06431-448d-4ded-90e2-1c7ff1409c5e",
+          "label": "核心层",
+          "parentId": null,
+          "data": {
+            "name": "核心层",
+            "typeId": "200",
+            "category": "Subnet",
+            "nativeId": "SN=34603023",
+            "ownerId": "0",
+            "resId": "48f06431-448d-4ded-90e2-1c7ff1409c5e",
+            "parentResId": "3",
+            "parentNativeId": "/",
+            "sync": 1,
+            "drill": false,
+            "networkLayer": "network",
+            "layerId": 1
+          },
+          "option": {
+            "fixX": 250.5,
+            "drill": false
+          },
+          "fixSize": [321, 156]
+        },
+        {
+          "id": "943097cb-e7c7-4edc-9c2a-4d4fc8095a58",
+          "label": "2号楼",
+          "parentId": null,
+          "data": {
+            "name": "2号楼",
+            "typeId": "200",
+            "category": "Subnet",
+            "nativeId": "SN=36700186",
+            "ownerId": "0",
+            "resId": "943097cb-e7c7-4edc-9c2a-4d4fc8095a58",
+            "parentResId": "3",
+            "parentNativeId": "/",
+            "sync": 1,
+            "drill": true,
+            "networkLayer": "business",
+            "layerId": 3
+          },
+          "option": {
+            "consistentHeight": 216,
+            "drill": true
+          }
+        },
+        {
+          "id": "42c2adfb-c463-49d9-a57b-eb747ce96675",
+          "label": "1号楼",
+          "parentId": null,
+          "data": {
+            "name": "1号楼",
+            "typeId": "200",
+            "category": "Subnet",
+            "nativeId": "SN=36700184",
+            "ownerId": "0",
+            "resId": "42c2adfb-c463-49d9-a57b-eb747ce96675",
+            "parentResId": "3",
+            "parentNativeId": "/",
+            "sync": 1,
+            "drill": true,
+            "networkLayer": "business",
+            "layerId": 3
+          },
+          "option": {
+            "consistentHeight": 216,
+            "drill": true
+          }
+        },
+        {
+          "id": "81a2a61a-8255-490b-8b63-23984dd89e51",
+          "label": "地下室",
+          "parentId": null,
+          "data": {
+            "name": "地下室",
+            "typeId": "200",
+            "category": "Subnet",
+            "nativeId": "SN=36700185",
+            "ownerId": "0",
+            "resId": "81a2a61a-8255-490b-8b63-23984dd89e51",
+            "parentResId": "3",
+            "parentNativeId": "/",
+            "sync": 1,
+            "drill": true,
+            "networkLayer": "business",
+            "layerId": 3
+          },
+          "option": {
+            "consistentHeight": 216,
+            "drill": true
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "6f04abd3-4f38-4274-b6f4-a80e0deddba6",
+          "source": "educationnet",
+          "target": "c02a2d27-930d-3a56-a14d-6d30a342e5cd",
+          "directed": true,
+          "option": {}
+        },
+        {
+          "id": "230d14fc-a791-439b-985d-55a3cbc13c71",
+          "source": "extranet",
+          "target": "c02a2d27-930d-3a56-a14d-6d30a342e5cd",
+          "directed": true,
+          "option": {}
+        },
+        {
+          "id": "d28d6afe-8da7-4519-962c-83cf1a7b7e8a",
+          "source": "a4e4daec-c1cc-459e-870f-0ec05d832e42",
+          "target": "c02a2d27-930d-3a56-a14d-6d30a342e5c6",
+          "data": [],
+          "option": {
+            "getControlPoints": null,
+            "aLabel": null,
+            "zLabel": null
+          },
+          "directed": true
+        },
+        {
+          "id": "47ffe685-93ea-4cfb-ab84-41da2ebac20c",
+          "source": "a4e4daec-c1cc-459e-870f-0ec05d832e42",
+          "target": "c02a2d27-930d-3a56-a14d-6d30a342e5c7",
+          "data": [
+            {
+              "relationId": "47ffe685-93ea-4cfb-ab84-41da2ebac20c",
+              "srcResId": "6ea57b75-bd28-4d35-9d0d-9d1d6ace5117",
+              "srcNodeType": "ponOnu",
+              "srcSubnetResId": "943097cb-e7c7-4edc-9c2a-4d4fc8095a58",
+              "srcClassName": null,
+              "srcPortName": "1",
+              "dstResId": "9235e8d0-cd10-3c2e-80ab-18398101555a",
+              "dstNodeType": "教学一体机",
+              "dstSubnetResId": "943097cb-e7c7-4edc-9c2a-4d4fc8095a58",
+              "dstClassName": null,
+              "dstPortName": null,
+              "status": 0,
+              "linkDn": null
+            }
+          ],
+          "option": {
+            "getControlPoints": null,
+            "aLabel": null,
+            "zLabel": null
+          },
+          "directed": true
+        },
+        {
+          "id": "47ffe685-93ea-4cfb-ab84-41da2ebac21c",
+          "source": "a4e4daec-c1cc-459e-870f-0ec05d832e42",
+          "target": "c02a2d27-930d-3a56-a14d-6d30a342e5c8",
+          "data": [
+            {
+              "relationId": "47ffe685-93ea-4cfb-ab84-41da2ebac20c",
+              "srcResId": "6ea57b75-bd28-4d35-9d0d-9d1d6ace5117",
+              "srcNodeType": "ponOnu",
+              "srcSubnetResId": "943097cb-e7c7-4edc-9c2a-4d4fc8095a58",
+              "srcClassName": null,
+              "srcPortName": "1",
+              "dstResId": "9235e8d0-cd10-3c2e-80ab-18398101555a",
+              "dstNodeType": "教学一体机",
+              "dstSubnetResId": "943097cb-e7c7-4edc-9c2a-4d4fc8095a58",
+              "dstClassName": null,
+              "dstPortName": null,
+              "status": 0,
+              "linkDn": null
+            }
+          ],
+          "option": {
+            "getControlPoints": null,
+            "aLabel": null,
+            "zLabel": null
+          },
+          "directed": true
+        },
+        {
+          "id": "b6b04952-db3e-4986-be8b-d13687832af7",
+          "source": "c5c1a7fd-84c3-492f-bda1-8d18178fc20e",
+          "target": "a4e4daec-c1cc-459e-870f-0ec05d832e42",
+          "data": [],
+          "option": {
+            "getControlPoints": null,
+            "aLabel": null,
+            "zLabel": null
+          },
+          "directed": true
+        },
+        {
+          "id": "197d4a2e-acdc-40c4-8009-9def277487c6",
+          "source": "22cded8c-28b3-4457-a2d0-f2e70ce69014",
+          "target": "c02a2d27-930d-3a56-a14d-6d30a342e5c1",
+          "data": [],
+          "option": {
+            "getControlPoints": null,
+            "aLabel": null,
+            "zLabel": null
+          },
+          "directed": true
+        },
+        {
+          "id": "0a4e807e-3348-451c-8369-8b0cd4a5f436",
+          "source": "22cded8c-28b3-4457-a2d0-f2e70ce69014",
+          "target": "c02a2d27-930d-3a56-a14d-6d30a342e5c2",
+          "data": [],
+          "option": {
+            "getControlPoints": null,
+            "aLabel": null,
+            "zLabel": null
+          },
+          "directed": true
+        },
+        {
+          "id": "82132953-efe8-4be3-8ca1-df7bf571acb2",
+          "source": "22cded8c-28b3-4457-a2d0-f2e70ce69014",
+          "target": "c02a2d27-930d-3a56-a14d-6d30a342e5c3",
+          "data": [],
+          "option": {
+            "getControlPoints": null,
+            "aLabel": null,
+            "zLabel": null
+          },
+          "directed": true
+        },
+        {
+          "id": "51dcdea4-98b9-4012-8fca-31b2adb9d6a8",
+          "source": "c5c1a7fd-84c3-492f-bda1-8d18178fc20e",
+          "target": "22cded8c-28b3-4457-a2d0-f2e70ce69014",
+          "data": [],
+          "option": {
+            "getControlPoints": null,
+            "aLabel": null,
+            "zLabel": null
+          },
+          "directed": true
+        },
+        {
+          "id": "0523a1bd-6cd6-4b3d-a95c-9670cccb7bfe",
+          "source": "91343244-2d18-45e3-9cc5-8e364e18a58d",
+          "target": "c02a2d27-930d-3a56-a14d-6d30a342e5c4",
+          "data": [],
+          "option": {
+            "getControlPoints": null,
+            "aLabel": null,
+            "zLabel": null
+          },
+          "directed": true
+        },
+        {
+          "id": "1523a1bd-6cd6-4b3d-a95c-9670cccb7bfe",
+          "source": "91343244-2d18-45e3-9cc5-8e364e18a58d",
+          "target": "c02a2d27-930d-3a56-a14d-6d30a342e5c5",
+          "data": [],
+          "option": {
+            "getControlPoints": null,
+            "aLabel": null,
+            "zLabel": null
+          },
+          "directed": true
+        },
+        {
+          "id": "2049cea5-e787-40e8-a465-79ba6bd159fa",
+          "source": "c5c1a7fd-84c3-492f-bda1-8d18178fc20e",
+          "target": "91343244-2d18-45e3-9cc5-8e364e18a58d",
+          "data": [],
+          "option": {
+            "getControlPoints": null,
+            "aLabel": null,
+            "zLabel": null
+          },
+          "directed": true
+        },
+        {
+          "id": "3bcd1f57-57c6-4066-bfa9-1a74f975e6d1",
+          "source": "c02a2d27-930d-3a56-a14d-6d30a342e5cd",
+          "target": "1640e4d6-66d9-382b-aea5-64457cdfd91a",
+          "data": [
+            {
+              "relationId": "3bcd1f57-57c6-4066-bfa9-1a74f975e6d1",
+              "srcResId": "c02a2d27-930d-3a56-a14d-6d30a342e5cd",
+              "srcNodeType": "ne.category.switch",
+              "srcSubnetResId": "48f06431-448d-4ded-90e2-1c7ff1409c5e",
+              "srcClassName": null,
+              "srcPortName": "GigabitEthernet0/0/0",
+              "dstResId": "1640e4d6-66d9-382b-aea5-64457cdfd91a",
+              "dstNodeType": "ne.category.firewall",
+              "dstSubnetResId": "eff8b1df-9d2b-4420-8e34-63cc3780a72e",
+              "dstClassName": null,
+              "dstPortName": "GE1/0/9",
+              "status": 0,
+              "linkDn": "2-58520572223462588-861562551422771549"
+            }
+          ],
+          "option": {
+            "getControlPoints": null,
+            "aLabel": null,
+            "zLabel": null
+          },
+          "directed": true
+        },
+        {
+          "id": "ca64992a-4e1b-49ee-81b8-69c67e6e17f2",
+          "source": "c02a2d27-930d-3a56-a14d-6d30a342e5cd",
+          "target": "c5c1a7fd-84c3-492f-bda1-8d18178fc20e",
+          "data": [
+            {
+              "relationId": "ca64992a-4e1b-49ee-81b8-69c67e6e17f2",
+              "srcResId": "1640e4d6-66d9-382b-aea5-64457cdfd91a",
+              "srcNodeType": "ne.category.switch",
+              "srcSubnetResId": "48f06431-448d-4ded-90e2-1c7ff1409c5e",
+              "srcClassName": null,
+              "srcPortName": null,
+              "dstResId": "c5c1a7fd-84c3-492f-bda1-8d18178fc20e",
+              "dstNodeType": "ponOlt",
+              "dstSubnetResId": "48f06431-448d-4ded-90e2-1c7ff1409c5e",
+              "dstClassName": null,
+              "dstPortName": null,
+              "status": 0,
+              "linkDn": "5-1561272534127928937414393248561036441758"
+            }
+          ],
+          "option": {
+            "getControlPoints": null,
+            "aLabel": null,
+            "zLabel": null
+          },
+          "directed": true
+        }
+      ]
+    }
+  }
+]
