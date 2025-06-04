@@ -1,0 +1,48 @@
+{
+  "name": "openInula dev tools",
+  "description": "openInula chrome development extension",
+  "author": "openInula",
+  "version": "1.1.0",
+  "minimum_chrome_version": "50",
+  "manifest_version": 3,
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "action": {
+    "default_icon": {
+      "32": "assets/32-logo_grey.png",
+      "48": "assets/48-logo_grey.png",
+      "128": "assets/128-logo_grey.png"
+    },
+    "default_popup": "popups/popup_disabled.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "tabs",
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "devtools_page": "main.html",
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["messageHub.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["*.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "icons": {
+    "32": "assets/32-logo.png",
+    "48": "assets/48-logo.png",
+    "128": "assets/128-logo.png"
+  }
+}
