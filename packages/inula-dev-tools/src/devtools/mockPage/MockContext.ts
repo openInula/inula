@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
+ * Copyright (c) 2025 Huawei Technologies Co.,Ltd.
  *
  * openInula is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
@@ -13,9 +13,6 @@
  * See the Mulan PSL v2 for more details.
  */
 
-/*
-  区分是否开发者模式
- */
-declare var isDev: boolean;
-declare var isTest: boolean;
-declare const __VERSION__: string;
+import { createContext } from 'openinula';
+
+export const MockContext = createContext({ value: 'default context value' });

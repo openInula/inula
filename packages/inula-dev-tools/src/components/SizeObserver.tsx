@@ -14,35 +14,35 @@
  */
 
 import { useEffect, useState, useRef } from 'openinula';
-import { addResizeListener, removeResizeListener } from './resizeEvent';
+import { throttle } from 'lodash';
 
-export function SizeObserver(props) {
+export function SizeObserver(props: any) {
   const { children, ...rest } = props;
-  const containerRef = useRef<HTMLDivElement>();
-  const [size, setSize] = useState<{ width: number; height: number }>();
-  const notifyChild = element => {
-    setSize({
-      width: element.offsetWidth,
-      height: element.offsetHeight,
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+  const resizeFn = throttle((entries: ResizeObserverEntry[]) => {
+    entries.forEach(entry => {
+      const { width, height } = entry.contentRect;
+      setSize({ width, height });
     });
-  };
+  }, 300);
+
+  const observer = useRef<ResizeObserver>(new ResizeObserver(entries => resizeFn(entries)));
 
   useEffect(() => {
-    const element = containerRef.current!;
-    setSize({
-      width: element.offsetWidth,
-      height: element.offsetHeight,
-    });
-    addResizeListener(element, notifyChild);
+    const { offsetWidth, offsetHeight } = containerRef.current;
+    setSize({ width: offsetWidth, height: offsetHeight });
+    observer.current.observe(containerRef.current);
     return () => {
-      removeResizeListener(element, notifyChild);
+      observer.current.unobserve(containerRef.current);
     };
   }, []);
-  const myChild = size ? children(size.width, size.height) : null;
+
+  const wrapper = size ? children(size.width, size.height) : null;
 
   return (
     <div ref={containerRef} {...rest}>
-      {myChild}
+      {wrapper}
     </div>
   );
 }

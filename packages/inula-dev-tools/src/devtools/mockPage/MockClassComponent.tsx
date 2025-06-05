@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
+ * Copyright (c) 2025 Huawei Technologies Co.,Ltd.
  *
  * openInula is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
@@ -13,7 +13,24 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Panel from '../panel/Panel';
+import { Component } from 'openinula';
 
-// 这里导出 Panel 为了加载 Panel.less
-export default Panel;
+const defaultState = {
+  name: 'jenny',
+  boolean: true,
+};
+
+export default class MockClassComponent extends Component<{ fruit: string }, typeof defaultState> {
+  state = defaultState;
+
+  render() {
+    return (
+      <div>
+        111
+        <button onClick={() => this.setState({ name: 'pika' })}>update state</button>
+        {this.state.name}
+        {this.props?.fruit}
+      </div>
+    );
+  }
+}

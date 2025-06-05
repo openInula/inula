@@ -15,7 +15,7 @@
 
 import { DevToolBackground, DevToolContentScript, DevToolPanel } from '../utils/constants';
 import { connections } from './index';
-import { packagePayload } from '../utils/transferUtils';
+import { createMessage } from '../utils/transferUtils';
 
 // 监听来自 content script 的消息，并将消息发送给对应的 dev tools page
 const eventsPerTab = {};
@@ -36,7 +36,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
 
 function sendTo(connectionId, message) {
   if (connections[connectionId]) {
-    connections[connectionId].postMessage(message);
+    connections[connectionId].channel.postMessage(message);
   }
 }
 
@@ -44,7 +44,7 @@ function requestObservedComponents(tabId) {
   setTimeout(() => {
     chrome.tabs.sendMessage(
       tabId,
-      packagePayload(
+      createMessage(
         {
           type: 'inulax request observed components',
           data: {},
@@ -58,7 +58,7 @@ function requestObservedComponents(tabId) {
 function executeAction(tabId, storeId, action, params) {
   chrome.tabs.sendMessage(
     tabId,
-    packagePayload(
+    createMessage(
       {
         type: 'inulax execute action',
         data: {
@@ -75,7 +75,7 @@ function executeAction(tabId, storeId, action, params) {
 function queueAction(tabId, storeId, action, params) {
   chrome.tabs.sendMessage(
     tabId,
-    packagePayload(
+    createMessage(
       {
         type: 'inulax queue action',
         data: {
@@ -207,7 +207,7 @@ chrome.runtime.onMessage.addListener(function (message, sender) {
       }
 
       if (message.payload.type === 'inulax change state') {
-        chrome.tabs.sendMessage(message.payload.tabId, packagePayload(message.payload, 'dev tool background'));
+        chrome.tabs.sendMessage(message.payload.tabId, createMessage(message.payload, 'dev tool background'));
         return;
       }
 

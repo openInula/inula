@@ -17,3 +17,15 @@ declare module '*.less' {
   const resource: { [key: string]: string };
   export = resource;
 }
+declare module '*.svg' {
+  const content: string;
+  export = content;
+}
+
+declare module '*?inline' {
+  import Inula from 'openinula';
+  const SVG: Inula.FC<Inula.InulaSVGProps<SVGSVGElement>>;
+  export = SVG;
+}
+
+declare module '*.png';

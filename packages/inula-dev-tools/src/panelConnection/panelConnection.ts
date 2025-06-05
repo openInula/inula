@@ -13,10 +13,10 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { packagePayload } from '../utils/transferUtils';
+import { createMessage } from '../utils/transferUtils';
 import { DevToolPanel, InitDevToolPageConnection } from '../utils/constants';
 
-let connection;
+let connection: chrome.runtime.Port;
 const callbacks = [];
 
 export function addBackgroundMessageListener(func: (message) => void) {
@@ -34,7 +34,7 @@ export function initBackgroundConnection(type) {
   if (!isDev) {
     try {
       connection = chrome.runtime.connect({ name: type });
-      const notice = message => {
+      const notice = (message: any) => {
         callbacks.forEach(func => {
           func(message);
         });
@@ -44,19 +44,19 @@ export function initBackgroundConnection(type) {
       // 页面打开后发送初始化请求
       postMessageToBackground(InitDevToolPageConnection);
     } catch (e) {
-      console.error('create connection failer');
-      console.error(e);
+      console.error(`create connection failed ${e}`);
     }
   }
 }
 
 let reconnectionTimes = 0;
+
 export function postMessageToBackground(type: string, data?: any, inulaX?: boolean) {
   try {
     const payload = data
       ? { type, tabId: chrome.devtools.inspectedWindow.tabId, data }
       : { type, tabId: chrome.devtools.inspectedWindow.tabId };
-    connection.postMessage(packagePayload(payload, DevToolPanel));
+    connection.postMessage(createMessage(payload, DevToolPanel));
   } catch (e) {
     // 可能出现 port 关闭的场景，需要重新建立连接，增加可靠性
     if (reconnectionTimes === 20) {

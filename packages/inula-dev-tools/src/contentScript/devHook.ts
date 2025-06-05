@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Technologies Co.,Ltd.
+ * Copyright (c) 2025 Huawei Technologies Co.,Ltd.
  *
  * openInula is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
@@ -13,4 +13,11 @@
  * See the Mulan PSL v2 for more details.
  */
 
-export * from './types/jsx';
+import { contentScriptMessageHandler, installDevToolHook } from '../injector';
+
+if (!window.__INULA_DEV_HOOK__) {
+  // 接受contentScript的消息
+  window.addEventListener('message', contentScriptMessageHandler);
+
+  installDevToolHook();
+}

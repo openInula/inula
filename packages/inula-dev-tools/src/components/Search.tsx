@@ -34,8 +34,8 @@ export default function Search(props: SearchProps) {
 
   return (
     <input
-      onkeyup={handleKeyUp}
-      onchange={handleChange}
+      onKeyUp={handleKeyUp}
+      onChange={handleChange}
       className={styles.search}
       value={value}
       placeholder="Search Component"

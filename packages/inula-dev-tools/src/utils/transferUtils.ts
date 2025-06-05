@@ -13,35 +13,39 @@
  * See the Mulan PSL v2 for more details.
  */
 
-const devTools = 'INULA_DEV_TOOLS';
+import { DevToolPanel, DevToolBackground, DevToolContentScript, DevToolHook } from './constants';
+
+type MessageSource = typeof DevToolPanel | typeof DevToolBackground | typeof DevToolContentScript | typeof DevToolHook;
+
+const DevToolMsgLabel = 'DevTool_Msg_Label';
 
 interface PayloadType {
   type: string;
-  data?: any;
+  data?: unknown;
   inulaX?: boolean;
 }
 
 interface Message {
-  type: typeof devTools;
+  type: typeof DevToolMsgLabel;
   payload: PayloadType;
-  from: string;
+  from: MessageSource;
 }
 
-export function packagePayload(payload: PayloadType, from: string, inulaX?: boolean): Message {
+export function createMessage(payload: PayloadType, from: MessageSource, inulaX?: boolean): Message {
   if (inulaX) {
     payload.inulaX = true;
   }
   return {
-    type: devTools,
+    type: DevToolMsgLabel,
     payload,
     from,
   };
 }
 
-export function checkMessage(data: any, from: string) {
-  return data?.type === devTools && data?.from === from;
+export function checkMessageSource(data: any, from: MessageSource) {
+  return data?.type === DevToolMsgLabel && data?.from === from;
 }
 
-export function changeSource(message: Message, from: string) {
-  message.from = from;
+export function modifyMessageSource(message: Message, from: MessageSource) {
+  return { ...message, from };
 }

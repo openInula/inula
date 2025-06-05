@@ -20,7 +20,7 @@
 import { useState, useRef, useEffect, useMemo } from 'openinula';
 import styles from './VList.less';
 import ItemMap from './ItemMap';
-import { debounceFunc } from '../../utils/publicUtil';
+import { debounce } from 'lodash';
 
 interface IProps<T extends { id: number | string }> {
   data: T[];
@@ -64,7 +64,7 @@ export function VList<T extends { id: number | string }>(props: IProps<T>) {
   });
 
   useEffect(() => {
-    debounceFunc(() => setIndentationLength(Math.min(12, Math.round(width / (2 * maxDeep)))));
+    setIndentationLength(Math.min(12, Math.round(width / (2 * maxDeep))));
   }, [width]);
 
   useEffect(() => {
@@ -82,14 +82,13 @@ export function VList<T extends { id: number | string }>(props: IProps<T>) {
 
   // 滚动事件会频繁触发，通过框架提供的代理会有大量计算寻找 dom 元素，直接绑定到原生事件上减少计算量
   useEffect(() => {
-    const handleScroll = event => {
-      const scrollTop = event.target.scrollTop;
+    const handleScroll: (event: MouseEvent) => void = event => {
+      const scrollTop = (event.target as HTMLDivElement).scrollTop;
       setScrollTop(scrollTop);
     };
-    const container = containerRef.current;
-    container?.addEventListener('scroll', handleScroll);
+    containerRef.current?.addEventListener('scroll', handleScroll);
     return () => {
-      container?.removeEventListener('scroll', handleScroll);
+      containerRef.current?.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
