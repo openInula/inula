@@ -1,0 +1,37 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist", // 指定输出目录
+        "incremental": false,
+        "sourceMap": false,
+        "allowJs": true, // allowJs=true => tsc compile js as module, no type check
+        "checkJs": false, // Disable ts error checking in js
+        "strict": false, // js-ts mixed setting
+        "noImplicitReturns": true,
+        "noUnusedLocals": false,  // 等大部分js代码改成ts之后再启用.
+        "noUnusedParameters": false,
+        "noImplicitAny": false,
+        "noImplicitThis": true,
+        // "strictNullChecks": true,
+        "module": "CommonJS",
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "moduleResolution": "node",
+        "target": "ES5",
+        "jsx": "react",
+        "resolveJsonModule": true,
+        "allowSyntheticDefaultImports": true,
+        "allowUnreachableCode": true,
+        "alwaysStrict": true,
+        "esModuleInterop": true,
+        "declaration": true,
+        "experimentalDecorators": true,
+        "downlevelIteration": true,
+        "types": [], // 赋值为空数组使@types/node不会起作用
+        "lib": ["dom", "esnext"],
+        "baseUrl": ".",
+        "rootDir": "./",
+        "strictNullChecks": true
+    },
+    "exclude": ["node_modules", "**/*.spec.ts", "dev"],
+    "types": ["node"]
+}
