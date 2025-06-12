@@ -1,0 +1,11 @@
+import type { VNode } from '../Types';
+declare function callBeforeSubmitLifeCycles(vNode: VNode): void;
+declare function callAfterSubmitLifeCycles(vNode: VNode): void;
+declare function attachRef(vNode: VNode): void;
+declare function detachRef(vNode: VNode, isOldRef?: boolean): void;
+declare function submitAddition(vNode: VNode): void;
+declare function submitClear(vNode: VNode): void;
+declare function submitDeletion(vNode: VNode): void;
+declare function submitUpdate(vNode: VNode): void;
+declare function submitResetTextContent(vNode: VNode): void;
+export { callBeforeSubmitLifeCycles, submitResetTextContent, submitAddition, submitDeletion, submitClear, submitUpdate, callAfterSubmitLifeCycles, attachRef, detachRef, };
