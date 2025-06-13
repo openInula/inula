@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
 import getMergedConfig from '../utils/configUtils/getMergedConfig';
 import IrHeaders from './IrHeaders';
 import InterceptorManager from '../interceptor/InterceptorManager';
@@ -23,8 +8,13 @@ import handleAsyncInterceptor from '../interceptor/handleAsyncInterceptor';
 import handleSyncInterceptor from '../interceptor/handleSyncInterceptor';
 import defaultConfig from '../config/defaultConfig';
 import { Method } from '../types/types';
-import { IrRequestConfig, IrResponse, IrInterface, IrInstance, Interceptors } from '../types/interfaces';
-import buildInstance from '../utils/instanceUtils/buildInstance';
+import {
+  IrRequestConfig,
+  IrResponse,
+  IrInterface,
+  IrInstance,
+  Interceptors,
+} from '../types/interfaces';
 
 class InulaRequest implements IrInterface {
   defaultConfig: IrRequestConfig;
@@ -75,7 +65,12 @@ class InulaRequest implements IrInterface {
     }
 
     // 全都是同步拦截器处理
-    return handleSyncInterceptor(this.processRequest, mergedConfig, requestInterceptorChain, responseInterceptorChain);
+    return handleSyncInterceptor(
+      this.processRequest,
+      mergedConfig,
+      requestInterceptorChain,
+      responseInterceptorChain
+    );
   }
 
   private preprocessing(requestParam: string | Record<string, any>, config?: IrRequestConfig) {
@@ -219,7 +214,7 @@ class InulaRequest implements IrInterface {
   static create(instanceConfig?: IrRequestConfig): IrInstance {
     const config = getMergedConfig(defaultConfig, instanceConfig || {});
 
-    return buildInstance(config);
+    return new InulaRequest(config) as unknown as IrInstance;
   }
 }
 

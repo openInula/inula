@@ -1,26 +1,14 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
 import { PackageJSON } from 'resolve';
 import yargsParser from 'yargs-parser';
 import { Logger } from '../utils/logger.js';
 import type * as http from 'http';
 import type * as express from 'express';
 
-type Request = express.Request;
-type Response = express.Response;
+
+interface Request extends express.Request {
+}
+interface Response extends express.Response {
+}
 
 export interface IDep {
   [name: string]: string;
@@ -37,7 +25,7 @@ export interface IPlugin {
   id: string;
   key: string;
   path: string;
-  apply: (...args: any[]) => any;
+  apply: Function;
 
   config?: IPluginConfig;
   isPreset?: boolean;
@@ -45,7 +33,7 @@ export interface IPlugin {
 
 export interface IPluginConfig {
   default?: any;
-  onChange?: string | ((...args: any[]) => any);
+  onChange?: string | Function;
 }
 
 export interface IHook {
@@ -94,8 +82,8 @@ export interface API {
     (hook: IHook): void;
   };
   registerMethod: {
-    (method: (...args: any[]) => any): void;
-  };
+    (method: Function): void;
+  }
   applyHook: {
     (opts: applyHookConfig): void;
   };
@@ -133,22 +121,22 @@ export interface MockConfig {
 export interface DevBuildConfig {
   name: string;
   path: string;
-  args?: Record<string, unknown>;
-  env?: Record<string, unknown>;
+  args?: object;
+  env?: object;
   devProxy?: DevProxy;
 }
 
 export interface DevProxy {
   target: string;
-  matcher: (pathname: string, req: Request) => boolean;
+  matcher: ((pathname: string, req: Request) => boolean);
   onProxyRes: (proxyRes: http.IncomingMessage, req: Request, res: Response) => void;
 }
 
 export interface BuildConfig {
   name: string;
   path: string;
-  args?: Record<string, unknown>;
-  env?: Record<string, unknown>;
+  args?: object;
+  env?: object;
 }
 
 export type ExportUserConfig = UserConfig | Promise<UserConfig>;
@@ -162,3 +150,4 @@ export interface Arguments {
   '--'?: Array<string | number>;
   [argName: string]: any;
 }
+

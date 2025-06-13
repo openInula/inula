@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { injectIntl } from '../../index';
+import { injectIntl } from '../../src/intl';
 
 const Example5 = ({ intl }) => {
   // 使用intl.formatMessage来获取国际化消息

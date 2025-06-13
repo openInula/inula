@@ -1,21 +1,6 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
 import chokidar from 'chokidar';
 import bodyParser from 'body-parser';
-import { globSync } from 'glob';
+import {globSync} from 'glob';
 import { join } from 'path';
 
 import { createRequire } from 'module';
@@ -38,14 +23,13 @@ function getMocksFile() {
   const mockFiles = globSync('**/*.js', {
     cwd: mockDir,
   });
-  const ret = mockFiles.reduce((mocks: any, mockFile: string) => {
+  let ret = mockFiles.reduce((mocks: any, mockFile: string) => {
     if (!mockFile.startsWith('_')) {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const file = require(join(mockDir, mockFile));
       mocks = {
         ...mocks,
-        ...file,
+        ...require(join(mockDir, mockFile)),
       };
+      console.log('mockFile', require(join(mockDir, mockFile)));
     }
 
     return mocks;
@@ -55,8 +39,8 @@ function getMocksFile() {
 }
 
 function generateRoutes(app: any) {
-  const mockStartIndex = app._router.stack.length;
-  let mocks: Mock = {};
+  let mockStartIndex = app._router.stack.length,
+    mocks: Mock = {};
 
   try {
     mocks = getMocksFile();

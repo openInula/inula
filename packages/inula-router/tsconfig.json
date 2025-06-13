@@ -25,8 +25,22 @@
     "declaration": true,
     "experimentalDecorators": true,
     "downlevelIteration": true,
-    "types": ["jest"], // 赋值为空数组使@types/node不会起作用
-    "lib": ["dom", "esnext", "ES2015", "ES2016", "ES2017", "ES2018", "ES2019", "ES2020"],
+    "stripInternal": true,
+    "types": [
+      "jest"
+    ],
+    // 赋值为空数组使@types/node不会起作用
+    "lib": [
+      "dom",
+      "DOM.Iterable",
+      "esnext",
+      "ES2015",
+      "ES2016",
+      "ES2017",
+      "ES2018",
+      "ES2019",
+      "ES2020"
+    ],
     "baseUrl": ".",
     "rootDir": "./src",
     "strictNullChecks": true

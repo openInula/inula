@@ -12,7 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import creatI18nCache from '../../../src/format/cache/cache';
+import creatI18nCache from '../../../src/intl/format/cache/cache';
 
 describe('creatI18nCache', () => {
   it('should create an empty I18nCache object', () => {

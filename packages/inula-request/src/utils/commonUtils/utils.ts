@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
 import { Callback, FilterFunc, PropFilterFunc } from '../../types/types';
 
 /**
@@ -23,7 +8,7 @@ import { Callback, FilterFunc, PropFilterFunc } from '../../types/types';
  *
  * @returns {any} 新的函数，当这个新的函数被调用时，它会调用 func 函数，并使用 apply() 方法将 thisArg 作为上下文对象，将传递的参数作为 func 函数的参数传递给它
  */
-function bind(func: (...args: any[]) => any, thisArg: any): (...args: any[]) => any {
+function bind(func: Function, thisArg: any): (...args: any[]) => any {
   return (...args: any[]) => func.apply(thisArg, args);
 }
 
@@ -41,24 +26,24 @@ function getType(input: any): string {
 
 /**
  * 输入类型名称构造判断相应类型的函数
+ *
+ * @param type 需要判断的类型名称
+ *
+ * @returns {Function} 工厂函数，用以判断输入值是否为当前类型
  */
-function createTypeChecker<T extends object>(type: string): (input: unknown) => input is T {
-  return function (input: unknown): input is T {
-    return getType(input) === type.toLowerCase();
-  };
-}
+const createTypeChecker = (type: string) => (input: any) => getType(input) === type.toLowerCase();
 
-const checkString = (value: unknown): value is string => typeof value === 'string';
+const checkString = createTypeChecker('string');
 
-const checkFunction = (value: unknown) => typeof value === 'function';
+const checkFunction = createTypeChecker('function');
 
-const checkNumber = (value: unknown): value is number => typeof value === 'number';
+const checkNumber = createTypeChecker('number');
 
 const checkObject = (input: any) => input !== null && typeof input === 'object';
 
 const checkBoolean = (input: any) => input === true || input === false;
 
-const checkUndefined = (value: unknown): value is undefined => typeof value === 'undefined';
+const checkUndefined = createTypeChecker('undefined');
 
 /**
  * 判断变量类型是否为纯对象
@@ -67,7 +52,7 @@ const checkUndefined = (value: unknown): value is undefined => typeof value === 
  *
  * @returns {boolean} 如果变量为纯对象 则返回 true，否则返回 false
  */
-const checkPlainObject = <T extends object>(input: unknown): input is T => {
+const checkPlainObject = (input: any) => {
   if (Object.prototype.toString.call(input) !== '[object Object]') {
     return false;
   }
@@ -76,25 +61,23 @@ const checkPlainObject = <T extends object>(input: unknown): input is T => {
   return prototype === null || prototype === Object.prototype;
 };
 
-const checkDate = createTypeChecker<Date>('Date');
+const checkDate = createTypeChecker('Date');
 
-const checkFile = createTypeChecker<File>('File');
+const checkFile = createTypeChecker('File');
 
-const checkBlob = createTypeChecker<Blob>('Blob');
+const checkBlob = createTypeChecker('Blob');
 
 const checkStream = (input: any) => checkObject(input) && checkFunction(input.pipe);
 
-const checkFileList = createTypeChecker<FileList>('FileList');
+const checkFileList = createTypeChecker('FileList');
 
 const checkFormData = (input: any) => input instanceof FormData;
 
-const checkURLSearchParams = createTypeChecker<URLSearchParams>('URLSearchParams');
+const checkURLSearchParams = createTypeChecker('URLSearchParams');
 
-const checkRegExp = createTypeChecker<RegExp>('RegExp');
+const checkRegExp = createTypeChecker('RegExp');
 
-const checkHTMLForm = createTypeChecker<HTMLHtmlElement>('HTMLFormElement');
-
-const checkHeaders = createTypeChecker<Headers>('Headers');
+const checkHTMLForm = createTypeChecker('HTMLFormElement');
 
 /**
  * 对数组或对象中的每个元素执行指定的回调函数
@@ -109,7 +92,7 @@ const checkHeaders = createTypeChecker<Headers>('Headers');
  */
 function forEach<T>(
   input: T | T[] | Record<string, T> | null | undefined,
-  func: (...args: any[]) => any,
+  func: Function,
   options: { includeAll?: boolean } = {}
 ): void {
   if (input === null || input === undefined) {
@@ -127,7 +110,9 @@ function forEach<T>(
       func.call(null, value, index, array);
     });
   } else {
-    const keys = includeAll ? getAllPropertyNames(input as Record<string, T>) : Object.keys(input as Record<string, T>);
+    const keys = includeAll
+      ? getAllPropertyNames(input as Record<string, T>)
+      : Object.keys(input as Record<string, T>);
     keys.forEach(key => {
       func.call(null, (input as Record<string, T>)[key], key, input!);
     });
@@ -172,17 +157,14 @@ function extendObject(
 ) {
   const { includeAll = false } = options || {};
 
-  forEach(
-    source,
-    (val: any, key: any) => {
-      if (thisArg && checkFunction(val)) {
-        target[key as number] = bind(val, thisArg);
-      } else {
-        target[key as number] = val;
-      }
-    },
-    { includeAll: includeAll }
-  );
+  forEach(source, (val: any, key: any) => {
+    if (thisArg && checkFunction(val)) {
+      target[key as number] = bind(val, thisArg);
+    } else {
+      target[key as number] = val;
+    }
+    // @ts-ignore
+  }, { includeAll: includeAll });
 
   return target;
 }
@@ -195,7 +177,7 @@ function extendObject(
  * @returns {string[]} 所有属性名数组
  */
 function getAllPropertyNames(obj: Record<string, any>): string[] {
-  const result: string[] = [];
+  let result: string[] = [];
   let currentObj = obj;
   while (currentObj) {
     const propNames = Object.getOwnPropertyNames(currentObj);
@@ -404,8 +386,6 @@ function objectToQueryString(obj: Record<string, any>, options?: Record<string, 
           return urlPart;
         });
         return urlPart.slice(0, -1);
-      } else if (utils.checkObject(obj[key])) {
-        return encodeURIComponent(key) + '=' + encodeURIComponent(JSON.stringify(obj[key]));
       }
       return encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]);
     })
@@ -415,25 +395,23 @@ function objectToQueryString(obj: Record<string, any>, options?: Record<string, 
 const all = <T>(promises: Array<Promise<T>>): Promise<T[]> => Promise.all(promises);
 
 function spread<T>(callback: Callback<T>): (arr: any[]) => T {
-  // eslint-disable-next-line
   return (arr: any[]): T => callback.apply(null, arr);
 }
 
-function getNormalizedValue(
-  value: string | any[] | boolean | null | undefined | number | Record<string, any>
-): string | undefined | any[] | boolean | null | number | Record<string, any> {
-  if (value === false || value === null || value === undefined) {
+function getNormalizedValue(value: string | any[] | boolean | null | number): string | any[] | boolean | null {
+  if (
+    value === false
+    || value === null
+    || value === undefined
+  ) {
     return value;
   }
 
-  return Array.isArray(value) ? value.map(getNormalizedValue) : String(value);
+  return Array.isArray(value) ? value.map(item => getNormalizedValue(item) as string) : String(value);
 }
 
 function isIE(): boolean {
-  if (typeof window !== 'undefined') {
-    return /MSIE|Trident/.test(window.navigator.userAgent);
-  }
-  return false;
+  return /MSIE|Trident/.test(window.navigator.userAgent);
 }
 
 function getObjectByArray(arr: any[]): Record<string, any> {
@@ -470,7 +448,6 @@ const utils = {
   checkURLSearchParams,
   checkFileList,
   checkHTMLForm,
-  checkHeaders,
   forEach,
   extendObject,
   flattenObject,

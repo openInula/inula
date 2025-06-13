@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
 import Inula from '@cloudsop/horizon';
 import './index.css';
 
@@ -34,9 +19,7 @@ function App() {
           <h2>了解更多</h2>
           <p>
             要了解 Inula，查看{' '}
-            <a href="https://inulajs.org" target="_blank">
-              Inula 官网
-            </a>
+            <a href="https://inulajs.org" target="_blank">Inula 官网</a>
           </p>
         </div>
       </div>

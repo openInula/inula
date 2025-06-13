@@ -12,7 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import copyStaticProps from '../../src/utils/copyStaticProps';
+import copyStaticProps from '../../src/intl/utils/copyStaticProps';
 
 describe('hoistNonReactStatics', () => {
   it('should hoist static properties from sourceComponent to targetComponent', () => {

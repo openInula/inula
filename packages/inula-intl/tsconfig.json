@@ -55,8 +55,7 @@
     }
   },
   "include": [
-    "./index.ts",
-
+    "./src/intl/index.ts"
   ],
   "exclude": [
     "node_modules",
@@ -72,6 +71,6 @@
     "@testing-library/jest-dom"
   ],
   "files": [
-    "./index.ts"
+    "./src/intl/index.ts"
   ]
 }

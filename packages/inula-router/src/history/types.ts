@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
 export type BaseOption = {
   basename?: string;
   getUserConfirmation?: ConfirmationFunc;
@@ -26,14 +11,20 @@ export interface HistoryProps<T = unknown> {
   length: number;
 }
 
-export interface History<T = unknown> extends HistoryProps<T> {
+export interface AgnosticHistory<T = unknown> extends HistoryProps<T> {
   createHref(path: Partial<Path>): string;
 
   push(to: To, state?: T): void;
 
   replace(to: To, state?: T): void;
 
-  listen(listener: Listener<T>): () => void;
+  listen(listener: CommonListener<T>): () => void;
+
+  // add listener for listen pop action
+  addListener(listener: Listener<T>): () => void;
+
+  // cancel all pop listeners
+  destroy(): void;
 
   block(prompt: Prompt<T>): () => void;
 
@@ -42,6 +33,18 @@ export interface History<T = unknown> extends HistoryProps<T> {
   goBack(): void;
 
   goForward(): void;
+}
+
+export type History<T = unknown> = Omit<AgnosticHistory<T>, 'addListener' | 'destroy'>;
+
+export interface LocationHandler<T> {
+  locationHandler?: ((state?: Partial<HistoryState<T>>) => Location<T>) | null;
+  baseHandler?: (() => string) | null;
+}
+
+export interface CreateLocationHandler<T> {
+  locationHandler?: ((basename: string) => (state?: Partial<HistoryState<T>>) => Location<T>) | null;
+  baseHandler?: ((basename: string) => () => string) | null;
 }
 
 export enum Action {
@@ -53,6 +56,12 @@ export enum Action {
 export enum EventType {
   PopState = 'popstate',
   HashChange = 'hashchange',
+}
+
+export enum PopDirection {
+  back = 'back',
+  forward = 'forward',
+  unknown = '',
 }
 
 export type Path = {
@@ -75,9 +84,35 @@ export type Location<T = unknown> = Path & HistoryState<T>;
 
 export type To = string | Partial<Path>;
 
-export interface Listener<T = unknown> {
+export interface CommonListener<T = unknown> {
   (navigation: Navigation<T>): void;
 }
+
+export interface ActionInfo {
+  type: Action;
+  direction: PopDirection;
+  delta: number;
+}
+
+export interface PopListener {
+  (to: string, from: string, information: ActionInfo): void;
+}
+
+export interface PopNavigation {
+  to: string;
+  from: string;
+  information: ActionInfo;
+}
+
+export type Listener<S> =
+  | {
+      type: 'common';
+      listener: CommonListener<S>;
+    }
+  | {
+      type: 'pop';
+      listener: PopListener;
+    };
 
 export interface Navigation<T = unknown> {
   action: Action;
@@ -93,10 +128,6 @@ export type ConfirmationFunc = (message: string, callBack: CallBackFunc) => void
 
 export interface TManager<S> {
   setPrompt(next: Prompt<S>): () => void;
-
-  addListener(func: (navigation: Navigation<S>) => void): () => void;
-
-  notifyListeners(args: Navigation<S>): void;
 
   confirmJumpTo(
     location: Location<S>,

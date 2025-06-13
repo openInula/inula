@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
  *
  * openInula is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
@@ -56,11 +56,11 @@ export function calculateTransRate(samplesNum: number, interval: number) {
     }
 
     if (now - firstTimestamp < minInterval) {
-      return undefined;
+      return;
     }
 
     const totalTime = start && now - start;
 
-    return totalTime ? Math.round((totalSize * 1000) / totalTime) : undefined;
+    return totalTime ? Math.round(totalSize * 1000 / totalTime) : undefined;
   };
 }

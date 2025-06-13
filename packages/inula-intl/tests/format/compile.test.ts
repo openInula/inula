@@ -12,8 +12,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import Translation from '../../src/format/Translation';
-import utils from '../../src/utils/utils';
+import Translation from '../../src/intl/format/Translation';
+import utils from '../../src/intl/utils/utils';
 
 describe('compile', function () {
   const englishPlurals = {

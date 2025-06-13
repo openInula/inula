@@ -12,7 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import createIntl from '../../src/core/createIntl';
+import createIntl from '../../src/intl/core/createIntl';
 
 describe('createI18n', () => {
   it('createIntl', function () {

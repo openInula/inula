@@ -17,54 +17,72 @@ import { launchUpdateFromVNode } from '../../renderer/TreeBuilder';
 import { getProcessingVNode } from '../../renderer/GlobalVar';
 import { VNode } from '../../renderer/vnode/VNode';
 import { devtools } from '../devtools';
+import { KeyTypes } from '../Constants';
+import { addRContext, ContextType, DirtyLevels, RContextMap } from '../reactive/RContext';
 
-export interface IObserver {
-  useProp: (key: string) => void;
+import { IObserver, Listener, Mutation } from '../types/ProxyTypes';
+import { queueJob } from './Scheduler';
+import { ComputedImpl } from '../reactive/Computed';
 
-  addListener: (listener: () => void) => void;
-
-  removeListener: (listener: () => void) => void;
-
-  setProp: (key: string, mutation: any) => void;
-
-  triggerChangeListeners: (mutation: any) => void;
-
-  triggerUpdate: (vNode: any) => void;
-
-  allChange: () => void;
-
-  clearByVNode: (vNode: any) => void;
+export enum ObserverType {
+  REF = 'REF',
+  REACTIVE = 'REACTIVE',
+  COMPUTED = 'COMPUTED',
 }
 
 /**
  * 一个对象（对象、数组、集合）对应一个Observer
  */
 export class Observer implements IObserver {
-  vNodeKeys = new WeakMap();
+  type: ObserverType;
 
-  keyVNodes = new Map();
+  source?: ComputedImpl;
 
-  listeners: ((mutation) => void)[] = [];
+  vNodeKeys = new WeakMap<VNode, Set<any>>();
 
-  watchers = {} as { [key: string]: ((key: string, oldValue: any, newValue: any, mutation: any) => void)[] };
+  keyVNodes = new Map<any, Set<VNode>>();
+
+  // 处理：store.$subscribe(() => {})
+  listeners: Listener[] = [];
+
+  // 处理：store.$s.watch('key', () => {})
+  watchers = {};
+
+  // 处理：watchEffect(() => {}) 和 watch(ref/computed/reactive/() => obj, () => {})
+  rContexts: {
+    [key: string | symbol]: RContextMap;
+  } = {};
+
+  constructor(type: ObserverType, source?: ComputedImpl) {
+    this.type = type;
+    this.source = source;
+  }
 
   // 对象的属性被使用时调用
   useProp(key: string | symbol): void {
+    // 用于watchEffect 和 watch的监听
+    addRContext(this, key);
+
+    let vNodes = this.keyVNodes.get(key);
+    if (!vNodes) {
+      vNodes = new Set();
+      this.keyVNodes.set(key, vNodes);
+    }
+
     const processingVNode = getProcessingVNode();
-    if (processingVNode === null || !processingVNode.observers) {
+    if (processingVNode === null) {
       // 异常场景
       return;
+    }
+
+    if (!processingVNode.observers) {
+      processingVNode.observers = new Set<Observer>();
     }
 
     // vNode -> Observers
     processingVNode.observers.add(this);
 
     // key -> vNodes，记录这个prop被哪些VNode使用了
-    let vNodes = this.keyVNodes.get(key);
-    if (!vNodes) {
-      vNodes = new Set();
-      this.keyVNodes.set(key, vNodes);
-    }
     vNodes.add(processingVNode);
 
     // vNode -> keys，记录这个VNode使用了哪些props
@@ -77,36 +95,62 @@ export class Observer implements IObserver {
   }
 
   // 对象的属性被赋值时调用
-  setProp(key: string | symbol, mutation: any): void {
+  setProp(
+    key: string | symbol,
+    mutation: Mutation,
+    oldValue?: any,
+    newValue?: any,
+    dirtyLevel: DirtyLevels = DirtyLevels.Dirty
+  ): void {
     const vNodes = this.keyVNodes.get(key);
-    //NOTE: using Set directly can lead to deadlock
-    const vNodeArray = Array.from(vNodes || []);
-    vNodeArray.forEach((vNode: VNode) => {
-      if (vNode.isStoreChange) {
-        // VNode已经被触发过，不再重复触发
-        return;
+
+    // 这里需要过滤调COLLECTION_CHANGE，因为这个是集合的变化，不是具体的某个prop的变化，否则会重复触发
+    if (key !== KeyTypes.COLLECTION_CHANGE) {
+      // 触发：store.$s.watch('key', () => {})
+      if (this.watchers[key]) {
+        this.watchers[key].forEach(cb => {
+          cb(key, oldValue, newValue, mutation);
+        });
       }
-      vNode.isStoreChange = true;
 
-      // 触发vNode更新
-      this.triggerUpdate(vNode);
-    });
+      if (this.listeners.length) {
+        // 异步触发
+        queueJob(() => {
+          this.triggerChangeListeners({ mutation, vNodes });
+        });
+      }
+    }
 
-    // NOTE: mutations are different in dev and production.
-    this.triggerChangeListeners({ mutation, vNodes });
-  }
+    const keyRContexts = this.rContexts[key];
+    if (keyRContexts) {
+      for (const rContext of keyRContexts.keys()) {
+        let tracking: boolean | undefined;
+        if (tracking === undefined) {
+          tracking = keyRContexts.get(rContext) === rContext._trackId;
+        }
 
-  triggerUpdate(vNode: VNode): void {
-    // 触发VNode更新
-    launchUpdateFromVNode(vNode);
-  }
+        if (rContext._dirtyLevel < dirtyLevel && tracking) {
+          if (rContext._shouldSchedule === undefined || rContext._shouldSchedule === false) {
+            rContext._shouldSchedule = rContext._dirtyLevel === DirtyLevels.NotDirty;
+          }
+          rContext._dirtyLevel = dirtyLevel;
+        }
 
-  addListener(listener: (mutation) => void): void {
-    this.listeners.push(listener);
-  }
+        if (rContext._shouldSchedule && tracking) {
+          if (rContext.type === ContextType.COMPUTED) {
+            // 触发依赖
+            rContext.trigger();
+          } else {
+            if (!rContext.runs && rContext._dirtyLevel !== DirtyLevels.MaybeDirty_ComputedSideEffect) {
+              rContext._shouldSchedule = false;
 
-  removeListener(listener: (mutation) => void): void {
-    this.listeners = this.listeners.filter(item => item != listener);
+              // 异步触发
+              queueJob(rContext.job);
+            }
+          }
+        }
+      }
+    }
   }
 
   triggerChangeListeners({ mutation, vNodes }): void {
@@ -132,6 +176,19 @@ export class Observer implements IObserver {
     );
   }
 
+  triggerUpdate(vNode: VNode): void {
+    // 触发VNode更新
+    launchUpdateFromVNode(vNode);
+  }
+
+  addListener(listener: Listener): void {
+    this.listeners.push(listener);
+  }
+
+  removeListener(listener: Listener): void {
+    this.listeners = this.listeners.filter(item => item != listener);
+  }
+
   // 触发所有使用的props的VNode更新
   allChange(): void {
     const keyIt = this.keyVNodes.keys();
@@ -142,14 +199,25 @@ export class Observer implements IObserver {
     }
   }
 
+  arrayLengthChange(length: number): void {
+    const keyIt = this.keyVNodes.keys();
+    let keyItem = keyIt.next();
+    while (!keyItem.done) {
+      if (keyItem.value >= length) {
+        this.setProp(keyItem.value, {});
+      }
+      keyItem = keyIt.next();
+    }
+  }
+
   // 删除Observer中保存的这个VNode的关系数据
   clearByVNode(vNode: VNode): void {
     const keys = this.vNodeKeys.get(vNode);
     if (keys) {
       keys.forEach((key: any) => {
         const vNodes = this.keyVNodes.get(key);
-        vNodes.delete(vNode);
-        if (vNodes.size === 0) {
+        vNodes!.delete(vNode);
+        if (vNodes!.size === 0) {
           this.keyVNodes.delete(key);
         }
       });

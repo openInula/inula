@@ -6,9 +6,6 @@
   "bin": {
     "create-inula": "bin/cli.js"
   },
-  "engines": {
-    "node": ">= 18.0.0"
-  },
   "files": [
     "bin",
     "lib",
@@ -16,17 +13,17 @@
     "package.json"
   ],
   "author": "",
-  "license": "MulanPSL2",
+  "license": "ISC",
   "dependencies": {
     "glob": "^10.3.3",
     "inquirer": "^8.0.0",
     "mkdirp": "^3.0.1",
     "yargs-parser": "^21.1.1",
     "yeoman-environment": "^3.15.0",
-    "yeoman-generator": "^5.8.0",
-    "chalk": "^4.1.2"
+    "yeoman-generator": "^5.8.0"
   },
   "devDependencies": {
+    "chalk": "^4.1.2",
     "lodash": "^4.17.21"
   }
 }

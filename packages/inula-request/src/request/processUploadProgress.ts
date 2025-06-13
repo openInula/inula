@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
 import { IrProgressEvent, IrRequestConfig, IrResponse } from '../types/interfaces';
 import IrError from '../core/IrError';
 import CancelError from '../cancel/CancelError';
@@ -25,7 +10,7 @@ function processUploadProgress(
   resolve: (value: PromiseLike<IrResponse<any>> | IrResponse<any>) => void,
   method: string,
   url: string | undefined,
-  config: IrRequestConfig
+  config: IrRequestConfig,
 ) {
   if (onUploadProgress) {
     let totalBytesToUpload = 0; // 上传的总字节数
@@ -48,25 +33,27 @@ function processUploadProgress(
 
       // 添加 progress 事件监听器
       xhr.upload.addEventListener('progress', event => {
-        const loaded = event.loaded;
-        const total = event.lengthComputable ? event.total : undefined;
-        const progressBytes = loaded - loadedBytes;
-        const rate = calculate(progressBytes);
-        const inRange = total && loaded <= total;
-        loadedBytes = loaded;
-        const feedback = {
-          loaded,
-          total,
-          progress: total ? loaded / total : undefined,
-          bytes: progressBytes,
-          rate: rate ?? undefined,
-          estimated: rate && total && inRange ? (total - loaded) / rate : undefined,
-          event,
-          upload: true,
-        };
-        // 可以计算上传进度
-        onUploadProgress!(feedback);
-      });
+
+          const loaded = event.loaded;
+          const total = event.lengthComputable ? event.total : undefined;
+          const progressBytes = loaded - loadedBytes;
+          const rate = calculate(progressBytes);
+          const inRange = total && loaded <= total;
+          loadedBytes = loaded;
+          const feedback = {
+            loaded,
+            total,
+            progress: total ? (loaded / total) : undefined,
+            bytes: progressBytes,
+            rate: rate ?? undefined,
+            estimated: rate && total && inRange ? (total - loaded) / rate : undefined,
+            event,
+            upload: true,
+          };
+          // 可以计算上传进度
+          onUploadProgress!(feedback);
+        }
+      );
 
       // 添加 readystatechange 事件监听器，当 xhr.readyState 变更时执行回调函数
       xhr.addEventListener('readystatechange', () => {
@@ -82,16 +69,7 @@ function processUploadProgress(
                 parsedText = xhr.responseText;
             }
           } catch (e) {
-            const responseData = {
-              data: parsedText,
-              status: xhr.status,
-              statusText: xhr.statusText,
-              headers: xhr.getAllResponseHeaders(),
-              config: config,
-              request: xhr,
-            };
-            const error = new IrError('parse error', '', config, xhr, responseData);
-            reject(error);
+            reject('parse error');
           }
           const response: IrResponse = {
             data: parsedText,
@@ -99,7 +77,7 @@ function processUploadProgress(
             statusText: xhr.statusText,
             headers: xhr.getAllResponseHeaders(),
             config: config,
-            request: xhr,
+            request: xhr
           };
 
           if (config.validateStatus!(xhr.status)) {
@@ -125,8 +103,8 @@ function processUploadProgress(
 
       for (const header in config.headers) {
         if (
-          !['Content-Length', 'Accept-Encoding', 'User-Agent'].includes(header) && // 过滤不安全的请求头设置
-          Object.prototype.hasOwnProperty.call(config.headers, header) // 不遍历请求头原型上的方法
+          !['Content-Length', 'Accept-Encoding', 'User-Agent'].includes(header) // 过滤不安全的请求头设置
+          && Object.prototype.hasOwnProperty.call(config.headers, header) // 不遍历请求头原型上的方法
         ) {
           xhr.setRequestHeader(header, config.headers[header]);
         }

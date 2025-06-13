@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { useIntl } from '../../index';
+import { useIntl } from '../../src/intl';
 
 const Example1 = () => {
   const i18n = useIntl();

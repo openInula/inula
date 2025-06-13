@@ -12,7 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import { defineMessage, defineMessages } from '../index';
+import { defineMessage, defineMessages } from '../src/intl';
 
 describe('index', () => {
   describe('defineMessages Test', () => {

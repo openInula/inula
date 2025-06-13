@@ -13,8 +13,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Translation from '../../src/format/Translation';
-import creatI18nCache from '../../src/format/cache/cache';
+import Translation from '../../src/intl/format/Translation';
+import creatI18nCache from '../../src/intl/format/cache/cache';
 
 describe('Translation', () => {
   let translation;

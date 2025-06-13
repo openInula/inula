@@ -24,7 +24,7 @@ function getInitValue(props: Props) {
     let initValue = defaultValue;
 
     // children content存在时，会覆盖defaultValue
-    if (children !== null && children !== undefined) {
+    if (children != null) {
       // 子节点不是纯文本，则取第一个子节点
       initValue = children instanceof Array ? children[0] : children;
     }
@@ -53,7 +53,7 @@ export function updateTextareaValue(dom: HTMLTextAreaElement, props: Props, isIn
   } else {
     // 获取当前节点的 value 值
     let value = props.value;
-    if (value !== null && value !== undefined) {
+    if (value != null) {
       value = String(value);
       // 当且仅当值实际发生变化时才去设置节点的value值
       if (dom.value !== value) {

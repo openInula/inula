@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
 import { existsSync } from 'fs';
 import { extname, join } from 'path';
 import { parseRequireDeps, cleanRequireCache } from '../utils/util.js';
@@ -89,7 +74,7 @@ export default class Config {
 
   getConfigFile(): string | null {
     const configFileList: string[] = DEFAULT_CONFIG_FILES.map(f => join(this.cwd, f));
-    for (const configFile of configFileList) {
+    for (let configFile of configFileList) {
       if (existsSync(configFile)) {
         return configFile;
       }

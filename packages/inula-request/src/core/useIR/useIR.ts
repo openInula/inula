@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
 import Inula from '@cloudsop/horizon';
 import IRClient from './IRClient';
 import { IrRequestConfig, QueryOptions } from '../../types/interfaces';
@@ -20,11 +5,7 @@ import { IrRequestConfig, QueryOptions } from '../../types/interfaces';
 // 全局初始化一个 IRClient 实例
 const irClient = new IRClient();
 
-const useIR = <T = unknown>(
-  url: string,
-  config?: IrRequestConfig,
-  options?: QueryOptions
-): { data?: T; error?: any } => {
+const useIR = <T = unknown>(url: string, config?: IrRequestConfig, options?: QueryOptions): { data?: T; error?: any } => {
   const [data, setData] = Inula.useState<T>(null as unknown as T);
   const [error, setError] = Inula.useState<any>(null);
 
@@ -38,7 +19,7 @@ const useIR = <T = unknown>(
   Inula.useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await irClient.query(url, config, options);
+        let result = await irClient.query(url, config, options);
         document.addEventListener('request', handleRequest(result));
 
         setData(result); // 未设置轮询查询时展示一次

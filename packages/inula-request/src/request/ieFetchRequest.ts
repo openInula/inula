@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
 import utils from '../utils/commonUtils/utils';
 import IrError from '../core/IrError';
 import CustomAbortController from './ieCompatibility/CustomAbortController';
@@ -21,9 +6,10 @@ import { Method, ResponseType } from '../types/types';
 
 export const ieFetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
   return new Promise((resolve, reject) => {
-    const {
+    let {
       method = 'get',
       baseURL,
+      url,
       params = null,
       data = null,
       headers = {},
@@ -34,12 +20,11 @@ export const ieFetchRequest = (config: IrRequestConfig): Promise<IrResponse> => 
       withCredentials = false,
     } = config;
 
-    let { url } = config;
     let controller: any;
     let signal;
 
     // 兼容处理 IE 浏览器AbortController
-    if (typeof window !== 'undefined' && window.AbortController) {
+    if (window.AbortController) {
       controller = new AbortController();
       signal = controller.signal;
     } else {
@@ -88,6 +73,7 @@ export const ieFetchRequest = (config: IrRequestConfig): Promise<IrResponse> => 
 
     fetch(url, options as RequestInit)
       .then(response => {
+
         config.method = config.method!.toLowerCase() as Method;
 
         const responseData: IrResponse = {
@@ -112,8 +98,31 @@ export const ieFetchRequest = (config: IrRequestConfig): Promise<IrResponse> => 
             break;
 
           // text 和 json 服务端返回的都是字符串 统一处理
-          default:
+          case 'text':
             parseMethod = response.text();
+            break;
+
+          // 显式指定返回类型
+          case 'json':
+            parseMethod = response.text().then((text: string) => {
+              try {
+                return JSON.parse(text);
+              } catch (e) {
+                // 显式指定返回类型 JSON解析失败报错
+                reject('parse error');
+              }
+            });
+            break;
+
+          default:
+            parseMethod = response.text().then((text: string) => {
+              try {
+                return JSON.parse(text);
+              } catch (e) {
+                // 默认为 JSON 类型，若JSON校验失败则直接返回服务端数据
+                return text;
+              }
+            });
         }
 
         parseMethod

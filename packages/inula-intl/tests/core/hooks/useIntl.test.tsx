@@ -3,12 +3,12 @@
  */
 
 import * as React from 'react';
-import { render } from '@testing-library/react';
-import { IntlProvider, useIntl } from '../../../index';
+import { render, screen } from '../../testingLibrary/testingLibrary';
+import { IntlProvider, useIntl } from '../../../src/intl';
 
 const FunctionComponent = ({ spy }: { spy?: Function }) => {
-  const { i18n } = useIntl();
-  spy!(i18n.locale);
+  const { intl } = useIntl();
+  spy!(intl.locale);
   return null;
 };
 
@@ -35,23 +35,23 @@ describe('useIntl() hooks', () => {
   });
 
   it('should work when switching locale on provider', () => {
-    const { rerender, getByTestId } = render(
+    render(
       <IntlProvider locale="en">
         <span data-testid="comp">
           <FC />
         </span>
       </IntlProvider>
     );
-    expect(getByTestId('comp')).toMatchSnapshot();
-    rerender(
+    expect(screen.getByTestId('comp')).toMatchSnapshot();
+    render(
       <IntlProvider locale="es">
         <span data-testid="comp">
           <FC />
         </span>
       </IntlProvider>
     );
-    expect(getByTestId('comp')).toMatchSnapshot();
-    rerender(
+    expect(screen.getByTestId('comp')).toMatchSnapshot();
+    render(
       <IntlProvider locale="en">
         <span data-testid="comp">
           <FC />
@@ -59,6 +59,6 @@ describe('useIntl() hooks', () => {
       </IntlProvider>
     );
 
-    expect(getByTestId('comp')).toMatchSnapshot();
+    expect(screen.getByTestId('comp')).toMatchSnapshot();
   });
 });

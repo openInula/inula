@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
 const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
@@ -32,16 +17,15 @@ const generatorType = fs
   });
 
 const runGenerator = async (templatePath, { name = '', cwd = process.cwd(), args = {} }) => {
-  let currentPath;
   return new Promise(resolve => {
     if (name) {
       mkdirp.sync(name);
-      currentPath = path.join(cwd, name);
+      cwd = path.join(cwd, name);
     }
 
     const Generator = require(templatePath);
     const env = yeoman.createEnv([], {
-      cwd: currentPath,
+      cwd,
     });
     const generator = new Generator({
       name,
@@ -62,17 +46,7 @@ const run = async config => {
   }
   process.emit('message', { type: 'prompt' });
 
-  let { type, name } = config;
-  if (!name) {
-    const answers = await inquirer.prompt([
-      {
-        name: 'projectName',
-        message: 'Project name',
-        type: 'input',
-      },
-    ]);
-    config.name = answers.projectName;
-  }
+  let { type } = config;
   if (!type) {
     const answers = await inquirer.prompt([
       {

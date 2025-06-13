@@ -14,7 +14,7 @@
  */
 
 import { useState } from '@cloudsop/horizon';
-import { createI18n, I18nProvider, IntlProvider } from '../index';
+import { createI18n, I18nProvider, IntlProvider } from '../src/intl';
 import zh from './locale/zh';
 import en from './locale/en';
 import Example1 from './components/Example1';
@@ -36,7 +36,7 @@ const App = () => {
 
   const message = locale === 'zh' ? zh : en;
 
-  const i18n = createI18n({
+  const { global: i18n } = createI18n({
     locale: 'en',
     messages: {
       en: {

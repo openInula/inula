@@ -13,11 +13,10 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import * as React from 'react';
-import { act, render } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
-import { IntlProvider } from '../../../index';
-import { createI18nInstance } from '../../../src/core/I18n';
+import { act } from '@cloudsop/horizon';
+import { render, screen } from '../../testingLibrary/testingLibrary';
+import { IntlProvider } from '../../../src/intl';
+import { createI18nInstance } from '../../../src/intl/core/I18n';
 
 describe('I18nProvider', () => {
   afterEach(() => {
@@ -86,12 +85,12 @@ describe('I18nProvider', () => {
   it('should render children', () => {
     const child = <div data-testid="child" />;
 
-    const { getByTestId } = render(
+    render(
       <IntlProvider key={locale} locale={locale} messages={{}}>
         {child}
       </IntlProvider>
     );
 
-    expect(getByTestId('child')).toBeTruthy(); // toBeTruthy()匹配任何if语句为真
+    expect(screen.getByTestId('child')).toBeTruthy(); // toBeTruthy()匹配任何if语句为真
   });
 });

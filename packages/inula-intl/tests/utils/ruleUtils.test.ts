@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import ruleUtils from '../../src/utils/parseRuleUtils';
+import ruleUtils from '../../src/intl/utils/parseRuleUtils';
 
 describe('ruleUtils test', () => {
   describe('getRegGroups function', () => {

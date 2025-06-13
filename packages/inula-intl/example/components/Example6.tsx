@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { createIntl, createIntlCache, RawIntlProvider } from '../../index';
+import { createIntl, createIntlCache, RawIntlProvider } from '../../src/intl';
 import Example6Child from './Example6Child';
 
 const Example6 = (props: any) => {

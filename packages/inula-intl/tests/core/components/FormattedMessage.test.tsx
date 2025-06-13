@@ -13,11 +13,11 @@
  * See the Mulan PSL v2 for more details.
  */
 import * as React from 'react';
-import I18nProvider from '../../../src/core/components/I18nProvider';
-import { FormattedMessage } from '../../../index';
-import { render } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { createI18nInstance } from '../../../src/core/I18n';
+import I18nProvider from '../../../src/intl/core/components/I18nProvider';
+import { FormattedMessage } from '../../../src/intl';
+import { createI18nInstance } from '../../../src/intl/core/I18n';
+import { render, screen } from '../../testingLibrary/testingLibrary';
+import '../../testingLibrary/globalSetup';
 
 const dummyContext = React.createContext('');
 const { Provider: DummyProvider, Consumer: DummyConsumer } = dummyContext;
@@ -34,7 +34,7 @@ describe('<FormattedMessage>', () => {
     messages: enMessage,
   });
   it('should  format context', function () {
-    const { getByTestId } = render(
+    render(
       <I18nProvider key={locale} locale={locale} messages={enMessage}>
         <span data-testid="id">
           <FormattedMessage data-testid="id" id={enMessage.hello} />
@@ -43,7 +43,7 @@ describe('<FormattedMessage>', () => {
     );
 
     setTimeout(() => {
-      expect(getByTestId('id').textContent).toEqual(i18n.formatMessage('hello', {}, {}));
+      expect(screen.getByTestId('id').textContent).toEqual(i18n.formatMessage('hello', {}, {}));
     }, 1000);
   });
   it('should  format context', function () {
@@ -51,13 +51,13 @@ describe('<FormattedMessage>', () => {
       id: enMessage.id,
       values: { name: 'fred' },
     };
-    const { getByTestId } = render(
+    render(
       <I18nProvider key={locale} locale={'en'} messages={enMessage}>
         <span data-testid="id">
           <FormattedMessage data-testid="id" id={props.id} values={props.values} />
         </span>
       </I18nProvider>
     );
-    expect(getByTestId('id').textContent).toEqual(i18n.formatMessage('id', { name: 'fred' }, {}));
+    expect(screen.getByTestId('id').textContent).toEqual(i18n.formatMessage('id', { name: 'fred' }, {}));
   });
 });

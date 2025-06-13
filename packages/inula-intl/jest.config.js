@@ -36,4 +36,6 @@ export default {
   testPathIgnorePatterns: ['\\\\node_modules\\\\'],
 
   testEnvironment: 'jsdom',
+  globalSetup: '<rootDir>/tests/testingLibrary/globalSetup.js',
+  setupFilesAfterEnv: ['<rootDir>/tests/testingLibrary/setupTests.js'],
 };

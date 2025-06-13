@@ -13,52 +13,48 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { useI18n } from '../../../src/vueI18n-adapter/src/hooks/useI18n';
-import vueI18n from '../../../src/vueI18n-adapter/src/VueI18n';
+import { useI18n } from '../../../src/vueI18n/hooks/useI18n';
+import vueI18n from '../../../src/vueI18n/VueI18n';
 import Inula from '@cloudsop/horizon';
-
-// 模拟 createVueI18nInstance 函数
-const createVueI18nInstance = jest.fn(options => new vueI18n(options));
-
-// 导入并模拟被测试的模块
-jest.mock('./i18nInstance', () => ({ createVueI18nInstance }));
+import { IntlProvider, createI18n, useIntl } from '../../../src/intl';
+import { render, screen } from '../../testingLibrary/testingLibrary';
 
 describe('useI18n', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    Inula.useContext.mockReturnValue(null); // 默认没有 context
-  });
-
   it('load useIntl when exit options with messages', () => {
-    const i18n = useI18n({
+    const topI18n = createI18n({
       locale: 'en',
       messages: {
         en: {
-          hello: 'hello!',
+          hello: 'Welcome to vue-i18n internationalization',
+          change: 'change',
+        },
+        zh: {
+          hello: '欢迎使用vue-i18n国际化',
+          change: '切换',
         },
       },
     });
-    expect(i18n.t('hello')).toEqual('hello!');
-  });
+    let _i18n;
+    const FunctionComponent = () => {
+      const i18n = useI18n({
+        locale: 'en',
+        messages: {
+          en: {
+            hello: 'hello!',
+          },
+        },
+      });
+      _i18n = i18n;
 
-  it('load useIntl when exit options with messages1', () => {
-    const i18n = useI18n({
-      locale: 'en',
-      messages: {
-        hello: 'hello!',
-      },
-    });
-    expect(i18n.t('hello')).toEqual('hello!');
-  });
+      return <></>;
+    };
 
-  it('should use context when available', () => {
-    const contextI18n = new vueI18n({
-      locale: 'fr',
-      messages: { fr: { hello: 'bonjour!' } },
-    });
-    React.useContext.mockReturnValue(contextI18n);
+    render(
+      <IntlProvider locale="en" i18n={topI18n.global}>
+        <FunctionComponent />
+      </IntlProvider>
+    );
 
-    const i18n = useI18n();
-    expect(i18n.t('hello')).toEqual('bonjour!');
+    expect(_i18n.t('hello')).toEqual('hello!');
   });
 });

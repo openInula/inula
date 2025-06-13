@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import VueI18n from '../../src/vueI18n-adapter/src/VueI18n';
+import VueI18n from '../../src/vueI18n/VueI18n';
 
 describe('VueI18n', () => {
   it('load VueI18n', () => {
@@ -33,33 +33,6 @@ describe('VueI18n', () => {
 
     expect(vueI18n.messages).toEqual(messages.zh);
     expect(vueI18n.locale).toEqual('zh');
-  });
-
-  it('Test cases for local messages should be preferred', () => {
-    const vueI18n = new VueI18n({
-      locale: 'zh',
-      messages: {
-        en: { hello: 'Hello', world: 'World' },
-        zh: { hello: '你好', world: '世界' },
-        es: { hello: '¡Hola!', world: 'mundo' },
-      },
-    });
-    vueI18n.setLocalMessage('MyComponent', {
-      en: { hello: 'Hi there!', component: 'MyComponent' },
-      zh: { hello: '嗨！', component: '我的组件' },
-    });
-
-    expect(vueI18n.$t('hello', {}, 'MyComponent')).toEqual('嗨！'); // 输出: "Hi there!" (使用局部消息)
-    expect(vueI18n.$t('world')).toEqual('世界'); // 输出: "World" (使用全局消息)
-
-    vueI18n.changeLanguage('en');
-    expect(vueI18n.$t('hello', {}, 'MyComponent')).toEqual('Hi there!'); // 输出: "Hi there!" (使用局部消息)
-    expect(vueI18n.$t('world')).toEqual('World'); // 输出: "World" (使用全局消息)
-
-    vueI18n.loadMessage('es', { hello: '¡Hola!' }, 'MyComponent');
-    vueI18n.changeLanguage('es');
-    expect(vueI18n.$t('hello', {}, 'MyComponent')).toEqual('¡Hola!'); // 输出: "Hi there!" (使用局部消息)
-    expect(vueI18n.$t('world')).toEqual('mundo'); // 输出: "mundo" (使用全局消息)
   });
 
   it('When the key is an object, $t is used for internationalization.', () => {

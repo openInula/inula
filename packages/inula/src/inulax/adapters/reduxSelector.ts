@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Technologies Co.,Ltd.
+ * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
  *
  * openInula is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
@@ -87,9 +87,9 @@ function handleMapDispatchToProps<DispatchProps, OwnProps>(
   } else {
     const selector = () => {
       const mappedDispatch = {};
-      Object.entries(mapDispatchToProps).forEach(([key, value]) => {
+      Object.entries(mapDispatchToProps!).forEach(([key, value]) => {
         mappedDispatch[key] = (...args: ReduxAction[]) => {
-          return dispatch(value(...args));
+          dispatch(value(...args));
         };
       });
       return mappedDispatch;
