@@ -11,15 +11,8 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
   },
-  "include": [
-    "src/**/*",
-    "./externals.d.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts",
-    "./src/template/**/*"
-  ],
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts", "./src/template/**/*"],
   "ts-node": {
     "esm": true,
   },

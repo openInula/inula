@@ -1,28 +1,8 @@
-
-## 1.1.37(2024-11-27) 
-- **intl**
-与react-intl对齐，调用injectIntl后，给组件props注入的属性改为只有intl，intl展开后可取到$t、formatMessage等属性
-注意：如果业务当前代码直接从props中获取formatMessage等属性，请调整为从props.intl获取,如下：
-```
-const { $t, formatMessage }  = props;
-```
-改为
-```
-const { intl } = props;
-const { $t, formatMessage }  = intl;
-```
-## 1.0.36(2024-10-24) 
-- **intl**
-修复调用formatMessage传入非法id抛出异常的问题
-## 1.0.34(2024-10-10) 
-- **intl**
-解决低版本浏览器正则不兼容的问题
-
-## 1.0.31(2024-8-27)
+## 1.0.31(2024-8/27)
 - **intl**:
 修复国际化中复数规则多value值覆盖问题：https://open.codehub.huawei.com/innersource/fenghuang/horizon/horizon-core/issues/177
 
-## 1.0.30(2024-8-19)
+## 1.0.30(2024-8/19)
 - **intl**:
 - 1、优化国际化无法解析当文档中存在'‘
 - 2、支持vue-i18n的相关API

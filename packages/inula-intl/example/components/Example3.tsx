@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { FormattedMessage } from '../../index';
+import { FormattedMessage } from '../../src/intl';
 
 const Example3 = props => {
   const { locale, setLocale } = props;

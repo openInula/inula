@@ -12,7 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import { checkStateGroup } from '../../src/parser/parseMappingRule';
+import { checkStateGroup } from '../../src/intl/parser/parseMappingRule';
 
 describe('checkStateGroup function', () => {
   it('should throw an error if state is missing', () => {

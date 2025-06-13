@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
 import Plugin from './Plugin.js';
 import { IHook, ICommand } from '../types/types.js';
 import { Logger } from '../utils/logger.js';
@@ -39,7 +24,7 @@ export default class PluginAPI {
     if (!this.manager.hooksByPluginPath[this.path]) {
       this.manager.hooksByPluginPath[this.path] = [];
     }
-
+    
     this.manager.hooksByPluginPath[this.path].push(hook);
   }
 
@@ -55,11 +40,11 @@ export default class PluginAPI {
     this.register(hook);
   }
 
-  registerMethod(fn: (...args: any[]) => any) {
+  registerMethod(fn: Function) {
     this.manager.registerFunction.push(fn);
   }
 
-  async applyHook(name: string, args?: any) {
+  async applyHook(name: string, args?: any ) {
     const hooks: IHook[] = this.manager.hooks[name] || [];
     let config: any = undefined;
     for (const hook of hooks) {

@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
 import IrError from '../core/IrError';
 import IrHeaders from '../core/IrHeaders';
 import { Method, ResponseType, IrTransformer, FulfilledFn, RejectedFn, Callback } from './types';
@@ -104,7 +89,7 @@ export type IrResponse<T = any> = {
   event?: string;
 
   // 响应对象上的完整 URL
-  responseURL?: string;
+  responseURL?: string
 };
 
 // Ir 类接口类型
@@ -122,8 +107,6 @@ export interface IrInterface {
   head<T = unknown>(url: string, config?: IrRequestConfig): Promise<IrResponse<T>>;
 
   options<T = unknown>(url: string, config?: IrRequestConfig): Promise<IrResponse<T>>;
-
-  patch<T = unknown>(url: string, data?: any, config?: IrRequestConfig): Promise<IrResponse<T>>;
 
   postForm<T = unknown>(url: string, data: any, config: IrRequestConfig): Promise<IrResponse<T>>;
 
@@ -240,7 +223,7 @@ export interface IrInterceptorManager<T> {
   clear(): void;
 
   // 过滤跳过迭代器
-  forEach(func: (...arg: any) => any): void;
+  forEach(func: Function): void;
 }
 
 export interface IrErrorInterface {
@@ -314,8 +297,8 @@ export interface QueryOptions {
 }
 
 export interface Limitation {
-  minInterval: number;
-  maxInterval: number;
+  minInterval: number,
+  maxInterval: number,
 }
 
 // useIR 缓存

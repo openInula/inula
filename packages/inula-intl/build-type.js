@@ -38,12 +38,12 @@ export function cleanUp(folders) {
 
 function buildTypeConfig() {
   return {
-    input: './build/@types/index.d.ts',
+    input: './build/intl/@types/index.d.ts',
     output: {
-      file: './build/@types/index.d.ts',
+      file: './build/intl/@types/index.d.ts',
       format: 'es',
     },
-    plugins: [dts(), cleanUp(['./build/@types/example', './build/@types/src'])],
+    plugins: [dts(), cleanUp(['./build/intl/@types/example', './build/intl/@types/src'])],
   };
 }
 

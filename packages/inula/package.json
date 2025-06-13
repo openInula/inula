@@ -4,7 +4,7 @@
   "keywords": [
     "horizon"
   ],
-  "version": "0.1.13",
+  "version": "0.0.77",
   "homepage": "",
   "bugs": "",
   "main": "index.js",
@@ -13,7 +13,7 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "build": "npm run build-types && rollup --config ./scripts/rollup/rollup.config.js",
+    "build": "rollup --config ./scripts/rollup/rollup.config.js",
     "build-types": "tsc -p tsconfig.build.json || echo \"WARNING: TSC exited with status $?\" && rollup -c ./scripts/rollup/build-types.js",
     "build:inula3rdLib-dev": "npm run build & node ./scripts/gen3rdLib.js build:horizon3rdLib-dev",
     "build:watch": "rollup --watch --config ./scripts/rollup/rollup.config.js",
@@ -25,7 +25,6 @@
   "types": "@types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./@types/index.d.ts",
       "default": "./index.js"
     },
     "./package.json": "./package.json",

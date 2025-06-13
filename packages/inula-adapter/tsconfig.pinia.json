@@ -1,0 +1,10 @@
+{
+  "files": [
+    "src/pinia/index.ts"
+  ],
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "emitDeclarationOnly": true,
+    "declarationDir": "./build/pinia/@types"
+  },
+}

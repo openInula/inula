@@ -1,14 +1,14 @@
 {
   "name": "@cloudsop/horizon-intl",
-  "version": "1.0.34",
+  "version": "1.0.32",
   "description": "intl for horizon framework, a part of intl-ecosystem",
-  "main": "./build/cjs/intl.js",
-  "module": "./build/esm/intl.js",
+  "main": "./intl/cjs/intl.js",
+  "module": "./intl/esm/intl.js",
   "type": "module",
-  "types": "build/@types/index.d.ts",
+  "types": "intl/@types/index.d.ts",
   "scripts": {
     "demo-serve": "webpack serve --mode=development",
-    "rollup-build": "rollup --config rollup.config.js && npm run build-types ",
+    "rollup-build": "rollup --config rollup.config.js",
     "build-types": "tsc -p tsconfig.json && rollup -c build-type.js",
     "test": "jest --no-cache --config jest.config.js",
     "test-c": "jest --coverage"
@@ -18,7 +18,9 @@
     "url": "https://szv-open.codehub.huawei.com/innersource/fenghuang/horizon/horizon-core.git"
   },
   "files": [
-    "/build"
+    "/intl",
+    "/vueI18n",
+    "README.md"
   ],
   "keywords": [],
   "author": "",
@@ -28,7 +30,6 @@
   },
   "devDependencies": {
     "@babel/preset-react": "^7.9.4",
-    "@cloudsop/horizon": "^0.0.58",
     "@rollup/plugin-typescript": "^11.0.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",

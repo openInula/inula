@@ -37,7 +37,7 @@ export type Props = Record<string, any> & {
   style?: { display?: string };
 };
 
-export type Container = Element | Document;
+export type Container = (Element & { _treeRoot?: VNode | null }) | (Document & { _treeRoot?: VNode | null });
 
 let selectionInfo: null | SelectionData = null;
 

@@ -79,7 +79,7 @@ export function getCurrentHook(): Hook<any, any> {
       throw Error('Hooks are more than expected, please check whether the hook is written in the condition.');
     }
 
-    return createHook(lastTimeHook.state);
+    createHook(lastTimeHook.state);
   }
 
   return currentHook!;

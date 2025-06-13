@@ -12,7 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import getTokenAST from '../../src/utils/getTokenAST';
+import getTokenAST from '../../src/intl/utils/getTokenAST';
 import * as assert from 'assert';
 
 describe('getTokenAST', () => {

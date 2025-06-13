@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
 import resolve from 'resolve';
 import chalk from 'chalk';
 import PluginAPI, { IOpts } from './PluginAPI.js';
@@ -36,7 +21,7 @@ export interface IPlugin {
   id: string;
   key: string;
   path: string;
-  apply: (...args: any[]) => any;
+  apply: Function;
 }
 
 export default class Plugin {
@@ -57,7 +42,7 @@ export default class Plugin {
   } = {};
   hub: Hub;
   logger: Logger;
-  registerFunction: ((...args: any[]) => any)[] = [];
+  registerFunction: Function[] = [];
   // 解决调用this[props]时ts提示属性未知
   [key: string]: any;
 
@@ -108,9 +93,9 @@ export default class Plugin {
         api,
       };
     });
-
+    
     for (const obj of objs) {
-      const module: ((...args: any[]) => any) | undefined = await loadModule(obj.path);
+      const module: Function | undefined = await loadModule(obj.path);
       if (module) {
         try {
           module(obj.api);
@@ -135,11 +120,15 @@ export default class Plugin {
     return new Proxy(pluginAPI, {
       get: (target: PluginAPI, prop: string) => {
         if (['userConfig', 'devBuildConfig', 'buildConfig', 'compileMode', 'packageJson', 'cwd'].includes(prop)) {
-          return typeof this.hub[prop] === 'function' ? this.hub[prop].bind(this.hub) : this.hub[prop];
+          return typeof this.hub[prop] === 'function' 
+            ? this.hub[prop].bind(this.hub) 
+            : this.hub[prop];
         }
 
         if (['setStore', 'logger', 'commands'].includes(prop)) {
-          return typeof this[prop] === 'function' ? this[prop].bind(this) : this[prop];
+          return typeof this[prop] === 'function' 
+            ? this[prop].bind(this) 
+            : this[prop];
         }
 
         return target[prop];

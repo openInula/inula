@@ -12,7 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import { checkSelectType } from '../../src/parser/parser';
+import { checkSelectType } from '../../src/intl/parser/parser';
 
 describe('checkSelectType function', () => {
   it('should return true for valid select types', () => {

@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
 import utils from '../../../../src/utils/commonUtils/utils';
 
 describe('objectToQueryString function', () => {
@@ -52,7 +37,8 @@ describe('objectToQueryString function', () => {
       key4: [1, 2, 3],
       key5: { a: 'b' },
     };
-    const expectedResult = 'key1=string&key2=42&key3=true&key4[]=1&key4[]=2&key4[]=3&key5=%7B%22a%22%3A%22b%22%7D';
+    const expectedResult =
+      'key1=string&key2=42&key3=true&key4[]=1&key4[]=2&key4[]=3&key5=%5Bobject%20Object%5D';
     const result = utils.objectToQueryString(input);
     expect(result).toBe(expectedResult);
   });
@@ -64,9 +50,8 @@ describe('objectToQueryString function', () => {
     };
 
     const options = {
-      serialize: params => {
-        return Object.keys(params)
-          .filter(item => Object.prototype.hasOwnProperty.call(params, item))
+      serialize: (params) => {
+        return Object.keys(params).filter(item => Object.prototype.hasOwnProperty.call(params, item))
           .reduce((pre, currentValue) => {
             if (params[currentValue]) {
               if (pre) {
@@ -77,7 +62,7 @@ describe('objectToQueryString function', () => {
               return pre;
             }
           }, '');
-      },
+      }
     };
 
     const expectedResult = 'key1=string&key4=1%2C2%2C3';

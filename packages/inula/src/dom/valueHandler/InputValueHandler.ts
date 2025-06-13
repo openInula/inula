@@ -19,9 +19,9 @@ import { Props } from '../utils/Interface';
 function getInitValue(dom: HTMLInputElement, props: Props) {
   const { value, defaultValue, checked, defaultChecked } = props;
 
-  const defaultValueStr = defaultValue !== null && defaultValue !== undefined ? defaultValue : '';
-  const initValue = value !== null && value !== undefined ? value : defaultValueStr;
-  const initChecked = checked !== null && checked !== undefined ? checked : defaultChecked;
+  const defaultValueStr = defaultValue != null ? defaultValue : '';
+  const initValue = value != null ? value : defaultValueStr;
+  const initChecked = checked != null ? checked : defaultChecked;
 
   return { initValue, initChecked };
 }

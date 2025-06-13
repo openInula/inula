@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import type { ContextType } from '../Types';
+import type { ContextType, VNode } from '../Types';
 
 import { useRefImpl } from './UseRefHook';
 import { useEffectImpl, useLayoutEffectImpl } from './UseEffectHook';
@@ -22,6 +22,7 @@ import { useMemoImpl } from './UseMemoHook';
 import { useImperativeHandleImpl } from './UseImperativeHook';
 import { useReducerImpl } from './UseReducerHook';
 import { useStateImpl } from './UseStateHook';
+import { useInstanceImpl } from './UseInstanceHook';
 import { getNewContext } from '../components/context/Context';
 import { getProcessingVNode } from '../GlobalVar';
 import type { MutableRef, RefCallBack, RefObject } from './HookType';
@@ -34,8 +35,11 @@ import type {
   Reducer,
   EffectCallBack,
   DependencyList,
+  Context,
+  DispatchVoid,
+  ReducerAction,
+  ReducerState,
 } from '../../types';
-import { DispatchVoid, ReducerAction, ReducerState, Context } from '../../types';
 
 export function useContext<T>(Context: Context<T>): T;
 export function useContext<T>(Context: ContextType<T> | Context<T>): T {
@@ -111,6 +115,10 @@ export function useImperativeHandle<T, R extends T>(
   deps?: DependencyList
 ): void {
   return useImperativeHandleImpl(ref, create, deps);
+}
+
+export function useInstance(vNode?: VNode) {
+  return useInstanceImpl(vNode);
 }
 
 // 兼容react-redux

@@ -12,7 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import utils from '../../src/utils/utils';
+import utils from '../../src/intl/utils/utils';
 
 describe('generateKey', () => {
   it('should generate a key for a single locale without options', () => {

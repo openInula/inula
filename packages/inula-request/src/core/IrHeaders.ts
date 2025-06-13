@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
 import utils from '../utils/commonUtils/utils';
 import convertRawHeaders from '../utils/headerUtils/convertRawHeaders';
 import { HeaderMatcher } from '../types/types';
@@ -20,17 +5,11 @@ import checkHeaderName from '../utils/headerUtils/checkHeaderName';
 import processValueByParser from '../utils/headerUtils/processValueByParser';
 import deleteHeader from '../utils/headerUtils/deleteHeader';
 
-export type IrHeaderValue = IrHeaders | string | string[] | number | boolean | null;
-
-export type RawIrHeaders = {
-  [key: string]: IrHeaderValue;
-};
-
 class IrHeaders {
   // 定义 IrHeaders 类索引签名
   [key: string]: any;
 
-  constructor(headers?: RawIrHeaders | IrHeaders | string) {
+  constructor(headers?: Record<string, string | string[]> | IrHeaders) {
     // 将默认响应头加入 IrHeaders
     this.defineAccessor();
 
@@ -39,51 +18,38 @@ class IrHeaders {
     }
   }
 
-  private _setHeader(_header: string, _value?: IrHeaderValue, _rewrite?: IrHeaderValue | boolean) {
-    const normalizedHeader = _header ? String(_header).trim().toLowerCase() : undefined;
-    if (!normalizedHeader) {
-      throw new Error('header name must be a non-empty string');
-    }
-
+  private _setHeader(
+    header: Record<string, string | string[]> | IrHeaders | string,
+    _value: string | string[],
+    _header: string
+  ) {
+    const normalizedHeader = String(header).trim().toLowerCase();
     const key = utils.getObjectKey(this, normalizedHeader);
 
     // this[key] 可能为 false
-    if (!key || this[key] === undefined || _rewrite === true || (_rewrite === undefined && this[key] !== false)) {
+    if (!key || this[key] === undefined) {
       this[key || _header] = utils.getNormalizedValue(_value);
     }
-  }
+  };
 
-  private _setHeaders(headers: RawIrHeaders | IrHeaders, valueOrRewrite?: IrHeaderValue | boolean) {
-    return utils.forEach<IrHeaderValue>(headers, (_value: string | string[], _header: string) => {
-      return this._setHeader(_header, _value, valueOrRewrite);
+  private _setHeaders(headers: Record<string, string | string[]> | IrHeaders | string) {
+    return utils.forEach(headers, (_value: string | string[], _header: string) => {
+      return this._setHeader(headers, _value, _header);
     });
   }
 
-  private isIrHeader(object: unknown): object is IrHeaders {
-    return object instanceof this.constructor;
-  }
-
-  set(headerName?: string, value?: IrHeaderValue, rewrite?: boolean): IrHeaders;
-  set(headers?: RawIrHeaders | IrHeaders | Headers | string, rewrite?: boolean): IrHeaders;
-  set(
-    header?: RawIrHeaders | IrHeaders | Headers | string,
-    valueOrRewrite?: IrHeaderValue | boolean,
-    rewrite?: boolean
-  ): IrHeaders {
+  set(header: Record<string, string | string[]> | IrHeaders | string): this {
     // 通过传入的 headers 创建 IrHeaders 对象
-    if (utils.checkPlainObject<RawIrHeaders | IrHeaders>(header) || this.isIrHeader(header)) {
-      this._setHeaders(header, valueOrRewrite);
-    } else if (utils.checkString(header) && (header = header.trim()) && !checkHeaderName(header)) {
-      this._setHeaders(convertRawHeaders(header), valueOrRewrite);
-    } else if (utils.checkHeaders(header)) {
-      for (const [k, v] of header.entries()) {
-        this._setHeader(v, k, rewrite);
-      }
+    if (utils.checkPlainObject(header) || header instanceof this.constructor) {
+      this._setHeaders(header);
+    } else if (utils.checkString(header) && (header = header.trim()) && !checkHeaderName(header as string)) {
+      this._setHeaders(convertRawHeaders(header as string));
     } else {
       if (header) {
-        this._setHeader(header, valueOrRewrite, rewrite);
+        this._setHeader(header, header as string, header as string);
       }
     }
+
     return this;
   }
 
@@ -143,7 +109,7 @@ class IrHeaders {
 
   toJSON(arrayToStr?: boolean): Record<string, string | string[]> {
     // 过滤无意义的转换
-    const entries = Object.entries(this).filter(([, value]) => {
+    const entries = Object.entries(this).filter(([_, value]) => {
       return value != null && value !== false;
     });
 

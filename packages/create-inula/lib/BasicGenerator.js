@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
 const fs = require('fs');
 const path = require('path');
 const Generator = require('yeoman-generator');
@@ -53,6 +38,7 @@ class BasicGenerator extends Generator {
     readStream.pipe(writeStream);
     readStream.on('error', err => console.error(err));
     writeStream.on('error', err => console.error(err));
+    // writeStream.on('finish', () => console.log(`Copied ${src} to ${dest}`));
   }
 
   /**
@@ -128,9 +114,9 @@ class BasicGenerator extends Generator {
         if (fs.existsSync(fullpath)) {
           this.traverseDirCapture(fullpath, dirCallback, fileCallback);
         }
-      } else {
-        fileCallback(fullpath);
+        continue;
       }
+      fileCallback(fullpath);
     }
   }
 
@@ -140,9 +126,9 @@ class BasicGenerator extends Generator {
       if (fs.lstatSync(fullpath).isDirectory()) {
         this.traverseDirBubble(fullpath, dirCallback, fileCallback);
         dirCallback(fullpath);
-      } else {
-        fileCallback(fullpath);
+        continue;
       }
+      fileCallback(fullpath);
     }
   }
 

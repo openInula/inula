@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { useIntl } from '../../index';
+import { useIntl } from '../../src/intl';
 
 const Example6Child = () => {
   const { formatMessage } = useIntl();
