@@ -79,10 +79,6 @@ export function isSame(obj1: unknown, obj2: unknown) {
   if (obj1 === null || obj1 === undefined || obj2 === null || obj2 === undefined) {
     return obj1 === obj2;
   }
-  // 如果两个对象都是基本类型，比较它们的值是否相等
-  if (kindOf(obj1) !== 'object') {
-    return obj1 === obj2;
-  }
   // 如果两个对象都是数组，比较它们的长度是否相等，然后递归比较每个元素是否相等
   if (Array.isArray(obj1) && Array.isArray(obj2)) {
     if (obj1.length !== obj2.length) {
@@ -94,6 +90,10 @@ export function isSame(obj1: unknown, obj2: unknown) {
       }
     }
     return true;
+  }
+  // 如果两个对象都是基本类型，比较它们的值是否相等
+  if (kindOf(obj1) !== 'object') {
+    return obj1 === obj2;
   }
   // 如果两个对象都是普通对象，比较它们的属性数量是否相等，然后递归比较每个属性的值是否相等
   if (kindOf(obj1) === 'object') {
