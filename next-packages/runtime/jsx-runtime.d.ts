@@ -13,8 +13,4 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Panel from '../panel/Panel';
-import Inula from 'openinula';
-
-const root = document.getElementById('root');
-Inula.render(<Panel />, root);
+export * from './types/jsx';
