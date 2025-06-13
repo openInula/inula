@@ -13,24 +13,17 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { Component } from 'openinula';
+import { unmountComponentAtNode } from 'openinula';
 
-const defaultState = {
-  name: 'jenny',
-  boolean: true,
-};
+global.container = null;
+global.beforeEach(() => {
+  // 创建一个 DOM 元素作为渲染目标
+  global.container = document.createElement('div');
+  document.body.appendChild(global.container);
+});
 
-export default class MockClassComponent extends Component<{ fruit: string }, typeof defaultState> {
-  state = defaultState;
-
-  render() {
-    return (
-      <div>
-        111
-        <button onClick={() => this.setState({ name: 'pika' })}>update state</button>
-        {this.state.name}
-        {this.props?.fruit}
-      </div>
-    );
-  }
-}
+global.afterEach(() => {
+  unmountComponentAtNode(global.container);
+  global.container.remove();
+  global.container = null;
+});
