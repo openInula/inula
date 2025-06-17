@@ -14,7 +14,7 @@
  */
 
 import parseTreeRoot, { clearVNode, queryVNode, VNodeToIdMap } from '../parser/parseVNode';
-import { packagePayload, checkMessage } from '../utils/transferUtils';
+import { createMessage, checkMessageSource } from '../utils/transferUtils';
 import {
   RequestAllVNodeTreeInfos,
   AllVNodeTreeInfos,
@@ -38,7 +38,7 @@ import {
 } from '../utils/constants';
 import { VNode } from '../../../inula/src/renderer/vnode/VNode';
 import { parseVNodeAttrs } from '../parser/parseAttr';
-import { showHighlight, hideHighlight } from '../highlight';
+import { showHighlight, hideHighlight } from './highLightElement';
 import {
   FunctionComponent,
   ClassComponent,
@@ -63,7 +63,7 @@ function send() {
     pre.push(info);
     return pre;
   }, []);
-  postMessage(AllVNodeTreeInfos, result);
+  sendToContentScript(AllVNodeTreeInfos, result);
 }
 
 function deleteVNode(vNode: VNode) {
@@ -75,17 +75,8 @@ function deleteVNode(vNode: VNode) {
   }
 }
 
-export function postMessage(type: string, data) {
-  window.postMessage(
-    packagePayload(
-      {
-        type: type,
-        data: data,
-      },
-      DevToolHook
-    ),
-    '*'
-  );
+export function sendToContentScript(type: string, data?: unknown) {
+  window.postMessage(createMessage({ type, data }, DevToolHook), '*');
 }
 
 function parseCompAttrs(id: number) {
@@ -95,7 +86,7 @@ function parseCompAttrs(id: number) {
     return;
   }
   const parsedAttrs = parseVNodeAttrs(vNode, helper.getHookInfo);
-  postMessage(ComponentAttrs, parsedAttrs);
+  sendToContentScript(ComponentAttrs, parsedAttrs);
 }
 
 function calculateNextValue(editValue, value, attrPath) {
@@ -243,12 +234,9 @@ function storeDataWithPath(id: number, path: Array<string | number>, attrsName: 
   }
 }
 
-export let helper;
+type InternalRender = (...args: any[]) => any;
 
-function init(inulaHelper) {
-  helper = inulaHelper;
-  (window as any).__INULA_DEV_HOOK__.isInit = true;
-}
+export let helper: Record<string, InternalRender>;
 
 export function getElement(travelVNodeTree, treeRoot: VNode) {
   const result: any[] = [];
@@ -277,7 +265,7 @@ const inspectDom = data => {
   const info = getElement(helper.travelVNodeTree, vNode);
   if (info) {
     showHighlight(info);
-    (window as any).__INULA_DEV_HOOK__.$0 = info[0];
+    window.__INULA_DEV_HOOK__.$0 = info[0];
   }
 };
 
@@ -395,66 +383,127 @@ const showSource = (node: VNode) => {
     case ClassComponent:
     case IncompleteClassComponent:
     case FunctionComponent:
-      global.$type = node.type;
+      globalThis.$type = node.type;
       break;
     case ForwardRef:
-      global.$type = node.type.render;
+      globalThis.$type = node.type.render;
       break;
     case MemoComponent:
-      global.$type = node.type.type;
+      globalThis.$type = node.type.type;
       break;
     default:
-      global.$type = null;
+      globalThis.$type = null;
       break;
   }
 };
 
-const handleRequest = (type: string, data) => {
-  const action = actions.get(type);
-  if (action) {
-    action.call(this, data);
-    return null;
-  }
-  console.warn('unknown command', type);
-};
-
-function injectHook() {
-  if ((window as any).__INULA_DEV_HOOK__) {
+export function contentScriptMessageHandler(event: MessageEvent) {
+  // 只接收我们自己的消息
+  if (event.source !== window || !event.data) {
     return;
   }
+  const request = event.data;
+  if (checkMessageSource(request, DevToolContentScript)) {
+    const { payload } = request;
+    const { type, data } = payload;
+
+    // 忽略 inulaX 的 actions
+    if (type.startsWith('inulax')) {
+      return;
+    }
+    const action = actions.get(type);
+    if (action) {
+      action.call(this, data);
+      return null;
+    }
+    console.warn('unknown command', type);
+  }
+}
+
+export type Handler = (data: unknown) => void;
+
+function createInulaDevHook() {
+  const listener: Record<string, Handler[]> = {};
+  const renders: Record<number, Record<string, InternalRender>> = {};
+  let renderId = 0;
+
+  function init(inulaHelper: Record<string, InternalRender>) {
+    renderId++;
+    renders[renderId] = inulaHelper;
+    helper = inulaHelper;
+    window.__INULA_DEV_HOOK__.isInit = true;
+
+    devHook.trigger('startRender', {});
+    return renderId;
+  }
+
+  const attach = (event: string, fn: Handler) => {
+    if (!listener[event]) {
+      listener[event] = [];
+    }
+    listener[event].push(fn);
+  };
+
+  const detach = (event: string, fn: Handler) => {
+    if (!listener[event]) {
+      return;
+    }
+    listener[event] = listener[event].filter(v => v !== fn);
+    if (listener[event].length === 0) {
+      delete listener[event];
+    }
+  };
+
+  const subscribe = (event: string, fn: Handler) => {
+    attach(event, fn);
+    return () => detach(event, fn);
+  };
+
+  const trigger = (event: string, data: unknown) => {
+    if (listener[event]) {
+      listener[event].forEach(fn => fn(data));
+    }
+  };
+
+  const devHook = {
+    // listener
+    attach,
+    detach,
+    subscribe,
+    trigger,
+
+    // properties
+    $0: null,
+    init,
+    isInit: false,
+    renders,
+    addIfNotInclude,
+    send,
+    deleteVNode,
+
+    // inulaX 使用
+    getVNodeId: vNode => {
+      return VNodeToIdMap.get(vNode);
+    },
+  };
+
+  return devHook;
+}
+
+export function installDevToolHook() {
+  if (window.__INULA_DEV_HOOK__) {
+    return;
+  }
+  const inulaDevHook = createInulaDevHook();
   Object.defineProperty(window, '__INULA_DEV_HOOK__', {
     enumerable: false,
-    value: {
-      $0: null,
-      init,
-      isInit: false,
-      addIfNotInclude,
-      send,
-      deleteVNode,
-      // inulaX 使用
-      getVNodeId: vNode => {
-        return VNodeToIdMap.get(vNode);
-      },
+    get() {
+      return inulaDevHook;
     },
   });
 
-  window.addEventListener('message', function (event) {
-    // 只接收我们自己的消息
-    if (event.source !== window) {
-      return;
-    }
-    const request = event.data;
-    if (checkMessage(request, DevToolContentScript)) {
-      const { payload } = request;
-      const { type, data } = payload;
-
-      // 忽略 inulaX 的 actions
-      if (type.startsWith('inulax')) {
-        return;
-      }
-      handleRequest(type, data);
-    }
+  // highlight extension icon
+  inulaDevHook.attach('startRender', () => {
+    sendToContentScript('openInula-framework-detected');
   });
 }
-
-injectHook();

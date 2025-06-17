@@ -1,6 +1,6 @@
 {
   "name": "inula-request",
-  "version": "1.1.5",
+  "version": "1.1.9",
   "description": "Inula-request brings you a convenient request experience!",
   "type": "module",
   "main": "./dist/inulaRequest.esm-browser.js",
@@ -53,7 +53,7 @@
     "webpack-dev-server": "^4.13.3"
   },
   "peerDependencies": {
-    "openinula": ">=0.1.14"
+    "openinula": ">=0.0.1"
   },
   "exclude": [
     "node_modules"

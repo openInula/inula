@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
+ * Copyright (c) 2025 Huawei Technologies Co.,Ltd.
  *
  * openInula is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
@@ -13,9 +13,16 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { createContext } from 'openinula';
+import { createContext, Dispatch } from 'openinula';
+import { PanelAction, PanelState } from '../panel/Panel';
+
+const PickElementContext = createContext(null);
+PickElementContext.displayName = 'PickElementContext';
 
 const ViewSourceContext = createContext(null);
 ViewSourceContext.displayName = 'ViewSourceContext';
 
-export default ViewSourceContext;
+const GlobalCtx = createContext<{ state: PanelState; dispatch: Dispatch<PanelAction> }>(null);
+GlobalCtx.displayName = 'GlobalCtx';
+
+export { PickElementContext, ViewSourceContext, GlobalCtx };

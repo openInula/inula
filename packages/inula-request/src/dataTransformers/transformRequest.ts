@@ -27,24 +27,28 @@ const strategies: Record<string, Strategy> = {
   FormData: (data, headers, hasJSONContentType: boolean) => {
     return hasJSONContentType ? JSON.stringify(getJSONByFormData(data)) : data;
   },
-  StreamOrFileOrBlob: (data, headers) => {
+  StreamOrFileOrBlob: data => {
     return data;
   },
   URLSearchParams: (data, headers) => {
-    headers['Content-Type'] = headers['Content-type'] ?? 'application/x-www-form-urlencoded;charset=utf-8';
+    if (!headers.has('Content-Type')) {
+      headers.set('Content-Type', 'application/x-www-form-urlencoded;charset=utf-8');
+    }
     return data.toString();
   },
   MultipartFormData: (data, headers, isFileList: boolean) => {
     return getFormData(isFileList ? { 'files[]': data } : data);
   },
   JSONData: (data, headers) => {
-    headers['Content-Type'] = headers['Content-Type'] ?? 'application/json';
+    if (!headers.has('Content-Type')) {
+      headers.set('Content-Type', 'application/json');
+    }
     return utils.stringifySafely(data);
   },
 };
 
 function transformRequest(data: any, headers: IrHeaders): any {
-  const contentType = headers['Content-Type'] || '';
+  const contentType = headers.get('Content-Type') || '';
   const hasJSONContentType = contentType.indexOf('application/json') > -1;
   const isObjectPayload = utils.checkObject(data);
 

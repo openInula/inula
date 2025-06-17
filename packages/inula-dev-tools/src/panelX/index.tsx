@@ -13,6 +13,6 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import PanelX from './PanelX';
+import PanelX from '../panelX/PanelX';
 
 export default PanelX;

@@ -41,7 +41,9 @@
 
     .name {
       flex: 1 1 auto;
-      padding: 0 1rem 0 1rem;
+      padding: 0 0.5rem;
+      font-size: 0.875rem;
+
       .text {
         display: block;
       }
@@ -90,10 +92,11 @@
         display: flex;
         flex-direction: row;
         align-items: center;
-        padding: 0.5rem 0.5rem 0 0.5rem;
+        padding: 0.5rem;
 
         .attrType {
           flex: 1 1 0;
+          font-size: 0.875rem;
         }
 
         .attrCopy {
@@ -125,16 +128,7 @@
 
         .info {
           display: flex;
-          &:hover {
-            .operation {
-              visibility: visible;
-              .operationIcon :hover {
-                border: none;
-                border-radius: 5px;
-                background-color: lightskyblue;
-              }
-            }
-          }
+          cursor: pointer;
         }
 
         .attrValue {
@@ -205,7 +199,7 @@
       li {
         padding: 0 10px;
         background: darken(#333, 2%);
-        color: darken(#EEE, 40%);
+        color: #f0f0f0;
         text-align: left;
         border: 0;
         width: 100%;
@@ -215,6 +209,7 @@
         opacity: 0;
         transition-property: all, background-color;
         transition-duration: 0.2s, 0.4s;
+        font-weight: 500;
 
         &:hover, &.selected {
           background-color: darken(#333, 10%);
@@ -261,7 +256,12 @@
     flex: 1 1 0;
 
     .parentName {
-      padding: 0.5rem 0.5rem 0 0.5rem;
+      padding: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .parent_container {
+      padding-bottom: 0.5rem;
     }
 
     .parent {

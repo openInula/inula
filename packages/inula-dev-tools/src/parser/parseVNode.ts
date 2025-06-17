@@ -26,7 +26,7 @@ import {
 
 export type NameObj = {
   itemName: string;
-  badge: Array<string>;
+  badge: string[];
 };
 
 // 建立双向映射关系，当用户在修改属性值后，可以找到对应的 VNode
@@ -42,6 +42,7 @@ if (!IdToVNodeMap) {
 }
 
 let uid = 0;
+
 function generateUid(vNode: VNode) {
   const id = VNodeToIdMap.get(vNode);
   if (id !== undefined) {
