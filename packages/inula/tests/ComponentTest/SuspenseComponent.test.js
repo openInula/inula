@@ -208,6 +208,9 @@ describe('SuspenseComponent Test', () => {
     resolvePromise2();
     await delayedPromise2;
 
+    // 等待一个微任务队列，让组件更新
+    await Promise.resolve();
+
     // 重新渲染以触发更新
     Inula.render(
       <div>
