@@ -8,7 +8,6 @@
     "watch": "webpack -c webpack.config.mjs --watch",
     "build-dev": "webpack -c webpack.dev.config.mjs",
     "start": "npm run build && webpack serve -c webpack.dev.config.mjs",
-    "test": "jest",
     "clear": "rimraf build"
   },
   "keywords": [
