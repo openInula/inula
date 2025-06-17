@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
+ * Copyright (c) 2025 Huawei Technologies Co.,Ltd.
  *
  * openInula is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
@@ -15,11 +15,17 @@
 
 import path from 'path';
 import webpack from 'webpack';
+import { fileURLToPath } from 'node:url';
+import { webpackAlias, webpackRules } from './webpack.common.rules.mjs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // 用于 panel 页面开发
-module.exports = {
+/** @type {import('webpack').Configuration  & {devServer:import('webpack-dev-server').Configuration}}*/
+const devConfig = {
   entry: {
-    panel: './src/panel/index.tsx',
+    panel: '/src/devtools/mockPanel.tsx',
     mockPage: './src/devtools/mockPage/index.tsx',
   },
   output: {
@@ -29,36 +35,11 @@ module.exports = {
   mode: 'development',
   devtool: 'source-map',
   module: {
-    rules: [
-      {
-        test: /\.tsx?$/,
-        exclude: /node_modules/,
-        use: [
-          {
-            loader: 'babel-loader',
-          },
-        ],
-      },
-      {
-        test: /\.less/i,
-        use: [
-          'style-loader',
-          {
-            loader: 'css-loader',
-            options: {
-              modules: true,
-            },
-          },
-          'less-loader',
-        ],
-      },
-    ],
+    rules: webpackRules,
   },
   resolve: {
-    extensions: ['.js', '.ts', 'tsx'],
-  },
-  externals: {
-    openinula: 'Inula',
+    alias: webpackAlias,
+    extensions: ['.js', '.ts', '.tsx'],
   },
   plugins: [
     new webpack.DefinePlugin({
@@ -72,6 +53,7 @@ module.exports = {
     },
     open: 'panel.html',
     port: 9000,
-    magicHtml: true,
   },
 };
+
+export default devConfig;

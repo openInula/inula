@@ -22,25 +22,12 @@ function processUploadProgress(
   onUploadProgress: (progressEvent: IrProgressEvent) => void,
   data: FormData,
   reject: (reason?: any) => void,
-  resolve: (value: PromiseLike<IrResponse<any>> | IrResponse<any>) => void,
+  resolve: (value: PromiseLike<IrResponse> | IrResponse) => void,
   method: string,
   url: string | undefined,
   config: IrRequestConfig
 ) {
   if (onUploadProgress) {
-    let totalBytesToUpload = 0; // 上传的总字节数
-
-    if (data instanceof File) {
-      totalBytesToUpload = data.size;
-    }
-    if (data instanceof FormData) {
-      data.forEach(value => {
-        if (value instanceof Blob) {
-          totalBytesToUpload += value.size;
-        }
-      });
-    }
-
     const handleUploadProgress = () => {
       const xhr = new XMLHttpRequest();
       let loadedBytes = 0;
@@ -82,7 +69,8 @@ function processUploadProgress(
                 parsedText = xhr.responseText;
             }
           } catch (e) {
-            const responseData = {
+            const responseData: IrResponse = {
+              type: 'default',
               data: parsedText,
               status: xhr.status,
               statusText: xhr.statusText,
@@ -94,6 +82,7 @@ function processUploadProgress(
             reject(error);
           }
           const response: IrResponse = {
+            type: 'default',
             data: parsedText,
             status: xhr.status,
             statusText: xhr.statusText,

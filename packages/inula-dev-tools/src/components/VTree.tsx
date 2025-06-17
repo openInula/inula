@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { useState, useEffect, useCallback, memo } from 'openinula';
+import { useState, useEffect, useCallback, memo, type InulaNode } from 'openinula';
 import styles from './VTree.less';
 import Triangle from '../svgs/Triangle';
 import { createRegExp } from '../utils/regExpUtil';
@@ -127,9 +127,9 @@ function Item(props: IItem) {
 
   const reg = createRegExp(highlightValue);
   const heightCharacters = name.itemName.match(reg);
-  const showName = [];
+  const showName: InulaNode[] = [];
 
-  const addShowName = (showName: Array<string>, name: NameObj) => {
+  const addShowName = (showName: InulaNode[], name: NameObj) => {
     showName.push(`<${name.itemName}>`);
     name.badge.forEach(key => {
       showName.push(<div className={`${styles.Badge}`}>{key}</div>);
@@ -154,7 +154,7 @@ function Item(props: IItem) {
       <div
         style={{ marginLeft: indentation * indentationLength }}
         className={styles.treeIcon}
-        onclick={handleClickCollapse}
+        onClick={handleClickCollapse}
       >
         {showIcon}
       </div>
@@ -243,7 +243,7 @@ function VTree(props: {
     [onSelectItem]
   );
 
-  const handleMouseEnterItem = useCallback(item => {
+  const handleMouseEnterItem = useCallback((item: any) => {
     postMessageToBackground(Highlight, item);
   }, null);
 

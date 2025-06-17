@@ -24,7 +24,7 @@
   "author": "",
   "license": "MulanPSL2",
   "peerDependencies": {
-    "openinula": ">=0.1.14"
+    "openinula": ">=0.0.1"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.9.4",

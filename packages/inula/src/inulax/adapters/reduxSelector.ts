@@ -19,9 +19,13 @@ import type { MapStateToPropsP, MapDispatchToPropsP, MergePropsP, ConnectOption 
 
 type StateOrDispatch<S extends ReduxAction = ReduxAction> = S | Dispatch;
 
-const defaultMerge = (...args: any[]) => {
-  return Object.assign({}, ...args);
-};
+function defaultMerge<StateProps, DispatchProps, OwnProps>(
+  stateProps: StateProps,
+  dispatchProps: DispatchProps,
+  ownProps: OwnProps
+) {
+  return { ...ownProps, ...stateProps, ...dispatchProps };
+}
 
 interface ReduxSelector<OwnProps = unknown> {
   dependsOnOwnProps: boolean;

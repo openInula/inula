@@ -13,20 +13,20 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { useState, useEffect, useRef, memo, useMemo, useCallback, useReducer } from 'openinula';
+import { memo, type MouseEvent, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'openinula';
 import VTree, { IData } from '../components/VTree';
 import Search from '../components/Search';
 import ComponentInfo from '../components/ComponentInfo';
 import styles from './Panel.less';
-import Select from '../svgs/Select';
+import Select from '../svgs/Select.svg?inline';
 import { FilterTree } from '../hooks/FilterTree';
-import Close from '../svgs/Close';
+import Close from '../svgs/Close.svg?inline';
 import Arrow from '../svgs/Arrow';
 import {
   AllVNodeTreeInfos,
-  RequestComponentAttrs,
   ComponentAttrs,
   PickElement,
+  RequestComponentAttrs,
   StopPickElement,
 } from '../utils/constants';
 import {
@@ -39,20 +39,20 @@ import { IAttr } from '../parser/parseAttr';
 import { NameObj } from '../parser/parseVNode';
 import { createLogger } from '../utils/logUtil';
 import type { Source } from '../../../inula/src/renderer/Types';
-import ViewSourceContext from '../utils/ViewSource';
-import PickElementContext from '../utils/PickElement';
-import Discover from '../svgs/Discover';
+import { ViewSourceContext, PickElementContext, GlobalCtx } from '../utils/Contexts';
+import Discover from '../svgs/Discover.svg?inline';
 
-type ResizeActionType = 'START_RESIZE' | 'SET_HORIZONTAL_PERCENTAGE';
+type PanelActionType = 'START_RESIZE' | 'SET_HORIZONTAL_PERCENTAGE' | 'SET_DROPDOWN_STATUS';
 
-type ResizeAction = {
-  type: ResizeActionType;
+export type PanelAction = {
+  type: PanelActionType;
   payload: any;
 };
 
-type ResizeState = {
+export type PanelState = {
   horizontalPercentage: number;
   isResizing: boolean;
+  dropDownOpen: boolean;
 };
 
 const logger = createLogger('panelApp');
@@ -128,33 +128,28 @@ interface IIdToNodeMap {
  */
 const setResizePCTForElement = (resizeElement: null | HTMLElement, percentage: number): void => {
   if (resizeElement !== null) {
-    resizeElement.style.setProperty('--horizontal-percentage', `${percentage}`);
+    resizeElement.style.setProperty('--horizontal-percentage', `${percentage}%`);
   }
 };
 
-function resizeReducer(state: ResizeState, action: ResizeAction): ResizeState {
+function panelReducer(state: PanelState, action: PanelAction): PanelState {
   switch (action.type) {
     case 'START_RESIZE':
-      return {
-        ...state,
-        isResizing: action.payload,
-      };
+      return { ...state, isResizing: action.payload };
     case 'SET_HORIZONTAL_PERCENTAGE':
-      return {
-        ...state,
-        horizontalPercentage: action.payload,
-      };
+      return { ...state, horizontalPercentage: action.payload };
+    case 'SET_DROPDOWN_STATUS':
+      return { ...state, dropDownOpen: action.payload };
     default:
       return state;
   }
 }
 
-function initResizeState(): ResizeState {
-  const horizontalPercentage = 0.62;
-
+function initPanelState(): PanelState {
   return {
-    horizontalPercentage,
+    horizontalPercentage: 0.6,
     isResizing: false,
+    dropDownOpen: false,
   };
 }
 
@@ -169,11 +164,12 @@ function Panel({ viewSource, inspectVNode }) {
   const [isPicking, setPicking] = useState(false);
   const [source, setSource] = useState<Source>(null);
   const idToTreeNodeMapref = useRef<IIdToNodeMap>({});
-  const [state, dispatch] = useReducer(resizeReducer, null, initResizeState);
-  const pageRef = useRef<null | HTMLElement>(null);
-  const treeRef = useRef<null | HTMLElement>(null);
+  const [state, dispatch] = useReducer(panelReducer, null, initPanelState);
+  const pageRef = useRef<null | HTMLDivElement>(null);
+  const treeRef = useRef<null | HTMLDivElement>(null);
+  const contextValue = useMemo(() => ({ state, dispatch }), [state]);
 
-  const { horizontalPercentage } = state;
+  const { horizontalPercentage, isResizing } = state;
   const {
     filterValue,
     onChangeSearchValue: setFilterValue,
@@ -237,15 +233,15 @@ function Panel({ viewSource, inspectVNode }) {
 
   useEffect(() => {
     const treeElement = treeRef.current;
-
     setResizePCTForElement(treeElement, horizontalPercentage * 100);
-  }, []);
+  }, [treeRef.current, horizontalPercentage]);
 
   const handleSearchChange = (str: string) => {
     setFilterValue(str);
   };
 
   const handleSelectComp = (item: IData) => {
+    dispatch({ type: 'SET_DROPDOWN_STATUS', payload: false });
     setSelectComp(item);
     if (isDev) {
       // setComponentAttrs({});
@@ -280,137 +276,118 @@ function Panel({ viewSource, inspectVNode }) {
   );
 
   // 选择页面元素图标样式
-  let pickClassName;
-  if (isPicking) {
-    pickClassName = styles.Picking;
-  } else {
-    pickClassName = styles.StopPicking;
-  }
+  const pickClassName = isPicking ? styles.Picking : styles.StopPicking;
 
   const MINIMUM_SIZE = 50;
-  const { isResizing } = state;
   const doResize = () => dispatch({ type: 'START_RESIZE', payload: true });
-  let onResize;
-  let stopResize;
-  if (isResizing) {
-    stopResize = () => dispatch({ type: 'START_RESIZE', payload: false });
+  const stopResize = () => dispatch({ type: 'START_RESIZE', payload: false });
+  const onResize = (event: MouseEvent) => {
+    // 整个页面（左树部分加节点详情部分），要拿到页面宽度，防止 resize 时移出页面
+    const pageElement = pageRef.current;
+    if (!isResizing || pageElement === null) {
+      return;
+    }
 
-    onResize = event => {
-      // 设置横向 resize 百分比区域（左树部分）
-      const treeElement = treeRef.current;
-      // 整个页面（左树部分加节点详情部分），要拿到页面宽度，防止 resize 时移出页面
-      const pageElement = pageRef.current;
+    // 左移时防止左树移出页面
+    event.preventDefault();
 
-      if (isResizing || pageElement === null || treeElement === null) {
-        return;
-      }
+    const { width, left } = pageElement.getBoundingClientRect();
 
-      // 左移时防止左树移出页面
-      event.preventDefault();
+    const mouseAbscissa = event.clientX - left;
 
-      const { width, left } = pageElement.getBoundingClientRect();
+    const pageSizeMin = MINIMUM_SIZE;
+    const pageSizeMax = width - MINIMUM_SIZE;
 
-      const mouseAbscissa = event.clientX - left;
+    const isMouseInPage = mouseAbscissa > pageSizeMin && mouseAbscissa < pageSizeMax;
 
-      const pageSizeMin = MINIMUM_SIZE;
-      const pageSizeMax = width - MINIMUM_SIZE;
-
-      const isMouseInPage = mouseAbscissa > pageSizeMin && mouseAbscissa < pageSizeMax;
-
-      if (isMouseInPage) {
-        const resizedElementWidth = width;
-        const actionType = 'SET_HORIZONTAL_PERCENTAGE';
-        const percentage = (mouseAbscissa / resizedElementWidth) * 100;
-
-        setResizePCTForElement(treeElement, percentage);
-
-        dispatch({
-          type: actionType,
-          payload: mouseAbscissa / resizedElementWidth,
-        });
-      }
-    };
-  }
+    if (isMouseInPage) {
+      dispatch({
+        type: 'SET_HORIZONTAL_PERCENTAGE',
+        payload: mouseAbscissa / width,
+      });
+    }
+  };
 
   return (
-    <ViewSourceContext.Provider value={{ viewSourceFunction }}>
-      <PickElementContext.Provider value={{ pickElementFunction }}>
-        <div
-          ref={pageRef}
-          onMouseMove={onResize}
-          onMouseLeave={stopResize}
-          onMouseUp={stopResize}
-          className={styles.app}
-        >
-          <div ref={treeRef} className={styles.left}>
-            <div className={styles.leftTop}>
-              <div className={styles.select}>
-                <button className={`${pickClassName}`}>
-                  <span
-                    className={styles.eye}
-                    title={'Pick an element from the page'}
-                    onClick={() => {
-                      postMessageToBackground(!isPicking ? PickElement : StopPickElement);
-                      setPicking(!isPicking);
-                    }}
-                  >
-                    <Select />
-                  </span>
-                </button>
+    <GlobalCtx.Provider value={contextValue}>
+      <ViewSourceContext.Provider value={{ viewSourceFunction }}>
+        <PickElementContext.Provider value={{ pickElementFunction }}>
+          <div
+            ref={pageRef}
+            onMouseMove={isResizing && onResize}
+            onMouseLeave={isResizing && stopResize}
+            onMouseUp={stopResize}
+            className={styles.app}
+          >
+            <div ref={treeRef} className={styles.left}>
+              <div className={styles.left_top}>
+                <div className={styles.select}>
+                  <button className={`${pickClassName}`}>
+                    <span
+                      title={'Pick an element from the page'}
+                      onClick={() => {
+                        postMessageToBackground(!isPicking ? PickElement : StopPickElement);
+                        setPicking(!isPicking);
+                      }}
+                    >
+                      <Select />
+                    </span>
+                  </button>
+                </div>
+                <div className={styles.divider} />
+                <div className={styles.search}>
+                  <Discover style={{ flexShrink: 0 }} />
+                  <Search onKeyUp={onSelectNext} onChange={handleSearchChange} value={filterValue} />
+                </div>
+                {filterValue !== '' && (
+                  <>
+                    <span className={styles.searchResult}>
+                      {`${matchItems.indexOf(currentItem) + 1}/${matchItems.length}`}
+                    </span>
+                    <div className={styles.divider} />
+                    <button className={styles.searchAction} onClick={onSelectLast}>
+                      <Arrow direction={'up'} />
+                    </button>
+                    <button className={styles.searchAction} onClick={onSelectNext}>
+                      <Arrow direction={'down'} />
+                    </button>
+                    <button className={styles.searchAction} onClick={onClear}>
+                      <Close />
+                    </button>
+                  </>
+                )}
               </div>
-              <div className={styles.divider} />
-              <div className={styles.search}>
-                <Discover />
-                <Search onKeyUp={onSelectNext} onChange={handleSearchChange} value={filterValue} />
+              <div className={styles.left_bottom}>
+                <VTree
+                  data={parsedVNodeData}
+                  maxDeep={maxDeep}
+                  highlightValue={filterValue}
+                  onRendered={onRendered}
+                  collapsedNodes={collapsedNodes}
+                  onCollapseNode={setCollapsedNodes}
+                  scrollToItem={currentItem}
+                  selectItem={selectComp}
+                  onSelectItem={handleSelectComp}
+                />
               </div>
-              {filterValue !== '' && (
-                <>
-                  <span className={styles.searchResult}>
-                    {`${matchItems.indexOf(currentItem) + 1}/${matchItems.length}`}
-                  </span>
-                  <div className={styles.divider} />
-                  <button className={styles.searchAction} onClick={onSelectLast}>
-                    <Arrow direction={'up'} />
-                  </button>
-                  <button className={styles.searchAction} onClick={onSelectNext}>
-                    <Arrow direction={'down'} />
-                  </button>
-                  <button className={styles.searchAction} onClick={onClear}>
-                    <Close />
-                  </button>
-                </>
-              )}
             </div>
-            <div>
-              <VTree
-                data={parsedVNodeData}
-                maxDeep={maxDeep}
-                highlightValue={filterValue}
-                onRendered={onRendered}
-                collapsedNodes={collapsedNodes}
-                onCollapseNode={setCollapsedNodes}
-                scrollToItem={currentItem}
-                selectItem={selectComp}
-                onSelectItem={handleSelectComp}
+            <div className={styles.resizeBar}>
+              <div onMouseDown={doResize} className={styles.resizeLine} />
+            </div>
+            <div className={styles.right}>
+              <ComponentInfo
+                name={selectComp ? selectComp.name.itemName : null}
+                attrs={selectComp ? componentAttrs : {}}
+                parents={parents}
+                id={selectComp ? selectComp.id : null}
+                source={selectComp ? source : null}
+                onClickParent={handleClickParent}
               />
             </div>
           </div>
-          <div>
-            <div onMouseDown={doResize} className={styles.resizeLine} />
-          </div>
-          <div>
-            <ComponentInfo
-              name={selectComp ? selectComp.name.itemName : null}
-              attrs={selectComp ? componentAttrs : {}}
-              parents={parents}
-              id={selectComp ? selectComp.id : null}
-              source={selectComp ? source : null}
-              onClickParent={handleClickParent}
-            />
-          </div>
-        </div>
-      </PickElementContext.Provider>
-    </ViewSourceContext.Provider>
+        </PickElementContext.Provider>
+      </ViewSourceContext.Provider>
+    </GlobalCtx.Provider>
   );
 }
 

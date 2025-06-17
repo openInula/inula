@@ -14,19 +14,17 @@
  */
 
 import styles from './ComponentInfo.less';
-import Eye from '../svgs/Eye';
-import Debug from '../svgs/Debug';
-import Location from '../svgs/Location';
+import Eye from '../svgs/Eye.svg?inline';
+import Debug from '../svgs/Debug.svg?inline';
+import Location from '../svgs/Location.svg?inline';
 import Triangle from '../svgs/Triangle';
-import { memo, useContext, useEffect, useState, useRef, useMemo, createRef } from 'openinula';
+import { memo, useContext, useEffect, useState, useRef, useMemo, createRef, type MouseEvent } from 'openinula';
 import { IData } from './VTree';
 import { buildAttrModifyData, IAttr } from '../parser/parseAttr';
 import { postMessageToBackground } from '../panelConnection';
 import { CopyToConsole, InspectDom, LogComponentData, ModifyAttrs, StorageValue } from '../utils/constants';
 import type { Source } from '../../../inula/src/renderer/Types';
-import ViewSourceContext from '../utils/ViewSource';
-import PickElementContext from '../utils/PickElement';
-import Operation from '../svgs/Operation';
+import { GlobalCtx, PickElementContext, ViewSourceContext } from '../utils/Contexts';
 
 type IComponentInfo = {
   name: string;
@@ -54,6 +52,7 @@ const ComponentAttr = memo(function ComponentAttr({
   id: number;
   dropdownRef: null | HTMLElement;
 }) {
+  const { dispatch } = useContext(GlobalCtx);
   const [editableAttrs, setEditableAttrs] = useState(attrs);
   const [expandNodes, setExpandNodes] = useState([]);
 
@@ -140,7 +139,7 @@ const ComponentAttr = memo(function ComponentAttr({
   // 为每一行数据添加一个 ref
   const refsById = useMemo(() => {
     const refs = {};
-    editableAttrs.forEach((item, index) => {
+    editableAttrs.forEach((_, index) => {
       refs[index] = createRef();
     });
     return refs;
@@ -160,25 +159,19 @@ const ComponentAttr = memo(function ComponentAttr({
     const hasChild = nextItem ? nextItem.indentation - item.indentation > 0 : false;
     const isCollapsed = !expandNodes.includes(`${item.name}_${index}`);
 
-    // 按钮点击事件
-    const operationClick = (e: Event, operationRef: any) => {
-      // 防止点击按钮触发展开或者合起数据
-      e.stopPropagation();
-      if (operationRef.current) {
-        const operationRect = operationRef.current.getBoundingClientRect();
-        // 19.2 为图标按钮高度，85 为弹框高度的一半
-        dropdownRef.style.setProperty('--content-top', `${operationRect.top + 19.2}px`);
-        dropdownRef.style.setProperty('--content-left', `${operationRect.left - 85}px`);
+    const showContextMenu = (type: string) => (event: MouseEvent) => {
+      event.preventDefault();
+      if (type !== 'boolean') {
+        dropdownRef.style.setProperty('--content-top', `${event.pageY + 13}px`);
+        dropdownRef.style.setProperty('--content-left', `${event.pageX - 85}px`);
+        (dropdownRef as any).attrInfo = {
+          id: { id },
+          itemName: item.name,
+          attrsName: attrsName,
+          path: getPath(editableAttrs, index, attrsName),
+        };
+        dispatch({ type: 'SET_DROPDOWN_STATUS', payload: true });
       }
-      dropdownRef.classList.toggle(styles['active']);
-      const attrInfo = {
-        id: { id },
-        itemName: item.name,
-        attrsName: attrsName,
-        path: getPath(editableAttrs, index, attrsName),
-      };
-      (dropdownRef as any).attrInfo = attrInfo;
-      console.log(dropdownRef);
     };
 
     showAttr.push(
@@ -186,7 +179,8 @@ const ComponentAttr = memo(function ComponentAttr({
         className={styles.info}
         style={{ paddingLeft: item.indentation * 10 }}
         key={index}
-        onclick={() => handleCollapse(item)}
+        onClick={() => handleCollapse(item)}
+        onContextMenu={showContextMenu(item.type)}
       >
         <span className={styles.attrArrow}>{hasChild && <Triangle director={isCollapsed ? 'right' : 'down'} />}</span>
         <span className={styles.attrName}>{`${item.name}`}</span>
@@ -216,11 +210,6 @@ const ComponentAttr = memo(function ComponentAttr({
                 }
               }}
             />
-            <div className={styles.operation} ref={operationRef}>
-              <span className={styles.operationIcon} onclick={event => operationClick(event, operationRef)}>
-                <Operation />
-              </span>
-            </div>
           </>
         ) : item.type === 'boolean' ? (
           <>
@@ -249,11 +238,6 @@ const ComponentAttr = memo(function ComponentAttr({
             <span data-type={item.type} className={styles.attrValue}>
               {item.value}
             </span>
-            <div className={styles.operation} ref={operationRef}>
-              <span className={styles.operationIcon} onClick={event => operationClick(event, operationRef)}>
-                <Operation />
-              </span>
-            </div>
           </>
         )}
       </div>
@@ -275,11 +259,17 @@ const ComponentAttr = memo(function ComponentAttr({
 
 function ComponentInfo({ name, attrs, parents, id, source, onClickParent }: IComponentInfo) {
   const view = useContext(ViewSourceContext) as any;
+  const { state, dispatch } = useContext(GlobalCtx);
   const viewSource = view.viewSourceFunction.viewSource;
 
   const pick = useContext(PickElementContext) as any;
   const inspectVNode = pick.pickElementFunction.inspectVNode;
-  const dropdownRef = useRef<null | HTMLElement>(null);
+  const dropdownRef = useRef<null | HTMLDivElement>(null);
+
+  useEffect(() => {
+    const method = state.dropDownOpen === false ? 'remove' : 'add';
+    dropdownRef.current.classList[method](styles.active);
+  }, [state.dropDownOpen]);
 
   const doViewSource = (id: number) => {
     postMessageToBackground(InspectDom, { id });
@@ -315,16 +305,20 @@ function ComponentInfo({ name, attrs, parents, id, source, onClickParent }: ICom
 
   const copyToConsole = (itemName: string | number, attrsName: string, path: Array<string | number>) => {
     postMessageToBackground(CopyToConsole, { id, itemName, attrsName, path });
-    dropdownRef.current.classList.toggle(styles['active']);
+    dispatch({ type: 'SET_DROPDOWN_STATUS', payload: false });
   };
 
   const storeVariable = (attrsName: string, path: Array<string | number>) => {
     postMessageToBackground(StorageValue, { id, attrsName, path });
-    dropdownRef.current.classList.toggle(styles['active']);
+    dispatch({ type: 'SET_DROPDOWN_STATUS', payload: false });
+  };
+
+  const closeDropdown = () => {
+    dispatch({ type: 'SET_DROPDOWN_STATUS', payload: false });
   };
 
   return (
-    <div className={styles.infoContainer}>
+    <div className={styles.infoContainer} onClick={closeDropdown} onBlur={closeDropdown}>
       <div className={styles.componentInfoHead}>
         {name && (
           <>
@@ -387,26 +381,24 @@ function ComponentInfo({ name, attrs, parents, id, source, onClickParent }: ICom
           }
           return null;
         })}
-        <div className={styles.parentsInfo}>
-          {name && (
-            <div>
-              <div className={styles.parentName}>Parents</div>
+        {name && parents.length > 0 && (
+          <div className={styles.parentsInfo}>
+            <div className={styles.parentName}>Parents</div>
+            <div className={styles.parent_container}>
               {parents.map(item => (
                 <button className={styles.parent} onClick={() => onClickParent(item)}>
                   {`<${item.name.itemName}>`}
                 </button>
               ))}
             </div>
-          )}
-        </div>
-        <div className={styles.parentsInfo}>
-          {source && (
-            <>
-              <div>source: {''}</div>
-              <div style={{ marginLeft: '1rem' }}>{sourceFormatted(source.fileName, source.lineNumber)}</div>
-            </>
-          )}
-        </div>
+          </div>
+        )}
+        {source && (
+          <div className={styles.parentsInfo}>
+            <div>source: {''}</div>
+            <div style={{ marginLeft: '1rem' }}>{sourceFormatted(source.fileName, source.lineNumber)}</div>
+          </div>
+        )}
         <div ref={dropdownRef} className={styles.dropdown}>
           <ul>
             <li
@@ -418,7 +410,7 @@ function ComponentInfo({ name, attrs, parents, id, source, onClickParent }: ICom
                 )
               }
             >
-              <b>Copy value to console</b>
+              Copy value to console
             </li>
             <li
               onClick={() =>
@@ -428,7 +420,7 @@ function ComponentInfo({ name, attrs, parents, id, source, onClickParent }: ICom
                 )
               }
             >
-              <b>Store as global variable</b>
+              Store as global variable
             </li>
           </ul>
         </div>

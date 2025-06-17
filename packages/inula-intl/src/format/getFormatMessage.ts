@@ -60,6 +60,11 @@ export function getFormatMessage(
     compliedMessage = i18n.messages[id] || messages || id;
   }
 
+  // 如果消息是纯字符串且不需要填充参数，则直接移除占位符两边的单引号
+  if (Object.keys(values).length === 0 && compliedMessage && typeof compliedMessage === 'string') {
+    return compliedMessage.replace(/'{(.*?)}'/gi, '{$1}');
+  }
+
   // 对解析的message进行parse解析，并输出解析后的Token
   compliedMessage = typeof compliedMessage === 'string' ? utils.compile(compliedMessage) : compliedMessage;
 

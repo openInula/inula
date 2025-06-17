@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Panel from './Panel';
+import Panel from '../panel/Panel';
 
 // 这里导出 Panel 为了加载 Panel.less
 export default Panel;

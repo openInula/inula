@@ -36,6 +36,7 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
       onUploadProgress = null,
       onDownloadProgress = null,
       paramsSerializer,
+      fetchOption,
     } = config;
 
     let { signal, url, data = null } = config;
@@ -50,6 +51,7 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
       headers,
       body: data || null, // 防止用户在拦截器传入空字符串，引发 fetch 错误
       credentials: withCredentials ? 'include' : 'omit',
+      ...fetchOption,
     };
 
     if (typeof window !== 'undefined' && window.AbortController) {
@@ -108,6 +110,7 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
           config.method = config.method!.toLowerCase() as Method;
 
           const responseData: IrResponse = {
+            type: response.type,
             data: '',
             status: response.status,
             statusText: response.statusText,

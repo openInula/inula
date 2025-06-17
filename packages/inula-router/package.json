@@ -36,7 +36,7 @@
     "redux": "4.2.1"
   },
   "peerDependencies": {
-    "openinula": ">=0.0.10"
+    "openinula": ">=0.0.1"
   },
   "browserslist": {
     "production": [

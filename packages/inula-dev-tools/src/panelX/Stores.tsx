@@ -71,4 +71,6 @@ export default function Stores({ nextStoreId, showFilteredEvents }) {
       removeBackgroundMessageListener(listener);
     };
   });
+
+  return null;
 }

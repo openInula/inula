@@ -14,11 +14,11 @@
  */
 
 import { PickElement, StopPickElement } from '../utils/constants';
-import { getElement, helper, postMessage } from './index';
+import { getElement, helper, sendToContentScript } from './index';
 import { queryVNode, VNodeToIdMap } from '../parser/parseVNode';
 import { isUserComponent } from '../parser/parseVNode';
 import { throttle } from 'lodash';
-import { hideHighlight, showHighlight } from '../highlight';
+import { hideHighlight, showHighlight } from './highLightElement';
 
 // 判断鼠标移入节点是否为 dev tools 上的节点，如果不是则找父节点
 function getUserComponent(target) {
@@ -56,13 +56,7 @@ function onMouseMove(event: MouseEvent) {
     }
 
     // 0.5 秒内在节流结束后只触发一次
-    throttle(
-      () => {
-        postMessage(PickElement, id);
-      },
-      500,
-      { leading: false, trailing: true }
-    )();
+    throttle(() => sendToContentScript(PickElement, id), 500, { leading: false, trailing: true })();
   }
 }
 
