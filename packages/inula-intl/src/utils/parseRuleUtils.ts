@@ -158,16 +158,16 @@ function getRuleOptions(type: any, obj: any) {
 
   // 创建默认的选项对象，初始化各个选项属性
   const options: Record<string, any> = {
-    defaultType: type,
-    lineBreaks: !!obj.error || !!obj.fallback,
-    pop: false,
-    next: null,
-    push: null,
-    error: false,
-    fallback: false,
     value: null,
     type: null,
+    defaultType: type,
+    pop: false,
+    push: null,
+    next: null,
+    error: false,
+    fallback: false,
     shouldThrow: false,
+    lineBreaks: !!obj.error || !!obj.fallback,
   };
 
   Object.assign(options, obj);
