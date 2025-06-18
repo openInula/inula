@@ -14,19 +14,15 @@
  */
 
 import { AllMessages, Messages } from '../../../types/types';
-import { isNull, isObject } from './utils';
+import { isObject } from './utils';
 import {
   AFTER_PATH,
-  APPEND,
   BEFORE_PATH,
   ERROR,
   IN_DOUBLE_QUOTE,
   IN_SINGLE_QUOTE,
   IN_SUB_PATH,
-  INC_SUB_PATH_DEPTH,
   pathStateMachine,
-  PUSH,
-  PUSH_SUB_PATH,
 } from '../constants';
 import { PathStateMachine, PathValue } from '../type/types';
 
@@ -83,23 +79,15 @@ function parse(path: string): string[] {
   let index: number = -1;
   let mode: number = BEFORE_PATH;
   let subPathDepth: number = 0;
-  let c: string | undefined;
+  let char: string | undefined;
   let key: any;
   let newChar: string;
   let type: string;
   let transition: any;
   let action: () => void | boolean;
   let typeMap: PathStateMachine;
-  const actions: Array<() => void | boolean> = [];
 
-  actions[PUSH] = function () {
-    if (key !== undefined) {
-      keys.push(key);
-      key = undefined;
-    }
-  };
-
-  actions[APPEND] = function () {
+  const append = () => {
     if (key === undefined) {
       key = newChar;
     } else {
@@ -107,18 +95,25 @@ function parse(path: string): string[] {
     }
   };
 
-  actions[INC_SUB_PATH_DEPTH] = function () {
-    actions[APPEND]();
+  const push = () => {
+    if (key !== undefined) {
+      keys.push(key);
+      key = undefined;
+    }
+  };
+
+  const incSubPathDepth = () => {
+    append();
     subPathDepth++;
   };
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  actions[PUSH_SUB_PATH] = function () {
+  const pushSubPath = () => {
     if (subPathDepth > 0) {
       subPathDepth--;
       mode = IN_SUB_PATH;
-      actions[APPEND]();
+      append();
     } else {
       subPathDepth = 0;
       if (key === undefined) {
@@ -128,30 +123,32 @@ function parse(path: string): string[] {
       if (key === false) {
         return false;
       } else {
-        actions[PUSH]();
+        push();
       }
     }
   };
+
+  const actions: Array<() => void | boolean> = [append, push, incSubPathDepth, pushSubPath];
 
   function maybeUnescapeQuote(): boolean | void {
     const nextChar: string = path[index + 1];
     if ((mode === IN_SINGLE_QUOTE && nextChar === "'") || (mode === IN_DOUBLE_QUOTE && nextChar === '"')) {
       index++;
       newChar = '\\' + nextChar;
-      actions[APPEND]();
+      append();
       return true;
     }
   }
 
   while (mode !== null) {
     index++;
-    c = path[index];
+    char = path[index];
 
-    if (c === '\\' && maybeUnescapeQuote()) {
+    if (char === '\\' && maybeUnescapeQuote()) {
       continue;
     }
 
-    type = getPathCharType(c);
+    type = getPathCharType(char);
 
     //  根据不同的字符串，进行匹配对应的状态模式
     typeMap = pathStateMachine[mode];
@@ -167,7 +164,7 @@ function parse(path: string): string[] {
     action = actions[transition[1]];
     if (action) {
       newChar = transition[2];
-      newChar = newChar === undefined ? c : newChar;
+      newChar = newChar === undefined ? char : newChar;
       if (action() === false) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
