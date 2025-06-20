@@ -1,4 +1,4 @@
-import { useInstance } from 'vue-horizon';
+import { useInstance } from 'vue-inula';
 
 export default function (props) {
   const { theme } = props;

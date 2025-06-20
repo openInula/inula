@@ -1,5 +1,5 @@
 export default function (props) {
-  // horizon rendering is synchronous, so this timeout appends this function at next asynchronous position to execute after render
+  // inula rendering is synchronous, so this timeout appends this function at next asynchronous position to execute after render
   useEffect(() => {
     // this timeout should be wrapped as an adapter that way you can call only $nextClick( ... ) as usual
     const timeout = setTimeout(() => {

@@ -15,7 +15,7 @@ export default {
     // We need to decide how this can be processed to implement custom global functions
     app.config.globalProperties.$hideLoading = hideLoading;
     // Should we do something like this?
-    import { registerGlobal } from 'vue-horizon';
+    import { registerGlobal } from 'inula-vue';
     registerGlobal('$hideLoading', hideLoading);
   },
 };

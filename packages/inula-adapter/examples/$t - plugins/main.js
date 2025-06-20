@@ -1,4 +1,4 @@
-import { createApp } from 'horizon-vue'; //here original function is replaced with adapter!
+import { createApp } from 'vue-inula'; //here original function is replaced with adapter!
 import App from 'App.vue';
 import i18n from './i18n';
 
