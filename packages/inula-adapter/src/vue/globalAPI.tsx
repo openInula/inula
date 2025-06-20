@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Horizon, {
+import Inula, {
   createContext,
   lazy,
   render,
@@ -21,7 +21,7 @@ import Horizon, {
   unmountComponentAtNode,
   useContext,
   vueReactive,
-} from '@cloudsop/horizon';
+} from 'openinula';
 import { vShow } from './vShow';
 
 const { useInstance } = vueReactive;
@@ -104,7 +104,7 @@ export function createApp(rootComponent, id: string = DEFAULT_APP_KEY) {
   let isMounted = false;
 
   if (typeof rootComponent === 'function') {
-    rootComponent = Horizon.createElement(rootComponent, {});
+    rootComponent = Inula.createElement(rootComponent, {});
   }
 
   const app: App = (context.app = {
@@ -136,7 +136,7 @@ export function createApp(rootComponent, id: string = DEFAULT_APP_KEY) {
 
     mixin(mixin) {
       // 不支持
-      console.log('Horizon中暂时不支持mixin，请用Hook方式进行改造代码。');
+      console.log('Inula中暂时不支持mixin，请用Hook方式进行改造代码。');
       return app;
     },
 
@@ -188,7 +188,7 @@ export function createApp(rootComponent, id: string = DEFAULT_APP_KEY) {
 
     runWithContext(fn) {
       // 不支持
-      console.log('Horizon中暂时不支持runWithContext，请手动修改相关的代码。');
+      console.log('Inula中暂时不支持runWithContext，请手动修改相关的代码。');
       return fn();
     },
   });

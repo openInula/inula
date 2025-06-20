@@ -1,4 +1,4 @@
-import { createContext, useContext } from '@cloudsop/horizon';
+import { createContext, useContext } from 'openinula';
 
 // Allows holding multiple variables and accessing them implicitly
 const contextMap = new Map();
