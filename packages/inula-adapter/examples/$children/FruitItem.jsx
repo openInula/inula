@@ -1,4 +1,4 @@
-import { useRef, defineExpose } from 'vue-horizon';
+import { useRef, defineExpose } from 'vue-inula';
 export default function (props) {
   const { fruitName } = props;
 
