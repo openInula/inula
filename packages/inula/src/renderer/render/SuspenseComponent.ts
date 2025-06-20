@@ -215,7 +215,11 @@ function resolvePromise(suspenseVNode: VNode, promise: PromiseType<any>) {
   if (promiseCache !== null) {
     promiseCache.delete(promise);
   }
-  suspenseVNode.suspenseState!.promiseResolved = true;
+  // 检查suspenseVNode是否已经被清理（卸载）
+  if (suspenseVNode.suspenseState !== null) {
+    suspenseVNode.suspenseState.promiseResolved = true;
+  }
+
   const root = updateShouldUpdateOfTree(suspenseVNode);
   if (root !== null) {
     tryRenderFromRoot(root);
