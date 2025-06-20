@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import type { RefType, UnwrapRef, ComputedImpl } from '@cloudsop/horizon';
+import type { RefType, UnwrapRef, ComputedImpl } from 'openinula';
 
 export type StoreSetup<R = Record<string, unknown>> = () => R;
 

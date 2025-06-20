@@ -1,4 +1,4 @@
-import Horizon, {
+import {
   ComponentType,
   useCallback,
   useEffect,
@@ -6,14 +6,14 @@ import Horizon, {
   useMemo,
   createElement,
   vueReactive,
-} from '@cloudsop/horizon';
+} from 'openinula';
 import { useDirectives } from './globalAPI';
 
 const { useInstance } = vueReactive;
 
 /**
  * Vue写法：<div v-click-outside:foo.bar="closePopup" v-focus class="popup">
- * Horizon写法：
+ * Inula写法：
  * <DirectiveComponent
  *   componentName={'div'}
  *   directives={[
