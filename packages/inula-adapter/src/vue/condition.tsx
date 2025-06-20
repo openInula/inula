@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Horizon, { isValidElement, Children, FC } from '@cloudsop/horizon';
+import Inula, { isValidElement, Children, FC } from 'openinula';
 
 interface ConditionalProps {
   children?: any;

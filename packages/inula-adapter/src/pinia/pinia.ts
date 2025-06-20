@@ -12,7 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import { createStore, StoreObj, vueReactive } from '@cloudsop/horizon';
+import { createStore, StoreObj, vueReactive } from 'openinula';
 import {
   FilterAction,
   FilterComputed,
@@ -195,7 +195,7 @@ export function storeToRefs<
 
 export function createPinia() {
   console.warn(
-    `The pinia-adapter in Horizon does not support the createPinia interface. Please modify your code accordingly.`
+    `The pinia-adapter in inula does not support the createPinia interface. Please modify your code accordingly.`
   );
 
   const result = {
