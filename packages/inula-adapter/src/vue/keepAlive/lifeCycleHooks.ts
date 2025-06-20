@@ -1,4 +1,4 @@
-import { useContext, useRef, useEffect } from '@cloudsop/horizon';
+import { useContext, useRef, useEffect } from 'openinula';
 import { NodeKeeperLifeCycleContext } from './context';
 
 export enum KEEP_ALIVE_LIFECYCLE {

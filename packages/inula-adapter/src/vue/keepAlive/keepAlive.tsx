@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useMemo } from '@cloudsop/horizon';
+import React, { useRef, useEffect, useState, useMemo } from 'openinula';
 import Keeper from './keeper';
 
 type StringRegexList = string | RegExp | (string | RegExp)[];
