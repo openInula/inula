@@ -12,7 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import Horizon, { vueReactive, useRef, ReactiveRet } from '@cloudsop/horizon';
+import Inula, { vueReactive, useRef, ReactiveRet } from 'openinula';
 import useScoped from './useScoped';
 
 const { shallowReactive } = vueReactive;

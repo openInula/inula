@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { InulaNode, vueReactive } from '@cloudsop/horizon';
+import { InulaNode, vueReactive } from 'openinula';
 import { emit } from './globalAPI';
 
 const { useInstance } = vueReactive;
