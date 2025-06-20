@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from '@cloudsop/horizon';
+import React, { useRef, useEffect } from 'openinula';
 import { NodeKeeperLifeCycleContext } from './context';
 import { KEEP_ALIVE_LIFECYCLE, LifeCycleFunc } from './lifeCycleHooks';
 

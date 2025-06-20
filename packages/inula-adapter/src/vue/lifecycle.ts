@@ -12,7 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import { useEffect, useLayoutEffect, useRef } from '@cloudsop/horizon';
+import { useEffect, useLayoutEffect, useRef } from 'openinula';
 import { FN } from './types';
 
 // 用于存储组件是否已挂载的状态
