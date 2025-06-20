@@ -1,5 +1,5 @@
 import TableItem from 'table-item';
-import { expose } from 'vue-horizon';
+import { expose } from 'vue-inula';
 
 export default function (props) {
   const { items } = props;

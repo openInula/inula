@@ -1,4 +1,4 @@
-import { reactive } from 'vue-horizon';
+import { reactive } from 'vue-inula';
 
 export default function (props) {
   const fruits = reactive([

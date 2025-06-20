@@ -1,4 +1,4 @@
-import { ref, defineExpose } from 'vue-horizon';
+import { ref, defineExpose } from 'vue-inula';
 
 export default function (props) {
   const theme = ref('light');
