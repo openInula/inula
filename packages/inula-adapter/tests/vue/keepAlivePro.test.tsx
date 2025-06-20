@@ -18,7 +18,7 @@ import { createApp } from '../../src/vue/globalAPI';
 import '../utils/globalSetup';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { DynamicComponent } from '../../src/vue';
-import { useState } from '@cloudsop/horizon';
+import { useState } from 'openinula';
 
 function wait(ms) {
   return new Promise(resolve => {

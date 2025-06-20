@@ -1,7 +1,7 @@
-import Inula from '@cloudsop/horizon';
+import Inula from 'openinula';
 import { History, Location } from './index';
 import { type Matched, matchPath } from '../matcher/parser';
-import { useContext, Children, createElement, InulaNode, ComponentType } from '@cloudsop/horizon';
+import { useContext, Children, createElement, InulaNode, ComponentType } from 'openinula';
 import RouterContext from './context';
 import type { GetURLParams } from '../matcher/types';
 

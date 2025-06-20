@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { InulaNode, useLayoutEffect, useRef, useState } from '@cloudsop/horizon';
+import { InulaNode, useLayoutEffect, useRef, useState } from 'openinula';
 import { RouteContext, RouterContext } from './RouterContext';
 import { initRouter, RouterOptions, VueRouter, VueRouterInternal } from './Router';
 import { parseURL } from './utils';

@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Horizon, { useState, useEffect, useRef, ChangeEvent, FC } from '@cloudsop/horizon';
+import Inula, { useState, useEffect, useRef, ChangeEvent, FC } from 'openinula';
 
 // 定义组件的属性接口
 interface SemiControlledInputProps {

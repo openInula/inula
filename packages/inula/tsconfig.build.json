@@ -6,6 +6,6 @@
     "declaration": true,
     "skipLibCheck": true,
     "emitDeclarationOnly": true,
-    "declarationDir": "./build/horizon/@types"
+    "declarationDir": "./build/inula/@types"
   }
 }

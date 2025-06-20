@@ -14,7 +14,7 @@
  */
 
 import { describe, it, vi, expect } from 'vitest';
-import { render, act, useState } from '@cloudsop/horizon';
+import { render, act, useState } from 'openinula';
 import { onBeforeUnmount, onUnmounted, onMounted, onBeforeMount, onUpdated } from '../../src/vue/lifecycle';
 
 describe('lifecycle', () => {

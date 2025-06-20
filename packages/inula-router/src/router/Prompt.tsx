@@ -1,5 +1,5 @@
-import Inula, { useRef } from '@cloudsop/horizon';
-import { useContext } from '@cloudsop/horizon';
+import Inula, { useRef } from 'openinula';
+import { useContext } from 'openinula';
 import { LifeCycle, LifeCycleProps } from './lifeCycleHook';
 import { Location } from './index';
 import { Action } from '../history/types';

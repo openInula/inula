@@ -15,7 +15,7 @@
 
 import { beforeEach, describe, it, vi, expect } from 'vitest';
 import { defineStore, storeToRefs } from '../../src/pinia/pinia';
-import { vueReactive } from '@cloudsop/horizon';
+import { vueReactive } from 'openinula';
 
 const { ref, computed, reactive } = vueReactive;
 

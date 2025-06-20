@@ -12,7 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import { isMemo, ForwardRef } from '@cloudsop/horizon';
+import { isMemo, ForwardRef } from 'openinula';
 import { INULA_FORWARD_REF_STATICS, INULA_MEMO_STATICS, INULA_STATICS, NATIVE_STATICS } from '../constants';
 
 const staticsMap = new Map();

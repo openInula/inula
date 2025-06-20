@@ -12,7 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import { useCallback, useEffect, useMemo, useState } from '@cloudsop/horizon';
+import { useCallback, useEffect, useMemo, useState } from 'openinula';
 import { InjectProvider } from './InjectI18n';
 import { createI18nInstance, I18n } from '../I18n';
 import { I18nProviderProps } from '../../types/types';

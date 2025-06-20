@@ -1,5 +1,5 @@
-import Inula from '@cloudsop/horizon';
-import { useContext } from '@cloudsop/horizon';
+import Inula from 'openinula';
+import { useContext } from 'openinula';
 import RouterContext from './context';
 import { LifeCycle, LifeCycleProps } from './lifeCycleHook';
 import { Matched, createPathParser } from '../matcher/parser';

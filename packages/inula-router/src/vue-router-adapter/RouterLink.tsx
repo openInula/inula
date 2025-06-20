@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { InulaNode, useContext } from '@cloudsop/horizon';
+import { InulaNode, useContext } from 'openinula';
 import { RouterContext } from './RouterContext';
 import { useLink } from './hooks';
 

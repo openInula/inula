@@ -13,8 +13,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { NumberFormatter } from '../../../src/intl';
-import creatI18nCache from '../../../src/intl/format/cache/cache';
+import { NumberFormatter } from '../../../index';
+import creatI18nCache from '../../../src/format/cache/cache';
 
 describe('NumberFormatter', () => {
   it('number formatter is memoized', async () => {

@@ -1,5 +1,5 @@
-import Inula from '@cloudsop/horizon';
-import { useContext, MouseEvent, ComponentType, Ref } from '@cloudsop/horizon';
+import Inula from 'openinula';
+import { useContext, MouseEvent, ComponentType, Ref } from 'openinula';
 import RouterContext from './context';
 import { Location } from './index';
 import { createPath, parsePath } from '../history/utils';

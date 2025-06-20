@@ -2,6 +2,7 @@
   "presets": [
     ["@babel/preset-env", {
       "targets": {
+        "browsers": ["> 1%", "last 2 versions", "not ie <= 8"],
         "node": "current"
       }
     }],
@@ -14,7 +15,7 @@
       "@babel/plugin-transform-react-jsx",
       {
         "runtime": "automatic",
-        "importSource": "@cloudsop/horizon"
+        "importSource": "openinula"
       }
     ],
     ["@babel/plugin-proposal-class-properties", { "loose": true }],

@@ -12,7 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import { Children, Fragment } from '@cloudsop/horizon';
+import { Children, Fragment } from 'openinula';
 import { FormattedMessageProps } from '../../types/interfaces';
 import { useIntl } from '../../../index';
 

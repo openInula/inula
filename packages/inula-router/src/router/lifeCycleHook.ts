@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from '@cloudsop/horizon';
+import { useLayoutEffect, useRef } from 'openinula';
 
 export type LifeCycleProps = {
   onMount?: () => void;

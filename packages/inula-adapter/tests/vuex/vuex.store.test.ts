@@ -15,7 +15,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { createStore } from '../../src/vuex/vuex';
-import { vueReactive } from '@cloudsop/horizon';
+import { vueReactive } from 'openinula';
 
 const { nextTick } = vueReactive;
 

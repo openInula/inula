@@ -38,16 +38,16 @@ const BuildConfig = mode => {
       sourcemap: 'true',
       format: 'cjs',
       globals: {
-        '@cloudsop/horizon': 'Horizon',
+        openinula: 'Inula',
       },
     },
     {
       file: path.join(output, `umd/intl.${prod ? 'min.' : ''}js`),
-      name: 'HorizonI18n',
+      name: 'InulaI18n',
       sourcemap: 'true',
       format: 'umd',
       globals: {
-        '@cloudsop/horizon': 'Horizon',
+        openinula: 'Inula',
       },
     },
   ];
@@ -84,7 +84,7 @@ const BuildConfig = mode => {
         brotliSize: true,
       }),
     ],
-    external: ['@cloudsop/horizon', 'react', 'react-dom'],
+    external: ['openinula', 'react', 'react-dom'],
   };
 };
 export default [BuildConfig('dev'), BuildConfig('prod')];

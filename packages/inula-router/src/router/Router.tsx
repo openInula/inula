@@ -1,5 +1,5 @@
-import Inula from '@cloudsop/horizon';
-import { useLayoutEffect, useMemo, useRef, useState, InulaNode } from '@cloudsop/horizon';
+import Inula from 'openinula';
+import { useLayoutEffect, useMemo, useRef, useState, InulaNode } from 'openinula';
 
 import { History, Location } from '../history/types';
 

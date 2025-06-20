@@ -2,26 +2,25 @@
  * Copyright (c) Huawei Technologies Co., Ltd. 2023-2023. All rights reserved.
  */
 
-import * as React from 'react';
-import { render, screen } from '../../testingLibrary/testingLibrary';
-import { IntlProvider, useIntl } from '../../../src/intl';
+import { render } from 'openinula';
+import { IntlProvider, useIntl } from '../../../index';
 
 const FunctionComponent = ({ spy }: { spy?: Function }) => {
-  const { intl } = useIntl();
-  spy!(intl.locale);
+  const { locale } = useIntl();
+  spy!(locale);
   return null;
 };
 
 const FC = () => {
   const i18n = useIntl();
-  return i18n.formatNumber(10000, { style: 'currency', currency: 'USD' }) as any;
+  return <span>{i18n.formatNumber(10000, { style: 'currency', currency: 'USD' })}</span>;
 };
 
 describe('useIntl() hooks', () => {
   it('throws when <IntlProvider> is missing from ancestry', () => {
     // So it doesn't spam the console
     jest.spyOn(console, 'error').mockImplementation(() => {});
-    expect(() => render(<FunctionComponent />)).toThrow('I18n object is not found!');
+    expect(() => render(<FunctionComponent />, container)).toThrow('I18n object is not found!');
   });
 
   it('hooks onto the intl context', () => {
@@ -29,7 +28,8 @@ describe('useIntl() hooks', () => {
     render(
       <IntlProvider locale="en">
         <FunctionComponent spy={spy} />
-      </IntlProvider>
+      </IntlProvider>,
+      container
     );
     expect(spy).toHaveBeenCalledWith('en');
   });
@@ -37,28 +37,32 @@ describe('useIntl() hooks', () => {
   it('should work when switching locale on provider', () => {
     render(
       <IntlProvider locale="en">
-        <span data-testid="comp">
+        <div data-testid="comp">
           <FC />
-        </span>
-      </IntlProvider>
+        </div>
+      </IntlProvider>,
+      container
     );
-    expect(screen.getByTestId('comp')).toMatchSnapshot();
+    expect(container.querySelector('[data-testid="comp"]')!.innerHTML).toMatchSnapshot();
+
     render(
       <IntlProvider locale="es">
-        <span data-testid="comp">
+        <div data-testid="comp">
           <FC />
-        </span>
-      </IntlProvider>
+        </div>
+      </IntlProvider>,
+      container
     );
-    expect(screen.getByTestId('comp')).toMatchSnapshot();
+    expect(container.querySelector('[data-testid="comp"]')!.innerHTML).toMatchSnapshot();
+
     render(
       <IntlProvider locale="en">
-        <span data-testid="comp">
+        <div data-testid="comp">
           <FC />
-        </span>
-      </IntlProvider>
+        </div>
+      </IntlProvider>,
+      container
     );
-
-    expect(screen.getByTestId('comp')).toMatchSnapshot();
+    expect(container.querySelector('[data-testid="comp"]')!.innerHTML).toMatchSnapshot();
   });
 });

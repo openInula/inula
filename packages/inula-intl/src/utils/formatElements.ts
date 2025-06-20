@@ -12,7 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import { cloneElement, createElement, Fragment, InulaElement } from '@cloudsop/horizon';
+import { cloneElement, createElement, Fragment, InulaElement } from 'openinula';
 import { voidElementTags } from '../constants';
 
 // 用于匹配标签的正则表达式

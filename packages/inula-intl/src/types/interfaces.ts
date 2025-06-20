@@ -26,7 +26,7 @@ import {
 } from './types';
 import I18n from '../core/I18n';
 import Lexer from '../parser/Lexer';
-import { InulaElement, Key } from '@cloudsop/horizon';
+import { InulaElement, Key } from 'openinula';
 import VueI18n from '../vueI18n-adapter/src/VueI18n';
 
 // FormattedMessage的参数定义

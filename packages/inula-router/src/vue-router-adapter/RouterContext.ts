@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { createContext } from '@cloudsop/horizon';
+import { createContext } from 'openinula';
 import type { NormalizedRouteRecord, RouteLocation } from './types';
 import type { VueRouter } from './Router';
 import { START_LOCATION } from './const';

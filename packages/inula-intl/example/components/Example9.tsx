@@ -2,8 +2,7 @@
  * Copyright (c) Huawei Technologies Co., Ltd. 2023-2023. All rights reserved.
  */
 
-import { useI18n } from '../../src/intl';
-import { useLocalMessage } from '../../src/vueI18n/hooks/useLocalMessage';
+import { useI18n } from '../../index';
 
 const Example9 = () => {
   const localeMessage = {
@@ -17,8 +16,8 @@ const Example9 = () => {
     },
   };
 
-  const { locale, changeLanguage } = useI18n();
-  const { t } = useLocalMessage(localeMessage);
+  const { t, locale, changeLanguage, setLocalMessage } = useI18n();
+  setLocalMessage('Example9', localeMessage);
   const handleChange2 = () => {
     changeLanguage(locale === 'zh' ? 'en' : 'zh');
   };
@@ -27,7 +26,7 @@ const Example9 = () => {
     <div className="card">
       <h2>局部message切换</h2>
       <pre>
-        <p>{t('hello')}</p>
+        <p>{t('hello', {}, 'Example9')}</p>
         <p>{locale}</p>
       </pre>
       <div className="button">

@@ -106,7 +106,7 @@ const vueReactive = {
   toInstance,
 };
 
-const Horizon = {
+const Inula = {
   Children,
   createRef,
   Component,
@@ -227,4 +227,4 @@ export * from './inulax/types/StoreTypes';
 export { ComputedImpl } from './inulax/reactive/Computed';
 export { VNode } from './renderer/vnode/VNode';
 
-export default Horizon;
+export default Inula;

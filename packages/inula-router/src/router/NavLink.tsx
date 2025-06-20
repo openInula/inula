@@ -1,5 +1,5 @@
-import Inula from '@cloudsop/horizon';
-import { useContext } from '@cloudsop/horizon';
+import Inula from 'openinula';
+import { useContext } from 'openinula';
 import type { LinkProps } from './Link';
 import Link from './Link';
 import { Location, matchPath } from './index';

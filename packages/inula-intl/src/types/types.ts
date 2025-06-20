@@ -28,7 +28,7 @@ import {
   MessageOptions,
   I18nCache,
 } from './interfaces';
-import { InulaElement } from '@cloudsop/horizon';
+import { InulaElement } from 'openinula';
 
 export type Error = string | ((message: any, id: any, context: any) => string);
 

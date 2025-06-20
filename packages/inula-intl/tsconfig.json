@@ -21,7 +21,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
-    "target": "es5",
+    "target": "es6",
     "jsx": "preserve",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
@@ -55,7 +55,7 @@
     }
   },
   "include": [
-    "./src/intl/index.ts"
+    "./index.ts"
   ],
   "exclude": [
     "node_modules",
@@ -71,6 +71,6 @@
     "@testing-library/jest-dom"
   ],
   "files": [
-    "./src/intl/index.ts"
+    "./index.ts"
   ]
 }

@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { createIntl } from '../../src/intl';
+import { createIntl } from '../../index';
 
 const Example10 = props => {
   // 受渲染时机影响，createIntl方式需控制时序，否则慢一拍

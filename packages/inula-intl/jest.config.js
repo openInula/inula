@@ -24,6 +24,7 @@ export default {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/tests/$1',
   },
+  setupFilesAfterEnv: ['./tests/jestSetting.js'],
   transform: {
     '^.+\\.(ts|js|jsx|tsx)$': 'babel-jest',
   },
@@ -36,6 +37,4 @@ export default {
   testPathIgnorePatterns: ['\\\\node_modules\\\\'],
 
   testEnvironment: 'jsdom',
-  globalSetup: '<rootDir>/tests/testingLibrary/globalSetup.js',
-  setupFilesAfterEnv: ['<rootDir>/tests/testingLibrary/setupTests.js'],
 };

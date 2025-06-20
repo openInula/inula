@@ -12,7 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import Inula from '@cloudsop/horizon';
+import Inula from 'openinula';
 import App from './App';
 
 function render() {

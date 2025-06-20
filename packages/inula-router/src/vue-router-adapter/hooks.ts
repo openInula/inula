@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { useContext, useEffect, useMemo, useRef } from '@cloudsop/horizon';
+import { useContext, useEffect, useMemo, useRef } from 'openinula';
 import { RouteContext, RouterContext } from './RouterContext';
 import { guardEvent, includesParams, isSameRouteLocation } from './utils';
 import type { RouterLinkProps } from './RouterLink';

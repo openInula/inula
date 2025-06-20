@@ -12,7 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import { FormattedMessage } from '../../src/intl';
+import { FormattedMessage } from '../../index';
 
 const Example2 = () => {
   return (

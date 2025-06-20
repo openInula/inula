@@ -14,7 +14,7 @@
  */
 
 import { describe, it, vi, expect } from 'vitest';
-import { render, act, vueReactive, useEffect } from '@cloudsop/horizon';
+import { render, act, vueReactive, useEffect } from 'openinula';
 import { useReactiveProps } from '../../src/vue';
 
 const { useReactive, useComputed, useWatch, nextTick } = vueReactive;

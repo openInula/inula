@@ -12,7 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import EventEmitter from '../../src/intl/utils/eventListener';
+import EventEmitter from '../../src/utils/eventListener';
 
 describe('eventEmitter', () => {
   it('should call registered event listeners on emit', async () => {

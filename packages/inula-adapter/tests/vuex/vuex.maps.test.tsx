@@ -16,7 +16,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createStore, registerStore } from '../../src/vuex/vuex';
 import { useMapState, useMapMutations, useMapActions, useMapGetters } from '../../src/vuex/maps';
-import { render } from '@cloudsop/horizon';
+import { render } from 'openinula';
 import '../utils/globalSetup';
 
 describe('vuex maps API', () => {

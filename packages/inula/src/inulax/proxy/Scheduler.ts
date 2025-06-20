@@ -58,7 +58,7 @@ export function queueJob(job) {
 }
 
 /**
- * 即依赖flushPromise，也要依赖Horizon渲染机制中的异步机制runAsync，才能做到等待DOM渲染
+ * 即依赖flushPromise，也要依赖Inula渲染机制中的异步机制runAsync，才能做到等待DOM渲染
  * @param this - 执行上下文
  * @param fn - 可选的回调函数
  * @returns Promise - 返回一个 Promise，当回调函行完成时 resolve

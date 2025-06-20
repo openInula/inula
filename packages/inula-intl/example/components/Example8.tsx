@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { useI18n } from '../../src/vueI18n/hooks/useI18n';
+import { useI18n } from '../../src/vueI18n-adapter/src/hooks/useI18n';
 
 const Example8 = () => {
   const { t, locale, changeLanguage } = useI18n();

@@ -1,5 +1,5 @@
-import Inula from '@cloudsop/horizon';
-import { useRef, InulaNode } from '@cloudsop/horizon';
+import Inula from 'openinula';
+import { useRef, InulaNode } from 'openinula';
 import Router from './Router';
 import { createBrowserHistory } from '../history/browerHistory';
 import { ConfirmationFunc, History } from '../history/types';

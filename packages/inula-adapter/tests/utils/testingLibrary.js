@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import Horizon from '@cloudsop/horizon';
+import Inula from 'openinula';
 import { expect } from 'vitest';
 import { createApp } from '../../src/vue';
 

@@ -13,8 +13,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { useState } from '@cloudsop/horizon';
-import { createI18n, I18nProvider, IntlProvider } from '../src/intl';
+import { useState } from 'openinula';
+import { createI18n, I18nProvider, IntlProvider } from '../index';
 import zh from './locale/zh';
 import en from './locale/en';
 import Example1 from './components/Example1';
@@ -36,7 +36,7 @@ const App = () => {
 
   const message = locale === 'zh' ? zh : en;
 
-  const { global: i18n } = createI18n({
+  const i18n = createI18n({
     locale: 'en',
     messages: {
       en: {

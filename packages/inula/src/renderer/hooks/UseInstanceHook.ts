@@ -47,8 +47,8 @@ function createInstance(curVNode: VNode): Instance {
           }
 
           // 特殊处理：
-          // 因为vue-to-horizon工具会把<component :is="Comp"></component>编译成<DirectiveComponent componentName="Comp">，多包了一层组件
-          // 因为vue-to-horizon工具会把<Comp v-xxx>编译成<DirectiveComponent componentName="Comp">，多包了一层组件
+          // 因为vue-to-inula工具会把<component :is="Comp"></component>编译成<DirectiveComponent componentName="Comp">，多包了一层组件
+          // 因为vue-to-inula工具会把<Comp v-xxx>编译成<DirectiveComponent componentName="Comp">，多包了一层组件
           while (
             !isComponentVNode(vNode) ||
             vNode.type.name === DYNAMIC_COMPONENT ||
@@ -270,8 +270,8 @@ export function useInstanceImpl(vNode?: VNode): Instance {
 export function toInstance(vNode: VNode) {
   if (vNode.tag && vNode.tag === FunctionComponent) {
     // 特殊处理：
-    // 因为vue-to-horizon工具会把<component :is="Comp"></component>编译成<DynamicComponent is="Comp">，多包了一层组件
-    // 因为vue-to-horizon工具会把<Comp v-xxx>编译成<DirectiveComponent componentName="Comp">，多包了一层组件
+    // 因为vue-to-inula工具会把<component :is="Comp"></component>编译成<DynamicComponent is="Comp">，多包了一层组件
+    // 因为vue-to-inula工具会把<Comp v-xxx>编译成<DirectiveComponent componentName="Comp">，多包了一层组件
     if (
       vNode.type.__internal_comp_tag === DYNAMIC_COMPONENT ||
       vNode.type.__internal_comp_tag === DIRECTIVE_COMPONENT
