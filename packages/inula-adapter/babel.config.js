@@ -21,7 +21,7 @@ module.exports = {
       '@babel/plugin-transform-react-jsx',
       {
         runtime: 'automatic',
-        importSource: '@cloudsop/horizon',
+        importSource: 'openinula',
       },
     ],
     ['@babel/plugin-proposal-class-properties', { loose: true }],
