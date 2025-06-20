@@ -146,10 +146,11 @@ function getRulesByArray(array: any[]) {
 }
 
 // 创建默认选项对象的工厂函数
-function createDefaultOptions(type: any, obj: any): Record<string, any> {
+function createDefaultOptions(defaultType: any, obj: any): Record<string, any> {
   const lineBreaks = !!obj.error || !!obj.fallback;
   return {
     lineBreaks,
+    defaultType,
     value: null,
     pop: false,
     push: null,
@@ -158,7 +159,6 @@ function createDefaultOptions(type: any, obj: any): Record<string, any> {
     fallback: false,
     shouldThrow: false,
     type: null,
-    defaultType: type,
   };
 }
 
