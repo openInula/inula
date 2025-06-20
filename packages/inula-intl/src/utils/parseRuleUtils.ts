@@ -145,6 +145,23 @@ function getRulesByArray(array: any[]) {
   return result;
 }
 
+// 创建默认选项对象的工厂函数
+function createDefaultOptions(defaultType: any, obj: any): Record<string, any> {
+  const lineBreaks = !!obj.error || !!obj.fallback;
+  return {
+    lineBreaks,
+    defaultType,
+    value: null,
+    pop: false,
+    push: null,
+    next: null,
+    error: false,
+    fallback: false,
+    shouldThrow: false,
+    type: null,
+  };
+}
+
 function getRuleOptions(type: any, obj: any) {
   // 如果 obj 不是一个对象，则将其转换为包含 'match' 属性的对象
   if (!checkObject(obj)) {
@@ -156,19 +173,7 @@ function getRuleOptions(type: any, obj: any) {
     throw new Error('The matching rule cannot contain the status!');
   }
 
-  // 创建默认的选项对象，初始化各个选项属性
-  const options: Record<string, any> = {
-    value: null,
-    type: null,
-    defaultType: type,
-    pop: false,
-    push: null,
-    next: null,
-    error: false,
-    fallback: false,
-    shouldThrow: false,
-    lineBreaks: !!obj.error || !!obj.fallback,
-  };
+  const options = createDefaultOptions(type, obj);
 
   Object.assign(options, obj);
 
@@ -215,6 +220,7 @@ const ruleUtils = {
   getReg,
   getRulesByObject,
   getRulesByArray,
+  createDefaultOptions,
   getRuleOptions,
   getRules,
 };
