@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { createI18n } from '../../../src/vueI18n/hooks/createI18n';
+import { createI18n } from '../../../src/vueI18n-adapter/src/hooks/createI18n';
 
 describe('createI18n', () => {
   it('load createIntl', () => {
@@ -26,6 +26,6 @@ describe('createI18n', () => {
         ja: {},
       },
     });
-    expect(i18n.global.$t('hello')).toEqual('hello!');
+    expect(i18n.$t('hello')).toEqual('hello!');
   });
 });

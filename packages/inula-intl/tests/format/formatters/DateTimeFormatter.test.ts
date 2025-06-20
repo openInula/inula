@@ -13,8 +13,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { DateTimeFormatter } from '../../../src/intl';
-import creatI18nCache from '../../../src/intl/format/cache/cache';
+import { DateTimeFormatter } from '../../../index';
+import creatI18nCache from '../../../src/format/cache/cache';
 
 describe('DateTimeFormatter', () => {
   const date = new Date('2023-04-03T12:34:56Z');

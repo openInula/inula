@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { StoreObj } from '@cloudsop/horizon';
+import { StoreObj } from 'openinula';
 
 export type AnyFunction = (...args: any[]) => any;
 

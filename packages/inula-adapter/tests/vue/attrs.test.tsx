@@ -14,7 +14,7 @@
  */
 
 import { describe, it, vi, expect } from 'vitest';
-import { render, act, vueReactive, useState, Component, memo, forwardRef } from '@cloudsop/horizon';
+import { render, act, vueReactive, useState, Component, memo, forwardRef } from 'openinula';
 import '../utils/globalSetup';
 import { createApp, useReactiveProps } from '../../src/vue';
 

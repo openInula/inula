@@ -15,7 +15,7 @@
 
 import { UseI18nOptions } from '../type/types';
 import VueI18n from '../VueI18n';
-import { useContext, useEffect } from '@cloudsop/horizon';
+import { useContext, useEffect } from 'openinula';
 import { I18nContext } from '../../../core/components/InjectI18n';
 
 export const useI18n = (options?: UseI18nOptions): any => {

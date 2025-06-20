@@ -23,7 +23,7 @@ import {
   useProvide,
 } from '../../src/vue/globalAPI';
 import { createStore, registerStore, useStore } from '../../src/vuex';
-import { act, lazy, Suspense } from '@cloudsop/horizon';
+import { act, lazy, Suspense } from 'openinula';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import '../utils/globalSetup';
 
@@ -183,14 +183,14 @@ describe('api: createApp', () => {
     const app = createApp(<Comp />);
 
     app.config.globalProperties.foo = 'hello';
-    app.config.globalProperties.bar = 'horizon';
+    app.config.globalProperties.bar = 'inula';
     app.config.globalProperties.fn = () => {
       // 不支持this
       return this.foo;
     };
     app.mount(global.container);
 
-    expect(document.querySelector('#foo')!.innerHTML).toBe('hello, horizon');
+    expect(document.querySelector('#foo')!.innerHTML).toBe('hello, inula');
   });
 
   it('app.component', () => {

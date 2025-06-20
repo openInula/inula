@@ -14,7 +14,7 @@
  */
 
 import { describe, it, vi, expect } from 'vitest';
-import { render, act, vueReactive } from '@cloudsop/horizon';
+import { render, act, vueReactive } from 'openinula';
 import { defineExpose } from '../../src/vue/sfcAPI';
 import '../utils/globalSetup';
 

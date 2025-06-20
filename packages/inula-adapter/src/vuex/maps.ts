@@ -14,7 +14,7 @@
  */
 
 import { moduleGettersProxy, useStore } from './vuex';
-import { vueReactive, useRef, ComputedImpl } from '@cloudsop/horizon';
+import { vueReactive, useRef, ComputedImpl } from 'openinula';
 
 const { computed } = vueReactive;
 

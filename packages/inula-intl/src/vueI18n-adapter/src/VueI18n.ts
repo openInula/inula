@@ -18,7 +18,7 @@ import { dealMsgArgs, dealNumberOrTimesArgs } from './utils/utils';
 import { I18n } from '../../../index';
 import { AllMessages, DatePool, Locale, Messages } from '../../types/types';
 import I18nPath from './utils/parseMsgParamUtils';
-import { createElement } from '@cloudsop/horizon';
+import { createElement } from 'openinula';
 import I18nProvider from '../../core/components/I18nProvider';
 
 class VueI18n extends I18n {
@@ -81,6 +81,7 @@ class VueI18n extends I18n {
     super.changeMessage(messages);
   };
 
+  // @ts-expect-error VueI18n 的 $t 方法的参数类型与 I18n 的 $t 方法的参数类型不同
   $t = (msgKey: string, values?: any, componentId?: string) => {
     const messages = componentId ? this.getComponentMessages(componentId) : this.messages;
 

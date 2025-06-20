@@ -1,21 +1,25 @@
 {
-  "name": "@cloudsop/horizon",
-  "description": "Horizon is a JavaScript framework library.",
+  "name": "openinula",
+  "description": "Inula is a JavaScript framework library.",
   "keywords": [
-    "horizon"
+    "inula"
   ],
-  "version": "0.0.77",
+  "version": "1.0.0",
   "homepage": "",
   "bugs": "",
-  "main": "index.js",
+  "license": "MulanPSL2",
+  "main": "./build/inula/index.js",
   "repository": {},
   "engines": {
     "node": ">=0.10.0"
   },
+  "publishConfig": {
+    "directory": "./build/inula"
+  },
   "scripts": {
     "build": "rollup --config ./scripts/rollup/rollup.config.js",
     "build-types": "tsc -p tsconfig.build.json || echo \"WARNING: TSC exited with status $?\" && rollup -c ./scripts/rollup/build-types.js",
-    "build:inula3rdLib-dev": "npm run build & node ./scripts/gen3rdLib.js build:horizon3rdLib-dev",
+    "build:inula3rdLib-dev": "npm run build & node ./scripts/gen3rdLib.js build:inula3rdLib-dev",
     "build:watch": "rollup --watch --config ./scripts/rollup/rollup.config.js",
     "debug-test": "yarn test --debug",
     "lint": "eslint . --ext .ts --fix",

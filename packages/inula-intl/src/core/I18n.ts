@@ -30,7 +30,7 @@ import {
   InulaNode,
 } from '../types/types';
 import creatI18nCache from '../format/cache/cache';
-import { isValidElement } from '@cloudsop/horizon';
+import { isValidElement } from 'openinula';
 
 export class I18n extends EventDispatcher<Events> {
   public locale: Locale;
@@ -45,7 +45,7 @@ export class I18n extends EventDispatcher<Events> {
     id: MessageDescriptor | string,
     values?: Record<string, unknown> | undefined,
     { messages, context, formatOptions }?: MessageOptions
-  ) => string | any[];
+  ) => string | any[] | MessageDescriptor;
 
   constructor(props: I18nProps) {
     super();

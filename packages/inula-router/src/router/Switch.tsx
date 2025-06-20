@@ -1,5 +1,5 @@
-import Inula from '@cloudsop/horizon';
-import { useContext, Children, isValidElement, cloneElement, InulaNode, InulaElement } from '@cloudsop/horizon';
+import Inula from 'openinula';
+import { useContext, Children, isValidElement, cloneElement, InulaNode, InulaElement } from 'openinula';
 
 import { Location } from './index';
 import RouterContext from './context';

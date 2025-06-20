@@ -16,9 +16,9 @@
 import react from '@vitejs/plugin-react';
 
 const alias = {
-  react: '@cloudsop/horizon', // 新增
-  'react-dom': '@cloudsop/horizon', // 新增
-  'react/jsx-dev-runtime': '@cloudsop/horizon/jsx-dev-runtime',
+  react: 'openinula', // 新增
+  'react-dom': 'openinula', // 新增
+  'react/jsx-dev-runtime': 'openinula/jsx-dev-runtime',
 };
 
 export default {

@@ -14,7 +14,7 @@
  */
 
 import { NavigationGuard } from './types';
-import { useContext, useLayoutEffect } from '@cloudsop/horizon';
+import { useContext, useLayoutEffect } from 'openinula';
 import { CurrentRouteRecord } from './RouterContext';
 
 function onBeforeRouteLeave(leaveGuard: NavigationGuard) {

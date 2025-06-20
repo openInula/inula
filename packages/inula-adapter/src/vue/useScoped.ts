@@ -1,5 +1,5 @@
-import { vueReactive, useEffect, useLayoutEffect, useRef, useCallback } from '@cloudsop/horizon';
-import type { VNode, Instance } from '@cloudsop/horizon';
+import { vueReactive, useEffect, useLayoutEffect, useRef, useCallback } from 'openinula';
+import type { VNode, Instance } from 'openinula';
 import { styles } from './helper';
 import { shallowCompare } from './compare';
 

@@ -14,7 +14,7 @@
  */
 
 import type { VueHistory } from './vueHistory';
-import { ComponentType, createElement, FunctionComponent, InulaElement } from '@cloudsop/horizon';
+import { ComponentType, createElement, FunctionComponent, InulaElement } from 'openinula';
 import type {
   ExceptListener,
   NavigationGuard,

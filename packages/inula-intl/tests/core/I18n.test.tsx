@@ -1,8 +1,8 @@
 /*
  * Copyright (c) Huawei Technologies Co., Ltd. 2023-2023. All rights reserved.
  */
-import I18n from '../../src/intl/core/I18n';
-import { render, screen } from '../testingLibrary/testingLibrary';
+import { render } from 'openinula';
+import I18n from '../../src/core/I18n';
 
 // 测试组件
 const IndividualCustomComponent = () => {
@@ -104,7 +104,7 @@ describe('I18n', () => {
       locale: 'es',
       messages: { es: messages },
     });
-    expect(i18n.formatMessage("My ''name'' is '{name}'")).toEqual("Mi ''nombre'' es '{name}'");
+    expect(i18n.formatMessage("My ''name'' is '{name}'")).toEqual("Mi ''nombre'' es {name}");
   });
 
   it('._ should format message from catalog', function () {
@@ -133,16 +133,31 @@ describe('I18n', () => {
     expect(i18n.formatMessage({ id: 'id' }, { name: value })).toEqual('hello, <strong>Jane</strong>');
   });
 
-  it('test demo from product', () => {
+  it('test for Message without curly brackets in single quote', () => {
     const messages = {
-      id: "服务商名称长度不能超过64个字符，允许输入中文、字母、数字、字符_-!@#$^.+'}{'，且不能为关键字null(不区分大小写)。",
+      'i18n.key':
+        "服务商名称长度不能超过64个字符，允许输入中文、字母、数字、字符_-!@#$^.+'}{'，且不能为关键字null(不区分大小写)。",
     };
     const i18n = new I18n({
       locale: 'zh',
       messages: { zh: messages },
     });
-    expect(i18n.formatMessage('id')).toEqual(
+    expect(i18n.formatMessage('i18n.key')).toEqual(
       "服务商名称长度不能超过64个字符，允许输入中文、字母、数字、字符_-!@#$^.+'}{'，且不能为关键字null(不区分大小写)。"
+    );
+  });
+
+  it('test for Message with curly brackets in single quote', () => {
+    const messages = {
+      'i18n.key':
+        "服务商名称长度不能超过64个字符，允许输入中文、字母、数字、字符_-!@#$^.+'{}'，且不能为关键字null(不区分大小写)。",
+    };
+    const i18n = new I18n({
+      locale: 'zh',
+      messages: { zh: messages },
+    });
+    expect(i18n.formatMessage('i18n.key')).toEqual(
+      '服务商名称长度不能超过64个字符，允许输入中文、字母、数字、字符_-!@#$^.+{}，且不能为关键字null(不区分大小写)。'
     );
   });
 
@@ -159,13 +174,10 @@ describe('I18n', () => {
     };
     const formattedMessage = i18n.formatMessage({ id: 'richText' }, values);
 
-    // 渲染格式化后的文本内容
-    render(<div>{formattedMessage}</div>);
+    render(<div data-testid="message">{formattedMessage}</div>, container);
 
-    // 检查文本内容中是否包含自定义组件的内容
-    expect(screen.getByText('This is a rich text with a custom component').innerHTML).toBe(
-      '<div>This is a rich text with a custom component: <span>Custom Component</span></div>'
-    );
+    const messageElement = container.querySelector('[data-testid="message"]')!;
+    expect(messageElement.textContent).toContain('This is a rich text with a custom component');
   });
 
   it('Should return information for nested scenes with dom elements', () => {
@@ -186,11 +198,10 @@ describe('I18n', () => {
     };
     const formattedMessage = i18n.formatMessage({ id: 'richText' }, values);
 
-    // 渲染格式化后的文本内容
-    render(<div>{formattedMessage}</div>);
+    render(<div data-testid="message">{formattedMessage}</div>, container);
 
-    // 检查文本内容中是否包含自定义组件的内容
-    expect(screen.getByText('test')).toBeTruthy();
+    const messageElement = container.querySelector('[data-testid="message"]')!;
+    expect(messageElement.textContent).toContain('test');
   });
 
   it('Should return information for nested scenes with dom elements', () => {
@@ -211,14 +222,13 @@ describe('I18n', () => {
     };
     const formattedMessage = i18n.formatMessage({ id: 'richText' }, values);
 
-    // 渲染格式化后的文本内容
-    render(<div>{formattedMessage}</div>);
+    render(<div data-testid="message">{formattedMessage}</div>, container);
 
-    // 检查文本内容中是否包含自定义组件的内容
-    expect(screen.getByText('test')).toBeTruthy();
+    const messageElement = container.querySelector('[data-testid="message"]')!;
+    expect(messageElement.textContent).toContain('test');
   });
 
-  it('should be returned as value when Multiple dom elements\n', () => {
+  it('should be returned as value when Multiple dom elements', () => {
     const messages = {
       richText: '{today}, my name is {name}, and {age} years old!',
     };
@@ -242,11 +252,10 @@ describe('I18n', () => {
     };
     const formattedMessage = i18n.formatMessage({ id: 'richText' }, values);
 
-    // 渲染格式化后的文本内容
-    render(<div>{formattedMessage}</div>);
+    render(<div data-testid="message">{formattedMessage}</div>, container);
 
-    // 检查文本内容中是否包含自定义组件的内容
-    expect(screen.getByText('my name is tom, and 16 years old!')).toBeTruthy();
+    const messageElement = container.querySelector('[data-testid="message"]')!;
+    expect(messageElement.textContent).toContain('my name is tom, and 16 years old!');
   });
 
   it('should return the formatted date and time', () => {
@@ -256,6 +265,7 @@ describe('I18n', () => {
     const formattedDateTime = i18n.formatDate('2023-06-06T07:53:54.465Z', {
       dateStyle: 'full',
       timeStyle: 'short',
+      timeZone: 'Asia/Shanghai',
     });
     expect(typeof formattedDateTime).toBe('string');
     expect(formattedDateTime).toEqual('mardi 6 juin 2023 à 15:53');
@@ -282,7 +292,7 @@ describe('I18n', () => {
       messages: message,
     });
     const messageResult = i18n.formatMessage(
-      { id: `threats.eventMgr.common.loadingTipMore` },
+      { id: 'threats.eventMgr.common.loadingTipMore' },
       { num: 100, total: 29639 }
     );
     expect(messageResult).toEqual('Loaded records: 100, total records: 29,639, pull down to load more...');

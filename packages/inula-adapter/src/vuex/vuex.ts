@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { createStore as createStoreX, StoreObj, vueReactive } from '@cloudsop/horizon';
+import { createStore as createStoreX, StoreObj, vueReactive } from 'openinula';
 import { VuexStore, VuexStoreOptions } from './types';
 import { AnyFunction } from '../vuex/types';
 

@@ -12,8 +12,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import { getFormatMessage } from '../../src/intl/format/getFormatMessage';
-import I18n from '../../src/intl/core/I18n';
+import { getFormatMessage } from '../../src/format/getFormatMessage';
+import I18n from '../../src/core/I18n';
 
 describe('getFormatMessage', () => {
   // Mocked i18nInstance object

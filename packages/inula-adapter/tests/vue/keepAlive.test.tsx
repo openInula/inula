@@ -22,7 +22,7 @@ import { createApp } from '../../src/vue/globalAPI';
 import '../utils/globalSetup';
 import { describe, expect, it, beforeEach } from 'vitest';
 import { DynamicComponent } from '../../src/vue';
-import { useState, act } from '@cloudsop/horizon';
+import { useState, act } from 'openinula';
 
 describe('component: KeepAlive', () => {
   beforeEach(() => {});

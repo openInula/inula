@@ -15,7 +15,7 @@
 
 import { beforeEach, describe, it, vi, expect } from 'vitest';
 import { defineStore } from '../../src/pinia/pinia';
-import { vueReactive } from '@cloudsop/horizon';
+import { vueReactive } from 'openinula';
 
 const { watch, nextTick } = vueReactive;
 

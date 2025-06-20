@@ -12,7 +12,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-import { createContext, forwardRef } from '@cloudsop/horizon';
+import { createContext, forwardRef } from 'openinula';
 import { isVariantI18n } from '../../utils/utils';
 import copyStaticProps from '../../utils/copyStaticProps';
 import { InjectOptions } from '../../types/interfaces';

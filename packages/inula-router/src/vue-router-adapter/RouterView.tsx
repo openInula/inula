@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { createElement, useContext, useMemo } from '@cloudsop/horizon';
+import { createElement, useContext, useMemo } from 'openinula';
 import { CurrentRouteRecord, RouteContext, ViewDepth } from './RouterContext';
 import { NormalizedRouteRecord } from './types';
 

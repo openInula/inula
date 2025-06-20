@@ -15,7 +15,7 @@
 
 import { DirectiveComponent } from '../../src/vue/directive';
 
-import { act, useState } from '@cloudsop/horizon';
+import { act, useState } from 'openinula';
 import { describe, expect, it, vi } from 'vitest';
 import '../utils/globalSetup';
 import { createApp } from '../../src/vue';

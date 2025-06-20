@@ -1,5 +1,5 @@
-import Inula from '@cloudsop/horizon';
-import { useRef } from '@cloudsop/horizon';
+import Inula from 'openinula';
+import { useRef } from 'openinula';
 import { History } from '../history/types';
 import { BaseRouterProps } from './BrowserRouter';
 import { createHashHistory, urlHashType } from '../history/hashHistory';

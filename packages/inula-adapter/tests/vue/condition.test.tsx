@@ -15,7 +15,7 @@
 
 import { If, ElseIf, Else, ConditionalRenderer } from '../../src/vue/condition';
 
-import { act, useRef, useState, vueReactive } from '@cloudsop/horizon';
+import { act, useRef, useState, vueReactive } from 'openinula';
 import { describe, expect, it, vi } from 'vitest';
 import '../utils/globalSetup';
 import { createApp } from '../../src/vue';

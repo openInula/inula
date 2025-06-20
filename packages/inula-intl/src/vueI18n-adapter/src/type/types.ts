@@ -29,7 +29,7 @@ import {
   PUSH,
   PUSH_SUB_PATH,
 } from '../constants';
-import { FunctionComponent, InulaElement } from '@cloudsop/horizon';
+import { FunctionComponent, InulaElement } from 'openinula';
 
 export type I18nOptions = {
   locale?: Locale;
