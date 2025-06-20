@@ -1,4 +1,4 @@
-import { ChildrenType, Component, Memo, useEffect, useRef } from '@cloudsop/horizon';
+import { ChildrenType, Component, Memo, useEffect, useRef } from 'openinula';
 import { inject, provide } from './injectProvide';
 
 type StringRegexList = String | RegExp | (String | RegExp)[];
