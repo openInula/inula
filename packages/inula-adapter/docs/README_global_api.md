@@ -123,9 +123,9 @@ export default {
   },
 };
 ```
-Horizon中需要修改为hook，改法如下：
+openinula中需要修改为hook，改法如下：
 ```jsx
-import { useReactive, onBeforeUnmount } from 'adapters/vue-horizon';
+import { useReactive, onBeforeUnmount } from 'adapters/vue-openinula';
 import Timer from '../timer';
 
 export function useEventHook() {
@@ -193,7 +193,7 @@ export default {
   },
 }
 
-// Horizon中使用
+// openinula中使用
 export default (props) => {
   const {$startTimer} = useEventHook();
 
@@ -247,7 +247,7 @@ const Comp = () => {
 const app = createApp(<Comp />);
 // 设置globalProperties
 app.config.globalProperties.foo = 'hello';
-app.config.globalProperties.bar = 'horizon';
+app.config.globalProperties.bar = 'inula';
 
 app.mount(global.container);
 ```
