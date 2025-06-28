@@ -38,7 +38,6 @@ function isBuiltinComponent(type: any) {
 }
 /**
  * 获取传入的element的类型
- * 只能用于判断createElement的返回值，不能判断forwardRef、Memo的返回值
  * 1. fragment, suspense 属于内置标签，类型位于type
  * 2. memo, lazy, forwardRef 属于包装函数，产生新的对象，类型位于type.vtype
  * 3. Context.Provider/Consumer 的类型是框架定义的对象，类型位于type.vtype

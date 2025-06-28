@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
 import dts from 'rollup-plugin-dts';
 import fs from 'fs';
 
@@ -55,7 +40,7 @@ function routerTypeConfig() {
       file: './router/@types/index.d.ts',
       format: 'es',
     },
-    plugins: [dts(), cleanUp(['./router/@types/history', './router/@types/router'])],
+    plugins: [dts(), cleanUp(['./router/@types/history', './router/@types/router', './router/@types/matcher'])],
   };
 }
 
@@ -69,6 +54,7 @@ function connectRouterTypeConfig() {
     plugins: [
       dts(),
       cleanUp([
+        './connectRouter/@types/matcher',
         './connectRouter/@types/history',
         './connectRouter/@types/router',
         './connectRouter/@types/connect-router',
@@ -77,4 +63,22 @@ function connectRouterTypeConfig() {
   };
 }
 
-export default [routerTypeConfig(), connectRouterTypeConfig()];
+function vueRouterAdapterTypeConfig() {
+  return {
+    input: './vueRouterAdapter/@types/vue-router-adapter/index.d.ts',
+    output: {
+      file: './vueRouterAdapter/@types/index.d.ts',
+      format: 'es',
+    },
+    plugins: [
+      dts(),
+      cleanUp([
+        './vueRouterAdapter/@types/vue-router-adapter',
+        './vueRouterAdapter/@types/matcher',
+        './vueRouterAdapter/@types/history',
+      ]),
+    ],
+  };
+}
+
+export default [routerTypeConfig(), connectRouterTypeConfig(), vueRouterAdapterTypeConfig()];

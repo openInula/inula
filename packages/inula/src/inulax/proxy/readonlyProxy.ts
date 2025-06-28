@@ -14,14 +14,10 @@
  */
 
 import { isObject } from '../CommonUtils';
-import { RAW_VALUE } from '../Constants';
 
 export function readonlyProxy<T extends Record<string, any>>(rawObj: T): ProxyHandler<T> {
   return new Proxy(rawObj, {
     get(rawObj, property, receiver) {
-      if (property === RAW_VALUE) {
-        return rawObj;
-      }
       const result = Reflect.get(rawObj, property, receiver);
 
       try {

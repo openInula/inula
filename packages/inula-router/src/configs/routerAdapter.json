@@ -1,0 +1,5 @@
+{
+  "module": "./esm/vradapter.js",
+  "main": "./cjs/vradapter.js",
+  "types": "./@types/index.d.ts"
+}

@@ -1,0 +1,313 @@
+{
+  "tag": {
+    "el-button": {
+      "targetTag": "WrapperButton",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "tag": "text"
+      }
+    },
+    "el-radio": {
+      "targetTag": "WrapperRadio",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-radio-button": {
+      "targetTag": "WrapperRadioButton",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-radio-group": {
+      "targetTag": "WrapperRadioGroup",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "model-value": "modelValue",
+        "v-model": "modelValue",
+        "change": "onChange"
+      }
+    },
+    "el-checkbox": {
+      "targetTag": "WrapperCheckbox",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-checkbox-button": {
+      "targetTag": "WrapperCheckboxButton",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-checkbox-group": {
+      "targetTag": "WrapperCheckboxGroup",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "model-value": "modelValue",
+        "v-model": "modelValue",
+        "change": "onChange",
+        "aria-label": "label",
+        "tag": "className"
+      }
+    },
+    "el-slider": {
+      "targetTag": "WrapperSlider",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "change": "onChange",
+        "tag": "className",
+        "show-input": "showInput",
+        "format-tooltip": "formatTooltip",
+        "aria-label": "ariaLabel"
+      }
+    },
+    "el-collapse": {
+      "targetTag": "WrapperPanel",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "model-value": "model",
+        "class": "className"
+      }
+    },
+    "el-collapse-item": {
+      "targetTag": "WrapperPanelItem",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-dialog": {
+      "targetTag": "WrapperDialog",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "custom-class": "className",
+        "class": "className",
+        "close-on-press-escape": "closeOnEscape",
+        "show-close": "closable",
+        "close": "onClose",
+        "draggable": "movable"
+      }
+    },
+    "el-upload": {
+      "targetTag": "WrapperFileUpload",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "v-model": "fileList",
+        "file-list": "fileList",
+        "limit": "maxFileCount",
+        "on-exceed": "onExceed"
+      }
+    },
+    "el-drawer": {
+      "targetTag": "WrapperDrawer",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-input": {
+      "targetTag": "WrapperInput",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "maxlength": "maxLength",
+        "autocomplete": "autoComplete",
+        "input-style": "inputStyle",
+        "readonly": "readOnly",
+        "class": "className"
+      }
+    },
+    "el-tab-pane": {
+      "targetTag": "WrapperTabPane",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "label": "title"
+      }
+    },
+    "el-tab": {
+      "targetTag": "WrapperTab",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "class": "className"
+      }
+    },
+    "el-tooltip": {
+      "targetTag": "WrapperTooltip",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "class": "overlayClassName"
+      }
+    },
+    "el-popover": {
+      "targetTag": "WrapperPopover",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "popper-class": "overlayClassName"
+      }
+    },
+    "el-table-column": {
+      "targetTag": "WrapperTableColumn",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "popper-class": "overlayClassName"
+      }
+    },
+    "el-table": {
+      "targetTag": "WrapperTable",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "max-height": "maxHeight",
+        "stripe": "enableZebraCrossing",
+        "resizable": "enableColumnDrag",
+        "data": "dataset"
+      }
+    },
+    "el-date-picker": {
+      "targetTag": "WrapperDatePicker",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "popper-class": "popupClassName"
+      }
+    },
+    "el-select": {
+      "targetTag": "WrapperSelect",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "popper-class": "optionClassName",
+        "class": "className"
+      }
+    },
+    "el-option": {
+      "targetTag": "WrapperOption",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "key": "Key"
+      }
+    },
+    "el-tree": {
+      "targetTag": "WrapperTree",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "node-key": "nodeKey",
+        "show-checkbox": "enableCheckbox",
+        "default-checked-keys": "checkedKeys",
+        "default-expanded-keys": "expandedKeys"
+      }
+    },
+    "el-alert": {
+      "targetTag": "WrapperAlert",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-color-picker": {
+      "targetTag": "WrapperColorPicker",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-icon": {
+      "targetTag": "WrapperIcon",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-pagination": {
+      "targetTag": "WrapperPagination",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-progress": {
+      "targetTag": "WrapperProgress",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-scrollbar": {
+      "targetTag": "WrapperScrollbar",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-switch": {
+      "targetTag": "WrapperSwitch",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-tabs": {
+      "targetTag": "WrapperTab",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-skeleton": {
+      "targetTag": "WrapperSkeleton",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-skeleton-item": {
+      "targetTag": "WrapperSkeletonItem",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-divider": {
+      "targetTag": "WrapperDivider",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-menu": {
+      "targetTag": "WrapperMenu",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "default-active": "defaultActive",
+        "ellipsis-icon": "ellipsisIcon",
+        "popper-offset": "popperOffset",
+        "unique-opened": "uniqueOpened",
+        "default-openeds": "defaultOpenKeys"
+      }
+    },
+    "el-menu-item": {
+      "targetTag": "WrapperMenuItem",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-sub-menu": {
+      "targetTag": "WrapperSubMenuItem",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-menu-item-group": {
+      "targetTag": "WrapperMenuItemGroup",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-form": {
+      "targetTag": "WrapperForm",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "class": "className",
+        "label-position": "labelAlign"
+      }
+    },
+    "el-form-item": {
+      "targetTag": "WrapperFormItem",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {
+        "prop": "name"
+      }
+    },
+    "el-tag": {
+      "targetTag": "WrapperTag",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "el-config-provider": {
+      "targetTag": "WrapperConfigProvider",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    }
+  },
+  "instance": {
+    "ElMessageBox": {
+      "targetTag": "WrapperMessageBox",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "ElNotification": {
+      "targetTag": "WrapperNotification",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    },
+    "ElMessage": {
+      "targetTag": "WrapperMessage",
+      "source": "@cloudsop/wrapper-eview-ui",
+      "attributesMap": {}
+    }
+  }
+}

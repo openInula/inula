@@ -128,7 +128,7 @@ function updateFallback(processing: VNode): Array<VNode> | VNode | null {
 
     if (children !== null) {
       // child不需要更新，跳过child处理fallback
-      return children.next;
+      return children[1];
     } else {
       return null;
     }
@@ -215,11 +215,7 @@ function resolvePromise(suspenseVNode: VNode, promise: PromiseType<any>) {
   if (promiseCache !== null) {
     promiseCache.delete(promise);
   }
-  // 检查suspenseVNode是否已经被清理（卸载）
-  if (suspenseVNode.suspenseState !== null) {
-    suspenseVNode.suspenseState.promiseResolved = true;
-  }
-
+  suspenseVNode.suspenseState!.promiseResolved = true;
   const root = updateShouldUpdateOfTree(suspenseVNode);
   if (root !== null) {
     tryRenderFromRoot(root);

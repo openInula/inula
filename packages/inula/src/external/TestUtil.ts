@@ -17,6 +17,7 @@ import { asyncUpdates } from '../renderer/TreeBuilder';
 import { callRenderQueueImmediate } from '../renderer/taskExecutor/RenderQueue';
 import { hasAsyncEffects, runAsyncEffects } from '../renderer/submit/HookEffectHandler';
 import { isPromise } from '../renderer/ErrorHandler';
+import { flushJobs } from '../inulax/proxy/Scheduler';
 
 interface Thenable {
   then(resolve: (val?: any) => void, reject: (err: any) => void): void;
@@ -25,6 +26,7 @@ interface Thenable {
 // 防止死循环
 const LOOPING_LIMIT = 50;
 let loopingCount = 0;
+
 function callRenderQueue() {
   callRenderQueueImmediate();
 
@@ -41,6 +43,8 @@ function act(fun: () => void | Thenable): Thenable {
   const funRet = asyncUpdates(fun);
 
   callRenderQueue();
+
+  flushJobs();
 
   // 如果fun返回的是Promise
   if (isPromise(funRet)) {

@@ -99,7 +99,7 @@ export default function transferNonInulaStatics<T extends ComponentType<any>, S 
           try {
             // 将属性描述符应用到目标组件
             defineProperty(target, key, descriptor);
-          } catch (_) {
+          } catch {
             // 忽略错误
           }
         }

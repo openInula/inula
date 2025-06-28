@@ -1,4 +1,3 @@
-// Base on type definitions of React 17.0.2
 import {
   InulaAnimationEventHandler,
   InulaChangeEventHandler,

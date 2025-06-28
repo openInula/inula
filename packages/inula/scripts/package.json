@@ -1,10 +1,10 @@
 {
-  "name": "openinula",
-  "description": "Inula is a JavaScript framework library.",
+  "name": "@cloudsop/horizon",
+  "description": "Horizon is a JavaScript framework library.",
   "keywords": [
-    "inula"
+    "horizon"
   ],
-  "version": "1.0.0",
+  "version": "0.1.13",
   "homepage": "",
   "bugs": "",
   "license": "MulanPSL2",
@@ -18,7 +18,7 @@
     ".": {
       "default": "./index.js"
     },
-    "./package.json": "./package.json",
+    "./package.json":"./package.json",
     "./jsx-runtime": "./jsx-runtime.js",
     "./jsx-dev-runtime": "./jsx-dev-runtime.js"
   }

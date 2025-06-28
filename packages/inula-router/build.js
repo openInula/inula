@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -25,6 +10,7 @@ const __dirname = path.dirname(__filename);
 
 const routerEntry = path.join(__dirname, '/src/router/index.ts');
 const connectRouterEntry = path.join(__dirname, '/src/router/index2.ts');
+const vueRouterAdapterEntry = path.join(__dirname, '/src/vue-router-adapter/index.ts');
 
 const output = __dirname;
 
@@ -32,6 +18,9 @@ const extensions = ['.js', '.ts', '.tsx'];
 
 if (!fs.existsSync(path.join(output, 'connectRouter'))) {
   fs.mkdirSync(path.join(output, 'connectRouter'), { recursive: true });
+}
+if (!fs.existsSync(path.join(output, 'vueRouterAdapter'))) {
+  fs.mkdirSync(path.join(output, 'vueRouterAdapter'), { recursive: true });
 }
 
 const routerBuildConfig = mode => {
@@ -66,7 +55,7 @@ const routerBuildConfig = mode => {
       }),
       babel({
         exclude: 'node_modules/**',
-        configFile: path.join(__dirname, '/babel.config.cjs'),
+        configFile: path.join(__dirname, '/babel.config.js'),
         babelHelpers: 'runtime',
         extensions,
       }),
@@ -107,7 +96,7 @@ const connectRouterConfig = mode => {
       }),
       babel({
         exclude: 'node_modules/**',
-        configFile: path.join(__dirname, '/babel.config.cjs'),
+        configFile: path.join(__dirname, '/babel.config.js'),
         babelHelpers: 'runtime',
         extensions,
       }),
@@ -122,11 +111,59 @@ const connectRouterConfig = mode => {
   };
 };
 
+const vueRouterAdapterConfig = mode => {
+  const prod = mode.startsWith('prod');
+  const outputList = [
+    {
+      file: path.join(output, `vueRouterAdapter/cjs/vradapter.${prod ? 'min.' : ''}js`),
+      sourcemap: 'true',
+      format: 'cjs',
+    },
+    {
+      file: path.join(output, `vueRouterAdapter/umd/vradapter.${prod ? 'min.' : ''}js`),
+      name: 'vradapter',
+      sourcemap: 'true',
+      format: 'umd',
+    },
+  ];
+  if (!prod) {
+    outputList.push({
+      file: path.join(output, 'vueRouterAdapter/esm/vradapter.js'),
+      sourcemap: 'true',
+      format: 'esm',
+    });
+  }
+  return {
+    input: vueRouterAdapterEntry,
+    output: outputList,
+    plugins: [
+      nodeResolve({
+        extensions,
+        modulesOnly: true,
+      }),
+      babel({
+        exclude: 'node_modules/**',
+        configFile: path.join(__dirname, '/babel.config.js'),
+        babelHelpers: 'runtime',
+        extensions,
+      }),
+      prod && terser(),
+      copyFiles([
+        {
+          from: path.join(__dirname, 'src/configs/routerAdapter.json'),
+          to: path.join(output, '/vueRouterAdapter/package.json'),
+        },
+      ]),
+    ],
+  };
+};
+
 function copyFiles(copyPairs) {
   return {
     name: 'copy-files',
     generateBundle() {
       copyPairs.forEach(({ from, to }) => {
+        console.log(`copy files: ${from} → ${to}`);
         fs.copyFileSync(from, to);
       });
     },
@@ -138,4 +175,6 @@ export default [
   routerBuildConfig('prod'),
   connectRouterConfig('dev'),
   connectRouterConfig('prod'),
+  vueRouterAdapterConfig('dev'),
+  vueRouterAdapterConfig('prod'),
 ];

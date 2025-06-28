@@ -37,6 +37,8 @@ import type { RefType, ContextType, SuspenseState, Source } from '../Types';
 import type { Hook } from '../hooks/HookType';
 import { InitFlag } from './VNodeFlags';
 import { Observer } from '../../inulax/proxy/Observer';
+import { RContext } from '../../inulax/reactive/RContext';
+import { RContextScope } from '../../inulax/reactive/RContextScope';
 
 export const BELONG_CLASS_VNODE_KEY = typeof Symbol === 'function' ? Symbol('belongClassVNode') : 'belongClassVNode';
 
@@ -105,8 +107,14 @@ export class VNode {
   // 状态管理器InulaX使用
   isStoreChange: boolean;
   observers: Set<Observer> | null = null; // 记录这个函数组件/类组件依赖哪些Observer
-  classComponentWillUnmount: ((vNode: VNode) => any) | null; // InulaX会在classComponentWillUnmount中清除对VNode的引入用
   src: Source | null; // 节点所在代码位置
+
+  instanceVariables: { [key: string | symbol]: any } | null = null; // 记录useInstance().xx = 值，作用类似useRef
+
+  __ineranl_comp_tag?: string;
+
+  compRContext: RContext | null;
+  compRContextScope: RContextScope | null;
 
   constructor(tag: VNodeTag, props: any, key: null | string, realNode) {
     this.tag = tag; // 对应组件的类型，比如ClassComponent等
@@ -135,8 +143,9 @@ export class VNode {
         this.oldHooks = null;
         this.isStoreChange = false;
         this.observers = null;
-        this.classComponentWillUnmount = null;
         this.src = null;
+        this.compRContext = null;
+        this.compRContextScope = null;
         break;
       case ClassComponent:
         this.realNode = null;
@@ -150,8 +159,9 @@ export class VNode {
         this.context = null;
         this.isStoreChange = false;
         this.observers = null;
-        this.classComponentWillUnmount = null;
         this.src = null;
+        this.compRContext = null;
+        this.compRContextScope = null;
         break;
       case DomPortal:
         this.realNode = null;

@@ -1,10 +1,23 @@
-// Base on type definitions of React 17.0.2
+/*
+ * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
+ *
+ * openInula is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
 
 import { Component } from './renderer/components/BaseClassComponent';
 import { MutableRef, RefCallBack, RefObject } from './renderer/hooks/HookType';
 
 import * as Event from './EventTypes';
-import { BaseElement } from './jsx-type';
+import { VNode } from './renderer/vnode/VNode';
 
 //
 // --------------------------------- Inula Base Types ----------------------------------
@@ -30,7 +43,8 @@ interface InulaErrorInfo {
   componentStack: string;
 }
 
-export type KVObject = Record<any, any>;
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type KVObject = {};
 
 export type InulaFragment = Iterable<InulaNode>;
 
@@ -42,7 +56,7 @@ export interface ExoticComponent<P = KVObject> {
   (props: P): InulaElement | null;
 }
 
-export interface ProviderProps<T> {
+interface ProviderProps<T> {
   value: T;
   children?: InulaNode | undefined;
 }
@@ -54,34 +68,14 @@ interface ConsumerProps<T> {
 export interface Context<T> {
   Provider: ExoticComponent<ProviderProps<T>>;
   Consumer: ExoticComponent<ConsumerProps<T>>;
+  // 兼容React
   displayName?: string | undefined;
 }
 
 export interface FunctionComponent<P = KVObject> {
   (props: P, context?: any): InulaElement<any, any> | null;
+
   displayName?: string;
-}
-
-export type ClassType<P, T extends Component<P, ComponentState>, C extends ComponentClass<P>> = C &
-  (new (props: P, context?: any) => T);
-export interface ClassicComponent<P = KVObject, S = KVObject> extends Component<P, S> {
-  replaceState(nextState: S, callback?: () => void): void;
-  isMounted(): boolean;
-  getInitialState?(): S;
-}
-
-export type InulaCElement<P, T extends Component<P, ComponentState>> = ComponentElement<P, T>;
-interface ComponentElement<P, T extends Component<P, ComponentState>> extends InulaElement<P, ComponentClass<P>> {
-  ref?: LegacyRef<T> | undefined;
-}
-
-export interface ClassicComponentClass<P = KVObject> extends ComponentClass<P> {
-  new (props: P, context?: any): ClassicComponent<P, ComponentState>;
-  getDefaultProps?(): P;
-}
-
-export interface FunctionComponentElement<P> extends InulaElement<P, FunctionComponent<P>> {
-  ref?: ('ref' extends keyof P ? (P extends { ref?: infer R | undefined } ? R : never) : never) | undefined;
 }
 
 export interface ComponentClass<P = KVObject, S = ComponentState> extends StaticLifecycle<P, S> {
@@ -126,11 +120,9 @@ export type PropsWithRef<P> = 'ref' extends keyof P
     : P
   : P;
 
-export type Attributes = {
+type Attributes = {
   key?: Key | null | undefined;
 };
-
-export type { RefObject, RefCallBack };
 
 export type Ref<T> = RefCallBack<T> | RefObject<T> | null;
 
@@ -138,11 +130,9 @@ export type RefAttributes<T> = Attributes & {
   ref?: Ref<T> | null;
 };
 
-export type ComponentPropsWithRef<T> = T extends new (props: infer P) => Component<any, any>
+export type ComponentPropsWithRef<T extends any> = T extends new (props: infer P) => Component<any, any>
   ? PropsOmitRef<P> & RefAttributes<InstanceType<T>>
-  : T extends (props: infer P, legacyContext?: any) => InulaNode
-    ? PropsWithRef<P>
-    : never;
+  : PropsWithRef<any>;
 
 export type LazyComponent<T extends ComponentType<any>> = ExoticComponent<ComponentPropsWithRef<T>> & {
   readonly _result: T;
@@ -247,6 +237,27 @@ export type DependencyList = Array<unknown>;
 
 export type EffectCallBack = () => void | (() => void);
 
+// Base props interface
+interface BaseProps {
+  className?: string;
+  style?: string | Record<string, string | number>;
+  [key: string]: any;
+}
+
+export interface Instance {
+  // Vue-like instance properties
+  $parent?: Instance;
+  $vnode: VNode;
+  $el: HTMLElement | null;
+  $props: BaseProps;
+  $children: Instance[];
+  $root: Instance;
+  $refs: Record<string, HTMLElement | Instance | undefined>;
+
+  // Allow dynamic properties
+  [key: string]: any;
+}
+
 //
 // --------------------------------- Inula JSX Types----------------------------------
 //
@@ -283,7 +294,7 @@ interface InulaBaseEvent<E = unknown, Tr = unknown, Ta = unknown> {
 }
 
 // eslint-disable-next-line
-export interface SyntheticEvent<T = Element, E = Event> extends InulaBaseEvent<E, EventTarget & T, EventTarget> {}
+interface SyntheticEvent<T = Element, E = Event> extends InulaBaseEvent<E, EventTarget & T, EventTarget> {}
 
 export interface ClipboardEvent<T = Element> extends SyntheticEvent<T, Event.DomClipboardEvent> {
   clipboardData: DataTransfer;
@@ -421,59 +432,23 @@ export interface MouseEvent<T = Element, E = Event.DomMouseEvent> extends UIEven
 
 export type EventHandler<E extends SyntheticEvent<unknown>> = { bivarianceHack(event: E): void }['bivarianceHack'];
 
-export type InulaClipboardEventHandler<T = Element> = EventHandler<ClipboardEvent<T>>;
-export type InulaCompositionEventHandler<T = Element> = EventHandler<CompositionEvent<T>>;
-export type InulaDragEventHandler<T = Element> = EventHandler<DragEvent<T>>;
-export type InulaFocusEventHandler<T = Element> = EventHandler<FocusEvent<T>>;
-export type InulaFormEventHandler<T = Element> = EventHandler<FormEvent<T>>;
-export type InulaChangeEventHandler<T = Element> = EventHandler<ChangeEvent<T>>;
-export type InulaKeyboardEventHandler<T = Element> = EventHandler<KeyboardEvent<T>>;
-export type InulaMouseEventHandler<T = Element> = EventHandler<MouseEvent<T>>;
-export type InulaTouchEventHandler<T = Element> = EventHandler<TouchEvent<T>>;
-export type InulaPointerEventHandler<T = Element> = EventHandler<PointerEvent<T>>;
-export type InulaUIEventHandler<T = Element> = EventHandler<UIEvent<T>>;
-export type InulaWheelEventHandler<T = Element> = EventHandler<WheelEvent<T>>;
-export type InulaAnimationEventHandler<T = Element> = EventHandler<AnimationEvent<T>>;
-export type InulaTransitionEventHandler<T = Element> = EventHandler<TransitionEvent<T>>;
+export type ClipboardEventHandler<T = Element> = EventHandler<ClipboardEvent<T>>;
+export type CompositionEventHandler<T = Element> = EventHandler<CompositionEvent<T>>;
+export type DragEventHandler<T = Element> = EventHandler<DragEvent<T>>;
+export type FocusEventHandler<T = Element> = EventHandler<FocusEvent<T>>;
+export type FormEventHandler<T = Element> = EventHandler<FormEvent<T>>;
+export type ChangeEventHandler<T = Element> = EventHandler<ChangeEvent<T>>;
+export type KeyboardEventHandler<T = Element> = EventHandler<KeyboardEvent<T>>;
+export type MouseEventHandler<T = Element> = EventHandler<MouseEvent<T>>;
+export type TouchEventHandler<T = Element> = EventHandler<TouchEvent<T>>;
+export type PointerEventHandler<T = Element> = EventHandler<PointerEvent<T>>;
+export type UIEventHandler<T = Element> = EventHandler<UIEvent<T>>;
+export type WheelEventHandler<T = Element> = EventHandler<WheelEvent<T>>;
+export type AnimationEventHandler<T = Element> = EventHandler<AnimationEvent<T>>;
+export type TransitionEventHandler<T = Element> = EventHandler<TransitionEvent<T>>;
 
 //
 // --------------------------------- Css Props----------------------------------
 //
 
 export type CSSProperties = Record<string | number, any>;
-
-//
-// --------------------------------- VDOM ---------------------------------------
-//
-export type LegacyRef<T> = string | Ref<T>;
-export interface ClassAttributes<T> extends Attributes {
-  ref?: LegacyRef<T> | undefined;
-}
-
-export interface InulaCSSProperties extends CSSProperties {}
-
-export type InulaBoolean = boolean | 'true' | 'false';
-
-export type InulaEventHandler<T = Element> = EventHandler<SyntheticEvent<T>>;
-
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSX {
-    interface IntrinsicAttributes extends Attributes {}
-    interface Element extends InulaElement<any, any> {}
-
-    interface ElementClass extends Component<any> {
-      render(): InulaNode;
-    }
-
-    interface ElementAttributesProperty {
-      props: KVObject;
-    }
-    interface ElementChildrenAttribute {
-      children: KVObject;
-    }
-    interface IntrinsicClassAttributes<T> extends ClassAttributes<T> {}
-
-    type IntrinsicElements = BaseElement;
-  }
-}
