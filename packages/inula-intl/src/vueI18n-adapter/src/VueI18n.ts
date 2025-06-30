@@ -134,5 +134,4 @@ class VueI18n extends I18n {
 export function createVueI18nInstance(i18nProps: I18nOptions = {}): VueI18n {
   return new VueI18n(i18nProps);
 }
-
 export default VueI18n;

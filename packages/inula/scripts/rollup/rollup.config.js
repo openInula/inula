@@ -19,6 +19,7 @@ import path from 'path';
 import fs from 'fs';
 import replace from '@rollup/plugin-replace';
 import copy from './copy-plugin';
+import execute from 'rollup-plugin-execute';
 import { terser } from 'rollup-plugin-terser';
 import { version as inulaVersion } from '../../package.json';
 
@@ -85,14 +86,10 @@ function genConfig(mode) {
         name: 'Inula',
         format: 'umd',
       },
-      {
-        file: outputResolve('esm', getOutputName(mode)),
-        sourcemap,
-        format: 'esm',
-      },
     ],
     plugins: [
       ...getBasicPlugins(mode),
+      execute('npm run build-types', true),
       mode === 'production' && terser(),
       copy([
         {
@@ -100,12 +97,8 @@ function genConfig(mode) {
           to: path.join(outDir, 'index.js'),
         },
         {
-          from: path.join(__dirname, '..', 'package.json'),
+          from: path.join(libDir, 'package.json'),
           to: path.join(outDir, 'package.json'),
-        },
-        {
-          from: path.join(libDir, 'README.md'),
-          to: path.join(outDir, 'README.md'),
         },
       ]),
     ],
@@ -115,16 +108,10 @@ function genConfig(mode) {
 function genJSXRuntimeConfig(mode) {
   return {
     input: path.resolve(libDir, 'src', 'jsx-runtime.ts'),
-    output: [
-      {
-        file: outputResolve('jsx-runtime.js'),
-        format: 'cjs',
-      },
-      {
-        file: outputResolve('jsx-runtime.esm-browser.js'),
-        format: 'esm',
-      },
-    ],
+    output: {
+      file: outputResolve('jsx-runtime.js'),
+      format: 'cjs',
+    },
     plugins: [...getBasicPlugins(mode)],
   };
 }

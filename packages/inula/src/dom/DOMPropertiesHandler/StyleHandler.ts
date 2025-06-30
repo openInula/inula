@@ -62,16 +62,16 @@ function isNeedUnitCSS(styleName: string) {
  * 对空值或布尔值进行适配，转为空字符串
  * 去掉多余空字符
  */
-export function adjustStyleValue(name: string, value: unknown, isCustomProperty = false) {
-  if (value === '' || value === null || value === undefined || typeof value === 'boolean') {
-    return '';
+export function adjustStyleValue(name, value) {
+  let validValue = value;
+
+  if (typeof value === 'number' && value !== 0 && isNeedUnitCSS(name)) {
+    validValue = `${value}px`;
+  } else if (value === '' || value === null || value === undefined || typeof value === 'boolean') {
+    validValue = '';
   }
 
-  if (!isCustomProperty && typeof value === 'number' && value !== 0 && isNeedUnitCSS(name)) {
-    return `${value}px`;
-  }
-
-  return value;
+  return validValue;
 }
 
 /**
@@ -83,18 +83,14 @@ export function setStyles(dom, styles) {
   }
 
   const style = dom.style;
-  for (let name of Object.keys(styles)) {
-    const isCssVariable = name.startsWith('--');
-    const styleVal = adjustStyleValue(name, styles[name], isCssVariable);
-    if (name === 'float') {
-      name = 'cssFloat';
-    }
+  Object.keys(styles).forEach(name => {
+    const styleVal = styles[name];
     // 以--开始的样式直接设置即可
-    if (isCssVariable) {
+    if (name.indexOf('--') === 0) {
       style.setProperty(name, styleVal);
     } else {
       // 使用这种赋值方式，浏览器可以将'WebkitLineClamp'， 'backgroundColor'分别识别为'-webkit-line-clamp'和'backgroud-color'
-      style[name] = styleVal;
+      style[name] = adjustStyleValue(name, styleVal);
     }
-  }
+  });
 }

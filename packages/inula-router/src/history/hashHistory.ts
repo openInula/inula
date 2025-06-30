@@ -1,26 +1,11 @@
-/*
- * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
-
-import { Action, BaseOption, DefaultStateType, EventType, History, Location, To } from './types';
+import { Action, AgnosticHistory, BaseOption, CommonListener, DefaultStateType, Listener, Location, To } from './types';
 import {
   addHeadSlash,
-  normalizeSlash,
+  createLocation,
   createMemoryRecord,
   createPath,
-  createLocation,
   isLocationEqual,
+  normalizeSlash,
   stripBasename,
   stripHeadSlash,
 } from './utils';
@@ -43,12 +28,12 @@ function stripHash(path: string): string {
 }
 
 // 获取#后的内容
-function getHashContent(path: string): string {
+export function getHashContent(path: string): string {
   const idx = path.indexOf('#');
   return idx === -1 ? '' : path.substring(idx + 1);
 }
 
-export function createHashHistory<S = DefaultStateType>(option: HashHistoryOption = {}): History<S> {
+export function createHashHistory<S = DefaultStateType>(option: HashHistoryOption = {}): AgnosticHistory<S> {
   const browserHistory = window.history;
   const { hashType = 'slash', getUserConfirmation = getDefaultConfirmation } = option;
 
@@ -88,23 +73,30 @@ export function createHashHistory<S = DefaultStateType>(option: HashHistoryOptio
   let forceNextPop = false;
   let ignorePath: null | string = null;
 
-  const { go, goBack, goForward, listen, block, getUpdateStateFunc } = getBaseHistory(
+  const listen = (listener: CommonListener<S>) => {
+    const trigger: Listener<S> = { type: 'common', listener: listener };
+    return addListener(trigger);
+  };
+
+  const { go, addListener, block, destroy, getUpdateStateFunc } = getBaseHistory(
+    'hash',
     transitionManager,
-    setListener,
-    browserHistory
+    handleHashChange
   );
 
-  const history: History<S> = {
+  const history: AgnosticHistory<S> = {
     action: Action.pop,
     length: browserHistory.length,
     location: initLocation,
     go,
-    goBack,
-    goForward,
+    goBack: () => go(-1),
+    goForward: () => go(1),
     push,
     replace,
     listen,
+    addListener,
     block,
+    destroy,
     createHref,
   };
 
@@ -195,23 +187,12 @@ export function createHashHistory<S = DefaultStateType>(option: HashHistoryOptio
   }
 
   // 在跳转行为被Block后，用History.go()跳转回之前的页面
-  function revertPopState(form: Location<S>) {
+  function revertPopState(from: Location<S>) {
     const to = history.location;
-    const delta = memRecords.getDelta(to, form);
+    const delta = memRecords.getDelta(to, from);
     if (delta !== 0) {
       go(delta);
       forceNextPop = true;
-    }
-  }
-
-  let listenerCount = 0;
-
-  function setListener(delta: number) {
-    listenerCount += delta;
-    if (listenerCount === 1 && delta === 1) {
-      window.addEventListener(EventType.HashChange, handleHashChange);
-    } else if (listenerCount === 0) {
-      window.removeEventListener(EventType.HashChange, handleHashChange);
     }
   }
 

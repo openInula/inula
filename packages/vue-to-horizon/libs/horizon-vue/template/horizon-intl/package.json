@@ -1,0 +1,52 @@
+{
+  "name": "@cloudsop/horizon-intl",
+  "version": "1.0.32",
+  "description": "intl for horizon framework, a part of intl-ecosystem",
+  "main": "./intl/cjs/intl.js",
+  "module": "./intl/esm/intl.js",
+  "type": "module",
+  "types": "intl/@types/index.d.ts",
+  "scripts": {
+    "demo-serve": "webpack serve --mode=development",
+    "rollup-build": "rollup --config rollup.config.js",
+    "build-types": "tsc -p tsconfig.json && rollup -c build-type.js",
+    "test": "jest --no-cache --config jest.config.js",
+    "test-c": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://szv-open.codehub.huawei.com/innersource/fenghuang/horizon/horizon-core.git"
+  },
+  "files": [
+    "/intl",
+    "/vueI18n",
+    "README.md"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "peerDependencies": {
+    "@cloudsop/horizon": ">=0.0.10"
+  },
+  "devDependencies": {
+    "@babel/preset-react": "^7.9.4",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^14.0.0",
+    "@types/react": "18.0.25",
+    "babel-loader": "^9.1.2",
+    "html-webpack-plugin": "^5.5.1",
+    "jest-environment-jsdom": "^29.5.0",
+    "jsdom": "^21.1.1",
+    "react": "18.2.0-h3",
+    "react-dom": "18.2.0-h3",
+    "rollup-plugin-livereload": "^2.0.5",
+    "rollup-plugin-serve": "^1.1.0",
+    "rollup-plugin-visualizer": "^5.10.0",
+    "ts-node": "10.9.1",
+    "tslib": "^2.6.1",
+    "webpack": "^5.72.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.13.3"
+  }
+}

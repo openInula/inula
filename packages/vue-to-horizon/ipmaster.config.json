@@ -1,0 +1,16 @@
+{
+    "src": "./libs/horizon-examples/ipmaster-cfggen-web/src",
+    "out": "./libs/horizon-examples/build/ipmaster-cfggen-web",
+    "fast": false,
+    "whitelist": [
+        "**/*"
+    ],
+    "blacklist": [
+        "."
+    ],
+    "additionalDependencies": {
+        "lodash-es": "^4.17.11",
+        "axios": "0.27.2",
+        "@antv/x6": "1.30.0"
+    }
+}

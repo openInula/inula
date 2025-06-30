@@ -21,9 +21,9 @@ import { getIFrameFocusedDom, isText } from './utils/Common';
 import { isElement } from './utils/Common';
 
 type SelectionRange = {
-  start: number | null;
-  end: number | null;
-};
+  start: number | null,
+  end: number | null
+}
 
 /**
  * 设置聚焦的 textarea 或 input 节点的选择范围

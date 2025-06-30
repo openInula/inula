@@ -1,0 +1,22 @@
+{
+  "globalProperties": [
+    "Hierarchy",
+    "Api",
+    "httpUtil",
+    "findParent",
+    "findParentByRef",
+    "findChildren",
+    "checkParamIsNull",
+    "$showLoading",
+    "$hideLoading",
+    "$updateLoading",
+    "$showPrompt",
+    "$setExportMsg",
+    "$removeExportMsg",
+    "$checkExportMsg",
+    "$checkUserPermission",
+    "$showLoadingEx",
+    "$hideLoadingEx",
+    "$updateLoadingEx"
+  ]
+}

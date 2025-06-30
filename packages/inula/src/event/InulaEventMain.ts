@@ -142,13 +142,7 @@ function triggerInulaEvents(
   const target = nativeEvent.target || nativeEvent.srcElement!;
 
   // 触发普通委托事件
-  const listenerList: ListenerUnitList = getCommonListeners(
-    nativeEvtName,
-    vNode,
-    nativeEvent as MouseEvent,
-    target,
-    isCapture
-  );
+  const listenerList: ListenerUnitList = getCommonListeners(nativeEvtName, vNode, nativeEvent, target, isCapture);
 
   let mouseEnterListeners: ListenerUnitList = [];
   if (inulaEventToNativeMap.get('onMouseEnter')!.includes(nativeEvtName)) {

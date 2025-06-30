@@ -17,7 +17,7 @@
  * 兼容IE浏览器没有Object.is
  */
 export function isSame(x: any, y: any) {
-  if (typeof Object.is !== 'function') {
+  if (!(typeof Object.is === 'function')) {
     if (x === y) {
       // +0 != -0
       return x !== 0 || 1 / x === 1 / y;
