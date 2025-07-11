@@ -19,6 +19,7 @@
     "build:inula-intl": "pnpm -F inula-intl build",
     "build:inula-request": "pnpm -F inula-request build",
     "build:inula-router": "pnpm -F inula-router build",
+    "build:inula-adapter": "pnpm -F inula-adapter build",
     "commitlint": "commitlint --config commitlint.config.js -e",
     "version": "pnpm exec changeset version && node packages/inula/scripts/sync-version.js",
     "postinstall": "husky install"
