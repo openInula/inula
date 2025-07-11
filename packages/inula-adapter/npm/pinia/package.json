@@ -1,0 +1,5 @@
+{
+  "module": "./esm/pinia-adapter.js",
+  "main": "./cjs/pinia-adapter.js",
+  "types": "./@types/index.d.ts"
+}
