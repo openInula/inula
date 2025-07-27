@@ -1,0 +1,5 @@
+{
+  "module": "./esm/vueI18n.js",
+  "main": "./cjs/vueI18n.js",
+  "types": "./@types/index.d.ts"
+}

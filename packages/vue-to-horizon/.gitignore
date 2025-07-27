@@ -1,0 +1,9 @@
+node_modules
+./build/
+.idea
+.vscode
+package-lock.json
+libs/**/dist
+scripts/*.ejs
+libs/horizon-examples/build/
+libs/horizon-examples/3rd-party/element-dev/build

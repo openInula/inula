@@ -1,0 +1,34 @@
+{
+  "name": "@cloudsop/horizon",
+  "description": "Horizon is a JavaScript framework library.",
+  "keywords": [
+    "horizon"
+  ],
+  "version": "0.0.77",
+  "homepage": "",
+  "bugs": "",
+  "main": "index.js",
+  "repository": {},
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "build": "rollup --config ./scripts/rollup/rollup.config.js",
+    "build-types": "tsc -p tsconfig.build.json || echo \"WARNING: TSC exited with status $?\" && rollup -c ./scripts/rollup/build-types.js",
+    "build:inula3rdLib-dev": "npm run build & node ./scripts/gen3rdLib.js build:horizon3rdLib-dev",
+    "build:watch": "rollup --watch --config ./scripts/rollup/rollup.config.js",
+    "debug-test": "yarn test --debug",
+    "lint": "eslint . --ext .ts --fix",
+    "test": "jest --config=jest.config.js",
+    "watch-test": "yarn test --watch --dev"
+  },
+  "types": "@types/index.d.ts",
+  "exports": {
+    ".": {
+      "default": "./index.js"
+    },
+    "./package.json": "./package.json",
+    "./jsx-runtime": "./jsx-runtime.js",
+    "./jsx-dev-runtime": "./jsx-dev-runtime.js"
+  }
+}

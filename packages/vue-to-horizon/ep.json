@@ -1,0 +1,12 @@
+{
+  "src": "F:/Allspark/frontend/ospp/element-plus-dev",
+  "out": "F:/Allspark/frontend/ospp/ep-convert",
+  "fast": false,
+  "whitelist": [
+    "packages/components/button/**",
+    "packages/components/icon/**"
+  ],
+  "blacklist": [
+    "**/*.spec.ts"
+  ]
+}
