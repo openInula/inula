@@ -19,20 +19,19 @@ import { createSetProxy } from './SetProxy';
 import { createWeakMapProxy } from './WeakMapProxy';
 import { createMapProxy } from './MapProxy';
 
-import { CurrentListener } from '../../types/ProxyTypes';
-
-export function createCollectionProxy<T extends any>(rawObj: T, listener: CurrentListener) {
+export function createCollectionProxy(
+  rawObj: Record<string, unknown>,
+  listener: { current: (...args) => any },
+  hookObserver = true
+): ProxyHandler<Record<string, unknown>> {
   if (isWeakSet(rawObj)) {
-    return createWeakSetProxy(rawObj as WeakSet<any>, listener);
+    return createWeakSetProxy(rawObj, listener, hookObserver);
   }
-
   if (isSet(rawObj)) {
-    return createSetProxy(rawObj as Set<any>, listener);
+    return createSetProxy(rawObj, listener, hookObserver);
   }
-
   if (isWeakMap(rawObj)) {
-    return createWeakMapProxy(rawObj as WeakMap<any, any>, listener);
+    return createWeakMapProxy(rawObj, listener, hookObserver);
   }
-
-  return createMapProxy(rawObj as Map<any, any>, listener);
+  return createMapProxy(rawObj, listener, hookObserver);
 }

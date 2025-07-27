@@ -17,7 +17,31 @@ import { TYPE_COMMON_ELEMENT } from './JSXElementType';
 import { getProcessingClassVNode } from '../renderer/GlobalVar';
 import { Source } from '../renderer/Types';
 import { BELONG_CLASS_VNODE_KEY } from '../renderer/vnode/VNode';
-import { InulaElement, KVObject } from '../types';
+import {
+  Attributes,
+  ClassAttributes,
+  ClassType,
+  ClassicComponent,
+  ClassicComponentClass,
+  ComponentClass,
+  ComponentState,
+  FunctionComponent,
+  FunctionComponentElement,
+  InulaCElement,
+  InulaElement,
+  InulaNode,
+  KVObject,
+} from '../types';
+import { Component } from '../renderer/components/BaseClassComponent';
+import { DOMAttributes, HTMLAttributes, InputHTMLAttributes, SVGAttributes } from '../jsx-type/baseAttr';
+import {
+  DOMElement,
+  DetailedInulaHTMLElement,
+  InulaHTML,
+  InulaHTMLElement,
+  InulaSVG,
+  InulaSVGElement,
+} from '../jsx-type';
 
 /**
  * vtype 节点的类型，这里固定是element
@@ -109,18 +133,102 @@ function buildElement(isClone, type, setting, children) {
   return JSXElement(element, key, ref, vNode, props, src);
 }
 
+export function createElement(
+  type: 'input',
+  props?: (InputHTMLAttributes<HTMLInputElement> & ClassAttributes<HTMLInputElement>) | null,
+  ...children: InulaNode[]
+): DetailedInulaHTMLElement<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
+
+export function createElement<P extends HTMLAttributes<T>, T extends HTMLElement>(
+  type: keyof InulaHTML,
+  props?: (ClassAttributes<T> & P) | null,
+  ...children: InulaNode[]
+): DetailedInulaHTMLElement<P, T>;
+
+export function createElement<P extends SVGAttributes<T>, T extends SVGElement>(
+  type: keyof InulaSVG,
+  props?: (ClassAttributes<T> & P) | null,
+  ...children: InulaNode[]
+): InulaSVGElement;
+
+export function createElement<P extends DOMAttributes<T>, T extends Element>(
+  type: string,
+  props?: (ClassAttributes<T> & P) | null,
+  ...children: InulaNode[]
+): DOMElement<P, T>;
+
+export function createElement<P extends KVObject>(
+  type: FunctionComponent<P>,
+  props?: (Attributes & P) | null,
+  ...children: InulaNode[]
+): FunctionComponentElement<P>;
+
+export function createElement<P extends KVObject>(
+  type: ClassType<P, ClassicComponent<P, ComponentState>, ClassicComponentClass<P>>,
+  props?: (ClassAttributes<ClassicComponent<P, ComponentState>> & P) | null,
+  ...children: InulaNode[]
+): InulaCElement<P, ClassicComponent<P, ComponentState>>;
+
+export function createElement<P extends KVObject, T extends Component<P, ComponentState>, C extends ComponentClass<P>>(
+  type: ClassType<P, T, C>,
+  props?: (ClassAttributes<T> & P) | null,
+  ...children: InulaNode[]
+): InulaCElement<P, T>;
+
+export function createElement<P extends KVObject>(
+  type: FunctionComponent<P> | ComponentClass<P> | string,
+  props?: (Attributes & P) | null,
+  ...children: InulaNode[]
+): InulaElement<P>;
+
 // 创建Element结构体，供JSX编译时调用
 export function createElement(type, setting, ...children) {
   return buildElement(false, type, setting, children);
 }
+
+export function cloneElement<P extends HTMLAttributes<T>, T extends HTMLElement>(
+  element: DetailedInulaHTMLElement<P, T>,
+  props?: P,
+  ...children: InulaNode[]
+): DetailedInulaHTMLElement<P, T>;
+export function cloneElement<P extends HTMLAttributes<T>, T extends HTMLElement>(
+  element: InulaHTMLElement<T>,
+  props?: P,
+  ...children: InulaNode[]
+): InulaHTMLElement<T>;
+export function cloneElement<P extends SVGAttributes<T>, T extends SVGElement>(
+  element: InulaSVGElement,
+  props?: P,
+  ...children: InulaNode[]
+): InulaSVGElement;
+export function cloneElement<P extends DOMAttributes<T>, T extends Element>(
+  element: DOMElement<P, T>,
+  props?: DOMAttributes<T> & P,
+  ...children: InulaNode[]
+): DOMElement<P, T>;
+export function cloneElement<P>(
+  element: FunctionComponentElement<P>,
+  props?: Partial<P> & Attributes,
+  ...children: InulaNode[]
+): FunctionComponentElement<P>;
+export function cloneElement<P, T extends Component<P, ComponentState>>(
+  element: InulaCElement<P, T>,
+  props?: Partial<P> & ClassAttributes<T>,
+  ...children: InulaNode[]
+): InulaCElement<P, T>;
+export function cloneElement<P>(
+  element: InulaElement<P>,
+  props?: Partial<P> & Attributes,
+  ...children: InulaNode[]
+): InulaElement<P>;
 
 export function cloneElement(element, setting, ...children) {
   return buildElement(true, element, setting, children);
 }
 
 // 检测结构体是否为合法的Element
-export function isValidElement<P>(element: KVObject | null | undefined): element is InulaElement<P> {
-  return !!(element && element.vtype === TYPE_COMMON_ELEMENT);
+export function isValidElement<P>(element: {} | null | undefined): element is InulaElement<P> {
+  return typeof element === 'object' && element !== null && 'vtype' in element && element.vtype === TYPE_COMMON_ELEMENT;
 }
 
 // 兼容高版本的babel编译方式

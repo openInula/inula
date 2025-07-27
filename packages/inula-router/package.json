@@ -7,7 +7,6 @@
   "types": "./router/@types/index.d.ts",
   "type": "module",
   "files": [
-    "/vueRouterAdapter",
     "/connectRouter",
     "/router",
     "README.md"
@@ -15,22 +14,25 @@
   "scripts": {
     "test": "jest",
     "build": "rollup -c build.js && npm run build-types",
-    "build-types": "tsc -p tsconfig.build.json && tsc -p tsconfig.cbuild.json && tsc -p tsconfig.vradapter.json && rollup -c build-types.js"
+    "build-types": "tsc -p tsconfig.build.json && tsc -p tsconfig.cbuild.json && rollup -c build-types.js"
   },
+  "keywords": [
+    "inula-router"
+  ],
+  "license": "MulanPSL2",
   "repository": {
     "type": "git",
     "url": ""
   },
   "devDependencies": {
+    "openinula": "^0.1.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
-    "@types/jest": "^29.5.14",
-    "@types/react-redux": "7.0.0",
-    "jest-environment-jsdom": "^29.5.0",
-    "jsdom": "^21.1.1",
-    "openinula": "^1.0.0",
-    "react-redux": "^3.8.1 || ^4.0.0",
+    "@types/react-redux": "7.1.33",
+    "jest-environment-jsdom": "29.5.0",
+    "jsdom": "24.0.0",
+    "react-redux": "^4.0.0",
     "redux": "4.2.1"
   },
   "peerDependencies": {

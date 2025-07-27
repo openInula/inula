@@ -56,7 +56,6 @@ export function runAsyncEffects() {
         destroy();
       } catch (error) {
         // 不处理副作用阶段抛出的异常
-        console.error(error);
       }
     }
   });
@@ -71,7 +70,6 @@ export function runAsyncEffects() {
       effect.removeEffect = create();
     } catch (error) {
       // 不处理副作用阶段抛出的异常
-      console.error(error);
     }
   });
 

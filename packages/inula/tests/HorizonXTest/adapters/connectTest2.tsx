@@ -14,7 +14,7 @@
  */
 
 import * as Inula from '../../../src';
-import { InulaNode } from '../../../build/horizon';
+import { InulaNode } from '../../../build/inula';
 import { log } from '../../jest/logUtils';
 
 class TestComponent extends Inula.Component {

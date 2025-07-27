@@ -360,7 +360,11 @@ function diffArrayNodesHandler(parentNode: VNode, firstChild: VNode | null, newC
 
   // 3. 新节点已经处理完成
   if (leftIdx === rightIdx) {
-    if (firstChild && parentNode.tag === DomComponent && newChildren.length === 0) {
+    /**
+     * 优化策略：首先克隆这些节点的共同父节点P，然后将父节点P从DOM树中删除，最后再将克隆的P节点添加回DOM树中。
+     * 例外处理：当父节点为select时，克隆option子节点时会导致原父节点child变化，因此不适用与该优化，降级采用deleteVNodes。
+     */
+    if (firstChild && parentNode.tag === DomComponent && parentNode.type !== 'select' && newChildren.length === 0) {
       FlagUtils.markClear(parentNode);
       parentNode.clearChild = firstChild;
     } else {

@@ -15,24 +15,4 @@
 
 export const OBSERVER_KEY = typeof Symbol === 'function' ? Symbol('_inulaObserver') : '_inulaObserver';
 
-// 特殊处理的keys
-export enum KeyTypes {
-  RAW_VALUE = '_rawValue',
-  COLLECTION_CHANGE = '_collectionChange',
-  GET = 'get',
-  SIZE = 'size',
-  VALUE = 'value',
-  WATCH = 'watch',
-  LENGTH = 'length',
-  PROTOTYPE = 'prototype',
-  HAS_OWN_PROPERTY = 'hasOwnProperty',
-  ADD_LISTENER = 'addListener',
-  REMOVE_LISTENER = 'removeListener',
-}
-
-export enum ReactiveFlags {
-  IS_SKIP = '_isSkip',
-  IS_SHALLOW = '_isShallow',
-  IS_READONLY = '_isReadonly',
-  IS_REF = '_isRef',
-}
+export const RAW_VALUE = '_rawValue';

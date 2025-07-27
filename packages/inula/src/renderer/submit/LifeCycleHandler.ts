@@ -50,11 +50,10 @@ import {
   callUseLayoutEffectRemove,
 } from './HookEffectHandler';
 import { handleSubmitError } from '../ErrorHandler';
-import { travelVNodeTree, clearVNode, isDomVNode, getSiblingDom } from '../vnode/VNodeUtils';
+import { travelVNodeTree, clearVNode, isDomVNode, getSiblingDom, clearVNodeTree } from '../vnode/VNodeUtils';
 import { shouldAutoFocus } from '../../dom/utils/Common';
 import { BELONG_CLASS_VNODE_KEY } from '../vnode/VNode';
-import { cleanupRContext } from '../../inulax/reactive/RContext';
-import { clearVNodeObservers } from '../../inulax/store/StoreHandler';
+import { detachUnmountDom } from '../../dom/DOMInternalKeys';
 
 function callComponentWillUnmount(vNode: VNode, instance: any) {
   try {
@@ -162,16 +161,9 @@ function handleRef(vNode: VNode, ref, val) {
     const refType = typeof ref;
 
     if (refType === 'function') {
-      if (vNode.tag === FunctionComponent) {
-        // 给函数组件新增ref能力是新增的逻辑，用于适配vue的$refs
-        ref(vNode);
-      } else {
-        ref(val);
-      }
+      ref(val);
     } else if (refType === 'object') {
-      if (vNode.tag !== FunctionComponent && vNode.tag !== ForwardRef) {
-        (<RefType>ref).current = val;
-      }
+      (<RefType>ref).current = val;
     } else {
       if (vNode[BELONG_CLASS_VNODE_KEY] && vNode[BELONG_CLASS_VNODE_KEY].realNode) {
         vNode[BELONG_CLASS_VNODE_KEY].realNode.refs[String(ref)] = val;
@@ -265,8 +257,6 @@ function unmountVNode(vNode: VNode): void {
     case ForwardRef:
     case MemoComponent: {
       callEffectRemove(vNode);
-
-      detachCompReactive(vNode);
       break;
     }
     case ClassComponent: {
@@ -279,11 +269,16 @@ function unmountVNode(vNode: VNode): void {
         callComponentWillUnmount(vNode, instance);
       }
 
-      detachCompReactive(vNode);
+      // InulaX会在classComponentWillUnmount中清除对VNode的引入用
+      if (vNode.classComponentWillUnmount) {
+        vNode.classComponentWillUnmount(vNode);
+        vNode.classComponentWillUnmount = null;
+      }
       break;
     }
     case DomComponent: {
       detachRef(vNode);
+      detachUnmountDom(vNode.realNode);
       break;
     }
     case DomPortal: {
@@ -294,22 +289,6 @@ function unmountVNode(vNode: VNode): void {
     default: {
       break;
     }
-  }
-}
-
-// 清除reactive相关的数据
-function detachCompReactive(vNode: VNode) {
-  // 删除VNode使用的响应式数据
-  const observers = vNode.observers;
-  if (observers) {
-    clearVNodeObservers(vNode);
-  }
-
-  // RContextScope收集RContext，用于在组件销毁时，清除组件中的RContext，如：清除组件中注册的watch
-  const rScope = vNode.compRContextScope;
-  if (rScope) {
-    rScope.off();
-    rScope.stop();
   }
 }
 
@@ -416,9 +395,7 @@ function submitClear(vNode: VNode): void {
 function submitDeletion(vNode: VNode): void {
   // 遍历所有子节点：删除dom节点，detach ref 和 调用componentWillUnmount()
   unmountDomComponents(vNode);
-
-  // 置空vNode
-  clearVNode(vNode);
+  clearVNodeTree(vNode);
 }
 
 function submitSuspenseComponent(vNode: VNode) {

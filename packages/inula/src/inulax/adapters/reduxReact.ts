@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { useContext, useEffect, useLayoutEffect, useMemo, useReducer, useRef } from '../../renderer/hooks/HookExternal';
+import { useContext, useLayoutEffect, useMemo, useReducer, useRef } from '../../renderer/hooks/HookExternal';
 import { createContext } from '../../renderer/components/context/CreateContext';
 import { createElement } from '../../external/JSXElement';
 import type { BoundActionCreator, ReduxAction, ReduxStoreHandler } from './redux';
@@ -22,10 +22,11 @@ import createSubscription from './subscription';
 import type { Subscription } from './subscription';
 import { isContextConsumer } from '../../external/InulaIs';
 import { getSelector } from './reduxSelector';
-import { ForwardRef } from '../../types';
+import { ComponentType, ForwardRef } from '../../types';
+import transferNonInulaStatics from './utils';
 
-const DefaultContext = createContext<{ store: ReduxStoreHandler; subscription: Subscription }>(null as any);
-type Context = typeof DefaultContext;
+export const ReduxAdapterContext = createContext<{ store: ReduxStoreHandler; subscription: Subscription }>(null as any);
+type Context = typeof ReduxAdapterContext;
 type Selector = (state: unknown) => unknown;
 
 type ConnectProps = {
@@ -39,7 +40,7 @@ type WrapperInnerProps = {
 
 export function Provider({
   store,
-  context = DefaultContext,
+  context = ReduxAdapterContext,
   children,
 }: {
   store: ReduxStoreHandler;
@@ -80,9 +81,9 @@ export function createStoreHook(context: Context): () => ReduxStoreHandler {
 }
 
 export function createSelectorHook(context: Context) {
-  const store = createStoreHook(context)();
+  const { store, subscription } = useContext(context);
   return function useSelector(selector: Selector = state => state) {
-    return useSelectorWithStore(store, selector);
+    return useSelectorWithStore(store, selector, subscription);
   };
 }
 
@@ -94,15 +95,15 @@ export function createDispatchHook(context: Context): () => BoundActionCreator {
 }
 
 export const useSelector = (selector?: Selector) => {
-  return createSelectorHook(DefaultContext)(selector);
+  return createSelectorHook(ReduxAdapterContext)(selector);
 };
 
 export const useDispatch = () => {
-  return createDispatchHook(DefaultContext)();
+  return createDispatchHook(ReduxAdapterContext)();
 };
 
 export const useStore = () => {
-  return createStoreHook(DefaultContext)();
+  return createStoreHook(ReduxAdapterContext)();
 };
 
 export type MapStateToPropsP<StateProps, OwnProps> = (state: any, ownProps: OwnProps) => StateProps;
@@ -117,14 +118,14 @@ export type MergePropsP<StateProps, DispatchProps, OwnProps, MergedProps> = (
 
 type WrappedComponent<OwnProps> = (props: OwnProps & WrapperInnerProps) => ReturnType<typeof createElement>;
 type OriginalComponent<MergedProps> = (props: MergedProps) => ReturnType<typeof createElement>;
-type Connector<OwnProps, MergedProps> = (Component: OriginalComponent<MergedProps>) => WrappedComponent<OwnProps>;
+type Connector<OwnProps, MergedProps> = (Component: OriginalComponent<MergedProps>) => ComponentType<OwnProps>;
 export type ConnectOption<State, StateProps, OwnProps> = {
   /** @deprecated */
   prue?: boolean;
   forwardRef?: boolean;
   context?: Context;
-  areOwnPropsEqual?: (newOwnProps: OwnProps, oldOwnProps: OwnProps) => any;
-  areStatePropsEqual?: (newStateProps: StateProps, oldStateProps: StateProps) => any;
+  areOwnPropsEqual?: (newOwnProps: OwnProps, oldOwnProps: OwnProps) => boolean;
+  areStatePropsEqual?: (newStateProps: StateProps, oldStateProps: StateProps) => boolean;
   areStatesEqual?: (newState: State, oldState: State) => boolean;
 };
 
@@ -143,9 +144,9 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
     options,
   };
 
-  const { context: storeContext = DefaultContext } = options;
+  const { context: storeContext = ReduxAdapterContext } = options;
 
-  return (Component: OriginalComponent<MergedProps>): WrappedComponent<OwnProps> => {
+  return (Component: OriginalComponent<MergedProps>): ComponentType<any> => {
     // this component should mimic original type of component used
     const Wrapper: WrappedComponent<OwnProps> = (props: OwnProps & ConnectProps & WrapperInnerProps) => {
       const [, forceUpdate] = useReducer(s => s + 1, 0);
@@ -193,7 +194,7 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
           : selector(store.getState(), wrappedProps as OwnProps);
       }, [store, wrappedProps, latestWrappedProps]);
 
-      useEffect(() => {
+      useLayoutEffect(() => {
         latestChildProps.current = childProps;
         latestWrappedProps.current = wrappedProps;
         isRendering.current = false;
@@ -203,7 +204,7 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
         }
       });
 
-      useEffect(() => {
+      useLayoutEffect(() => {
         let isUnsubscribe = false;
 
         const update = () => {
@@ -246,15 +247,17 @@ export function connect<StateProps, DispatchProps, OwnProps, MergedProps>(
       const forwarded = forwardRef(function (props, ref) {
         return Wrapper({ ...props, reduxAdapterRef: ref });
       });
-      return forwarded as WrappedComponent<OwnProps>;
+      return transferNonInulaStatics(forwarded as WrappedComponent<OwnProps>, Component);
     }
 
-    return Wrapper;
+    return transferNonInulaStatics(Wrapper, Component);
   };
 }
 
-function useSelectorWithStore(store: ReduxStoreHandler, selector: Selector) {
+function useSelectorWithStore(store: ReduxStoreHandler, selector: Selector, subContext: Subscription) {
   const [, forceUpdate] = useReducer(s => s + 1, 0);
+
+  const subscription = useMemo(() => createSubscription(store, subContext), [store, subContext]);
 
   const latestSelector = useRef<(state: any) => unknown>();
   const latestState = useRef<any>();
@@ -300,10 +303,12 @@ function useSelectorWithStore(store: ReduxStoreHandler, selector: Selector) {
       forceUpdate();
     };
 
+    subscription.stateChange = update;
+    subscription.trySubscribe();
+
     update();
 
-    const unsubscribe = store.subscribe(() => update());
-    return () => unsubscribe();
+    return () => subscription.tryUnsubscribe();
   }, [store]);
 
   return selectedState;

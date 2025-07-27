@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
+ * Copyright (c) 2024 Huawei Technologies Co.,Ltd.
  *
  * openInula is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
@@ -13,8 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { unstable_batchedUpdates } from '../../dom/DOMExternal';
-import { ReduxStoreHandler } from './redux';
+import { batch, ReduxStoreHandler } from './redux';
 
 type LinkListNode<T> = {
   next: LinkListNode<T>;
@@ -32,10 +31,6 @@ interface ListenerManager {
   subscribe(cb: Callback): () => void;
 }
 
-function batchUpdate(callback: () => any) {
-  unstable_batchedUpdates(callback);
-}
-
 function getLinkedList<T>() {
   let firstNode: LinkListNode<T> = null;
   let lastNode: LinkListNode<T> = null;
@@ -45,12 +40,14 @@ function getLinkedList<T>() {
     lastNode = null;
   }
 
-  function* getIterator(): Generator<T> {
+  function getIterator(): T[] {
+    const data: T[] = [];
     let curNode = firstNode;
     while (curNode) {
-      yield curNode.value;
+      data.push(curNode.value);
       curNode = curNode.next;
     }
+    return data;
   }
 
   function add(element: T): NonNullable<LinkListNode<T>> {
@@ -106,7 +103,7 @@ function getListenerManager(): ListenerManager {
 
   function trigger() {
     const listeners = linkedList.getIterator();
-    batchUpdate(() => {
+    batch(() => {
       for (const listener of listeners) {
         listener();
       }

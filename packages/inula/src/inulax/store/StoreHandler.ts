@@ -16,7 +16,7 @@
 import { useEffect, useRef } from '../../renderer/hooks/HookExternal';
 import { getProcessingVNode } from '../../renderer/GlobalVar';
 import { createProxy } from '../proxy/ProxyHandler';
-import readonlyProxy from '../proxy/ReadonlyProxy';
+import readonlyProxy from '../proxy/readonlyProxy';
 import { Observer } from '../proxy/Observer';
 import { FunctionComponent, ClassComponent } from '../../renderer/vnode/VNodeTags';
 import { isPromise } from '../CommonUtils';
@@ -30,7 +30,7 @@ import type {
   StoreObj,
   UserActions,
   UserComputedValues,
-} from '../types/StoreTypes';
+} from '../types';
 import { VNode } from '../../renderer/vnode/VNode';
 import { devtools } from '../devtools';
 import {
@@ -43,7 +43,6 @@ import {
   SUBSCRIBED,
   UNSUBSCRIBED,
 } from '../devtools/constants';
-import { CurrentListener } from '../types/ProxyTypes';
 
 const idGenerator = {
   id: 0,
@@ -53,15 +52,14 @@ const idGenerator = {
 };
 
 const storeMap = new Map<string, StoreObj<any, any, any>>();
-const pendingMap = new WeakMap<any, boolean | number>();
 
 // 通过该方法执行store.$queue中的action
 function tryNextAction(storeObj, proxyObj, config, plannedActions) {
   if (!plannedActions.length) {
-    if (pendingMap.get(proxyObj)) {
+    if (proxyObj.$pending) {
       const timestamp = Date.now();
-      const duration = timestamp - (pendingMap.get(proxyObj) as number);
-      pendingMap.set(proxyObj, false);
+      const duration = timestamp - proxyObj.$pending;
+      proxyObj.$pending = false;
       devtools.emit(QUEUE_FINISHED, {
         store: storeObj,
         endedAt: timestamp,
@@ -100,11 +98,49 @@ export function clearVNodeObservers(vNode: VNode) {
   vNode.observers.clear();
 }
 
-// createStore返回的是一个getStore的函数
+// 注册VNode销毁时的清理动作
+function registerDestroyFunction() {
+  const processingVNode = getProcessingVNode();
+
+  // 获取不到当前运行的VNode，说明不在组件中运行，属于非法场景
+  if (!processingVNode) {
+    return;
+  }
+
+  if (!processingVNode.observers) {
+    processingVNode.observers = new Set<Observer>();
+  }
+
+  // 函数组件
+  if (processingVNode.tag === FunctionComponent) {
+    const vNodeRef = useRef(processingVNode);
+
+    useEffect(() => {
+      return () => {
+        clearVNodeObservers(vNodeRef.current!);
+        vNodeRef.current!.observers = null;
+      };
+    }, []);
+  } else if (processingVNode.tag === ClassComponent) {
+    // 类组件
+    if (!processingVNode.classComponentWillUnmount) {
+      processingVNode.classComponentWillUnmount = vNode => {
+        clearVNodeObservers(vNode);
+        vNode.observers = null;
+      };
+    }
+  }
+}
+
+// createStore返回的是一个getStore的函数，这个函数必须要在组件（函数/类组件）里面被执行，因为要注册VNode销毁时的清理动作
 function createGetStore<S extends Record<string, any>, A extends UserActions<S>, C extends UserComputedValues<S>>(
   storeObj: StoreObj<S, A, C>
 ): () => StoreObj<S, A, C> {
   const getStore = () => {
+    if (!storeObj.$config.options?.isReduxAdapter) {
+      registerDestroyFunction();
+    }
+
     return storeObj;
   };
 
@@ -121,28 +157,25 @@ export function createStore<S extends Record<string, any>, A extends UserActions
 
   const id = config.id || idGenerator.get('UNNAMED_STORE');
 
-  const listener: CurrentListener = {
+  const listener = {
     current: listener => {},
   };
 
-  const proxyObj = createProxy(config.state, listener, config.options?.isReduxAdapter, config.options?.isReduxAdapter);
+  const proxyObj = createProxy(config.state, listener, !config.options?.isReduxAdapter);
 
-  if (proxyObj !== undefined) {
-    pendingMap.set(proxyObj, false);
-  }
+  proxyObj.$pending = false;
 
   const $a: Partial<StoreActions<S, A>> = {};
   const $queue: Partial<StoreActions<S, A>> = {};
   const $c: Partial<ComputedValues<S, C>> = {};
   const storeObj = {
     id,
-    $state: proxyObj,
     $s: proxyObj,
     $a: $a as StoreActions<S, A>,
     $c: $c as ComputedValues<S, C>,
     $queue: $queue as QueuedStoreActions<S, A>,
     $config: config,
-    $subscriptions: [
+    $listeners: [
       change => {
         devtools.emit(STATE_CHANGE, {
           store: storeObj,
@@ -152,19 +185,16 @@ export function createStore<S extends Record<string, any>, A extends UserActions
     ],
     $subscribe: listener => {
       devtools.emit(SUBSCRIBED, { store: storeObj, listener });
-      storeObj.$subscriptions.push(listener);
-      return () => {
-        storeObj.$unsubscribe(listener);
-      };
+      storeObj.$listeners.push(listener);
     },
     $unsubscribe: listener => {
       devtools.emit(UNSUBSCRIBED, { store: storeObj });
-      storeObj.$subscriptions = storeObj.$subscriptions.filter(item => item != listener);
+      storeObj.$listeners = storeObj.$listeners.filter(item => item != listener);
     },
   } as unknown as StoreObj<S, A, C>;
 
   listener.current = (...args) => {
-    storeObj.$subscriptions.forEach(listener => listener(...args));
+    storeObj.$listeners.forEach(listener => listener(...args));
   };
 
   const plannedActions: PlannedAction<S, ActionFunction<S>>[] = [];
@@ -184,11 +214,11 @@ export function createStore<S extends Record<string, any>, A extends UserActions
           fromQueue: true,
         });
         return new Promise(resolve => {
-          if (!pendingMap.get(proxyObj)) {
-            pendingMap.set(proxyObj, Date.now());
+          if (!proxyObj.$pending) {
+            proxyObj.$pending = Date.now();
             devtools.emit(QUEUE_PENDING, {
               store: storeObj,
-              startedAt: pendingMap.get(proxyObj),
+              startedAt: proxyObj.$pending,
             });
 
             const result = config.actions![action].bind(storeObj, proxyObj)(...payload);
@@ -246,15 +276,12 @@ export function createStore<S extends Record<string, any>, A extends UserActions
 
   if (config.computed) {
     Object.keys(config.computed).forEach(computeKey => {
-      const computeFn = config.computed![computeKey].bind(storeObj, readonlyProxy(proxyObj));
-      // 让store.$c[computeKey]可以访问到computed的值
-      Object.defineProperty($c, computeKey, {
-        get: computeFn as () => any,
-      });
+      // 让store.$c[computeKey]可以访问到computed方法
+      ($c as any)[computeKey] = config.computed![computeKey].bind(storeObj, readonlyProxy(proxyObj));
 
       // 让store[computeKey]可以访问到computed的值
       Object.defineProperty(storeObj, computeKey, {
-        get: computeFn as () => any,
+        get: $c[computeKey] as () => any,
       });
     });
   }
@@ -288,6 +315,10 @@ export function useStore<S extends Record<string, unknown>, A extends UserAction
   id: string
 ): StoreObj<S, A, C> {
   const storeObj = storeMap.get(id);
+
+  if (storeObj && !storeObj.$config.options?.isReduxAdapter) {
+    registerDestroyFunction();
+  }
 
   return storeObj as StoreObj<S, A, C>;
 }

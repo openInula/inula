@@ -1,4 +1,19 @@
-import Inula from 'openinula';
+/*
+ * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
+ *
+ * openInula is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
+import Inula, { InulaElement } from 'openinula';
 import { useContext, MouseEvent, ComponentType, Ref } from 'openinula';
 import RouterContext from './context';
 import { Location } from './index';
@@ -10,10 +25,6 @@ export type LinkProps = {
   to: Partial<Location> | string | ((location: Location) => string | Partial<Location>);
   replace?: boolean;
   tag?: string;
-  /**
-   * @deprecated
-   * React16以后不再需要该属性
-   **/
   innerRef?: Ref<HTMLAnchorElement>;
 } & { [key: string]: any };
 
@@ -25,8 +36,7 @@ const checkTarget = (target?: any) => {
   return !target || target === '_self';
 };
 
-
-function Link<P extends LinkProps>(props: P) {
+function Link<P extends LinkProps>(props: P): InulaElement {
   const { to, replace, component, onClick, target, ...other } = props;
 
   const tag = props.tag || 'a';
@@ -34,7 +44,7 @@ function Link<P extends LinkProps>(props: P) {
   const context = useContext(RouterContext);
   const history = context.history;
 
-  let location = typeof to === 'function' ? to(context.location) : to;
+  const location = typeof to === 'function' ? to(context.location) : to;
 
   let state: any;
   let path: Partial<Path>;
@@ -45,7 +55,7 @@ function Link<P extends LinkProps>(props: P) {
     path = { pathname, hash, search };
     state = location.state;
   }
-  const href = history.createHref(path);
+  const href = location ? history.createHref(path) : '';
 
   const linkClickEvent = (event: MouseEvent<HTMLAnchorElement>) => {
     try {

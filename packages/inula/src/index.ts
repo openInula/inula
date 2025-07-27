@@ -30,6 +30,7 @@ import { createContext } from './renderer/components/context/CreateContext';
 import { lazy } from './renderer/components/Lazy';
 import { forwardRef } from './renderer/components/ForwardRef';
 import { memo } from './renderer/components/Memo';
+import { version } from './renderer/Version';
 import './external/devtools';
 
 import {
@@ -43,7 +44,6 @@ import {
   useRef,
   useState,
   useDebugValue,
-  useInstance,
 } from './renderer/hooks/HookExternal';
 import {
   isContextProvider,
@@ -57,13 +57,9 @@ import {
   isPortal,
 } from './external/InulaIs';
 import { createStore, useStore, clearStore } from './inulax/store/StoreHandler';
-import { reactive, useReactive, shallowReactive, useShallowReactive, toRaw, markRaw } from './inulax/reactive/Reactive';
-import { ref, useReference, isRef, unref, shallowRef, toRef, toRefs } from './inulax/reactive/Ref';
 import * as reduxAdapter from './inulax/adapters/redux';
-import { watch, watchEffect, useWatch } from './inulax/reactive/Watch';
-import { computed, useComputed } from './inulax/reactive/Computed';
+import { watch } from './inulax/proxy/watch';
 import { act } from './external/TestUtil';
-import { nextTick } from './inulax/proxy/Scheduler';
 
 import {
   render,
@@ -75,36 +71,7 @@ import {
 } from './dom/DOMExternal';
 
 import { syncUpdates as flushSync } from './renderer/TreeBuilder';
-import { isReactive, isShallow, isReadonly } from './inulax/CommonUtils';
-import { toInstance } from './renderer/hooks/UseInstanceHook';
-
-const version = __VERSION__;
-const vueReactive = {
-  ref,
-  useReference,
-  isRef,
-  unref,
-  shallowRef,
-  toRef,
-  toRefs,
-  reactive,
-  useReactive,
-  shallowReactive,
-  useShallowReactive,
-  markRaw,
-  isReactive,
-  isShallow,
-  isReadonly,
-  computed,
-  useComputed,
-  watchEffect,
-  watch,
-  useWatch,
-  toRaw,
-  nextTick,
-  useInstance,
-  toInstance,
-};
+import { toRaw } from './inulax/proxy/ProxyHandler';
 
 const Inula = {
   Children,
@@ -156,9 +123,7 @@ const Inula = {
   Profiler,
   StrictMode,
   Suspense,
-
-  // vue reactive api
-  vueReactive,
+  version,
 };
 
 export {
@@ -197,7 +162,7 @@ export {
   clearStore,
   reduxAdapter,
   watch,
-
+  toRaw,
   // 兼容ReactIs
   isFragment,
   isElement,
@@ -214,17 +179,8 @@ export {
   Profiler,
   StrictMode,
   Suspense,
-
-  // vue reactive api
-  vueReactive,
+  version,
 };
 
 export * from './types';
-export * from './inulax/types/ReactiveTypes';
-export * from './inulax/types/ProxyTypes';
-export * from './inulax/types/StoreTypes';
-export * from './inulax/types/StoreTypes';
-export { ComputedImpl } from './inulax/reactive/Computed';
-export { VNode } from './renderer/vnode/VNode';
-
 export default Inula;

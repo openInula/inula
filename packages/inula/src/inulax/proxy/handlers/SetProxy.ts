@@ -13,43 +13,130 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { getObserver } from '../ProxyHandler';
-import { KeyTypes } from '../../Constants';
-import { getValOrProxy, registerListener } from './HandlerUtils';
-import {
-  baseGetFun,
-  baseForEach,
-  baseAddFunOfSet,
-  baseHasFun,
-  baseDeleteFun,
-  baseClearFun,
-} from './BaseCollectionHandler';
-import { CurrentListener, Listeners } from '../../types/ProxyTypes';
+import { resolveMutation } from '../../CommonUtils';
+import { createProxy, getObserver, hookObserverMap } from '../ProxyHandler';
+import { RAW_VALUE } from '../../Constants';
 
-export function createSetProxy<T extends Set<any>>(rawObj: T, listener: CurrentListener): ProxyHandler<T> {
-  const listeners: Listeners = [];
-  // 因为rawObj是Set类型，里面存放的是proxy对象，所以需要一个map来存放真实的对象和proxy对象的映射关系
-  const valProxies = new Map();
+const COLLECTION_CHANGE = '_collectionChange';
 
-  function add(rawObj: T, value: any): Record<string, any> {
-    return baseAddFunOfSet(rawObj, value, listener, listeners, 'Set', valProxies);
+export function createSetProxy<T extends Record<string, any>>(
+  rawObj: T,
+  listener: { current: (...args) => any },
+  hookObserver = true
+): ProxyHandler<T> {
+  let listeners: ((mutation) => Record<string, any>)[] = [];
+  const proxies = new WeakMap();
+
+  // Set的add方法
+  function add(
+    rawObj: { add: (any) => void; has: (any) => boolean; values: () => any[] },
+    value: any
+  ): Record<string, any> {
+    if (!rawObj.has(proxies.get(value))) {
+      const proxy = createProxy(
+        value,
+        {
+          current: change => {
+            if (!change.parents) change.parents = [];
+            change.parents.push(rawObj);
+            const mutation = resolveMutation(
+              { ...rawObj, valueChange: change.mutation.from },
+              { ...rawObj, valueChange: change.mutation.to }
+            );
+            listener.current({
+              ...change,
+              mutation,
+            });
+            listeners.forEach(lst =>
+              lst({
+                ...change,
+                mutation,
+              })
+            );
+          },
+        },
+        hookObserverMap.get(rawObj)
+      );
+      const oldValues = Array.from(rawObj.values());
+
+      proxies.set(value, proxy);
+
+      rawObj.add(proxies.get(value));
+
+      const observer = getObserver(rawObj);
+      const mutation = resolveMutation(
+        {
+          _type: 'Set',
+          values: oldValues,
+        },
+        {
+          _type: 'Set',
+          values: Array.from(rawObj.values()),
+        }
+      );
+
+      observer.setProp(value, mutation);
+      observer.setProp(COLLECTION_CHANGE, mutation);
+    }
+
+    return rawObj;
   }
-
-  function has(rawObj: T, value: any): boolean {
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  function has(rawObj: { has: (string) => boolean }, value: any): boolean {
     const observer = getObserver(rawObj);
     observer.useProp(value);
 
-    return baseHasFun(rawObj, value, valProxies);
+    return rawObj.has(proxies.get(value));
   }
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  function deleteFun(
+    rawObj: { has: (key: any) => boolean; delete: (value: any) => void; values: () => any[] },
+    value: any
+  ) {
+    const val = rawObj.has(proxies.get(value)) ? proxies.get(value) : value;
+    if (rawObj.has(val)) {
+      const oldValues = Array.from(rawObj.values());
+      rawObj.delete(val);
 
-  function deleteFun(rawObj: T, value: any) {
-    return baseDeleteFun(rawObj, value, 'Set', valProxies);
+      proxies.delete(value);
+
+      const observer = getObserver(rawObj);
+      const mutation = resolveMutation(
+        {
+          _type: 'Set',
+          values: oldValues,
+        },
+        {
+          _type: 'Set',
+          values: Array.from(rawObj.values()),
+        }
+      );
+
+      observer.setProp(value, mutation);
+      observer.setProp(COLLECTION_CHANGE, mutation);
+
+      return true;
+    }
+
+    return false;
   }
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  function clear(rawObj: { size: number; clear: () => void }) {
+    const oldSize = rawObj.size;
+    rawObj.clear();
 
-  function clear(rawObj: T) {
-    baseClearFun(rawObj, valProxies, 'Set');
+    if (oldSize > 0) {
+      const observer = getObserver(rawObj);
+      observer.allChange();
+    }
   }
-
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  function size(rawObj: { size: number }) {
+    const observer = getObserver(rawObj);
+    observer.useProp(COLLECTION_CHANGE);
+    return rawObj.size;
+  }
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const handler = {
     get,
     add,
@@ -64,21 +151,86 @@ export function createSetProxy<T extends Set<any>>(rawObj: T, listener: CurrentL
     [typeof Symbol === 'function' ? Symbol.iterator : '@@iterator']: forOf,
   };
 
-  function get(rawObj: T, key: any, receiver: any): any {
-    return baseGetFun(rawObj, key, receiver, listeners, handler, 'Set');
-  }
+  function get(rawObj: { size: number }, key: any, receiver: any): any {
+    if (Object.prototype.hasOwnProperty.call(handler, key)) {
+      const value = Reflect.get(handler, key, receiver);
+      return value.bind(null, rawObj);
+    }
 
-  function wrapIterator(rawObj: T, rawIt: IterableIterator<any>) {
+    if (key === 'size') {
+      return size(rawObj);
+    }
+
+    if (key === 'addListener') {
+      return listener => {
+        listeners.push(listener);
+      };
+    }
+
+    if (key === 'removeListener') {
+      return listener => {
+        listeners = listeners.filter(item => item != listener);
+      };
+    }
+    if (key === 'watch') {
+      const observer = getObserver(rawObj);
+
+      return (prop: any, handler: (key: string, oldValue: any, newValue: any) => void) => {
+        if (!observer.watchers[prop]) {
+          observer.watchers[prop] = [] as ((key: string, oldValue: any, newValue: any) => void)[];
+        }
+        observer.watchers[prop].push(handler);
+        return () => {
+          observer.watchers[prop] = observer.watchers[prop].filter(cb => cb !== handler);
+        };
+      };
+    }
+
+    if (key === RAW_VALUE) {
+      return rawObj;
+    }
+
+    return Reflect.get(rawObj, key, receiver);
+  }
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  function wrapIterator(rawObj: Record<string, any>, rawIt: { next: () => { value: any; done: boolean } }) {
     const observer = getObserver(rawObj);
-    observer.useProp(KeyTypes.COLLECTION_CHANGE);
+    const hookObserver = hookObserverMap.get(rawObj);
+    observer.useProp(COLLECTION_CHANGE);
 
     return {
       next() {
+        const currentListener = {
+          current: change => {
+            if (!change.parents) change.parents = [];
+            change.parents.push(rawObj);
+            const mutation = resolveMutation(
+              { ...rawObj, valueChange: change.mutation.from },
+              { ...rawObj, valueChange: change.mutation.to }
+            );
+            listener.current({
+              ...change,
+              mutation,
+            });
+            listeners.forEach(lst =>
+              lst({
+                ...change,
+                mutation,
+              })
+            );
+          },
+        };
         const { value, done } = rawIt.next();
-        if (!done) {
-          observer.useProp(KeyTypes.COLLECTION_CHANGE);
+        if (done) {
+          return { value: createProxy(value, currentListener, hookObserver), done };
         }
-        return { value: getValOrProxy('valueChange', false, value, rawObj, listener, listeners), done };
+
+        observer.useProp(COLLECTION_CHANGE);
+
+        const newVal = createProxy(value, currentListener, hookObserver);
+
+        return { value: newVal, done };
       },
       // 判断Symbol类型，兼容IE
       [typeof Symbol === 'function' ? Symbol.iterator : '@@iterator']() {
@@ -87,27 +239,72 @@ export function createSetProxy<T extends Set<any>>(rawObj: T, listener: CurrentL
     };
   }
 
-  function keys(rawObj: T) {
+  function keys(rawObj: { keys: () => { next: () => { value: any; done: boolean } } }) {
     return wrapIterator(rawObj, rawObj.keys());
   }
 
-  function values(rawObj: T) {
+  function values(rawObj: { values: () => { next: () => { value: any; done: boolean } } }) {
     return wrapIterator(rawObj, rawObj.values());
   }
 
-  function entries(rawObj: T) {
+  function entries(rawObj: { entries: () => { next: () => { value: any; done: boolean } } }) {
     return wrapIterator(rawObj, rawObj.entries());
   }
 
-  function forOf(rawObj: T) {
-    return wrapIterator(rawObj, rawObj.values());
+  function forOf(rawObj: {
+    entries: () => { next: () => { value: any; done: boolean } };
+    values: () => { next: () => { value: any; done: boolean } };
+  }) {
+    const iterator = rawObj.values();
+    return wrapIterator(rawObj, iterator);
   }
 
-  function forEach(rawObj: T, callback: (valProxy: any, keyProxy: any, rawObj: any) => void) {
-    baseForEach(rawObj, callback, listener, listeners);
+  function forEach(
+    rawObj: { forEach: (callback: (value: any, key: any) => void) => void },
+    callback: (valProxy: any, keyProxy: any, rawObj: any) => void
+  ) {
+    const observer = getObserver(rawObj);
+    observer.useProp(COLLECTION_CHANGE);
+    rawObj.forEach((value, key) => {
+      const currentListener = {
+        current: change => {
+          if (!change.parents) change.parents = [];
+          change.parents.push(rawObj);
+          const mutation = resolveMutation(
+            { ...rawObj, valueChange: change.mutation.from },
+            { ...rawObj, valueChange: change.mutation.to }
+          );
+          listener.current({
+            ...change,
+            mutation,
+          });
+          listeners.forEach(lst =>
+            lst({
+              ...change,
+              mutation,
+            })
+          );
+        },
+      };
+      const valProxy = createProxy(value, currentListener, hookObserverMap.get(rawObj));
+      const keyProxy = createProxy(key, currentListener, hookObserverMap.get(rawObj));
+      // 最后一个参数要返回代理对象
+      return callback(valProxy, keyProxy, rawObj);
+    });
   }
-
-  registerListener(rawObj, listener, listeners);
-
-  return new Proxy(rawObj, handler);
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  getObserver(rawObj).addListener(change => {
+    if (!change.parents) change.parents = [];
+    change.parents.push(rawObj);
+    listener.current(change);
+    listeners.forEach(lst => lst(change));
+  });
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  const boundHandler = {};
+  Object.entries(handler).forEach(([id, val]) => {
+    boundHandler[id] = (...args: any[]) => {
+      return (val as any)(...args, hookObserver);
+    };
+  });
+  return new Proxy(rawObj, { ...boundHandler });
 }

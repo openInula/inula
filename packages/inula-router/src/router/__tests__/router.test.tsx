@@ -1,11 +1,34 @@
-import * as React from 'react';
+/*
+ * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
+ *
+ * openInula is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
+import { render, act } from 'openinula';
 import { historyHook, locationHook, Test_Demo, Test_Demo2, Test_Demo3, Test_Demo4 } from './test_app';
 import { createBrowserHistory, createHashHistory, Router } from '../index';
-import { act, render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import '@testing-library/jest-dom';
 
 describe('Inula-router Test', () => {
+  let container;
+
+  beforeEach(() => {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+  });
+
+  afterEach(() => {
+    document.body.removeChild(container);
+    container = null;
+  });
 
   it('Render app and Jump use <Link>', async () => {
     const history = createBrowserHistory();
@@ -13,26 +36,35 @@ describe('Inula-router Test', () => {
       <Router history={history}>
         <Test_Demo />
       </Router>,
+      container
     );
-    const user = userEvent.setup();
+
     expect(locationHook.pathname).toEqual('/');
-    expect(screen.getByText(/you are home/i)).toBeInTheDocument();
+    expect(container.textContent).toMatch(/you are home/i);
 
-    await user.click(screen.getByText(/about/i));
+    // 模拟点击事件
+    const aboutLink = container.querySelector('a[href="/about"]');
+    if (aboutLink) {
+      aboutLink.click();
+    }
     expect(locationHook.pathname).toEqual('/about');
-    expect(screen.getByText(/you are on the about page/i)).toBeInTheDocument();
+    expect(container.textContent).toMatch(/you are on the about page/i);
 
-    await user.click(screen.getByText(/user/i));
+    const userLink = container.querySelector('a[href="/user"]');
+    if (userLink) {
+      userLink.click();
+    }
     expect(locationHook.pathname).toEqual('/user');
-    expect(screen.getByText(/You are at User Index/i)).toBeInTheDocument();
+    expect(container.textContent).toMatch(/You are at User Index/i);
   });
 
-  it('Test hooks and use hook to jump to page', async () => {
+  it('Test hooks and use hook to jump to page', () => {
     const history = createBrowserHistory();
     render(
       <Router history={history}>
         <Test_Demo />
       </Router>,
+      container
     );
 
     act(() => {
@@ -44,49 +76,49 @@ describe('Inula-router Test', () => {
       historyHook.push('/about');
     });
 
-    expect(screen.getByText(/you are on the about page/i)).toBeInTheDocument();
+    expect(container.textContent).toMatch(/you are on the about page/i);
 
     act(() => {
       historyHook.push('/user');
     });
     expect(locationHook.pathname).toEqual('/user');
-    expect(screen.getByText(/You are at User Index/i)).toBeInTheDocument();
+    expect(container.textContent).toMatch(/You are at User Index/i);
 
     act(() => {
       historyHook.push('/test');
     });
     expect(locationHook.pathname).toEqual('/test');
-    expect(screen.getByText(/No match/i)).toBeInTheDocument();
-
+    expect(container.textContent).toMatch(/No match/i);
   });
 
-  it('Test Redirect', async () => {
+  it('Test Redirect', () => {
     const history = createBrowserHistory();
     render(
       <Router history={history}>
         <Test_Demo />
       </Router>,
+      container
     );
 
     act(() => {
       historyHook.push('/default');
     });
-    expect(screen.getByText(/No match/i)).toBeInTheDocument();
+    expect(container.textContent).toMatch(/No match/i);
 
     act(() => {
       historyHook.push('/test2');
     });
-    // '/test2'会重定向至'/redirect'
     expect(locationHook.pathname).toEqual('/redirect');
-    expect(screen.getByText(/No match/i)).toBeInTheDocument();
+    expect(container.textContent).toMatch(/No match/i);
   });
 
-  it('Test useParams Hook', async () => {
+  it('Test useParams Hook', () => {
     const history = createBrowserHistory();
     render(
       <Router history={history}>
         <Test_Demo />
       </Router>,
+      container
     );
 
     act(() => {
@@ -94,16 +126,16 @@ describe('Inula-router Test', () => {
     });
     expect(locationHook.pathname).toEqual('/profile/123');
 
-    expect(screen.getByText(/Param is 123/i)).toBeInTheDocument();
-
+    expect(container.textContent).toMatch(/Param is 123/i);
   });
 
-  it('Test WithRouter', async () => {
+  it('Test WithRouter', () => {
     const history = createBrowserHistory();
     render(
       <Router history={history}>
         <Test_Demo />
       </Router>,
+      container
     );
 
     act(() => {
@@ -111,10 +143,7 @@ describe('Inula-router Test', () => {
     });
 
     expect(locationHook.pathname).toEqual('/testr');
-
-    // 测试WithRouter是否正确注入Props
-    expect(screen.getByText('withRoute Test, pathname--/testr')).toBeInTheDocument();
-
+    expect(container.textContent).toMatch(/withRoute Test, pathname--\/testr/);
   });
 
   it('Test Prompt', async () => {
@@ -123,15 +152,20 @@ describe('Inula-router Test', () => {
       <Router history={history}>
         <Test_Demo2 />
       </Router>,
+      container
     );
 
-    const user = userEvent.setup();
-    await user.click(screen.getByText(/about/i));
-    // 查找结果为Null说明Prompt组件已成功拦截前往/about的跳转行为
-    expect(screen.queryByText(/you are on the about page/i)).toBeNull();
+    const aboutLink = container.querySelector('a[href="/about"]');
+    if (aboutLink) {
+      aboutLink.click();
+    }
+    expect(container.textContent.includes('you are on the about page')).toBe(false);
 
-    await user.click(screen.getByText(/user/i));
-    expect(screen.queryByText(/You are at User Index/i)).not.toBeNull();
+    const userLink = container.querySelector('a[href="/user"]');
+    if (userLink) {
+      userLink.click();
+    }
+    expect(container.textContent.includes('You are at User Index')).toBe(true);
   });
 
   it('Test Init Render Redirect', () => {
@@ -140,11 +174,11 @@ describe('Inula-router Test', () => {
       <Router history={history}>
         <Test_Demo3 />
       </Router>,
+      container
     );
-    // 初次渲染重定向至User Index
-    expect(screen.queryByText(/you are home/i)).toBeNull();
 
-    expect(screen.queryByText(/You are at User Index/i)).not.toBeNull();
+    expect(container.textContent.includes('you are home')).toBe(false);
+    expect(container.textContent.includes('You are at User Index')).toBe(true);
   });
 
   it('<Redirect/> support props path and wildcard', () => {
@@ -153,11 +187,11 @@ describe('Inula-router Test', () => {
       <Router history={history}>
         <Test_Demo4 />
       </Router>,
+      container
     );
-    // 初次渲染重定向至User Index
-    expect(screen.queryByText(/you are home/i)).toBeNull();
-    expect(screen.queryByText(/You are on the about page/i)).toBeNull();
 
-    expect(screen.queryByText(/You are at User Index/i)).not.toBeNull();
+    expect(container.textContent.includes('you are home')).toBe(false);
+    expect(container.textContent.includes('you are on the about page')).toBe(false);
+    expect(container.textContent.includes('You are at User Index')).toBe(true);
   });
 });

@@ -200,9 +200,8 @@ function getChildByIndex(vNode: VNode, idx: number) {
 // 从多个更新节点中，计算出开始节点。即：找到最近的共同的父辈节点
 export function calcStartUpdateVNode(treeRoot: VNode) {
   const toUpdateNodes = Array.from(treeRoot.toUpdateNodes!);
-  // 所有待更新元素的parent为null说明所有node的父元素已经被卸载，应该从根节点发起更新
-  // Array.every方法对于空数组总返回true
-  if (toUpdateNodes.every(node => node.parent === null)) {
+  // 只要有待更新元素的path为''，说明node自身或父元素已经被卸载，应该从根节点发起更新
+  if (toUpdateNodes.length === 0 || toUpdateNodes.some(node => !node.path)) {
     return treeRoot;
   }
 
@@ -368,11 +367,6 @@ function renderFromRoot(treeRoot) {
   popCurrentRoot();
   if (window.__INULA_DEV_HOOK__) {
     const hook = window.__INULA_DEV_HOOK__;
-    // injector.js 可能在 Inula 代码之后加载，此时无 __INULA_DEV_HOOK__ 全局变量
-    // Inula 代码初次加载时不会初始化 helper
-    if (!hook.isInit) {
-      injectUpdater();
-    }
     hook.addIfNotInclude(treeRoot);
     hook.send(treeRoot);
   }

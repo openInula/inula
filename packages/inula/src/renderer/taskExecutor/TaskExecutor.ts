@@ -24,7 +24,6 @@ import { add, shift, first, remove } from './TaskQueue';
 
 const ImmediatePriority = 1;
 const NormalPriority = 10;
-const LowPriority = 100;
 
 // 用于控制插入任务的顺序
 let idCounter = 1;
@@ -83,13 +82,8 @@ function runAsync(callback, priorityLevel = NormalPriority) {
       increment = -1;
       break;
     case NormalPriority:
-      increment = 10000;
-      break;
-    case LowPriority:
-      increment = 50000;
-      break;
     default:
-      increment = 50000;
+      increment = 10000;
       break;
   }
 
@@ -113,4 +107,4 @@ function cancelTask(task) {
   task.callback = null;
 }
 
-export { ImmediatePriority, NormalPriority, LowPriority, runAsync, cancelTask };
+export { ImmediatePriority, NormalPriority, runAsync, cancelTask };

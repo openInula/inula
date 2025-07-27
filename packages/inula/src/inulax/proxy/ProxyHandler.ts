@@ -14,75 +14,70 @@
  */
 
 import { createObjectProxy } from './handlers/ObjectProxyHandler';
-import { Observer, ObserverType } from './Observer';
+import { Observer } from './Observer';
 import { HooklessObserver } from './HooklessObserver';
-import { isArray, isCanProxyObject, isCollection, isObject } from '../CommonUtils';
+import { isArray, isCollection, isObject } from '../CommonUtils';
 import { createArrayProxy } from './handlers/ArrayProxyHandler';
 import { createCollectionProxy } from './handlers/CollectionProxyHandler';
-import { IObserver, CurrentListener } from '../types/ProxyTypes';
-import { ReactiveFlags } from '../Constants';
+import type { IObserver } from '../types';
+import { OBSERVER_KEY, RAW_VALUE } from '../Constants';
 
-// Save rawObj -> Proxy
-const proxyMap = new WeakMap<any, ProxyHandler<any>>();
+// 保存rawObj -> Proxy
+const proxyMap = new WeakMap();
 
-// Record whether rawObj has been deeply proxied
-export const reduxAdapterMap = new WeakMap<any, boolean>();
+export const hookObserverMap = new WeakMap();
 
-// Use WeakMap to save rawObj -> Observer, without polluting the original object
-const rawObserverMap = new WeakMap<any, IObserver>();
-
-export function getObserver(rawObj: any): IObserver {
-  return rawObserverMap.get(rawObj) as IObserver;
+export function getObserver(rawObj: any): Observer {
+  return rawObj[OBSERVER_KEY];
 }
 
-function setObserver(rawObj: any, observer: IObserver): void {
-  rawObserverMap.set(rawObj, observer);
-}
+const setObserverKey =
+  typeof OBSERVER_KEY === 'string'
+    ? (rawObj, observer) => {
+        Object.defineProperty(rawObj, OBSERVER_KEY, {
+          configurable: false,
+          enumerable: false,
+          value: observer,
+        });
+      }
+    : (rawObj, observer) => {
+        rawObj[OBSERVER_KEY] = observer;
+      };
 
-export function createProxy(rawObj: any, listener?: CurrentListener, isShallow = false, isReduxAdapter = false): any {
-  // No need to proxy if it's not an object (i.e., it's a primitive data type)
+export function createProxy(rawObj: any, listener: { current: (...args) => any }, isHookObserver = true): any {
+  // 不是对象（是原始数据类型）不用代理
   if (!(rawObj && isObject(rawObj))) {
     return rawObj;
   }
 
-  // just proxy 'Object', 'Array', 'Map', 'Set', 'WeakMap', 'WeakSet'
-  if (!isCanProxyObject(rawObj)) {
-    return rawObj;
-  }
-
-  // skip markRaw object
-  if (rawObj[ReactiveFlags.IS_SKIP]) {
-    return rawObj;
-  }
-
-  // Already exists
+  // 已代理过
   const existProxy = proxyMap.get(rawObj);
   if (existProxy) {
     return existProxy;
   }
 
-  // Observer does not need to be approached
+  // Observer不需要代理
   if (rawObj instanceof Observer) {
     return rawObj;
   }
 
-  // Create Observer
-  let observer = getObserver(rawObj);
+  // 创建Observer
+  let observer: IObserver = getObserver(rawObj);
   if (!observer) {
-    observer = (isReduxAdapter ? new HooklessObserver() : new Observer(ObserverType.REACTIVE)) as IObserver;
-    setObserver(rawObj, observer);
+    observer = isHookObserver ? new Observer() : new HooklessObserver();
+    setObserverKey(rawObj, observer);
   }
 
-  reduxAdapterMap.set(rawObj, isReduxAdapter);
+  hookObserverMap.set(rawObj, isHookObserver);
 
   // 创建Proxy
-  let proxyObj: ProxyHandler<any>;
-  if (isShallow) {
+  let proxyObj;
+  if (!isHookObserver) {
     proxyObj = createObjectProxy(
       rawObj,
       {
         current: change => {
-          listener?.current(change);
+          listener.current(change);
         },
       },
       true
@@ -91,23 +86,27 @@ export function createProxy(rawObj: any, listener?: CurrentListener, isShallow =
     // 数组
     proxyObj = createArrayProxy(rawObj as [], {
       current: change => {
-        listener?.current(change);
+        listener.current(change);
       },
     });
   } else if (isCollection(rawObj)) {
     // 集合
-    proxyObj = createCollectionProxy(rawObj, {
-      current: change => {
-        listener?.current(change);
+    proxyObj = createCollectionProxy(
+      rawObj,
+      {
+        current: change => {
+          listener.current(change);
+        },
       },
-    });
+      true
+    );
   } else {
     // 原生对象 或 函数
     proxyObj = createObjectProxy(
       rawObj,
       {
         current: change => {
-          listener?.current(change);
+          listener.current(change);
         },
       },
       false
@@ -118,4 +117,8 @@ export function createProxy(rawObj: any, listener?: CurrentListener, isShallow =
   proxyMap.set(proxyObj, proxyObj);
 
   return proxyObj;
+}
+
+export function toRaw<T>(observed: T): T {
+  return observed && observed[RAW_VALUE];
 }

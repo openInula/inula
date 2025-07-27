@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
+ *
+ * openInula is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 import Inula from 'openinula';
 import { useLayoutEffect, useMemo, useRef, useState, InulaNode } from 'openinula';
 
@@ -18,11 +33,11 @@ function Router<P extends RouterProps>(props: P) {
   const isMount = useRef<boolean>(false);
 
   // 在Router加载时就监听history地址变化，以保证在始渲染时重定向能正确触发
-  if (unListen.current === null)
+  if (unListen.current === null) {
     unListen.current = history.listen(arg => {
       pendingLocation.current = arg.location;
     });
-
+  }
   // 模拟componentDidMount和componentWillUnmount
   useLayoutEffect(() => {
     isMount.current = true;
@@ -56,7 +71,7 @@ function Router<P extends RouterProps>(props: P) {
       location: location,
       match: { isExact: location.pathname === '/', params: {}, path: '/', score: [], url: '/' },
     }),
-    [location],
+    [location]
   );
 
   return <RouterContext.Provider value={initContextValue} children={children} />;

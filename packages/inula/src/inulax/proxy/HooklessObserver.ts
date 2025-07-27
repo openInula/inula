@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  */
 
-import { IObserver } from '../types/ProxyTypes';
+import type { IObserver } from './Observer';
 
 /**
  * 一个对象（对象、数组、集合）对应一个Observer
@@ -48,8 +48,6 @@ export class HooklessObserver implements IObserver {
   triggerUpdate(vNode): void {}
 
   allChange(): void {}
-
-  arrayLengthChange(): void {}
 
   clearByVNode(vNode): void {}
 }

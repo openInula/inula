@@ -21,7 +21,7 @@ import { findDOMByClassInst } from '../renderer/vnode/VNodeUtils';
 import { listenSimulatedDelegatedEvents } from '../event/EventBinding';
 import { Callback } from '../renderer/Types';
 import { InulaNode } from '../types';
-import { EVENT_KEY } from './DOMInternalKeys';
+import { EVENT_KEY, ROOT_CONTAINER } from './DOMInternalKeys';
 
 function createRoot(children: any, container: Container, callback?: Callback) {
   // 清空容器
@@ -33,7 +33,7 @@ function createRoot(children: any, container: Container, callback?: Callback) {
 
   // 调度器创建根节点，并给容器dom赋vNode结构体
   const treeRoot = createTreeRootVNode(container);
-  container._treeRoot = treeRoot;
+  container[ROOT_CONTAINER] = treeRoot;
   listenSimulatedDelegatedEvents(treeRoot);
 
   // 执行回调
@@ -54,7 +54,7 @@ function createRoot(children: any, container: Container, callback?: Callback) {
 }
 
 function executeRender(children: any, container: Container, callback?: Callback) {
-  let treeRoot = container._treeRoot;
+  let treeRoot = container[ROOT_CONTAINER];
 
   if (!treeRoot) {
     treeRoot = createRoot(children, container, callback);
@@ -106,11 +106,11 @@ function removeRootEventLister(container: Container) {
 // 卸载入口
 function destroy(container: Element | DocumentFragment | Document): boolean;
 function destroy(container: Container): boolean {
-  if (container._treeRoot) {
+  if (container[ROOT_CONTAINER]) {
     syncUpdates(() => {
       executeRender(null, container, () => {
         removeRootEventLister(container);
-        container._treeRoot = null;
+        container[ROOT_CONTAINER] = null;
       });
     });
 

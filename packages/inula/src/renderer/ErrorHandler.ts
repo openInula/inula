@@ -104,7 +104,7 @@ export function handleRenderThrowError(sourceVNode: VNode, error: any) {
         handleRootError(error);
         return;
       }
-      case ClassComponent:
+      case ClassComponent: {
         const ctor = vNode.type;
         const instance = vNode.realNode;
         if (
@@ -126,6 +126,7 @@ export function handleRenderThrowError(sourceVNode: VNode, error: any) {
           return;
         }
         break;
+      }
       default:
         break;
     }

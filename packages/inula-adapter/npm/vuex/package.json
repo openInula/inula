@@ -1,5 +1,0 @@
-{
-  "module": "./esm/vuex-adapter.js",
-  "main": "./cjs/vuex-adapter.js",
-  "types": "./@types/index.d.ts"
-}

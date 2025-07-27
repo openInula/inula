@@ -22,8 +22,6 @@ import { ForwardRef } from '../vnode/VNodeTags';
 import { FlagUtils, Update } from '../vnode/VNodeFlags';
 import { onlyUpdateChildVNodes } from '../vnode/VNodeCreator';
 import { createChildrenByDiff } from '../diff/nodeDiffComparator';
-import { markRef } from './BaseComponent';
-import { createComponentRContext } from '../../inulax/reactive/RContext';
 
 // 在useState, useReducer的时候，会触发state变化
 let stateChange = false;
@@ -58,14 +56,10 @@ export function captureFunctionComponent(processing: VNode, funcComp: any, nextP
   // 在执行exeFunctionHook前先设置stateChange为false
   setStateChange(false);
 
-  const newElements = createComponentRContext(
-    () =>
-      runFunctionWithHooks(
-        processing.tag === ForwardRef ? funcComp.render : funcComp,
-        nextProps,
-        processing.tag === ForwardRef ? processing.ref : undefined,
-        processing
-      ),
+  const newElements = runFunctionWithHooks(
+    processing.tag === ForwardRef ? funcComp.render : funcComp,
+    nextProps,
+    processing.tag === ForwardRef ? processing.ref : undefined,
     processing
   );
 
@@ -77,9 +71,6 @@ export function captureFunctionComponent(processing: VNode, funcComp: any, nextP
   }
 
   processing.isStoreChange = false;
-
-  // 给函数组件新增ref能力，用于适配vue的$refs
-  markRef(processing);
 
   processing.child = createChildrenByDiff(processing, processing.child, newElements, !processing.isCreated);
   return processing.child;

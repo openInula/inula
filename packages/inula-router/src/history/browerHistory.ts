@@ -1,20 +1,21 @@
+/*
+ * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
+ *
+ * openInula is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 import { getDefaultConfirmation, isSupportHistory, isSupportsPopState } from './dom';
-import {
-  Action,
-  AgnosticHistory,
-  BaseOption,
-  CommonListener,
-  DefaultStateType,
-  EventType,
-  History,
-  HistoryState,
-  Listener,
-  Location,
-  LocationHandler,
-  Path,
-  To,
-} from './types';
-import { createLocation, createMemoryRecord, createPath, normalizeSlash, stripBasename } from './utils';
+import { Action, BaseOption, DefaultStateType, EventType, History, HistoryState, Location, Path, To } from './types';
+import { normalizeSlash, createMemoryRecord, createPath, createLocation, stripBasename } from './utils';
 import TransitionManager from './transitionManager';
 
 import warning from './waring';
@@ -27,17 +28,7 @@ export type BrowserHistoryOption = {
   forceRefresh?: boolean;
 } & BaseOption;
 
-export function createBrowserHistory<S = DefaultStateType>(options: BrowserHistoryOption): History<S>;
-/**
- * @internal
- * @desc this override signature only for internal usage
- */
-export function createBrowserHistory<S = DefaultStateType>(
-  options: LocationHandler<S> & BrowserHistoryOption
-): AgnosticHistory<S>;
-export function createBrowserHistory<S = DefaultStateType>(
-  options: LocationHandler<S> & BrowserHistoryOption = {}
-): AgnosticHistory<S> {
+export function createBrowserHistory<S = DefaultStateType>(options: BrowserHistoryOption = {}): History<S> {
   const supportHistory = isSupportHistory();
   const isSupportPopState = isSupportsPopState();
   const browserHistory = window.history;
@@ -51,30 +42,23 @@ export function createBrowserHistory<S = DefaultStateType>(
 
   const transitionManager = new TransitionManager<S>();
 
-  const { go, addListener, block, destroy, getUpdateStateFunc } = getBaseHistory<S>(
-    'browser',
+  const { go, goBack, goForward, listen, block, getUpdateStateFunc } = getBaseHistory<S>(
     transitionManager,
-    handlePop
+    setListener,
+    browserHistory
   );
 
-  const listen = (listener: CommonListener<S>) => {
-    const trigger: Listener<S> = { type: 'common', listener: listener };
-    return addListener(trigger);
-  };
-
-  const history: AgnosticHistory<S> = {
+  const history: History<S> = {
     action: Action.pop,
     length: browserHistory.length,
     location: initLocation,
     go,
-    goBack: () => go(-1),
-    goForward: () => go(-1),
+    goBack,
+    goForward,
     listen,
-    addListener,
     block,
     push,
     replace,
-    destroy,
     createHref,
   };
 
@@ -116,19 +100,35 @@ export function createBrowserHistory<S = DefaultStateType>(
     }
   }
 
-  const isEventPopState = (event: Event): event is PopStateEvent => {
-    return event.type === EventType.PopState;
-  };
+  function popStateListener(event: PopStateEvent) {
+    handlePopState(getLocation(event.state));
+  }
 
-  function handlePop(event: PopStateEvent | HashChangeEvent) {
-    const historyState = isSupportPopState && isEventPopState(event) ? event.state : getHistoryState();
-    const handler = options.locationHandler ? options.locationHandler : getLocation;
-    handlePopState(handler(historyState));
+  function hashChangeListener() {
+    const location = getLocation(getHistoryState());
+    handlePopState(location);
+  }
+
+  let listenerCount = 0;
+
+  function setListener(count: number) {
+    listenerCount += count;
+    if (listenerCount === 1 && count === 1) {
+      window.addEventListener(EventType.PopState, popStateListener);
+      if (!isSupportPopState) {
+        window.addEventListener(EventType.HashChange, hashChangeListener);
+      }
+    } else if (listenerCount === 0) {
+      window.removeEventListener(EventType.PopState, popStateListener);
+      if (!isSupportPopState) {
+        window.removeEventListener(EventType.HashChange, hashChangeListener);
+      }
+    }
   }
 
   // 取消页面跳转并恢复到跳转前的页面
-  function revertPopState(from: Location<S>, to: Location<S>) {
-    const delta = recordOperator.getDelta(to, from);
+  function revertPopState(form: Location<S>, to: Location<S>) {
+    const delta = recordOperator.getDelta(to, form);
     if (delta !== 0) {
       go(delta);
       forceJump = true;
@@ -136,7 +136,7 @@ export function createBrowserHistory<S = DefaultStateType>(
   }
 
   function createHref(path: Partial<Path>) {
-    return (options.baseHandler ? options.baseHandler() : basename) + createPath(path);
+    return basename + createPath(path);
   }
 
   function push(to: To, state?: S) {

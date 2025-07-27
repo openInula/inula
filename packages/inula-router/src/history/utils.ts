@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
+ *
+ * openInula is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 import { Action, Location, Path, To } from './types';
 
 export function createPath(path: Partial<Path>): string {
@@ -26,9 +41,9 @@ export function parsePath(url: string): Partial<Path> {
     pathname = pathname.substring(0, hashIdx);
   }
 
-  const searchIdx = url.indexOf('?');
+  const searchIdx = pathname.indexOf('?');
   if (searchIdx > -1) {
-    const search = url.substring(searchIdx);
+    const search = pathname.substring(searchIdx);
     parsedPath.search = search === '?' ? '' : search;
     pathname = pathname.substring(0, searchIdx);
   }
@@ -103,12 +118,12 @@ export function stripBasename(path: string, prefix: string): string {
 export function createMemoryRecord<T, S>(initVal: S, fn: (arg: S) => T) {
   let visitedRecord: T[] = [fn(initVal)];
 
-  function getDelta(to: S, from: S): number {
-    let toIdx = visitedRecord.lastIndexOf(fn(to));
+  function getDelta(toKey: S, formKey: S): number {
+    let toIdx = visitedRecord.lastIndexOf(fn(toKey));
     if (toIdx === -1) {
       toIdx = 0;
     }
-    let fromIdx = visitedRecord.lastIndexOf(fn(from));
+    let fromIdx = visitedRecord.lastIndexOf(fn(formKey));
     if (fromIdx === -1) {
       fromIdx = 0;
     }
@@ -146,13 +161,13 @@ export function parseRelativePath(to: string, from: string) {
   if (to.startsWith('/')) {
     return to;
   }
-  const fromParts = from.split('/');
+  const formParts = from.split('/');
   const toParts = to.split('/');
   const lastToPart = toParts[toParts.length - 1];
   if (lastToPart === '..' || lastToPart === '.') {
     toParts.push('');
   }
-  let index = fromParts.length - 1;
+  let index = formParts.length - 1;
   let toIndex = 0;
   let urlPart: string;
 
@@ -170,5 +185,5 @@ export function parseRelativePath(to: string, from: string) {
       break;
     }
   }
-  return fromParts.slice(0, index).join('/') + '/' + toParts.slice(toIndex).join('/');
+  return formParts.slice(0, index).join('/') + '/' + toParts.slice(toIndex).join('/');
 }

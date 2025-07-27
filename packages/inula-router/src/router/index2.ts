@@ -1,11 +1,26 @@
+/*
+ * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
+ *
+ * openInula is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
 import { Location as HLocation } from '../history/types';
-import { getConnectedRouter } from '../connect-router';
+export { ConnectedHRouter, ConnectedRouter } from '../connect-router';
 
 type Location<S = unknown> = Omit<HLocation<S>, 'key'>;
 
 // ============================ history ============================
 
-export type { Location };
+export { Location };
 export type { History } from '../history/types';
 
 export { createBrowserHistory } from '../history/browerHistory';
@@ -15,7 +30,7 @@ export { default as __RouterContext } from './context';
 
 // ============================ URL parser ============================
 
-export { matchPath, generatePath } from '../matcher/parser';
+export { matchPath, generatePath } from './matcher/parser';
 
 // ============================ Router Hooks ============================
 
@@ -41,5 +56,3 @@ export type { RouteComponentProps, RouteChildrenProps, RouteProps } from './Rout
 // ============================ Connect-router ============================
 
 export { connectRouter, routerMiddleware, push, go, replace } from '../connect-router';
-export const ConnectedRouter = getConnectedRouter('Redux');
-export const ConnectedHRouter = getConnectedRouter('InulaXCompat');
