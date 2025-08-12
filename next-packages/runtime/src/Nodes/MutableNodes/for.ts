@@ -123,11 +123,6 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
       addDidUnmount(this.runAllDidUnmount.bind(this));
       delete this.notInitialized;
 
-      for (const nodes of this.nodesMap.values()) {
-        for (const node of nodes) {
-          update(node);
-        }
-      }
       runDidMount();
       return;
     }

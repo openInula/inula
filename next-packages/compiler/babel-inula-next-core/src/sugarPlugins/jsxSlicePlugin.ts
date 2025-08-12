@@ -87,10 +87,17 @@ function transformJSXSlice(path: NodePath<t.JSXElement> | NodePath<t.JSXFragment
   // insert the subcomponent
   const sliceComp = t.variableDeclaration('const', [t.variableDeclarator(sliceId, sliceCompNode)]);
   path.node.extra = { ...path.node.extra, transformJSXSlice: true };
+  const jsxSliceAlternative = 
+    t.arrowFunctionExpression(
+      [],
+      t.callExpression(t.identifier(importMap.createCompNode), [sliceId])
+    );
+
   if (path.parentPath.isArrowFunctionExpression()) {
+    // special case: returned by arrow function
     const block = t.blockStatement([
       sliceComp,
-      t.returnStatement(t.callExpression(t.identifier(importMap.createCompNode), [sliceId])),
+      t.returnStatement(jsxSliceAlternative),
     ]);
     path.replaceWith(block);
   } else {
@@ -100,7 +107,7 @@ function transformJSXSlice(path: NodePath<t.JSXElement> | NodePath<t.JSXFragment
       throw new Error('Cannot find the statement parent');
     }
     stmt.insertBefore(sliceComp);
-    path.replaceWith(t.callExpression(t.identifier(importMap.createCompNode), [sliceId]));
+    path.replaceWith(jsxSliceAlternative);
   }
 }
 

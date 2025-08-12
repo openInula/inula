@@ -63,7 +63,7 @@ class ExpNode extends MutableLifecycleNode implements InulaBaseNode {
           // TODO DO
           return createTextNode(`${node}`, () => {});
         }
-        if (typeof node === 'function' && node.$$isChildren) {
+        if (typeof node === 'function') {
           return node();
         }
         return node;
