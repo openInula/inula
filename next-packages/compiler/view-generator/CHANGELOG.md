@@ -1,5 +1,11 @@
 # @openinula/view-generator
 
+## 0.0.6
+
+### Patch Changes
+
+- 1825203: bugfix: fix map and jsx slice
+
 ## 0.0.5
 
 ### Patch Changes
