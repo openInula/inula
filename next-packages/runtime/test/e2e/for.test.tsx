@@ -355,4 +355,83 @@ describe('for', () => {
     clearItems();
     expect(container.innerHTML).toMatchInlineSnapshot('""');
   });
+
+  it('Should handle optional member expression with map (comment replies scenario)', ({ container }) => {
+    interface Reply {
+      id: number;
+      content: string;
+    }
+
+    interface Comment {
+      id: number;
+      content: string;
+      replies?: Reply[];
+    }
+
+    function CommentComponent({ comment, depth = 0 }: { comment: Comment; depth?: number }) {
+      return (
+        <div style={{ marginLeft: `${depth * 20}px` }}>
+          <div>Comment: {comment.content}</div>
+          {comment.replies?.map(reply => (
+            <CommentComponent 
+              key={reply.id} 
+              comment={reply} 
+              depth={depth + 1} 
+            />
+          ))}
+        </div>
+      );
+    }
+
+    function App() {
+      const comment: Comment = {
+        id: 1,
+        content: 'Root comment',
+        replies: [
+          { id: 2, content: 'First reply' },
+          { id: 3, content: 'Second reply' }
+        ]
+      };
+
+      return <CommentComponent comment={comment} />;
+    }
+
+    render(App(), container);
+    expect(container.innerHTML).toMatchInlineSnapshot(
+      '"<div style=\"margin-left: 0px;\"><div>Comment: Root comment</div><div style=\"margin-left: 20px;\"><div>Comment: First reply</div></div><div style=\"margin-left: 20px;\"><div>Comment: Second reply</div></div></div>"'
+    );
+  });
+
+  it('Should handle optional member expression with undefined array', ({ container }) => {
+    interface Comment {
+      id: number;
+      content: string;
+      replies?: { id: number; content: string }[];
+    }
+
+    function CommentComponent({ comment }: { comment: Comment }) {
+      return (
+        <div>
+          <div>Comment: {comment.content}</div>
+          {comment.replies?.map(reply => (
+            <div key={reply.id}>Reply: {reply.content}</div>
+          ))}
+        </div>
+      );
+    }
+
+    function App() {
+      const comment: Comment = {
+        id: 1,
+        content: 'Root comment without replies'
+      };
+
+      return <CommentComponent comment={comment} />;
+    }
+
+    render(App(), container);
+    expect(container.innerHTML).toMatchInlineSnapshot(
+      '"<div><div>Comment: Root comment without replies</div></div>"'
+    );
+  });
 });

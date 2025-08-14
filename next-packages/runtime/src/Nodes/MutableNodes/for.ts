@@ -35,10 +35,10 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
   nodeFunc;
 
   dataFunc;
-  data;
+  data: Value[] = [];
 
   keysFunc;
-  keys?: Value[];
+  keys?: Value[] = [];
 
   /**
    * @brief Getter for nodes
@@ -72,8 +72,11 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
     this.dataFunc = dataFunc;
     this.keysFunc = keysFunc;
     this.nodeFunc = nodeFunc;
-    this.data = [...dataFunc()];
-    if (keysFunc) this.keys = [...keysFunc()];
+    const data= dataFunc();
+    if (Array.isArray(data)) {
+      this.data = [...data];
+      if (keysFunc) this.keys = [...keysFunc()];
+    } 
     this.update();
 
     this.dataReactBits = dataReactBits;

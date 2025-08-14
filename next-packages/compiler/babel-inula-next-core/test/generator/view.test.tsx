@@ -165,7 +165,9 @@ describe('view generation', () => {
       "function Comp() {
         const $$self = $$compBuilder();
         let list = ['hello', 'world'];
-        return $$self.prepare().init($$createHTMLNode("div", null, $$createForNode(() => list, () => list.map((item, index) => index), ($$n, updateItemFuncArr, item, $$key, index) => {
+        return $$self.prepare().init($$createHTMLNode("div", null, $$createForNode(() => list, () => {
+          return list?.map?.((item, index) => index);
+        }, ($$n, updateItemFuncArr, item, $$key, index) => {
           updateItemFuncArr[index] = (newItem, newIdx) => {
             item = newItem;
             index = newIdx;

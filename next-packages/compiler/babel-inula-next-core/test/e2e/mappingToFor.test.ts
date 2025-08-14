@@ -69,4 +69,42 @@ describe('mapping2ForPlugin', () => {
       }"
     `);
   });
+
+  it('should transform to optional key mapping ', () => {
+    const code = `
+        function MyComp({ comment }) {
+          return (
+            <div >
+              {comment.replies?.map(reply => (
+                <CommentComponent 
+                  key={reply.id} 
+                />
+              ))}
+            </div>
+          )
+        }
+      `;
+    const transformedCode = transform(code);
+    expect(transformedCode).toMatchInlineSnapshot(`
+      "import { compBuilder as $$compBuilder, createForNode as $$createForNode, createCompNode as $$createCompNode, createHTMLNode as $$createHTMLNode } from "@openinula/next";
+      function MyComp({
+        comment
+      }) {
+        const $$self = $$compBuilder();
+        $$self.addProp("comment", $$value => comment = $$value, 1);
+        return $$self.prepare().init($$createHTMLNode("div", null, $$createForNode(() => comment.replies, () => {
+          return comment.replies?.map?.(reply => reply.id);
+        }, ($$n, updateItemFuncArr, reply, $$key, $$i) => {
+          updateItemFuncArr[$$i] = (newItem, newIdx) => {
+            reply = newItem;
+          };
+          return [$$createCompNode(CommentComponent, {
+            "key": reply.id
+          }, $$node => {
+            $$node.updateProp("key", () => reply.id, [reply?.id], 1);
+          })];
+        }, 1)));
+      }"
+    `);
+  });
 });
