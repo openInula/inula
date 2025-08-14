@@ -1,5 +1,13 @@
 # babel-preset-inula-next
 
+## 0.0.7
+
+### Patch Changes
+
+- 1825203: bugfix: fix map and jsx slice
+- Updated dependencies [1825203]
+  - @openinula/view-generator@0.0.6
+
 ## 0.0.6
 
 ### Patch Changes
