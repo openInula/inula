@@ -36,7 +36,10 @@ export default function (api: typeof babel): PluginObj {
       Program(program) {
         program.traverse({
           CallExpression(path: NodePath<t.CallExpression>) {
-            callExpressionVisitor(path, false);
+            mapCallVisitor(path, false);
+          },
+          OptionalCallExpression(path: NodePath<t.OptionalCallExpression>) {
+            mapCallVisitor(path, false);
           },
         });
       },
@@ -45,13 +48,12 @@ export default function (api: typeof babel): PluginObj {
 }
 
 /**
- * Convert map in JSXExpressionContainer to for visitor
+ * Convert map call (regular or optional) in JSXExpressionContainer to for visitor
  *
- * @param path Map call expression path
+ * @param path Map call expression path (CallExpression or OptionalCallExpression)
  * @param inner is inside for tag
  */
-
-function callExpressionVisitor(path: NodePath<t.CallExpression>, inner: boolean): void {
+function mapCallVisitor(path: NodePath<t.CallExpression | t.OptionalCallExpression>, inner: boolean): void {
   //match arrow function map call inside for tag
   if (inner && !path.parentPath.isArrowFunctionExpression()) {
     return;
@@ -67,11 +69,16 @@ function callExpressionVisitor(path: NodePath<t.CallExpression>, inner: boolean)
   }
 
   const callee = path.get('callee');
-  if (!callee.isMemberExpression()) {
+  if (!callee.isMemberExpression() && !callee.isOptionalMemberExpression()) {
     return;
   }
-  const object = callee.get('object');
-  const map = callee.get('property');
+  
+  // Handle both MemberExpression and OptionalMemberExpression
+  const objectProperty = callee.get('object');
+  const object = Array.isArray(objectProperty) ? objectProperty[0] : objectProperty;
+  const mapProperty = callee.get('property');
+  const map = Array.isArray(mapProperty) ? mapProperty[0] : mapProperty;
+  
   if (!map.isIdentifier()) {
     return;
   }
@@ -106,7 +113,10 @@ function callExpressionVisitor(path: NodePath<t.CallExpression>, inner: boolean)
   if (!inner) {
     path.parentPath.traverse({
       CallExpression(path: NodePath<t.CallExpression>) {
-        callExpressionVisitor(path, true);
+        mapCallVisitor(path, true);
+      },
+      OptionalCallExpression(path: NodePath<t.OptionalCallExpression>) {
+        mapCallVisitor(path, true);
       },
     });
   }

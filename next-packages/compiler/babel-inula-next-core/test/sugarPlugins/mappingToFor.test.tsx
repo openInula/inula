@@ -103,6 +103,33 @@ describe('mapping2ForPlugin', () => {
     const code = `
       const a = arr.map(i => i+ 1) `;
     const transformedCode = mock(code);
-    expect(transformedCode).toMatchInlineSnapshot(`"const a = arr.map(i => i + 1);"`);
+    expect(transformedCode).toMatchInlineSnapshot('"const a = arr.map(i => i + 1);"');
+  });
+
+  it('should transform map with optional chaining to for', () => {
+    const code = `const Comment = ({ comment, depth = 0 }) => {
+  return (
+    <div>
+      {comment.replies?.map(reply => (
+        <Comment 
+          key={reply.id} 
+          comment={reply} 
+          depth={depth + 1} 
+        />
+      ))}
+    </div>
+  );
+};`;
+    const transformedCode = mock(code);
+    expect(transformedCode).toMatchInlineSnapshot(`
+      "const Comment = ({
+        comment,
+        depth = 0
+      }) => {
+        return <div>
+            <for each={comment.replies}>{reply => <Comment key={reply.id} comment={reply} depth={depth + 1} />}</for>
+          </div>;
+      };"
+    `);
   });
 });

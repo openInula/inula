@@ -8,11 +8,14 @@ import { runDidMount } from './lifecycle';
  * @param compNode
  * @param container
  */
-export const render = (compNode: CompNode, container: HTMLElement) => {
+export const render = (compNode: CompNode | (() => CompNode), container: HTMLElement) => {
   if (container == null) {
     throw new Error('Render target is empty. Please provide a valid DOM element.');
   }
   container.innerHTML = '';
+  if (typeof compNode === 'function') {
+    compNode = compNode();
+  }
   insertNode(container as InulaHTMLNode, compNode, 0);
   runDidMount();
 };

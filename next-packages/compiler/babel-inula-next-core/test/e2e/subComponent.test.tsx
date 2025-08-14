@@ -67,8 +67,8 @@ describe('nested component', () => {
             $$setHTMLProp($$node, "value", () => val, [val], 1);
           }));
         }
-        let input = $$createCompNode(JSX_input);
-        return $$self.prepare().init($$createHTMLNode("div", null, $$createExpNode(() => input, () => [input], 2)));
+        const input = () => $$createCompNode(JSX_input);
+        return $$self.prepare().init($$createHTMLNode("div", null, $$createExpNode(() => input, () => [], 0)));
       }"
     `);
   });

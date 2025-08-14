@@ -56,6 +56,28 @@ describe('for', () => {
     expect(container.innerHTML).toMatchInlineSnapshot('"<div>0</div><div>1</div><div>2</div><div>3</div>"');
   });
 
+  it('should update item when arr changed with extra state', ({ container }) => {
+    let updateArr: (num: number) => void;
+
+    function App() {
+      let extra = 'extra';
+      const arr = [0, 1, 2];
+      updateArr = (num: number) => {
+        arr.push(num);
+      };
+      return <>
+        <for each={arr}>{item => <div>{item}</div>}</for>
+        <div>{extra}</div>
+      </>;
+    }
+
+    render(App(), container);
+    expect(container.children.length).toEqual(4);
+    updateArr(3);
+    expect(container.children.length).toEqual(5);
+    expect(container.innerHTML).toMatchInlineSnapshot(`"<div>0</div><div>1</div><div>2</div><div>3</div><div>extra</div>"`);
+  });
+
   it('should get index', ({ container }) => {
     let update: (num: number) => void;
     function App() {
@@ -242,5 +264,174 @@ describe('for', () => {
     expect(container.innerHTML).toMatchInlineSnapshot('"<span>1</span><span>2</span><span>3</span>"');
     updateNumber!(4);
     expect(container.innerHTML).toMatchInlineSnapshot('"<span>4</span><span>2</span><span>3</span>"');
+  });
+
+  it('Should handle item dependencies changed', ({ container }) => {
+    let addColor: () => void;
+    let changeCounter: () => void;
+
+    function Colors() {
+      let a = 1;
+      const colors = ['red', 'green', 'blue'];
+      
+      addColor = () => {
+        colors.push('yellow');
+      };
+      
+      changeCounter = () => {
+        a += 1;
+      };
+      
+      return (
+        <ul>
+          <for each={colors}>{color => <li>{color}{a}</li>}</for>
+          <button onClick={addColor}>add{a}</button>
+          <button onClick={changeCounter}>change{a}</button>
+        </ul>
+      );
+    }
+
+    render(Colors(), container);
+    expect(container.innerHTML).toMatchInlineSnapshot(
+      '"<ul><li>red1</li><li>green1</li><li>blue1</li><button>add1</button><button>change1</button></ul>"'
+    );
+    
+    addColor();
+    expect(container.innerHTML).toMatchInlineSnapshot(
+      '"<ul><li>red1</li><li>green1</li><li>blue1</li><li>yellow1</li><button>add1</button><button>change1</button></ul>"'
+    );
+    
+    changeCounter();
+    expect(container.innerHTML).toMatchInlineSnapshot(
+      '"<ul><li>red2</li><li>green2</li><li>blue2</li><li>yellow2</li><button>add2</button><button>change2</button></ul>"'
+    );
+  });
+
+  it('Should handle empty array', ({ container }) => {
+    function App() {
+      const items = [];
+      return <for each={items}>{item => <div>{item}</div>}</for>;
+    }
+
+    render(App(), container);
+    expect(container.innerHTML).toMatchInlineSnapshot('""');
+  });
+
+  it('Should handle array removal operations', ({ container }) => {
+    let removeItem: (index: number) => void;
+
+    function App() {
+      const items = [1, 2, 3, 4, 5];
+      removeItem = (index: number) => {
+        items.splice(index, 1);
+      };
+      return <for each={items}>{item => <span>{item}</span>}</for>;
+    }
+
+    render(App(), container);
+    expect(container.innerHTML).toMatchInlineSnapshot('"<span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>"');
+    
+    removeItem(2);
+    expect(container.innerHTML).toMatchInlineSnapshot('"<span>1</span><span>2</span><span>4</span><span>5</span>"');
+    
+    removeItem(0);
+    expect(container.innerHTML).toMatchInlineSnapshot('"<span>2</span><span>4</span><span>5</span>"');
+  });
+
+  it('Should handle array clear operation', ({ container }) => {
+    let clearItems: () => void;
+
+    function App() {
+      const items = [1, 2, 3];
+      clearItems = () => {
+        items.length = 0;
+      };
+      return <for each={items}>{item => <div>{item}</div>}</for>;
+    }
+
+    render(App(), container);
+    expect(container.innerHTML).toMatchInlineSnapshot('"<div>1</div><div>2</div><div>3</div>"');
+    
+    clearItems();
+    expect(container.innerHTML).toMatchInlineSnapshot('""');
+  });
+
+  it('Should handle optional member expression with map (comment replies scenario)', ({ container }) => {
+    interface Reply {
+      id: number;
+      content: string;
+    }
+
+    interface Comment {
+      id: number;
+      content: string;
+      replies?: Reply[];
+    }
+
+    function CommentComponent({ comment, depth = 0 }: { comment: Comment; depth?: number }) {
+      return (
+        <div style={{ marginLeft: `${depth * 20}px` }}>
+          <div>Comment: {comment.content}</div>
+          {comment.replies?.map(reply => (
+            <CommentComponent 
+              key={reply.id} 
+              comment={reply} 
+              depth={depth + 1} 
+            />
+          ))}
+        </div>
+      );
+    }
+
+    function App() {
+      const comment: Comment = {
+        id: 1,
+        content: 'Root comment',
+        replies: [
+          { id: 2, content: 'First reply' },
+          { id: 3, content: 'Second reply' }
+        ]
+      };
+
+      return <CommentComponent comment={comment} />;
+    }
+
+    render(App(), container);
+    expect(container.innerHTML).toMatchInlineSnapshot(
+      '"<div style=\"margin-left: 0px;\"><div>Comment: Root comment</div><div style=\"margin-left: 20px;\"><div>Comment: First reply</div></div><div style=\"margin-left: 20px;\"><div>Comment: Second reply</div></div></div>"'
+    );
+  });
+
+  it('Should handle optional member expression with undefined array', ({ container }) => {
+    interface Comment {
+      id: number;
+      content: string;
+      replies?: { id: number; content: string }[];
+    }
+
+    function CommentComponent({ comment }: { comment: Comment }) {
+      return (
+        <div>
+          <div>Comment: {comment.content}</div>
+          {comment.replies?.map(reply => (
+            <div key={reply.id}>Reply: {reply.content}</div>
+          ))}
+        </div>
+      );
+    }
+
+    function App() {
+      const comment: Comment = {
+        id: 1,
+        content: 'Root comment without replies'
+      };
+
+      return <CommentComponent comment={comment} />;
+    }
+
+    render(App(), container);
+    expect(container.innerHTML).toMatchInlineSnapshot(
+      '"<div><div>Comment: Root comment without replies</div></div>"'
+    );
   });
 });

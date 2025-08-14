@@ -35,10 +35,10 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
   nodeFunc;
 
   dataFunc;
-  data;
+  data: Value[] = [];
 
   keysFunc;
-  keys?: Value[];
+  keys?: Value[] = [];
 
   /**
    * @brief Getter for nodes
@@ -72,8 +72,11 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
     this.dataFunc = dataFunc;
     this.keysFunc = keysFunc;
     this.nodeFunc = nodeFunc;
-    this.data = [...dataFunc()];
-    if (keysFunc) this.keys = [...keysFunc()];
+    const data= dataFunc();
+    if (Array.isArray(data)) {
+      this.data = [...data];
+      if (keysFunc) this.keys = [...keysFunc()];
+    } 
     this.update();
 
     this.dataReactBits = dataReactBits;
@@ -110,7 +113,7 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
     // TODO: extract
     if (this.notInitialized) {
       for (let idx = 0; idx < this.data.length; idx++) {
-        let item = this.data[idx];
+        const item = this.data[idx];
         this.initUnmountStore();
         const key = this.keys?.[idx] ?? idx;
         const nodes = this.nodeFunc(this, this.updateItemFuncArr, item, key, idx);
@@ -123,26 +126,28 @@ class ForNode extends MutableContextNode implements InulaBaseNode {
       addDidUnmount(this.runAllDidUnmount.bind(this));
       delete this.notInitialized;
 
-      for (const nodes of this.nodesMap.values()) {
-        for (const node of nodes) {
-          update(node);
-        }
-      }
       runDidMount();
       return;
     }
 
-    // ---- e.g. this.depNum -> 1110 changed-> 1010
-    //      ~this.depNum & changed -> ~1110 & 1010 -> 0000
-    //      no update because depNum contains all the changed
-    // ---- e.g. this.depNum -> 1110 changed-> 1101
-    //      ~this.depNum & changed -> ~1110 & 1101 -> 0001
-    //      update because depNum doesn't contain all the changed
-    if (!(~this.dataReactBits & this.owner.dirtyBits!)) {
+    if (this.dataReactBits & this.owner.dirtyBits!) {
       this.updateArray();
-      return;
     }
-    this.updateItems();
+    // Only update items if there are dirty bits not covered by our reactive data bits
+    // This optimization prevents unnecessary item updates when all changes are already
+    // handled by the current reactive scope
+    // 
+    // Example 1: this.dataReactBits -> 1110, changed (dirtyBits) -> 1010
+    //           ~this.dataReactBits & changed -> ~1110 & 1010 -> 0001 & 1010 -> 0000
+    //           No update needed because dataReactBits contains all the changed bits
+    // 
+    // Example 2: this.dataReactBits -> 1110, changed (dirtyBits) -> 1101  
+    //           ~this.dataReactBits & changed -> ~1110 & 1101 -> 0001 & 1101 -> 0001
+    //           Update needed because dataReactBits doesn't contain all the changed bits
+    //           (bit 0 is dirty but not covered by our reactive scope)
+    if (~this.dataReactBits & this.owner.dirtyBits!) {
+      this.updateItems();
+    }
   }
 
   /**

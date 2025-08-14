@@ -40,6 +40,16 @@ describe('JSX Element Usage in Various Contexts', () => {
       expect(container.innerHTML).toBe('<div>Hello, World!</div>');
     });
 
+    it('should render JSX variable multi times', ({ container }) => {
+      function App() {
+        const element = <span>Hello</span>;
+        return <div>{element}{element}{element}</div>;
+      }
+
+      render(App(), container);
+      expect(container.innerHTML).toBe('<div><span>Hello</span><span>Hello</span><span>Hello</span></div>');
+    });
+
     it('should support JSX elements in arrays', ({ container }) => {
       function App() {
         const elements = [<div>First</div>, <div>Second</div>, <div>Third</div>];

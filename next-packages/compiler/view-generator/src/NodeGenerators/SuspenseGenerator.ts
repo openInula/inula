@@ -23,8 +23,9 @@ export const suspenseGenerator: ViewGenerator = {
       fallbackNode = fallback.value;
     }
     const suspenseNode = t.callExpression(t.identifier(importMap.createSuspenseNode), []);
-    const fallbacked = t.callExpression(t.memberExpression(suspenseNode, t.identifier('fallback')), [
-      t.arrowFunctionExpression([], fallbackNode),
+    const fallbacked = t.callExpression(
+      t.memberExpression(suspenseNode, t.identifier('fallback')), [
+      fallbackNode,
     ]);
     return t.callExpression(t.memberExpression(fallbacked, t.identifier('with')), [t.arrayExpression(childrenNode)]);
   },

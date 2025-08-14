@@ -67,7 +67,7 @@ function keyMappingFn(
   array: DependencyValue<t.Expression>,
   item: t.Identifier | t.Pattern | t.RestElement,
   index: t.Identifier | null,
-  key: t.Expression
+  key: t.Expression | null
 ): t.Expression | t.SpreadElement | t.ArgumentPlaceholder {
   if (!key) {
     return t.nullLiteral();
@@ -78,7 +78,15 @@ function keyMappingFn(
   }
   return t.arrowFunctionExpression(
     [],
-    t.callExpression(t.memberExpression(array.value, t.identifier('map')), [t.arrowFunctionExpression(params, key)])
+    t.blockStatement([
+      t.returnStatement(
+        t.optionalCallExpression(
+          t.optionalMemberExpression(array.value, t.identifier('map'), false, true),
+          [t.arrowFunctionExpression(params, key)],
+          true
+        )
+      )
+    ])
   );
 }
 
