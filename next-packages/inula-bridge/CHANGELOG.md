@@ -1,5 +1,14 @@
 # @openinula/bridge
 
+## 0.0.4
+
+### Patch Changes
+
+- e166e20: adjust dependecy to caret range
+- Updated dependencies [e166e20]
+  - @openinula/babel-preset-inula-next@0.0.8
+  - @openinula/unplugin@0.0.4
+
 ## 0.0.3
 
 ### Patch Changes
