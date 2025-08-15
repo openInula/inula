@@ -1,5 +1,11 @@
 # @openinula/error-handler
 
+## 0.0.5
+
+### Patch Changes
+
+- e166e20: adjust dependecy to caret range
+
 ## 0.0.4
 
 ### Patch Changes

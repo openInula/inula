@@ -1,5 +1,13 @@
 # @openinula/view-generator
 
+## 0.0.7
+
+### Patch Changes
+
+- e166e20: adjust dependecy to caret range
+- Updated dependencies [e166e20]
+  - @openinula/error-handler@0.0.5
+
 ## 0.0.6
 
 ### Patch Changes

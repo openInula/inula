@@ -1,5 +1,11 @@
 # @openinula/next
 
+## 0.0.8
+
+### Patch Changes
+
+- e166e20: adjust dependecy to caret range
+
 ## 0.0.7
 
 ### Patch Changes
