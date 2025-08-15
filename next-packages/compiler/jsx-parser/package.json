@@ -23,7 +23,7 @@
     "tsup": "^6.7.0",
     "typescript": "^5.3.2",
     "@babel/plugin-syntax-jsx": "7.23.3",
-    "@openinula/error-handler": "workspace:*",
+    "@openinula/error-handler": "workspace:^",
     "vitest": "^1.2.1"
   },
   "tsup": {

@@ -25,9 +25,9 @@
     "vitest": "^0.34.5"
   },
   "dependencies": {
-    "@openinula/error-handler": "workspace:*",
-    "@openinula/jsx-view-parser": "workspace:*",
-    "@openinula/babel-api": "workspace:*"
+    "@openinula/error-handler": "workspace:^",
+    "@openinula/jsx-view-parser": "workspace:^",
+    "@openinula/babel-api": "workspace:^"
   },
   "tsup": {
     "entry": [
