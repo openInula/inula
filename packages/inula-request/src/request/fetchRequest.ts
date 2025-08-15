@@ -219,7 +219,7 @@ async function readStream(
   if (type === 'arraybuffer') {
     return concatenateArrayBuffers(chunks);
   } else if (type === 'blob') {
-    return new Blob(chunks, { type: contentType });
+    return new Blob(chunks as BlobPart[], { type: contentType });
   } else {
     const decoder = new TextDecoder();
     let result = '';
