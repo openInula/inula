@@ -24,11 +24,11 @@
   "author": "",
   "license": "MulanPSL2",
   "peerDependencies": {
-    "openinula": ">=0.0.1"
+    "openinula": ">=1.0.1"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.9.4",
-    "openinula": "^0.1.1",
+    "openinula": "^1.0.1",
     "@rollup/plugin-typescript": "^11.0.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
