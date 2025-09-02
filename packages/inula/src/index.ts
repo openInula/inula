@@ -57,6 +57,7 @@ import {
   isPortal,
 } from './external/InulaIs';
 import { createStore, useStore, clearStore } from './inulax/store/StoreHandler';
+import type { Action } from './inulax/types';
 import * as reduxAdapter from './inulax/adapters/redux';
 import { watch } from './inulax/proxy/watch';
 import { act } from './external/TestUtil';
@@ -163,6 +164,7 @@ export {
   reduxAdapter,
   watch,
   toRaw,
+  type Action,
   // 兼容ReactIs
   isFragment,
   isElement,

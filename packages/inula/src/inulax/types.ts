@@ -59,7 +59,7 @@ export type StoreActions<S extends Record<string, unknown>, A extends UserAction
   [K in keyof A]: Action<A[K], S>;
 };
 
-type Action<T extends ActionFunction<any>, S extends Record<string, unknown>> = (
+export type Action<T extends ActionFunction<any>, S extends Record<string, unknown>> = (
   this: StoreObj<S, any, any>,
   ...args: RemoveFirstFromTuple<Parameters<T>>
 ) => ReturnType<T>;
