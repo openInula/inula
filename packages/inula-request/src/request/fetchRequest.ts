@@ -180,7 +180,7 @@ export const fetchRequest = (config: IrRequestConfig): Promise<IrResponse> => {
             const cancelError = new CancelError('request canceled', config);
             reject(cancelError);
           } else {
-            const irError = new IrError(error.message, 'ERR_FETCH_FAILED');
+            const irError = new IrError(error.message, 'ERR_FETCH_FAILED', config);
             reject(irError);
           }
         });
