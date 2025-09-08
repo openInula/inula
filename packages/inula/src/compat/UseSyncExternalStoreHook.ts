@@ -94,7 +94,7 @@ type SelectionInstance<Selection> =
 
 // 确保返回的类型既是原始类型 T，又确实是个函数
 function isFunction<T>(value: T): value is T & ((...args: any[]) => any) {
-  return typeof value !== 'function';
+  return typeof value === 'function';
 }
 
 // 与useSyncExternalStore相同，但支持选择器和相等性判断参数
