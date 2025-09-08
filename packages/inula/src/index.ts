@@ -73,6 +73,7 @@ import {
 
 import { syncUpdates as flushSync } from './renderer/TreeBuilder';
 import { toRaw } from './inulax/proxy/ProxyHandler';
+import { useSyncExternalStore, useSyncExternalStoreWithSelector } from './compat/UseSyncExternalStoreHook';
 
 const Inula = {
   Children,
@@ -93,6 +94,8 @@ const Inula = {
   useReducer,
   useRef,
   useState,
+  useSyncExternalStore,
+  useSyncExternalStoreWithSelector,
   createElement,
   cloneElement,
   isValidElement,
@@ -146,6 +149,8 @@ export {
   useReducer,
   useRef,
   useState,
+  useSyncExternalStore,
+  useSyncExternalStoreWithSelector,
   createElement,
   cloneElement,
   isValidElement,
