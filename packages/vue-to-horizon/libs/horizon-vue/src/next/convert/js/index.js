@@ -22,7 +22,7 @@ import { handleThis, handleThisAssignment } from './handlers/thisHandler.js'
  * @param {*} sourceAst
  * @param {*} reactCovert
  */
-export default function convertJS(sourceAst, reactCovert, { component, config }) {
+export default function convertJS(sourceAst, reactCovert, { component, config, template }) {
 
   // vue3 解析，针对函数式组件
   if (reactCovert.isSetup) {
@@ -49,7 +49,7 @@ export default function convertJS(sourceAst, reactCovert, { component, config })
     });
 
     // 转换和标准化 $t、$l、$i18n 的调用方式
-    i18nParser(sourceAst, reactCovert);
+    i18nParser(sourceAst, reactCovert, template);
 
     // 处理jquery和underscore 等
     threePartyLibsParser(sourceAst, reactCovert, { config });

@@ -43,16 +43,20 @@ export declare function GlobalComponent({ componentName, ...otherProps }: {
 export declare function registerDirective(name: string, directive: any): void;
 export declare function useDirectives(): Record<string, any>;
 export declare function defineAsyncComponent(loader: () => Promise<any>): (props: any) => any;
-export declare function useAppContext(): App<any>;
 export declare function emit<T extends Record<string, any>>(props: T, eventName: keyof T, ...args: Parameters<any>): void;
-export type ObjectEmitsOptions = Record<string, ((...args: any[]) => any) | null>;
-export type EmitsOptions = ObjectEmitsOptions | string[];
-export declare function defineEmits<T extends EmitsOptions>(emits: T, props: Record<string, any>): <K extends keyof T>(eventName: K, ...args: Parameters<any>) => void;
-export declare function getCurrentInstance(): {
-    vnode: any;
-    proxy: any;
+export declare function getCurrentInstance(): any;
+export declare function createVNode(component: any, props: any): {
+    [x: string]: any;
+    vtype: number;
+    src: any;
+    type: any;
+    key: any;
+    ref: any;
+    props: any;
 };
-export declare function defineExpose<Exposed extends Record<string, any> = Record<string, any>>(exposed?: Exposed): void;
-export declare function useSlots(): {};
-export declare function useAttrs(): {};
+export declare function render(vnode: any, target: any): void;
+export declare function useWindowSize(options?: {}): {
+    width: any;
+    height: any;
+};
 export {};

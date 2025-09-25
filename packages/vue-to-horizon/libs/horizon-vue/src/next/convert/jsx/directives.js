@@ -71,17 +71,12 @@ export function handleShowDirective(path, value) {
 
 // 获取原代码中的事件执行语句
 function getFuncBody(handEventExpressionStatement = t.emptyStatement()) {
-  let functionBody = Array.isArray(handEventExpressionStatement)
+  return Array.isArray(handEventExpressionStatement)
     ? handEventExpressionStatement
     : [handEventExpressionStatement];
-  // 处理handEventExpressionStatement是箭头函数场景问题
-  if (handEventExpressionStatement.type === 'ArrowFunctionExpression') {
-    functionBody = handEventExpressionStatement.body.body;
-  }
-  return functionBody;
 }
 
-function getModifierBody(modifier, functionBody) {
+function getEventModifierBody(modifier, functionBody) {
   if (modifier === 'stop') {
     return [
       t.expressionStatement(
@@ -143,24 +138,70 @@ function getModifierBody(modifier, functionBody) {
       ),
     ];
   }
-  if (modifier === 'enter') {
-    return [
-      t.ifStatement(
-        t.binaryExpression(
-          '===',
-          t.memberExpression(t.identifier(EVENT_PARAM_NAME), t.identifier('key')),
-          t.stringLiteral('Enter')
-        ),
-        t.blockStatement(functionBody)
-      ),
-    ];
-  }
   // passive、capture和default
-  return [t.blockStatement(functionBody)];
+  return functionBody;
+}
+
+function getKeyModifierBody(modifier, functionBody) {
+  const keyMap = {
+    enter: 'Enter',
+    space: 'Space',
+    tab: 'Tab',
+    delete: ['Delete', 'Backspace'],
+    esc: 'Escape',
+    up: 'ArrowUp',
+    down: 'ArrowDown',
+    left: 'ArrowLeft',
+    right: 'ArrowRight',
+  }
+  if (!keyMap[modifier]) {
+    return functionBody;
+  }
+
+  let condition;
+  if (modifier === 'delete') {
+    const expressionDelete = t.binaryExpression(
+      '===',
+      t.memberExpression(t.identifier(EVENT_PARAM_NAME), t.identifier('key')),
+      t.stringLiteral(keyMap.delete[0])
+    );
+    const expressionBackspace = t.binaryExpression(
+      '===',
+      t.memberExpression(t.identifier(EVENT_PARAM_NAME), t.identifier('key')),
+      t.stringLiteral(keyMap.delete[1])
+    );
+    condition =  t.logicalExpression('||', expressionDelete, expressionBackspace)
+  } else {
+    condition = t.binaryExpression(
+      '===',
+      t.memberExpression(t.identifier(EVENT_PARAM_NAME), t.identifier('key')),
+      t.stringLiteral(keyMap[modifier])
+    );
+  }
+  return [
+    t.ifStatement(condition, t.blockStatement(functionBody))
+  ];
+}
+
+function getModifierBody(modifier, functionBody) {
+  let newBody = getEventModifierBody(modifier, functionBody);
+  return getKeyModifierBody(modifier, newBody);
 }
 
 const getModifierFunc = (modifierList, handEventExpressionStatement = t.emptyStatement()) => {
-  let newBody = getFuncBody(handEventExpressionStatement);
+  let newBody;
+  // 箭头函数场景
+  if (handEventExpressionStatement.type === 'ArrowFunctionExpression') {
+    if (handEventExpressionStatement.body.type === 'BlockStatement') {
+      newBody = handEventExpressionStatement.body.body;
+    } else {
+      newBody = [t.expressionStatement(handEventExpressionStatement.body)];
+    }
+  } else {
+    // 绑定方法名、绑定语句场景
+    newBody = getFuncBody(handEventExpressionStatement);
+  }
+
   modifierList.forEach(modifier => {
     newBody = getModifierBody(modifier, newBody);
   })
@@ -278,7 +319,7 @@ export function handleOnDirective(path, name, value) {
  * @param {Object} path - AST路径对象
  * @param {string} name - 指令名称
  * @param {any} value - 指令值
- * @param {Object} sourceCodeContext - 源代码上下文对象，包含导入信息等
+ * @param {Object} reactCovert - 转换实例，包含上下文等
  *
  * @example
  * // Vue 模板中的用法:
@@ -307,7 +348,7 @@ export function handleOnDirective(path, name, value) {
  * >
  * </DirectiveComponent>
  */
-export function handleCustomDirective(path, name, value, sourceCodeContext) {
+export function handleCustomDirective(path, name, value, reactCovert) {
   const parentOpenNode = path.parentPath.node;
   const newDerectProps = [];
   // 处理原有元素上的属性
@@ -335,7 +376,7 @@ export function handleCustomDirective(path, name, value, sourceCodeContext) {
         newAttrVals.push(t.objectProperty(t.identifier('arg'), t.identifier(argName)));
       }
       if (v.value) {
-        newAttrVals.push(t.objectProperty(t.identifier('value'), getDirectiveValueByNode(v)));
+        newAttrVals.push(t.objectProperty(t.identifier('value'), getDirectiveValueByNode(v, reactCovert)));
       }
       newDerectProps.push(t.objectExpression(newAttrVals));
     } else {
@@ -350,7 +391,7 @@ export function handleCustomDirective(path, name, value, sourceCodeContext) {
   );
 
   // 如果存在指令，添加 registerDirectives 属性
-  if (sourceCodeContext.hasDirectives) {
+  if (reactCovert.sourceCodeContext.hasDirectives) {
     newElementAttrs.push(
       t.jSXAttribute(t.jSXIdentifier('registerDirectives'), t.jSXExpressionContainer(t.identifier('registerDirectives')))
     );
@@ -369,7 +410,7 @@ export function handleCustomDirective(path, name, value, sourceCodeContext) {
   );
 
   // 添加必要的导入
-  sourceCodeContext.addExtrasImport(DIRECTIVE_COMPONENT, globalLibPaths.vueAdapter);
+  reactCovert.sourceCodeContext.addExtrasImport(DIRECTIVE_COMPONENT, globalLibPaths.vueAdapter);
 
   // 替换原有节点为新的 DirectiveComponent
   path.parentPath.parentPath.replaceWith(

@@ -1,21 +1,104 @@
 import { vueReactive, createStore as createStore$1, useRef } from '@cloudsop/horizon';
 
-function _extends() {
-  _extends = Object.assign ? Object.assign.bind() : function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
-    }
-    return target;
-  };
-  return _extends.apply(this, arguments);
+function _typeof(o) {
+  "@babel/helpers - typeof";
+
+  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
+    return typeof o;
+  } : function (o) {
+    return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+  }, _typeof(o);
 }
 
-var watch = vueReactive.watch;
+function toPrimitive(t, r) {
+  if ("object" != _typeof(t) || !t) return t;
+  var e = t[Symbol.toPrimitive];
+  if (void 0 !== e) {
+    var i = e.call(t, r || "default");
+    if ("object" != _typeof(i)) return i;
+    throw new TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return ("string" === r ? String : Number)(t);
+}
+
+function toPropertyKey(t) {
+  var i = toPrimitive(t, "string");
+  return "symbol" == _typeof(i) ? i : String(i);
+}
+
+function _defineProperty(obj, key, value) {
+  key = toPropertyKey(key);
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+  return obj;
+}
+
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+
+function _iterableToArrayLimit(r, l) {
+  var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
+  if (null != t) {
+    var e,
+      n,
+      i,
+      u,
+      a = [],
+      f = !0,
+      o = !1;
+    try {
+      if (i = (t = t.call(r)).next, 0 === l) {
+        if (Object(t) !== t) return;
+        f = !1;
+      } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0);
+    } catch (r) {
+      o = !0, n = r;
+    } finally {
+      try {
+        if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
+      } finally {
+        if (o) throw n;
+      }
+    }
+    return a;
+  }
+}
+
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+  return arr2;
+}
+
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor) n = o.constructor.name;
+  if (n === "Map" || n === "Set") return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+}
+
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+
+function _slicedToArray(arr, i) {
+  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+}
+
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+var _watch = vueReactive.watch;
   vueReactive.useComputed;
   vueReactive.computed;
 var MUTATION_PREFIX = 'm_';
@@ -30,7 +113,7 @@ function createStore(options) {
   var _getters = {};
   var vuexStore = {
     state: new Proxy({}, {
-      get: function (_, key) {
+      get: function get(_, key) {
         if (key in _modules) {
           var storeX = _modules[key].storeX;
           return storeX;
@@ -40,47 +123,49 @@ function createStore(options) {
       }
     }),
     getters: new Proxy({}, {
-      get: function (_, key) {
+      get: function get(_, key) {
         if (typeof key === 'string') {
           // 如果key包含/，说明是访问模块的getters，进行split
           if (key.includes('/')) {
             var _key$split = key.split('/'),
-              moduleName = _key$split[0],
-              getterKey = _key$split[1];
+              _key$split2 = _slicedToArray(_key$split, 2),
+              moduleName = _key$split2[0],
+              getterKey = _key$split2[1];
             var storeX = _modules[moduleName].storeX;
-            return storeX["" + GETTER_PREFIX + getterKey];
+            return storeX["".concat(GETTER_PREFIX).concat(getterKey)];
           } else {
-            return _getters["" + GETTER_PREFIX + key];
+            return _getters["".concat(GETTER_PREFIX).concat(key)];
           }
         }
       }
     }),
-    commit: function (_type, _payload, _options, moduleName) {
+    commit: function commit(_type, _payload, _options, moduleName) {
       var _prepareTypeParams = prepareTypeParams(_type, _payload, _options),
         type = _prepareTypeParams.type,
         payload = _prepareTypeParams.payload,
         options = _prepareTypeParams.options;
       // 如果options.root为true，调用根store的action
       if (options !== null && options !== void 0 && options.root) {
-        return rootStoreX["" + MUTATION_PREFIX + type](payload);
+        return rootStoreX["".concat(MUTATION_PREFIX).concat(type)](payload);
       }
 
       // 包含/，说明是访问模块的mutation
       if (type.includes('/')) {
         var _type$split = type.split('/'),
-          _moduleName = _type$split[0],
-          key = _type$split[1];
-        return _modules[_moduleName].storeX["" + MUTATION_PREFIX + key](payload);
+          _type$split2 = _slicedToArray(_type$split, 2),
+          _moduleName = _type$split2[0],
+          key = _type$split2[1];
+        return _modules[_moduleName].storeX["".concat(MUTATION_PREFIX).concat(key)](payload);
       }
       if (moduleName != undefined) {
         // dispatch到指定的module
-        return _modules[moduleName].storeX["" + MUTATION_PREFIX + type](payload);
+        return _modules[moduleName].storeX["".concat(MUTATION_PREFIX).concat(type)](payload);
       }
 
       // 调用所有非namespaced的modules的mutation
       Object.values(_modules).forEach(function (module) {
         if (!module.namespaced) {
-          var mutation = module.storeX["" + MUTATION_PREFIX + type];
+          var mutation = module.storeX["".concat(MUTATION_PREFIX).concat(type)];
           if (typeof mutation === 'function') {
             mutation(payload);
           }
@@ -88,11 +173,11 @@ function createStore(options) {
       });
 
       // 调用storeX对象上的方法
-      if (rootStoreX["" + MUTATION_PREFIX + type]) {
-        rootStoreX["" + MUTATION_PREFIX + type](payload);
+      if (rootStoreX["".concat(MUTATION_PREFIX).concat(type)]) {
+        rootStoreX["".concat(MUTATION_PREFIX).concat(type)](payload);
       }
     },
-    dispatch: function (_type, _payload, _options, moduleName) {
+    dispatch: function dispatch(_type, _payload, _options, moduleName) {
       var _prepareTypeParams2 = prepareTypeParams(_type, _payload, _options),
         type = _prepareTypeParams2.type,
         payload = _prepareTypeParams2.payload,
@@ -104,9 +189,10 @@ function createStore(options) {
 
       // 包含/，说明是访问模块的action
       if (type.includes('/')) {
-        var _type$split2 = type.split('/'),
-          _moduleName2 = _type$split2[0],
-          key = _type$split2[1];
+        var _type$split3 = type.split('/'),
+          _type$split4 = _slicedToArray(_type$split3, 2),
+          _moduleName2 = _type$split4[0],
+          key = _type$split4[1];
         return _modules[_moduleName2].storeX[key](payload);
       }
       if (moduleName != undefined) {
@@ -135,19 +221,19 @@ function createStore(options) {
       // 返回一个Promise，内容是results，支持then链式调用
       return Promise.all(results);
     },
-    subscribe: function (fn) {
+    subscribe: function subscribe(fn) {
       return rootStoreX.$subscribe(fn);
     },
-    subscribeAction: function (fn) {
+    subscribeAction: function subscribeAction(fn) {
       return rootStoreX.$subscribe(fn);
     },
-    watch: function (fn, cb) {
-      watch(function () {
+    watch: function watch(fn, cb) {
+      _watch(function () {
         return fn(vuexStore.state, vuexStore.getters);
       }, cb);
     },
     // 动态注册模块
-    registerModule: function (key, module) {
+    registerModule: function registerModule(key, module) {
       _modules[key] = {
         storeX: _createStoreX(key, module, vuexStore, rootStoreX),
         namespaced: !!module.namespaced
@@ -155,18 +241,18 @@ function createStore(options) {
       collectGetters(_modules[key].storeX, _getters);
     },
     // 动态注销模块
-    unregisterModule: function (moduleName) {
+    unregisterModule: function unregisterModule(moduleName) {
       deleteGetters(_modules[moduleName].storeX, _getters);
       delete _modules[moduleName];
     },
-    hasModule: function (moduleName) {
+    hasModule: function hasModule(moduleName) {
       return moduleName in _modules;
     },
-    getModule: function (moduleName) {
+    getModule: function getModule(moduleName) {
       var _modules$moduleName;
       return (_modules$moduleName = _modules[moduleName]) === null || _modules$moduleName === void 0 ? void 0 : _modules$moduleName.storeX;
     },
-    install: function (app, key) {
+    install: function install(app, key) {
       registerStore(this, key || storeKey);
     }
   };
@@ -175,7 +261,7 @@ function createStore(options) {
 
   // 递归创建子模块
   for (var _i = 0, _Object$entries = Object.entries(modules); _i < _Object$entries.length; _i++) {
-    var _Object$entries$_i = _Object$entries[_i],
+    var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
       moduleName = _Object$entries$_i[0],
       moduleOptions = _Object$entries$_i[1];
     _modules[moduleName] = {
@@ -187,7 +273,7 @@ function createStore(options) {
   return vuexStore;
 }
 function prepareTypeParams(type, payload, options) {
-  if (typeof type === 'object' && type.type) {
+  if (_typeof(type) === 'object' && type.type) {
     options = payload;
     payload = type;
     type = type.type;
@@ -209,22 +295,24 @@ function _createStoreX(moduleName, options, store, rootStoreX) {
   var getStoreX = createStore$1({
     id: moduleName,
     state: state,
-    actions: _extends({}, Object.fromEntries(Object.entries(mutations).map(function (_ref) {
-      var key = _ref[0],
-        mutation = _ref[1];
-      return ["" + MUTATION_PREFIX + key, mutation];
-    })), Object.fromEntries(Object.entries(actions).map(function (_ref2) {
-      var key = _ref2[0],
-        action = _ref2[1];
+    actions: _objectSpread(_objectSpread({}, Object.fromEntries(Object.entries(mutations).map(function (_ref) {
+      var _ref2 = _slicedToArray(_ref, 2),
+        key = _ref2[0],
+        mutation = _ref2[1];
+      return ["".concat(MUTATION_PREFIX).concat(key), mutation];
+    }))), Object.fromEntries(Object.entries(actions).map(function (_ref3) {
+      var _ref4 = _slicedToArray(_ref3, 2),
+        key = _ref4[0],
+        action = _ref4[1];
       return [key, function (state, payload) {
         rootStoreX = rootStoreX || storeX;
-        var argFirst = _extends({}, store, {
+        var argFirst = _objectSpread(_objectSpread({}, store), {}, {
           // 覆盖commit方法，多传一个参数moduleName
-          commit: function (type, payload, options) {
+          commit: function commit(type, payload, options) {
             store.commit(type, payload, options, moduleName);
           },
           // 覆盖dispatch方法，多传一个参数moduleName
-          dispatch: function (type, payload, options) {
+          dispatch: function dispatch(type, payload, options) {
             return store.dispatch(type, payload, options, moduleName);
           },
           state: storeX.$state,
@@ -235,11 +323,12 @@ function _createStoreX(moduleName, options, store, rootStoreX) {
         return action.call(storeX, argFirst, payload);
       }];
     }))),
-    computed: _extends({}, Object.fromEntries(Object.entries(getters).map(function (_ref3) {
-      var key = _ref3[0],
-        getter = _ref3[1];
+    computed: _objectSpread({}, Object.fromEntries(Object.entries(getters).map(function (_ref5) {
+      var _ref6 = _slicedToArray(_ref5, 2),
+        key = _ref6[0],
+        getter = _ref6[1];
       return [// 给getters的key增加一个前缀，避免和actions, mutations的key冲突
-      "" + GETTER_PREFIX + key,
+      "".concat(GETTER_PREFIX).concat(key),
       // 重新定义getter的方法，绑定this，修改参数: state, getters, rootState, rootGetters
       function (state) {
         rootStoreX = rootStoreX || storeX;
@@ -256,7 +345,7 @@ function _createStoreX(moduleName, options, store, rootStoreX) {
 function collectGetters(storeX, gettersMap) {
   Object.keys(storeX.$config.computed).forEach(function (type) {
     Object.defineProperty(gettersMap, type, {
-      get: function () {
+      get: function get() {
         return storeX.$c[type];
       },
       configurable: true
@@ -277,8 +366,8 @@ function deleteGetters(storeX, gettersMap) {
 }
 function moduleGettersProxy(storeX) {
   return new Proxy({}, {
-    get: function (_, key) {
-      return storeX["" + GETTER_PREFIX + key];
+    get: function get(_, key) {
+      return storeX["".concat(GETTER_PREFIX).concat(key)];
     }
   });
 }
@@ -293,22 +382,8 @@ function registerStore(store) {
   storeMap.set(key, store);
 }
 
-/*
- * Copyright (c) 2024 Huawei Technologies Co.,Ltd.
- *
- * openInula is licensed under Mulan PSL v2.
- * You can use this software according to the terms and conditions of the Mulan PSL v2.
- * You may obtain a copy of Mulan PSL v2 at:
- *
- *          http://license.coscl.org.cn/MulanPSL2
- *
- * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
- * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
- * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
- * See the Mulan PSL v2 for more details.
- */
 var computed = vueReactive.computed;
-var useMapState = function (moduleName, states) {
+var useMapState = function useMapState(moduleName, states) {
   var store = useStore();
   var objRef = useRef(null);
   if (objRef.current === null) {
@@ -343,7 +418,7 @@ var useMapState = function (moduleName, states) {
   }
   return objRef.current;
 };
-var useMapGetters = function (moduleName, getters) {
+var useMapGetters = function useMapGetters(moduleName, getters) {
   var store = useStore();
   var objRef = useRef(null);
   if (objRef.current === null) {
@@ -356,7 +431,7 @@ var useMapGetters = function (moduleName, getters) {
       var key = _ref2.key,
         val = _ref2.val;
       if (moduleName) {
-        val = moduleName + "/" + val;
+        val = "".concat(moduleName, "/").concat(val);
       }
       objRef.current[key] = computed(function () {
         return store.getters[val];
@@ -365,7 +440,7 @@ var useMapGetters = function (moduleName, getters) {
   }
   return objRef.current;
 };
-var useMapMutations = function (moduleName, mutations) {
+var useMapMutations = function useMapMutations(moduleName, mutations) {
   var store = useStore();
   var objRef = useRef(null);
   if (objRef.current === null) {
@@ -379,7 +454,7 @@ var useMapMutations = function (moduleName, mutations) {
         val = _ref3.val;
       var commit = store.commit;
       if (moduleName) {
-        commit = function () {
+        commit = function commit() {
           store.commit(arguments.length <= 0 ? undefined : arguments[0], arguments.length <= 1 ? undefined : arguments[1], arguments.length <= 2 ? undefined : arguments[2], moduleName);
         };
       }
@@ -402,7 +477,7 @@ var useMapMutations = function (moduleName, mutations) {
   }
   return objRef.current;
 };
-var useMapActions = function (moduleName, actions) {
+var useMapActions = function useMapActions(moduleName, actions) {
   var store = useStore();
   var objRef = useRef(null);
   if (objRef.current === null) {
@@ -416,7 +491,7 @@ var useMapActions = function (moduleName, actions) {
         val = _ref4.val;
       var dispatch = store.dispatch;
       if (moduleName) {
-        dispatch = function () {
+        dispatch = function dispatch() {
           store.dispatch(arguments.length <= 0 ? undefined : arguments[0], arguments.length <= 1 ? undefined : arguments[1], arguments.length <= 2 ? undefined : arguments[2], moduleName);
         };
       }
@@ -440,7 +515,7 @@ var useMapActions = function (moduleName, actions) {
   return objRef.current;
 };
 function toArray(map) {
-  if (!(Array.isArray(map) || map !== null && typeof map === 'object')) {
+  if (!(Array.isArray(map) || map !== null && _typeof(map) === 'object')) {
     return [];
   }
   return Array.isArray(map) ? map.map(function (key) {

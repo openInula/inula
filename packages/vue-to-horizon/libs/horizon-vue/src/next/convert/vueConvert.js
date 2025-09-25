@@ -86,7 +86,7 @@ export default class VueConvert {
 
     try {
       // 转换vue js到Horizon，同时收集ref等等变量
-      convertJS(this.sourceAst, this.baseCovertHandler, { component, config });
+      convertJS(this.sourceAst, this.baseCovertHandler, { component, config, template });
     } catch (error) {
       LOG.error('trans js code error in VueConvert: ', error.message, `[${this.sourcePath}]`);
     }

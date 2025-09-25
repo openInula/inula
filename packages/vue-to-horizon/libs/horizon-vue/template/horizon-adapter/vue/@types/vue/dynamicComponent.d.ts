@@ -14,5 +14,8 @@ interface DynamicComponentProps {
  * @param componentProps
  * @constructor
  */
-export declare function DynamicComponent({ is, components, ...componentProps }: DynamicComponentProps): InulaElement;
+export declare function DynamicComponent({ is, components, ...componentProps }: DynamicComponentProps): InulaElement | null;
+export declare namespace DynamicComponent {
+    var __internal_comp_tag: string;
+}
 export {};

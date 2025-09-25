@@ -2,6 +2,7 @@ import t from '@babel/types';
 import parser from '@babel/parser';
 import tsCompile from './ts/index.js';
 import LOG from '../logHelper.js';
+import {createNodeByVueVariable} from './jsx/handlers/expressionHandler.js';
 
 
 const defaultParseOption = {
@@ -178,6 +179,7 @@ function parseDirectiveValue(value) {
 /**
  * 获取指令节点的值
  * @param {Object} node - 指令节点
+ * @param {Object} reactCovert
  * @returns {Object} - 返回处理后的值节点
  *
  * @example
@@ -193,21 +195,25 @@ function parseDirectiveValue(value) {
  * // <div v-custom={message} />
  * // 返回: t.identifier("message")
  */
-export function getDirectiveValueByNode(node) {
-  let value = node.value;
+export function getDirectiveValueByNode(node, reactCovert) {
+  const value = node.value;
 
   if (t.isJSXExpressionContainer(node.value)) {
     // JSX 表达式容器的情况
     // 例如: v-custom={message}
     // 从容器中提取表达式部分
-    value = node.value.expression;
-  } else if (t.isStringLiteral(node.value)) {
+    return node.value.expression;
+  }
+  if (t.isStringLiteral(node.value)) {
+    // props、directive等替换情况
+    const newNode = createNodeByVueVariable(node.value.value, reactCovert);
+    if (newNode) {
+      return newNode;
+    }
     // 字符串字面量的情况
     // 例如: v-custom="message" 或 v-custom="'message'"
     const parsedValue = parseDirectiveValue(node.value.value);
-    value = typeof parsedValue === 'string'
-      ? t.stringLiteral(parsedValue)
-      : parsedValue;
+    return typeof parsedValue === 'string' ? t.stringLiteral(parsedValue) : parsedValue;
   }
 
   return value;

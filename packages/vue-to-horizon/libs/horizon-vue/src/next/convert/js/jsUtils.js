@@ -59,3 +59,7 @@ export function capitalizeFirstLetter(str) {
   // 首字母不是小写字母，直接返回原字符串
   return str;
 }
+
+export function getIsPinia(reactConvert) {
+  return reactConvert.sourceCodeContext?.extrasImports?.has('adapters/piniaAdapter');
+}
