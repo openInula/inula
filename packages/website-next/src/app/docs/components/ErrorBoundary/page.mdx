@@ -1,0 +1,54 @@
+---
+id: ErrorBoundary
+title: ErrorBoundary
+sidebar_label: ErrorBoundary
+---
+
+# ErrorBoundary
+
+`ErrorBoundary` 组件用于捕获其子组件渲染过程中的异常，并渲染备用 UI（fallback）。适用于防止整个应用因单个组件错误而崩溃。
+
+## 典型用法
+
+```tsx filename="ErrorBoundaryExample.jsx"
+function BuggyComponent() {
+  throw new Error('出错了');
+  return <div>不会渲染</div>;
+}
+
+const Fallback = error => <div>{error.message}</div>;
+
+<ErrorBoundary fallback={Fallback}>
+  <BuggyComponent />
+</ErrorBoundary>
+```
+
+- 当子组件抛出异常时，`fallback` 会接收到 error 对象并渲染对应内容。
+- 正常情况下渲染 children。
+
+## 嵌套与错误冒泡
+
+支持嵌套 ErrorBoundary，错误会冒泡到最近的 ErrorBoundary：
+
+```tsx filename="NestedErrorBoundary.jsx"
+<ErrorBoundary fallback={outerErr => <div>外部错误: {outerErr.message}</div>}>
+  <ErrorBoundary fallback={innerErr => <div>内部错误: {innerErr.message}</div>}>
+    <BuggyComponent />
+  </ErrorBoundary>
+</ErrorBoundary>
+```
+
+## 注意事项
+
+- `fallback` 必须是函数，参数为 error。
+- 只捕获渲染过程中的错误，不捕获事件处理等异步错误。
+- 多层嵌套时，内层优先捕获。
+
+## 最佳实践
+
+- 建议在应用入口或关键区域包裹 ErrorBoundary。
+- fallback UI 应简洁明了，便于用户理解。
+
+## 相关链接
+
+- [React Error Boundaries](https://reactjs.org/docs/error-boundaries.html) 

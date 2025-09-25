@@ -1,0 +1,63 @@
+---
+id: Dynamic
+title: Dynamic
+sidebar_label: Dynamic
+---
+
+# Dynamic
+
+`Dynamic` 组件用于动态渲染不同的组件类型，支持 props 传递、context、生命周期等，适合需要根据状态切换渲染内容的场景。
+
+## 典型用法
+
+```tsx filename="DynamicComponent.jsx"
+function Hello() { return <div>Hello</div>; }
+function World() { return <div>World</div>; }
+<Dynamic component={condition ? Hello : World} />
+```
+- 支持 props 透传、context 获取、生命周期钩子。
+- 支持组件切换时自动卸载/挂载。
+
+## props/context/生命周期
+
+- 支持 props 传递：
+```tsx filename="DynamicWithProps.jsx"
+<Dynamic component={Hello} name="Inula" />
+```
+- 支持 context：
+```tsx filename="DynamicWithContext.jsx"
+const Ctx = createContext(0);
+<Ctx index={1}>
+  <Dynamic component={Comp} />
+</Ctx>
+```
+- 支持 didUnmount/willUnmount 等生命周期钩子。
+
+## 多元素/事件/空组件
+
+- 支持组件返回多个元素（Fragment）：
+```tsx filename="DynamicMultiElement.jsx"
+function Multi() { return <><div>First</div><div>Second</div></>; }
+<Dynamic component={Multi} />
+```
+- 支持事件处理：
+```tsx filename="DynamicWithEvent.jsx"
+function Btn({ onClick }) { return <button onClick={onClick}>Click</button>; }
+<Dynamic component={Btn} onClick={fn} />
+```
+- component 可为 null/undefined，渲染为空。
+
+## 注意事项
+
+- component 可为 null/undefined，渲染为空。
+- 支持多种 props 结构、rest props。
+- 支持多元素返回、事件处理。
+
+## 最佳实践
+
+- 用于需要动态切换组件的场景，如 tab、动态表单等。
+- props 建议使用解构，便于类型推导和响应式。
+
+## 相关链接
+
+- [React Dynamic Rendering](https://react.dev/reference/react/cloneElement) 

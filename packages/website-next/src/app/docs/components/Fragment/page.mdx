@@ -1,0 +1,68 @@
+---
+id: Fragment
+title: Fragment
+sidebar_label: Fragment
+---
+
+# Fragment
+
+`Fragment` 用于包裹多个元素，避免额外的 DOM 节点，常用于返回多个兄弟节点的场景。
+
+## 典型用法
+
+```tsx filename="FragmentExample.jsx"
+<>
+  <div>First</div>
+  <div>Second</div>
+</>
+```
+- 渲染结果不会多出额外的 DOM 层级。
+
+## 嵌套/条件/三元/事件
+
+- 支持嵌套：
+```tsx filename="NestedFragment.jsx"
+<>
+  <div>Start</div>
+  <>
+    <p>Nested</p>
+    <span>Child</span>
+  </>
+  <div>End</div>
+</>
+```
+- 支持条件渲染：
+```tsx filename="ConditionalFragment.jsx"
+<>
+  <div>Always</div>
+  {showExtra && <><div>Extra 1</div><div>Extra 2</div></>}
+</>
+```
+- 支持三元表达式：
+```tsx filename="TernaryFragment.jsx"
+<>
+  {cond ? <><div>True 1</div><div>True 2</div></> : <><div>False 1</div><div>False 2</div></>}
+</>
+```
+- 支持事件处理：
+```tsx filename="FragmentWithEvent.jsx"
+<>
+  <button onClick={fn}>Click me</button>
+  <div>{clicked ? 'Clicked' : 'Not clicked'}</div>
+</>
+```
+
+## 注意事项
+
+- Fragment 不会影响 CSS 或事件。
+- 可与文本、JSX 表达式混用。
+- 支持多层嵌套。
+
+## 最佳实践
+
+- 用于组件需要返回多个兄弟节点时，避免多余的 div。
+- 可与条件渲染、列表渲染等结合使用。
+
+## 相关链接
+
+- [React Fragments](https://react.dev/reference/react/Fragment) 

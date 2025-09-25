@@ -1,0 +1,90 @@
+---
+id: context
+title: 上下文
+sidebar_label: 上下文
+---
+
+# 上下文（Context）
+
+openInula 2（zouyu）支持类似 React 的 Context 机制，用于在组件树中跨层级传递数据，避免 props 层层传递。Context 机制包括 Provider（提供者）和 Consumer（消费者），并且支持响应式更新。
+
+## 基本用法
+
+### 1. 创建 Context
+
+```tsx filename="createContext.jsx"
+import { createContext } from 'openinula';
+
+const UserContext = createContext({ level: 0, path: '' });
+```
+
+### 2. Provider（提供者）
+
+通过将 context 作为组件标签包裹子组件，并传递属性来提供数据：
+
+```tsx filename="ContextProvider.jsx"
+function App() {
+  let level = 1;
+  let path = '/home';
+  return (
+    <UserContext level={level} path={path}>
+      <Child />
+    </UserContext>
+  );
+}
+```
+
+- context 属性可以是任意响应式变量，变化时会自动通知所有消费组件。
+
+### 3. Consumer（消费者）
+
+在子组件中通过 `useContext` 获取 context 数据：
+
+```tsx filename="ContextConsumer.jsx"
+import { useContext } from 'openinula';
+
+function Child() {
+  const { level, path } = useContext(UserContext);
+  return <div>{level} - {path}</div>;
+}
+```
+
+- 解构 useContext 返回的对象即可获得 context 的所有属性。
+- context 属性变化时，消费组件会自动响应更新。
+
+## 响应式原理
+
+- context 属性是响应式的，父组件更新属性，所有 useContext 的子组件会自动重新渲染。
+- 编译器会自动为每个属性生成依赖追踪和更新函数。
+
+## 只消费部分属性
+
+可以只消费 context 的部分属性，只有被消费的属性变化时才会触发更新。
+
+```tsx filename="PartialContextConsumer.jsx"
+function OnlyLevel() {
+  const { level } = useContext(UserContext);
+  return <span>{level}</span>;
+}
+```
+
+## 多层嵌套与多 context
+
+可以嵌套多个 context，useContext 会自动查找最近的 Provider。
+
+## 最佳实践
+
+- 用于全局配置、用户信息、主题等场景
+- 避免频繁变化的小数据放入 context
+- 推荐解构useContext返回值，帮助响应式系统能够只在对应 key 更新时，仅更新对应 value 的消费组件，提升性能
+
+## 注意事项
+
+- context 属性必须通过 Provider 传递，且应为响应式变量
+- useContext 只能在函数组件中调用
+- context 变化会导致所有消费组件重新渲染
+
+## 相关链接
+
+- [组件组合](../composition)
+- [官方测试用例参考](https://github.com/openinula/openinula/blob/main/next-packages/compiler/babel-inula-next-core/test/e2e/context.test.tsx) 

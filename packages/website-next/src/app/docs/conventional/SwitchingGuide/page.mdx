@@ -1,0 +1,180 @@
+---
+sidebar_position: 3
+---
+
+为了便于开发者使用 openInula 进行页面开发，尤其是已经使用 React 的相关项目，openInula 提供了一种无感切换机制，可以从 React 切换到 openInula。您只需要按照如下的方式进行修改，就可以体验到 openInula 框架所提供的能力。
+
+### 使用 React 的项目切换 openInula 步骤
+
+- 步骤1：安装 openInula。
+
+```bash filename="install.sh"
+npm install openinula
+```
+
+最新版本号请在 npm 官网查看：[访问官网](https://www.npmjs.com/package/openinula)
+
+- 步骤2：引用切换，修改 openInula 相关 API 的加载方式。
+
+```ts
+// 修改前：
+import React, { useContext, useEffect, Suspense, lazy, useState } from 'react';
+import ReactDOM from 'react-dom';
+
+// 修改后：
+import React, { useContext, useEffect, Suspense, lazy, useState } from 'openinula';
+import ReactDOM from 'openinula';
+```
+*注意*：修改后可以保留 React 全局变量。
+
+- 步骤3：修改 webpack 配置文件中 `alias`，新增 `react`、`react-dom` 等别名，如下：
+
+```ts filename="webpack.config.js"
+alias: {
+  // 省略其它...
+  'react': 'openinula', // 新增
+  'react-dom': 'openinula', // 新增
+  'react-is': 'openinula', // 新增
+},
+```
+
+### 切换FAQ
+
+#### openInula 编译 FAQ
+
+1. 在切换或者使用 openInula 框架时，`React.createElement` 无法转换成 `openinula.createElement`：
+
+    请排查编译命令中是否有 `--mode development`，该选项会导致 `React.createElement` 无法转换成 `openinula.createElement`，需要删除。
+
+2. 如果在 webpack 配置文件中配置 `externals` 字段，需把 React 相关三方件的 `externals` 都替换，如下：
+
+    ```ts filename="webpack.config.js"
+    externals: {
+        'react': 'openinula',
+        'react-dom': 'openinula',
+        'react-redux': 'openinula',
+        'react-thunk': 'openinula',
+    },
+    ```
+
+3、如果使用 babel，则需要修改 `.babelrc` (`babel.config.js`) 或 webpack 配置文件中 `babel-loader` 配置（解决编译后文件存留 `React.createElement` 的问题），如：
+
+- 如果你使用的是 `@babel/preset-react`，请确保版本号大于 `7.9.0`
+
+    ```jsx
+    // 修改前：
+    {
+      "presets": [
+        "@babel/preset-react"
+      ]
+    }
+
+    // 修改后
+    {
+      "presets": [
+        [
+          "@babel/preset-react", 
+          { 
+            "runtime": "automatic", // 新增 
+            "importSource": "openinula" // 新增
+          }  
+        ]
+      ]
+    }
+    ```
+
+- 如若使用了 `@babel/plugin-transform-react-jsx`，请确保版本号大于 `7.9.0`
+
+    ```jsx
+    // 修改前
+    {
+      "plugins": [
+        "@babel/plugin-transform-react-jsx"
+      ]
+    }
+
+    // 修改后：
+    {
+      "plugins": [
+        [
+          "@babel/plugin-transform-react-jsx", 
+          { 
+            "runtime": "automatic", // 新增 
+            "importSource": "openinula" // 新增
+          } 
+        ]
+      ]
+    }
+    ```
+
+  > 注意：**`.babelrc` (`babel.config.js`)** 和 **webpack配置文件** 不要重复配置。
+
+---
+
+#### 不兼容 React 变更 FAQ
+
+1. openInula 不支持 Legacy Context，如：https://reactjs.org/docs/legacy-context.html ，请修改成new Context API，参考：https://reactjs.org/docs/context.html 。
+
+2. openInula 不支持在 Class 组件中使用 `this.refs`
+
+    ```jsx filename="InputFocusExample.jsx"
+    class InputFocusExample extends Component {
+      focusInput = () => {
+        this.refs.myInput.focus(); // 不支持 this.refs
+      };
+
+      render() {
+        return (
+          <div>
+            <input type="text" ref="myInput" />
+            <button onClick={this.focusInput}>Focus Input</button>
+          </div>
+        );
+      }
+    }
+
+    // 请修改成以下新的 Ref API 方式:
+    class InputFocusExample extends Component {
+      constructor(props) {
+        super(props);
+        this.myInput = React.createRef(); // 新的 Ref API
+      }
+
+      focusInput = () => {
+        this.myInput.current.focus(); // 通过 this.myInput.current 引用
+      };
+
+      render() {
+        return (
+          <div>
+            <input type="text" ref={this.myInput} />
+            <button onClick={this.focusInput}>Focus Input</button>
+          </div>
+        );
+      }
+    }
+    ```
+
+---
+
+#### 测试框架 FAQ
+
+1. openInula 如何与 `@testing-library/react` 配套使用？
+
+    openInula 支持与 React 提供的测试框架配合使用，方法配置简便，需要在 `jest.config.js` 中需要加入如下配置：
+
+    ```js filename="jest.config.js"
+    module.exports = {
+      moduleNameMapper: {
+        "^react$": "<rootDir>/node_modules/openinula", 
+        "^react-dom": "<rootDir>/node_modules/openinula", 
+        "^react/jsx-runtime": "<rootDir>/node_modules/openinula/jsx-runtime" // 非必须，如存在 require("react/jsx-runtime") 这种引入方式才需要
+      },
+    };
+    ```
+
+    > 注意：`"^react/jsx-runtime": "rootDir/node_modules/openinula/jsx-runtime"`是非必须添加，若存在 `require("react/jsx-runtime")` 这种引入方式才需要
+
+2. openInula 项目如何使用 `react-test-renderer` 测试框架？
+
+    openInula 不支持 `react-test-renderer` 这个测试框架，如果使用到需要自行修改。因为 `react-test-renderer` 用到了 React 的 `React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED` 接口，而 openInula 没有该接口。

@@ -1,0 +1,125 @@
+---
+id: props
+title: Props 传递
+sidebar_label: Props 传递
+---
+
+# Props 传递
+
+在 openInula 2（zouyu）中，props 用于父组件向子组件传递数据和回调函数，语法与 React 类似，但更贴近原生 JS。
+
+## 基本用法
+
+```tsx filename="Welcome.jsx"
+function Welcome({ name }) {
+  return <h1>你好，{name}！</h1>;
+}
+
+function App() {
+  return <Welcome name="OpenInula" />;
+}
+```
+
+## 默认值与解构
+
+可以为 props 设置默认值，并使用解构赋值：
+
+```tsx filename="UserProfile.jsx"
+function UserProfile({ name = '匿名', age = 0 }) {
+  return (
+    <div>
+      <p>姓名：{name}</p>
+      <p>年龄：{age}</p>
+    </div>
+  );
+}
+```
+
+## 传递回调函数
+
+父组件可以通过 props 向子组件传递事件处理函数，实现子组件向父组件通信：
+
+```tsx filename="CounterWithCallback.jsx"
+function Counter({ onIncrement }) {
+  return <button onClick={onIncrement}>增加</button>;
+}
+
+function App() {
+  let count = 0;
+  function handleIncrement() {
+    count++;
+  }
+  return (
+    <div>
+      <p>计数：{count}</p>
+      <Counter onIncrement={handleIncrement} />
+    </div>
+  );
+}
+```
+
+## 传递对象和数组
+
+可以直接传递对象、数组等复杂数据类型：
+
+```tsx filename="TodoList.jsx"
+function TodoList({ todos }) {
+  return (
+    <ul>
+      <for each={todos}>
+        {(todo) => <li>{todo.text}</li>}
+      </for>
+    </ul>
+  );
+}
+
+function App() {
+  let todos = [
+    { text: '学习 OpenInula' },
+    { text: '写文档' }
+  ];
+  return <TodoList todos={todos} />;
+}
+```
+
+## children 插槽
+
+通过 `children` 实现插槽功能：
+
+```tsx filename="PanelWithChildren.jsx"
+function Panel({ title, children }) {
+  return (
+    <div className="panel">
+      <h2>{title}</h2>
+      <div>{children}</div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <Panel title="欢迎">
+      <p>这是插槽内容</p>
+    </Panel>
+  );
+}
+```
+
+## 最佳实践
+
+- 使用解构赋值提升代码可读性，并帮助响应式系统能够只在对应 props key 更新时，更新组件
+- 为 props 设置合理的默认值
+- 只传递必要的数据，避免 props 过多
+- 通过回调函数实现父子通信
+
+## 注意事项
+
+- props 是只读的，不要在子组件内部修改 props
+- children 也是 props 的一部分
+- 复杂数据建议使用不可变数据结构
+
+## 下一步
+
+- 学习[组件组合](../composition)的高级用法
+- 了解[上下文](../context)的全局数据传递
+- 探索[生命周期](../lifecycle/mounting)的管理 

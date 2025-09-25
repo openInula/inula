@@ -1,0 +1,120 @@
+---
+id: composition
+title: 组件组合
+sidebar_label: 组件组合
+---
+
+# 组件组合
+
+组件组合是构建复杂 UI 的基础。openInula 2支持多种组合模式，包括容器组件、复合组件、插槽（children）、高阶组件等。
+
+## 容器组件与展示组件
+
+将逻辑与展示分离，提升复用性。
+
+```tsx filename="UserCardAndList.jsx"
+// 展示组件
+function UserCard({ user }) {
+  return (
+    <div>
+      <h3>{user.name}</h3>
+      <p>邮箱：{user.email}</p>
+    </div>
+  );
+}
+
+// 容器组件
+function UserList({ users }) {
+  return (
+    <div>
+      <for each={users}>
+        {(user) => <UserCard user={user} />}
+      </for>
+    </div>
+  );
+}
+```
+
+## 插槽（children）
+
+通过 `children` 实现灵活的内容插入。
+
+```tsx filename="PanelWithSlot.jsx"
+function Panel({ title, children }) {
+  return (
+    <div className="panel">
+      <h2>{title}</h2>
+      <div>{children}</div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <Panel title="欢迎">
+      <p>这是插槽内容</p>
+      <button>确定</button>
+    </Panel>
+  );
+}
+```
+
+## 复合组件模式
+
+将多个子组件组合为一个整体。
+
+```tsx filename="TabsComponent.jsx"
+function Tabs({ children }) {
+  // 省略 tab 切换逻辑
+  return <div className="tabs">{children}</div>;
+}
+
+function Tab({ label, children }) {
+  return (
+    <div className="tab">
+      <h4>{label}</h4>
+      <div>{children}</div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <Tabs>
+      <Tab label="A">内容A</Tab>
+      <Tab label="B">内容B</Tab>
+    </Tabs>
+  );
+}
+```
+
+## 高阶组件（HOC）
+
+高阶组件用于复用逻辑或增强组件功能。
+
+```tsx filename="HigherOrderComponent.jsx"
+function withLogger(Component) {
+  return function Wrapper(props) {
+    console.log('props:', props);
+    return <Component {...props} />;
+  };
+}
+
+const LoggedPanel = withLogger(Panel);
+```
+
+## 最佳实践
+
+- 组件应职责单一，便于组合和复用
+- 善用 children 和 props 传递内容和行为
+- 复合组件可提升灵活性
+
+## 注意事项
+
+- 避免过度嵌套，保持结构清晰
+- 插槽内容建议通过 children 传递
+
+## 相关链接
+
+- [Props 传递](./props)
+- [上下文](./context) 
