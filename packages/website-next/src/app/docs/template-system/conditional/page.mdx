@@ -1,0 +1,208 @@
+---
+id: conditional
+title: 条件渲染
+sidebar_label: 条件渲染
+---
+
+# 条件渲染
+
+OpenInula 提供了内置的条件渲染标签，使得条件渲染变得简单直观。
+
+## 基本用法
+
+### if 条件
+
+最简单的条件渲染使用 `if` 标签：
+
+```tsx filename="SimpleCondition.jsx"
+function Notification({ message }) {
+  return (
+    <div>
+      <if cond={message}>
+        <p className="message">{message}</p>
+      </if>
+    </div>
+  );
+}
+```
+
+### if-else 条件
+
+使用 `if` 和 `else` 标签处理两种情况：
+
+```tsx filename="IfElseCondition.jsx"
+function LoginStatus({ isLoggedIn }) {
+  return (
+    <div>
+      <if cond={isLoggedIn}>
+        <button onClick={() => /* logout */}>退出登录</button>
+      </if>
+      <else>
+        <button onClick={() => /* login */}>登录</button>
+      </else>
+    </div>
+  );
+}
+```
+
+### 多重条件
+
+使用 `else-if` 处理多个条件：
+
+```tsx filename="MultipleConditions.jsx"
+function TrafficLight({ color }) {
+  return (
+    <div>
+      <if cond={color === 'red'}>
+        <p>停止</p>
+      </if>
+      <else-if cond={color === 'yellow'}>
+        <p>注意</p>
+      </else-if>
+      <else-if cond={color === 'green'}>
+        <p>通行</p>
+      </else-if>
+      <else>
+        <p>信号灯故障</p>
+      </else>
+    </div>
+  );
+}
+```
+
+## 条件表达式
+
+条件表达式可以是任何返回布尔值的表达式：
+
+```tsx filename="ComplexConditions.jsx"
+function UserProfile({ user }) {
+  return (
+    <div>
+      <if cond={user && user.age >= 18}>
+        <h2>成年用户</h2>
+      </if>
+      <if cond={user?.premium && !user.suspended}>
+        <h3>高级会员</h3>
+      </if>
+    </div>
+  );
+}
+```
+
+## 嵌套条件
+
+条件标签可以嵌套使用：
+
+```tsx filename="NestedConditions.jsx"
+function ProductDisplay({ product, user }) {
+  return (
+    <div>
+      <if cond={product}>
+        <if cond={user?.isAdmin}>
+          <button>编辑商品</button>
+        </if>
+        <else-if cond={user?.canPurchase}>
+          <button>购买</button>
+        </else-if>
+        <else>
+          <p>请登录后购买</p>
+        </else>
+      </if>
+      <else>
+        <p>商品不存在</p>
+      </else>
+    </div>
+  );
+}
+```
+
+## 最佳实践
+
+### 1. 提前返回
+
+对于简单的条件判断，可以使用提前返回模式：
+
+```tsx filename="EarlyReturn.jsx"
+function AdminPanel({ user }) {
+  if (!user) {
+    return <p>请先登录</p>;
+  }
+  
+  if (!user.isAdmin) {
+    return <p>权限不足</p>;
+  }
+  
+  return <div>管理员面板</div>;
+}
+```
+
+### 2. 条件组合
+
+对于复杂的条件逻辑，建议将条件提取为变量：
+
+```tsx filename="ComplexConditionLogic.jsx"
+function UserAccess({ user, resource }) {
+  const canView = user && user.permissions.includes('view');
+  const canEdit = canView && user.permissions.includes('edit');
+  const isOwner = resource.ownerId === user.id;
+  
+  return (
+    <div>
+      <if cond={canView}>
+        <div>{resource.content}</div>
+        <if cond={canEdit || isOwner}>
+          <button>编辑</button>
+        </if>
+      </if>
+      <else>
+        <p>无访问权限</p>
+      </else>
+    </div>
+  );
+}
+```
+
+### 3. 避免过度嵌套
+
+当条件逻辑变得复杂时，考虑将其拆分为多个组件：
+
+```tsx filename="ComponentComposition.jsx"
+function UserActions({ user, resource }) {
+  return (
+    <div>
+      <ViewPermission user={user}>
+        <ResourceContent resource={resource} />
+        <EditPermission user={user} resource={resource}>
+          <EditButtons resource={resource} />
+        </EditPermission>
+      </ViewPermission>
+    </div>
+  );
+}
+
+function ViewPermission({ user, children }) {
+  return (
+    <if cond={user && user.permissions.includes('view')}>
+      {children}
+    </if>
+    <else>
+      <p>无访问权限</p>
+    </else>
+  );
+}
+```
+
+## 注意事项
+
+1. 条件标签必须包含 `cond` 属性
+2. `else-if` 和 `else` 标签必须跟在 `if` 或 `else-if` 标签之后
+3. 条件表达式应该返回布尔值
+4. 避免在条件表达式中进行复杂的计算，建议提前计算并存储结果
+
+## 下一步
+
+学习完条件渲染后，你可以：
+
+1. 了解[列表渲染](../list-rendering)的使用方法
+2. 探索[事件处理](../event-handling)系统
+3. 学习[组件组合](../../components/composition)的技巧

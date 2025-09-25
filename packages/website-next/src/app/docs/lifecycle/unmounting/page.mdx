@@ -1,0 +1,43 @@
+---
+id: unmounting
+title: 卸载阶段
+sidebar_label: 卸载阶段
+---
+
+# 卸载阶段
+
+组件卸载时需清理副作用，防止内存泄漏。OpenInula 提供 willUnmount/didUnmount 钩子。
+
+## 基本用法
+
+```tsx filename="Timer.jsx"
+function Timer() {
+  let timer;
+  didMount(() => {
+    timer = setInterval(() => {}, 1000);
+  });
+  willUnmount(() => clearInterval(timer));
+  // 或 didUnmount(() => clearInterval(timer));
+  return <div>定时器已启动</div>;
+}
+```
+
+## 副作用清理
+
+- 清理定时器、事件监听、watch 副作用等
+- 推荐所有副作用都在卸载时清理
+
+## 最佳实践
+
+- 所有副作用都应在卸载时清理
+- 推荐用 willUnmount/didUnmount
+
+## 注意事项
+
+- 清理函数只在组件卸载时执行一次
+- 避免遗留定时器、事件监听等，防止内存泄漏
+
+## 相关链接
+
+- [挂载阶段](../mounting)
+- [清理操作](../cleanup)

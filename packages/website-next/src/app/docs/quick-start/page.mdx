@@ -1,0 +1,141 @@
+---
+id: getting-started
+title: 快速入门
+sidebar_label: 快速入门
+---
+
+# 快速入门
+
+欢迎使用 openInula 2！本节将带你完成环境搭建、插件集成、项目初始化和第一个组件。
+
+## 环境要求
+
+- Node.js >= 16.14
+- 推荐使用 npm 8+ 或 pnpm/yarn
+
+## 使用 CLI 快速创建项目
+
+OpenInula 提供了官方脚手架工具 `create-inula`，可以一键初始化新项目，无需手动配置。
+
+### 安装与使用
+
+无需全局安装，直接用 npx 或 npm create：
+
+```bash filename="create-project.sh"
+# 推荐方式（无需全局安装）
+npm create inula@latest my-app
+
+# 或者使用 npx
+npx create-inula my-app
+```
+
+执行命令后，CLI 会引导你选择项目模板、打包方式（如 webpack/vite）等，并自动拉取依赖、初始化目录结构。
+
+### 典型交互流程
+
+1. 选择项目名称（如 my-app）
+2. 选择模板（如 Next-app，后续会有更多模板）
+3. 选择打包方式（webpack 或 vite）
+4. 自动安装依赖并初始化项目
+
+### 目录结构示例
+
+```text filename="project-structure.txt"
+my-app/
+├── src/
+│   └── main.tsx
+├── public/
+│   └── index.html
+├── package.json
+└── ...
+```
+
+### 启动开发服务器
+
+进入项目目录后，运行：
+
+```bash filename="start-dev.sh"
+npm install
+npm start
+```
+
+即可在浏览器中访问本地开发环境。
+
+### 更多用法
+
+详细参数和高级用法请参考 [create-inula README](https://github.com/openinula/openinula/tree/main/packages/create-inula/README.md)。
+
+
+## 集成到主流构建工具
+
+OpenInula 提供统一的 unplugin 插件，支持 Vite、Rollup、Webpack、Nuxt、Vue CLI、esbuild 等主流工具。
+
+### 安装依赖
+
+
+```bash filename="install-unplugin.sh"
+npm i @openinula/unplugin
+```
+
+### Vite
+
+```ts filename="vite.config.ts"
+import { defineConfig } from 'vite';
+import inulaNext from '@openinula/unplugin/vite';
+
+export default defineConfig({
+  plugins: [
+    inulaNext({ /* 可选配置 */ }),
+  ],
+});
+```
+
+### Rollup
+
+```js filename="rollup.config.js"
+import inulaNext from '@openinula/unplugin/rollup';
+
+export default {
+  plugins: [
+    inulaNext({ /* 可选配置 */ }),
+  ],
+};
+```
+
+### Webpack
+
+```js filename="webpack.config.js"
+// webpack.config.js
+module.exports = {
+  /* ... */
+  plugins: [
+    require('@openinula/unplugin/webpack')({ /* 可选配置 */ })
+  ]
+}
+```
+
+
+## 第一个组件
+
+```tsx filename="Hello.jsx"
+function Hello() {
+  return <h1>你好，OpenInula！</h1>;
+}
+```
+
+## 目录结构
+
+- src/ 代码目录
+- public/ 静态资源
+- package.json 项目配置
+
+## 相关链接
+
+- [unplugin 官方文档](https://github.com/unjs/unplugin)
+- [OpenInula 插件源码](https://github.com/openinula/openinula/tree/main/next-packages/compiler/unplugin-inula-next)
+- [更多示例 playground/](https://github.com/openinula/openinula/tree/main/next-packages/compiler/unplugin-inula-next/playground)
+
+## 下一步
+
+- 阅读[项目介绍](./introduction)
+- 深入[基础概念](next/core-concepts/introduction) 

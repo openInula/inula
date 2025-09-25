@@ -1,0 +1,257 @@
+---
+id: list-rendering
+title: 列表渲染
+sidebar_label: 列表渲染
+---
+
+# 列表渲染
+
+OpenInula 提供了内置的 `for` 标签来实现列表渲染，使得数组的遍历和渲染变得简单直观。
+
+## 基本用法
+
+### 简单列表
+
+使用 `for` 标签遍历数组：
+
+```tsx filename="FruitList.jsx"
+function FruitList() {
+  const fruits = ['苹果', '香蕉', '橙子'];
+  
+  return (
+    <ul>
+      <for each={fruits}>
+        {(fruit) => <li>{fruit}</li>}
+      </for>
+    </ul>
+  );
+}
+```
+
+### 带索引的列表
+
+通过第二个参数获取索引：
+
+```tsx filename="NumberedList.jsx"
+function NumberedList() {
+  const items = ['第一项', '第二项', '第三项'];
+  
+  return (
+    <ul>
+      <for each={items}>
+        {(item, index) => (
+          <li>#{index + 1}: {item}</li>
+        )}
+      </for>
+    </ul>
+  );
+}
+```
+
+## 对象列表
+
+渲染对象数组：
+
+```tsx filename="UserTable.jsx"
+function UserList() {
+  const users = [
+    { id: 1, name: '张三', age: 25 },
+    { id: 2, name: '李四', age: 30 },
+    { id: 3, name: '王五', age: 28 }
+  ];
+  
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>姓名</th>
+          <th>年龄</th>
+        </tr>
+      </thead>
+      <tbody>
+        <for each={users}>
+          {(user) => (
+            <tr>
+              <td>{user.id}</td>
+              <td>{user.name}</td>
+              <td>{user.age}</td>
+            </tr>
+          )}
+        </for>
+      </tbody>
+    </table>
+  );
+}
+```
+
+## 列表操作
+
+### 列表过滤
+
+可以在渲染前对列表进行过滤：
+
+```tsx filename="ActiveUserList.jsx"
+function ActiveUserList() {
+  const users = [
+    { id: 1, name: '张三', active: true },
+    { id: 2, name: '李四', active: false },
+    { id: 3, name: '王五', active: true }
+  ];
+  
+  const activeUsers = users.filter(user => user.active);
+  
+  return (
+    <ul>
+      <for each={activeUsers}>
+        {(user) => <li>{user.name}</li>}
+      </for>
+    </ul>
+  );
+}
+```
+
+### 列表排序
+
+可以在渲染前对列表进行排序：
+
+```tsx filename="SortedUserList.jsx"
+function SortedUserList() {
+  const users = [
+    { id: 1, name: '张三', age: 25 },
+    { id: 2, name: '李四', age: 30 },
+    { id: 3, name: '王五', age: 28 }
+  ];
+  
+  const sortedUsers = [...users].sort((a, b) => a.age - b.age);
+  
+  return (
+    <ul>
+      <for each={sortedUsers}>
+        {(user) => (
+          <li>{user.name} ({user.age}岁)</li>
+        )}
+      </for>
+    </ul>
+  );
+}
+```
+
+## 嵌套列表
+
+可以嵌套使用 `for` 标签：
+
+```tsx filename="NestedList.jsx"
+function NestedList() {
+  const departments = [
+    {
+      name: '技术部',
+      teams: ['前端组', '后端组', '测试组']
+    },
+    {
+      name: '产品部',
+      teams: ['设计组', '运营组']
+    }
+  ];
+  
+  return (
+    <div>
+      <for each={departments}>
+        {(dept) => (
+          <div>
+            <h3>{dept.name}</h3>
+            <ul>
+              <for each={dept.teams}>
+                {(team) => <li>{team}</li>}
+              </for>
+            </ul>
+          </div>
+        )}
+      </for>
+    </div>
+  );
+}
+```
+
+## 最佳实践
+
+### 1. 列表项组件化
+
+对于复杂的列表项，建议将其抽取为单独的组件：
+
+```tsx filename="UserItemComponent.jsx"
+function UserItem({ user }) {
+  return (
+    <div className="user-item">
+      <img src={user.avatar} alt={user.name} />
+      <div className="user-info">
+        <h3>{user.name}</h3>
+        <p>{user.email}</p>
+      </div>
+    </div>
+  );
+}
+
+function UserList() {
+  const users = [/* ... */];
+  
+  return (
+    <div className="user-list">
+      <for each={users}>
+        {(user) => <UserItem user={user} />}
+      </for>
+    </div>
+  );
+}
+```
+
+### 2. 列表更新优化
+
+当列表项可能发生变化时，建议使用不可变数据操作：
+
+```tsx
+function TodoList() {
+  let todos = [
+    { id: 1, text: '学习 OpenInula', done: false },
+    { id: 2, text: '写文档', done: false }
+  ];
+  
+  function toggleTodo(id) {
+    todos = todos.map(todo =>
+      todo.id === id
+        ? { ...todo, done: !todo.done }
+        : todo
+    );
+  }
+  
+  return (
+    <ul>
+      <for each={todos}>
+        {(todo) => (
+          <li
+            onClick={() => toggleTodo(todo.id)}
+            style={{ textDecoration: todo.done ? 'line-through' : 'none' }}
+          >
+            {todo.text}
+          </li>
+        )}
+      </for>
+    </ul>
+  );
+}
+```
+
+## 注意事项
+
+1. `for` 标签必须包含 `each` 属性
+2. 回调函数必须返回 JSX 元素
+3. 对于大列表，考虑使用分页或虚拟滚动
+4. 避免在渲染函数中进行复杂计算，建议提前处理数据
+
+## 下一步
+
+学习完列表渲染后，你可以：
+
+1. 了解[事件处理](../event-handling)系统
+2. 探索[组件组合](../../components/composition)的技巧
+3. 学习[状态管理](../../reactivity/state)的最佳实践

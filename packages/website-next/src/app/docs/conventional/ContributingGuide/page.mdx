@@ -1,0 +1,142 @@
+---
+sidebar_position: 7
+---
+
+本指南会指导你如何为 openInula 贡献自己的一份力量，请你在提出 issue 或 pull request 前花费几分钟来了解 openInula 社区的贡献指南。
+
+## 行为准则
+
+我们有一份 openInula 代码贡献[行为准则](/docs/行为准则)，希望所有的贡献者都能遵守，在参与社区贡献之前，请先阅读并遵守 openInula 的[行为准则](/docs/行为准则)。
+
+## 参与贡献
+
+贡献代码之前，您必须签署一份“openInula贡献者协议，然后才能参与代码贡献。根据您的参与身份，选择签署个人 CLA、员工 CLA 或企业 CLA，请点击**[这里](https://gitee.com/organizations/inula-js/cla/inula-js-contributor-protocol)**签署。
+
+* 个人 CLA：以个人身份参与社区，请签署个人 CLA
+* 企业 CLA: 以企业身份参与社区，请签署企业 CLA
+* 员工 CLA: 以企业员工的身份参与社区，请签署员工 CLA
+
+#### 贡献流程
+
+* 我们所有的工作都会放在 [Gitee](https://gitee.com/openInula) 上。
+* 针对Git的安装、环境配置及使用方法，请参考码云帮助中心的 Git 知识大全：[https://gitee.com/help/categories/43](https://gitee.com/help/categories/43)
+* openInula 长期维护 master 分支。如果你要修复一个 Bug 或增加一个新的功能，那么请 Pull Request 到 master 分支上
+
+#### 参与贡献
+
+openInula 团队会关注所有 Pull Request，我们会经测试与评审后合入你的代码，也有可能要求你做一些修改或者告诉你我们为什么不能接受你的修改。
+
+在你发送Pull Request之前，请确认你是按照下面的步骤来做的：
+
+1. 确保基于正确的分支进行修改。
+2. 在项目根目录下运行了 `npm install`。
+3. 如果你修复了一个bug或者新增了一个功能，请确保新增或完善了相应的测试，这很重要。
+4. 确认所有的测试都是通过的 `npm run test`
+5. 确保你的代码通过了lint检查 `npm run lint`.
+
+#### 贡献流程
+
+1. Fork 代码分支
+   
+   1. 找到并打开对应 Repository 的首页；
+   2. 点击右上角的 **Forked** 按钮，按照指引，建立一个属于个人的分支。
+
+2. 把 Fork 仓下载到本地
+
+   1. 创建本地工作目录；
+      ```bash
+      mkdir ${your_working_dir}
+      cd ${your_working_dir}
+      ```
+
+   2. 复制远程仓库到本地。
+      ```bash
+      git clone {$remote_link}
+      ```
+
+3. 代码修改
+   
+   1. 根据您的想法，修复bug或者新增功能；
+   
+   2. 推送到您的线上代码仓分支。在此之前，请确认您已完成一下步骤：
+      1. 确保基于正确的分支进行修改。
+      2. 在项目根目录下运行了 `npm install`。
+      3. 如果你修复了一个 bug 或者新增了一个功能，请确保新增或完善了相应的测试，这很重要。
+      4. 确认所有的测试都是通过的 `npm run test`
+      5. 确保你的代码通过了 lint 检查 `npm run lint`.
+
+      确认无误后即可推送
+      ```bash
+      git push origin master
+      ```
+
+4. 提交 Pull Request
+
+   1. 在代码仓首页点击 **+Pull Request**，创建一个新PR
+   2. 选择分支为您修改过的分支
+   3. 补充标题与 PR 描述等信息。openInula 库提供 PR 模板，帮助您快速高效的传递 PR 的描述信息。
+   4. 确认无误后，点击**创建 Pull Request**
+
+   提交完毕后，请耐心等待 openInula 团队完成测试与评审流程。流程通过后，您的代码就会被合入 openInula 的代码仓中。
+
+   如果你还不清楚怎么在Gitee上提交 Pull Request，你可以通过[这篇文章](https://oschina.gitee.io/opensource-guide/guide/%E7%AC%AC%E4%B8%89%E9%83%A8%E5%88%86%EF%BC%9A%E5%B0%9D%E8%AF%95%E5%8F%82%E4%B8%8E%E5%BC%80%E6%BA%90/%E7%AC%AC%207%20%E5%B0%8F%E8%8A%82%EF%BC%9A%E6%8F%90%E4%BA%A4%E7%AC%AC%E4%B8%80%E4%B8%AA%20Pull%20Request/#%E4%BB%80%E4%B9%88%E6%98%AF-pull-request)学习
+
+
+### 门禁构建
+
+#### 创建 Issue
+
+1. 找到并打开对应 Repository 的首页
+2. 选择 Issues 页签。
+3. 在点击右侧 **+新建 Issue** 按钮，建立一个专属的任务，用于相关联的代码（开发特性/修改 bug）执行 CI 门禁。
+
+#### 将 Issue 与 PR 关联
+
+创建 PR 或编辑已有的 PR 时，描述框输入 `#I[五位 Issue ID]`，例如 `#I12345`，即可将 Issue 与 PR 关联。
+
+#### 约束
+-  一个 PR 只允许关联一个 Issue，关联多个 Issue 时无法触发CI。
+- 相关特性开发或 bug 修复涉及多个代码仓联合修改时，多个 PR 可关联同一个 Issue。
+- Issue 关联的 PR 中，不允许存在已被合入或关闭的 PR，否则无法触发 CI。
+- 若 Issue 已被合入或关闭的 PR 关联，则该 Issue 无法被重复使用，需重新创建 Issue 并进行 OPEN 的 PR 关联。
+- 当你想开始处理一个 Issue 时，先检查一下 Issue 下面的留言，确保没有其他人正在处理。如果没有，你可以留言告知其他人你将处理这个 Issue，避免重复劳动。
+
+
+#### 触发代码门禁
+
+在 PR 中评论“start build”即可触发 CI 门禁。
+
+多个 PR 关联同一个 Issue 时，在任一 PR 中评论“start build”均可触发该 Issue 的 CI 门禁。
+
+门禁执行完成，会在该 Issue 关联的所有 PR 中自动评论门禁执行结果。
+
+如果门禁通过，该 Issue 关联的所有PR均会自动标记“测试通过”。
+
+#### Bug 提交
+
+我们使用 Gitee Issues 来进行 Bug 跟踪。在你发现 Bug 后，请通过我们提供的模板来提 Issue，以便你发现的 Bug 能被快速解决。
+
+在你报告一个 bug 之前，请先确保不和已有 Issue 重复以及查阅了我们的用户使用指南。
+
+#### 新增功能
+
+ 如果你有帮助我们改进 API 或者新增功能的想法，我们同样推荐你使用我们提供 Issue 模板来新建一个添加新功能的 Issue。
+
+### CI 门户
+
+openInula 通过持续集成（CI，Continuous Integration）及时发现代码问题，确保代码质量可靠和功能稳定，包括：
+
+* 代码门禁：开发者向 openInula 提交代码合入申请后，会触发门禁检查，例如静态检查、代码编译、功能测试等，门禁通过后才能合入代码。
+* 每日构建：openInula 的持续集成流水线每日自动执行，以便提前发现代码静态检查、编译、功能等方面的问题，及时修复问题，确保代码质量。
+
+CI 门户是为了便于开发者及时查看、分析每日构建和代码门禁的执行结果的一个可持续集成的门户。
+
+## 内容版权
+
+用户提交的内容、图片必须是原创内容，不得侵犯他人知识产权。
+
+对应采纳的内容，openInula 有权根据相关规范修改用户提交的内容。
+
+## License
+
+openInula 主要遵循 Mulan Permissive Software License v2 协议，详情请参考各代码仓 LICENSE 声明。

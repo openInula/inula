@@ -1,0 +1,293 @@
+---
+id: state
+title: 状态管理
+sidebar_label: 状态管理
+---
+
+# 状态管理
+
+OpenInula 的状态管理采用直观的方式，无需特殊的 API 或 Hook，直接使用 JavaScript 变量和赋值即可。
+
+## 基础用法
+
+### 声明状态
+
+在组件中直接声明变量作为状态：
+
+```tsx filename="Counter.jsx"
+function Counter() {
+  let count = 0;  // 直接声明状态
+  
+  return (
+    <div>
+      <p>计数：{count}</p>
+      <button onClick={() => count++}>增加</button>
+    </div>
+  );
+}
+```
+
+### 对象状态
+
+对于复杂的状态，可以使用对象：
+
+```tsx filename="UserProfile.jsx"
+function UserProfile() {
+  let user = {
+    name: '张三',
+    age: 25,
+    preferences: {
+      theme: 'dark',
+      language: 'zh'
+    }
+  };
+  
+  function updateTheme(newTheme) {
+    user.preferences.theme = newTheme;  // 直接修改对象属性
+  }
+  
+  return (
+    <div>
+      <h2>{user.name}</h2>
+      <p>年龄：{user.age}</p>
+      <div>
+        主题：{user.preferences.theme}
+        <button onClick={() => updateTheme('light')}>
+          切换主题
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+### 数组状态
+
+处理数组类型的状态：
+
+```tsx filename="TodoList.jsx"
+function TodoList() {
+  let todos = [
+    { id: 1, text: '学习 OpenInula', done: false },
+    { id: 2, text: '写文档', done: false }
+  ];
+  
+  function addTodo(text) {
+    todos = [
+      ...todos,
+      {
+        id: todos.length + 1,
+        text,
+        done: false
+      }
+    ];
+  }
+  
+  function toggleTodo(id) {
+    todos = todos.map(todo =>
+      todo.id === id
+        ? { ...todo, done: !todo.done }
+        : todo
+    );
+  }
+  
+  return (
+    <div>
+      <button onClick={() => addTodo('新任务')}>
+        添加任务
+      </button>
+      <ul>
+        <for each={todos}>
+          {(todo) => (
+            <li
+              onClick={() => toggleTodo(todo.id)}
+              style={{
+                textDecoration: todo.done ? 'line-through' : 'none'
+              }}
+            >
+              {todo.text}
+            </li>
+          )}
+        </for>
+      </ul>
+    </div>
+  );
+}
+```
+
+## 状态更新
+
+### 直接赋值
+
+最简单的状态更新方式是直接赋值：
+
+```tsx filename="CounterWithMessage.jsx"
+function Counter() {
+  let count = 0;
+  let message = '';
+  
+  function increment() {
+    count++;  // 直接赋值
+    message = `当前计数：${count}`;  // 状态之间可以互相依赖
+  }
+  
+  return (
+    <div>
+      <p>{message}</p>
+      <button onClick={increment}>增加</button>
+    </div>
+  );
+}
+```
+
+### 批量更新
+
+当需要同时更新多个状态时：
+
+```tsx filename="UserForm.jsx"
+function UserForm() {
+  let formData = {
+    username: '',
+    email: '',
+    age: 0
+  };
+  
+  function resetForm() {
+    // 一次性更新多个字段
+    formData = {
+      username: '',
+      email: '',
+      age: 0
+    };
+  }
+  
+  function updateField(field, value) {
+    formData[field] = value;  // 更新单个字段
+  }
+  
+  return (
+    <form>
+      <input
+        value={formData.username}
+        onInput={e => updateField('username', e.target.value)}
+      />
+      <input
+        value={formData.email}
+        onInput={e => updateField('email', e.target.value)}
+      />
+      <input
+        type="number"
+        value={formData.age}
+        onInput={e => updateField('age', parseInt(e.target.value))}
+      />
+      <button type="button" onClick={resetForm}>
+        重置
+      </button>
+    </form>
+  );
+}
+```
+
+## 最佳实践
+
+### 1. 状态初始化
+
+将复杂的初始状态提取为函数：
+
+```tsx filename="createInitialState.jsx"
+function createInitialState() {
+  return {
+    user: null,
+    preferences: {
+      theme: 'light',
+      language: 'zh'
+    },
+    todos: []
+  };
+}
+
+function App() {
+  let state = createInitialState();
+  
+  function reset() {
+    state = createInitialState();  // 重置为初始状态
+  }
+  
+  return (
+    <div>
+      {/* 使用状态 */}
+    </div>
+  );
+}
+```
+
+### 2. 状态组织
+
+对于复杂组件，建议将相关状态组织在一起：
+
+```tsx filename="ShoppingCart.jsx"
+function ShoppingCart() {
+  let cart = {
+    items: [],
+    total: 0,
+    
+    addItem(product) {
+      this.items = [...this.items, product];
+      this.updateTotal();
+    },
+    
+    removeItem(productId) {
+      this.items = this.items.filter(item => item.id !== productId);
+      this.updateTotal();
+    },
+    
+    updateTotal() {
+      this.total = this.items.reduce((sum, item) => sum + item.price, 0);
+    }
+  };
+  
+  return (
+    <div>
+      <h2>购物车 ({cart.items.length})</h2>
+      <p>总计：¥{cart.total}</p>
+      {/* 渲染购物车内容 */}
+    </div>
+  );
+}
+```
+
+### 3. 派生状态
+
+避免重复存储可以从现有状态计算出的值：
+
+```tsx filename="TodoApp.jsx"
+function TodoApp() {
+  let todos = [];
+  
+  // 好的做法：通过计算获得派生状态
+  const completedCount = todos.filter(todo => todo.done).length;
+  const remainingCount = todos.length - completedCount;
+  
+  return (
+    <div>
+      <p>完成：{completedCount}</p>
+      <p>剩余：{remainingCount}</p>
+    </div>
+  );
+}
+```
+
+## 注意事项
+
+1. 避免直接修改复杂对象的深层属性，推荐使用不可变更新模式
+2. 确保状态更新是同步的，避免在异步操作中直接修改状态
+3. 对于大型应用，考虑使用状态管理库
+4. 注意状态的作用域，避免全局状态
+
+## 下一步
+
+学习完状态管理后，你可以：
+
+1. 了解[计算值](./computed.mdx)的使用
+2. 探索[监听系统](./watch)的功能
+3. 学习[组件组合](../components/composition)的最佳实践 

@@ -1,0 +1,94 @@
+欢迎学习 openInula 教程。此教程将会指导你使用 openInula 构建快速、轻便的 web 应用程序。
+
+## 什么是openInula
+
+openInula 是一款用于构建用户界面的 JavaScript 库，提供响应式 API 帮助开发者简单高效构建 web 页面，比传统虚拟 DOM 方式渲染效率提升30%以上！同时 openInula 提供与 React 保持一致的 API，并且提供5大常用功能丰富的核心组件：**状态管理器**、**路由**、**国际化**、**请求组件**、**应用脚手架**，以便开发者高效、高质量的构筑基于 openInula 的前端产品。
+
+### 在已有项目中安装 openInula
+
+#### 方式一：使用 `npm` 安装
+
+在命令行中运行以下命令来通过 `npm` 安装 openInula：
+
+```sh filename="install.sh"
+npm install openinula
+```
+
+上述命令会将最新版本的 openInula 包添加到您的项目中，当然，您也可以指定特定版本来安装包。最新版本号请在 npm 官网查看：[访问官网](https://www.npmjs.com/package/openinula)
+
+#### 方式二：使用 `yarn` 安装
+
+openInula 也支持 `yarn` 命令安装，前提已安装了 `yarn`，如未安装，则通过 `npm install -g yarn` 命令来安装（全局安装）。
+
+在命令行中运行以下命令来通过 `yarn` 安装 openInula：
+
+```sh filename="install.sh"
+yarn add openinula
+```
+
+### 直接创建 openInula 项目
+
+如果你已经安装了openInula，则可以简单地创建一个新的 JavaScript 文件，尝试使用 openInula，例如 `index.jsx`，并在其中添加以下代码：
+
+```jsx filename="index.jsx"
+import { render } from 'openinula';
+
+const HelloWorld = () => {
+  return (
+    <div>
+      <h1>Hello, World!</h1>
+    </div>
+  );
+};
+
+render(
+  <HelloWorld/>,
+  document.getElementById('root')
+);
+```
+
+上述代码片段主要分为三部分，首先通过 `import` 语法导入 openInula 包，其次构建一个名为 `HelloWorld` 的函数组件，最后将 `HelloWorld` 组件挂载在 HTML 中 id 为 `root` 的 DOM元素上，详细使用请查阅[API参考Inula](https://docs.openinula.net/apis/Inula)。`index.jsx` 经过 babel 编译后，您将看到一个显示 "Hello, World!" 的页面。
+
+### 使用脚手架创建openInula项目
+
+#### 步骤一： 启动openInula脚手架
+
+在您需要创建项目的目录下执行以下命令：
+
+```sh filename="create.sh"
+npx create-inula <项目名>
+```
+
+#### 步骤二： 选择需要项目模板
+
+执行启动命令后，您将收到以下回显信息询问，可根据回显信息进行相应的输入：
+
+```sh filename="select-template.txt"
+Need to install the following packages:create-inula@0.0.2
+Ok to proceed? (y) y
+? Please select the template (Use arrow keys)
+> Simple-app
+```
+
+在创建项目过程中脚手架提供 Simple-app 模板供开发者使用：
+- Simple-app 已默认安装 openInula，开发者可以直接在项目中专注于核心代码的开发。
+
+#### 步骤三：选择打包方式
+
+在创建项目过程中有两种打包方式供选择，您可以根据自己使用习惯选择：
+
+```sh filename="select-build.txt"
+? Please select the build type (Use arrow keys)
+ > webpack
+   vite
+```
+
+如果您不知如何选择可分别参考 [Vite 文档](https://cn.vitejs.dev/) 以及 [webpack文档](https://webpack.js.org/)。
+
+至此，可以使用 openInula 框架，通过 `npm run start` 命令运行项目，您会看到简单的 openInula 的示例。当然，您也可以基于 openInula 框架构建您的 web 项目。
+
+### 开始使用openInula
+
+恭喜！您已经成功安装了 openInula。现在您可以根据项目需求自由使用 openInula 提供的组件和功能。
+
+请查阅[《用户指南》](/docs/用户指南)以了解更多关于如何使用和配置框架的详细信息。

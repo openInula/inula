@@ -1,0 +1,59 @@
+---
+id: cleanup
+title: 清理操作
+sidebar_label: 清理操作
+---
+
+# 清理操作
+
+清理操作用于移除副作用，如定时器、事件监听、watch 清理函数等。
+
+## 定时器清理
+
+```tsx filename="TimerCleanup.jsx"
+function Timer() {
+  let timer;
+  didMount(() => {
+    timer = setInterval(() => {}, 1000);
+  });
+  willUnmount(() => clearInterval(timer));
+  return <div>定时器已启动</div>;
+}
+```
+
+## 事件监听清理
+
+```tsx filename="EventListener.jsx"
+function Listener() {
+  function onResize() {}
+  didMount(() => window.addEventListener('resize', onResize));
+  willUnmount(() => window.removeEventListener('resize', onResize));
+  return <div>监听窗口大小</div>;
+}
+```
+
+## watch 清理函数
+
+```tsx filename="WatchCleanup.jsx"
+function Watcher() {
+  let timer;
+  watch(() => {
+    timer = setInterval(() => {}, 1000);
+    return () => clearInterval(timer);
+  });
+  return <div>watch 清理</div>;
+}
+```
+
+## 最佳实践
+
+- 所有副作用都应有清理逻辑
+- 推荐统一在 willUnmount/didUnmount 或 watch 清理函数中处理
+
+## 注意事项
+
+- 避免遗留定时器、事件监听等，防止内存泄漏
+
+## 相关链接
+
+- [卸载阶段](../unmounting)

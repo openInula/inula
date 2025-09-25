@@ -1,0 +1,49 @@
+---
+id: mounting
+title: 挂载阶段
+sidebar_label: 挂载阶段
+---
+
+# 挂载阶段
+
+组件挂载时可执行副作用，如数据请求、事件监听等。OpenInula 提供 didMount 钩子。
+
+## 基本用法
+
+```tsx filename="PageTitle.jsx"
+function PageTitle() {
+  let title = '';
+  didMount(() => {
+    title = document.title;
+  });
+  return <p>页面标题：{title}</p>;
+}
+```
+
+## 数据请求
+
+```tsx filename="FetchData.jsx"
+function FetchData() {
+  let data = null;
+  didMount(() => {
+    fetch('/api/data')
+      .then(res => res.json())
+      .then(d => { data = d; });
+  });
+  return <pre>{JSON.stringify(data)}</pre>;
+}
+```
+
+## 最佳实践
+
+- 只在 didMount 中执行副作用
+- 清理副作用请用 willUnmount/didUnmount
+
+## 注意事项
+
+- didMount 只在组件首次挂载时执行一次
+
+## 相关链接
+
+- [卸载阶段](../unmounting)
+- [清理操作](../cleanup)

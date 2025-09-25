@@ -1,0 +1,79 @@
+---
+id: computed
+title: 计算值
+sidebar_label: 计算值
+---
+
+# 计算值
+
+在 openInula 2（zouyu）中，计算值（Computed）是指依赖于其他状态变量的表达式。你只需像写普通 JS 一样声明变量，编译器会自动识别并优化这些依赖关系。
+
+## 基本用法
+
+```tsx filename="DoubleCounter.jsx"
+function DoubleCounter() {
+  let count = 0;
+  // 计算值：double 会自动随着 count 变化
+  const double = count * 2;
+
+  return (
+    <div>
+      <p>当前计数：{count}</p>
+      <p>双倍值：{double}</p>
+      <button onClick={() => count++}>增加</button>
+    </div>
+  );
+}
+```
+
+## 多重依赖
+
+计算值可以依赖多个状态变量：
+
+```tsx filename="PriceCalculator.jsx"
+function PriceCalculator() {
+  let price = 100;
+  let quantity = 2;
+  const total = price * quantity;
+
+  return (
+    <div>
+      <p>单价：{price}</p>
+      <p>数量：{quantity}</p>
+      <p>总价：{total}</p>
+      <button onClick={() => quantity++}>增加数量</button>
+    </div>
+  );
+}
+```
+
+## 嵌套计算
+
+计算值可以嵌套依赖其他计算值：
+
+```tsx filename="NestedComputed.jsx"
+function NestedComputed() {
+  let a = 1;
+  const b = a + 2;
+  const c = b * 3;
+
+  return <div>c 的值：{c}</div>;
+}
+```
+
+## 最佳实践
+
+- 只需像写普通 JS 一样声明依赖关系，编译器会自动优化。
+- 避免在计算值中产生副作用（如修改外部状态）。
+- 计算值适合用于 UI 展示、派生数据等场景。
+
+## 注意事项
+
+- 计算值应为纯表达式，不要在其中执行异步操作或副作用。
+- 如果依赖的状态较多，建议提前拆分变量，提升可读性。
+
+## 下一步
+
+- 了解[监听系统](./watch)的用法
+- 学习[状态管理](./state)的更多技巧
+- 探索[组件组合](../components/composition)的高级用法 

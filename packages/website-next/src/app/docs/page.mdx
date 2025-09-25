@@ -1,0 +1,110 @@
+# openInula 2
+
+openInula 2版本是一个现代化的 JavaScript UI 开发库，具有以下特点：
+
+- **无 API 设计理念**：只需使用 JSX 和原生 JavaScript 即可直观编程
+- **编译优先**：通过编译时分析优化性能
+- **轻量级响应式系统**：高效的运行时更新机制
+
+## 核心特性
+
+### 直接状态管理
+
+```tsx filename="Counter.jsx"
+function Counter() {
+  let count = 0;  // 直接声明状态
+
+  return (
+    <div>
+      <p>计数: {count}</p>
+      <button onClick={() => count++}>增加</button>
+    </div>
+  );
+}
+```
+
+### 内置流程控制
+
+```tsx filename="UserList.jsx"
+function UserList({ users }) {
+  return (
+    <ul>
+      <for each={users}>
+        {(user) => (
+          <if cond={user.active}>
+            <li>{user.name}</li>
+          </if>
+        )}
+      </for>
+    </ul>
+  );
+}
+```
+
+### 计算值
+
+```tsx filename="DoubleCounter.jsx"
+function DoubleCounter() {
+  let count = 0;
+  const double = count * 2;  // 自动计算的值
+
+  return <div>双倍值: {double}</div>;
+}
+```
+
+### 监听系统
+
+```tsx filename="DataFetcher.jsx"
+function DataFetcher() {
+  let data = null;
+
+  watch(() => {
+    fetch('https://api.example.com/data')
+      .then(res => res.json())
+      .then(_data => {
+        data = _data;
+      });
+  });
+
+  return (
+    <div>
+      <if cond={data}>
+        <pre>{JSON.stringify(data, null, 2)}</pre>
+      </if>
+      <else>
+        <p>加载中...</p>
+      </else>
+    </div>
+  );
+}
+```
+
+## 快速开始
+
+让我们通过以下章节来学习 openInula 2版本：
+
+1. [基础概念](./core-concepts/introduction)
+
+- 组件基础
+- JSX 语法
+- 状态管理
+2. [模板系统](./template-system/conditional)
+
+- 条件渲染
+- 列表渲染
+- 事件处理
+3. [响应式系统](./reactivity/state)
+
+- 状态声明
+- 计算值
+- 监听系统
+4. [组件开发](./components/props)
+
+- Props 传递
+- 组件组合
+- 上下文管理
+5. [生命周期](./lifecycle/mounting)
+
+- 挂载阶段
+- 卸载阶段
+- 清理操作

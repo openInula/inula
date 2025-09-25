@@ -1,0 +1,124 @@
+---
+id: untrack
+title: untrack（非响应式访问）
+sidebar_label: untrack
+---
+
+# untrack（非响应式访问）
+
+`untrack` 是 openInula 2（zouyu）响应式系统中的一个高级工具，用于在响应式计算、watch、或其他依赖收集场景下，临时"跳出"依赖追踪，获取某个状态的当前值但不建立响应式依赖。
+
+## 作用
+
+- **避免依赖收集**：在 computed、watch、或其他响应式回调中，某些变量的读取不希望被追踪为依赖时使用。
+- **性能优化**：减少不必要的响应式更新，避免副作用函数被频繁触发。
+- **实现只读快照**：获取某一时刻的状态快照，而不关心后续变化。
+
+## 基本用法
+
+```tsx filename="Example.jsx"
+import { untrack } from 'openinula';
+
+function Example() {
+  let count = 0;
+  let log = [];
+
+  watch(() => {
+    // 只在 count 变化时触发
+    log.push(`count: ${count}, time: ${untrack(() => Date.now())}`);
+  });
+
+  return (
+    <div>
+      <button onClick={() => count++}>增加</button>
+      <ul>
+        <for each={log}>{(item) => <li>{item}</li>}</for>
+      </ul>
+    </div>
+  );
+}
+```
+
+## Demo 示例
+
+下面是一个最小可运行的 untrack 用法示例：
+
+```tsx filename="Demo.jsx"
+import { watch, untrack } from 'openinula';
+
+function Demo() {
+  let a = 0;
+  let b = 0;
+  watch(() => {
+    // 只依赖 b，a 的变化不会触发 watch
+    console.log('sum:', untrack(() => a) + b);
+  });
+  return (
+    <>
+      <button onClick={() => a++}>a: {a}</button>
+      <button onClick={() => b++}>b: {b}</button>
+    </>
+  );
+}
+```
+点击 a 按钮不会触发 watch，点击 b 按钮会触发 watch 并输出 sum。
+
+## 在 computed 中使用
+
+```tsx filename="ComputedUntrack.jsx"
+import { untrack } from 'openinula';
+
+function ComputedUntrack() {
+  let count = 0;
+  // 只依赖 count，不依赖 Date.now()
+  const message = `当前计数：${count}，时间：${untrack(() => Date.now())}`;
+
+  return <div>{message}</div>;
+}
+```
+
+## 在 watch 中使用
+
+```tsx filename="WatchUntrack.jsx"
+import { untrack } from 'openinula';
+
+function WatchUntrack() {
+  let count = 0;
+  let lastTime = 0;
+
+  watch(() => {
+    // 只在 count 变化时触发
+    lastTime = untrack(() => Date.now());
+  });
+
+  return (
+    <div>
+      <button onClick={() => count++}>增加</button>
+      <p>上次更新时间：{lastTime}</p>
+    </div>
+  );
+}
+```
+
+## 在响应式系统的其他场景
+
+- **避免副作用循环**：在副作用函数中读取但不追踪依赖，防止死循环。
+- **只读快照**：在复杂计算或日志记录时，获取当前值但不建立响应式关系。
+
+## 最佳实践
+
+- 仅在确实不希望建立响应式依赖时使用 `untrack`。
+- 用于性能优化、避免不必要的副作用触发。
+- 保持代码可读性，避免滥用。
+
+## 注意事项
+
+- `untrack` 只影响其回调函数内部的依赖收集。
+- 不要在 `untrack` 内部修改响应式状态，只做只读访问。
+- 滥用 `untrack` 可能导致响应式失效，需谨慎使用。
+
+## 相关链接
+
+- [计算值（computed）](./computed.mdx)
+- [监听系统（watch）](./watch)
+- [状态管理](./state.mdx)

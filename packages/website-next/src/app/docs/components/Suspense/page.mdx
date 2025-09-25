@@ -1,0 +1,54 @@
+---
+id: Suspense
+title: Suspense & lazy
+sidebar_label: Suspense & lazy
+---
+
+# Suspense & lazy
+
+`Suspense` 组件用于包裹异步组件（如 `lazy` 加载），在异步加载期间渲染 fallback。`lazy` 用于声明异步加载的组件。
+
+## 典型用法
+
+```tsx filename="SuspenseExample.jsx"
+const LazyComponent = lazy(() => import('./Comp'));
+
+<Suspense fallback={<div>loading...</div>}>
+  <LazyComponent />
+</Suspense>
+```
+
+- fallback 在异步加载期间显示，加载完成后自动切换为真实内容。
+- 支持多个 lazy 组件、嵌套 Suspense。
+
+## 嵌套与多组件
+
+```tsx filename="NestedSuspense.jsx"
+<Suspense fallback={<div>outer loading...</div>}>
+  <LazyOuter />
+  <Suspense fallback={<div>inner loading...</div>}>
+    <LazyInner />
+  </Suspense>
+</Suspense>
+```
+- 外层和内层 Suspense 可分别控制不同异步内容的 loading 状态。
+
+## 错误处理
+
+- 异步加载失败时可结合 ErrorBoundary 捕获错误。
+- lazy 组件必须返回 Promise，resolve 时需有 default 导出。
+
+## 注意事项
+
+- Suspense 只对 lazy 组件生效。
+- fallback 必须为有效的 React 元素。
+- 支持多层嵌套，内层优先显示 fallback。
+
+## 最佳实践
+
+- 推荐为每个异步区域单独设置 Suspense，提升用户体验。
+- fallback UI 应简洁明了。
+
+## 相关链接
+
+- [React Suspense](https://react.dev/reference/react/Suspense) 

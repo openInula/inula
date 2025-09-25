@@ -1,0 +1,114 @@
+---
+id: watch
+title: 监听系统
+sidebar_label: 监听系统
+---
+
+# 监听系统（watch）
+
+openInula 2（zouyu）提供了 `watch` 方法，用于监听状态或计算值的变化，并在变化时执行副作用逻辑。
+
+## 基本用法
+
+```tsx filename="FetchData.jsx"
+function FetchData({ url }) {
+  let data = null;
+
+  watch(() => {
+    fetch(url)
+      .then(res => res.json())
+      .then(_data => {
+        data = _data;
+      });
+  });
+
+  return (
+    <div>
+      <if cond={data}>
+        <pre>{JSON.stringify(data, null, 2)}</pre>
+      </if>
+      <else>
+        <p>加载中...</p>
+      </else>
+    </div>
+  );
+}
+```
+
+## 依赖追踪
+
+`watch` 会自动追踪其回调中用到的所有状态和计算值，只要依赖发生变化，回调就会重新执行。
+
+```tsx filename="Logger.jsx"
+function Logger() {
+  let count = 0;
+  watch(() => {
+    console.log('count 变化为：', count);
+  });
+
+  return <button onClick={() => count++}>增加</button>;
+}
+```
+
+## 清理副作用
+
+可以在 `watch` 回调中返回一个清理函数，用于移除定时器、事件监听等副作用：
+
+```tsx filename="Timer.jsx"
+function Timer() {
+  let time = Date.now();
+
+  watch(() => {
+    const timer = setInterval(() => {
+      time = Date.now();
+    }, 1000);
+    // 返回清理函数
+    return () => clearInterval(timer);
+  });
+
+  return <div>当前时间：{new Date(time).toLocaleTimeString()}</div>;
+}
+```
+
+## 多个 watch
+
+可以在同一个组件中使用多个 `watch`，分别监听不同的状态：
+
+```tsx filename="MultiWatch.jsx"
+function MultiWatch() {
+  let a = 1;
+  let b = 2;
+
+  watch(() => {
+    console.log('a 变化：', a);
+  });
+  watch(() => {
+    console.log('b 变化：', b);
+  });
+
+  return (
+    <div>
+      <button onClick={() => a++}>a++</button>
+      <button onClick={() => b++}>b++</button>
+    </div>
+  );
+}
+```
+
+## 最佳实践
+
+- 只在需要副作用（如数据请求、日志、定时器等）时使用 `watch`
+- 避免在 `watch` 中直接修改依赖自身的状态，防止死循环
+- 善用清理函数，避免内存泄漏
+
+## 注意事项
+
+- `watch` 回调应为同步函数，避免直接返回 Promise
+- 清理函数只在依赖变化或组件卸载时调用
+- 不要在 `watch` 外部直接调用副作用逻辑
+
+## 下一步
+
+- 学习[状态管理](./state.mdx)的更多用法
+- 了解[计算值](./computed.mdx)的高级技巧
+- 探索[生命周期](../lifecycle/mounting)的管理 

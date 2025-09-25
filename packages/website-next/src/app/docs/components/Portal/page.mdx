@@ -1,0 +1,64 @@
+---
+id: Portal
+title: Portal
+sidebar_label: Portal
+---
+
+# Portal
+
+`Portal` 组件用于将子节点渲染到指定的 DOM 容器外部，常用于模态框、弹窗等场景。
+
+## 典型用法
+
+```tsx filename="PortalExample.jsx"
+const portalRoot = document.getElementById('portal-root');
+<Portal target={portalRoot}>
+  <div>Portal Content</div>
+</Portal>
+```
+- target 必须为有效的 DOM 元素。
+- 组件卸载时自动移除内容。
+
+## 多 Portal 与嵌套 Portal
+
+- 支持多个 Portal 指向同一目标：
+
+```tsx filename="MultiPortal.jsx"
+<Portal target={portalRoot}>First Content</Portal>
+<Portal target={portalRoot}>Second Content</Portal>
+```
+- 支持嵌套 Portal：
+
+```tsx filename="NestedPortal.jsx"
+<Portal target={portalRoot}>
+  <div>Outer Content</div>
+  <Portal target={nestedTarget}>
+    <div>Inner Content</div>
+  </Portal>
+</Portal>
+```
+
+## 事件处理
+
+- Portal 内的事件（如 onClick）可正常冒泡和处理。
+
+```tsx filename="PortalEvent.jsx"
+<Portal target={portalRoot}>
+  <button onClick={handleClick}>Click Me</button>
+</Portal>
+```
+
+## 注意事项
+
+- target 必须为已挂载的 DOM 元素。
+- 组件卸载时内容会自动清理。
+- 支持内容和事件的动态更新。
+
+## 最佳实践
+
+- 用于模态框、弹窗、全局提示等需要脱离父 DOM 层级的场景。
+- 建议统一管理 portal 容器节点。
+
+## 相关链接
+
+- [React Portal](https://react.dev/reference/react-dom/createPortal) 
