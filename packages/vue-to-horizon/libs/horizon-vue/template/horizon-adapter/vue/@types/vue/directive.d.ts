@@ -3,7 +3,7 @@ import { ComponentType } from '@cloudsop/horizon';
  * Vue写法：<div v-click-outside:foo.bar="closePopup" v-focus class="popup">
  * Horizon写法：
  * <DirectiveComponent
- *   ctype={'div'}
+ *   componentName={'div'}
  *   directives={[
  *     {
  *       name: 'click-outside',
@@ -28,7 +28,7 @@ interface DirectiveBinding {
     arg?: string;
     modifiers?: Record<string, boolean>;
 }
-interface Directive {
+export interface Directive {
     bind?: (el: HTMLElement, binding: DirectiveBinding) => void;
     inserted?: (el: HTMLElement, binding: DirectiveBinding) => void;
     update?: (el: HTMLElement, binding: DirectiveBinding) => void;
@@ -37,6 +37,7 @@ interface Directive {
     beforeMount?: (el: HTMLElement, binding: DirectiveBinding) => void;
     mounted?: (el: HTMLElement, binding: DirectiveBinding) => void;
     updated?: (el: HTMLElement, binding: DirectiveBinding) => void;
+    beforeUnmount?: (el: HTMLElement, binding: DirectiveBinding) => void;
     unmounted?: (el: HTMLElement, binding: DirectiveBinding) => void;
 }
 interface DirectiveComponentProps {
@@ -61,4 +62,7 @@ export declare function DirectiveComponent(props: DirectiveComponentProps): {
     ref: any;
     props: any;
 };
+export declare namespace DirectiveComponent {
+    var __internal_comp_tag: string;
+}
 export {};

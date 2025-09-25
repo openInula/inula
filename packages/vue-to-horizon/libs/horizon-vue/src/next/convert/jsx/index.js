@@ -29,6 +29,7 @@ import { handleModelDirective } from './handlers/directives/modelDirective.js';
 import { handleIfDirective } from './handlers/directives/ifDirective.js';
 import { handleForDirective } from './handlers/directives/forDirective.js';
 import { handleSlotTag } from './handlers/slotTagHandler.js';
+import { handleInputAdapter  } from './handlers/inputAdapterHandler.js';
 
 export default function convertTemplate(template, reactCovert, component = {}) {
   const sourceCodeContext = reactCovert.sourceCodeContext;
@@ -198,7 +199,7 @@ export default function convertTemplate(template, reactCovert, component = {}) {
             handleBindDirective(path, node.name.name.name, node.value);
             // hard code
             if (node.name.name.name === 'className') {
-              reactCovert.sourceCodeContext.addExtrasImport('classnames', 'classnames', true);
+              reactCovert.sourceCodeContext.addExtrasImport('classnames', 'adapters/util');
             }
           }
         }
@@ -308,7 +309,7 @@ export default function convertTemplate(template, reactCovert, component = {}) {
         }
         // TODO  name.nameSpace;
         if (name && name.startsWith('v-')) {
-          handleCustomDirective(path, node.name.name, node.value, sourceCodeContext);
+          handleCustomDirective(path, node.name.name, node.value, reactCovert);
         }
       },
     });
@@ -419,6 +420,9 @@ export default function convertTemplate(template, reactCovert, component = {}) {
         }
       },
     });
+
+    // input组件的value如果绑定reactive变量，会导致中间输入后光标移动到末尾
+    handleInputAdapter(templateAst, reactCovert);
 
     // 处理<slot>标签
     handleSlotTag(templateAst, reactCovert);

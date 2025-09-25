@@ -103,13 +103,10 @@ export function handleModelDirective(path, value, reactCovert) {
         valueName = 'files';
       }
     }
-    // 查找是否存在现有的 value 属性
-    const existingValueAttr = parentNode.attributes.find(attr => getAttributeNodeName(attr) === 'value');
-
     // 构造 onChange 事件中的赋值表达式：$event.target.value 或 $event.target.checked
     expression = t.memberExpression(
       t.memberExpression(t.identifier(EVENT_PARAM_NAME), t.identifier('target')),
-      t.identifier((isRadio && !existingValueAttr) || isCheckbox ? 'checked' : valueName)
+      t.identifier( isCheckbox ? 'checked' : valueName)
     );
   } else if (parentNode.name.name === 'select') {
     valueName = 'value';

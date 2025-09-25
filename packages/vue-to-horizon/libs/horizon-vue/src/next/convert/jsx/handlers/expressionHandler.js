@@ -22,7 +22,7 @@ import { INSTANCE } from '../consts.js'
  * @param {*} path
  */
 export function handlerThisExpression(path, reactCovert) {
-  if (isThisNode(path.node.object)) {
+  if (isThisNode(path.node.object, path)) {
     // 将 this.xxx 替换为一个不含 this 的标识符 xxx
     let name = getThisProperty(path.node);
     if (name === '') {
@@ -30,7 +30,7 @@ export function handlerThisExpression(path, reactCovert) {
       return;
     }
 
-    let replaceNode = createNodeByVueVariable(name, reactCovert);
+    let replaceNode = createNodeByVueVariable(name, reactCovert, path);
     if (replaceNode) {
       path.replaceWith(replaceNode);
     } else {
@@ -64,24 +64,103 @@ export function getThisProperty(node) {
   return name;
 }
 
-export const THIS_ALIASES = ['_this', 'this_', '$this', 'this$', 'self', '_self', 'self_', 'that', '_that', 'that', '_serf'];
+export const THIS_ALIASES = ['_this', 'this_', '$this', 'this$', 'self', '_self', 'self_', 'that', '_that', 'that', '_serf', 'seft'];
 
 /**
  * 检查给定的节点是否表示 this 或其别名（如 self, _that）
  * @param {Object} node - Babel 的 AST 节点
+ * @param path
  * @returns {boolean} - 如果节点表示 this 或其别名则返回 true，否则返回 false
  */
-export function isThisNode(node) {
+export function isThisNode(node, path) {
   // 检查 this
   if (t.isThisExpression(node)) {
     return true;
   }
 
   // 检查 this 的别名（如 self, _that）
-  if (t.isIdentifier(node)) {
-    return THIS_ALIASES.includes(node.name);
+  if (!t.isIdentifier(node) || !THIS_ALIASES.includes(node.name)) {
+    return false;
   }
 
+  // 查找该变量的声明节点（定义处）
+  const binding = path.scope.getBinding(node.name);
+  if (!binding) {
+    return false;
+  }
+
+  // 检查该绑定的值是否来自 `this`
+  const declaration = binding.path.node;
+  if (!t.isVariableDeclarator(declaration)) {
+    return false;
+  }
+
+  const init = declaration.init;
+  if (!init) {
+    return false;
+  }
+
+  // 判断初始化是否綁定的 `this` 表达式
+  if (t.isThisExpression(init) || init.name === 'instance') {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * 查找当前node是否在reactive里面使用的
+ *
+ * 用于处理reactive里面调用reactive的参数的场景
+ * 示例转换:
+ * const dataReactive = reactive({
+ *   subId: [],
+ *   obj: {
+ *     taskId: this.subId
+ *   }
+ * });
+ * 转换后：
+ * const dataReactive = reactive({
+ *   subId: [],
+ *   obj: {
+ *     taskId: undefined
+ *   }
+ * });
+ * @returns {boolean} - 如果节点在reactive里面被调用，返回true,否则返回false
+ */
+function isThisInReactiveScope(path) {
+  if (!path) {
+    return false;
+  }
+
+  let currentPath = path.parentPath;
+  let depth = 0;
+  const MAX_DEPTH = 10; // 最多向上遍历 10 层
+
+  while (currentPath && depth < MAX_DEPTH) {
+    const node = currentPath.node;
+
+    // 1. 遇到函数体节点，立即停止遍历
+    if (
+      node.type === 'ArrowFunctionExpression' ||
+      node.type === 'FunctionDeclaration' ||
+      node.type === 'FunctionExpression' ||
+      node.type === 'ClassMethod'
+    ) {
+      return false;
+    }
+
+    // 遇到 CallExpression 且其 callee 是 'reactive'，返回true
+    if (node.type === 'CallExpression' && node.callee?.name === 'reactive') {
+      return true;
+    }
+
+    // 移动到下一个祖先节点
+    currentPath = currentPath.parentPath;
+    depth++;
+  }
+
+  // 遍历了指定层数或者到达了根节点都没有找到
   return false;
 }
 
@@ -97,7 +176,7 @@ export function isThisNode(node) {
  * 5. store: this.$store -> useStore()
  * 6. instance: this.$parent -> instance.$parent
  */
-export function createNodeByVueVariable(name, reactCovert) {
+export function createNodeByVueVariable(name, reactCovert, path) {
   // 处理 props
   if (reactCovert.sourceCodeContext.findKeyInProps(name)) {
     return t.memberExpression(t.identifier(reactCovert.sourceCodeContext.propsName), t.identifier(name));
@@ -112,7 +191,8 @@ export function createNodeByVueVariable(name, reactCovert) {
   }
   // 处理 reactive
   else if (reactCovert.sourceCodeContext.findKeyInReactive(name)) {
-    return t.memberExpression(t.identifier(reactCovert.sourceCodeContext.reactive[name]), t.identifier(name));
+    const isInReactive = isThisInReactiveScope(path);
+    return isInReactive ? t.identifier('undefined') : t.memberExpression(t.identifier(reactCovert.sourceCodeContext.reactive[name]), t.identifier(name));
   }
   // 处理全局属性
   else if (reactCovert.sourceCodeContext.findKeyInGlobalProperties(name)) {
@@ -168,7 +248,7 @@ export function createNodeByVueVariable(name, reactCovert) {
 export function memberExpressionValueReplaceHandler(expression, reactCovert, path) {
   const processNode = (node) => {
     if (t.isMemberExpression(node) || t.isOptionalMemberExpression(node)) {
-      if (isThisNode(node.object)) {
+      if (isThisNode(node.object, path)) {
         const name = getThisProperty(node);
         if (name === '') {
           return node.property;
@@ -177,7 +257,7 @@ export function memberExpressionValueReplaceHandler(expression, reactCovert, pat
         // {{this.xxx}} ==> {{dataReactive.xxx}}
         return createNodeByVueVariable(name, reactCovert);
       }
-      if (node.computed && (t.isIdentifier(node.property) || t.isBinaryExpression(node.property))) {
+      if (node.computed && (t.isIdentifier(node.property) || t.isBinaryExpression(node.property)) || t.isMemberExpression(node.property)) {
         node.property = processNode(node.property);
       }
       // 递归处理对象和属性

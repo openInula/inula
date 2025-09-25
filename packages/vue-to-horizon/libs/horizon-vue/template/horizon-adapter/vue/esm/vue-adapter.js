@@ -1,4 +1,4 @@
-import Horizon, { useRef, useEffect, useLayoutEffect, vueReactive, createContext, render, unmountComponentAtNode, useContext, lazy, Suspense, useMemo, useCallback, createElement, Children, isValidElement, useState } from '@cloudsop/horizon';
+import Horizon, { useRef, useEffect, useLayoutEffect, vueReactive, createContext, unmountComponentAtNode, useContext, lazy, Suspense, useMemo, useCallback, createElement, Children, isValidElement, useState, Fragment as Fragment$1, createPortal, forwardRef } from '@cloudsop/horizon';
 import { jsx, Fragment, jsxs } from '@cloudsop/horizon/jsx-runtime';
 
 /*
@@ -16,7 +16,7 @@ import { jsx, Fragment, jsxs } from '@cloudsop/horizon/jsx-runtime';
  * See the Mulan PSL v2 for more details.
  */
 // 用于存储组件是否已挂载的状态
-var useIsMounted = function () {
+var useIsMounted = function useIsMounted() {
   var isMounted = useRef(false);
   useEffect(function () {
     isMounted.current = true;
@@ -26,55 +26,81 @@ var useIsMounted = function () {
   }, []);
   return isMounted.current;
 };
-var onBeforeMount = function (fn) {
+var onBeforeMount = function onBeforeMount(fn) {
   var isMounted = useIsMounted();
   if (!isMounted) {
-    fn === null || fn === void 0 ? void 0 : fn();
+    fn === null || fn === void 0 || fn();
   }
 };
 function onMounted(fn) {
   useEffect(function () {
-    fn === null || fn === void 0 ? void 0 : fn();
+    fn === null || fn === void 0 || fn();
   }, []);
 }
 function onBeforeUpdate(fn) {
   useEffect(function () {
-    fn === null || fn === void 0 ? void 0 : fn();
+    fn === null || fn === void 0 || fn();
   });
 }
 function onUpdated(fn) {
   useEffect(function () {
-    fn === null || fn === void 0 ? void 0 : fn();
+    fn === null || fn === void 0 || fn();
   });
 }
-var onBeforeUnmount = function (fn) {
+var onBeforeUnmount = function onBeforeUnmount(fn) {
   useLayoutEffect(function () {
     return function () {
-      fn === null || fn === void 0 ? void 0 : fn();
+      fn === null || fn === void 0 || fn();
     };
   }, []);
 };
 function onUnmounted(fn) {
   useEffect(function () {
     return function () {
-      fn === null || fn === void 0 ? void 0 : fn();
+      fn === null || fn === void 0 || fn();
     };
   }, []);
 }
 
-function _extends() {
-  _extends = Object.assign ? Object.assign.bind() : function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
-    }
-    return target;
-  };
-  return _extends.apply(this, arguments);
+function _typeof(o) {
+  "@babel/helpers - typeof";
+
+  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
+    return typeof o;
+  } : function (o) {
+    return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+  }, _typeof(o);
+}
+
+function toPrimitive(t, r) {
+  if ("object" != _typeof(t) || !t) return t;
+  var e = t[Symbol.toPrimitive];
+  if (void 0 !== e) {
+    var i = e.call(t, r || "default");
+    if ("object" != _typeof(i)) return i;
+    throw new TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return ("string" === r ? String : Number)(t);
+}
+
+function toPropertyKey(t) {
+  var i = toPrimitive(t, "string");
+  return "symbol" == _typeof(i) ? i : String(i);
+}
+
+function _defineProperty(obj, key, value) {
+  key = toPropertyKey(key);
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+  return obj;
 }
 
 function _objectWithoutPropertiesLoose(source, excluded) {
@@ -86,6 +112,22 @@ function _objectWithoutPropertiesLoose(source, excluded) {
     key = sourceKeys[i];
     if (excluded.indexOf(key) >= 0) continue;
     target[key] = source[key];
+  }
+  return target;
+}
+
+function _objectWithoutProperties(source, excluded) {
+  if (source == null) return {};
+  var target = _objectWithoutPropertiesLoose(source, excluded);
+  var key, i;
+  if (Object.getOwnPropertySymbols) {
+    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+    for (i = 0; i < sourceSymbolKeys.length; i++) {
+      key = sourceSymbolKeys[i];
+      if (excluded.indexOf(key) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+      target[key] = source[key];
+    }
   }
   return target;
 }
@@ -107,18 +149,18 @@ function _objectWithoutPropertiesLoose(source, excluded) {
 
 var vShowOriginalDisplay = Symbol('_v_show_original_display');
 var vShow = {
-  beforeMount: function (el, _ref) {
+  beforeMount: function beforeMount(el, _ref) {
     var value = _ref.value;
     el[vShowOriginalDisplay] = el.style.display === 'none' ? '' : el.style.display;
     setDisplay(el, value);
   },
-  updated: function (el, _ref2) {
+  updated: function updated(el, _ref2) {
     var value = _ref2.value,
       oldValue = _ref2.oldValue;
     if (!value === !oldValue) return;
     setDisplay(el, value);
   },
-  beforeUnmount: function (el, _ref3) {
+  beforeUnmount: function beforeUnmount(el, _ref3) {
     var value = _ref3.value;
     setDisplay(el, value);
   }
@@ -127,7 +169,9 @@ function setDisplay(el, value) {
   el.style.display = value ? el[vShowOriginalDisplay] : 'none';
 }
 
-var _excluded$3 = ["componentName"];
+var _excluded$5 = ["componentName"];
+function ownKeys$7(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$7(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$7(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$7(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 var useInstance$3 = vueReactive.useInstance;
 function createAppContext() {
   return {
@@ -167,7 +211,7 @@ function createApp(rootComponent) {
       return context.config;
     },
     set config(v) {},
-    use: function (plugin) {
+    use: function use(plugin) {
       for (var _len = arguments.length, options = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         options[_key - 1] = arguments[_key];
       }
@@ -180,32 +224,58 @@ function createApp(rootComponent) {
       }
       return app;
     },
-    mixin: function (mixin) {
+    mixin: function (_mixin) {
+      function mixin(_x) {
+        return _mixin.apply(this, arguments);
+      }
+      mixin.toString = function () {
+        return _mixin.toString();
+      };
+      return mixin;
+    }(function (mixin) {
       // 不支持
-      console.log('Horizon中暂时不支持mixin，请用Hook方式进行改造代码。');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Horizon中暂时不支持mixin，请用Hook方式进行改造代码。');
+      }
       return app;
-    },
-    component: function (name, component) {
+    }),
+    component: function (_component) {
+      function component(_x2, _x3) {
+        return _component.apply(this, arguments);
+      }
+      component.toString = function () {
+        return _component.toString();
+      };
+      return component;
+    }(function (name, component) {
       var ccName = kebabToCamelCase(name);
       if (!component) {
         return context.components[ccName];
       }
       context.components[ccName] = component;
       return app;
-    },
-    directive: function (name, directive) {
+    }),
+    directive: function (_directive) {
+      function directive(_x4, _x5) {
+        return _directive.apply(this, arguments);
+      }
+      directive.toString = function () {
+        return _directive.toString();
+      };
+      return directive;
+    }(function (name, directive) {
       if (!directive) {
         return context.directives[name];
       }
       context.directives[name] = directive;
       return app;
-    },
-    mount: function (rootContainer) {
+    }),
+    mount: function mount(rootContainer) {
       if (!isMounted) {
         if (typeof rootContainer === 'string') {
           rootContainer = document.querySelector(rootContainer);
         }
-        render(jsx(AppWrapper, {
+        Horizon.render(jsx(AppWrapper, {
           root: app.rootComponent,
           appContext: AppContext,
           value: app
@@ -214,19 +284,21 @@ function createApp(rootComponent) {
         app._container = rootContainer;
       }
     },
-    unmount: function () {
+    unmount: function unmount() {
       if (isMounted) {
         unmountComponentAtNode(app._container);
         delete app._container;
       }
     },
-    provide: function (key, value) {
+    provide: function provide(key, value) {
       context.provides[key] = value;
       return app;
     },
-    runWithContext: function (fn) {
+    runWithContext: function runWithContext(fn) {
       // 不支持
-      console.log('Horizon中暂时不支持runWithContext，请手动修改相关的代码。');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Horizon中暂时不支持runWithContext，请手动修改相关的代码。');
+      }
       return fn();
     }
   };
@@ -259,14 +331,14 @@ function kebabToCamelCase(str) {
 }
 function GlobalComponent(_ref) {
   var componentName = _ref.componentName,
-    otherProps = _objectWithoutPropertiesLoose(_ref, _excluded$3);
+    otherProps = _objectWithoutProperties(_ref, _excluded$5);
   var app = useContext(AppContext);
   componentName = kebabToCamelCase(componentName);
   var Comp = app._context.components[componentName];
   if (!Comp) {
-    throw new Error("Component " + componentName + " not found, please register it first.");
+    throw new Error("Component ".concat(componentName, " not found, please register it first."));
   }
-  return jsx(Comp, _extends({}, otherProps));
+  return jsx(Comp, _objectSpread$7({}, otherProps));
 }
 function registerDirective(name, directive) {
   var app = appMap.get(DEFAULT_APP_KEY);
@@ -281,7 +353,7 @@ function defineAsyncComponent(loader) {
   return function (props) {
     return jsx(Suspense, {
       fallback: null,
-      children: jsx(LazyComponent, _extends({}, props))
+      children: jsx(LazyComponent, _objectSpread$7({}, props))
     });
   };
 }
@@ -289,7 +361,7 @@ function emit(props, eventName) {
   var fn = props[eventName];
   if (typeof fn !== 'function' && typeof eventName === 'string' && !eventName.startsWith('on')) {
     var capitalizedEventName = eventName.charAt(0).toUpperCase() + eventName.slice(1);
-    var onEventName = "on" + capitalizedEventName;
+    var onEventName = "on".concat(capitalizedEventName);
     fn = props[onEventName];
   }
   if (typeof fn === 'function') {
@@ -298,7 +370,7 @@ function emit(props, eventName) {
     }
     fn.apply(void 0, args);
   } else {
-    console.warn("Attempted to emit event '" + String(eventName) + "' but no handler was defined.");
+    console.warn("Attempted to emit event '".concat(String(eventName), "' but no handler was defined."));
   }
 }
 function getCurrentInstance() {
@@ -316,8 +388,53 @@ function getCurrentInstance() {
     }
   };
 }
+function createVNode(component, props) {
+  return Horizon.createElement(component, props, props.children);
+}
+function render(vnode, target) {
+  Horizon.render(vnode, target);
+}
+function useWindowSize() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var _options$initialWidth = options.initialWidth,
+    initialWidth = _options$initialWidth === void 0 ? Number.POSITIVE_INFINITY : _options$initialWidth,
+    _options$initialHeigh = options.initialHeight,
+    initialHeight = _options$initialHeigh === void 0 ? Number.POSITIVE_INFINITY : _options$initialHeigh,
+    _options$listenOrient = options.listenOrientation,
+    listenOrientation = _options$listenOrient === void 0 ? true : _options$listenOrient,
+    _options$includeScrol = options.includeScrollbar,
+    includeScrollbar = _options$includeScrol === void 0 ? true : _options$includeScrol;
+  var width = vueReactive.useReference(initialWidth);
+  var height = vueReactive.useReference(initialHeight);
+  function update() {
+    if (window) {
+      if (includeScrollbar) {
+        width.value = window.innerWidth;
+        height.value = window.innerHeight;
+      } else {
+        width.value = window.document.documentElement.clientWidth;
+        height.value = window.document.documentElement.clientHeight;
+      }
+    }
+  }
+  update();
+  Horizon.useEffect(function () {
+    window.addEventListener('resize', update);
+    if (listenOrientation) window.addEventListener('orientationchange', update);
+    return function () {
+      window.removeEventListener('resize', update);
+      if (listenOrientation) window.removeEventListener('orientationchange', update);
+    };
+  });
+  return {
+    width: width.value,
+    height: height.value
+  };
+}
 
-var _excluded$2 = ["children", "componentName", "directives", "registerDirectives"];
+var _excluded$4 = ["children", "componentName", "directives", "registerDirectives"];
+function ownKeys$6(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$6(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$6(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$6(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 var useInstance$2 = vueReactive.useInstance;
 
 /**
@@ -349,7 +466,7 @@ function DirectiveComponent(props) {
     componentName = props.componentName,
     directives = props.directives,
     registerDirectives = props.registerDirectives,
-    rest = _objectWithoutPropertiesLoose(props, _excluded$2);
+    rest = _objectWithoutProperties(props, _excluded$4);
   var appDirectives = useDirectives();
   var instance = useInstance$2();
   useLayoutEffect(function () {
@@ -394,8 +511,9 @@ function DirectiveComponent(props) {
       }
     });
   }, []);
-  return createElement(componentName, _extends({}, rest), children);
+  return createElement(componentName, _objectSpread$6({}, rest), children);
 }
+DirectiveComponent.__internal_comp_tag = 'DirectiveComponent';
 
 /*
  * Copyright (c) 2024 Huawei Technologies Co.,Ltd.
@@ -411,7 +529,7 @@ function DirectiveComponent(props) {
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-var If = function (_ref) {
+var If = function If(_ref) {
   var children = _ref.children,
     condition = _ref.condition;
   return condition ? jsx(Fragment, {
@@ -419,13 +537,13 @@ var If = function (_ref) {
   }) : null;
 };
 var ElseIf = If;
-var Else = function (_ref2) {
+var Else = function Else(_ref2) {
   var children = _ref2.children;
   return jsx(Fragment, {
     children: children
   });
 };
-var ConditionalRenderer = function (_ref3) {
+var ConditionalRenderer = function ConditionalRenderer(_ref3) {
   var children = _ref3.children;
   var childrenArray = Children.toArray(children);
   var renderedChild = childrenArray.find(function (child) {
@@ -444,7 +562,9 @@ var ConditionalRenderer = function (_ref3) {
   }) : null;
 };
 
-var _excluded$1 = ["is", "components"];
+var _excluded$3 = ["is", "components"];
+function ownKeys$5(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$5(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$5(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$5(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 /**
  * 对标Vue的动态组件，如：<component :is="Math.random() > 0.5 ? Foo : Bar" />
  * @param is
@@ -455,7 +575,7 @@ var _excluded$1 = ["is", "components"];
 function DynamicComponent(_ref) {
   var is = _ref.is,
     components = _ref.components,
-    componentProps = _objectWithoutPropertiesLoose(_ref, _excluded$1);
+    componentProps = _objectWithoutProperties(_ref, _excluded$3);
   if (is === '') {
     return null;
   }
@@ -477,7 +597,7 @@ function DynamicComponent(_ref) {
   if (!Component) {
     Component = is;
   }
-  return jsx(Component, _extends({}, componentProps));
+  return jsx(Component, _objectSpread$5({}, componentProps));
 }
 
 // 把vue风格的组件命名转换为react风格的组件命名，如：my-component => MyComponent
@@ -492,7 +612,65 @@ function toPascalCase(name) {
     return word.charAt(0).toUpperCase() + word.slice(1);
   }).join('');
 }
+DynamicComponent.__internal_comp_tag = 'DynamicComponent';
 
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+
+function _iterableToArrayLimit(r, l) {
+  var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
+  if (null != t) {
+    var e,
+      n,
+      i,
+      u,
+      a = [],
+      f = !0,
+      o = !1;
+    try {
+      if (i = (t = t.call(r)).next, 0 === l) {
+        if (Object(t) !== t) return;
+        f = !1;
+      } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0);
+    } catch (r) {
+      o = !0, n = r;
+    } finally {
+      try {
+        if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
+      } finally {
+        if (o) throw n;
+      }
+    }
+    return a;
+  }
+}
+
+function _arrayLikeToArray$1(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+  return arr2;
+}
+
+function _unsupportedIterableToArray$1(o, minLen) {
+  if (!o) return;
+  if (typeof o === "string") return _arrayLikeToArray$1(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor) n = o.constructor.name;
+  if (n === "Map" || n === "Set") return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen);
+}
+
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+
+function _slicedToArray(arr, i) {
+  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray$1(arr, i) || _nonIterableRest();
+}
+
+function ownKeys$4(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$4(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$4(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$4(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 var useInstance$1 = vueReactive.useInstance;
 /**
  * Custom Hook to simulate Vue's fallthrough attributes functionality
@@ -502,7 +680,7 @@ var useInstance$1 = vueReactive.useInstance;
  */
 function useAttrs(props) {
   var excludeList = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-  var attrs = _extends({}, props);
+  var attrs = _objectSpread$4({}, props);
   excludeList.forEach(function (key) {
     return delete attrs[key];
   });
@@ -520,8 +698,9 @@ function useSlots(props) {
 
   // Extract template slots from props
   Object.entries(props).forEach(function (_ref) {
-    var key = _ref[0],
-      value = _ref[1];
+    var _ref2 = _slicedToArray(_ref, 2),
+      key = _ref2[0],
+      value = _ref2[1];
     if (key.startsWith('template_')) {
       var slotName = key.replace('template_', '');
       slots[slotName] = value;
@@ -538,7 +717,7 @@ function defineExpose(exposed) {
   var instance = useInstance$1();
   if (instance) {
     // 检查 exposed 是否是一个对象
-    if (typeof exposed === 'object' && exposed !== null) {
+    if (_typeof(exposed) === 'object' && exposed !== null) {
       // 遍历 exposed 对象的所有属性
       Object.keys(exposed).forEach(function (key) {
         // 将每个属性赋值给 instance
@@ -561,6 +740,24 @@ function defineEmits(emits, props) {
   };
 }
 
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) return _arrayLikeToArray$1(arr);
+}
+
+function _iterableToArray(iter) {
+  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+}
+
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+
+function _toConsumableArray(arr) {
+  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray$1(arr) || _nonIterableSpread();
+}
+
+function ownKeys$3(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$3(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$3(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$3(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 /*
  * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
  *
@@ -584,10 +781,11 @@ function defineEmits(emits, props) {
  */
 function setToInstance(instance, items) {
   // 如果是对象类型，直接遍历对象的键值对
-  if (items && typeof items === 'object' && !Array.isArray(items)) {
+  if (items && _typeof(items) === 'object' && !Array.isArray(items)) {
     Object.entries(items).forEach(function (_ref) {
-      var key = _ref[0],
-        value = _ref[1];
+      var _ref2 = _slicedToArray(_ref, 2),
+        key = _ref2[0],
+        value = _ref2[1];
       if (key) {
         instance[key] = value;
       } else {
@@ -602,8 +800,9 @@ function setToInstance(instance, items) {
     items.forEach(function (item) {
       // 处理数组类型的 [key, value] 键值对
       if (Array.isArray(item)) {
-        var key = item[0],
-          value = item[1];
+        var _item = _slicedToArray(item, 2),
+          key = _item[0],
+          value = _item[1];
         if (key) {
           instance[key] = value;
         } else {
@@ -639,26 +838,27 @@ function styles() {
   }
   // 主处理逻辑：处理所有参数并合并结果
   return args.reduce(function (acc, arg) {
-    return _extends({}, acc, processArg(arg));
+    return _objectSpread$3(_objectSpread$3({}, acc), _processArg(arg));
   }, {});
 }
 
 // 辅助函数：将破折号式命名转换为驼峰式命名
-var toCamelCase = function (str) {
+var toCamelCase = function toCamelCase(str) {
   return str.replace(/-([a-z])/g, function (g) {
     return g[1].toUpperCase();
   });
 };
 
 // 辅助函数：处理单个样式字符串
-var processStyleString = function (styleString) {
+var processStyleString = function processStyleString(styleString) {
   var result = {};
   styleString.split(';').forEach(function (item) {
     var _item$split$map = item.split(':').map(function (part) {
         return part.trim();
       }),
-      key = _item$split$map[0],
-      value = _item$split$map[1];
+      _item$split$map2 = _slicedToArray(_item$split$map, 2),
+      key = _item$split$map2[0],
+      value = _item$split$map2[1];
     if (key && value) {
       result[toCamelCase(key)] = value;
     }
@@ -667,7 +867,7 @@ var processStyleString = function (styleString) {
 };
 
 // 辅助函数：处理样式对象
-var processStyleObject = function (styleObject) {
+var processStyleObject = function processStyleObject(styleObject) {
   var result = {};
   for (var key in styleObject) {
     var camelKey = toCamelCase(key);
@@ -676,7 +876,7 @@ var processStyleObject = function (styleObject) {
     if (typeof value === 'number' && !isNaN(value)) {
       // 某些属性不需要单位，如 zIndex, opacity 等
       if (!['zIndex', 'opacity', 'fontWeight'].includes(camelKey)) {
-        value = value + "px";
+        value = "".concat(value, "px");
       }
     }
     result[camelKey] = value;
@@ -685,48 +885,154 @@ var processStyleObject = function (styleObject) {
 };
 
 // 处理单个参数
-var processArg = function (arg) {
+var _processArg = function processArg(arg) {
   if (typeof arg === 'string') {
     return processStyleString(arg);
   } else if (Array.isArray(arg)) {
     return arg.reduce(function (acc, item) {
-      return _extends({}, acc, processArg(item));
+      return _objectSpread$3(_objectSpread$3({}, acc), _processArg(item));
     }, {});
-  } else if (typeof arg === 'object' && arg !== null) {
+  } else if (_typeof(arg) === 'object' && arg !== null) {
     return processStyleObject(arg);
   } else {
     return {}; // 处理无效输入
   }
 };
 
+/*
+ * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
+ *
+ * openInula is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
+/**
+ * 兼容IE浏览器没有Object.is
+ */
+function isSame(x, y) {
+  if (!(typeof Object.is === 'function')) {
+    if (x === y) {
+      // +0 != -0
+      return x !== 0 || 1 / x === 1 / y;
+    } else {
+      // NaN == NaN
+      return x !== x && y !== y;
+    }
+  } else {
+    return Object.is(x, y);
+  }
+}
+function shallowCompare(paramX, paramY) {
+  if (isSame(paramX, paramY)) {
+    return true;
+  }
+
+  // 对比对象
+  if (_typeof(paramX) === 'object' && _typeof(paramY) === 'object' && paramX !== null && paramY !== null) {
+    var keysX = Object.keys(paramX);
+    var keysY = Object.keys(paramY);
+
+    // key长度不相等时直接返回不相等
+    if (keysX.length !== keysY.length) {
+      return false;
+    }
+    return keysX.every(function (key, i) {
+      return Object.prototype.hasOwnProperty.call(paramY, key) && isSame(paramX[key], paramY[keysX[i]]);
+    });
+  }
+  return false;
+}
+
 var useInstance = vueReactive.useInstance;
 
 /**
- * 判断是否应该跳过为元素设置属性
- * 通过遍历虚拟节点树来确定是否需要跳过属性设置
+ * 从当前节点开始，沿着节点树往下找第一个tag === 'DomComponent'的vNode，
+ * 中途一旦遇到某个节点的next不为空，则返回null
+ *
+ * 例如 中途遇到如下节点，则返回null
+ *    <>
+        <Child>
+          child
+        </Child>
+        <div>
+          child2
+        </div>
+      </>
+ * 例如 最底层节点内容如下，也返回null
+ *    <>
+        <div>
+          grandchild
+        </div>
+        <div>
+          grandchild2
+        </div>
+      </>
+  * 例如 找到最底层节点内容如下，返回xxxx对应的vNode
+  *    <>
+        <div id={'xxxx'}>
+          grandchild
+          <div>
+          grandchild2
+          </div>
+        </div>
+      </>
+ * @param vNode - 虚拟节点
+ * @returns 找到的第一个没有兄弟节点的DomComponent，如果找到最底层或者中途遇到有兄弟节点的vNode，则返回null
+ */
+function getFirstSingleDomVnode(vnode) {
+  var node = vnode;
+  while (node.child) {
+    // 遇到了有兄弟节点的child，则返回null
+    if (node.child.next) {
+      return null;
+    }
+
+    // 找到了DomComponent，则把它返回
+    if (node.child.tag === 'DomComponent') {
+      return node.child;
+    }
+    node = node.child;
+  }
+  return null;
+}
+
+/**
+ * 判断是否应该跳过为元素设置class、style、hash、id属性
+ *
+ * 通过调用getFirstSingleDomVnode，找最底层的vNode，如果能找不到或者中途遇到next不为空的节点，
+ * 则getFirstSingleDomVnode结果为null，
+ * 则说明当前节点props中的属性不应该在下层dom上生效
+ *
  * @param vNode - 虚拟节点
  * @returns 如果应该跳过则返回 true，否则返回 false
  */
 function shouldSkipSetAttrToEl(vNode) {
-  var node = vNode;
-  while (node.child) {
-    if (node.child.next) {
-      return true;
-    }
-    if (node.child.tag === 'DomComponent') {
-      break;
-    }
-    node = node.child;
-  }
-  return false;
+  return getFirstSingleDomVnode(vNode) === null;
 }
 function useScoped() {
+  var propsOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var instance = useInstance();
   var preClass = useRef(instance.$props.className);
 
+  // 这里是为了监听最底层vDomNode自身的style发生变化时，执行style的合并逻辑
+  // 场景举例：vDomNode为：<div style={{width: width + 'px'}} />，其中width是组件状态且会更新
+  var vDomNode = getFirstSingleDomVnode(instance === null || instance === void 0 ? void 0 : instance.$vnode);
+
+  // 由于vDomNode的style，每次在组件刷新时，都会创建新对象，所以useEffect监听函数每次都会刷新，
+  // 这里通过ref保持上次刷新后的style，然后手动比较style是否变化，再决定是否走更新逻辑
+  var preNodeStyle = useRef(null);
+
   // 处理 className
   useEffect(function () {
-    if (shouldSkipSetAttrToEl(instance.$vnode)) {
+    if (shouldSkipSetAttrToEl(instance.$vnode) || propsOptions !== null && propsOptions !== void 0 && propsOptions.className) {
       return;
     }
     var el = instance.$el;
@@ -742,29 +1048,86 @@ function useScoped() {
       el.className = el.className.replace(preClass.current, currentClassName).trim();
     } else if (currentClassName) {
       // 如果有新的类名要添加，且没有找到之前的类名，则追加
-      el.className = el.className ? (el.className + " " + currentClassName).trim() : currentClassName;
+      el.className = el.className ? "".concat(el.className, " ").concat(currentClassName).trim() : currentClassName;
     }
 
     // 更新引用的类名
     preClass.current = currentClassName;
   }, [instance.$props.className]);
 
-  // 处理 style
+  // 处理 id
   useEffect(function () {
     if (shouldSkipSetAttrToEl(instance.$vnode)) {
       return;
     }
     var el = instance.$el;
-    if (instance.$props.style) {
-      var styleToApply = styles(el.style.cssText, instance.$props.style);
+    // 若子组件没有解析id，且父组件的container没有设置id,则父组件传了id属性会强制赋给子组件第一个子节点DOM
+    if ((propsOptions === null || propsOptions === void 0 ? void 0 : propsOptions.id) === undefined && !el.id && instance.$props.id) {
+      el.id = instance.$props.id;
+    }
+  }, [instance.$props.id]);
+
+  // 合并生成style，并应用到el上
+  // 对于Parent=>Child=>GrandChild组合关系，优先级始终保持Parent>Child>GrandChid
+  // 所以，这里从vDomNode开始找，找到路径上的Parent，Child，GrandChid对应vNode，并取出props中的style进行合并
+  var mergeStyle = useCallback(function () {
+    var el = instance.$el;
+    var currentVDomNode = getFirstSingleDomVnode(instance === null || instance === void 0 ? void 0 : instance.$vnode);
+    if (currentVDomNode) {
+      var _parentVNode$props;
+      // currentVDomNode优先级最低，先入队
+      var treePath = [currentVDomNode];
+
+      // 从currentVDomNode开始往上找，直到找到有兄弟节点的vNode或者DomComponent类型的vNode
+      var parentVNode = currentVDomNode.parent;
+      while (parentVNode && !parentVNode.next && parentVNode.tag !== 'DomComponent') {
+        treePath.push(parentVNode);
+        parentVNode = parentVNode.parent;
+      }
+      // 退出循环的parentVNode，其有兄弟节点，但其自身style是需要合并的
+      // 这里不需要合并DomComponent类型的vNode
+      if (parentVNode && parentVNode.tag !== 'DomComponent' && (_parentVNode$props = parentVNode.props) !== null && _parentVNode$props !== void 0 && _parentVNode$props.style) {
+        treePath.push(parentVNode);
+      }
+
+      // 取出路径上的style列表
+      var styleList = treePath.map(function (node) {
+        var _node$props;
+        return ((_node$props = node.props) === null || _node$props === void 0 ? void 0 : _node$props.style) || {};
+      });
+      var styleToApply = styles.apply(void 0, _toConsumableArray(styleList));
+
+      // 应用style到el上
       Object.entries(styleToApply).forEach(function (_ref) {
-        var key = _ref[0],
-          value = _ref[1];
+        var _ref2 = _slicedToArray(_ref, 2),
+          key = _ref2[0],
+          value = _ref2[1];
         if (!key) return;
         el.style[key.trim()] = typeof value === 'string' ? value.trim() : value;
       });
     }
+  }, []);
+
+  // 处理 props的style
+  useEffect(function () {
+    if (shouldSkipSetAttrToEl(instance.$vnode) || propsOptions !== null && propsOptions !== void 0 && propsOptions.style) {
+      return;
+    }
+    mergeStyle();
   }, [instance.$props.style]);
+
+  // 处理 vNode的style
+  // 1、useEffect执行时，vDomNode的style。已经在el生效渲染成功，再执行刷新后，dom元素样式前后不一致，会抖动
+  //    所以这里用useLayoutEffect，在渲染之前，就把el的style刷新成合并后的style
+  // 2、由于vDomNode的style，每次在组件刷新时，都会创建新对象，所以useEffect监听函数每次都会刷新，
+  //    这里通过ref保持上次刷新后的style，然后手动比较style是否变化，再决定是否走更新逻辑
+  useLayoutEffect(function () {
+    if (shouldSkipSetAttrToEl(instance.$vnode) || shallowCompare(preNodeStyle.current, vDomNode === null || vDomNode === void 0 ? void 0 : vDomNode.props.style)) {
+      return;
+    }
+    preNodeStyle.current = vDomNode === null || vDomNode === void 0 ? void 0 : vDomNode.props.style;
+    mergeStyle();
+  }, [vDomNode === null || vDomNode === void 0 ? void 0 : vDomNode.props.style]);
 
   // 处理 data-v-hash
   useEffect(function () {
@@ -814,7 +1177,7 @@ function useReactiveProps(rawProps) {
     // 后续更新时更新属性
     updateProps(objRef.current, rawProps, options);
   }
-  useScoped();
+  useScoped(options);
   return objRef.current;
 }
 
@@ -890,7 +1253,9 @@ function resolvePropValue(options, key, value) {
   return value;
 }
 
-var _excluded = ["value", "onChange"];
+var _excluded$2 = ["value", "onChange"];
+function ownKeys$2(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$2(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$2(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$2(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 /**
  * SemiControlledInput 组件
  *
@@ -911,17 +1276,18 @@ var _excluded = ["value", "onChange"];
  *   placeholder="Enter text"
  * />
  */
-var SemiControlledInput = function (_ref) {
+var SemiControlledInput = function SemiControlledInput(_ref) {
   var _ref$value = _ref.value,
     value = _ref$value === void 0 ? {
       value: ''
     } : _ref$value,
     onChange = _ref.onChange,
-    props = _objectWithoutPropertiesLoose(_ref, _excluded);
+    props = _objectWithoutProperties(_ref, _excluded$2);
   // 使用内部状态管理输入值，初始值为传入的 valueObj.value
   var _useState = useState(value.value),
-    internalValue = _useState[0],
-    setInternalValue = _useState[1];
+    _useState2 = _slicedToArray(_useState, 2),
+    internalValue = _useState2[0],
+    setInternalValue = _useState2[1];
 
   // 创建一个引用，用于直接访问 input 元素
   var inputRef = useRef(null);
@@ -937,7 +1303,7 @@ var SemiControlledInput = function (_ref) {
   useEffect(function () {
     var input = inputRef.current;
     if (!input) return;
-    var handlePropertyChange = function () {
+    var handlePropertyChange = function handlePropertyChange() {
       var newValue = input.value;
       if (newValue !== internalValue) {
         setInternalValue(newValue);
@@ -960,8 +1326,8 @@ var SemiControlledInput = function (_ref) {
     // 重写 'value' 属性的 setter，以捕获直接对 value 的赋值操作
     Object.defineProperty(input, 'value', {
       get: descriptor.get,
-      set: function (val) {
-        originalSetter === null || originalSetter === void 0 ? void 0 : originalSetter.call(this, val);
+      set: function set(val) {
+        originalSetter === null || originalSetter === void 0 || originalSetter.call(this, val);
         handlePropertyChange();
       },
       configurable: true
@@ -974,7 +1340,7 @@ var SemiControlledInput = function (_ref) {
   }, [onChange, internalValue]);
 
   // 处理输入框的 onChange 事件
-  var handleChange = function (e) {
+  var handleChange = function handleChange(e) {
     var newValue = e.target.value;
     setInternalValue(newValue);
     if (onChange) {
@@ -983,7 +1349,7 @@ var SemiControlledInput = function (_ref) {
   };
 
   // 渲染 input 元素
-  return jsx("input", _extends({
+  return jsx("input", _objectSpread$2({
     ref: inputRef // 绑定 ref 到 input 元素
     ,
     value: internalValue // 使用内部状态作为输入框的值
@@ -1019,9 +1385,9 @@ function inject(name, defaultValue) {
   return defaultValue;
 }
 
-function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var n = 0, F = function () {}; return { s: F, n: function () { return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] }; }, e: function (r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function () { t = t.call(r); }, n: function () { var r = t.next(); return a = r.done, r; }, e: function (r) { u = !0, o = r; }, f: function () { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
-function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) { n[e] = r[e]; } return n; }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function onActivated(listener) {
   var listeners = inject('onActivatedListeners');
   var key = inject('keep-alive-key');
@@ -1082,7 +1448,7 @@ function checkInclude(name, whitelist, blacklist) {
   }
   return true;
 }
-var KeepAlivePro = function (_ref) {
+var KeepAlivePro = function KeepAlivePro(_ref) {
   var _searchComponent$prop;
   var children = _ref.children,
     _ref$max = _ref.max,
@@ -1101,8 +1467,9 @@ var KeepAlivePro = function (_ref) {
     // deactivate active components
     return function () {
       Array.from(componentCache.current.entries()).forEach(function (_ref2) {
-        var name = _ref2[0];
-          _ref2[1];
+        var _ref3 = _slicedToArray(_ref2, 2),
+          name = _ref3[0];
+          _ref3[1];
         provide('keep-alive-key', name);
         if (componentName === name) {
           var listeners = inject('onDeactivatedListeners').get(name);
@@ -1128,7 +1495,7 @@ var KeepAlivePro = function (_ref) {
           _step;
         try {
           for (_iterator.s(); !(_step = _iterator.n()).done;) {
-            var _step$value = _step.value,
+            var _step$value = _slicedToArray(_step.value, 2),
               key = _step$value[0],
               value = _step$value[1];
             if (value.timestamp < minTimestamp) {
@@ -1153,9 +1520,10 @@ var KeepAlivePro = function (_ref) {
     }
   }
   return jsxs(Fragment, {
-    children: [Array.from(componentCache.current.entries()).map(function (_ref3) {
-      var name = _ref3[0],
-        data = _ref3[1];
+    children: [Array.from(componentCache.current.entries()).map(function (_ref4) {
+      var _ref5 = _slicedToArray(_ref4, 2),
+        name = _ref5[0],
+        data = _ref5[1];
       provide('keep-alive-key', name);
       if (componentName === name) {
         setTimeout(function () {
@@ -1178,47 +1546,6 @@ var KeepAlivePro = function (_ref) {
   });
 };
 
-function _typeof(o) {
-  "@babel/helpers - typeof";
-
-  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
-    return typeof o;
-  } : function (o) {
-    return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
-  }, _typeof(o);
-}
-
-function toPrimitive(t, r) {
-  if ("object" != _typeof(t) || !t) return t;
-  var e = t[Symbol.toPrimitive];
-  if (void 0 !== e) {
-    var i = e.call(t, r || "default");
-    if ("object" != _typeof(i)) return i;
-    throw new TypeError("@@toPrimitive must return a primitive value.");
-  }
-  return ("string" === r ? String : Number)(t);
-}
-
-function toPropertyKey(t) {
-  var i = toPrimitive(t, "string");
-  return "symbol" == _typeof(i) ? i : String(i);
-}
-
-function _defineProperty(obj, key, value) {
-  key = toPropertyKey(key);
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-  return obj;
-}
-
 var NodeKeeperLifeCycleContext = createContext(null);
 
 var KEEP_ALIVE_LIFECYCLE = /*#__PURE__*/function (KEEP_ALIVE_LIFECYCLE) {
@@ -1226,7 +1553,7 @@ var KEEP_ALIVE_LIFECYCLE = /*#__PURE__*/function (KEEP_ALIVE_LIFECYCLE) {
   KEEP_ALIVE_LIFECYCLE["UNACTIVATE"] = "componentWillUnactivate";
   return KEEP_ALIVE_LIFECYCLE;
 }({});
-var useActivation = function (lifeCycleName, func) {
+var useActivation = function useActivation(lifeCycleName, func) {
   var keeperCtx = useContext(NodeKeeperLifeCycleContext);
 
   // 未处于 KeepAlive 中
@@ -1247,13 +1574,12 @@ var useActivation = function (lifeCycleName, func) {
 var useActivatePro = useActivation.bind(null, KEEP_ALIVE_LIFECYCLE.ACTIVATE);
 var useUnActivatePro = useActivation.bind(null, KEEP_ALIVE_LIFECYCLE.UNACTIVATE);
 
-var Keeper = function (_ref) {
-  var _useRef;
+var Keeper = function Keeper(_ref) {
   var children = _ref.children,
     active = _ref.active;
   var wrapper = useRef(null);
   var childrenNode = useRef([]);
-  var nodeKeeperLifeCycleValue = useRef((_useRef = {}, _defineProperty(_useRef, KEEP_ALIVE_LIFECYCLE.ACTIVATE, []), _defineProperty(_useRef, KEEP_ALIVE_LIFECYCLE.UNACTIVATE, []), _useRef));
+  var nodeKeeperLifeCycleValue = useRef(_defineProperty(_defineProperty({}, KEEP_ALIVE_LIFECYCLE.ACTIVATE, []), KEEP_ALIVE_LIFECYCLE.UNACTIVATE, []));
   useEffect(function () {
     return function () {
       childrenNode.current.forEach(function (child) {
@@ -1269,8 +1595,8 @@ var Keeper = function (_ref) {
       var _wrapper$current;
       childrenNode.current = Array.from(((_wrapper$current = wrapper.current) === null || _wrapper$current === void 0 ? void 0 : _wrapper$current.children) || []);
       childrenNode.current.forEach(function (child) {
-        var _wrapper$current2, _wrapper$current2$par;
-        (_wrapper$current2 = wrapper.current) === null || _wrapper$current2 === void 0 ? void 0 : (_wrapper$current2$par = _wrapper$current2.parentElement) === null || _wrapper$current2$par === void 0 ? void 0 : _wrapper$current2$par.insertBefore(child, wrapper.current);
+        var _wrapper$current2;
+        (_wrapper$current2 = wrapper.current) === null || _wrapper$current2 === void 0 || (_wrapper$current2 = _wrapper$current2.parentElement) === null || _wrapper$current2 === void 0 || _wrapper$current2.insertBefore(child, wrapper.current);
       });
       nodeKeeperLifeCycleValue.current[KEEP_ALIVE_LIFECYCLE.ACTIVATE].forEach(function (callback) {
         callback();
@@ -1278,7 +1604,7 @@ var Keeper = function (_ref) {
     } else {
       childrenNode.current.forEach(function (child) {
         var _wrapper$current3;
-        (_wrapper$current3 = wrapper.current) === null || _wrapper$current3 === void 0 ? void 0 : _wrapper$current3.appendChild(child);
+        (_wrapper$current3 = wrapper.current) === null || _wrapper$current3 === void 0 || _wrapper$current3.appendChild(child);
       });
       nodeKeeperLifeCycleValue.current[KEEP_ALIVE_LIFECYCLE.UNACTIVATE].forEach(function (callback) {
         callback();
@@ -1347,7 +1673,7 @@ function getComponentKey(children) {
   }
 
   // fallback到组件名
-  return children === null || children === void 0 ? void 0 : (_children$type = children.type) === null || _children$type === void 0 ? void 0 : _children$type.name;
+  return children === null || children === void 0 || (_children$type = children.type) === null || _children$type === void 0 ? void 0 : _children$type.name;
 }
 function KeepAlive(_ref) {
   var children = _ref.children,
@@ -1358,8 +1684,9 @@ function KeepAlive(_ref) {
   var childrenMap = useRef(new Map()); // 缓存所有的组件节点
   var cachedChildrenKeys = useRef([]); // 已经缓存的所有children节点的key的数组，按照激活事件由老到新排序。主要用于处理max场景下，有些移除最久没用的组件缓存
   var _useState = useState(null),
-    currentChildrenKey = _useState[0],
-    updateCurrentChildrenKey = _useState[1];
+    _useState2 = _slicedToArray(_useState, 2),
+    currentChildrenKey = _useState2[0],
+    updateCurrentChildrenKey = _useState2[1];
   var needCache = useMemo(function () {
     var key = getComponentKey(children);
     var isInInclude = !include || isKeyMatched(key, include);
@@ -1401,5 +1728,92 @@ function KeepAlive(_ref) {
   });
 }
 
-export { ConditionalRenderer, DirectiveComponent, DynamicComponent, Else, ElseIf, GlobalComponent, If, KeepAlive, KeepAlivePro, SemiControlledInput, createApp, createAppContext, defineAsyncComponent, defineEmits, defineExpose, emit, getCurrentInstance, initProps, inject, onActivated, onBeforeMount, onBeforeUnmount, onBeforeUpdate, onDeactivated, onMounted, onUnmounted, onUpdated, provide, registerComponent, registerDirective, setToInstance, styles, updateProps, useActivatePro, useAttrs, useDirectives, useGlobalProperties, useIsMounted, useProvide, useReactiveProps, useSlots, useUnActivatePro };
+function Teleport(_ref) {
+  var to = _ref.to,
+    children = _ref.children,
+    _ref$disabled = _ref.disabled,
+    disabled = _ref$disabled === void 0 ? false : _ref$disabled;
+  var _useState = useState(null),
+    _useState2 = _slicedToArray(_useState, 2),
+    container = _useState2[0],
+    setContainer = _useState2[1];
+  useEffect(function () {
+    var targetElement = document.querySelector(to);
+    if (targetElement) {
+      setContainer(targetElement);
+    }
+  }, [to]);
+  if (disabled) {
+    return jsx(Fragment$1, {
+      children: children
+    });
+  }
+
+  // 如果目标容器存在，则使用 createPortal 进行传送
+  return container ? createPortal(children, container) : null;
+}
+
+var _excluded$1 = ["value", "onChange"];
+function ownKeys$1(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$1(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$1(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$1(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+var ReactiveAdapterInput = forwardRef(function (_ref, ref) {
+  var value = _ref.value,
+    onChange = _ref.onChange,
+    props = _objectWithoutProperties(_ref, _excluded$1);
+  var _useState = useState(props.value),
+    _useState2 = _slicedToArray(_useState, 2),
+    val = _useState2[0],
+    setVal = _useState2[1];
+  useEffect(function () {
+    if (value !== undefined && value !== val) {
+      setVal(value);
+    }
+  }, [value]);
+  var changeHandler = function changeHandler(e) {
+    var newVal = e.target.value;
+    setVal(newVal);
+    if (onChange) {
+      onChange(e);
+    }
+  };
+  return jsx("input", _objectSpread$1(_objectSpread$1({
+    value: val,
+    onChange: changeHandler
+  }, props), {}, {
+    ref: ref
+  }));
+});
+
+var _excluded = ["value", "onChange"];
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+var ReactiveAdapterTextarea = forwardRef(function (_ref, ref) {
+  var value = _ref.value,
+    onChange = _ref.onChange,
+    props = _objectWithoutProperties(_ref, _excluded);
+  var _useState = useState(props.value),
+    _useState2 = _slicedToArray(_useState, 2),
+    val = _useState2[0],
+    setVal = _useState2[1];
+  useEffect(function () {
+    if (value !== undefined && value !== val) {
+      setVal(value);
+    }
+  }, [value]);
+  var changeHandler = function changeHandler(e) {
+    var newVal = e.target.value;
+    setVal(newVal);
+    if (onChange) {
+      onChange(e);
+    }
+  };
+  return jsx("textarea", _objectSpread(_objectSpread({
+    value: val,
+    onChange: changeHandler
+  }, props), {}, {
+    ref: ref
+  }));
+});
+
+export { ConditionalRenderer, DirectiveComponent, DynamicComponent, Else, ElseIf, GlobalComponent, If, KeepAlive, KeepAlivePro, ReactiveAdapterInput, ReactiveAdapterTextarea, SemiControlledInput, Teleport, createApp, createAppContext, createVNode, defineAsyncComponent, defineEmits, defineExpose, emit, getCurrentInstance, initProps, inject, onActivated, onBeforeMount, onBeforeUnmount, onBeforeUpdate, onDeactivated, onMounted, onUnmounted, onUpdated, provide, registerComponent, registerDirective, render, setToInstance, styles, updateProps, useActivatePro, useAttrs, useDirectives, useGlobalProperties, useIsMounted, useProvide, useReactiveProps, useSlots, useUnActivatePro, useWindowSize };
 //# sourceMappingURL=vue-adapter.js.map

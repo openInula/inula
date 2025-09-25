@@ -1,4 +1,5 @@
 import { FN } from './types';
+export declare const useIsMounted: () => boolean;
 export declare const onBeforeMount: (fn: FN) => void;
 export declare function onMounted(fn: FN): void;
 export declare function onBeforeUpdate(fn: FN): void;
