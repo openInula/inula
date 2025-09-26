@@ -4,8 +4,9 @@ import { traverse } from '@babel/core';
 import t from '@babel/types';
 import SourceCodeContext from './sourceCodeContext.js';
 import { globalLibPaths } from './defaultConfig.js';
-import { INSTANCE } from './jsx/consts.js';
-import { addInstance } from './jsx/handlers/instanceHandler.js';
+import { INSTANCE } from './jsx/consts.js'
+import { addInstance } from './jsx/handlers/instanceHandler.js'
+
 
 export default class BaseCovertHandler {
   targetAst = null;
@@ -246,7 +247,10 @@ export default class BaseCovertHandler {
     // 检查 targetAst 是否为数组
     if (Array.isArray(this.targetAst)) {
       this.targetAst.push(exportDefaultStatement);
-    } else if (this.targetAst.program && Array.isArray(this.targetAst.program.body)) {
+    } else if (
+      this.targetAst.program &&
+      Array.isArray(this.targetAst.program.body)
+    ) {
       this.targetAst.program.body.push(exportDefaultStatement);
     } else {
       console.warn('Unable to add export default statement: unexpected AST structure');
@@ -296,7 +300,10 @@ export default class BaseCovertHandler {
 
       this.addCodeAstToHorizonForOnce('$i18n', () => {
         return t.variableDeclaration('const', [
-          t.variableDeclarator(t.identifier('$i18n'), t.callExpression(t.identifier('useI18n'), [])),
+          t.variableDeclarator(
+            t.identifier('$i18n'),
+            t.callExpression(t.identifier('useI18n'), [])
+          )
         ]);
       });
     }
@@ -328,7 +335,10 @@ export default class BaseCovertHandler {
           }
 
           return t.variableDeclaration('const', [
-            t.variableDeclarator(t.objectPattern(properties), t.callExpression(t.identifier(useMethod), callArgs)),
+            t.variableDeclarator(
+              t.objectPattern(properties),
+              t.callExpression(t.identifier(useMethod), callArgs)
+            )
           ]);
         }
 
@@ -340,19 +350,15 @@ export default class BaseCovertHandler {
 }
 
 function createBlankReactStr(name, css = [], template = '') {
-  // 将连字符转换为驼峰命名，确保函数名合法
-  const validFunctionName = name.replace(/-([a-z])/g, (match, letter) => letter.toUpperCase());
-
   const cssStr = css.map(c => `import './${name}${c.scoped ? '.scoped' : ''}.${c.lang}';`).join('\r\n');
   const componentBody = template.trim() ? 'return <TEMPLATE/>;' : 'return <Fragment />;';
-  const reactImport = template.trim()
-    ? "import React from '@cloudsop/horizon';"
-    : "import React, { Fragment } from '@cloudsop/horizon';";
+  const reactImport = template.trim() ?
+    'import React from \'@cloudsop/horizon\';' : 'import React, { Fragment } from \'@cloudsop/horizon\';';
 
   return `
     ${reactImport}
     ${cssStr}
-    function ${validFunctionName}(rawProps){
+    function ${name}(rawProps){
      ${componentBody}
     }
     `;
@@ -364,9 +370,6 @@ function createBlankReactStr(name, css = [], template = '') {
  * @returns
  */
 function getAstExportDefaultFunction(ast, name) {
-  // 将连字符转换为驼峰命名，确保函数名匹配
-  const validFunctionName = name.replace(/-([a-z])/g, (match, letter) => letter.toUpperCase());
-
   let exportDefaultFunction = null;
   traverse(ast, {
     ExportDefaultDeclaration(path) {
@@ -380,7 +383,7 @@ function getAstExportDefaultFunction(ast, name) {
       }
     },
     FunctionDeclaration(path) {
-      if (path.node.id.name === validFunctionName) {
+      if (path.node.id.name === name) {
         exportDefaultFunction = path.node;
         path.stop();
       }

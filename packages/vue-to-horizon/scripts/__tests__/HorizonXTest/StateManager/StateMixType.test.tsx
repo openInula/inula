@@ -46,7 +46,11 @@ describe('测试store中的混合类型变化', () => {
       },
       actions: {
         addDay: (state, day) => {
-          state.persons.values().next().value.love.get('lanqiu').days.push(day);
+          state.persons
+            .values()
+            .next()
+            .value.love.get('lanqiu')
+            .days.push(day);
         },
       },
     });
@@ -64,7 +68,7 @@ describe('测试store中的混合类型变化', () => {
 
   function Parent(props) {
     const userStore = useStore('user');
-    const addDay = function () {
+    const addDay = function() {
       userStore.addDay(7);
     };
 
@@ -82,7 +86,10 @@ describe('测试store中的混合类型变化', () => {
     function Child(props) {
       const userStore = useStore('user');
 
-      const days = userStore.persons.values().next().value.love.get('lanqiu').days;
+      const days = userStore.persons
+        .values()
+        .next()
+        .value.love.get('lanqiu').days;
 
       return (
         <div>

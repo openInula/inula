@@ -36,7 +36,9 @@ describe('Component Error Test', () => {
     };
 
     let AppChild = () => {
-      return <NullElement />;
+      return (
+        <NullElement />
+      );
     };
 
     expect(() => {
@@ -44,7 +46,9 @@ describe('Component Error Test', () => {
     }).toThrow('Component type is invalid, got: null');
 
     AppChild = () => {
-      return <UndefinedElement />;
+      return (
+        <UndefinedElement />
+      );
     };
 
     expect(() => {

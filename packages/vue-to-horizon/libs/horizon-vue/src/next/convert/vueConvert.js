@@ -63,21 +63,16 @@ export default class VueConvert {
           content: commentContent,
           scoped,
           lang,
-        };
+        }
       });
     }
 
-    this.baseCovertHandler = new BaseCovertHandler(
-      name,
-      this.sourcePath,
-      {
-        isSetup,
-        css: this.targetStyle,
-        config,
-        template,
-      },
-      {}
-    );
+    this.baseCovertHandler = new BaseCovertHandler(name, this.sourcePath, {
+      isSetup,
+      css: this.targetStyle,
+      config,
+      template,
+    }, {});
 
     // 存国际化内容，如：<i18n>{ "en": {}, "zh": {} }</i18n>
     this.baseCovertHandler.setI18n(i18n);
@@ -91,7 +86,7 @@ export default class VueConvert {
 
     try {
       // 转换vue js到Horizon，同时收集ref等等变量
-      convertJS(this.sourceAst, this.baseCovertHandler, { component, config });
+      convertJS(this.sourceAst, this.baseCovertHandler, { component, config, template });
     } catch (error) {
       LOG.error('trans js code error in VueConvert: ', error.message, `[${this.sourcePath}]`);
     }

@@ -27,7 +27,11 @@ describe('useContext Hook Test', () => {
     const SystemLanguageContext = Horizon.createContext(defaultValue);
 
     const SystemLanguageProvider = ({ type, children }) => {
-      return <SystemLanguageContext.Provider value={{ type }}>{children}</SystemLanguageContext.Provider>;
+      return (
+        <SystemLanguageContext.Provider value={{ type }}>
+          {children}
+        </SystemLanguageContext.Provider>
+      );
     };
     const TestFunction = () => {
       const context = useContext(SystemLanguageContext);

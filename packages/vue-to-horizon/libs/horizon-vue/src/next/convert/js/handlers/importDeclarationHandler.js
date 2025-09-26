@@ -191,10 +191,8 @@ export function toNamingFunction(ast, reactCovert) {
       const declaration = path.node.declaration;
 
       if (t.isArrowFunctionExpression(declaration) || t.isFunctionExpression(declaration)) {
-        // 生成一个组件名称，将连字符转换为驼峰命名
-        const componentName = (reactCovert.name || 'Component').replace(/-([a-z])/g, (match, letter) =>
-          letter.toUpperCase()
-        );
+        // 生成一个组件名称
+        const componentName = reactCovert.name || 'Component';
 
         // 创建命名函数声明
         const functionDeclaration = t.functionDeclaration(

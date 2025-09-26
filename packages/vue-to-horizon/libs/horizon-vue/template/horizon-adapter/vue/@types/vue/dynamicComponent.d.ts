@@ -1,11 +1,11 @@
 import { ComponentType, InulaElement } from '@cloudsop/horizon';
 interface ComponentsMap {
-  [key: string]: ComponentType<any>;
+    [key: string]: ComponentType<any>;
 }
 interface DynamicComponentProps {
-  is: string | ComponentType;
-  components?: ComponentsMap;
-  [key: string]: any;
+    is: string | ComponentType;
+    components?: ComponentsMap;
+    [key: string]: any;
 }
 /**
  * 对标Vue的动态组件，如：<component :is="Math.random() > 0.5 ? Foo : Bar" />
@@ -14,5 +14,8 @@ interface DynamicComponentProps {
  * @param componentProps
  * @constructor
  */
-export declare function DynamicComponent({ is, components, ...componentProps }: DynamicComponentProps): InulaElement;
+export declare function DynamicComponent({ is, components, ...componentProps }: DynamicComponentProps): InulaElement | null;
+export declare namespace DynamicComponent {
+    var __internal_comp_tag: string;
+}
 export {};

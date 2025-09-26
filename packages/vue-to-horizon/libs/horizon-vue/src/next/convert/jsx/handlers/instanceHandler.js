@@ -1,6 +1,6 @@
 import { globalLibPaths } from '../../defaultConfig.js';
 import t from '@babel/types';
-import { INSTANCE, USE_INSTANCE } from '../consts.js';
+import { INSTANCE, USE_INSTANCE } from '../consts.js'
 
 // Add useInstance import and declaration if not already added
 export function addInstance(reactCovert) {

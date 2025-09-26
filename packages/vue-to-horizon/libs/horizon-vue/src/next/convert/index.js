@@ -93,7 +93,7 @@ export async function vueFileConvert(srcPath, targetPath, option) {
       js: isSetup ? parsed.descriptor.scriptSetup?.content : parsed.descriptor.script?.content,
       template: template,
       style: parsed.descriptor.styles,
-      i18n: parsed.descriptor.customBlocks.find(block => block.type === 'i18n')?.content || '',
+      i18n: parsed.descriptor.customBlocks.find(block => block.type === 'i18n')?.content || ''
     },
     {
       lang: parsed.descriptor.scriptSetup?.lang,
@@ -117,7 +117,7 @@ export async function vueFileConvert(srcPath, targetPath, option) {
       LOG.error(error.message);
     }
     try {
-      const cssList = tool.getNewStyle();
+      const cssList= tool.getNewStyle();
       if (cssList && cssList.length > 0) {
         cssList.forEach(({ scoped, lang, content }) => {
           // writeFileSync：如果文件不存在，就会创建；如果存在，就会覆盖。使用 'a' 模式：追加内容，不覆盖

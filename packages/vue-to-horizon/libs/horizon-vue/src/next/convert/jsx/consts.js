@@ -10,18 +10,18 @@ export const SEMI_CONTROLLED_INPUT = 'SemiControlledInput';
 export const DEFAULT_COMPONENT_TAG = {
   teleport: {
     targetTag: 'Teleport',
-    source: 'adapters/vueAdapter',
+    source: 'adapters/vueAdapter'
   },
   input: {
     targetTag: 'input',
     attributesMap: {
-      readonly: 'readOnly',
-    },
+      readonly: 'readOnly'
+    }
   },
   label: {
     targetTag: 'label',
     attributesMap: {
-      for: 'htmlFor',
-    },
-  },
-};
+      for: 'htmlFor'
+    }
+  }
+}
