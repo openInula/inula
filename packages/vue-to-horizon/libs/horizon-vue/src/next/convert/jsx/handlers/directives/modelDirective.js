@@ -103,13 +103,10 @@ export function handleModelDirective(path, value, reactCovert) {
         valueName = 'files';
       }
     }
-    // 查找是否存在现有的 value 属性
-    const existingValueAttr = parentNode.attributes.find(attr => getAttributeNodeName(attr) === 'value');
-
     // 构造 onChange 事件中的赋值表达式：$event.target.value 或 $event.target.checked
     expression = t.memberExpression(
       t.memberExpression(t.identifier(EVENT_PARAM_NAME), t.identifier('target')),
-      t.identifier((isRadio && !existingValueAttr) || isCheckbox ? 'checked' : valueName)
+      t.identifier( isCheckbox ? 'checked' : valueName)
     );
   } else if (parentNode.name.name === 'select') {
     valueName = 'value';
@@ -139,7 +136,9 @@ export function handleModelDirective(path, value, reactCovert) {
       }
 
       // 更新或添加 checked 属性
-      const existingCheckedAttr = parentNode.attributes.find(attr => getAttributeNodeName(attr) === 'checked');
+      const existingCheckedAttr = parentNode.attributes.find(
+        attr => getAttributeNodeName(attr) === 'checked'
+      );
 
       if (existingCheckedAttr) {
         existingCheckedAttr.value = checkedExpression;
@@ -236,6 +235,8 @@ export function handleModelDirective(path, value, reactCovert) {
       t.blockStatement([t.expressionStatement(t.assignmentExpression('=', t.identifier(value), expression))])
     );
     // 添加到属性列表中
-    parentNode.attributes.push(t.jSXAttribute(t.jSXIdentifier('onChange'), t.jSXExpressionContainer(changeFuncNode)));
+    parentNode.attributes.push(
+      t.jSXAttribute(t.jSXIdentifier('onChange'), t.jSXExpressionContainer(changeFuncNode))
+    );
   }
 }

@@ -34,6 +34,7 @@ global.afterEach(() => {
   LogUtils.clear();
 });
 
+
 function runAssertion(fn) {
   try {
     fn();

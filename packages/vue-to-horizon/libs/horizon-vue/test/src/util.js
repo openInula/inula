@@ -13,17 +13,15 @@ export function generateReactCode(templateAst) {
     retainLines: true,
   });
 
-  return (
-    code
-      .replace(/\s+/g, ' ')
-      // 处理等号后左大括号前的空格，如 = { 转为 ={
-      .replace(/=\s*{/g, '={')
-      // 去除左大括号后的空格
-      .replace(/{\s+/g, '{')
-      // 去除右大括号前的空格
-      .replace(/\s+}/g, '}')
-      // 移除语句结尾分号
-      .replace(/;\s*/g, '')
-      .trim()
-  );
+  return code
+    .replace(/\s+/g, ' ')
+    // 处理等号后左大括号前的空格，如 = { 转为 ={
+    .replace(/=\s*{/g, '={')
+    // 去除左大括号后的空格
+    .replace(/{\s+/g, '{')
+    // 去除右大括号前的空格
+    .replace(/\s+}/g, '}')
+    // 移除语句结尾分号
+    .replace(/;\s*/g, '')
+    .trim();
 }

@@ -19,9 +19,15 @@ import { getLogUtils } from '../jest/testUtils';
 
 describe('Fragment', () => {
   const LogUtils = getLogUtils();
-  const { useEffect, useRef, act } = Horizon;
+  const {
+    useEffect,
+    useRef,
+    act,
+  } = Horizon;
   it('可以渲染空元素', () => {
-    const element = <Horizon.Fragment />;
+    const element = (
+      <Horizon.Fragment />
+    );
 
     Horizon.render(element, container);
 
@@ -55,7 +61,11 @@ describe('Fragment', () => {
 
   it('可以渲染集合元素', () => {
     const App = [<Text text="Java" />, <Text text="JavaScript" />];
-    const element = <>{App}</>;
+    const element = (
+      <>
+        {App}
+      </>
+    );
 
     Horizon.render(element, container);
 
@@ -64,7 +74,7 @@ describe('Fragment', () => {
   });
 
   it('元素被放进不同层级Fragment里时,状态不会保留', () => {
-    const ChildApp = props => {
+    const ChildApp = (props) => {
       const flag = useRef(true);
       useEffect(() => {
         if (flag.current) {
@@ -77,18 +87,19 @@ describe('Fragment', () => {
       return <p>{props.logo}</p>;
     };
 
-    const App = props => {
+    const App = (props) => {
       return props.change ? (
         <>
           <ChildApp logo={1} />
         </>
+
       ) : (
-        <>
           <>
-            <ChildApp logo={2} />
+            <>
+              <ChildApp logo={2} />
+            </>
           </>
-        </>
-      );
+        );
     };
 
     act(() => {
@@ -110,7 +121,7 @@ describe('Fragment', () => {
   });
 
   it('元素被放进单层Fragment里,且在Fragment的顶部时,状态会保留', () => {
-    const ChildApp = props => {
+    const ChildApp = (props) => {
       const flag = useRef(true);
       useEffect(() => {
         if (flag.current) {
@@ -123,14 +134,14 @@ describe('Fragment', () => {
       return <p>{props.logo}</p>;
     };
 
-    const App = props => {
+    const App = (props) => {
       return props.change ? (
         <ChildApp logo={1} />
       ) : (
-        <>
-          <ChildApp logo={2} />
-        </>
-      );
+          <>
+            <ChildApp logo={2} />
+          </>
+        );
     };
 
     act(() => {
@@ -152,7 +163,7 @@ describe('Fragment', () => {
   });
 
   it('元素被放进单层Fragment里,但不在Fragment的顶部时,状态不会保留', () => {
-    const ChildApp = props => {
+    const ChildApp = (props) => {
       const flag = useRef(true);
       useEffect(() => {
         if (flag.current) {
@@ -165,15 +176,15 @@ describe('Fragment', () => {
       return <p>{props.logo}</p>;
     };
 
-    const App = props => {
+    const App = (props) => {
       return props.change ? (
         <ChildApp logo={1} />
       ) : (
-        <>
-          <div>123</div>
-          <ChildApp logo={2} />
-        </>
-      );
+          <>
+            <div>123</div>
+            <ChildApp logo={2} />
+          </>
+        );
     };
 
     act(() => {
@@ -195,7 +206,7 @@ describe('Fragment', () => {
   });
 
   it('元素被放进多层Fragment里时,状态不会保留', () => {
-    const ChildApp = props => {
+    const ChildApp = (props) => {
       const flag = useRef(true);
       useEffect(() => {
         if (flag.current) {
@@ -208,18 +219,18 @@ describe('Fragment', () => {
       return <p>{props.logo}</p>;
     };
 
-    const App = props => {
+    const App = (props) => {
       return props.change ? (
         <ChildApp logo={1} />
       ) : (
-        <>
           <>
             <>
-              <ChildApp logo={2} />
+              <>
+                <ChildApp logo={2} />
+              </>
             </>
           </>
-        </>
-      );
+        );
     };
 
     act(() => {
@@ -241,7 +252,7 @@ describe('Fragment', () => {
   });
 
   it('元素被切换放进同级Fragment里时,状态会保留', () => {
-    const ChildApp = props => {
+    const ChildApp = (props) => {
       const flag = useRef(true);
       useEffect(() => {
         if (flag.current) {
@@ -254,7 +265,7 @@ describe('Fragment', () => {
       return <p>{props.logo}</p>;
     };
 
-    const App = props => {
+    const App = (props) => {
       return props.change ? (
         <>
           <>
@@ -264,14 +275,14 @@ describe('Fragment', () => {
           </>
         </>
       ) : (
-        <>
           <>
             <>
-              <ChildApp logo={2} />
+              <>
+                <ChildApp logo={2} />
+              </>
             </>
           </>
-        </>
-      );
+        );
     };
 
     act(() => {
@@ -293,7 +304,7 @@ describe('Fragment', () => {
   });
 
   it('元素被切换放进同级Fragment,且在数组顶层时,状态会保留', () => {
-    const ChildApp = props => {
+    const ChildApp = (props) => {
       const flag = useRef(true);
       useEffect(() => {
         if (flag.current) {
@@ -306,7 +317,7 @@ describe('Fragment', () => {
       return <p>{props.logo}</p>;
     };
 
-    const App = props => {
+    const App = (props) => {
       return props.change ? (
         <>
           <>
@@ -316,12 +327,14 @@ describe('Fragment', () => {
           </>
         </>
       ) : (
-        <>
           <>
-            <>{[<ChildApp logo={2} />]}</>
+            <>
+              <>
+                {[<ChildApp logo={2} />]}
+              </>
+            </>
           </>
-        </>
-      );
+        );
     };
 
     act(() => {
@@ -343,7 +356,7 @@ describe('Fragment', () => {
   });
 
   it('数组里的顶层元素被切换放进单级Fragment时,状态会保留', () => {
-    const ChildApp = props => {
+    const ChildApp = (props) => {
       const flag = useRef(true);
       useEffect(() => {
         if (flag.current) {
@@ -356,14 +369,14 @@ describe('Fragment', () => {
       return <p>{props.logo}</p>;
     };
 
-    const App = props => {
+    const App = (props) => {
       return props.change ? (
         [<ChildApp logo={1} />]
       ) : (
-        <>
-          <ChildApp logo={2} />
-        </>
-      );
+          <>
+            <ChildApp logo={2} />
+          </>
+        );
     };
 
     act(() => {
@@ -385,7 +398,7 @@ describe('Fragment', () => {
   });
 
   it('Fragment里的顶层数组里的顶层元素被切换放进不同级Fragment时,状态不会保留', () => {
-    const ChildApp = props => {
+    const ChildApp = (props) => {
       const flag = useRef(true);
       useEffect(() => {
         if (flag.current) {
@@ -398,18 +411,18 @@ describe('Fragment', () => {
       return <p>{props.logo}</p>;
     };
 
-    const App = props => {
+    const App = (props) => {
       return props.change ? (
         <>
           [<ChildApp logo={1} />]
         </>
       ) : (
-        <>
           <>
-            <ChildApp logo={2} />
+            <>
+              <ChildApp logo={2} />
+            </>
           </>
-        </>
-      );
+        );
     };
 
     act(() => {
@@ -431,7 +444,7 @@ describe('Fragment', () => {
   });
 
   it('Fragment的key值不同时,状态不会保留', () => {
-    const ChildApp = props => {
+    const ChildApp = (props) => {
       const flag = useRef(true);
       useEffect(() => {
         if (flag.current) {
@@ -444,16 +457,16 @@ describe('Fragment', () => {
       return <p>{props.logo}</p>;
     };
 
-    const App = props => {
+    const App = (props) => {
       return props.change ? (
-        <Horizon.Fragment key="hf">
+        <Horizon.Fragment key='hf'>
           <ChildApp logo={1} />
         </Horizon.Fragment>
       ) : (
-        <Horizon.Fragment key="nhf">
-          <ChildApp logo={2} />
-        </Horizon.Fragment>
-      );
+          <Horizon.Fragment key='nhf'>
+            <ChildApp logo={2} />
+          </Horizon.Fragment>
+        );
     };
 
     act(() => {

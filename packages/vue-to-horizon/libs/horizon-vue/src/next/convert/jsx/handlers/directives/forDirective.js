@@ -1,5 +1,5 @@
-import { globalLibPaths } from '../../../defaultConfig.js';
-import t from '@babel/types';
+import { globalLibPaths } from '../../../defaultConfig.js'
+import t from '@babel/types'
 
 export const V_FOR = 'vfor';
 
@@ -92,21 +92,19 @@ export function handleForDirective(path, value, sourceCodeContext) {
 
   // 根据声明类型创建对应的参数模式
   const params = isArrayPattern
-    ? t.arrayPattern(
-        // 处理数组解构，如 [a, b, c] in items
+    ? t.arrayPattern( // 处理数组解构，如 [a, b, c] in items
+      item
+        .slice(1, -1)
+        .split(',')
+        .map(el => t.identifier(el.trim()))
+    )
+    : isObjectPattern
+      ? t.objectPattern( // 处理对象解构，如 {name, age} in users
         item
           .slice(1, -1)
           .split(',')
-          .map(el => t.identifier(el.trim()))
+          .map(el => t.objectProperty(t.identifier(el.trim()), t.identifier(el.trim()), false, true))
       )
-    : isObjectPattern
-      ? t.objectPattern(
-          // 处理对象解构，如 {name, age} in users
-          item
-            .slice(1, -1)
-            .split(',')
-            .map(el => t.objectProperty(t.identifier(el.trim()), t.identifier(el.trim()), false, true))
-        )
       : t.identifier(item); // 处理普通变量，如 item in items
 
   // 处理索引参数命名冲突，如果项目名为 index，则使用 _index 作为索引名
@@ -139,7 +137,10 @@ export function handleForDirective(path, value, sourceCodeContext) {
     t.jSXOpeningElement(t.jSXIdentifier(elementName), [
       ...newAttrs,
       // 添加 vfor={true} 属性
-      t.jsxAttribute(t.jsxIdentifier(V_FOR), t.stringLiteral(index)),
+      t.jsxAttribute(
+        t.jsxIdentifier(V_FOR),
+        t.stringLiteral(index)
+      )
     ]),
     t.jSXClosingElement(t.jSXIdentifier(elementName)),
     children

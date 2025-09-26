@@ -18,7 +18,13 @@ import { getLogUtils } from '../../jest/testUtils';
 import { Text } from '../../jest/commonComponents';
 
 describe('useState Hook Test', () => {
-  const { useState, forwardRef, useImperativeHandle, memo, act } = Horizon;
+  const {
+    useState,
+    forwardRef,
+    useImperativeHandle,
+    memo,
+    act,
+  } = Horizon;
   const LogUtils = getLogUtils();
 
   it('简单使用useState', () => {
@@ -49,8 +55,7 @@ describe('useState Hook Test', () => {
             setCount(count + 2);
           }}
         >
-          {num}
-          {count}
+          {num}{count}
         </p>
       );
     };
@@ -108,6 +113,7 @@ describe('useState Hook Test', () => {
       });
       useImperativeHandle(ref, () => ({ setNum }));
       return <p>{num}</p>;
+
     });
     const ref = Horizon.createRef(null);
     Horizon.render(<App initNum={1} ref={ref} />, container);
@@ -144,7 +150,7 @@ describe('useState Hook Test', () => {
     let setNum;
     let setCount;
 
-    const App = props => {
+    const App = (props) => {
       const [num, setNum_1] = useState(0);
       setNum = setNum_1;
 

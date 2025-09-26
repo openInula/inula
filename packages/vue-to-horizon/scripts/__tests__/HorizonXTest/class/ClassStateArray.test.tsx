@@ -15,17 +15,14 @@
 
 import * as Horizon from '@cloudsop/horizon/index.ts';
 import * as LogUtils from '../../jest/logUtils';
-import { clearStore, createStore, useStore } from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
-import { App, Text, triggerClickEvent } from '../../jest/commonComponents';
-import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
+import {clearStore, createStore, useStore} from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
+import {App, Text, triggerClickEvent} from '../../jest/commonComponents';
+import {describe, beforeEach, afterEach, it, expect} from '@jest/globals';
 
-type Person = { name: string; age: number };
+type Person = {name:string,age:number};
 
-const persons: Person[] = [
-  { name: 'p1', age: 1 },
-  { name: 'p2', age: 2 },
-];
-let useUserStore = createStore({
+const persons:Person[] = [{ name: 'p1', age: 1 }, { name: 'p2', age: 2 }];
+let useUserStore =  createStore({
   id: 'user',
   state: {
     type: 'bing dun dun',
@@ -35,10 +32,10 @@ let useUserStore = createStore({
     addOnePerson: (state, person) => {
       state.persons.push(person);
     },
-    delOnePerson: state => {
+    delOnePerson: (state) => {
       state.persons.pop();
     },
-    clearPersons: state => {
+    clearPersons: (state) => {
       state.persons = [];
     },
   },
@@ -46,7 +43,7 @@ let useUserStore = createStore({
 
 describe('在Class组件中，测试store中的Array', () => {
   const { unmountComponentAtNode } = Horizon;
-  let container: HTMLElement | null = null;
+  let container:HTMLElement|null = null;
   beforeEach(() => {
     // 创建一个 DOM 元素作为渲染目标
     container = document.createElement('div');
@@ -66,35 +63,35 @@ describe('在Class组件中，测试store中的Array', () => {
   const newPerson = { name: 'p3', age: 3 };
   class Parent extends Horizon.Component {
     userStore = useUserStore();
-    props: {
-      children: any[];
+    props:{
+      children:any[]
     };
 
-    constructor(props) {
+    constructor(props){
       super(props);
       this.props = props;
     }
 
     addOnePerson = () => {
       this.userStore.addOnePerson(newPerson);
-    };
+    }
 
     delOnePerson = () => {
       this.userStore.delOnePerson();
-    };
+    }
 
     render() {
-      return (
+      return <div>
+        <button id={'addBtn'} onClick={this.addOnePerson}>
+          add person
+        </button>
+        <button id={'delBtn'} onClick={this.delOnePerson}>
+          delete person
+        </button>
         <div>
-          <button id={'addBtn'} onClick={this.addOnePerson}>
-            add person
-          </button>
-          <button id={'delBtn'} onClick={this.delOnePerson}>
-            delete person
-          </button>
-          <div>{this.props.children}</div>
+          {this.props.children}
         </div>
-      );
+      </div>
     }
   }
 
@@ -139,7 +136,7 @@ describe('在Class组件中，测试store中的Array', () => {
       }
 
       render() {
-        const nameList: string[] = [];
+        const nameList:string[] = [];
         const entries = this.userStore.$s.persons?.entries();
         if (entries) {
           for (const entry of entries) {
@@ -200,8 +197,8 @@ describe('在Class组件中，测试store中的Array', () => {
       }
 
       render() {
-        const nameList: string[] = [];
-        this.userStore.$s.persons.forEach((per: Person) => {
+        const nameList:string[] = [];
+        this.userStore.$s.persons.forEach((per:Person) => {
           nameList.push(per.name);
         });
 
@@ -245,4 +242,5 @@ describe('在Class组件中，测试store中的Array', () => {
     globalStore.$s.persons = [{ name: 'p1', age: 1 }];
     expect(container?.querySelector('#nameList')?.innerHTML).toBe('name list: p1');
   });
+
 });

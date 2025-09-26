@@ -143,7 +143,7 @@ export function transformRefProperty(templateAst, reactCovert) {
               // instance.$refs.xxx.push(val)
               t.expressionStatement(
                 t.callExpression(t.memberExpression(refsAccess, t.identifier('push')), [functionCall])
-              ),
+              )
             ]);
 
             reactCovert.sourceCodeContext.addExtrasImport(TO_INSTANCE, globalLibPaths.vue);

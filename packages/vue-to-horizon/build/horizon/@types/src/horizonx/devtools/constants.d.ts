@@ -1,0 +1,10 @@
+export declare const INITIALIZED = "horizonx store initialized";
+export declare const STATE_CHANGE = "horizonx state change";
+export declare const SUBSCRIBED = "horizonx subscribed";
+export declare const UNSUBSCRIBED = "horizonx unsubscribed";
+export declare const ACTION = "horizonx action";
+export declare const ACTION_QUEUED = "horizonx action queued";
+export declare const QUEUE_PENDING = "horizonx queue pending";
+export declare const QUEUE_FINISHED = "horizonx queue finished";
+export declare const RENDER_TRIGGERED = "horizonx render triggered";
+export declare const OBSERVED_COMPONENTS = "horizonx observed components";

@@ -18,7 +18,12 @@ import { getLogUtils } from '../../jest/testUtils';
 import { Text } from '../../jest/commonComponents';
 
 describe('useLayoutEffect Hook Test', () => {
-  const { useState, useEffect, useLayoutEffect, act } = Horizon;
+  const {
+    useState,
+    useEffect,
+    useLayoutEffect,
+    act,
+  } = Horizon;
   const LogUtils = getLogUtils();
   it('简单使用useLayoutEffect', () => {
     const App = () => {
@@ -28,9 +33,7 @@ describe('useLayoutEffect Hook Test', () => {
       });
       return (
         <>
-          <p style={{ display: 'block' }} id="p">
-            {num}
-          </p>
+          <p style={{ display: 'block' }} id="p">{num}</p>
           <button onClick={() => setNum(num + 1)} />
         </>
       );
@@ -42,7 +45,7 @@ describe('useLayoutEffect Hook Test', () => {
   });
 
   it('useLayoutEffect的触发时序', () => {
-    const App = props => {
+    const App = (props) => {
       useLayoutEffect(() => {
         LogUtils.log('LayoutEffect');
       });
@@ -53,17 +56,21 @@ describe('useLayoutEffect Hook Test', () => {
       1,
       // 同步在渲染之后
       'LayoutEffect',
-      'Sync effect',
+      'Sync effect'
     ]);
     expect(container.querySelector('p').innerHTML).toBe('1');
     // 更新
     Horizon.render(<App num={2} />, container, () => LogUtils.log('Sync effect'));
-    expect(LogUtils.getAndClear()).toEqual([2, 'LayoutEffect', 'Sync effect']);
+    expect(LogUtils.getAndClear()).toEqual([
+      2,
+      'LayoutEffect',
+      'Sync effect'
+    ]);
     expect(container.querySelector('p').innerHTML).toBe('2');
   });
 
   it('创建，销毁useLayoutEffect', () => {
-    const App = props => {
+    const App = (props) => {
       useEffect(() => {
         LogUtils.log(`num effect [${props.num}]`);
         return () => {
@@ -81,7 +88,11 @@ describe('useLayoutEffect Hook Test', () => {
 
     act(() => {
       Horizon.render(<App num={0} />, container, () => LogUtils.log('callback effect'));
-      expect(LogUtils.getAndClear()).toEqual(['num: 0', 'num Layouteffect [0]', 'callback effect']);
+      expect(LogUtils.getAndClear()).toEqual([
+        'num: 0',
+        'num Layouteffect [0]',
+        'callback effect'
+      ]);
       expect(container.textContent).toBe('num: 0');
     });
 
@@ -101,7 +112,7 @@ describe('useLayoutEffect Hook Test', () => {
       // 异步旧的effect销毁
       'num effect destroy',
       // 异步新的effect建立
-      'num effect [1]',
+      'num effect [1]'
     ]);
 
     act(() => {

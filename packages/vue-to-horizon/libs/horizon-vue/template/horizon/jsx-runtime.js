@@ -21,54 +21,44 @@ var TYPE_COMMON_ELEMENT = 1;
 var TYPE_FRAGMENT = 3;
 
 function _extends() {
-  _extends = Object.assign
-    ? Object.assign.bind()
-    : function (target) {
-        for (var i = 1; i < arguments.length; i++) {
-          var source = arguments[i];
-          for (var key in source) {
-            if (Object.prototype.hasOwnProperty.call(source, key)) {
-              target[key] = source[key];
-            }
-          }
+  _extends = Object.assign ? Object.assign.bind() : function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
         }
-        return target;
-      };
+      }
+    }
+    return target;
+  };
   return _extends.apply(this, arguments);
 }
 
 function _typeof(o) {
-  '@babel/helpers - typeof';
+  "@babel/helpers - typeof";
 
-  return (
-    (_typeof =
-      'function' == typeof Symbol && 'symbol' == typeof Symbol.iterator
-        ? function (o) {
-            return typeof o;
-          }
-        : function (o) {
-            return o && 'function' == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype
-              ? 'symbol'
-              : typeof o;
-          }),
-    _typeof(o)
-  );
+  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
+    return typeof o;
+  } : function (o) {
+    return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+  }, _typeof(o);
 }
 
 function toPrimitive(t, r) {
-  if ('object' != _typeof(t) || !t) return t;
+  if ("object" != _typeof(t) || !t) return t;
   var e = t[Symbol.toPrimitive];
   if (void 0 !== e) {
-    var i = e.call(t, r || 'default');
-    if ('object' != _typeof(i)) return i;
-    throw new TypeError('@@toPrimitive must return a primitive value.');
+    var i = e.call(t, r || "default");
+    if ("object" != _typeof(i)) return i;
+    throw new TypeError("@@toPrimitive must return a primitive value.");
   }
-  return ('string' === r ? String : Number)(t);
+  return ("string" === r ? String : Number)(t);
 }
 
 function toPropertyKey(t) {
-  var i = toPrimitive(t, 'string');
-  return 'symbol' == _typeof(i) ? i : String(i);
+  var i = toPrimitive(t, "string");
+  return "symbol" == _typeof(i) ? i : String(i);
 }
 
 function _defineProperty(obj, key, value) {
@@ -78,7 +68,7 @@ function _defineProperty(obj, key, value) {
       value: value,
       enumerable: true,
       configurable: true,
-      writable: true,
+      writable: true
     });
   } else {
     obj[key] = value;
@@ -117,26 +107,22 @@ var BELONG_CLASS_VNODE_KEY = typeof Symbol === 'function' ? Symbol('belongClassV
  * props 其他常规属性
  */
 function JSXElement(type, key, ref, vNode, props, source) {
-  var ele = _defineProperty(
-    {
-      // 元素标识符
-      vtype: TYPE_COMMON_ELEMENT,
-      src: null,
-      // 属于元素的内置属性
-      type: type,
-      key: key,
-      ref: ref,
-      props: props,
-    },
-    BELONG_CLASS_VNODE_KEY,
-    vNode
-  );
+  var ele = _defineProperty({
+    // 元素标识符
+    vtype: TYPE_COMMON_ELEMENT,
+    src: null,
+    // 属于元素的内置属性
+    type: type,
+    key: key,
+    ref: ref,
+    props: props
+  }, BELONG_CLASS_VNODE_KEY, vNode);
   // 兼容IE11不支持Symbol
   if (typeof BELONG_CLASS_VNODE_KEY === 'string') {
     Object.defineProperty(ele, BELONG_CLASS_VNODE_KEY, {
       configurable: false,
       enumerable: false,
-      value: vNode,
+      value: vNode
     });
   }
   return ele;
@@ -178,7 +164,7 @@ function buildElement(isClone, type, setting, children) {
   if (setting !== null && setting !== void 0 && setting.__source) {
     ({
       fileName: setting.__source.fileName,
-      lineNumber: setting.__source.lineNumber,
+      lineNumber: setting.__source.lineNumber
     });
   }
   return JSXElement(element, key, ref, vNode, props);

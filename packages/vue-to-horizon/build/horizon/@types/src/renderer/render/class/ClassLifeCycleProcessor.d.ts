@@ -1,0 +1,10 @@
+import type { VNode } from '../../Types';
+export declare function callDerivedStateFromProps(processing: VNode, getDerivedStateFromProps: (props: object, state: object) => object, nextProps: object): void;
+export declare function callShouldComponentUpdate(processing: VNode, oldProps: object, newProps: object, newState: object, newContext: object): any;
+export declare function callConstructor(processing: VNode, ctor: any, props: any): any;
+export declare function callComponentWillMount(processing: any, inst: any, newProps?: any): void;
+export declare function callComponentWillUpdate(inst: any, newProps: any, newState: any, nextContext: any): void;
+export declare function callComponentWillReceiveProps(inst: any, newProps: object, newContext: object): void;
+export declare function markComponentDidMount(processing: VNode): void;
+export declare function markGetSnapshotBeforeUpdate(processing: VNode): void;
+export declare function markComponentDidUpdate(processing: VNode): void;

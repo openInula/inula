@@ -37,5 +37,5 @@ export default {
   touchend: 'onTouchEnd',
   touchcancel: 'onTouchCancel',
   touchmove: 'onTouchMove',
-  contextmenu: 'onContextmenu',
+  contextmenu: 'onContextmenu'
 };
