@@ -4,26 +4,21 @@ import LOG from '../../logHelper.js';
 import { globalLibPaths, GlobalMethod } from '../defaultConfig.js';
 import vueSetupModelToReactHandler from './vueSetupParser.js';
 import parseVueOption from './vueOptionParser.js';
-import { importDeclarationHandler, importVueToJSX, toNamingFunction } from './handlers/importDeclarationHandler.js'
-import {
-  createNodeByVueVariable, getThisProperty,
-  isThisNode,
-} from '../jsx/handlers/expressionHandler.js'
-import { JSWarnings } from '../../errors.js'
-import { handlerVariableDeclarator } from './handlers/variableDeclaratorHandler.js'
-import { componentsParser } from './handlers/componentsHandler.js'
-import { i18nParser } from './handlers/i18nHandler.js'
-import { threePartyLibsParser } from './handlers/threePartyLibsHandler.js'
-import { handleThis, handleThisAssignment } from './handlers/thisHandler.js'
-
+import { importDeclarationHandler, importVueToJSX, toNamingFunction } from './handlers/importDeclarationHandler.js';
+import { createNodeByVueVariable, getThisProperty, isThisNode } from '../jsx/handlers/expressionHandler.js';
+import { JSWarnings } from '../../errors.js';
+import { handlerVariableDeclarator } from './handlers/variableDeclaratorHandler.js';
+import { componentsParser } from './handlers/componentsHandler.js';
+import { i18nParser } from './handlers/i18nHandler.js';
+import { threePartyLibsParser } from './handlers/threePartyLibsHandler.js';
+import { handleThis, handleThisAssignment } from './handlers/thisHandler.js';
 
 /**
  * 将源vue js ast切换到新组装的react ast
  * @param {*} sourceAst
  * @param {*} reactCovert
  */
-export default function convertJS(sourceAst, reactCovert, { component, config, template }) {
-
+export default function convertJS(sourceAst, reactCovert, { component, config }) {
   // vue3 解析，针对函数式组件
   if (reactCovert.isSetup) {
     // 处理import相关
@@ -49,13 +44,16 @@ export default function convertJS(sourceAst, reactCovert, { component, config, t
     });
 
     // 转换和标准化 $t、$l、$i18n 的调用方式
-    i18nParser(sourceAst, reactCovert, template);
+    i18nParser(sourceAst, reactCovert);
 
     // 处理jquery和underscore 等
     threePartyLibsParser(sourceAst, reactCovert, { config });
 
     // 处理import相关
-    importDeclarationHandler(sourceAst, reactCovert, { importRenameMap: reactCovert.sourceCodeContext.importComponents, component });
+    importDeclarationHandler(sourceAst, reactCovert, {
+      importRenameMap: reactCovert.sourceCodeContext.importComponents,
+      component,
+    });
 
     // 核心：处理vue文件中 export default { ... }
     parseVueOption(sourceAst, reactCovert);
@@ -72,4 +70,4 @@ export default function convertJS(sourceAst, reactCovert, { component, config, t
 
   // export default (props) => {} ===> function Xxx(props) => {}; export default Xxx;
   toNamingFunction(reactCovert.targetAst, reactCovert);
-};
+}

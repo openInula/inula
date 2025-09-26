@@ -1,12 +1,11 @@
-import t from '@babel/types'
-import LOG from '../../../logHelper.js'
-import { globalLibPaths } from '../../defaultConfig.js'
-import { addInstance } from '../../jsx/handlers/instanceHandler.js'
-import { JSErrors } from '../../../errors.js'
-import { DATA_REACTIVE, INSTANCE } from '../../jsx/consts.js'
-import { watchParser } from './watchHandler.js'
-import { propsParser } from './propsHandler.js'
-import {getIsPinia} from '../jsUtils.js';
+import t from '@babel/types';
+import LOG from '../../../logHelper.js';
+import { globalLibPaths } from '../../defaultConfig.js';
+import { addInstance } from '../../jsx/handlers/instanceHandler.js';
+import { JSErrors } from '../../../errors.js';
+import { DATA_REACTIVE, INSTANCE } from '../../jsx/consts.js';
+import { watchParser } from './watchHandler.js';
+import { propsParser } from './propsHandler.js';
 
 /**
  * 找到Object的key和value
@@ -117,7 +116,6 @@ function computedParser(ast, reactCovert) {
     let computedBody = null;
     if (prop.type === 'SpreadElement') {
       /*
-        vuex中需要讲mapState转成useMapState， pinia不需要
         computed: {
           ...mapState('counter', ['count']),
         }
@@ -126,8 +124,7 @@ function computedParser(ast, reactCovert) {
         */
       if (prop.argument.type === 'CallExpression') {
         const callName = prop.argument.callee.name;
-        const isPinia = getIsPinia(reactCovert);
-        const ags0 = prop.argument.arguments[isPinia ? 1 : 0];
+        const ags0 = prop.argument.arguments[0];
         let outKeys = [];
         let outputsNode = null;
         // 存在vuex的模块定义
@@ -146,10 +143,10 @@ function computedParser(ast, reactCovert) {
             });
           }
         }
-        const newCallName = isPinia ? callName : globalLibPaths.vuex.imports[callName];
+
         // 创建函数调用表达式 xx('')
         const functionCallExpression = t.callExpression(
-          t.identifier(newCallName),
+          t.identifier(globalLibPaths.vuex.imports[callName] || callName),
           prop.argument.arguments
         );
 
@@ -224,26 +221,24 @@ function computedParser(ast, reactCovert) {
 }
 
 function methodsParser(ast, reactCovert) {
-  // vuex中需要讲mapState转成useMapState， pinia不需要
   const methodNames = [];
   ast?.properties.forEach(prop => {
     let computedBody = null;
     if (prop.type === 'SpreadElement') {
       if (prop.argument.type === 'CallExpression') {
-        const isPinia = getIsPinia(reactCovert);
         const callName = prop.argument.callee.name;
-        const mapAttrParam = prop.argument.arguments[isPinia ? 1 : 0];
+        const ags0 = prop.argument.arguments[0];
         let outKeys = [];
         let outputsNode = null;
         // 存在vuex的模块定义
-        if (mapAttrParam.type === 'ObjectExpression') {
-          const { keys } = findObjectExpressionKeyAndValue(mapAttrParam);
+        if (ags0.type === 'ObjectExpression') {
+          const { keys } = findObjectExpressionKeyAndValue(ags0);
           outKeys = keys;
         } else {
-          if (mapAttrParam.type === 'StringLiteral') {
+          if (ags0.type === 'StringLiteral') {
             outputsNode = prop.argument.arguments?.[1];
-          } else if (mapAttrParam.type === 'ArrayExpression') {
-            outputsNode = mapAttrParam;
+          } else if (ags0.type === 'ArrayExpression') {
+            outputsNode = ags0;
           }
           if (outputsNode && outputsNode.type === 'ArrayExpression') {
             outputsNode.elements.forEach(v => {
@@ -252,10 +247,10 @@ function methodsParser(ast, reactCovert) {
             });
           }
         }
-        const newCallName = isPinia ? callName : globalLibPaths.vuex.imports[callName]
+
         // 创建函数调用表达式 xx('')
         const functionCallExpression = t.callExpression(
-          t.identifier(newCallName),
+          t.identifier(globalLibPaths.vuex.imports[callName] || callName),
           prop.argument.arguments
         );
 
@@ -303,16 +298,11 @@ function methodsParser(ast, reactCovert) {
 
     // 创建 methods 对象
     const methodsObject = t.objectExpression(
-      methodNames.map(name =>
-        t.objectProperty(t.identifier(name), t.identifier(name), false, true)
-      )
+      methodNames.map(name => t.objectProperty(t.identifier(name), t.identifier(name), false, true))
     );
 
     // 创建 setToInstance 函数调用
-    const setToInstanceCall = t.callExpression(t.identifier('setToInstance'), [
-      t.identifier(INSTANCE),
-      methodsObject
-    ]);
+    const setToInstanceCall = t.callExpression(t.identifier('setToInstance'), [t.identifier(INSTANCE), methodsObject]);
 
     // 创建表达式语句
     const expressionStatement = t.expressionStatement(setToInstanceCall);

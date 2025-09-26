@@ -221,18 +221,17 @@ function convert(options) {
   });
   log(handle);
 
-  const configPathSrc = _resolve(options.src,'..');
+  const configPathSrc = _resolve(options.src, '..');
   const configPathOut = _resolve(options.out);
-  console.log(
-    "should replace config:",
-    {path:_resolve(configPathSrc,'webpackConfig.js'),
-      target:_resolve(configPathOut,'webpack.config.js'),
-    shouldChange:existsSync(_resolve(configPathSrc,'webpackConfig.js')),
-  targetExists: existsSync(_resolve(configPathOut,'webpack.config.js'))}
-  )
-  if(existsSync(_resolve(configPathSrc,'webpackConfig.js'))){
-    rmSync(_resolve(configPathOut,'webpack.config.js'));
-    copyFileSync(_resolve(configPathSrc,'webpackConfig.js'),_resolve(configPathOut,'webpack.config.js'))
+  console.log('should replace config:', {
+    path: _resolve(configPathSrc, 'webpackConfig.js'),
+    target: _resolve(configPathOut, 'webpack.config.js'),
+    shouldChange: existsSync(_resolve(configPathSrc, 'webpackConfig.js')),
+    targetExists: existsSync(_resolve(configPathOut, 'webpack.config.js')),
+  });
+  if (existsSync(_resolve(configPathSrc, 'webpackConfig.js'))) {
+    rmSync(_resolve(configPathOut, 'webpack.config.js'));
+    copyFileSync(_resolve(configPathSrc, 'webpackConfig.js'), _resolve(configPathOut, 'webpack.config.js'));
   }
 }
 

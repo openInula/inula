@@ -1,34 +1,42 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@cloudsop/horizon'), require('react-redux'), require('@cloudsop/horizon/jsx-runtime')) :
-  typeof define === 'function' && define.amd ? define(['exports', '@cloudsop/horizon', 'react-redux', '@cloudsop/horizon/jsx-runtime'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.HorizonRouter = {}, global.Inula, global.reactRedux, global.jsxRuntime));
-})(this, (function (exports, Inula, reactRedux, jsxRuntime) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined'
+    ? factory(exports, require('@cloudsop/horizon'), require('react-redux'), require('@cloudsop/horizon/jsx-runtime'))
+    : typeof define === 'function' && define.amd
+      ? define(['exports', '@cloudsop/horizon', 'react-redux', '@cloudsop/horizon/jsx-runtime'], factory)
+      : ((global = typeof globalThis !== 'undefined' ? globalThis : global || self),
+        factory((global.HorizonRouter = {}), global.Inula, global.reactRedux, global.jsxRuntime));
+})(this, function (exports, Inula, reactRedux, jsxRuntime) {
+  'use strict';
 
-  function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+  function _interopDefaultLegacy(e) {
+    return e && typeof e === 'object' && 'default' in e ? e : { default: e };
+  }
 
-  var Inula__default = /*#__PURE__*/_interopDefaultLegacy(Inula);
+  var Inula__default = /*#__PURE__*/ _interopDefaultLegacy(Inula);
 
   function _extends() {
-    _extends = Object.assign ? Object.assign.bind() : function (target) {
-      for (var i = 1; i < arguments.length; i++) {
-        var source = arguments[i];
-        for (var key in source) {
-          if (Object.prototype.hasOwnProperty.call(source, key)) {
-            target[key] = source[key];
+    _extends = Object.assign
+      ? Object.assign.bind()
+      : function (target) {
+          for (var i = 1; i < arguments.length; i++) {
+            var source = arguments[i];
+            for (var key in source) {
+              if (Object.prototype.hasOwnProperty.call(source, key)) {
+                target[key] = source[key];
+              }
+            }
           }
-        }
-      }
-      return target;
-    };
+          return target;
+        };
     return _extends.apply(this, arguments);
   }
 
   // 定义位置变化和history方法调用的Action type
-  var ActionName = /*#__PURE__*/function (ActionName) {
-    ActionName["LOCATION_CHANGE"] = "$inula-router/LOCATION_CHANGE";
-    ActionName["CALL_HISTORY_METHOD"] = "$inula-router/CALL_HISTORY_METHOD";
+  var ActionName = /*#__PURE__*/ (function (ActionName) {
+    ActionName['LOCATION_CHANGE'] = '$inula-router/LOCATION_CHANGE';
+    ActionName['CALL_HISTORY_METHOD'] = '$inula-router/CALL_HISTORY_METHOD';
     return ActionName;
-  }({});
+  })({});
 
   // 定义Action的两种数据类型
 
@@ -39,8 +47,8 @@
       payload: {
         location: location,
         action: action,
-        isFirstRendering: isFirstRendering
-      }
+        isFirstRendering: isFirstRendering,
+      },
     };
   };
   var updateLocation = function (method) {
@@ -52,8 +60,8 @@
         type: ActionName.CALL_HISTORY_METHOD,
         payload: {
           method: method,
-          args: args
-        }
+          args: args,
+        },
       };
     };
   };
@@ -69,16 +77,16 @@
     var queryString = location && location.search;
     if (!queryString) {
       return _extends({}, location, {
-        query: {}
+        query: {},
       });
     }
     var queryObject = {};
     var params = new URLSearchParams(queryString);
     params.forEach(function (value, key) {
-      return queryObject[key] = value;
+      return (queryObject[key] = value);
     });
     return _extends({}, location, {
-      query: queryObject
+      query: queryObject,
     });
   }
   function createConnectRouter() {
@@ -86,7 +94,7 @@
     return function (history) {
       var initRouterState = {
         location: injectQueryParams(history.location),
-        action: history.action
+        action: history.action,
       };
 
       // 定义connect-router对应的redux reducer函数
@@ -104,7 +112,7 @@
           }
           return _extends({}, state, {
             location: injectQueryParams(location),
-            action: action
+            action: action,
           });
         }
         return state;
@@ -142,23 +150,23 @@
     return window.navigator.userAgent.indexOf('Trident') === -1;
   }
 
-  var Action = /*#__PURE__*/function (Action) {
-    Action["pop"] = "POP";
-    Action["push"] = "PUSH";
-    Action["replace"] = "REPLACE";
+  var Action = /*#__PURE__*/ (function (Action) {
+    Action['pop'] = 'POP';
+    Action['push'] = 'PUSH';
+    Action['replace'] = 'REPLACE';
     return Action;
-  }({});
-  var EventType = /*#__PURE__*/function (EventType) {
-    EventType["PopState"] = "popstate";
-    EventType["HashChange"] = "hashchange";
+  })({});
+  var EventType = /*#__PURE__*/ (function (EventType) {
+    EventType['PopState'] = 'popstate';
+    EventType['HashChange'] = 'hashchange';
     return EventType;
-  }({});
-  var PopDirection = /*#__PURE__*/function (PopDirection) {
-    PopDirection["back"] = "back";
-    PopDirection["forward"] = "forward";
-    PopDirection["unknown"] = "";
+  })({});
+  var PopDirection = /*#__PURE__*/ (function (PopDirection) {
+    PopDirection['back'] = 'back';
+    PopDirection['forward'] = 'forward';
+    PopDirection['unknown'] = '';
     return PopDirection;
-  }({});
+  })({});
 
   function createPath(path) {
     var search = path.search,
@@ -176,7 +184,7 @@
     var pathname = url || '/';
     var parsedPath = {
       search: '',
-      hash: ''
+      hash: '',
     };
     var hashIdx = url.indexOf('#');
     if (hashIdx > -1) {
@@ -198,13 +206,16 @@
     var urlObj = typeof to === 'string' ? parsePath(to) : to;
     // 随机key长度取6
     var getRandKey = genRandomKey(6);
-    var location = _extends({
-      pathname: pathname,
-      search: '',
-      hash: '',
-      state: state,
-      key: typeof key === 'string' ? key : getRandKey()
-    }, urlObj);
+    var location = _extends(
+      {
+        pathname: pathname,
+        search: '',
+        hash: '',
+        state: state,
+        key: typeof key === 'string' ? key : getRandKey(),
+      },
+      urlObj
+    );
     if (!location.pathname) {
       location.pathname = pathname ? pathname : '/';
     } else if (!location.pathname.startsWith('/')) {
@@ -241,7 +252,9 @@
     return tempPath;
   }
   function hasBasename(path, prefix) {
-    return path.toLowerCase().indexOf(prefix.toLowerCase()) === 0 && ['/', '?', '#', ''].includes(path.charAt(prefix.length));
+    return (
+      path.toLowerCase().indexOf(prefix.toLowerCase()) === 0 && ['/', '?', '#', ''].includes(path.charAt(prefix.length))
+    );
   }
   function stripBasename(path, prefix) {
     return hasBasename(path, prefix) ? path.substring(prefix.length) : path;
@@ -279,7 +292,7 @@
     }
     return {
       getDelta: getDelta,
-      addRecord: addRecord
+      addRecord: addRecord,
     };
   }
   function genRandomKey(length) {
@@ -320,34 +333,42 @@
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
+      throw new TypeError('Cannot call a class as a function');
     }
   }
 
   function _typeof(o) {
-    "@babel/helpers - typeof";
+    '@babel/helpers - typeof';
 
-    return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
-      return typeof o;
-    } : function (o) {
-      return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
-    }, _typeof(o);
+    return (
+      (_typeof =
+        'function' == typeof Symbol && 'symbol' == typeof Symbol.iterator
+          ? function (o) {
+              return typeof o;
+            }
+          : function (o) {
+              return o && 'function' == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype
+                ? 'symbol'
+                : typeof o;
+            }),
+      _typeof(o)
+    );
   }
 
   function toPrimitive(t, r) {
-    if ("object" != _typeof(t) || !t) return t;
+    if ('object' != _typeof(t) || !t) return t;
     var e = t[Symbol.toPrimitive];
     if (void 0 !== e) {
-      var i = e.call(t, r || "default");
-      if ("object" != _typeof(i)) return i;
-      throw new TypeError("@@toPrimitive must return a primitive value.");
+      var i = e.call(t, r || 'default');
+      if ('object' != _typeof(i)) return i;
+      throw new TypeError('@@toPrimitive must return a primitive value.');
     }
-    return ("string" === r ? String : Number)(t);
+    return ('string' === r ? String : Number)(t);
   }
 
   function toPropertyKey(t) {
-    var i = toPrimitive(t, "string");
-    return "symbol" == _typeof(i) ? i : String(i);
+    var i = toPrimitive(t, 'string');
+    return 'symbol' == _typeof(i) ? i : String(i);
   }
 
   function _defineProperties(target, props) {
@@ -355,55 +376,58 @@
       var descriptor = props[i];
       descriptor.enumerable = descriptor.enumerable || false;
       descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
+      if ('value' in descriptor) descriptor.writable = true;
       Object.defineProperty(target, toPropertyKey(descriptor.key), descriptor);
     }
   }
   function _createClass(Constructor, protoProps, staticProps) {
     if (protoProps) _defineProperties(Constructor.prototype, protoProps);
     if (staticProps) _defineProperties(Constructor, staticProps);
-    Object.defineProperty(Constructor, "prototype", {
-      writable: false
+    Object.defineProperty(Constructor, 'prototype', {
+      writable: false,
     });
     return Constructor;
   }
 
-  var TransitionManager = /*#__PURE__*/function () {
+  var TransitionManager = /*#__PURE__*/ (function () {
     function TransitionManager() {
       _classCallCheck(this, TransitionManager);
       this.prompt = void 0;
       this.prompt = null;
     }
-    _createClass(TransitionManager, [{
-      key: "setPrompt",
-      value: function setPrompt(prompt) {
-        var _this = this;
-        this.prompt = prompt;
+    _createClass(TransitionManager, [
+      {
+        key: 'setPrompt',
+        value: function setPrompt(prompt) {
+          var _this = this;
+          this.prompt = prompt;
 
-        // 清除Prompt
-        return function () {
-          if (_this.prompt === prompt) {
-            _this.prompt = null;
-          }
-        };
-      }
-    }, {
-      key: "confirmJumpTo",
-      value: function confirmJumpTo(location, action, userConfirmationFunc, callBack) {
-        if (this.prompt !== null) {
-          var result = typeof this.prompt === 'function' ? this.prompt(location, action) : this.prompt;
-          if (typeof result === 'string') {
-            typeof userConfirmationFunc === 'function' ? userConfirmationFunc(result, callBack) : callBack(true);
+          // 清除Prompt
+          return function () {
+            if (_this.prompt === prompt) {
+              _this.prompt = null;
+            }
+          };
+        },
+      },
+      {
+        key: 'confirmJumpTo',
+        value: function confirmJumpTo(location, action, userConfirmationFunc, callBack) {
+          if (this.prompt !== null) {
+            var result = typeof this.prompt === 'function' ? this.prompt(location, action) : this.prompt;
+            if (typeof result === 'string') {
+              typeof userConfirmationFunc === 'function' ? userConfirmationFunc(result, callBack) : callBack(true);
+            } else {
+              callBack(result !== false);
+            }
           } else {
-            callBack(result !== false);
+            callBack(true);
           }
-        } else {
-          callBack(true);
-        }
-      }
-    }]);
+        },
+      },
+    ]);
     return TransitionManager;
-  }();
+  })();
 
   function warning(condition, message) {
     if (condition) {
@@ -413,9 +437,70 @@
     }
   }
 
-  function _createForOfIteratorHelper$1(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray$1(r)) || e && r && "number" == typeof r.length) { t && (r = t); var n = 0, F = function () {}; return { s: F, n: function () { return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] }; }, e: function (r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function () { t = t.call(r); }, n: function () { var r = t.next(); return a = r.done, r; }, e: function (r) { u = !0, o = r; }, f: function () { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
-  function _unsupportedIterableToArray$1(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray$1(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray$1(r, a) : void 0; } }
-  function _arrayLikeToArray$1(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+  function _createForOfIteratorHelper$1(r, e) {
+    var t = ('undefined' != typeof Symbol && r[Symbol.iterator]) || r['@@iterator'];
+    if (!t) {
+      if (Array.isArray(r) || (t = _unsupportedIterableToArray$1(r)) || (e && r && 'number' == typeof r.length)) {
+        t && (r = t);
+        var n = 0,
+          F = function () {};
+        return {
+          s: F,
+          n: function () {
+            return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] };
+          },
+          e: function (r) {
+            throw r;
+          },
+          f: F,
+        };
+      }
+      throw new TypeError(
+        'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.'
+      );
+    }
+    var o,
+      a = !0,
+      u = !1;
+    return {
+      s: function () {
+        t = t.call(r);
+      },
+      n: function () {
+        var r = t.next();
+        return ((a = r.done), r);
+      },
+      e: function (r) {
+        ((u = !0), (o = r));
+      },
+      f: function () {
+        try {
+          a || null == t.return || t.return();
+        } finally {
+          if (u) throw o;
+        }
+      },
+    };
+  }
+  function _unsupportedIterableToArray$1(r, a) {
+    if (r) {
+      if ('string' == typeof r) return _arrayLikeToArray$1(r, a);
+      var t = {}.toString.call(r).slice(8, -1);
+      return (
+        'Object' === t && r.constructor && (t = r.constructor.name),
+        'Map' === t || 'Set' === t
+          ? Array.from(r)
+          : 'Arguments' === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t)
+            ? _arrayLikeToArray$1(r, a)
+            : void 0
+      );
+    }
+  }
+  function _arrayLikeToArray$1(r, a) {
+    (null == a || a > r.length) && (a = r.length);
+    for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
+    return n;
+  }
   // 抽取BrowserHistory和HashHistory中相同的方法
   function getBaseHistory() {
     var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'browser';
@@ -469,7 +554,7 @@
       };
       var trigger = {
         type: listener.type,
-        trigger: wrapper
+        trigger: wrapper,
       };
       listeners.push(trigger);
       setupListener(1);
@@ -487,7 +572,7 @@
       var _iterator = _createForOfIteratorHelper$1(unListeners),
         _step;
       try {
-        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        for (_iterator.s(); !(_step = _iterator.n()).done; ) {
           var unListen = _step.value;
           unListen();
         }
@@ -527,7 +612,7 @@
         var location = _extends({}, historyProps.location);
         var commonArgs = {
           location: location,
-          action: historyProps.action
+          action: historyProps.action,
         };
         var popArgs = {
           to: createPath(location),
@@ -535,8 +620,8 @@
           information: {
             delta: delta,
             direction: delta > 0 ? PopDirection.forward : PopDirection.back,
-            type: Action.pop
-          }
+            type: Action.pop,
+          },
         };
         for (var i = 0; i < listeners.length && !pauseTrigger; i++) {
           var listener = listeners[i];
@@ -555,7 +640,7 @@
       addListener: addListener,
       block: block,
       destroy: destroy,
-      getUpdateStateFunc: getUpdateStateFunc
+      getUpdateStateFunc: getUpdateStateFunc,
     };
   }
 
@@ -588,7 +673,7 @@
     var listen = function (listener) {
       var trigger = {
         type: 'common',
-        listener: listener
+        listener: listener,
       };
       return addListener(trigger);
     };
@@ -609,7 +694,7 @@
       push: push,
       replace: replace,
       destroy: destroy,
-      createHref: createHref
+      createHref: createHref,
     };
     var updateState = getUpdateStateFunc(history);
     function getHistoryState() {
@@ -624,11 +709,16 @@
         state = _ref.state;
       var pathname = window.location.pathname;
       pathname = basename ? stripBasename(pathname, basename) : pathname;
-      return createLocation('', {
-        pathname: pathname,
-        search: search,
-        hash: hash
-      }, state, key);
+      return createLocation(
+        '',
+        {
+          pathname: pathname,
+          search: search,
+          hash: hash,
+        },
+        state,
+        key
+      );
     }
 
     // 拦截页面POP事件后，防止返回到的页面被重复拦截
@@ -644,7 +734,7 @@
             // 执行跳转行为
             updateState({
               action: action,
-              location: location
+              location: location,
             });
           } else {
             revertPopState(location, history.location);
@@ -687,18 +777,25 @@
           if (forceRefresh) {
             window.location.href = href;
           } else {
-            browserHistory.pushState({
-              key: key,
-              state: state
-            }, '', href);
+            browserHistory.pushState(
+              {
+                key: key,
+                state: state,
+              },
+              '',
+              href
+            );
             recordOperator.addRecord(history.location, location, action);
             updateState({
               action: action,
-              location: location
+              location: location,
             });
           }
         } else {
-          warning(state !== undefined, 'Browser history cannot push state in browsers that do not support HTML5 history');
+          warning(
+            state !== undefined,
+            'Browser history cannot push state in browsers that do not support HTML5 history'
+          );
           window.location.href = href;
         }
       });
@@ -717,18 +814,25 @@
           if (forceRefresh) {
             window.location.replace(href);
           } else {
-            browserHistory.replaceState({
-              key: key,
-              state: state
-            }, '', href);
+            browserHistory.replaceState(
+              {
+                key: key,
+                state: state,
+              },
+              '',
+              href
+            );
             recordOperator.addRecord(history.location, location, action);
             updateState({
               action: action,
-              location: location
+              location: location,
             });
           }
         } else {
-          warning(state !== undefined, 'Browser history cannot push state in browsers that do not support HTML5 history');
+          warning(
+            state !== undefined,
+            'Browser history cannot push state in browsers that do not support HTML5 history'
+          );
           window.location.replace(href);
         }
       });
@@ -783,7 +887,7 @@
     var listen = function (listener) {
       var trigger = {
         type: 'common',
-        listener: listener
+        listener: listener,
       };
       return addListener(trigger);
     };
@@ -810,7 +914,7 @@
       addListener: addListener,
       block: block,
       destroy: destroy,
-      createHref: createHref
+      createHref: createHref,
     };
     var updateState = getUpdateStateFunc(history);
     function push(to, state) {
@@ -830,7 +934,7 @@
           memRecords.addRecord(history.location, location, action);
           updateState({
             action: action,
-            location: location
+            location: location,
           });
         } else {
           updateState(undefined);
@@ -854,7 +958,7 @@
         memRecords.addRecord(history.location, location, action);
         updateState({
           action: action,
-          location: location
+          location: location,
         });
       });
     }
@@ -886,7 +990,7 @@
           if (isJump) {
             updateState({
               action: action,
-              location: location
+              location: location,
             });
           } else {
             revertPopState(location);
@@ -930,16 +1034,16 @@
    * See the Mulan PSL v2 for more details.
    */
 
-  var TokenType = /*#__PURE__*/function (TokenType) {
-    TokenType["Delimiter"] = "delimiter";
-    TokenType["Static"] = "static";
-    TokenType["Param"] = "param";
-    TokenType["WildCard"] = "wildcard";
-    TokenType["LBracket"] = "(";
-    TokenType["RBracket"] = ")";
-    TokenType["Pattern"] = "pattern";
+  var TokenType = /*#__PURE__*/ (function (TokenType) {
+    TokenType['Delimiter'] = 'delimiter';
+    TokenType['Static'] = 'static';
+    TokenType['Param'] = 'param';
+    TokenType['WildCard'] = 'wildcard';
+    TokenType['LBracket'] = '(';
+    TokenType['RBracket'] = ')';
+    TokenType['Pattern'] = 'pattern';
     return TokenType;
-  }({});
+  })({});
 
   // 解析URL中的动态参数，以实现TypeScript提示功能
 
@@ -980,7 +1084,7 @@
     }
     var urlPath = cleanPath(path);
     if (urlPath !== '*' && !urlPath.startsWith('/')) {
-      throw new Error("Url must start with \"/\".");
+      throw new Error('Url must start with "/".');
     }
     var getLiteral = function () {
       var name = '';
@@ -1000,7 +1104,7 @@
       if (curChar === '/') {
         tokens.push({
           type: TokenType.Delimiter,
-          value: urlPath[i]
+          value: urlPath[i],
         });
         skipChar(1);
         continue;
@@ -1010,7 +1114,7 @@
         skipChar(1);
         tokens.push({
           type: TokenType.Param,
-          value: getLiteral()
+          value: getLiteral(),
         });
         continue;
       }
@@ -1018,7 +1122,7 @@
       if ((prevChar === '/' || prevChar === undefined) && curChar === '*') {
         tokens.push({
           type: TokenType.WildCard,
-          value: urlPath[i]
+          value: urlPath[i],
         });
         skipChar(1);
         continue;
@@ -1027,14 +1131,14 @@
       if (prevChar === '/' && validChar.test(curChar)) {
         tokens.push({
           type: TokenType.Static,
-          value: getLiteral()
+          value: getLiteral(),
         });
         continue;
       }
       if (curChar === '(') {
         tokens.push({
           type: TokenType.LBracket,
-          value: '('
+          value: '(',
         });
         skipChar(1);
         continue;
@@ -1042,7 +1146,7 @@
       if (curChar === ')') {
         tokens.push({
           type: TokenType.RBracket,
-          value: ')'
+          value: ')',
         });
         skipChar(1);
         continue;
@@ -1050,7 +1154,7 @@
       if (['*', '?', '$', '^', '+'].includes(curChar)) {
         tokens.push({
           type: TokenType.Pattern,
-          value: curChar
+          value: curChar,
         });
         skipChar(1);
         continue;
@@ -1058,7 +1162,7 @@
       if (validChar.test(curChar)) {
         tokens.push({
           type: TokenType.Pattern,
-          value: getLiteral()
+          value: getLiteral(),
         });
         continue;
       }
@@ -1068,25 +1172,86 @@
     return tokens;
   }
 
-  function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var n = 0, F = function () {}; return { s: F, n: function () { return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] }; }, e: function (r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function () { t = t.call(r); }, n: function () { var r = t.next(); return a = r.done, r; }, e: function (r) { u = !0, o = r; }, f: function () { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
-  function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
-  function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+  function _createForOfIteratorHelper(r, e) {
+    var t = ('undefined' != typeof Symbol && r[Symbol.iterator]) || r['@@iterator'];
+    if (!t) {
+      if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || (e && r && 'number' == typeof r.length)) {
+        t && (r = t);
+        var n = 0,
+          F = function () {};
+        return {
+          s: F,
+          n: function () {
+            return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] };
+          },
+          e: function (r) {
+            throw r;
+          },
+          f: F,
+        };
+      }
+      throw new TypeError(
+        'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.'
+      );
+    }
+    var o,
+      a = !0,
+      u = !1;
+    return {
+      s: function () {
+        t = t.call(r);
+      },
+      n: function () {
+        var r = t.next();
+        return ((a = r.done), r);
+      },
+      e: function (r) {
+        ((u = !0), (o = r));
+      },
+      f: function () {
+        try {
+          a || null == t.return || t.return();
+        } finally {
+          if (u) throw o;
+        }
+      },
+    };
+  }
+  function _unsupportedIterableToArray(r, a) {
+    if (r) {
+      if ('string' == typeof r) return _arrayLikeToArray(r, a);
+      var t = {}.toString.call(r).slice(8, -1);
+      return (
+        'Object' === t && r.constructor && (t = r.constructor.name),
+        'Map' === t || 'Set' === t
+          ? Array.from(r)
+          : 'Arguments' === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t)
+            ? _arrayLikeToArray(r, a)
+            : void 0
+      );
+    }
+  }
+  function _arrayLikeToArray(r, a) {
+    (null == a || a > r.length) && (a = r.length);
+    for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
+    return n;
+  }
 
   // 不同类型参数的匹配得分
-  var MatchScore = /*#__PURE__*/function (MatchScore) {
-    MatchScore[MatchScore["static"] = 10] = "static";
-    MatchScore[MatchScore["param"] = 6] = "param";
-    MatchScore[MatchScore["wildcard"] = 3] = "wildcard";
-    MatchScore[MatchScore["placeholder"] = -1] = "placeholder";
+  var MatchScore = /*#__PURE__*/ (function (MatchScore) {
+    MatchScore[(MatchScore['static'] = 10)] = 'static';
+    MatchScore[(MatchScore['param'] = 6)] = 'param';
+    MatchScore[(MatchScore['wildcard'] = 3)] = 'wildcard';
+    MatchScore[(MatchScore['placeholder'] = -1)] = 'placeholder';
     return MatchScore;
-  }(MatchScore || {}); // 兼容 react v5 matched类型
+  })(MatchScore || {}); // 兼容 react v5 matched类型
   var defaultOption = {
     // url匹配时是否大小写敏感
     caseSensitive: false,
     // 是否严格匹配url结尾的/
     strictMode: false,
     // 是否完全精确匹配
-    exact: false
+    exact: false,
   };
   // 正则表达式中需要转义的字符
   var REGEX_CHARS_RE = /[.+*?^${}()[\]/\\]/g;
@@ -1137,53 +1302,52 @@
       var token = tokens[tokenIdx];
       var nextToken = tokens[tokenIdx + 1];
       switch (token.type) {
-        case TokenType.Delimiter:
-          {
-            // 该分隔符后有可选参数则该分割符在匹配时是可选的
-            var hasOptional = lookToNextDelimiter(tokenIdx + 1);
-            // 该分隔符为最后一个且strictMode===false时，该分割符在匹配时是可选的
-            var isSlashOptional = nextToken === undefined && !strictMode;
-            pattern += "/" + (hasOptional || isSlashOptional ? '?' : '');
-            break;
-          }
+        case TokenType.Delimiter: {
+          // 该分隔符后有可选参数则该分割符在匹配时是可选的
+          var hasOptional = lookToNextDelimiter(tokenIdx + 1);
+          // 该分隔符为最后一个且strictMode===false时，该分割符在匹配时是可选的
+          var isSlashOptional = nextToken === undefined && !strictMode;
+          pattern += '/' + (hasOptional || isSlashOptional ? '?' : '');
+          break;
+        }
         case TokenType.Static:
           pattern += token.value.replace(REGEX_CHARS_RE, '\\$&');
           if (nextToken && nextToken.type === TokenType.Pattern) {
-            pattern += "(." + nextToken.value + ")";
+            pattern += '(.' + nextToken.value + ')';
             keys.push(String(asteriskCount));
             asteriskCount++;
           }
           scores.push(MatchScore.static);
           break;
-        case TokenType.Param:
-          {
-            // 动态参数支持形如/:param、/:param*、/:param?、/:param(\\d+)的形式
-            var paramRegexp = '';
-            if (nextToken) {
-              switch (nextToken.type) {
-                case TokenType.LBracket:
-                  // 跳过当前Token和左括号
-                  tokenIdx += 2;
-                  while (tokens[tokenIdx].type !== TokenType.RBracket) {
-                    paramRegexp += tokens[tokenIdx].value;
-                    tokenIdx++;
-                  }
-                  paramRegexp = "(" + paramRegexp + ")";
-                  break;
-                case TokenType.Pattern:
+        case TokenType.Param: {
+          // 动态参数支持形如/:param、/:param*、/:param?、/:param(\\d+)的形式
+          var paramRegexp = '';
+          if (nextToken) {
+            switch (nextToken.type) {
+              case TokenType.LBracket:
+                // 跳过当前Token和左括号
+                tokenIdx += 2;
+                while (tokens[tokenIdx].type !== TokenType.RBracket) {
+                  paramRegexp += tokens[tokenIdx].value;
                   tokenIdx++;
-                  paramRegexp += "(" + (nextToken.value === '*' ? '.*' : BASE_PARAM_PATTERN) + ")" + nextToken.value;
-                  break;
-              }
+                }
+                paramRegexp = '(' + paramRegexp + ')';
+                break;
+              case TokenType.Pattern:
+                tokenIdx++;
+                paramRegexp += '(' + (nextToken.value === '*' ? '.*' : BASE_PARAM_PATTERN) + ')' + nextToken.value;
+                break;
             }
-            pattern += paramRegexp ? "(?:" + paramRegexp + ")" : "(" + BASE_PARAM_PATTERN + ")";
-            keys.push(token.value);
-            scores.push(MatchScore.param);
-            break;
           }
+          pattern += paramRegexp ? '(?:' + paramRegexp + ')' : '(' + BASE_PARAM_PATTERN + ')';
+          keys.push(token.value);
+          scores.push(MatchScore.param);
+          break;
+        }
         case TokenType.WildCard:
           keys.push(token.value);
-          pattern += "((?:" + BASE_PARAM_PATTERN + ")" + (onlyHasWildCard ? '?' : '') + "(?:/(?:" + BASE_PARAM_PATTERN + "))*)";
+          pattern +=
+            '((?:' + BASE_PARAM_PATTERN + ')' + (onlyHasWildCard ? '?' : '') + '(?:/(?:' + BASE_PARAM_PATTERN + '))*)';
           scores.push(onlyHasWildCard ? MatchScore.wildcard : MatchScore.placeholder);
           break;
       }
@@ -1191,13 +1355,13 @@
     var isWildCard = lastToken.type === TokenType.WildCard;
     if (!isWildCard && !exact) {
       if (!strictMode) {
-        pattern += "(?:[" + escapeStr(DefaultDelimiter) + "](?=$))?";
+        pattern += '(?:[' + escapeStr(DefaultDelimiter) + '](?=$))?';
       }
       if (lastToken.type !== TokenType.Delimiter) {
-        pattern += "(?=[" + escapeStr(DefaultDelimiter) + "]|$)";
+        pattern += '(?=[' + escapeStr(DefaultDelimiter) + ']|$)';
       }
     } else {
-      pattern += strictMode ? '$' : "[" + escapeStr(DefaultDelimiter) + "]?$";
+      pattern += strictMode ? '$' : '[' + escapeStr(DefaultDelimiter) + ']?$';
     }
     var flag = caseSensitive ? '' : 'i';
     var regexp = new RegExp(pattern, flag);
@@ -1225,7 +1389,10 @@
             (_params$ = params['*']).push.apply(_params$, value);
           }
           // 完成通配符参数解析后将placeholder替换为wildcard参数的分值
-          parseScore.splice.apply(parseScore, [scores.indexOf(MatchScore.placeholder), 1].concat(new Array(value.length).fill(MatchScore.wildcard)));
+          parseScore.splice.apply(
+            parseScore,
+            [scores.indexOf(MatchScore.placeholder), 1].concat(new Array(value.length).fill(MatchScore.wildcard))
+          );
         } else {
           params[key] = param ? param : undefined;
         }
@@ -1237,7 +1404,7 @@
         path: pathname,
         url: url,
         score: parseScore,
-        params: params
+        params: params,
       };
     }
 
@@ -1249,7 +1416,7 @@
       var _iterator = _createForOfIteratorHelper(tokens),
         _step;
       try {
-        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        for (_iterator.s(); !(_step = _iterator.n()).done; ) {
           var _token = _step.value;
           switch (_token.type) {
             case TokenType.Static:
@@ -1261,16 +1428,15 @@
               }
               path += params[_token.value];
               break;
-            case TokenType.WildCard:
-              {
-                var wildCard = params['*'];
-                if (wildCard instanceof Array) {
-                  path += wildCard.join('/');
-                } else {
-                  path += wildCard;
-                }
-                break;
+            case TokenType.WildCard: {
+              var wildCard = params['*'];
+              if (wildCard instanceof Array) {
+                path += wildCard.join('/');
+              } else {
+                path += wildCard;
               }
+              break;
+            }
             case TokenType.Delimiter:
               path += _token.value;
               break;
@@ -1288,7 +1454,7 @@
       keys: keys,
       score: scores,
       compile: compile,
-      parse: parse
+      parse: parse,
     };
   }
 
@@ -1301,7 +1467,7 @@
     var _iterator2 = _createForOfIteratorHelper(patterns),
       _step2;
     try {
-      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+      for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
         var item = _step2.value;
         var parser = createPathParser(item, option);
         var matched = parser.parse(pathname);
@@ -1314,9 +1480,11 @@
     } finally {
       _iterator2.f();
     }
-    return !matchedResults.length ? null : matchedResults.sort(function (a, b) {
-      return scoreCompare(a.score, b.score);
-    })[0];
+    return !matchedResults.length
+      ? null
+      : matchedResults.sort(function (a, b) {
+          return scoreCompare(a.score, b.score);
+        })[0];
   }
   function generatePath(path, params) {
     var parser = createPathParser(path);
@@ -1361,14 +1529,14 @@
       match = matchPath(routeLocation.pathname, path, {
         strictMode: strict,
         caseSensitive: sensitive,
-        exact: exact
+        exact: exact,
       });
     } else {
       match = context.match;
     }
     var newProps = _extends({}, context, {
       location: routeLocation,
-      match: match
+      match: match,
     });
     if (Array.isArray(children) && Inula.Children.count(children) === 0) {
       children = null;
@@ -1407,7 +1575,7 @@
     };
     return jsxRuntime.jsx(RouterContext.Provider, {
       value: newProps,
-      children: getChildren()
+      children: getChildren(),
     });
   }
 
@@ -1423,9 +1591,10 @@
     var isMount = Inula.useRef(false);
 
     // 在Router加载时就监听history地址变化，以保证在始渲染时重定向能正确触发
-    if (unListen.current === null) unListen.current = history.listen(function (arg) {
-      pendingLocation.current = arg.location;
-    });
+    if (unListen.current === null)
+      unListen.current = history.listen(function (arg) {
+        pendingLocation.current = arg.location;
+      });
 
     // 模拟componentDidMount和componentWillUnmount
     Inula.useLayoutEffect(function () {
@@ -1451,22 +1620,25 @@
         }
       };
     }, []);
-    var initContextValue = Inula.useMemo(function () {
-      return {
-        history: history,
-        location: location,
-        match: {
-          isExact: location.pathname === '/',
-          params: {},
-          path: '/',
-          score: [],
-          url: '/'
-        }
-      };
-    }, [location]);
+    var initContextValue = Inula.useMemo(
+      function () {
+        return {
+          history: history,
+          location: location,
+          match: {
+            isExact: location.pathname === '/',
+            params: {},
+            path: '/',
+            score: [],
+            url: '/',
+          },
+        };
+      },
+      [location]
+    );
     return jsxRuntime.jsx(RouterContext.Provider, {
       value: initContextValue,
-      children: children
+      children: children,
     });
   }
 
@@ -1488,7 +1660,7 @@
           match = matchPath(location.pathname, target, {
             strictMode: elementProps.strict,
             caseSensitive: elementProps.sensitive,
-            exact: elementProps.exact
+            exact: elementProps.exact,
           });
         } else {
           match = context.match;
@@ -1499,7 +1671,7 @@
       // 使用cloneElement复制已有组件并更新其Props
       return Inula.cloneElement(element, {
         location: location,
-        computed: match
+        computed: match,
       });
     }
     return null;
@@ -1539,7 +1711,7 @@
     return null;
   }
 
-  var _excluded$4 = ["state"];
+  var _excluded$4 = ['state'];
   function Redirect(props) {
     var to = props.to,
       _props$push = props.push,
@@ -1558,7 +1730,7 @@
           var _parser = createPathParser(pathname);
           var _target = _parser.compile(computed.params);
           return _extends({}, to, {
-            pathname: _target
+            pathname: _target,
           });
         }
       }
@@ -1581,7 +1753,7 @@
     return jsxRuntime.jsx(LifeCycle, {
       onMount: onMountFunc,
       onUpdate: onUpdateFunc,
-      data: path
+      data: path,
     });
   }
 
@@ -1590,7 +1762,7 @@
     var message = props.message,
       _props$when = props.when,
       when = _props$when === void 0 ? true : _props$when;
-    if (typeof when === 'function' && when(context.location) === false || !when) {
+    if ((typeof when === 'function' && when(context.location) === false) || !when) {
       return null;
     }
     var navigate = context.history.block;
@@ -1616,19 +1788,22 @@
       onMount: onMountFunc,
       onUpdate: onUpdateFunc,
       onUnmount: onUnmountFunc,
-      data: message
+      data: message,
     });
   }
 
-  var _excluded$3 = ["wrappedComponentRef"];
+  var _excluded$3 = ['wrappedComponentRef'];
   function withRouter(Component) {
     return function (props) {
       var wrappedComponentRef = props.wrappedComponentRef,
         rest = _objectWithoutPropertiesLoose(props, _excluded$3);
       var context = Inula.useContext(RouterContext);
-      return jsxRuntime.jsx(Component, _extends({}, rest, context, {
-        ref: wrappedComponentRef
-      }));
+      return jsxRuntime.jsx(
+        Component,
+        _extends({}, rest, context, {
+          ref: wrappedComponentRef,
+        })
+      );
     };
   }
 
@@ -1638,12 +1813,12 @@
       historyRef.current = createHashHistory({
         basename: props.basename,
         getUserConfirmation: props.getUserConfirmation,
-        hashType: props.hashType
+        hashType: props.hashType,
       });
     }
     return jsxRuntime.jsx(Router, {
       history: historyRef.current,
-      children: props.children
+      children: props.children,
     });
   }
 
@@ -1654,16 +1829,16 @@
       historyRef.current = createBrowserHistory({
         basename: props.basename,
         forceRefresh: props.forceRefresh,
-        getUserConfirmation: props.getUserConfirmation
+        getUserConfirmation: props.getUserConfirmation,
       });
     }
     return jsxRuntime.jsx(Router, {
       history: historyRef.current,
-      children: props.children
+      children: props.children,
     });
   }
 
-  var _excluded$2 = ["to", "replace", "component", "onClick", "target"];
+  var _excluded$2 = ['to', 'replace', 'component', 'onClick', 'target'];
   var isModifiedEvent = function (event) {
     return event.metaKey || event.altKey || event.ctrlKey || event.shiftKey;
   };
@@ -1673,8 +1848,8 @@
   function Link(props) {
     var to = props.to,
       replace = props.replace;
-      props.component;
-      var onClick = props.onClick,
+    props.component;
+    var onClick = props.onClick,
       target = props.target,
       other = _objectWithoutPropertiesLoose(props, _excluded$2);
     var tag = props.tag || 'a';
@@ -1692,7 +1867,7 @@
       path = {
         pathname: pathname,
         hash: hash,
-        search: search
+        search: search,
       };
       state = location.state;
     }
@@ -1714,14 +1889,17 @@
         navigate(path, state);
       }
     };
-    var linkProps = _extends({
-      href: href,
-      onClick: linkClickEvent
-    }, other);
-    return Inula__default["default"].createElement(tag, linkProps);
+    var linkProps = _extends(
+      {
+        href: href,
+        onClick: linkClickEvent,
+      },
+      other
+    );
+    return Inula__default['default'].createElement(tag, linkProps);
   }
 
-  var _excluded$1 = ["to", "isActive", "exact", "strict", "sensitive", "className", "activeClassName"];
+  var _excluded$1 = ['to', 'isActive', 'exact', 'strict', 'sensitive', 'className', 'activeClassName'];
   function NavLink(props) {
     var to = props.to,
       isActive = props.isActive,
@@ -1735,24 +1913,35 @@
     var toLocation = typeof to === 'function' ? to(context.location) : to;
     var _ref = typeof toLocation === 'string' ? parsePath(toLocation) : toLocation,
       pathname = _ref.pathname;
-    var match = pathname ? matchPath(context.location.pathname, pathname, {
-      exact: exact,
-      strictMode: strict,
-      caseSensitive: sensitive
-    }) : null;
+    var match = pathname
+      ? matchPath(context.location.pathname, pathname, {
+          exact: exact,
+          strictMode: strict,
+          caseSensitive: sensitive,
+        })
+      : null;
     var isLinkActive = !!(isActive ? isActive(match, context.location) : match);
     var classNames = typeof className === 'function' ? className(isLinkActive) : className;
     if (isLinkActive) {
       classNames = [activeClassName, classNames].filter(Boolean).join(' ');
     }
     var page = 'page';
-    var otherProps = _extends({
-      className: classNames,
-      'aria-current': isLinkActive ? page : undefined
-    }, rest);
-    return jsxRuntime.jsx(Link, _extends({
-      to: to
-    }, otherProps));
+    var otherProps = _extends(
+      {
+        className: classNames,
+        'aria-current': isLinkActive ? page : undefined,
+      },
+      rest
+    );
+    return jsxRuntime.jsx(
+      Link,
+      _extends(
+        {
+          to: to,
+        },
+        otherProps
+      )
+    );
   }
 
   // 获取redux state中的值
@@ -1779,7 +1968,7 @@
     var getRouter = function (state) {
       var router = getIn(state, ['router']);
       if (!isRouter(router)) {
-        throw new Error("Could not find router reducer in " + storeType + " store, it must be mounted under \"router\"");
+        throw new Error('Could not find router reducer in ' + storeType + ' store, it must be mounted under "router"');
       }
       return router;
     };
@@ -1800,11 +1989,11 @@
       getAction: getAction,
       getSearch: getSearch,
       getRouter: getRouter,
-      getLocation: getLocation
+      getLocation: getLocation,
     };
   };
 
-  var _excluded = ["store"];
+  var _excluded = ['store'];
   var hConnect = Inula.reduxAdapter.connect;
   function ConnectedRouterWithoutMemo(props) {
     var store = props.store,
@@ -1817,30 +2006,41 @@
       getLocation = _stateReader.getLocation;
 
     // 监听store变化
-    var unsubscribe = Inula.useRef(store.subscribe(function () {
-      // 获取redux State中的location信息
-      var _getLocation = getLocation(store.getState()),
-        pathnameInStore = _getLocation.pathname,
-        searchInStore = _getLocation.search,
-        hashInStore = _getLocation.hash,
-        stateInStore = _getLocation.state;
+    var unsubscribe = Inula.useRef(
+      store.subscribe(function () {
+        // 获取redux State中的location信息
+        var _getLocation = getLocation(store.getState()),
+          pathnameInStore = _getLocation.pathname,
+          searchInStore = _getLocation.search,
+          hashInStore = _getLocation.hash,
+          stateInStore = _getLocation.state;
 
-      // 获取当前history对象中的location信息
-      var _history$location = history.location,
-        pathnameInHistory = _history$location.pathname,
-        searchInHistory = _history$location.search,
-        hashInHistory = _history$location.hash,
-        stateInHistory = _history$location.state;
+        // 获取当前history对象中的location信息
+        var _history$location = history.location,
+          pathnameInHistory = _history$location.pathname,
+          searchInHistory = _history$location.search,
+          hashInHistory = _history$location.hash,
+          stateInHistory = _history$location.state;
 
-      // 两个location不一致 执行跳转
-      if (history.action === 'PUSH' && (pathnameInHistory !== pathnameInStore || searchInHistory !== searchInStore || hashInHistory !== hashInStore || stateInHistory !== stateInStore)) {
-        history.push({
-          pathname: pathnameInStore,
-          search: searchInStore,
-          hash: hashInStore
-        }, stateInStore);
-      }
-    }));
+        // 两个location不一致 执行跳转
+        if (
+          history.action === 'PUSH' &&
+          (pathnameInHistory !== pathnameInStore ||
+            searchInHistory !== searchInStore ||
+            hashInHistory !== hashInStore ||
+            stateInHistory !== stateInStore)
+        ) {
+          history.push(
+            {
+              pathname: pathnameInStore,
+              search: searchInStore,
+              hash: hashInStore,
+            },
+            stateInStore
+          );
+        }
+      })
+    );
     var handleLocationChange = function (args) {
       var isFirstRendering = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       var location = args.location,
@@ -1858,14 +2058,17 @@
     }, []);
     if (!props.noInitialPop) {
       // 传递初始时位置信息，isFirstRendering设为true防止重复渲染
-      handleLocationChange({
-        location: history.location,
-        action: history.action
-      }, true);
+      handleLocationChange(
+        {
+          location: history.location,
+          action: history.action,
+        },
+        true
+      );
     }
     if (omitRouter) {
       return jsxRuntime.jsx(jsxRuntime.Fragment, {
-        children: children
+        children: children,
       });
     }
     var childrenNode;
@@ -1876,7 +2079,7 @@
     }
     return jsxRuntime.jsx(Router, {
       history: history,
-      children: childrenNode
+      children: childrenNode,
     });
   }
   function getConnectedRouter(type) {
@@ -1884,29 +2087,41 @@
       return {
         onLocationChanged: function (location, action, isFirstRendering) {
           return dispatch(onLocationChanged(location, action, isFirstRendering));
-        }
+        },
       };
     };
-    var ConnectedRouter = Inula__default["default"].memo(ConnectedRouterWithoutMemo);
+    var ConnectedRouter = Inula__default['default'].memo(ConnectedRouterWithoutMemo);
     var ConnectedRouterWithContext = function (props) {
       var Context = props.context || reactRedux.ReactReduxContext;
       return jsxRuntime.jsx(Context.Consumer, {
         children: function (_ref) {
           var store = _ref.store;
-          return jsxRuntime.jsx(ConnectedRouter, _extends({
-            store: store,
-            storeType: type
-          }, props));
-        }
+          return jsxRuntime.jsx(
+            ConnectedRouter,
+            _extends(
+              {
+                store: store,
+                storeType: type,
+              },
+              props
+            )
+          );
+        },
       });
     };
     var ConnectedHRouterWithContext = function (props) {
       var store = props.store,
         rest = _objectWithoutPropertiesLoose(props, _excluded);
-      return jsxRuntime.jsx(ConnectedRouter, _extends({
-        store: store,
-        storeType: type
-      }, rest));
+      return jsxRuntime.jsx(
+        ConnectedRouter,
+        _extends(
+          {
+            store: store,
+            storeType: type,
+          },
+          rest
+        )
+      );
     };
 
     // 针对不同的Store类型，使用对应的connect函数
@@ -1973,6 +2188,5 @@
   exports.withRouter = withRouter;
 
   Object.defineProperty(exports, '__esModule', { value: true });
-
-}));
+});
 //# sourceMappingURL=connectRouter.js.map

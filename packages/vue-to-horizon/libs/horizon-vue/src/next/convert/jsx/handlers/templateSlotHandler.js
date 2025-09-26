@@ -1,5 +1,5 @@
 import t from '@babel/types';
-import { globalLibPaths } from '../../defaultConfig.js'
+import { globalLibPaths } from '../../defaultConfig.js';
 
 /**
  * 把：
@@ -103,5 +103,3 @@ export function convertNestedTemplates(path, sourceCodeContext) {
     }
   }
 }
-
-

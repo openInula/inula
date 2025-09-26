@@ -1,8 +1,8 @@
 import prettier from 'prettier';
 import LOG from './logHelper.js';
-import {ESLint} from "eslint";
+import { ESLint } from 'eslint';
 import reactPlugin from 'eslint-plugin-react';
-import jsxAllyPlugin from  'eslint-plugin-jsx-a11y';
+import jsxAllyPlugin from 'eslint-plugin-jsx-a11y';
 import parser from '@babel/eslint-parser';
 import importPlugin from 'eslint-plugin-import';
 const defaultOption = {
@@ -27,7 +27,7 @@ const eslintOptions = {
     plugins: {
       react: reactPlugin,
       'jsx-a11y': jsxAllyPlugin,
-      import: importPlugin
+      import: importPlugin,
     },
     languageOptions: {
       parser: parser,
@@ -38,12 +38,12 @@ const eslintOptions = {
         babelOptions: {
           babelrc: false,
           configFile: false,
-          presets: ["@babel/preset-env", "@babel/preset-react"],
+          presets: ['@babel/preset-env', '@babel/preset-react'],
         },
         ecmaFeatures: {
           jsx: true,
         },
-      }
+      },
     },
     rules: {
       // 移出冗余的fregment
@@ -55,18 +55,18 @@ const eslintOptions = {
       // 禁止未使用变量,实测eslint无法自动修复该问题
       // 'no-unused-vars': ["warn", { args: 'after-used' }],
       // 标签自闭合
-      'react/self-closing-comp': ['warn', {
-        'component': true,
-        'html': true
-      }],
+      'react/self-closing-comp': [
+        'warn',
+        {
+          component: true,
+          html: true,
+        },
+      ],
       // 标签对齐
-      'react/jsx-closing-tag-location': ['warn', { location: 'tag-aligned' }]
+      'react/jsx-closing-tag-location': ['warn', { location: 'tag-aligned' }],
     },
   },
-}
-
-
-
+};
 
 async function formatCode(code) {
   const eslint = new ESLint(eslintOptions);

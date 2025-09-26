@@ -19,10 +19,10 @@ export function Dropdown(props) {
   const enhancedClassName = Array.isArray(props.classname)
     ? props.className.concat('el-dropdown')
     : typeof props.className === 'object'
-    ? { ...props.className, 'el-dropdown': true }
-    : props.className
-    ? [props.className, 'el-dropdown']
-    : 'el-dropdown';
+      ? { ...props.className, 'el-dropdown': true }
+      : props.className
+        ? [props.className, 'el-dropdown']
+        : 'el-dropdown';
   return (
     <div ref={referenceRef} className={enhancedClassName}>
       <div

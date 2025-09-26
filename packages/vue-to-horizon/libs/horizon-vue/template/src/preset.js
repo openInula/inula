@@ -1,35 +1,27 @@
-"use strict";
-console.log("using custom preset");
+'use strict';
+console.log('using custom preset');
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
   value: true,
 });
 exports.default = void 0;
 
-var _helperPluginUtils = require("@babel/helper-plugin-utils");
+var _helperPluginUtils = require('@babel/helper-plugin-utils');
 
-var _pluginTransformReactJsx = _interopRequireDefault(
-  require("@babel/plugin-transform-react-jsx")
-);
+var _pluginTransformReactJsx = _interopRequireDefault(require('@babel/plugin-transform-react-jsx'));
 
 var _pluginTransformReactJsxDevelopment = _interopRequireDefault(
-  require("@babel/plugin-transform-react-jsx-development")
+  require('@babel/plugin-transform-react-jsx-development')
 );
 
-var _pluginTransformReactDisplayName = _interopRequireDefault(
-  require("@babel/plugin-transform-react-display-name")
-);
+var _pluginTransformReactDisplayName = _interopRequireDefault(require('@babel/plugin-transform-react-display-name'));
 
-var _pluginTransformReactJsxSource = _interopRequireDefault(
-  require("@babel/plugin-transform-react-jsx-source")
-);
+var _pluginTransformReactJsxSource = _interopRequireDefault(require('@babel/plugin-transform-react-jsx-source'));
 
-var _pluginTransformReactJsxSelf = _interopRequireDefault(
-  require("@babel/plugin-transform-react-jsx-self")
-);
+var _pluginTransformReactJsxSelf = _interopRequireDefault(require('@babel/plugin-transform-react-jsx-self'));
 
 var _pluginTransformReactPureAnnotations = _interopRequireDefault(
-  require("@babel/plugin-transform-react-pure-annotations")
+  require('@babel/plugin-transform-react-pure-annotations')
 );
 
 function _interopRequireDefault(obj) {
@@ -37,35 +29,27 @@ function _interopRequireDefault(obj) {
 }
 
 var _default = (0, _helperPluginUtils.declare)((api, opts) => {
-  console.log("using _default");
+  console.log('using _default');
   api.assertVersion(7);
   let { pragma, pragmaFrag } = opts;
-  const {
-    pure,
-    throwIfNamespace = true,
-    useSpread,
-    runtime = "classic",
-    importSource,
-  } = opts;
+  const { pure, throwIfNamespace = true, useSpread, runtime = 'classic', importSource } = opts;
 
   console.log({ runtime });
-  if (runtime === "classic") {
-    console.log("using custom pragma");
-    pragma = "window.horizon.createElement";
-    pragmaFrag = "window.horizon.createFragment";
+  if (runtime === 'classic') {
+    console.log('using custom pragma');
+    pragma = 'window.horizon.createElement';
+    pragmaFrag = 'window.horizon.createFragment';
   }
 
   const development = !!opts.development;
   const useBuiltIns = !!opts.useBuiltIns;
 
-  if (typeof development !== "boolean") {
-    throw new Error(
-      "@babel preset-horizon 'development' option must be a boolean."
-    );
+  if (typeof development !== 'boolean') {
+    throw new Error("@babel preset-horizon 'development' option must be a boolean.");
   }
 
   const transformReactJSXPlugin =
-    runtime === "automatic" && development
+    runtime === 'automatic' && development
       ? _pluginTransformReactJsxDevelopment.default
       : _pluginTransformReactJsx.default;
   return {
@@ -85,12 +69,8 @@ var _default = (0, _helperPluginUtils.declare)((api, opts) => {
       ],
       _pluginTransformReactDisplayName.default,
       pure !== false && _pluginTransformReactPureAnnotations.default,
-      development &&
-        runtime === "classic" &&
-        _pluginTransformReactJsxSource.default,
-      development &&
-        runtime === "classic" &&
-        _pluginTransformReactJsxSelf.default,
+      development && runtime === 'classic' && _pluginTransformReactJsxSource.default,
+      development && runtime === 'classic' && _pluginTransformReactJsxSelf.default,
     ].filter(Boolean),
   };
 });

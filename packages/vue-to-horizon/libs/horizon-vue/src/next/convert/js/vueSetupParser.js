@@ -92,7 +92,8 @@ export default function vueSetupModelToReactHandler(sourceAst, reactCovert, impo
               const propsArgument = pathsub.node.arguments[0];
               if (propsArgument && t.isObjectExpression(propsArgument)) {
                 propsParser(propsArgument, reactCovert);
-              } else if (!propsArgument) { // 没有传参数
+              } else if (!propsArgument) {
+                // 没有传参数
                 reactCovert.addUseReactiveProps();
 
                 // 如果是解构形式，例如 const { title } = defineProps()
@@ -111,7 +112,7 @@ export default function vueSetupModelToReactHandler(sourceAst, reactCovert, impo
                               t.identifier(reactCovert.sourceCodeContext.propsName), // 组件 props 对象 (例如: props)
                               t.identifier(propName) // 访问 prop 对象的属性 (例如: props.title)
                             )
-                          )
+                          ),
                         ]);
 
                         // 将新生成的 const 声明插入到合适的位置
@@ -121,7 +122,10 @@ export default function vueSetupModelToReactHandler(sourceAst, reactCovert, impo
                   });
                 }
               } else {
-                LOG.error(`The parameter of defineProps must be a declarative object, for example, {'name': { type: String }}. It cannot be a variable.`);
+                // 处理变量形式的 defineProps，例如 const props = defineProps(propsConfig)
+                // 这种情况下我们假设 propsConfig 已经在其他地方定义，直接使用 useReactiveProps
+                reactCovert.addUseReactiveProps();
+                LOG.warn(`defineProps with variable parameter detected, using default props handling`);
               }
               pathsub.stop();
             } else if (targetname === 'defineExpose') {

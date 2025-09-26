@@ -12,11 +12,11 @@ import t from '@babel/types';
  * @param {Object} ast - 需要处理的抽象语法树
  * @param {Object} reactCovert - React转换器对象，用于存储上下文信息
  */
-export function i18nParser(ast, reactCovert, template) {
+export function i18nParser(ast, reactCovert) {
   traverse(ast, {
     MemberExpression(path) {
       // 将所有的 $t 调用改为简单的 $t，去掉 this 或 _this
-      if (isThisNode(path.node.object, path) && path.get('property').isIdentifier({ name: '$t' })) {
+      if (isThisNode(path.node.object) && path.get('property').isIdentifier({ name: '$t' })) {
         path.replaceWith(t.identifier('$t'));
         reactCovert.sourceCodeContext.setHas$t(true);
       }
@@ -27,7 +27,7 @@ export function i18nParser(ast, reactCovert, template) {
       }
 
       // 同样转换 $l
-      if (isThisNode(path.node.object, path) && path.get('property').isIdentifier({ name: '$l' })) {
+      if (isThisNode(path.node.object) && path.get('property').isIdentifier({ name: '$l' })) {
         path.replaceWith(t.identifier('$l'));
         reactCovert.sourceCodeContext.setHas$l(true);
       }
@@ -38,17 +38,12 @@ export function i18nParser(ast, reactCovert, template) {
       }
 
       // 同样转换 $i18n
-      if (isThisNode(path.node.object, path) && path.get('property').isIdentifier({ name: '$i18n' })) {
+      if (isThisNode(path.node.object) && path.get('property').isIdentifier({ name: '$i18n' })) {
         reactCovert.sourceCodeContext.setHas$i18n(true);
       }
 
       // 检查是否直接使用了 $i18n
       if (path.get('object').isIdentifier({ name: '$i18n' })) {
-        reactCovert.sourceCodeContext.setHas$i18n(true);
-      }
-
-      // 检查template是否直接使用了 $i18n
-      if (template.includes('$i18n.locale')) {
         reactCovert.sourceCodeContext.setHas$i18n(true);
       }
     },

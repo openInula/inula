@@ -14,7 +14,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { transform } from '../mock.js'
+import { transform } from '../mock.js';
 
 describe('mapping2ForPlugin', () => {
   it('should transform map to for jsxelement', () => {
@@ -3319,5 +3319,4 @@ export default {
     const transformedCode = transform(code);
     expect(transformedCode).toMatchInlineSnapshot(``);
   });
-
 });

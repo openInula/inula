@@ -30,7 +30,7 @@ module.exports = {
       '@': path.resolve(__dirname, 'convert'),
       'opendesign-theme': path.resolve(__dirname, './convert/plugins/opendesign-theme'),
       'opendesign-icons': path.resolve(__dirname, './convert/plugins/opendesign-icons'),
-      'opendesign-charts': path.resolve(__dirname, './convert/plugins/opendesign-charts')
+      'opendesign-charts': path.resolve(__dirname, './convert/plugins/opendesign-charts'),
     },
   },
   devServer: {
@@ -72,7 +72,7 @@ module.exports = {
       {
         test: /\.ts$/,
         exclude: /node_modules/,
-        use: [{loader: 'babel-loader'}],
+        use: [{ loader: 'babel-loader' }],
         include: path.join(__dirname, 'app'),
       },
       {
@@ -129,12 +129,12 @@ module.exports = {
             loader: 'sass-loader',
             options: {
               // 每个项目地址不同
-              additionalData: '@import “/convert/assets/common/style/common/varible.scss“;'
-            }
+              additionalData: '@import “/convert/assets/common/style/common/varible.scss“;',
+            },
           },
           {
             loader: 'scoped-css-loader',
-          }
+          },
         ],
       },
       {
@@ -148,14 +148,14 @@ module.exports = {
             },
           },
           {
-            loader: "scoped-css-loader",
+            loader: 'scoped-css-loader',
           },
           {
             loader: 'postcss-loader',
             options: {
               sourceMap: true,
             },
-          }
+          },
         ],
       },
       {
@@ -170,7 +170,7 @@ module.exports = {
   },
   optimization: {},
   plugins: [
-    new MiniCssExtractPlugin({filename: '[name].css'}),
+    new MiniCssExtractPlugin({ filename: '[name].css' }),
     new webpack.DefinePlugin({
       'process.env': { NODE_ENV: JSON.stringify('development') },
       // 'process.env': { NODE_ENV: JSON.stringify('production') },

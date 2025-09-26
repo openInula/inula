@@ -20,8 +20,7 @@ export default class SourceCodeContext {
   i18n = ''; // 存 <i18n>{ "en": {}, "zh": {} }</i18n>
   propsName = 'props'; // 存 const props = defineProps({}); 的变量名字
 
-  constructor() {
-  }
+  constructor() {}
 
   setProps(props) {
     this.props = props;
@@ -40,7 +39,7 @@ export default class SourceCodeContext {
     this.extrasImports.set(source, specifiers);
   }
 
-    /**
+  /**
    * 删除一个import 语句
    * @param {*} specifier
    * @param {*} source
@@ -181,5 +180,4 @@ export default class SourceCodeContext {
   findKeyInSelfThisDefines(key) {
     return this.selfThisDefines.has(key);
   }
-
 }

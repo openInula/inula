@@ -5,8 +5,8 @@ import LOG from '../../../logHelper.js';
 import {
   createNodeByVueVariable,
   handlerThisExpression,
-  memberExpressionValueReplaceHandler
-} from './expressionHandler.js'
+  memberExpressionValueReplaceHandler,
+} from './expressionHandler.js';
 
 export function identifierHandler(path, reactCovert) {
   // 比如 {!items.length && <li>Loading...</li>} or {isLoading && <div>loading</div>}
@@ -108,7 +108,6 @@ export function processIdentifier(node, reactCovert) {
   return node;
 }
 
-
 // 判断node是否是函数的入参，解决函数入参和全局名称相同场景
 export function isFunctionParameter(path) {
   if (!path || !path.parentPath) {
@@ -128,8 +127,12 @@ export function isFunctionParameter(path) {
     }
   }
 
-  if ((t.isFunctionDeclaration(parentNode) || t.isFunctionExpression(parentNode) || t.isArrowFunctionExpression(parentNode)) &&
-    parentNode.params.includes(node)) {
+  if (
+    (t.isFunctionDeclaration(parentNode) ||
+      t.isFunctionExpression(parentNode) ||
+      t.isArrowFunctionExpression(parentNode)) &&
+    parentNode.params.includes(node)
+  ) {
     return true;
   }
 

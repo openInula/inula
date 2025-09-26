@@ -1,11 +1,11 @@
-import t from '@babel/types'
-import { parse } from '@babel/parser'
-import LOG from '../../logHelper.js'
-import eventMap from './event-map.js'
-import { convertToCamelCase, getAttributeNodeName, getDirectiveValueByNode, isVueCustomTag } from '../nodeUtils.js'
-import { globalLibPaths } from '../defaultConfig.js'
-import { DIRECTIVE_COMPONENT, EVENT_PARAM_NAME } from './consts.js'
-import { convertToArrowFunction } from './stringRegexHandler.js'
+import t from '@babel/types';
+import { parse } from '@babel/parser';
+import LOG from '../../logHelper.js';
+import eventMap from './event-map.js';
+import { convertToCamelCase, getAttributeNodeName, getDirectiveValueByNode, isVueCustomTag } from '../nodeUtils.js';
+import { globalLibPaths } from '../defaultConfig.js';
+import { DIRECTIVE_COMPONENT, EVENT_PARAM_NAME } from './consts.js';
+import { convertToArrowFunction } from './stringRegexHandler.js';
 
 /**
  * <input v-model:value="message" />
@@ -33,7 +33,6 @@ export function handleMutualBindDirective(path, value) {
   }
   path.replaceWith(t.jSXAttribute(t.jSXIdentifier(name), valueExpression));
 
-
   const newValue = 'newValue';
   const eventName = 'update_' + name;
   const updateAttr = path.parentPath.node.attributes.find(attr => attr.name?.name?.name === eventName);
@@ -41,13 +40,12 @@ export function handleMutualBindDirective(path, value) {
     t.expressionStatement(t.assignmentExpression('=', valueExpression.expression, t.identifier(newValue))),
   ];
   if (updateAttr && updateAttr.value.type === 'StringLiteral') {
-    blockStatementBody.push(t.expressionStatement(t.callExpression(t.identifier(updateAttr.value.value), [t.identifier(newValue)])));
+    blockStatementBody.push(
+      t.expressionStatement(t.callExpression(t.identifier(updateAttr.value.value), [t.identifier(newValue)]))
+    );
     path.parentPath.node.attributes = path.parentPath.node.attributes.filter(item => item !== updateAttr);
   }
-  const changeFuncNode = t.arrowFunctionExpression(
-    [t.identifier(newValue)],
-    t.blockStatement(blockStatementBody)
-  );
+  const changeFuncNode = t.arrowFunctionExpression([t.identifier(newValue)], t.blockStatement(blockStatementBody));
   path.parentPath.node.attributes.push(
     t.jSXAttribute(t.jSXIdentifier(eventName), t.jSXExpressionContainer(changeFuncNode))
   );
@@ -71,12 +69,17 @@ export function handleShowDirective(path, value) {
 
 // 获取原代码中的事件执行语句
 function getFuncBody(handEventExpressionStatement = t.emptyStatement()) {
-  return Array.isArray(handEventExpressionStatement)
+  let functionBody = Array.isArray(handEventExpressionStatement)
     ? handEventExpressionStatement
     : [handEventExpressionStatement];
+  // 处理handEventExpressionStatement是箭头函数场景问题
+  if (handEventExpressionStatement.type === 'ArrowFunctionExpression') {
+    functionBody = handEventExpressionStatement.body.body;
+  }
+  return functionBody;
 }
 
-function getEventModifierBody(modifier, functionBody) {
+function getModifierBody(modifier, functionBody) {
   if (modifier === 'stop') {
     return [
       t.expressionStatement(
@@ -102,7 +105,7 @@ function getEventModifierBody(modifier, functionBody) {
           t.memberExpression(t.identifier(EVENT_PARAM_NAME), t.identifier('currentTarget'))
         ),
         t.blockStatement(functionBody)
-      )
+      ),
     ];
   }
   if (modifier === 'once') {
@@ -138,78 +141,29 @@ function getEventModifierBody(modifier, functionBody) {
       ),
     ];
   }
+  if (modifier === 'enter') {
+    return [
+      t.ifStatement(
+        t.binaryExpression(
+          '===',
+          t.memberExpression(t.identifier(EVENT_PARAM_NAME), t.identifier('key')),
+          t.stringLiteral('Enter')
+        ),
+        t.blockStatement(functionBody)
+      ),
+    ];
+  }
   // passive、capture和default
-  return functionBody;
-}
-
-function getKeyModifierBody(modifier, functionBody) {
-  const keyMap = {
-    enter: 'Enter',
-    space: 'Space',
-    tab: 'Tab',
-    delete: ['Delete', 'Backspace'],
-    esc: 'Escape',
-    up: 'ArrowUp',
-    down: 'ArrowDown',
-    left: 'ArrowLeft',
-    right: 'ArrowRight',
-  }
-  if (!keyMap[modifier]) {
-    return functionBody;
-  }
-
-  let condition;
-  if (modifier === 'delete') {
-    const expressionDelete = t.binaryExpression(
-      '===',
-      t.memberExpression(t.identifier(EVENT_PARAM_NAME), t.identifier('key')),
-      t.stringLiteral(keyMap.delete[0])
-    );
-    const expressionBackspace = t.binaryExpression(
-      '===',
-      t.memberExpression(t.identifier(EVENT_PARAM_NAME), t.identifier('key')),
-      t.stringLiteral(keyMap.delete[1])
-    );
-    condition =  t.logicalExpression('||', expressionDelete, expressionBackspace)
-  } else {
-    condition = t.binaryExpression(
-      '===',
-      t.memberExpression(t.identifier(EVENT_PARAM_NAME), t.identifier('key')),
-      t.stringLiteral(keyMap[modifier])
-    );
-  }
-  return [
-    t.ifStatement(condition, t.blockStatement(functionBody))
-  ];
-}
-
-function getModifierBody(modifier, functionBody) {
-  let newBody = getEventModifierBody(modifier, functionBody);
-  return getKeyModifierBody(modifier, newBody);
+  return [t.blockStatement(functionBody)];
 }
 
 const getModifierFunc = (modifierList, handEventExpressionStatement = t.emptyStatement()) => {
-  let newBody;
-  // 箭头函数场景
-  if (handEventExpressionStatement.type === 'ArrowFunctionExpression') {
-    if (handEventExpressionStatement.body.type === 'BlockStatement') {
-      newBody = handEventExpressionStatement.body.body;
-    } else {
-      newBody = [t.expressionStatement(handEventExpressionStatement.body)];
-    }
-  } else {
-    // 绑定方法名、绑定语句场景
-    newBody = getFuncBody(handEventExpressionStatement);
-  }
-
+  let newBody = getFuncBody(handEventExpressionStatement);
   modifierList.forEach(modifier => {
     newBody = getModifierBody(modifier, newBody);
-  })
-  return t.arrowFunctionExpression(
-    [t.identifier(EVENT_PARAM_NAME)],
-    t.blockStatement(newBody)
-  );
-}
+  });
+  return t.arrowFunctionExpression([t.identifier(EVENT_PARAM_NAME)], t.blockStatement(newBody));
+};
 
 /**
  * 处理click回调事件
@@ -229,10 +183,7 @@ export function handleOnDirective(path, name, value) {
     value = convertToArrowFunction(value);
     const templateAst = parse(value);
     // 只有一行且类型是字符串说明事件绑定的是方法名  v-on:click ="showOrHide"
-    if (
-      templateAst?.program?.body?.length === 1 &&
-      templateAst.program.body[0].expression?.type === 'Identifier'
-    ) {
+    if (templateAst?.program?.body?.length === 1 && templateAst.program.body[0].expression?.type === 'Identifier') {
       if (eventModifierList.length > 0) {
         path.replaceWith(
           t.jSXAttribute(
@@ -319,7 +270,7 @@ export function handleOnDirective(path, name, value) {
  * @param {Object} path - AST路径对象
  * @param {string} name - 指令名称
  * @param {any} value - 指令值
- * @param {Object} reactCovert - 转换实例，包含上下文等
+ * @param {Object} sourceCodeContext - 源代码上下文对象，包含导入信息等
  *
  * @example
  * // Vue 模板中的用法:
@@ -348,7 +299,7 @@ export function handleOnDirective(path, name, value) {
  * >
  * </DirectiveComponent>
  */
-export function handleCustomDirective(path, name, value, reactCovert) {
+export function handleCustomDirective(path, name, value, sourceCodeContext) {
   const parentOpenNode = path.parentPath.node;
   const newDerectProps = [];
   // 处理原有元素上的属性
@@ -376,7 +327,7 @@ export function handleCustomDirective(path, name, value, reactCovert) {
         newAttrVals.push(t.objectProperty(t.identifier('arg'), t.identifier(argName)));
       }
       if (v.value) {
-        newAttrVals.push(t.objectProperty(t.identifier('value'), getDirectiveValueByNode(v, reactCovert)));
+        newAttrVals.push(t.objectProperty(t.identifier('value'), getDirectiveValueByNode(v)));
       }
       newDerectProps.push(t.objectExpression(newAttrVals));
     } else {
@@ -391,9 +342,12 @@ export function handleCustomDirective(path, name, value, reactCovert) {
   );
 
   // 如果存在指令，添加 registerDirectives 属性
-  if (reactCovert.sourceCodeContext.hasDirectives) {
+  if (sourceCodeContext.hasDirectives) {
     newElementAttrs.push(
-      t.jSXAttribute(t.jSXIdentifier('registerDirectives'), t.jSXExpressionContainer(t.identifier('registerDirectives')))
+      t.jSXAttribute(
+        t.jSXIdentifier('registerDirectives'),
+        t.jSXExpressionContainer(t.identifier('registerDirectives'))
+      )
     );
   }
 
@@ -410,7 +364,7 @@ export function handleCustomDirective(path, name, value, reactCovert) {
   );
 
   // 添加必要的导入
-  reactCovert.sourceCodeContext.addExtrasImport(DIRECTIVE_COMPONENT, globalLibPaths.vueAdapter);
+  sourceCodeContext.addExtrasImport(DIRECTIVE_COMPONENT, globalLibPaths.vueAdapter);
 
   // 替换原有节点为新的 DirectiveComponent
   path.parentPath.parentPath.replaceWith(

@@ -16,35 +16,35 @@
 import * as Horizon from '@cloudsop/horizon/index.ts';
 describe('FunctionComponent Test', () => {
   it('渲染无状态组件', () => {
-    const App = (props) => {
+    const App = props => {
       return <p>{props.text}</p>;
     };
 
-    Horizon.render(<App text='app' />, container);
+    Horizon.render(<App text="app" />, container);
     expect(container.querySelector('p').innerHTML).toBe('app');
   });
 
   it('更新无状态组件', () => {
-    const App = (props) => {
+    const App = props => {
       return <p>{props.text}</p>;
     };
 
-    Horizon.render(<App text='app' />, container);
+    Horizon.render(<App text="app" />, container);
     expect(container.querySelector('p').innerHTML).toBe('app');
 
-    Horizon.render(<App text='ABC' />, container);
+    Horizon.render(<App text="ABC" />, container);
     expect(container.querySelector('p').innerHTML).toBe('ABC');
 
-    Horizon.render(<App text='abc' />, container);
+    Horizon.render(<App text="abc" />, container);
     expect(container.querySelector('p').innerHTML).toBe('abc');
   });
 
   it('卸载无状态组件', () => {
-    const App = (props) => {
+    const App = props => {
       return <p>{props.text}</p>;
     };
 
-    Horizon.render(<App text='app' />, container);
+    Horizon.render(<App text="app" />, container);
     expect(container.querySelector('p').innerHTML).toBe('app');
 
     Horizon.unmountComponentAtNode(container);
@@ -59,5 +59,4 @@ describe('FunctionComponent Test', () => {
     const realNode = Horizon.render(<App />, container);
     expect(realNode).toBe(null);
   });
-
 });

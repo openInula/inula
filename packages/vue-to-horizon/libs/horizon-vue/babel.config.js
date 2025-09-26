@@ -17,7 +17,7 @@ module.exports = {
   presets: ['@babel/preset-typescript', ['@babel/preset-env', { targets: { node: 'current' } }]],
   // 确保启用实验性语法
   experimental: {
-    async: true
+    async: true,
   },
   plugins: [
     '@babel/plugin-syntax-jsx',

@@ -32,7 +32,10 @@ const addAttributePlugin = (opts = {}) => {
                 isDeepSelector = true;
                 selector.remove();
               }
-              if ((selector.type === 'class' || selector.type === 'tag' || selector.type === 'id') && !checkGlobalContext(selector)) {
+              if (
+                (selector.type === 'class' || selector.type === 'tag' || selector.type === 'id') &&
+                !checkGlobalContext(selector)
+              ) {
                 lastValidSelector = selector;
               }
             });
@@ -172,18 +175,23 @@ export default class CSShandler {
 /**
  *
  * 转换vue中:deep()或::v-deep：CSS 深度选择器，用于穿透 scoped 样式 的作用域限制
- *  .clsA :deep(.childB){...} 或 .clsA::v-deep .childB{...}
+ *  .clsA :deep(.childB){...}/.clsA::v-deep .childB{...}
  *  ==>
- *  .clsA /deep/ .childB {...}
+ *  .clsA {
+ *    .childB {...}
+ *  }
  * @param cssStr
  * @returns
  */
 export function formatCssDeepSelectors(cssStr) {
-  // 替换 :deep(...) 为 /deep/
-  let result = cssStr.replace(/:deep\(([^)]+)\)/g, '/deep/ $1');
+  return cssStr.replace(/(::v-deep([^{]+)|:deep\(([^)]+)\))\s*{\s*([^}]*)\s*}/g, (match, p1, p2, p3, contentInside) => {
+    const selector = p2 || p3; // 如果是 ::v-deep，则 p2 有值；如果是 :deep()，则 p3 有值
+    // 格式化缩进
+    const formattedInnerContent = contentInside
+      .split('\n')
+      .map(line => `  ${line}`) // 假设需要缩进两个空格
+      .join('\n');
 
-  // 替换 ::v-deep 为 /deep/
-  result = result.replace(/::v-deep/g, ' /deep/');
-
-  return result;
+    return `${p2 ? ' ' : ''}{\n  ${selector} {\n  ${formattedInnerContent}}\n}`;
+  });
 }

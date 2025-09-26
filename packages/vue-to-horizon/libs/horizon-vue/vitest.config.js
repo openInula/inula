@@ -14,11 +14,11 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      include: ['src/**/*.js']
+      include: ['src/**/*.js'],
     },
     alias: {
       '@src': path.resolve(__dirname, './src'),
-      '@test': path.resolve(__dirname, './test')
-    }
-  }
+      '@test': path.resolve(__dirname, './test'),
+    },
+  },
 });

@@ -29,9 +29,9 @@ export const globalComponentConfig = {
 
 export const globalComponent = {
   RouterLink: { default: {} },
-  "router-link": { default: {} },
+  'router-link': { default: {} },
   RouterView: { default: {} },
-  "router-view": { default: {} },
+  'router-view': { default: {} },
   GlobalComp: { default: {} }, // for testGlobalComponent
   AsyncComp: { default: {} }, // for testGlobalComponent
 };

@@ -1,36 +1,60 @@
-import { createElement, Fragment, cloneElement, isValidElement, Children, ForwardRef, isMemo, createContext, forwardRef, useMemo, useState, useCallback, useEffect, useContext, useRef } from '@cloudsop/horizon';
+import {
+  createElement,
+  Fragment,
+  cloneElement,
+  isValidElement,
+  Children,
+  ForwardRef,
+  isMemo,
+  createContext,
+  forwardRef,
+  useMemo,
+  useState,
+  useCallback,
+  useEffect,
+  useContext,
+  useRef,
+} from '@cloudsop/horizon';
 import { jsx, Fragment as Fragment$1 } from '@cloudsop/horizon/jsx-runtime';
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
+    throw new TypeError('Cannot call a class as a function');
   }
 }
 
 function _typeof(o) {
-  "@babel/helpers - typeof";
+  '@babel/helpers - typeof';
 
-  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
-    return typeof o;
-  } : function (o) {
-    return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
-  }, _typeof(o);
+  return (
+    (_typeof =
+      'function' == typeof Symbol && 'symbol' == typeof Symbol.iterator
+        ? function (o) {
+            return typeof o;
+          }
+        : function (o) {
+            return o && 'function' == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype
+              ? 'symbol'
+              : typeof o;
+          }),
+    _typeof(o)
+  );
 }
 
 function toPrimitive(t, r) {
-  if ("object" != _typeof(t) || !t) return t;
+  if ('object' != _typeof(t) || !t) return t;
   var e = t[Symbol.toPrimitive];
   if (void 0 !== e) {
-    var i = e.call(t, r || "default");
-    if ("object" != _typeof(i)) return i;
-    throw new TypeError("@@toPrimitive must return a primitive value.");
+    var i = e.call(t, r || 'default');
+    if ('object' != _typeof(i)) return i;
+    throw new TypeError('@@toPrimitive must return a primitive value.');
   }
-  return ("string" === r ? String : Number)(t);
+  return ('string' === r ? String : Number)(t);
 }
 
 function toPropertyKey(t) {
-  var i = toPrimitive(t, "string");
-  return "symbol" == _typeof(i) ? i : String(i);
+  var i = toPrimitive(t, 'string');
+  return 'symbol' == _typeof(i) ? i : String(i);
 }
 
 function _defineProperties(target, props) {
@@ -38,15 +62,15 @@ function _defineProperties(target, props) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
     descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
+    if ('value' in descriptor) descriptor.writable = true;
     Object.defineProperty(target, toPropertyKey(descriptor.key), descriptor);
   }
 }
 function _createClass(Constructor, protoProps, staticProps) {
   if (protoProps) _defineProperties(Constructor.prototype, protoProps);
   if (staticProps) _defineProperties(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {
-    writable: false
+  Object.defineProperty(Constructor, 'prototype', {
+    writable: false,
   });
   return Constructor;
 }
@@ -75,22 +99,24 @@ function creatI18nCache() {
     numberFormat: {},
     plurals: {},
     select: {},
-    octothorpe: {}
+    octothorpe: {},
   };
 }
 
 function _extends() {
-  _extends = Object.assign ? Object.assign.bind() : function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
+  _extends = Object.assign
+    ? Object.assign.bind()
+    : function (target) {
+        for (var i = 1; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (Object.prototype.hasOwnProperty.call(source, key)) {
+              target[key] = source[key];
+            }
+          }
         }
-      }
-    }
-    return target;
-  };
+        return target;
+      };
   return _extends.apply(this, arguments);
 }
 
@@ -155,9 +181,11 @@ function getRegUnion(regexps) {
   if (!regexps.length) {
     return '(?!)';
   }
-  var source = regexps.map(function (str) {
-    return '(?:' + str + ')';
-  }).join('|');
+  var source = regexps
+    .map(function (str) {
+      return '(?:' + str + ')';
+    })
+    .join('|');
   return '(?:' + source + ')';
 }
 function getReg(input) {
@@ -178,7 +206,7 @@ function getReg(input) {
     }
     return input.source;
   } else {
-    throw new Error(input + "Non-conformance to specifications!");
+    throw new Error(input + 'Non-conformance to specifications!');
   }
 }
 function getRulesByObject(object) {
@@ -197,7 +225,7 @@ function getRulesByObject(object) {
     if (key === 'include') {
       for (var j = 0; j < rules.length; j++) {
         result.push({
-          include: rules[j]
+          include: rules[j],
         });
       }
       return 1; // continue
@@ -234,7 +262,7 @@ function getRulesByArray(array) {
       var include = [].concat(obj.include);
       for (var j = 0; j < include.length; j++) {
         result.push({
-          include: include[j]
+          include: include[j],
         });
       }
       continue;
@@ -250,7 +278,7 @@ function getRuleOptions(type, obj) {
   // 如果 obj 不是一个对象，则将其转换为包含 'match' 属性的对象
   if (!checkObject(obj)) {
     obj = {
-      match: obj
+      match: obj,
     };
   }
 
@@ -270,7 +298,7 @@ function getRuleOptions(type, obj) {
     fallback: false,
     value: null,
     type: null,
-    shouldThrow: false
+    shouldThrow: false,
   };
   _extends(options, obj);
   if (typeof options.type === 'string' && type !== options.type) {
@@ -313,13 +341,13 @@ var ruleUtils = {
   getRulesByObject: getRulesByObject,
   getRulesByArray: getRulesByArray,
   getRuleOptions: getRuleOptions,
-  getRules: getRules
+  getRules: getRules,
 };
 
 /**
  * 词法解析器，主要根据设计的规则对message进行处理成Token
  */
-var Lexer = /*#__PURE__*/function () {
+var Lexer = /*#__PURE__*/ (function () {
   function Lexer(unionReg, startState) {
     _classCallCheck(this, Lexer);
     this.startState = void 0;
@@ -348,187 +376,197 @@ var Lexer = /*#__PURE__*/function () {
    *  根据新的消息重置解析器
    * @param data 消息数据
    */
-  _createClass(Lexer, [{
-    key: "reset",
-    value: function reset(data) {
-      this.buffer = data || '';
-      this.index = 0;
-      this.line = 1;
-      this.col = 1;
-      this.queuedText = '';
-      this.setState(this.startState);
-      this.stack = [];
-      return this;
-    }
-  }, {
-    key: "setState",
-    value: function setState(state) {
-      if (!state || this.state === state) {
-        return;
-      }
-      this.state = state;
-      var info = this.unionReg[state];
-      this.groups = info.groups;
-      this.error = info.error;
-      this.regexp = info.regexp;
-      this.fast = info.fast;
-    }
-  }, {
-    key: "popState",
-    value: function popState() {
-      this.setState(this.stack.pop());
-    }
-  }, {
-    key: "pushState",
-    value: function pushState(state) {
-      this.stack.push(this.state);
-      this.setState(state);
-    }
-  }, {
-    key: "getGroup",
-    value: function getGroup(match) {
-      var groupCount = this.groups.length;
-      for (var i = 0; i < groupCount; i++) {
-        if (match[i + 1] !== undefined) {
-          return this.groups[i];
-        }
-      }
-      throw new Error('No token type found matching text!');
-    }
-  }, {
-    key: "tokenToString",
-    value: function tokenToString() {
-      return this.value;
-    }
-
-    /**
-     * 迭代获取下一个 token
-     */
-  }, {
-    key: "next",
-    value: function next() {
-      var index = this.index;
-      if (this.queuedGroup) {
-        var token = this.getToken(this.queuedGroup, this.queuedText, index);
-        this.queuedGroup = null;
+  _createClass(Lexer, [
+    {
+      key: 'reset',
+      value: function reset(data) {
+        this.buffer = data || '';
+        this.index = 0;
+        this.line = 1;
+        this.col = 1;
         this.queuedText = '';
-        return token;
-      }
-      var buffer = this.buffer;
-      if (index === buffer.length) {
-        return;
-      }
-      var fastGroup = this.fast[buffer.charCodeAt(index)];
-      if (fastGroup) {
-        return this.getToken(fastGroup, buffer.charAt(index), index);
-      }
-
-      // 如果没有快速匹配，那么使用预先编译的正则表达式进行匹配操作
-      var regexp = this.regexp;
-      regexp.lastIndex = index;
-      var match = getMatch(regexp, buffer);
-      var error = this.error;
-      if (match == null) {
-        return this.getToken(error, buffer.slice(index, buffer.length), index);
-      }
-      var group = this.getGroup(match);
-      var text = match[0];
-      if (error !== null && error !== void 0 && error.fallback && match.index !== index) {
-        this.queuedGroup = group;
-        this.queuedText = text;
-        return this.getToken(error, buffer.slice(index, match.index), index);
-      }
-      return this.getToken(group, text, index);
-    }
-
-    /**
-     * 获取Token
-     * @param group 解析模板后获得的属性值
-     * @param text 文本属性的信息
-     * @param offset 偏移量
-     * @private
-     */
-  }, {
-    key: "getToken",
-    value: function getToken(group, text, offset) {
-      var lineNum = 0;
-      var last = 1; // 最后一个换行符的索引位置
-      if (group.lineBreaks) {
-        var matchNL = /\n/g;
-        if (text === '\n') {
-          lineNum = 1;
-        } else {
-          while (matchNL.exec(text)) {
-            lineNum++;
-            last = matchNL.lastIndex;
+        this.setState(this.startState);
+        this.stack = [];
+        return this;
+      },
+    },
+    {
+      key: 'setState',
+      value: function setState(state) {
+        if (!state || this.state === state) {
+          return;
+        }
+        this.state = state;
+        var info = this.unionReg[state];
+        this.groups = info.groups;
+        this.error = info.error;
+        this.regexp = info.regexp;
+        this.fast = info.fast;
+      },
+    },
+    {
+      key: 'popState',
+      value: function popState() {
+        this.setState(this.stack.pop());
+      },
+    },
+    {
+      key: 'pushState',
+      value: function pushState(state) {
+        this.stack.push(this.state);
+        this.setState(state);
+      },
+    },
+    {
+      key: 'getGroup',
+      value: function getGroup(match) {
+        var groupCount = this.groups.length;
+        for (var i = 0; i < groupCount; i++) {
+          if (match[i + 1] !== undefined) {
+            return this.groups[i];
           }
         }
-      }
-      var token = {
-        type: typeof group.type === 'function' && group.type(text) || group.defaultType,
-        value: typeof group.value === 'function' ? group.value(text) : text,
-        text: text,
-        toString: this.tokenToString,
-        offset: offset,
-        // 标记在输入 buffer 中的偏移量
-        lineBreaks: lineNum,
-        line: this.line,
-        // token 所在的行号
-        col: this.col // token 所在的列号
-      };
-      var size = text.length;
-      this.index += size;
-      this.line += lineNum;
-      if (lineNum !== 0) {
-        this.col = size - last + 1;
-      } else {
-        this.col += size;
-      }
-      if (group.shouldThrow) {
-        throw new Error('Invalid Syntax!');
-      }
-      if (group.pop) {
-        this.popState();
-      } else if (group.push) {
-        this.pushState(group.push);
-      } else if (group.next) {
-        this.setState(group.next);
-      }
-      return token;
-    }
+        throw new Error('No token type found matching text!');
+      },
+    },
+    {
+      key: 'tokenToString',
+      value: function tokenToString() {
+        return this.value;
+      },
 
-    // 增加迭代器，允许逐个访问集合中的元素方法
-  }, {
-    key: Symbol.iterator,
-    value: function () {
-      var _this = this;
-      return {
-        next: function () {
-          var token = _this.next();
-          return {
-            value: token,
-            done: !token
-          };
+      /**
+       * 迭代获取下一个 token
+       */
+    },
+    {
+      key: 'next',
+      value: function next() {
+        var index = this.index;
+        if (this.queuedGroup) {
+          var token = this.getToken(this.queuedGroup, this.queuedText, index);
+          this.queuedGroup = null;
+          this.queuedText = '';
+          return token;
         }
-      };
-    }
-  }]);
+        var buffer = this.buffer;
+        if (index === buffer.length) {
+          return;
+        }
+        var fastGroup = this.fast[buffer.charCodeAt(index)];
+        if (fastGroup) {
+          return this.getToken(fastGroup, buffer.charAt(index), index);
+        }
+
+        // 如果没有快速匹配，那么使用预先编译的正则表达式进行匹配操作
+        var regexp = this.regexp;
+        regexp.lastIndex = index;
+        var match = getMatch(regexp, buffer);
+        var error = this.error;
+        if (match == null) {
+          return this.getToken(error, buffer.slice(index, buffer.length), index);
+        }
+        var group = this.getGroup(match);
+        var text = match[0];
+        if (error !== null && error !== void 0 && error.fallback && match.index !== index) {
+          this.queuedGroup = group;
+          this.queuedText = text;
+          return this.getToken(error, buffer.slice(index, match.index), index);
+        }
+        return this.getToken(group, text, index);
+      },
+
+      /**
+       * 获取Token
+       * @param group 解析模板后获得的属性值
+       * @param text 文本属性的信息
+       * @param offset 偏移量
+       * @private
+       */
+    },
+    {
+      key: 'getToken',
+      value: function getToken(group, text, offset) {
+        var lineNum = 0;
+        var last = 1; // 最后一个换行符的索引位置
+        if (group.lineBreaks) {
+          var matchNL = /\n/g;
+          if (text === '\n') {
+            lineNum = 1;
+          } else {
+            while (matchNL.exec(text)) {
+              lineNum++;
+              last = matchNL.lastIndex;
+            }
+          }
+        }
+        var token = {
+          type: (typeof group.type === 'function' && group.type(text)) || group.defaultType,
+          value: typeof group.value === 'function' ? group.value(text) : text,
+          text: text,
+          toString: this.tokenToString,
+          offset: offset,
+          // 标记在输入 buffer 中的偏移量
+          lineBreaks: lineNum,
+          line: this.line,
+          // token 所在的行号
+          col: this.col, // token 所在的列号
+        };
+        var size = text.length;
+        this.index += size;
+        this.line += lineNum;
+        if (lineNum !== 0) {
+          this.col = size - last + 1;
+        } else {
+          this.col += size;
+        }
+        if (group.shouldThrow) {
+          throw new Error('Invalid Syntax!');
+        }
+        if (group.pop) {
+          this.popState();
+        } else if (group.push) {
+          this.pushState(group.push);
+        } else if (group.next) {
+          this.setState(group.next);
+        }
+        return token;
+      },
+
+      // 增加迭代器，允许逐个访问集合中的元素方法
+    },
+    {
+      key: Symbol.iterator,
+      value: function () {
+        var _this = this;
+        return {
+          next: function () {
+            var token = _this.next();
+            return {
+              value: token,
+              done: !token,
+            };
+          },
+        };
+      },
+    },
+  ]);
   return Lexer;
-}();
+})();
 /**
  * 根据正则表达式，获取匹配到message的值
  * 索引为 0 的元素是完整的匹配结果。
  * 索引为 1、2、3 等的元素是正则表达式中指定的捕获组的匹配结果。
  */
-var getMatch = ruleUtils.checkSticky() ?
-// 正则表达式具有 sticky 标志
-function (regexp, buffer) {
-  return regexp.exec(buffer);
-} :
-// 正则表达式具有 global 标志,匹配的字符串长度为 0，则表示匹配失败
-function (regexp, buffer) {
-  return regexp.exec(buffer)[0].length === 0 ? null : regexp.exec(buffer);
-};
+var getMatch = ruleUtils.checkSticky()
+  ? // 正则表达式具有 sticky 标志
+    function (regexp, buffer) {
+      return regexp.exec(buffer);
+    }
+  : // 正则表达式具有 global 标志,匹配的字符串长度为 0，则表示匹配失败
+    function (regexp, buffer) {
+      return regexp.exec(buffer)[0].length === 0 ? null : regexp.exec(buffer);
+    };
 
 /*
  * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
@@ -550,7 +588,7 @@ var body = {
     match: "''",
     value: function () {
       return "'";
-    }
+    },
   },
   quoted: {
     lineBreaks: true,
@@ -558,7 +596,7 @@ var body = {
     // 用以匹配单引号、花括号{}以及井号# 如'Hello' 、{name}、{}#
     value: function (src) {
       return src.slice(1, -1).replace(/''/g, "'");
-    }
+    },
   },
   argument: {
     lineBreaks: true,
@@ -567,17 +605,17 @@ var body = {
     push: 'arg',
     value: function (src) {
       return src.substring(1).trim();
-    }
+    },
   },
   octothorpe: '#',
   end: {
     match: '}',
-    pop: 1
+    pop: 1,
   },
   content: {
     lineBreaks: true,
-    match: /[^][^{}#]*/u // 主要匹配不包含[]任何字符（除了换行符）、不包含{}、#的任何个字符
-  }
+    match: /[^][^{}#]*/u, // 主要匹配不包含[]任何字符（除了换行符）、不包含{}、#的任何个字符
+  },
 };
 var arg = {
   select: {
@@ -588,7 +626,7 @@ var arg = {
     // 继续解析下一个参数
     value: function (src) {
       return src.split(',')[1].trim();
-    } // 提取第二个参数，并处理收尾空格
+    }, // 提取第二个参数，并处理收尾空格
   },
   'func-args': {
     // 匹配是否包含其他非特殊字符的参数,匹配结果包含特殊字符，如param1, param2, param3
@@ -597,7 +635,7 @@ var arg = {
     next: 'body',
     value: function (src) {
       return src.split(',')[1].trim();
-    } // 参数字符串去除逗号并去除首尾空格
+    }, // 参数字符串去除逗号并去除首尾空格
   },
   'func-simple': {
     // 匹配是否包含其他简单参数，匹配结果不包含标点符号：param1 param2 param3
@@ -605,12 +643,12 @@ var arg = {
     match: /,\s*[^\p{Pat_Syn}\p{Pat_WS}]+\s*/u,
     value: function (src) {
       return src.substring(1).trim();
-    }
+    },
   },
   end: {
     match: '}',
-    pop: 1
-  }
+    pop: 1,
+  },
 };
 var select = {
   offset: {
@@ -619,7 +657,7 @@ var select = {
     // 匹配message中是否包含偏移量offest信息
     value: function (src) {
       return src.split(':')[1].trim();
-    }
+    },
   },
   case: {
     // 检查匹配该行是否包含分支信息。
@@ -630,17 +668,17 @@ var select = {
     // 匹配成功，则会push到body栈中
     value: function (src) {
       return src.substring(0, src.indexOf('{')).trim();
-    }
+    },
   },
   end: {
     match: /\s*\}/u,
-    pop: 1
-  }
+    pop: 1,
+  },
 };
 var mappingRule = {
   body: body,
   arg: arg,
-  select: select
+  select: select,
 };
 
 var STICKY_FLAG = 'ym';
@@ -660,7 +698,7 @@ var INULA_STATICS = {
   getDerivedStateFromProps: true,
   mixins: true,
   propTypes: true,
-  type: true
+  type: true,
 };
 
 // JavaScript 需要被保留原生静态属性
@@ -671,7 +709,7 @@ var NATIVE_STATICS = {
   caller: true,
   callee: true,
   arguments: true,
-  arity: true
+  arity: true,
 };
 
 // Inula ForwardRef 组件的静态属性需要被保留
@@ -680,7 +718,7 @@ var INULA_FORWARD_REF_STATICS = {
   render: true,
   defaultProps: true,
   key: true,
-  type: true
+  type: true,
 };
 
 // React ForwardRef 组件的静态属性需要被保留
@@ -692,7 +730,7 @@ var REACT_FORWARD_REF_STATICS = {
   defaultProps: true,
   // props
   displayName: true,
-  propTypes: true // type: type,
+  propTypes: true, // type: type,
 };
 _extends({}, INULA_FORWARD_REF_STATICS, REACT_FORWARD_REF_STATICS);
 
@@ -702,12 +740,29 @@ var INULA_MEMO_STATICS = {
   // inula 'vtype': true
   compare: true,
   defaultProps: true,
-  type: true
+  type: true,
 };
 
 // 默认复数规则
 var DEFAULT_PLURAL_KEYS = ['zero', 'one', 'two', 'few', 'many', 'other'];
-var voidElementTags = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr', 'menuitem'];
+var voidElementTags = [
+  'area',
+  'base',
+  'br',
+  'col',
+  'embed',
+  'hr',
+  'img',
+  'input',
+  'keygen',
+  'link',
+  'meta',
+  'param',
+  'source',
+  'track',
+  'wbr',
+  'menuitem',
+];
 
 /*
  * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
@@ -726,7 +781,7 @@ var voidElementTags = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input
 
 var defaultErrorRule = ruleUtils.getRuleOptions('error', {
   lineBreaks: true,
-  shouldThrow: true
+  shouldThrow: true,
 });
 
 // 解析规则并生成词法分析器所需的数据结构，以便进行词法分析操作
@@ -794,7 +849,7 @@ function parseRules(rules, hasStates) {
     regexp: combined,
     groups: groups,
     fast: fast,
-    error: errorRule || defaultErrorRule
+    error: errorRule || defaultErrorRule,
   };
 }
 function checkStateGroup(group, name, mappingRules) {
@@ -965,54 +1020,116 @@ function isOptionsErrorOrFallback(options, errorRule) {
 }
 var lexer = parseMappingRule(mappingRule);
 
-function _createForOfIteratorHelper$3(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray$3(r)) || e && r && "number" == typeof r.length) { t && (r = t); var n = 0, F = function () {}; return { s: F, n: function () { return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] }; }, e: function (r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function () { t = t.call(r); }, n: function () { var r = t.next(); return a = r.done, r; }, e: function (r) { u = !0, o = r; }, f: function () { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
-function _unsupportedIterableToArray$3(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray$3(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray$3(r, a) : void 0; } }
-function _arrayLikeToArray$3(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function _createForOfIteratorHelper$3(r, e) {
+  var t = ('undefined' != typeof Symbol && r[Symbol.iterator]) || r['@@iterator'];
+  if (!t) {
+    if (Array.isArray(r) || (t = _unsupportedIterableToArray$3(r)) || (e && r && 'number' == typeof r.length)) {
+      t && (r = t);
+      var n = 0,
+        F = function () {};
+      return {
+        s: F,
+        n: function () {
+          return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] };
+        },
+        e: function (r) {
+          throw r;
+        },
+        f: F,
+      };
+    }
+    throw new TypeError(
+      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.'
+    );
+  }
+  var o,
+    a = !0,
+    u = !1;
+  return {
+    s: function () {
+      t = t.call(r);
+    },
+    n: function () {
+      var r = t.next();
+      return ((a = r.done), r);
+    },
+    e: function (r) {
+      ((u = !0), (o = r));
+    },
+    f: function () {
+      try {
+        a || null == t.return || t.return();
+      } finally {
+        if (u) throw o;
+      }
+    },
+  };
+}
+function _unsupportedIterableToArray$3(r, a) {
+  if (r) {
+    if ('string' == typeof r) return _arrayLikeToArray$3(r, a);
+    var t = {}.toString.call(r).slice(8, -1);
+    return (
+      'Object' === t && r.constructor && (t = r.constructor.name),
+      'Map' === t || 'Set' === t
+        ? Array.from(r)
+        : 'Arguments' === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t)
+          ? _arrayLikeToArray$3(r, a)
+          : void 0
+    );
+  }
+}
+function _arrayLikeToArray$3(r, a) {
+  (null == a || a > r.length) && (a = r.length);
+  for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
+  return n;
+}
 /**
  *  语法解析器，根据Token,获得具备上下文的AST
  */
-var Parser = /*#__PURE__*/function () {
+var Parser = /*#__PURE__*/ (function () {
   function Parser(message) {
     _classCallCheck(this, Parser);
     this.cardinalKeys = DEFAULT_PLURAL_KEYS;
     this.ordinalKeys = DEFAULT_PLURAL_KEYS;
     lexer.reset(message);
   }
-  _createClass(Parser, [{
-    key: "isSelectKeyValid",
-    value: function isSelectKeyValid(type, value) {
-      if (value[0] === '=') {
-        if (type === 'select') {
-          throw new Error('The key value of the select type is invalid.');
+  _createClass(Parser, [
+    {
+      key: 'isSelectKeyValid',
+      value: function isSelectKeyValid(type, value) {
+        if (value[0] === '=') {
+          if (type === 'select') {
+            throw new Error('The key value of the select type is invalid.');
+          }
+        } else if (type !== 'select') {
+          var values = type === 'plural' ? this.cardinalKeys : this.ordinalKeys;
+          if (values.length > 0 && !values.includes(value)) {
+            throw new Error(type + ' type key value is invalid.');
+          }
         }
-      } else if (type !== 'select') {
-        var values = type === 'plural' ? this.cardinalKeys : this.ordinalKeys;
-        if (values.length > 0 && !values.includes(value)) {
-          throw new Error(type + " type key value is invalid.");
+      },
+    },
+    {
+      key: 'processSelect',
+      value: function processSelect(_ref, isPlural, context, type) {
+        var arg = _ref.value;
+        var select = {
+          type: type,
+          arg: arg,
+          cases: [],
+          ctx: context,
+        };
+        if (type === 'plural' || type === 'selectordinal') {
+          isPlural = true;
         }
-      }
-    }
-  }, {
-    key: "processSelect",
-    value: function processSelect(_ref, isPlural, context, type) {
-      var arg = _ref.value;
-      var select = {
-        type: type,
-        arg: arg,
-        cases: [],
-        ctx: context
-      };
-      if (type === 'plural' || type === 'selectordinal') {
-        isPlural = true;
-      }
-      var _iterator = _createForOfIteratorHelper$3(lexer),
-        _step;
-      try {
-        for (_iterator.s(); !(_step = _iterator.n()).done;) {
-          var token = _step.value;
-          switch (token.type) {
-            case 'offset':
-              {
+        var _iterator = _createForOfIteratorHelper$3(lexer),
+          _step;
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+            var token = _step.value;
+            switch (token.type) {
+              case 'offset': {
                 if (type === 'select') {
                   throw new Error('The complex offset of the select type is incorrect.');
                 }
@@ -1024,82 +1141,77 @@ var Parser = /*#__PURE__*/function () {
                 context.lineNum += token.lineBreaks;
                 break;
               }
-            case 'case':
-              {
+              case 'case': {
                 this.isSelectKeyValid(type, token.value);
                 select.cases.push({
                   key: token.value.replace(/=/g, ''),
                   tokens: this.parse(isPlural),
-                  ctx: getContext(token)
+                  ctx: getContext(token),
                 });
                 break;
               }
-            case 'end':
-              {
+              case 'end': {
                 return select;
               }
-            default:
-              {
-                throw new Error("Unrecognized analyzer token: " + token.type);
+              default: {
+                throw new Error('Unrecognized analyzer token: ' + token.type);
               }
+            }
           }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
         }
-      } catch (err) {
-        _iterator.e(err);
-      } finally {
-        _iterator.f();
-      }
-      throw new Error('The message end position is invalid.');
-    }
-
-    /**
-     * 解析获得的Token
-     * @param token
-     * @param isPlural
-     */
-  }, {
-    key: "parseToken",
-    value: function parseToken(token, isPlural) {
-      var context = getContext(token);
-      var nextToken = lexer.next();
-      if (!nextToken) {
         throw new Error('The message end position is invalid.');
-      }
-      context.text += nextToken.text;
-      context.lineNum += nextToken.lineBreaks;
-      switch (nextToken.type) {
-        case 'end':
-          {
+      },
+
+      /**
+       * 解析获得的Token
+       * @param token
+       * @param isPlural
+       */
+    },
+    {
+      key: 'parseToken',
+      value: function parseToken(token, isPlural) {
+        var context = getContext(token);
+        var nextToken = lexer.next();
+        if (!nextToken) {
+          throw new Error('The message end position is invalid.');
+        }
+        context.text += nextToken.text;
+        context.lineNum += nextToken.lineBreaks;
+        switch (nextToken.type) {
+          case 'end': {
             return {
               type: 'argument',
               arg: token.value,
-              ctx: context
+              ctx: context,
             };
           }
-        case 'func-simple':
-          {
+          case 'func-simple': {
             var end = lexer.next();
             if (!end) {
               throw new Error('The message end position is invalid.');
             }
             if (end.type !== 'end') {
-              throw new Error("Unrecognized analyzer token: " + end.type);
+              throw new Error('Unrecognized analyzer token: ' + end.type);
             }
             context.text += end.text;
             if (checkSelectType(nextToken.value.toLowerCase())) {
-              throw new Error("Invalid parameter type: " + nextToken.value);
+              throw new Error('Invalid parameter type: ' + nextToken.value);
             }
             return {
               type: 'function',
               arg: token.value,
               key: nextToken.value,
-              ctx: context
+              ctx: context,
             };
           }
-        case 'func-args':
-          {
+          case 'func-args': {
             if (checkSelectType(nextToken.value.toLowerCase())) {
-              throw new Error("Invalid parameter type: " + nextToken.value);
+              throw new Error('Invalid parameter type: ' + nextToken.value);
             }
             var param = this.parse(isPlural);
             return {
@@ -1107,85 +1219,87 @@ var Parser = /*#__PURE__*/function () {
               arg: token.value,
               key: nextToken.value,
               param: param,
-              ctx: context
+              ctx: context,
             };
           }
-        case 'select':
-          if (checkSelectType(nextToken.value)) {
-            return this.processSelect(token, isPlural, context, nextToken.value);
-          } else {
-            throw new Error("Invalid select type: " + nextToken.value);
-          }
-        default:
-          throw new Error("Unrecognized analyzer token: " + nextToken.type);
-      }
-    }
-
-    /**
-     * 解析方法入口
-     * 在根级别解析时，遇到结束符号即结束解析并返回结果；而在非根级别解析时，遇到结束符号会被视为不合法的结束位置，抛出错误
-     * @param isPlural  标记复数
-     * @param isRoot  标记根节点
-     */
-  }, {
-    key: "parse",
-    value: function parse(isPlural, isRoot) {
-      var tokens = [];
-      var content = null;
-      var _iterator2 = _createForOfIteratorHelper$3(lexer),
-        _step2;
-      try {
-        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-          var token = _step2.value;
-          if (token.type === 'argument') {
-            if (content) {
-              content = null;
-            }
-            tokens.push(this.parseToken(token, isPlural));
-          } else if (token.type === 'octothorpe' && isPlural) {
-            if (content) {
-              content = null;
-            }
-            tokens.push({
-              type: 'octothorpe'
-            });
-          } else if (token.type === 'end' && !isRoot) {
-            return tokens;
-          } else if (token.type === 'doubleapos') {
-            tokens.push(token.value);
-          } else if (token.type === 'quoted') {
-            tokens.push(token.value);
-          } else if (token.type === 'content') {
-            tokens.push(token.value);
-          } else {
-            var value = token.value;
-            if (!isPlural && token.type === 'quoted' && value[0] === '#') {
-              if (value.includes('{')) {
-                throw new Error("Invalid template: " + value);
-              }
-              value = token.text;
-            }
-            if (content) {
-              content = value;
+          case 'select':
+            if (checkSelectType(nextToken.value)) {
+              return this.processSelect(token, isPlural, context, nextToken.value);
             } else {
-              content = value;
-              tokens.push(content);
+              throw new Error('Invalid select type: ' + nextToken.value);
+            }
+          default:
+            throw new Error('Unrecognized analyzer token: ' + nextToken.type);
+        }
+      },
+
+      /**
+       * 解析方法入口
+       * 在根级别解析时，遇到结束符号即结束解析并返回结果；而在非根级别解析时，遇到结束符号会被视为不合法的结束位置，抛出错误
+       * @param isPlural  标记复数
+       * @param isRoot  标记根节点
+       */
+    },
+    {
+      key: 'parse',
+      value: function parse(isPlural, isRoot) {
+        var tokens = [];
+        var content = null;
+        var _iterator2 = _createForOfIteratorHelper$3(lexer),
+          _step2;
+        try {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
+            var token = _step2.value;
+            if (token.type === 'argument') {
+              if (content) {
+                content = null;
+              }
+              tokens.push(this.parseToken(token, isPlural));
+            } else if (token.type === 'octothorpe' && isPlural) {
+              if (content) {
+                content = null;
+              }
+              tokens.push({
+                type: 'octothorpe',
+              });
+            } else if (token.type === 'end' && !isRoot) {
+              return tokens;
+            } else if (token.type === 'doubleapos') {
+              tokens.push(token.value);
+            } else if (token.type === 'quoted') {
+              tokens.push(token.value);
+            } else if (token.type === 'content') {
+              tokens.push(token.value);
+            } else {
+              var value = token.value;
+              if (!isPlural && token.type === 'quoted' && value[0] === '#') {
+                if (value.includes('{')) {
+                  throw new Error('Invalid template: ' + value);
+                }
+                value = token.text;
+              }
+              if (content) {
+                content = value;
+              } else {
+                content = value;
+                tokens.push(content);
+              }
             }
           }
+        } catch (err) {
+          _iterator2.e(err);
+        } finally {
+          _iterator2.f();
         }
-      } catch (err) {
-        _iterator2.e(err);
-      } finally {
-        _iterator2.f();
-      }
-      if (isRoot) {
-        return tokens;
-      }
-      throw new Error('The message end position is invalid.');
-    }
-  }]);
+        if (isRoot) {
+          return tokens;
+        }
+        throw new Error('The message end position is invalid.');
+      },
+    },
+  ]);
   return Parser;
-}();
+})();
 /**
  * 获得 Token 的上下文
  * @param Token Token
@@ -1196,7 +1310,7 @@ var getContext = function (Token) {
     line: Token.line,
     col: Token.col,
     text: Token.text,
-    lineNum: Token.lineBreaks
+    lineNum: Token.lineBreaks,
   };
 };
 
@@ -1226,12 +1340,12 @@ function parse$1(message) {
 /**
  * 将parse后的Token数组针对不同的匀速类型进行处理
  */
-var TokenType = /*#__PURE__*/function (TokenType) {
-  TokenType["octothorpe"] = "OCTOTHORPE";
-  TokenType["argument"] = "ARGUMENT";
-  TokenType["function"] = "FUNCTION";
+var TokenType = /*#__PURE__*/ (function (TokenType) {
+  TokenType['octothorpe'] = 'OCTOTHORPE';
+  TokenType['argument'] = 'ARGUMENT';
+  TokenType['function'] = 'FUNCTION';
   return TokenType;
-}(TokenType || {});
+})(TokenType || {});
 var processToken = function (token) {
   if (typeof token === 'string') {
     return token;
@@ -1252,9 +1366,13 @@ var processToken = function (token) {
   token.cases.forEach(function (item) {
     tempFormatProps[item.key] = getTokenAST(item.tokens);
   });
-  var mergedProps = _extends({}, {
-    offset: offset
-  }, tempFormatProps);
+  var mergedProps = _extends(
+    {},
+    {
+      offset: offset,
+    },
+    tempFormatProps
+  );
   return [token.arg, token.type, mergedProps];
 };
 function getTokenAST(tokens) {
@@ -1288,20 +1406,26 @@ function isVariantI18n(i18n) {
 }
 function generateKey(locales, options, valueKey) {
   var localeKey = Array.isArray(locales) ? locales.sort().join('-') : locales;
-  return localeKey + ":" + JSON.stringify(options !== null && options !== void 0 ? options : {}) + "_" + (valueKey !== null && valueKey !== void 0 ? valueKey : '');
+  return (
+    localeKey +
+    ':' +
+    JSON.stringify(options !== null && options !== void 0 ? options : {}) +
+    '_' +
+    (valueKey !== null && valueKey !== void 0 ? valueKey : '')
+  );
 }
 function compile(message) {
   try {
     return getTokenAST(parse$1(message));
   } catch (e) {
-    console.error("Message cannot be parse due to syntax errors: " + message + ",cause by " + e);
+    console.error('Message cannot be parse due to syntax errors: ' + message + ',cause by ' + e);
     return message;
   }
 }
 var utils = {
   isVariantI18n: isVariantI18n,
   generateKey: generateKey,
-  compile: compile
+  compile: compile,
 };
 function createI18nProps(source) {
   return {
@@ -1314,14 +1438,14 @@ function createI18nProps(source) {
     formatMessage: source.formatMessage.bind(source),
     formatDate: source.formatDate ? source.formatDate.bind(source) : source.DateTimeFormat,
     formatNumber: source.formatNumber ? source.formatNumber.bind(source) : source.NumberFormat,
-    $t: source.$t || source.formatMessage.bind(source)
+    $t: source.$t || source.formatMessage.bind(source),
   };
 }
 
 /**
  * 时间格式化
  */
-var DateTimeFormatter = /*#__PURE__*/function () {
+var DateTimeFormatter = /*#__PURE__*/ (function () {
   function DateTimeFormatter(locales, formatOptions, cache, valueKey) {
     _classCallCheck(this, DateTimeFormatter);
     this.locales = void 0;
@@ -1334,42 +1458,44 @@ var DateTimeFormatter = /*#__PURE__*/function () {
     this.cache = cache !== null && cache !== void 0 ? cache : creatI18nCache();
     this.valueKey = valueKey !== null && valueKey !== void 0 ? valueKey : '';
   }
-  _createClass(DateTimeFormatter, [{
-    key: "dateTimeFormat",
-    value: function dateTimeFormat(value, formatOptions) {
-      var _this$cache;
-      var options = formatOptions !== null && formatOptions !== void 0 ? formatOptions : this.formatOptions;
-      var formatter = new Intl.DateTimeFormat(this.locales, options);
-      // 将传输的字符串转变为日期对象
-      if (typeof value === 'string') {
-        value = new Date(value);
-      }
-
-      // 如果启用了记忆化且已经有对应的数字格式化器缓存，则直接返回缓存中的格式化结果。否则创建新的格式化数据，并进行缓存
-      if ((_this$cache = this.cache) !== null && _this$cache !== void 0 && _this$cache.dateTimeFormat) {
-        // 造缓存的key，key包含区域设置和日期时间格式选项
-        var cacheKey = utils.generateKey(this.locales, options, this.valueKey);
-        if (this.cache.dateTimeFormat[cacheKey]) {
-          return this.cache.dateTimeFormat[cacheKey].format(value);
+  _createClass(DateTimeFormatter, [
+    {
+      key: 'dateTimeFormat',
+      value: function dateTimeFormat(value, formatOptions) {
+        var _this$cache;
+        var options = formatOptions !== null && formatOptions !== void 0 ? formatOptions : this.formatOptions;
+        var formatter = new Intl.DateTimeFormat(this.locales, options);
+        // 将传输的字符串转变为日期对象
+        if (typeof value === 'string') {
+          value = new Date(value);
         }
 
-        // 查询缓存中的key， 若无key则创建新key
-        this.cache.dateTimeFormat[cacheKey] = formatter;
+        // 如果启用了记忆化且已经有对应的数字格式化器缓存，则直接返回缓存中的格式化结果。否则创建新的格式化数据，并进行缓存
+        if ((_this$cache = this.cache) !== null && _this$cache !== void 0 && _this$cache.dateTimeFormat) {
+          // 造缓存的key，key包含区域设置和日期时间格式选项
+          var cacheKey = utils.generateKey(this.locales, options, this.valueKey);
+          if (this.cache.dateTimeFormat[cacheKey]) {
+            return this.cache.dateTimeFormat[cacheKey].format(value);
+          }
+
+          // 查询缓存中的key， 若无key则创建新key
+          this.cache.dateTimeFormat[cacheKey] = formatter;
+          return formatter.format(value);
+        }
+
+        // 返回格式化后的时间
+
         return formatter.format(value);
-      }
-
-      // 返回格式化后的时间
-
-      return formatter.format(value);
-    }
-  }]);
+      },
+    },
+  ]);
   return DateTimeFormatter;
-}();
+})();
 
 /**
  * 数字格式化
  */
-var NumberFormatter = /*#__PURE__*/function () {
+var NumberFormatter = /*#__PURE__*/ (function () {
   function NumberFormatter(locales, formatOption, cache, valueKey) {
     _classCallCheck(this, NumberFormatter);
     this.locales = void 0;
@@ -1382,28 +1508,30 @@ var NumberFormatter = /*#__PURE__*/function () {
     this.cache = cache !== null && cache !== void 0 ? cache : creatI18nCache();
     this.valueKey = valueKey !== null && valueKey !== void 0 ? valueKey : '';
   }
-  _createClass(NumberFormatter, [{
-    key: "numberFormat",
-    value: function numberFormat(value, formatOption) {
-      var _this$cache;
-      var options = formatOption !== null && formatOption !== void 0 ? formatOption : this.formatOption;
-      var formatter = new Intl.NumberFormat(this.locales, options);
+  _createClass(NumberFormatter, [
+    {
+      key: 'numberFormat',
+      value: function numberFormat(value, formatOption) {
+        var _this$cache;
+        var options = formatOption !== null && formatOption !== void 0 ? formatOption : this.formatOption;
+        var formatter = new Intl.NumberFormat(this.locales, options);
 
-      // 如果启用了记忆化且已经有对应的数字格式化器缓存，则直接返回缓存中的格式化结果。否则创建新的格式化数据，并进行缓存
-      if ((_this$cache = this.cache) !== null && _this$cache !== void 0 && _this$cache.numberFormat) {
-        // 造缓存的key，key包含区域设置数字格式选项
-        var cacheKey = utils.generateKey(this.locales, options, this.valueKey);
-        if (this.cache.numberFormat[cacheKey]) {
-          return this.cache.numberFormat[cacheKey].format(value);
+        // 如果启用了记忆化且已经有对应的数字格式化器缓存，则直接返回缓存中的格式化结果。否则创建新的格式化数据，并进行缓存
+        if ((_this$cache = this.cache) !== null && _this$cache !== void 0 && _this$cache.numberFormat) {
+          // 造缓存的key，key包含区域设置数字格式选项
+          var cacheKey = utils.generateKey(this.locales, options, this.valueKey);
+          if (this.cache.numberFormat[cacheKey]) {
+            return this.cache.numberFormat[cacheKey].format(value);
+          }
+          this.cache.numberFormat[cacheKey] = formatter;
+          return formatter.format(value);
         }
-        this.cache.numberFormat[cacheKey] = formatter;
         return formatter.format(value);
-      }
-      return formatter.format(value);
-    }
-  }]);
+      },
+    },
+  ]);
   return NumberFormatter;
-}();
+})();
 
 function _assertThisInitialized(self) {
   if (self === void 0) {
@@ -1413,49 +1541,114 @@ function _assertThisInitialized(self) {
 }
 
 function _possibleConstructorReturn(self, call) {
-  if (call && (_typeof(call) === "object" || typeof call === "function")) {
+  if (call && (_typeof(call) === 'object' || typeof call === 'function')) {
     return call;
   } else if (call !== void 0) {
-    throw new TypeError("Derived constructors may only return object or undefined");
+    throw new TypeError('Derived constructors may only return object or undefined');
   }
   return _assertThisInitialized(self);
 }
 
 function _getPrototypeOf(o) {
-  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
-    return o.__proto__ || Object.getPrototypeOf(o);
-  };
+  _getPrototypeOf = Object.setPrototypeOf
+    ? Object.getPrototypeOf.bind()
+    : function _getPrototypeOf(o) {
+        return o.__proto__ || Object.getPrototypeOf(o);
+      };
   return _getPrototypeOf(o);
 }
 
 function _setPrototypeOf(o, p) {
-  _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
-    o.__proto__ = p;
-    return o;
-  };
+  _setPrototypeOf = Object.setPrototypeOf
+    ? Object.setPrototypeOf.bind()
+    : function _setPrototypeOf(o, p) {
+        o.__proto__ = p;
+        return o;
+      };
   return _setPrototypeOf(o, p);
 }
 
 function _inherits(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
+  if (typeof superClass !== 'function' && superClass !== null) {
+    throw new TypeError('Super expression must either be null or a function');
   }
   subClass.prototype = Object.create(superClass && superClass.prototype, {
     constructor: {
       value: subClass,
       writable: true,
-      configurable: true
-    }
+      configurable: true,
+    },
   });
-  Object.defineProperty(subClass, "prototype", {
-    writable: false
+  Object.defineProperty(subClass, 'prototype', {
+    writable: false,
   });
   if (superClass) _setPrototypeOf(subClass, superClass);
 }
 
-function _createForOfIteratorHelper$2(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray$2(r)) || e && r && "number" == typeof r.length) { t && (r = t); var n = 0, F = function () {}; return { s: F, n: function () { return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] }; }, e: function (r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function () { t = t.call(r); }, n: function () { var r = t.next(); return a = r.done, r; }, e: function (r) { u = !0, o = r; }, f: function () { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
-function _unsupportedIterableToArray$2(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray$2(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray$2(r, a) : void 0; } }
-function _arrayLikeToArray$2(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function _createForOfIteratorHelper$2(r, e) {
+  var t = ('undefined' != typeof Symbol && r[Symbol.iterator]) || r['@@iterator'];
+  if (!t) {
+    if (Array.isArray(r) || (t = _unsupportedIterableToArray$2(r)) || (e && r && 'number' == typeof r.length)) {
+      t && (r = t);
+      var n = 0,
+        F = function () {};
+      return {
+        s: F,
+        n: function () {
+          return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] };
+        },
+        e: function (r) {
+          throw r;
+        },
+        f: F,
+      };
+    }
+    throw new TypeError(
+      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.'
+    );
+  }
+  var o,
+    a = !0,
+    u = !1;
+  return {
+    s: function () {
+      t = t.call(r);
+    },
+    n: function () {
+      var r = t.next();
+      return ((a = r.done), r);
+    },
+    e: function (r) {
+      ((u = !0), (o = r));
+    },
+    f: function () {
+      try {
+        a || null == t.return || t.return();
+      } finally {
+        if (u) throw o;
+      }
+    },
+  };
+}
+function _unsupportedIterableToArray$2(r, a) {
+  if (r) {
+    if ('string' == typeof r) return _arrayLikeToArray$2(r, a);
+    var t = {}.toString.call(r).slice(8, -1);
+    return (
+      'Object' === t && r.constructor && (t = r.constructor.name),
+      'Map' === t || 'Set' === t
+        ? Array.from(r)
+        : 'Arguments' === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t)
+          ? _arrayLikeToArray$2(r, a)
+          : void 0
+    );
+  }
+}
+function _arrayLikeToArray$2(r, a) {
+  (null == a || a > r.length) && (a = r.length);
+  for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
+  return n;
+}
 /*
  * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
  *
@@ -1473,7 +1666,7 @@ function _arrayLikeToArray$2(r, a) { (null == a || a > r.length) && (a = r.lengt
 /**
  * 定义一个时间触发器类，使用泛型实现动态时间的监听
  */
-var EventDispatcher = /*#__PURE__*/function () {
+var EventDispatcher = /*#__PURE__*/ (function () {
   function EventDispatcher() {
     _classCallCheck(this, EventDispatcher);
     // 声明_events，用于存储事件和对应的监听器
@@ -1486,71 +1679,75 @@ var EventDispatcher = /*#__PURE__*/function () {
    * @param event
    * @param listener
    */
-  _createClass(EventDispatcher, [{
-    key: "on",
-    value: function on(event, listener) {
-      var _this = this;
-      if (!this._events.has(event)) {
-        this._events.set(event, new Set());
-      }
-      var listeners = this._events.get(event);
-      listeners.add(listener);
-      return function () {
-        _this.removeListener(event, listener);
-      };
-    }
-
-    /**
-     * removeListener 方法，移除指定事件的监听器
-     * @param event
-     * @param listener
-     */
-  }, {
-    key: "removeListener",
-    value: function removeListener(event, listener) {
-      if (!this._events.has(event)) {
-        return;
-      }
-      var listeners = this._events.get(event);
-      listeners.delete(listener);
-      if (listeners.size === 0) {
-        this._events.delete(event);
-      }
-    }
-
-    /**
-     * emit 方法，触发指定事件，并按照监听器注册顺序执行监听器
-     * @param event
-     * @param args
-     */
-  }, {
-    key: "emit",
-    value: function emit(event) {
-      if (!this._events.has(event)) {
-        return;
-      }
-
-      // 获取该事件对应的监听器集合，并按照注册顺序执行每个监听器
-      var listeners = this._events.get(event);
-      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
-      }
-      var _iterator = _createForOfIteratorHelper$2(listeners),
-        _step;
-      try {
-        for (_iterator.s(); !(_step = _iterator.n()).done;) {
-          var listener = _step.value;
-          listener.apply(this, args);
+  _createClass(EventDispatcher, [
+    {
+      key: 'on',
+      value: function on(event, listener) {
+        var _this = this;
+        if (!this._events.has(event)) {
+          this._events.set(event, new Set());
         }
-      } catch (err) {
-        _iterator.e(err);
-      } finally {
-        _iterator.f();
-      }
-    }
-  }]);
+        var listeners = this._events.get(event);
+        listeners.add(listener);
+        return function () {
+          _this.removeListener(event, listener);
+        };
+      },
+
+      /**
+       * removeListener 方法，移除指定事件的监听器
+       * @param event
+       * @param listener
+       */
+    },
+    {
+      key: 'removeListener',
+      value: function removeListener(event, listener) {
+        if (!this._events.has(event)) {
+          return;
+        }
+        var listeners = this._events.get(event);
+        listeners.delete(listener);
+        if (listeners.size === 0) {
+          this._events.delete(event);
+        }
+      },
+
+      /**
+       * emit 方法，触发指定事件，并按照监听器注册顺序执行监听器
+       * @param event
+       * @param args
+       */
+    },
+    {
+      key: 'emit',
+      value: function emit(event) {
+        if (!this._events.has(event)) {
+          return;
+        }
+
+        // 获取该事件对应的监听器集合，并按照注册顺序执行每个监听器
+        var listeners = this._events.get(event);
+        for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+          args[_key - 1] = arguments[_key];
+        }
+        var _iterator = _createForOfIteratorHelper$2(listeners),
+          _step;
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+            var listener = _step.value;
+            listener.apply(this, args);
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+      },
+    },
+  ]);
   return EventDispatcher;
-}();
+})();
 
 function _objectWithoutPropertiesLoose(source, excluded) {
   if (source == null) return {};
@@ -1568,7 +1765,7 @@ function _objectWithoutPropertiesLoose(source, excluded) {
 /**
  * 复数格式化
  */
-var PluralFormatter = /*#__PURE__*/function () {
+var PluralFormatter = /*#__PURE__*/ (function () {
   function PluralFormatter(locale, locales, value, message) {
     _classCallCheck(this, PluralFormatter);
     this.locale = void 0;
@@ -1582,20 +1779,22 @@ var PluralFormatter = /*#__PURE__*/function () {
   }
 
   // 将 message中的“#”替换为指定数字value，并返回新的字符串或者字符串数组
-  _createClass(PluralFormatter, [{
-    key: "replaceSymbol",
-    value: function replaceSymbol(ctx) {
-      var msg = typeof this.message === 'function' ? this.message(ctx) : this.message;
-      var messages = Array.isArray(msg) ? msg : [msg];
-      var numberFormatter = new NumberFormatter(this.locales);
-      var valueStr = numberFormatter.numberFormat(this.value);
-      return messages.map(function (msg) {
-        return typeof msg === 'string' ? msg.replace('#', valueStr) : msg;
-      });
-    }
-  }]);
+  _createClass(PluralFormatter, [
+    {
+      key: 'replaceSymbol',
+      value: function replaceSymbol(ctx) {
+        var msg = typeof this.message === 'function' ? this.message(ctx) : this.message;
+        var messages = Array.isArray(msg) ? msg : [msg];
+        var numberFormatter = new NumberFormatter(this.locales);
+        var valueStr = numberFormatter.numberFormat(this.value);
+        return messages.map(function (msg) {
+          return typeof msg === 'string' ? msg.replace('#', valueStr) : msg;
+        });
+      },
+    },
+  ]);
   return PluralFormatter;
-}();
+})();
 
 /*
  * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
@@ -1616,30 +1815,35 @@ var PluralFormatter = /*#__PURE__*/function () {
  * eg : 输入选择语句 female {She} other {They}} ，表示'female'和'other'是两种可能的值，它们分别对应着'She'和'They'两个输出结果。
  * 如果调用select（{ value: 'female' }）则表示，输出 she
  */
-var SelectFormatter = /*#__PURE__*/function () {
+var SelectFormatter = /*#__PURE__*/ (function () {
   function SelectFormatter(locale) {
     _classCallCheck(this, SelectFormatter);
     this.locale = void 0;
     this.locale = locale;
   }
-  _createClass(SelectFormatter, [{
-    key: "getRule",
-    value: function getRule(value, rules) {
-      return rules[value] || rules.other;
-    }
-  }]);
+  _createClass(SelectFormatter, [
+    {
+      key: 'getRule',
+      value: function getRule(value, rules) {
+        return rules[value] || rules.other;
+      },
+    },
+  ]);
   return SelectFormatter;
-}();
+})();
 
-var _excluded = ["offset"],
-  _excluded2 = ["offset"];
+var _excluded = ['offset'],
+  _excluded2 = ['offset'];
 /**
  * 默认格式化接口
  */
 var generateFormatters = function (locale, locales) {
-  var localeConfig = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {
-    plurals: undefined
-  };
+  var localeConfig =
+    arguments.length > 2 && arguments[2] !== undefined
+      ? arguments[2]
+      : {
+          plurals: undefined,
+        };
   var formatOptions = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
   var cache = arguments.length > 4 ? arguments[4] : undefined;
   var valueKey = arguments.length > 5 ? arguments[5] : undefined;
@@ -1650,9 +1854,11 @@ var generateFormatters = function (locale, locales) {
    */
   var getStyleOption = function (formatOption) {
     if (typeof formatOption === 'string') {
-      return formatOptions[formatOption] || {
-        option: formatOption
-      };
+      return (
+        formatOptions[formatOption] || {
+          option: formatOption,
+        }
+      );
     } else {
       return formatOption;
     }
@@ -1663,14 +1869,22 @@ var generateFormatters = function (locale, locales) {
       var _ref$offset = _ref.offset,
         offset = _ref$offset === void 0 ? 0 : _ref$offset,
         rules = _objectWithoutPropertiesLoose(_ref, _excluded);
-      var pluralFormatter = new PluralFormatter(locale, locales, value - offset, rules[value] || rules[plurals === null || plurals === void 0 ? void 0 : plurals(value - offset)] || rules.other);
+      var pluralFormatter = new PluralFormatter(
+        locale,
+        locales,
+        value - offset,
+        rules[value] || rules[plurals === null || plurals === void 0 ? void 0 : plurals(value - offset)] || rules.other
+      );
       return pluralFormatter.replaceSymbol.bind(pluralFormatter);
     },
     selectordinal: function (value, _ref2) {
       var _ref2$offset = _ref2.offset,
         offset = _ref2$offset === void 0 ? 0 : _ref2$offset,
         rules = _objectWithoutPropertiesLoose(_ref2, _excluded2);
-      var message = rules[value] || rules[plurals === null || plurals === void 0 ? void 0 : plurals(value - offset, true)] || rules.other;
+      var message =
+        rules[value] ||
+        rules[plurals === null || plurals === void 0 ? void 0 : plurals(value - offset, true)] ||
+        rules.other;
       var pluralFormatter = new PluralFormatter(locale, locales, value - offset, message);
       return pluralFormatter.replaceSymbol.bind(pluralFormatter);
     },
@@ -1693,19 +1907,22 @@ var generateFormatters = function (locale, locales) {
      * @param formatOption { year: 'numeric', month: 'long', day: 'numeric' }
      */
     dateTimeFormat: function (value, formatOption) {
-      return new DateTimeFormatter(locales, getStyleOption(formatOption), cache, valueKey).dateTimeFormat(value, formatOption);
+      return new DateTimeFormatter(locales, getStyleOption(formatOption), cache, valueKey).dateTimeFormat(
+        value,
+        formatOption
+      );
     },
     // 用于处理未定义的值，接受一个值并直接返回它。
     undefined: function (value) {
       return value;
-    }
+    },
   };
 };
 
 /**
  * 获取翻译结果
  */
-var Translation = /*#__PURE__*/function () {
+var Translation = /*#__PURE__*/ (function () {
   function Translation(compiledMessage, locale, locales, localeConfig, cache) {
     _classCallCheck(this, Translation);
     this.compiledMessage = void 0;
@@ -1724,65 +1941,131 @@ var Translation = /*#__PURE__*/function () {
    * @param values 需要替换文本占位符的值
    * @param formatOptions 需要格式化选项
    */
-  _createClass(Translation, [{
-    key: "translate",
-    value: function translate(values) {
-      var _this = this;
-      var formatOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      var createTextFormatter = function (locale, locales, values, formatOptions, localeConfig) {
-        var textFormatter = function (valueKey, type, format) {
-          var formatters = generateFormatters(locale, locales, localeConfig, formatOptions, _this.cache, valueKey);
-          var value = values[valueKey];
-          var formatter = formatters[type](value, format);
-          var message;
-          if (typeof formatter === 'function') {
-            message = formatter(textFormatter); // 递归调用
-          } else {
-            message = formatter; // 获得变量值 formatted: "Fred"
-          }
-          return Array.isArray(message) ? message.join('') : message;
+  _createClass(Translation, [
+    {
+      key: 'translate',
+      value: function translate(values) {
+        var _this = this;
+        var formatOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        var createTextFormatter = function (locale, locales, values, formatOptions, localeConfig) {
+          var textFormatter = function (valueKey, type, format) {
+            var formatters = generateFormatters(locale, locales, localeConfig, formatOptions, _this.cache, valueKey);
+            var value = values[valueKey];
+            var formatter = formatters[type](value, format);
+            var message;
+            if (typeof formatter === 'function') {
+              message = formatter(textFormatter); // 递归调用
+            } else {
+              message = formatter; // 获得变量值 formatted: "Fred"
+            }
+            return Array.isArray(message) ? message.join('') : message;
+          };
+          return textFormatter;
         };
-        return textFormatter;
-      };
-      var textFormatter = createTextFormatter(this.locale, this.locales, values, formatOptions, this.localeConfig);
-      // 通过递归方法formatCore进行格式化处理
-      return this.formatMessage(this.compiledMessage, textFormatter); // 返回要格式化的结果
-    }
-  }, {
-    key: "formatMessage",
-    value: function formatMessage(compiledMessage, textFormatter) {
-      var _this2 = this;
-      if (!Array.isArray(compiledMessage)) {
-        return compiledMessage;
-      }
-      return compiledMessage.map(function (token) {
-        if (typeof token === 'string') {
-          return token;
+        var textFormatter = createTextFormatter(this.locale, this.locales, values, formatOptions, this.localeConfig);
+        // 通过递归方法formatCore进行格式化处理
+        return this.formatMessage(this.compiledMessage, textFormatter); // 返回要格式化的结果
+      },
+    },
+    {
+      key: 'formatMessage',
+      value: function formatMessage(compiledMessage, textFormatter) {
+        var _this2 = this;
+        if (!Array.isArray(compiledMessage)) {
+          return compiledMessage;
         }
-        var name = token[0],
-          type = token[1],
-          format = token[2];
-        var replaceValueFormat = format;
+        return compiledMessage
+          .map(function (token) {
+            if (typeof token === 'string') {
+              return token;
+            }
+            var name = token[0],
+              type = token[1],
+              format = token[2];
+            var replaceValueFormat = format;
 
-        // 如果 format 是对象，函数将递归地对它的每个值调用 formatMessage 后保存，否则直接保存
-        if (format && typeof format !== 'string') {
-          replaceValueFormat = Object.keys(replaceValueFormat).reduce(function (text, key) {
-            text[key] = _this2.formatMessage(format[key], textFormatter);
-            return text;
-          }, {});
-        }
-        //调用 getContent 函数来获取给定 name、type 和 interpolateFormat 的值
-        var value = textFormatter(name, type, replaceValueFormat);
-        return value !== null && value !== void 0 ? value : "{" + name + "}";
-      }).join('');
-    }
-  }]);
+            // 如果 format 是对象，函数将递归地对它的每个值调用 formatMessage 后保存，否则直接保存
+            if (format && typeof format !== 'string') {
+              replaceValueFormat = Object.keys(replaceValueFormat).reduce(function (text, key) {
+                text[key] = _this2.formatMessage(format[key], textFormatter);
+                return text;
+              }, {});
+            }
+            //调用 getContent 函数来获取给定 name、type 和 interpolateFormat 的值
+            var value = textFormatter(name, type, replaceValueFormat);
+            return value !== null && value !== void 0 ? value : '{' + name + '}';
+          })
+          .join('');
+      },
+    },
+  ]);
   return Translation;
-}();
+})();
 
-function _createForOfIteratorHelper$1(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray$1(r)) || e && r && "number" == typeof r.length) { t && (r = t); var n = 0, F = function () {}; return { s: F, n: function () { return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] }; }, e: function (r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function () { t = t.call(r); }, n: function () { var r = t.next(); return a = r.done, r; }, e: function (r) { u = !0, o = r; }, f: function () { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
-function _unsupportedIterableToArray$1(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray$1(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray$1(r, a) : void 0; } }
-function _arrayLikeToArray$1(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function _createForOfIteratorHelper$1(r, e) {
+  var t = ('undefined' != typeof Symbol && r[Symbol.iterator]) || r['@@iterator'];
+  if (!t) {
+    if (Array.isArray(r) || (t = _unsupportedIterableToArray$1(r)) || (e && r && 'number' == typeof r.length)) {
+      t && (r = t);
+      var n = 0,
+        F = function () {};
+      return {
+        s: F,
+        n: function () {
+          return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] };
+        },
+        e: function (r) {
+          throw r;
+        },
+        f: F,
+      };
+    }
+    throw new TypeError(
+      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.'
+    );
+  }
+  var o,
+    a = !0,
+    u = !1;
+  return {
+    s: function () {
+      t = t.call(r);
+    },
+    n: function () {
+      var r = t.next();
+      return ((a = r.done), r);
+    },
+    e: function (r) {
+      ((u = !0), (o = r));
+    },
+    f: function () {
+      try {
+        a || null == t.return || t.return();
+      } finally {
+        if (u) throw o;
+      }
+    },
+  };
+}
+function _unsupportedIterableToArray$1(r, a) {
+  if (r) {
+    if ('string' == typeof r) return _arrayLikeToArray$1(r, a);
+    var t = {}.toString.call(r).slice(8, -1);
+    return (
+      'Object' === t && r.constructor && (t = r.constructor.name),
+      'Map' === t || 'Set' === t
+        ? Array.from(r)
+        : 'Arguments' === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t)
+          ? _arrayLikeToArray$1(r, a)
+          : void 0
+    );
+  }
+}
+function _arrayLikeToArray$1(r, a) {
+  (null == a || a > r.length) && (a = r.length);
+  for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
+  return n;
+}
 
 // 用于匹配标签的正则表达式
 var tagReg = /<(\d+)>(.*?)<\/\1>|<(\d+)\/>/;
@@ -1806,14 +2089,16 @@ function formatElements(value) {
   var _iterator = _createForOfIteratorHelper$1(getElements(arrays)),
     _step;
   try {
-    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+    for (_iterator.s(); !(_step = _iterator.n()).done; ) {
       var _step$value = _step.value,
         index = _step$value[0],
         children = _step$value[1],
         after = _step$value[2];
       var element = elements[index];
-      if (!element || voidElementTags[element.type] && children) {
-        var errorMessage = !element ? "Index not declared as " + index + " in original translation" : element.type + " , No child element exists. Please check.";
+      if (!element || (voidElementTags[element.type] && children)) {
+        var errorMessage = !element
+          ? 'Index not declared as ' + index + ' in original translation'
+          : element.type + ' , No child element exists. Please check.';
         console.error(errorMessage);
 
         // 对于异常元素，通过创建<></>来代替，并继续解析现有的子元素和之后的元素，并保证在构建数组时，不会因为缺少元素而导致索引错位。
@@ -1824,9 +2109,13 @@ function formatElements(value) {
       var formattedChildren = children ? formatElements(children, elements) : element.props.children;
 
       // 更新element 的属性和子元素
-      var clonedElement = cloneElement(element, {
-        key: elementKeyID()
-      }, formattedChildren);
+      var clonedElement = cloneElement(
+        element,
+        {
+          key: elementKeyID(),
+        },
+        formattedChildren
+      );
       result.push(clonedElement);
       if (after) {
         result.push(after);
@@ -1862,9 +2151,12 @@ function getElements(arrays) {
     textAfter = _arrays$splice[3];
 
   // 解析当前标签元素和它的子元素，返回一个包含标签索引、子元素和后续文本的数组
-  var currentElement = [parseInt(pairedIndex || unpairedIndex),
-  // 解析标签索引，如果是自闭合标签，则使用 unpaired
-  children || '', textAfter || ''];
+  var currentElement = [
+    parseInt(pairedIndex || unpairedIndex),
+    // 解析标签索引，如果是自闭合标签，则使用 unpaired
+    children || '',
+    textAfter || '',
+  ];
 
   // 递归调用 getElements 函数，处理剩余的 arrays 数组
   var remainingElements = getElements(arrays);
@@ -1878,7 +2170,7 @@ function getElementIndex() {
   var count = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
   var prefix = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
   return function () {
-    return prefix + "_" + count++;
+    return prefix + '_' + count++;
   };
 }
 
@@ -1943,9 +2235,24 @@ function getFormatMessage(i18n, id) {
   return formatElements(formatResult, components);
 }
 
-function _callSuper$1(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct$1() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
-function _isNativeReflectConstruct$1() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct$1 = function () { return !!t; })(); }
-var I18n = /*#__PURE__*/function (_EventDispatcher) {
+function _callSuper$1(t, o, e) {
+  return (
+    (o = _getPrototypeOf(o)),
+    _possibleConstructorReturn(
+      t,
+      _isNativeReflectConstruct$1() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)
+    )
+  );
+}
+function _isNativeReflectConstruct$1() {
+  try {
+    var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+  } catch (t) {}
+  return (_isNativeReflectConstruct$1 = function () {
+    return !!t;
+  })();
+}
+var I18n = /*#__PURE__*/ (function (_EventDispatcher) {
   _inherits(I18n, _EventDispatcher);
   function I18n(props) {
     var _props$cache;
@@ -1985,134 +2292,159 @@ var I18n = /*#__PURE__*/function (_EventDispatcher) {
     _this.cache = (_props$cache = props.cache) !== null && _props$cache !== void 0 ? _props$cache : creatI18nCache();
     return _this;
   }
-  _createClass(I18n, [{
-    key: "messages",
-    get: function () {
-      if (this.locale in this.allMessages) {
-        var _this$allMessages$thi;
-        return (_this$allMessages$thi = this.allMessages[this.locale]) !== null && _this$allMessages$thi !== void 0 ? _this$allMessages$thi : {};
-      } else {
-        var _this$allMessages;
-        return (_this$allMessages = this.allMessages) !== null && _this$allMessages !== void 0 ? _this$allMessages : {};
-      }
-    }
-  }, {
-    key: "localeConfig",
-    get: function () {
-      var _this$_localeConfig$t;
-      return (_this$_localeConfig$t = this._localeConfig[this.locale]) !== null && _this$_localeConfig$t !== void 0 ? _this$_localeConfig$t : {};
-    }
-  }, {
-    key: "setLocaleConfig",
-    value: function setLocaleConfig(locale, localeData) {
-      if (this._localeConfig[locale]) {
-        _extends(this._localeConfig, localeData);
-      } else {
-        this._localeConfig[locale] = localeData;
-      }
-    }
+  _createClass(I18n, [
+    {
+      key: 'messages',
+      get: function () {
+        if (this.locale in this.allMessages) {
+          var _this$allMessages$thi;
+          return (_this$allMessages$thi = this.allMessages[this.locale]) !== null && _this$allMessages$thi !== void 0
+            ? _this$allMessages$thi
+            : {};
+        } else {
+          var _this$allMessages;
+          return (_this$allMessages = this.allMessages) !== null && _this$allMessages !== void 0
+            ? _this$allMessages
+            : {};
+        }
+      },
+    },
+    {
+      key: 'localeConfig',
+      get: function () {
+        var _this$_localeConfig$t;
+        return (_this$_localeConfig$t = this._localeConfig[this.locale]) !== null && _this$_localeConfig$t !== void 0
+          ? _this$_localeConfig$t
+          : {};
+      },
+    },
+    {
+      key: 'setLocaleConfig',
+      value: function setLocaleConfig(locale, localeData) {
+        if (this._localeConfig[locale]) {
+          _extends(this._localeConfig, localeData);
+        } else {
+          this._localeConfig[locale] = localeData;
+        }
+      },
 
-    // 将热语言环境的本地化数据加载
-  }, {
-    key: "loadLocaleConfig",
-    value: function loadLocaleConfig(localeOrAllData, localeConfig) {
-      var _this2 = this;
-      if (localeConfig) {
-        this.setLocaleConfig(localeOrAllData, localeConfig);
-      } else {
-        Object.keys(localeOrAllData).forEach(function (locale) {
-          _this2.setLocaleConfig(locale, localeOrAllData[locale]);
-        });
-      }
-      this.emit('change');
-    }
-  }, {
-    key: "setMessage",
-    value: function setMessage(locale, messages) {
-      if (this.allMessages[locale]) {
-        this.allMessages[locale] = _extends({}, this.allMessages[locale], messages);
-      } else {
-        this.allMessages[locale] = messages;
-      }
-    }
-  }, {
-    key: "changeMessage",
-    value: function changeMessage(messages) {
-      this.allMessages = messages;
-      this.emit('change');
-    }
+      // 将热语言环境的本地化数据加载
+    },
+    {
+      key: 'loadLocaleConfig',
+      value: function loadLocaleConfig(localeOrAllData, localeConfig) {
+        var _this2 = this;
+        if (localeConfig) {
+          this.setLocaleConfig(localeOrAllData, localeConfig);
+        } else {
+          Object.keys(localeOrAllData).forEach(function (locale) {
+            _this2.setLocaleConfig(locale, localeOrAllData[locale]);
+          });
+        }
+        this.emit('change');
+      },
+    },
+    {
+      key: 'setMessage',
+      value: function setMessage(locale, messages) {
+        if (this.allMessages[locale]) {
+          this.allMessages[locale] = _extends({}, this.allMessages[locale], messages);
+        } else {
+          this.allMessages[locale] = messages;
+        }
+      },
+    },
+    {
+      key: 'changeMessage',
+      value: function changeMessage(messages) {
+        this.allMessages = messages;
+        this.emit('change');
+      },
 
-    // 加载messages
-  }, {
-    key: "loadMessage",
-    value: function loadMessage(localeOrMessages, messages) {
-      var _this3 = this;
-      if (messages) {
-        //当 message 为空的时候，加载单一的message信息
-        this.setMessage(localeOrMessages, messages);
-      } else {
-        // 加载多对locale-message信息
-        localeOrMessages && Object.keys(localeOrMessages).forEach(function (locale) {
-          return _this3.setMessage(locale, localeOrMessages[locale]);
-        });
-      }
-      this.emit('change');
-    }
+      // 加载messages
+    },
+    {
+      key: 'loadMessage',
+      value: function loadMessage(localeOrMessages, messages) {
+        var _this3 = this;
+        if (messages) {
+          //当 message 为空的时候，加载单一的message信息
+          this.setMessage(localeOrMessages, messages);
+        } else {
+          // 加载多对locale-message信息
+          localeOrMessages &&
+            Object.keys(localeOrMessages).forEach(function (locale) {
+              return _this3.setMessage(locale, localeOrMessages[locale]);
+            });
+        }
+        this.emit('change');
+      },
 
-    // 改变当前的语言环境
-  }, {
-    key: "changeLanguage",
-    value: function changeLanguage(locale, locales) {
-      this.locale = locale;
-      if (locales) {
-        this.locales = locales;
-      }
-      this.emit('change', {
-        locale: locale,
-        id: ''
-      });
-    }
-  }, {
-    key: "formatMessage",
-    value: function formatMessage(id) {
-      var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-        messages = _ref.messages,
-        context = _ref.context,
-        formatOptions = _ref.formatOptions;
-      // 在多次渲染时，保证存储component不丢失
-      var components = {};
-      var tempValues = _extends({}, values);
-      if (tempValues) {
-        Object.keys(tempValues).forEach(function (key, index) {
-          var value = tempValues[key];
-          if (!isValidElement(value)) return;
-          // 将inula元素暂存
-          components[index] = value;
-          tempValues[key] = "<" + index + "/>";
+      // 改变当前的语言环境
+    },
+    {
+      key: 'changeLanguage',
+      value: function changeLanguage(locale, locales) {
+        this.locale = locale;
+        if (locales) {
+          this.locales = locales;
+        }
+        this.emit('change', {
+          locale: locale,
+          id: '',
         });
-      }
-      return getFormatMessage(this, id, tempValues, {
-        messages: messages,
-        context: context,
-        formatOptions: formatOptions
-      }, components);
-    }
-  }, {
-    key: "formatDate",
-    value: function formatDate(value, formatOptions) {
-      var dateTimeFormatter = new DateTimeFormatter(this.locale || this.locales, formatOptions, this.cache);
-      return dateTimeFormatter.dateTimeFormat(value);
-    }
-  }, {
-    key: "formatNumber",
-    value: function formatNumber(value, formatOptions) {
-      var numberFormatter = new NumberFormatter(this.locale || this.locales, formatOptions, this.cache);
-      return numberFormatter.numberFormat(value);
-    }
-  }]);
+      },
+    },
+    {
+      key: 'formatMessage',
+      value: function formatMessage(id) {
+        var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+          messages = _ref.messages,
+          context = _ref.context,
+          formatOptions = _ref.formatOptions;
+        // 在多次渲染时，保证存储component不丢失
+        var components = {};
+        var tempValues = _extends({}, values);
+        if (tempValues) {
+          Object.keys(tempValues).forEach(function (key, index) {
+            var value = tempValues[key];
+            if (!isValidElement(value)) return;
+            // 将inula元素暂存
+            components[index] = value;
+            tempValues[key] = '<' + index + '/>';
+          });
+        }
+        return getFormatMessage(
+          this,
+          id,
+          tempValues,
+          {
+            messages: messages,
+            context: context,
+            formatOptions: formatOptions,
+          },
+          components
+        );
+      },
+    },
+    {
+      key: 'formatDate',
+      value: function formatDate(value, formatOptions) {
+        var dateTimeFormatter = new DateTimeFormatter(this.locale || this.locales, formatOptions, this.cache);
+        return dateTimeFormatter.dateTimeFormat(value);
+      },
+    },
+    {
+      key: 'formatNumber',
+      value: function formatNumber(value, formatOptions) {
+        var numberFormatter = new NumberFormatter(this.locale || this.locales, formatOptions, this.cache);
+        return numberFormatter.numberFormat(value);
+      },
+    },
+  ]);
   return I18n;
-}(EventDispatcher);
+})(EventDispatcher);
 function createI18nInstance() {
   var i18nProps = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   return new I18n(i18nProps);
@@ -2148,7 +2480,7 @@ function FormattedMessage(props) {
     comment: comment,
     messages: messages,
     context: context,
-    formatOptions: formatOptions
+    formatOptions: formatOptions,
   };
   var formattedMessage = formatMessage(id, values, formatMessageOptions);
   if (typeof children === 'function') {
@@ -2157,11 +2489,11 @@ function FormattedMessage(props) {
   }
   if (TagName) {
     return jsx(TagName, {
-      children: Children.toArray(formattedMessage)
+      children: Children.toArray(formattedMessage),
     });
   }
   return jsx(Fragment$1, {
-    children: formattedMessage
+    children: formattedMessage,
   });
 }
 
@@ -2220,7 +2552,12 @@ function copyStaticProps(targetComponent, sourceComponent) {
   var targetStatics = getStatics(targetComponent);
   var sourceStatics = getStatics(sourceComponent);
   keys.forEach(function (key) {
-    if (!NATIVE_STATICS[key] && !(targetStatics && targetStatics[key]) && !(sourceStatics && sourceStatics[key]) && isDescriptorValid(sourceComponent, key)) {
+    if (
+      !NATIVE_STATICS[key] &&
+      !(targetStatics && targetStatics[key]) &&
+      !(sourceStatics && sourceStatics[key]) &&
+      isDescriptorValid(sourceComponent, key)
+    ) {
       try {
         // 在一个已有的targetComponent对象上增加sourceComponent的属性
         Object.defineProperty(targetComponent, key, Object.getOwnPropertyDescriptor(sourceComponent, key));
@@ -2258,22 +2595,33 @@ function injectI18n(Component, options) {
           isVariantI18n(context.i18nInstance);
         }
         var i18nProps = {
-          intl: context.i18nInstance
+          intl: context.i18nInstance,
         };
-        return jsx(Component, _extends({}, props, i18nProps, {
-          ref: isUsingForwardRef ? props.forwardedRef : null
-        }));
-      }
+        return jsx(
+          Component,
+          _extends({}, props, i18nProps, {
+            ref: isUsingForwardRef ? props.forwardedRef : null,
+          })
+        );
+      },
     });
   };
   WrappedI18n.WrappedComponent = Component;
 
   // 通过copyStatics方法，复制组件中的静态属性
-  return copyStaticProps(isUsingForwardRef ? forwardRef(function (props, ref) {
-    return jsx(WrappedI18n, _extends({}, props, {
-      forwardedRef: ref
-    }));
-  }) : WrappedI18n, Component);
+  return copyStaticProps(
+    isUsingForwardRef
+      ? forwardRef(function (props, ref) {
+          return jsx(
+            WrappedI18n,
+            _extends({}, props, {
+              forwardedRef: ref,
+            })
+          );
+        })
+      : WrappedI18n,
+    Component
+  );
 }
 
 /**
@@ -2287,12 +2635,18 @@ var I18nProvider = function (props) {
     messages = props.messages,
     i18n = props.i18n,
     children = props.children;
-  var i18nInstance = useMemo(function () {
-    return i18n || createI18nInstance({
-      locale: locale,
-      messages: messages
-    });
-  }, [i18n, locale, messages]);
+  var i18nInstance = useMemo(
+    function () {
+      return (
+        i18n ||
+        createI18nInstance({
+          locale: locale,
+          messages: messages,
+        })
+      );
+    },
+    [i18n, locale, messages]
+  );
 
   // 监听message和locale的变化
   var _useI18nSync = useI18nSync(i18nInstance),
@@ -2300,19 +2654,22 @@ var I18nProvider = function (props) {
     currentMessages = _useI18nSync.currentMessages;
 
   // 创建一个 memoized 的 context 值
-  var contextValue = useMemo(function () {
-    return _extends({}, i18nInstance, {
-      i18nInstance: i18nInstance,
-      locale: currentLocale,
-      messages: currentMessages,
-      changeLanguage: i18nInstance.changeLanguage,
-      changeMessage: i18nInstance.changeMessage
-    });
-  }, [i18nInstance, currentLocale, currentMessages]);
+  var contextValue = useMemo(
+    function () {
+      return _extends({}, i18nInstance, {
+        i18nInstance: i18nInstance,
+        locale: currentLocale,
+        messages: currentMessages,
+        changeLanguage: i18nInstance.changeLanguage,
+        changeMessage: i18nInstance.changeMessage,
+      });
+    },
+    [i18nInstance, currentLocale, currentMessages]
+  );
   // 提供一个 Provider 组件
   return jsx(InjectProvider, {
     value: contextValue,
-    children: children
+    children: children,
   });
 };
 var useI18nSync = function (i18nInstance) {
@@ -2322,21 +2679,27 @@ var useI18nSync = function (i18nInstance) {
   var _useState2 = useState(i18nInstance.messages),
     currentMessages = _useState2[0],
     setCurrentMessages = _useState2[1];
-  var handleChange = useCallback(function () {
-    if (currentLocale !== i18nInstance.locale) {
-      setCurrentLocale(i18nInstance.locale);
-    }
-    if (currentMessages !== i18nInstance.messages) {
-      setCurrentMessages(i18nInstance.messages);
-    }
-  }, [i18nInstance, currentLocale, currentMessages]);
-  useEffect(function () {
-    // 清理函数
-    return i18nInstance.on('change', handleChange);
-  }, [i18nInstance, handleChange]);
+  var handleChange = useCallback(
+    function () {
+      if (currentLocale !== i18nInstance.locale) {
+        setCurrentLocale(i18nInstance.locale);
+      }
+      if (currentMessages !== i18nInstance.messages) {
+        setCurrentMessages(i18nInstance.messages);
+      }
+    },
+    [i18nInstance, currentLocale, currentMessages]
+  );
+  useEffect(
+    function () {
+      // 清理函数
+      return i18nInstance.on('change', handleChange);
+    },
+    [i18nInstance, handleChange]
+  );
   return {
     currentLocale: currentLocale,
-    currentMessages: currentMessages
+    currentMessages: currentMessages,
   };
 };
 
@@ -2365,9 +2728,12 @@ function useIntl() {
   // 用于兼容通过createI18n对象直接创建一个I18n实例.
   var i18nInstance = ContextI18n.i18nInstance ? ContextI18n.i18nInstance : ContextI18n;
   utils.isVariantI18n(i18nInstance);
-  return useMemo(function () {
-    return createI18nProps(i18nInstance);
-  }, [i18nInstance]);
+  return useMemo(
+    function () {
+      return createI18nProps(i18nInstance);
+    },
+    [i18nInstance]
+  );
 }
 
 /*
@@ -2385,7 +2751,6 @@ function useIntl() {
  * See the Mulan PSL v2 for more details.
  */
 
-
 /**
  * createIntl hook函数，用于创建国际化i8n实例，以进行相关的数据操作
  */
@@ -2397,7 +2762,7 @@ var createIntl = function (config, cache) {
   var i18nInstance = createI18nInstance({
     locale: locale || defaultLocale || 'en',
     messages: messages,
-    cache: cache !== null && cache !== void 0 ? cache : creatI18nCache()
+    cache: cache !== null && cache !== void 0 ? cache : creatI18nCache(),
   });
   return createI18nProps(i18nInstance);
 };
@@ -2411,7 +2776,7 @@ function _superPropBase(object, property) {
 }
 
 function _get() {
-  if (typeof Reflect !== "undefined" && Reflect.get) {
+  if (typeof Reflect !== 'undefined' && Reflect.get) {
     _get = Reflect.get.bind();
   } else {
     _get = function _get(target, property, receiver) {
@@ -2434,7 +2799,7 @@ function _defineProperty(obj, key, value) {
       value: value,
       enumerable: true,
       configurable: true,
-      writable: true
+      writable: true,
     });
   } else {
     obj[key] = value;
@@ -2473,47 +2838,107 @@ var IN_SINGLE_QUOTE = 5;
 var IN_DOUBLE_QUOTE = 6;
 var AFTER_PATH = 7;
 var ERROR = 8;
-var pathStateMachine = _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty({}, BEFORE_PATH, {
-  ws: [BEFORE_PATH],
-  ident: [IN_IDENT, APPEND],
-  '[': [IN_SUB_PATH],
-  eof: [AFTER_PATH]
-}), IN_PATH, {
-  ws: [IN_PATH],
-  '.': [BEFORE_IDENT],
-  '[': [IN_SUB_PATH],
-  eof: [AFTER_PATH]
-}), BEFORE_IDENT, {
-  ws: [BEFORE_IDENT],
-  ident: [IN_IDENT, APPEND],
-  '0': [IN_IDENT, APPEND],
-  number: [IN_IDENT, APPEND]
-}), IN_IDENT, {
-  ident: [IN_IDENT, APPEND],
-  '0': [IN_IDENT, APPEND],
-  number: [IN_IDENT, APPEND],
-  ws: [IN_PATH, PUSH],
-  '.': [BEFORE_IDENT, PUSH],
-  '[': [IN_SUB_PATH, PUSH],
-  eof: [AFTER_PATH, PUSH]
-}), IN_SUB_PATH, {
-  "'": [IN_SINGLE_QUOTE, APPEND],
-  '"': [IN_DOUBLE_QUOTE, APPEND],
-  '[': [IN_SUB_PATH, INC_SUB_PATH_DEPTH],
-  ']': [IN_PATH, PUSH_SUB_PATH],
-  eof: ERROR,
-  else: [IN_SUB_PATH, APPEND]
-}), IN_SINGLE_QUOTE, {
-  "'": [IN_SUB_PATH, APPEND],
-  eof: ERROR,
-  else: [IN_SINGLE_QUOTE, APPEND]
-}), IN_DOUBLE_QUOTE, {
-  '"': [IN_SUB_PATH, APPEND],
-  eof: ERROR,
-  else: [IN_DOUBLE_QUOTE, APPEND]
-});
-var numberFormatKeys = ['compactDisplay', 'currency', 'currencyDisplay', 'currencySign', 'localeMatcher', 'notation', 'numberingSystem', 'signDisplay', 'style', 'unit', 'unitDisplay', 'useGrouping', 'minimumIntegerDigits', 'minimumFractionDigits', 'maximumFractionDigits', 'minimumSignificantDigits', 'maximumSignificantDigits'];
-var dateTimeFormatKeys = ['dateStyle', 'timeStyle', 'calendar', 'localeMatcher', 'hour12', 'hourCycle', 'timeZone', 'formatMatcher', 'weekday', 'era', 'year', 'month', 'day', 'hour', 'minute', 'second', 'timeZoneName'];
+var pathStateMachine = _defineProperty(
+  _defineProperty(
+    _defineProperty(
+      _defineProperty(
+        _defineProperty(
+          _defineProperty(
+            _defineProperty({}, BEFORE_PATH, {
+              ws: [BEFORE_PATH],
+              ident: [IN_IDENT, APPEND],
+              '[': [IN_SUB_PATH],
+              eof: [AFTER_PATH],
+            }),
+            IN_PATH,
+            {
+              ws: [IN_PATH],
+              '.': [BEFORE_IDENT],
+              '[': [IN_SUB_PATH],
+              eof: [AFTER_PATH],
+            }
+          ),
+          BEFORE_IDENT,
+          {
+            ws: [BEFORE_IDENT],
+            ident: [IN_IDENT, APPEND],
+            0: [IN_IDENT, APPEND],
+            number: [IN_IDENT, APPEND],
+          }
+        ),
+        IN_IDENT,
+        {
+          ident: [IN_IDENT, APPEND],
+          0: [IN_IDENT, APPEND],
+          number: [IN_IDENT, APPEND],
+          ws: [IN_PATH, PUSH],
+          '.': [BEFORE_IDENT, PUSH],
+          '[': [IN_SUB_PATH, PUSH],
+          eof: [AFTER_PATH, PUSH],
+        }
+      ),
+      IN_SUB_PATH,
+      {
+        "'": [IN_SINGLE_QUOTE, APPEND],
+        '"': [IN_DOUBLE_QUOTE, APPEND],
+        '[': [IN_SUB_PATH, INC_SUB_PATH_DEPTH],
+        ']': [IN_PATH, PUSH_SUB_PATH],
+        eof: ERROR,
+        else: [IN_SUB_PATH, APPEND],
+      }
+    ),
+    IN_SINGLE_QUOTE,
+    {
+      "'": [IN_SUB_PATH, APPEND],
+      eof: ERROR,
+      else: [IN_SINGLE_QUOTE, APPEND],
+    }
+  ),
+  IN_DOUBLE_QUOTE,
+  {
+    '"': [IN_SUB_PATH, APPEND],
+    eof: ERROR,
+    else: [IN_DOUBLE_QUOTE, APPEND],
+  }
+);
+var numberFormatKeys = [
+  'compactDisplay',
+  'currency',
+  'currencyDisplay',
+  'currencySign',
+  'localeMatcher',
+  'notation',
+  'numberingSystem',
+  'signDisplay',
+  'style',
+  'unit',
+  'unitDisplay',
+  'useGrouping',
+  'minimumIntegerDigits',
+  'minimumFractionDigits',
+  'maximumFractionDigits',
+  'minimumSignificantDigits',
+  'maximumSignificantDigits',
+];
+var dateTimeFormatKeys = [
+  'dateStyle',
+  'timeStyle',
+  'calendar',
+  'localeMatcher',
+  'hour12',
+  'hourCycle',
+  'timeZone',
+  'formatMatcher',
+  'weekday',
+  'era',
+  'year',
+  'month',
+  'day',
+  'hour',
+  'minute',
+  'second',
+  'timeZoneName',
+];
 
 /*
  * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
@@ -2568,7 +2993,7 @@ function dealNumberOrTimesArgs(args, numericOrTimeConstansArr) {
   return {
     dealLocale: dealLocale,
     key: key,
-    options: options
+    options: options,
   };
 }
 function isObject(obj) {
@@ -2623,67 +3048,131 @@ function dealMsgArgs(pathRet, message, key) {
   return ret;
 }
 
-function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var n = 0, F = function () {}; return { s: F, n: function () { return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] }; }, e: function (r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function () { t = t.call(r); }, n: function () { var r = t.next(); return a = r.done, r; }, e: function (r) { u = !0, o = r; }, f: function () { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
-function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
-function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-var I18nPath = /*#__PURE__*/function () {
+function _createForOfIteratorHelper(r, e) {
+  var t = ('undefined' != typeof Symbol && r[Symbol.iterator]) || r['@@iterator'];
+  if (!t) {
+    if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || (e && r && 'number' == typeof r.length)) {
+      t && (r = t);
+      var n = 0,
+        F = function () {};
+      return {
+        s: F,
+        n: function () {
+          return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] };
+        },
+        e: function (r) {
+          throw r;
+        },
+        f: F,
+      };
+    }
+    throw new TypeError(
+      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.'
+    );
+  }
+  var o,
+    a = !0,
+    u = !1;
+  return {
+    s: function () {
+      t = t.call(r);
+    },
+    n: function () {
+      var r = t.next();
+      return ((a = r.done), r);
+    },
+    e: function (r) {
+      ((u = !0), (o = r));
+    },
+    f: function () {
+      try {
+        a || null == t.return || t.return();
+      } finally {
+        if (u) throw o;
+      }
+    },
+  };
+}
+function _unsupportedIterableToArray(r, a) {
+  if (r) {
+    if ('string' == typeof r) return _arrayLikeToArray(r, a);
+    var t = {}.toString.call(r).slice(8, -1);
+    return (
+      'Object' === t && r.constructor && (t = r.constructor.name),
+      'Map' === t || 'Set' === t
+        ? Array.from(r)
+        : 'Arguments' === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t)
+          ? _arrayLikeToArray(r, a)
+          : void 0
+    );
+  }
+}
+function _arrayLikeToArray(r, a) {
+  (null == a || a > r.length) && (a = r.length);
+  for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
+  return n;
+}
+var I18nPath = /*#__PURE__*/ (function () {
   function I18nPath() {
     _classCallCheck(this, I18nPath);
     // 使用严格类型的缓存对象
     this._cache = Object.create(null);
   }
-  _createClass(I18nPath, [{
-    key: "parsePath",
-    value:
-    /**
-     * External parse that check for a cache hit first
-     */
-    function parsePath(path) {
-      var hit = this._cache[path];
-      if (!hit) {
-        hit = parse(path);
-        if (hit) {
-          this._cache[path] = hit;
-        }
-      }
-      return hit || [];
-    }
-  }, {
-    key: "getPathValue",
-    value: function getPathValue(obj, id) {
-      // 如果传入的不是对象，则返回null
-      if (!isObject(obj)) {
-        return null;
-      }
-      // 解析路径
-      var paths = this.parsePath(id);
-      if (paths.length === 0) {
-        return null;
-      } else {
-        var last = obj;
-        var _iterator = _createForOfIteratorHelper(paths),
-          _step;
-        try {
-          for (_iterator.s(); !(_step = _iterator.n()).done;) {
-            var path = _step.value;
-            var value = last[path];
-            // 如果路径对应的值为undefined或null，则返回null
-            if (value === undefined || value === null) {
-              return null;
+  _createClass(I18nPath, [
+    {
+      key: 'parsePath',
+      value:
+        /**
+         * External parse that check for a cache hit first
+         */
+        function parsePath(path) {
+          var hit = this._cache[path];
+          if (!hit) {
+            hit = parse(path);
+            if (hit) {
+              this._cache[path] = hit;
             }
-            last = value;
           }
-        } catch (err) {
-          _iterator.e(err);
-        } finally {
-          _iterator.f();
+          return hit || [];
+        },
+    },
+    {
+      key: 'getPathValue',
+      value: function getPathValue(obj, id) {
+        // 如果传入的不是对象，则返回null
+        if (!isObject(obj)) {
+          return null;
         }
-        return last;
-      }
-    }
-  }]);
+        // 解析路径
+        var paths = this.parsePath(id);
+        if (paths.length === 0) {
+          return null;
+        } else {
+          var last = obj;
+          var _iterator = _createForOfIteratorHelper(paths),
+            _step;
+          try {
+            for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+              var path = _step.value;
+              var value = last[path];
+              // 如果路径对应的值为undefined或null，则返回null
+              if (value === undefined || value === null) {
+                return null;
+              }
+              last = value;
+            }
+          } catch (err) {
+            _iterator.e(err);
+          } finally {
+            _iterator.f();
+          }
+          return last;
+        }
+      },
+    },
+  ]);
   return I18nPath;
-}();
+})();
 function parse(path) {
   var keys = [];
   var index = -1;
@@ -2737,7 +3226,7 @@ function parse(path) {
   };
   function maybeUnescapeQuote() {
     var nextChar = path[index + 1];
-    if (mode === IN_SINGLE_QUOTE && nextChar === "'" || mode === IN_DOUBLE_QUOTE && nextChar === '"') {
+    if ((mode === IN_SINGLE_QUOTE && nextChar === "'") || (mode === IN_DOUBLE_QUOTE && nextChar === '"')) {
       index++;
       newChar = '\\' + nextChar;
       actions[APPEND]();
@@ -2829,10 +3318,32 @@ function getPathCharType(ch) {
   return 'ident';
 }
 
-function _callSuper(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
-function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function () { return !!t; })(); }
-function _superPropGet(t, o, e, r) { var p = _get(_getPrototypeOf(1 & r ? t.prototype : t), o, e); return 2 & r && "function" == typeof p ? function (t) { return p.apply(e, t); } : p; }
-var VueI18n$1 = /*#__PURE__*/function (_I18n) {
+function _callSuper(t, o, e) {
+  return (
+    (o = _getPrototypeOf(o)),
+    _possibleConstructorReturn(
+      t,
+      _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)
+    )
+  );
+}
+function _isNativeReflectConstruct() {
+  try {
+    var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+  } catch (t) {}
+  return (_isNativeReflectConstruct = function () {
+    return !!t;
+  })();
+}
+function _superPropGet(t, o, e, r) {
+  var p = _get(_getPrototypeOf(1 & r ? t.prototype : t), o, e);
+  return 2 & r && 'function' == typeof p
+    ? function (t) {
+        return p.apply(e, t);
+      }
+    : p;
+}
+var VueI18n$1 = /*#__PURE__*/ (function (_I18n) {
   _inherits(VueI18n, _I18n);
   function VueI18n(_options) {
     var _this;
@@ -2848,22 +3359,42 @@ var VueI18n$1 = /*#__PURE__*/function (_I18n) {
     _this.listeners = void 0;
     // 重写 loadMessage 方法以支持加载局部消息
     _this.loadMessage = function (localeOrMessages, messages) {
-      _superPropGet((_assertThisInitialized(_this), VueI18n), "loadMessage", _assertThisInitialized(_this), 3)([localeOrMessages, messages]);
+      _superPropGet(
+        (_assertThisInitialized(_this), VueI18n),
+        'loadMessage',
+        _assertThisInitialized(_this),
+        3
+      )([localeOrMessages, messages]);
       _this.emit('change');
     };
     _this.changeLanguage = function (locale) {
       _this.locale = locale;
-      _superPropGet((_assertThisInitialized(_this), VueI18n), "changeLanguage", _assertThisInitialized(_this), 3)([locale]);
+      _superPropGet(
+        (_assertThisInitialized(_this), VueI18n),
+        'changeLanguage',
+        _assertThisInitialized(_this),
+        3
+      )([locale]);
     };
     _this.changeMessage = function (messages) {
-      _superPropGet((_assertThisInitialized(_this), VueI18n), "changeMessage", _assertThisInitialized(_this), 3)([messages]);
+      _superPropGet(
+        (_assertThisInitialized(_this), VueI18n),
+        'changeMessage',
+        _assertThisInitialized(_this),
+        3
+      )([messages]);
     };
     _this.$t = function (msgKey, values) {
       var _assertThisInitialize = _assertThisInitialized(_this),
         messages = _assertThisInitialize.messages;
       var pathRet = _this.path.getPathValue(messages, msgKey);
       var msgId = pathRet !== null ? dealMsgArgs(pathRet, messages, msgKey) : msgKey;
-      return _superPropGet((_assertThisInitialized(_this), VueI18n), "formatMessage", _assertThisInitialized(_this), 3)([msgId, values]);
+      return _superPropGet(
+        (_assertThisInitialized(_this), VueI18n),
+        'formatMessage',
+        _assertThisInitialized(_this),
+        3
+      )([msgId, values]);
     };
     _this.$n = function (value) {
       for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -2874,27 +3405,61 @@ var VueI18n$1 = /*#__PURE__*/function (_I18n) {
         key = _dealNumberOrTimesArg.key,
         options = _dealNumberOrTimesArg.options;
       // 如果自己传入新的语言，则更新
-      _superPropGet((_assertThisInitialized(_this), VueI18n), "changeLanguage", _assertThisInitialized(_this), 3)([dealLocale ? dealLocale : 'en']);
+      _superPropGet(
+        (_assertThisInitialized(_this), VueI18n),
+        'changeLanguage',
+        _assertThisInitialized(_this),
+        3
+      )([dealLocale ? dealLocale : 'en']);
       if (key) {
         var formatOptions = _this.numberFormats[dealLocale][key];
-        return _superPropGet((_assertThisInitialized(_this), VueI18n), "formatNumber", _assertThisInitialized(_this), 3)([value, formatOptions]);
+        return _superPropGet(
+          (_assertThisInitialized(_this), VueI18n),
+          'formatNumber',
+          _assertThisInitialized(_this),
+          3
+        )([value, formatOptions]);
       }
-      return _superPropGet((_assertThisInitialized(_this), VueI18n), "formatNumber", _assertThisInitialized(_this), 3)([value, options]);
+      return _superPropGet(
+        (_assertThisInitialized(_this), VueI18n),
+        'formatNumber',
+        _assertThisInitialized(_this),
+        3
+      )([value, options]);
     };
     _this.$d = function (value) {
-      for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+      for (
+        var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1;
+        _key2 < _len2;
+        _key2++
+      ) {
         args[_key2 - 1] = arguments[_key2];
       }
       var _dealNumberOrTimesArg2 = dealNumberOrTimesArgs(args, dateTimeFormatKeys),
         dealLocale = _dealNumberOrTimesArg2.dealLocale,
         key = _dealNumberOrTimesArg2.key,
         options = _dealNumberOrTimesArg2.options;
-      _superPropGet((_assertThisInitialized(_this), VueI18n), "changeLanguage", _assertThisInitialized(_this), 3)([dealLocale ? dealLocale : 'en']);
+      _superPropGet(
+        (_assertThisInitialized(_this), VueI18n),
+        'changeLanguage',
+        _assertThisInitialized(_this),
+        3
+      )([dealLocale ? dealLocale : 'en']);
       if (key) {
         var formatOptions = _this.dateTimeFormats[dealLocale][key];
-        return _superPropGet((_assertThisInitialized(_this), VueI18n), "formatDate", _assertThisInitialized(_this), 3)([value, formatOptions]);
+        return _superPropGet(
+          (_assertThisInitialized(_this), VueI18n),
+          'formatDate',
+          _assertThisInitialized(_this),
+          3
+        )([value, formatOptions]);
       }
-      return _superPropGet((_assertThisInitialized(_this), VueI18n), "formatDate", _assertThisInitialized(_this), 3)([value, options]);
+      return _superPropGet(
+        (_assertThisInitialized(_this), VueI18n),
+        'formatDate',
+        _assertThisInitialized(_this),
+        3
+      )([value, options]);
     };
     _this.locale = _options.locale || 'en';
     _this.localMessages = new Map();
@@ -2909,22 +3474,28 @@ var VueI18n$1 = /*#__PURE__*/function (_I18n) {
   }
 
   // 重写 messages getter
-  _createClass(VueI18n, [{
-    key: "messages",
-    get: function () {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      if (this.locale in this.vueMessages) {
-        var _this$vueMessages$thi;
-        return (_this$vueMessages$thi = this.vueMessages[this.locale]) !== null && _this$vueMessages$thi !== void 0 ? _this$vueMessages$thi : {};
-      } else {
-        var _this$vueMessages;
-        return (_this$vueMessages = this.vueMessages) !== null && _this$vueMessages !== void 0 ? _this$vueMessages : {};
-      }
-    }
-  }]);
+  _createClass(VueI18n, [
+    {
+      key: 'messages',
+      get: function () {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        if (this.locale in this.vueMessages) {
+          var _this$vueMessages$thi;
+          return (_this$vueMessages$thi = this.vueMessages[this.locale]) !== null && _this$vueMessages$thi !== void 0
+            ? _this$vueMessages$thi
+            : {};
+        } else {
+          var _this$vueMessages;
+          return (_this$vueMessages = this.vueMessages) !== null && _this$vueMessages !== void 0
+            ? _this$vueMessages
+            : {};
+        }
+      },
+    },
+  ]);
   return VueI18n;
-}(I18n);
+})(I18n);
 function createVueI18nInstance() {
   var i18nProps = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   return new VueI18n$1(i18nProps);
@@ -2935,22 +3506,26 @@ function createI18n(options) {
     messages = options.messages;
   var i18nInstance = createVueI18nInstance({
     locale: locale || 'en',
-    messages: messages
+    messages: messages,
   });
   return {
     global: _extends({}, i18nInstance, {
       // 这里需要手动把on属性带上，因为on来自i18nInstance的原型链上，...展开会丢失
       on: i18nInstance.on.bind(i18nInstance),
       t: i18nInstance.$t.bind(i18nInstance),
-      messages: i18nInstance.allMessages
+      messages: i18nInstance.allMessages,
     }),
     // 用于注册到全局国际化插件
     install: function (app) {
       // 将 vueIi18n 实例提供给I18nProvider
-      app.rootComponent = createElement(I18nProvider, {
-        i18n: i18nInstance
-      }, app.rootComponent);
-    }
+      app.rootComponent = createElement(
+        I18nProvider,
+        {
+          i18n: i18nInstance,
+        },
+        app.rootComponent
+      );
+    },
   };
 }
 
@@ -2967,17 +3542,29 @@ var useI18n = function (options) {
       var _contextI18n$i18nInst;
       var locale = _ref[0],
         messages = _ref[1];
-      contextI18n === null || contextI18n === void 0 ? void 0 : (_contextI18n$i18nInst = contextI18n.i18nInstance) === null || _contextI18n$i18nInst === void 0 ? void 0 : _contextI18n$i18nInst.loadMessage(_defineProperty({}, locale, _extends({}, contextI18n.messages[locale], messages)));
+      contextI18n === null || contextI18n === void 0
+        ? void 0
+        : (_contextI18n$i18nInst = contextI18n.i18nInstance) === null || _contextI18n$i18nInst === void 0
+          ? void 0
+          : _contextI18n$i18nInst.loadMessage(
+              _defineProperty({}, locale, _extends({}, contextI18n.messages[locale], messages))
+            );
     });
   }
-  useEffect(function () {
-    if (options !== null && options !== void 0 && options.locale) {
-      contextI18n === null || contextI18n === void 0 ? void 0 : contextI18n.changeLanguage(options.locale);
-    }
-    if (options !== null && options !== void 0 && options.messages) {
-      contextI18n === null || contextI18n === void 0 ? void 0 : contextI18n.loadMessage(options.messages);
-    }
-  }, [options === null || options === void 0 ? void 0 : options.locale, options === null || options === void 0 ? void 0 : options.messages]);
+  useEffect(
+    function () {
+      if (options !== null && options !== void 0 && options.locale) {
+        contextI18n === null || contextI18n === void 0 ? void 0 : contextI18n.changeLanguage(options.locale);
+      }
+      if (options !== null && options !== void 0 && options.messages) {
+        contextI18n === null || contextI18n === void 0 ? void 0 : contextI18n.loadMessage(options.messages);
+      }
+    },
+    [
+      options === null || options === void 0 ? void 0 : options.locale,
+      options === null || options === void 0 ? void 0 : options.messages,
+    ]
+  );
   return i18nInstance(contextI18n);
 };
 function i18nInstance(i18nContext) {
@@ -2986,7 +3573,7 @@ function i18nInstance(i18nContext) {
     on: i18nInstance.on.bind(i18nInstance),
     n: i18nInstance.$n.bind(i18nInstance),
     d: i18nInstance.$d.bind(i18nInstance),
-    t: i18nInstance.$t.bind(i18nInstance)
+    t: i18nInstance.$t.bind(i18nInstance),
   });
 }
 
@@ -3015,7 +3602,7 @@ var useLocalMessage = function (messages) {
   };
   return {
     $t: $t,
-    t: $t
+    t: $t,
   };
 };
 
@@ -3035,7 +3622,7 @@ var useLocalMessage = function (messages) {
  */
 // type for $api
 var VueI18n = {
-  VueI18n: VueI18n$1
+  VueI18n: VueI18n$1,
 };
 
 /*
@@ -3065,7 +3652,7 @@ var index = {
   IntlProvider: I18nProvider,
   injectIntl: injectI18n,
   RawIntlProvider: InjectProvider,
-  VueI18n: VueI18n
+  VueI18n: VueI18n,
 };
 
 // 用于定义文本
@@ -3076,5 +3663,24 @@ function defineMessage(msg) {
   return msg;
 }
 
-export { DateTimeFormatter, FormattedMessage, I18n, I18nProvider, I18nContext as IntlContext, I18nProvider as IntlProvider, NumberFormatter, InjectProvider as RawIntlProvider, createI18n, createIntl, creatI18nCache as createIntlCache, index as default, defineMessage, defineMessages, injectI18n as injectIntl, useI18n, useIntl, useLocalMessage };
+export {
+  DateTimeFormatter,
+  FormattedMessage,
+  I18n,
+  I18nProvider,
+  I18nContext as IntlContext,
+  I18nProvider as IntlProvider,
+  NumberFormatter,
+  InjectProvider as RawIntlProvider,
+  createI18n,
+  createIntl,
+  creatI18nCache as createIntlCache,
+  index as default,
+  defineMessage,
+  defineMessages,
+  injectI18n as injectIntl,
+  useI18n,
+  useIntl,
+  useLocalMessage,
+};
 //# sourceMappingURL=intl.js.map

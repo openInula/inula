@@ -39,25 +39,31 @@
     "webpack-dev-server": "^4.15.1",
     "react-hot-loader": "4.10.0",
     "typescript": "^5.5.4",
-    "@babel/preset-typescript": "7.8.3",
+    "@babel/preset-typescript": "7.8.3"
+  },
+  "dependencies": {
+    "@cloudsop/horizon": "file:./horizon",
+    "@cloudsop/horizon-adapter": "file:./horizon-adapter",
+    "@cloudsop/horizon-router": "file:./horizon-router",
+    "@cloudsop/horizon-intl": "file:./horizon-intl",
+    "@cloudsop/wrapper-eview-ui": "latest",
+    "babel-runtime": "^6.26.0",
+    "classnames": "^2.5.1",
+    "jquery": "^3.7.1",
+    "@baize/wdk": "0.7.1",
+    "highlight.js": "11.4.0",
+    "echarts": "5.4.3",
     "less": "^4.2.0",
     "less-loader": "^12.2.0",
     "style-loader": "^4.0.0",
+    "leaflet": "1.9.3",
+    "konva":"9.2.0",
     "postcss": "8.4.27",
     "postcss-loader": "7.3.3",
     "postcss-nested": "6.0.1",
     "postcss-scss": "4.0.9",
     "postcss-import": "16.1.0",
     "sass-loader": "^16.0.2"
-  },
-  "dependencies": {
-    "@ncede/horizon": "0.0.1",
-    "@cloudsop/horizon-adapter": "0.0.5",
-    "@cloudsop/horizon-router": "1.0.18",
-    "@cloudsop/horizon-intl": "1.1.3",
-    "jquery": "^3.7.1",
-    "@baize/wdk": "0.7.1",
-    "echarts": "5.4.3"
   },
   "comments": {
     "serve": "http-server -a 127.0.0.1 -p 8081 -c-1 -o --push-state ./index.html -P http://localhost:3000/ --proxy-options.changeOrigin true --proxy-options.secure false'"

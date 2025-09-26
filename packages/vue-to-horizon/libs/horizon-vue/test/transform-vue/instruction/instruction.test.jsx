@@ -8,7 +8,7 @@ describe('test for v-if instruction', () => {
   it('should transform v-if', async () => {
     const filePath = path.join(__dirname, '../../vue-atom-template/instruction/v-if.vue');
     const expectedFilePath = path.join(__dirname, '../../horizon-atom-template/instruction/v-if.jsx');
-    const code = fs.readFileSync(filePath, 'utf-8')
+    const code = fs.readFileSync(filePath, 'utf-8');
     const transformedCode = await transform(code);
     const expectedCode = fs.readFileSync(expectedFilePath, 'utf-8');
     console.log();

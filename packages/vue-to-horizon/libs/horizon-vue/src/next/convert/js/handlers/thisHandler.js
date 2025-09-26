@@ -93,7 +93,7 @@ export function handleThis(ast, reactCovert) {
       const callee = path.node.callee;
 
       // 处理方法调用，callee 是一个成员表达式并且 object 是 this
-      if (t.isMemberExpression(callee) && isThisNode(callee.object, path)) {
+      if (t.isMemberExpression(callee) && isThisNode(callee.object)) {
         // 处理全局方法导入，将 this.xxx() 替换成一个不含 this 的调用表达式 xxx()
         const name = path.node.callee.property.name || path.node.callee.property.value;
         if (Reflect.has(GlobalMethod, name)) {
@@ -144,7 +144,7 @@ export function handleThisAssignment(ast, reactCovert) {
   traverse(ast, {
     // 赋值表达式访问者，用于匹配 this.xxx = y 形式的赋值
     AssignmentExpression(path) {
-      if (t.isMemberExpression(path.node.left) && isThisNode(path.node.left.object, path)) {
+      if (t.isMemberExpression(path.node.left) && isThisNode(path.node.left.object)) {
         // 将 this.xxx 替换为一个不含 this 的标识符 xxx
         const name = getThisProperty(path.node.left);
         if (name === '') {
