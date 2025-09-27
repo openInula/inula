@@ -1,0 +1,743 @@
+{
+    "U2020-F_U2000_App": {
+        "actions": {
+            "U2020-F_Topology": {
+                "subs": {
+                    "U2020-F_Tp_View": {
+                        "subs": {
+                            "DccView": {
+                                "subs": {},
+                                "abbr": "DccView",
+                                "name": "DCC视图",
+                                "order": 50,
+                                "preferNewWindow": false,
+                                "test": "!scope['Crossdomain_MENU_HIDE'] && !(scope.transDASRegister && scope.transDASRegister.isDAS)",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Action': 'com.huawei.te.dccmgr.DoDcnViewAction'}"
+                                ],
+                                "isearch": "DCC Shi Tu"
+                            },
+                            "WebTopo": {
+                                "subs": {},
+                                "abbr": "WebTopo",
+                                "name": "物理拓扑",
+                                "order": 20,
+                                "preferNewWindow": false,
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Href': '/eviewwebsite/index.html?noBroadCastBox&refr-flags=e&refr-flags=S&agencyId=1#path=/topowebsite&topoClassId=3001&isMainTopo=true'}"
+                                ],
+                                "isearch": "Wu Li Tuo Pu"
+                            },
+                            "CustomTopo": {
+                                "subs": {},
+                                "abbr": "CustomTopo",
+                                "name": "自定义视图",
+                                "order": 40,
+                                "preferNewWindow": false,
+                                "test": "scope.u2020 && scope.u2020.notShownMenus.indexOf('CustomTopo') < 0 && scope.u2020.menus.indexOf('CustomTopo') >= 0",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Action': 'com.huawei.u2000.unitedmgr.topo.action.DoCustomViewAction', 'febsMenuId': 'U2020-F_U2000_App.U2020-F_Topology.U2020-F_Tp_View.CustomTopo'}"
+                                ],
+                                "isearch": "Zi Ding Yi Shi Tu"
+                            },
+                            "ClockTopo": {
+                                "subs": {},
+                                "abbr": "ClockTopo",
+                                "name": "时钟视图",
+                                "order": 32,
+                                "preferNewWindow": true,
+                                "test": "!scope.u2020 || scope.u2020.notShownMenus.indexOf('ClockTopo') < 0",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Href': '/eviewwebsite/index.html#path=/topowebsite&topoClassId=3102'}"
+                                ],
+                                "isearch": "Shi Zhong Shi Tu"
+                            },
+                            "OpticalRouteResView": {
+                                "subs": {},
+                                "abbr": "OpticalRouteResView",
+                                "name": "光路数字视图",
+                                "order": 50,
+                                "preferNewWindow": false,
+                                "test": "scope.dumbScenarioParam?.isDumbResEnabled",
+                                "href": "/eviewwebsite/index.html#path=/dumbResTopo/topoManagement",
+                                "tags": {},
+                                "isearch": "Guang Lu Shu Zi Di Tu"
+                            }
+                        },
+                        "abbr": "U2020-F_Tp_View",
+                        "name": "视图",
+                        "order": 50,
+                        "preferNewWindow": false,
+                        "tags": {},
+                        "isearch": "Shi Tu"
+                    },
+                    "U2020-F_Tp_Search": {
+                        "subs": {
+                            "Ne": {
+                                "subs": {},
+                                "abbr": "NE (Transport)",
+                                "name": "网元(传送)",
+                                "order": 10,
+                                "preferNewWindow": false,
+                                "test": "sys.user.ops.indexOf('EMS.APP.TopoAPP.Auto_Discovery')>=0&& (!scope['Crossdomain_MENU_HIDE'])",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Action': 'com.huawei.te.common.action.DoNeSearchAction'}"
+                                ],
+                                "isearch": "Chuan Song Wang Yuan"
+                            },
+                            "FiberWavelink": {
+                                "subs": {},
+                                "abbr": "FiberWavelink",
+                                "name": "纤缆/微波链路",
+                                "order": 30,
+                                "preferNewWindow": false,
+                                "test": "sys.user.ops.indexOf('EMS.APP.201_16.2620378')>=0&&(!scope.transSupportDomains || scope.transSupportDomains.domains.indexOf(1) >=0 || scope.transSupportDomains.domains.indexOf(9) >=0||scope.transSupportDomains.domains.indexOf(16) >=0) && (!scope.transLCTRegister || !scope.transLCTRegister.isLCT) && (!scope.menu_ctrl || !scope.menu_ctrl.isemergencysystem) && (!scope['Crossdomain_MENU_HIDE']) && !(scope.transDASRegister && scope.transDASRegister.isDAS)",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Action': 'com.huawei.te.common.action.DoFiberAutoSearchAction'}"
+                                ],
+                                "isearch": "Xian Lan Wei Bo Lian Lu"
+                            },
+                            "Link_Search_Web": {
+                                "subs": {},
+                                "abbr": "Link_Search_Web",
+                                "name": "链路",
+                                "order": 30,
+                                "preferNewWindow": false,
+                                "test": "sys.user.ops.indexOf('inventorydmbffservice_link_discovery')>=0 && (!scope.u2020 || scope.u2020.notShownMenus.indexOf('Link_Search_Web') < 0)",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Href': '/inventorydmwebsite/v1/inventorydm/linksearch/index.html?refr-flags=e#/page'}"
+                                ],
+                                "isearch": "Lian Lu"
+                            },
+                            "AutoDiscovery": {
+                                "subs": {},
+                                "abbr": "AutoDiscovery",
+                                "name": "网元",
+                                "order": 10,
+                                "preferNewWindow": false,
+                                "test": "sys.user.ops.indexOf('neresentryservice_neautodiscovery_query')>=0 && scope.u2020 && scope.u2020.menus.indexOf('AutoDiscovery') >= 0",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Href': '/neresentrywebsite/v1/#/autodiscovery'}"
+                                ],
+                                "isearch": "Wang Yuan"
+                            },
+                            "nedetect": {
+                                "subs": {},
+                                "abbr": "nedetect",
+                                "name": "网元自动发现",
+                                "order": 50,
+                                "preferNewWindow": false,
+                                "test": "sys.user.ops.indexOf('EMS.APP.201_100.11534850')>=0 && (!scope.u2020 || scope.u2020.notShownMenus.indexOf('nedetect') < 0)",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Href': '/unitedmgrwebsite/autoNeDiscovery/autoNeDiscovery.html?refr-flags=e#/autoNeDiscovery'}"
+                                ],
+                                "isearch": "Wang Yuan Zi Dong Fa Xian"
+                            }
+                        },
+                        "abbr": "U2020-F_Tp_Search",
+                        "name": "搜索",
+                        "order": 100,
+                        "preferNewWindow": false,
+                        "tags": {},
+                        "isearch": "Sou Suo"
+                    },
+                    "U2020-F_Tp_ROB": {
+                        "subs": {
+                            "TransDcnMgr": {
+                                "subs": {},
+                                "abbr": "TransDcnMgr",
+                                "name": "传送DCN管理",
+                                "order": 10,
+                                "preferNewWindow": false,
+                                "test": "sys.user.ops.indexOf('EMS.APP.201_12.2121736')>=0&& (!scope['Crossdomain_MENU_HIDE'])",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Action': 'com.huawei.te.dcn.DoDcnAction'}"
+                                ],
+                                "isearch": "Chuan Song DCN Guan Li"
+                            },
+                            "DeviceManagement": {
+                                "subs": {},
+                                "abbr": "DeviceManagement",
+                                "name": "网元接入",
+                                "order": 10,
+                                "preferNewWindow": false,
+                                "test": "sys.user.ops.indexOf('neresentryservice_entry_query')>=0 && (!scope.u2020 || scope.u2020.notShownMenus.indexOf('DeviceManagement') < 0)",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Href': '/neresentrywebsite/v1/#/devicemanagement'}"
+                                ],
+                                "isearch": "She Bei Jie Ru"
+                            },
+                            "GcliMgr": {
+                                "subs": {},
+                                "abbr": "GcliMgr",
+                                "name": "即插即用管理",
+                                "order": 30,
+                                "preferNewWindow": true,
+                                "test": "scope['Crossdomain_MENU_SHOW'] !== false",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Href': '/gcliwebsite/dist/gcli/view/index.html'}"
+                                ],
+                                "isearch": "Ji Cha Ji Yong Guan Li"
+                            },
+                            "RouterDcnMgr": {
+                                "subs": {},
+                                "abbr": "RouterDcnMgr",
+                                "name": "路由器DCN管理",
+                                "order": 10,
+                                "preferNewWindow": false,
+                                "test": "scope['Crossdomain_MENU_SHOW'] !== false && scope['isMBBMenuMode'] !== true",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'CmdId': 'RouterDCNCommand'}"
+                                ],
+                                "isearch": "Lu You Qi DCN Guan Li"
+                            }
+                        },
+                        "abbr": "U2020-F_Tp_ROB",
+                        "name": "网元上线",
+                        "order": 150,
+                        "preferNewWindow": false,
+                        "tags": {},
+                        "isearch": "Wang Yuan Shang Xian"
+                    }
+                },
+                "abbr": "U2020-F_Topology",
+                "name": "拓扑",
+                "order": 50,
+                "preferNewWindow": false,
+                "tags": {},
+                "isearch": "Tuo Pu"
+            },
+            "U2020-F_Monitor": {
+                "subs": {
+                    "U2020-F_Mn_Perf": {
+                        "subs": {
+                            "CP": {
+                                "subs": {},
+                                "abbr": "CP",
+                                "name": "控制平面性能",
+                                "order": 10,
+                                "preferNewWindow": false,
+                                "test": "sys.user.ops.indexOf('EMS.APP.201_1.2182189')>=0 && (!scope.transLCTRegister || !scope.transLCTRegister.isLCT) && (!scope.menu_ctrl || !scope.menu_ctrl.isemergencysystem) && (!scope['Crossdomain_MENU_HIDE']) && !(scope.transDASRegister && scope.transDASRegister.isDAS)",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'CmdId': 'CP_PFM_MODULE:openPerformance'}"
+                                ],
+                                "isearch": "Kong Zhi Ping Mian Xing Neng"
+                            },
+                            "performance_rmonhistorycontrol": {
+                                "subs": {},
+                                "abbr": "performance_rmonhistorycontrol",
+                                "name": "RMON历史控制组管理",
+                                "order": 350,
+                                "preferNewWindow": false,
+                                "test": "!scope['Crossdomain_MENU_HIDE'] && !(scope.transDASRegister && scope.transDASRegister.isDAS)",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Action': 'com.huawei.te.performance.action.DoRmonHistoryControlAction'}"
+                                ],
+                                "isearch": "RMON Li Shi Kong Zhi Zu Guan Li"
+                            },
+                            "MseRslPfmAnalyze": {
+                                "subs": {},
+                                "abbr": "MseRslPfmAnalyze",
+                                "name": "MSE/RSL性能分析",
+                                "order": 360,
+                                "preferNewWindow": false,
+                                "test": "sys.user.ops.indexOf('EMS.APP.201_1.2182189')>=0 && (!scope['Crossdomain_MENU_HIDE']) && !(scope.transDASRegister && scope.transDASRegister.isDAS)",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Action': 'com.huawei.te.performance.action.DoMseRslPfmAnalyzeAction'}"
+                                ],
+                                "isearch": "MSE RSL Xing Neng Fen Xi"
+                            },
+                            "WDM": {
+                                "subs": {},
+                                "abbr": "WDM",
+                                "name": "WDM性能",
+                                "order": 30,
+                                "preferNewWindow": false,
+                                "test": "(!scope.transSupportDomains|| scope.transSupportDomains.domains.indexOf(9) >=0) && (!scope.transLCTRegister || !scope.transLCTRegister.isLCT) && (!scope.menu_ctrl || !scope.menu_ctrl.isemergencysystem) && !scope['Crossdomain_MENU_HIDE']",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Action': 'com.huawei.te.wdm.action.DoBrowseWDMPfmFromMenuAction'}"
+                                ],
+                                "isearch": "WDM Xing Neng"
+                            },
+                            "SDH": {
+                                "subs": {},
+                                "abbr": "SDH",
+                                "name": "SDH性能",
+                                "order": 40,
+                                "preferNewWindow": false,
+                                "test": "(!scope.transSupportDomains|| scope.transSupportDomains.domains.indexOf(1) >=0 || scope.transSupportDomains.domains.indexOf(16) >=0) && (!scope.transLCTRegister || !scope.transLCTRegister.isLCT) && (!scope.menu_ctrl || !scope.menu_ctrl.isemergencysystem) && !scope['Crossdomain_MENU_HIDE'] && !(scope.transDASRegister && scope.transDASRegister.isDAS)",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Action': 'com.huawei.te.sdh.action.DoBrowseSDHPfmFromMenuAction'}"
+                                ],
+                                "isearch": "SDH Xing Neng"
+                            },
+                            "PerfDataAnalysis": {
+                                "subs": {},
+                                "abbr": "PerfDataAnalysis",
+                                "name": "传送性能数据分析",
+                                "order": 60,
+                                "preferNewWindow": false,
+                                "test": "(sys.user.ops.indexOf('EMS.APP.201_1.2182184')>=0)&&(!scope.transSupportDomains|| scope.transSupportDomains.domains.indexOf(1) >=0 || scope.transSupportDomains.domains.indexOf(9) >=0 || scope.transSupportDomains.domains.indexOf(2) <0)&& !scope['Crossdomain_MENU_HIDE'] && !(scope.transDASRegister && scope.transDASRegister.isDAS)",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Action': 'com.huawei.te.performance.action.DoAnalysisHisPfmAction'}"
+                                ],
+                                "isearch": "Chuan Song Xing Neng Shu Ju Fen Xi"
+                            },
+                            "EtherPortFlow": {
+                                "subs": {},
+                                "abbr": "EtherPortFlow",
+                                "name": "查询以太端口流速",
+                                "order": 70,
+                                "preferNewWindow": false,
+                                "test": "!scope['Crossdomain_MENU_HIDE'] && !(scope.transDASRegister && scope.transDASRegister.isDAS)",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Action': 'com.huawei.te.performance.action.DoQueryEtherPortFlowAction'}"
+                                ],
+                                "isearch": "Cha Xun Yi Tai Duan Kou Liu Su"
+                            },
+                            "ThresholdTemplate": {
+                                "subs": {},
+                                "abbr": "ThresholdTemplate",
+                                "name": "性能门限模板",
+                                "order": 80,
+                                "preferNewWindow": false,
+                                "test": "(!scope.transLCTRegister || !scope.transLCTRegister.isLCT)&& !scope['Crossdomain_MENU_HIDE'] && !(scope.transDASRegister && scope.transDASRegister.isDAS)",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Action': 'com.huawei.te.performance.action.DoPfmAttriTemplateAction'}"
+                                ],
+                                "isearch": "Xing Neng Men Xian Mo Ban"
+                            },
+                            "MonitorTemplate": {
+                                "subs": {},
+                                "abbr": "MonitorTemplate",
+                                "name": "性能事件监视模板",
+                                "order": 90,
+                                "preferNewWindow": false,
+                                "test": "(sys.user.ops.indexOf('EMS.APP.201_1.2182183')>=0) && (!scope.transLCTRegister || !scope.transLCTRegister.isLCT) && (!scope.menu_ctrl || !scope.menu_ctrl.isemergencysystem) && !scope['Crossdomain_MENU_HIDE'] && !(scope.transDASRegister && scope.transDASRegister.isDAS)",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Action': 'com.huawei.te.performance.action.DoPfmMonitorTemplateAction'}"
+                                ],
+                                "isearch": "Xing Neng Shi Jian Jian Shi Mo Ban"
+                            },
+                            "NePfmMonitorTime": {
+                                "subs": {},
+                                "abbr": "NePfmMonitorTime",
+                                "name": "网元性能监视时间",
+                                "order": 100,
+                                "preferNewWindow": false,
+                                "test": "(sys.user.ops.indexOf('EMS.APP.201_1.2182189')>=0) && (!scope.transLCTRegister || !scope.transLCTRegister.isLCT) && (!scope.menu_ctrl || !scope.menu_ctrl.isemergencysystem) && !scope['Crossdomain_MENU_HIDE']",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Action': 'com.huawei.te.performance.action.DoPfmNEMonitorTimeAction'}"
+                                ],
+                                "isearch": "Wang Yuan Xing Neng Jian Shi Shi Jian"
+                            },
+                            "NePfmCollectionConfig": {
+                                "subs": {},
+                                "abbr": "NePfmCollectionConfig",
+                                "name": "网元性能采集配置",
+                                "order": 110,
+                                "preferNewWindow": false,
+                                "test": "(!scope.transLCTRegister || !scope.transLCTRegister.isLCT) && (!scope.menu_ctrl || !scope.menu_ctrl.isemergencysystem) && !scope['Crossdomain_MENU_HIDE']",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Action': 'com.huawei.te.performance.action.DoPfmCollectionConfigAction'}"
+                                ],
+                                "isearch": "Wang Yuan Xing Neng Cai Ji Pei Zhi"
+                            },
+                            "NePfmZeroDataDisplay": {
+                                "subs": {},
+                                "abbr": "NePfmZeroDataDisplay",
+                                "name": "性能事件零数据模板管理",
+                                "order": 120,
+                                "preferNewWindow": false,
+                                "test": "(scope.transNeWebserviceUserCfg && scope.transNeWebserviceUserCfg.isTransNeWebService) && (!scope.transLCTRegister || !scope.transLCTRegister.isLCT) && (!scope.menu_ctrl || !scope.menu_ctrl.isemergencysystem) && !scope['Crossdomain_MENU_HIDE'] && !(scope.transDASRegister && scope.transDASRegister.isDAS)",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Href': '/transnewebsite/serviceApp/dist/ptnRmonZerodispTemplate.html'}"
+                                ],
+                                "isearch": "Xing Neng Shi Jian Ling Shu Ju Mu Ban Guan Li"
+                            },
+                            "MonitorConfiguration": {
+                                "subs": {},
+                                "abbr": "MonitorConfiguration",
+                                "name": "性能实例",
+                                "order": 20,
+                                "preferNewWindow": false,
+                                "test": "sys.user.ops.indexOf('EMS.APP.201_11.32545')>=0",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'CmdId': 'IPMS_MonitorConfiguration','isTab': 'true'}"
+                                ],
+                                "isearch": "Xing Neng Shi Li"
+                            },
+                            "MonitorTemplate1": {
+                                "subs": {},
+                                "abbr": "PTN(V8)MonitorTemplate",
+                                "name": "PTN(V8)性能事件监视模板",
+                                "order": 81,
+                                "preferNewWindow": false,
+                                "test": "scope['Crossdomain_MENU_SHOW'] !== false",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Href': '/vpnexpansionwebsite/template/service/index.html', 'openType': 'new'}"
+                                ],
+                                "isearch": "PTN(V8) Xing Neng Shi Jian Jian Shi Mo Ban1"
+                            },
+                            "DataQueryWeb": {
+                                "subs": {},
+                                "abbr": "DataQuery",
+                                "name": "历史性能数据",
+                                "order": 10,
+                                "preferNewWindow": false,
+                                "test": "sys.user.ops.indexOf('EMS.APP.201_11.32537')>=0",
+                                "tags": {},
+                                "emit": [
+                                    "jump2QueryHdDlg",
+                                    "{'isTab': 'false'}"
+                                ],
+                                "isearch": "Li Shi Xing Neng Shu Ju"
+                            }
+                        },
+                        "abbr": "U2020-F_Mn_Perf",
+                        "name": "性能",
+                        "order": 100,
+                        "preferNewWindow": false,
+                        "tags": {},
+                        "isearch": "Xing Neng"
+                    },
+                    "U2020-F_Mn_Tnet_Mn": {
+                        "subs": {
+                            "NM Status": {
+                                "subs": {},
+                                "abbr": "NM Status",
+                                "name": "全网维护状态",
+                                "order": 50,
+                                "preferNewWindow": false,
+                                "test": "!scope['Crossdomain_MENU_HIDE'] && !(scope.transDASRegister && scope.transDASRegister.isDAS)",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Action': 'com.huawei.te.spanmodule.action.DoMaintainStateAction'}"
+                                ],
+                                "isearch": "Quan Wang Wei Hu Zhuang Tai"
+                            },
+                            "NMTaskMgrPro": {
+                                "subs": {},
+                                "abbr": "NMTaskMgrPro",
+                                "name": "网管任务管理进度",
+                                "order": 60,
+                                "preferNewWindow": false,
+                                "test": "(!scope.transNeWebserviceUserCfg || !scope.transNeWebserviceUserCfg.isTransNeSwingToWeb) && !scope['Crossdomain_MENU_HIDE']",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Action': 'com.huawei.te.config.action.manage.DoCfgDMGuageAction', 'isTab': 'false'}"
+                                ],
+                                "isearch": "Wang Guan Ren Wu Guan Li Jin Du"
+                            },
+                            "NMTaskMgrPro_Web": {
+                                "subs": {},
+                                "abbr": "NMTaskMgrPro_Web",
+                                "name": "网管任务管理进度",
+                                "order": 60,
+                                "preferNewWindow": false,
+                                "test": "(scope.transNeWebserviceUserCfg && scope.transNeWebserviceUserCfg.isTransNeSwingToWeb) && !scope['Crossdomain_MENU_HIDE']",
+                                "tags": {},
+                                "emit": [
+                                    "openTransNeWebServiceTaskManageProgress"
+                                ],
+                                "isearch": "Wang Guan Ren Wu Guan Li Jin Du"
+                            }
+                        },
+                        "abbr": "U2020-F_Mn_Tnet_Mn",
+                        "name": "传送网络监控",
+                        "order": 150,
+                        "preferNewWindow": false,
+                        "test": "!scope['Crossdomain_MENU_HIDE'] && !(scope.transDASRegister && scope.transDASRegister.isDAS)",
+                        "tags": {},
+                        "isearch": "Chuan Song Wang Luo Guan Li"
+                    },
+                    "U2020-F_Mn_Alarm": {
+                        "subs": {
+                            "fmAlarmView": {
+                                "subs": {},
+                                "abbr": "fmAlarmView",
+                                "name": "当前告警",
+                                "order": 10,
+                                "preferNewWindow": true,
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Href': '/eviewwebsite/index.html?nceapp=Common_Alarm#path=/fmAlarmApp/fmAlarmView'}"
+                                ],
+                                "isearch": "Dang Qian Gao Jing"
+                            },
+                            "fmAlarmLog": {
+                                "subs": {},
+                                "abbr": "fmAlarmLog",
+                                "name": "告警日志",
+                                "order": 20,
+                                "preferNewWindow": true,
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Href': '/eviewwebsite/index.html?nceapp=Common_Alarm#path=/fmAlarmApp/fmAlarmLog'}"
+                                ],
+                                "isearch": "Gao Jing Ri Zhi"
+                            },
+                            "fmHistoryAlarm": {
+                                "subs": {},
+                                "abbr": "fmHistoryAlarm",
+                                "name": "历史告警",
+                                "order": 30,
+                                "preferNewWindow": true,
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Href': '/eviewwebsite/index.html?nceapp=Common_Alarm#path=/fmAlarmApp/fmHistoryAlarm'}"
+                                ],
+                                "isearch": "Li Shi Gao Jing"
+                            },
+                            "fmShieldedAlarm": {
+                                "subs": {},
+                                "abbr": "fmShieldedAlarm",
+                                "name": "被屏蔽告警",
+                                "order": 40,
+                                "preferNewWindow": true,
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Href': '/eviewwebsite/index.html?nceapp=Common_Alarm#path=/fmAlarmApp/fmShieldedAlarm'}"
+                                ],
+                                "isearch": "Bei Ping Bi Gao Jing"
+                            },
+                            "fmEventView": {
+                                "subs": {},
+                                "abbr": "fmEventView",
+                                "name": "事件日志",
+                                "order": 50,
+                                "preferNewWindow": true,
+                                "test": "!scope.menu_ctrl || !scope.menu_ctrl.isemergencysystem",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Href': '/eviewwebsite/index.html?nceapp=Common_Alarm#path=/fmAlarmApp/event'}"
+                                ],
+                                "isearch": "Shi Jian Ri Zhi"
+                            },
+                            "fmAlarmStatistics": {
+                                "subs": {},
+                                "abbr": "fmAlarmStatistics",
+                                "name": "告警日志统计",
+                                "order": 80,
+                                "preferNewWindow": true,
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Href': '/eviewwebsite/index.html#path=/fmAlarmApp/fmAlarmStatistics&type=alarm'}"
+                                ],
+                                "isearch": "Gao Jing Ri Zhi Tong Ji"
+                            },
+                            "fmEventStatistics": {
+                                "subs": {},
+                                "abbr": "fmEventStatistics",
+                                "name": "事件日志统计",
+                                "order": 85,
+                                "preferNewWindow": true,
+                                "test": "!scope.menu_ctrl || !scope.menu_ctrl.isemergencysystem",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Href': '/eviewwebsite/index.html#path=/fmAlarmApp/fmAlarmStatistics&type=event'}"
+                                ],
+                                "isearch": "Shi Jian Ri Zhi Tong Ji"
+                            },
+                            "fmAlarmSettings": {
+                                "subs": {},
+                                "abbr": "fmAlarmSettings",
+                                "name": "告警设置",
+                                "order": 90,
+                                "preferNewWindow": true,
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Href': '/eviewwebsite/index.html?nceapp=Common_Alarm#path=/fmAlarmApp/fmAlarmSettings'}"
+                                ],
+                                "isearch": "Gao Jing She Zhi"
+                            },
+                            "ConfigureConstructionTask": {
+                                "subs": {},
+                                "abbr": "ConfigureConstructionTask",
+                                "name": "配置工程任务",
+                                "order": 100,
+                                "preferNewWindow": false,
+                                "test": "sys.user.ops.indexOf('EMS.APP.201_16.11535418')>=0 && (!scope.u2020 || scope.u2020.notShownMenus.indexOf('ConfigureConstructionTask') < 0)",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Action': 'com.huawei.u2000.inventory.projectalarm.action.DoProjectAlarmAction', 'isTab': 'true','openType':'new'}"
+                                ],
+                                "isearch": "Pei Zhi Gong Cheng Ren Wu"
+                            },
+                            "NEAlarmRules": {
+                                "subs": {},
+                                "abbr": "NEAlarmRules",
+                                "name": "网元告警规则",
+                                "order": 80,
+                                "preferNewWindow": false,
+                                "test": "!scope.u2020 || scope.u2020.notShownMenus.indexOf('NEAlarmRules') < 0",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Action': 'com.huawei.u2000.unitedmgr.topo.action.DoNEAlarmRulesAction'}"
+                                ],
+                                "isearch": "Wang Yuan Gao Jing Gui Ze"
+                            },
+                            "QueryDumpTool": {
+                                "subs": {},
+                                "abbr": "QueryDumpTool",
+                                "name": "日志查询工具",
+                                "order": 200,
+                                "preferNewWindow": true,
+                                "test": "(!sys.user.ops || sys.user.ops.indexOf('ems.app.systemMaintenance.taskManager.dbdump') !== -1) && (!scope.u2020 || scope.u2020.notShownMenus.indexOf('QueryDumpTool') < 0)",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Action': 'com.huawei.u2000.unitedmgr.topo.action.DoQueryDumpToolAction'}"
+                                ],
+                                "isearch": "Ri Zhi Cha Xun Gong Ju"
+                            }
+                        },
+                        "abbr": "U2020-F_Mn_Alarm",
+                        "name": "告警",
+                        "order": 50,
+                        "preferNewWindow": false,
+                        "tags": {},
+                        "isearch": "Gao Jing"
+                    },
+                    "U2020-F_Mn_Receiver_Manage": {
+                        "subs": {
+                            "TrapReceiver": {
+                                "subs": {},
+                                "abbr": "TrapReceiver",
+                                "name": "Trap报文",
+                                "order": 10,
+                                "preferNewWindow": true,
+                                "test": "sys.user.ops.indexOf('trap.packets.query') > -1",
+                                "tags": {},
+                                "emit": [
+                                    "jumpSPAPage",
+                                    "{'Href': '/alarm360website/fm360trappacket.html?noAutoLoadPIU=true&loadTopPIU=webswingPIU&refr-flags=e#path=/alarm360website/fm360trappacket'}"
+                                ],
+                                "isearch": "Trap Bao Wen"
+                            }
+                        },
+                        "abbr": "U2020-F_Mn_Receiver_Manage",
+                        "name": "报文管理",
+                        "order": 200,
+                        "preferNewWindow": false,
+                        "tags": {},
+                        "isearch": "Bao Wen Guan Li"
+                    }
+                },
+                "abbr": "U2020-F_Monitor",
+                "name": "监控",
+                "order": 100,
+                "preferNewWindow": false,
+                "tags": {},
+                "isearch": "Jian Kong"
+            },
+            "name": "配置",
+            "isearch": "Pei Zhi",
+            "subs": {
+                "U2020-F_Cfg_Controller": {
+                    "name": "控制单元配置",
+                    "isearch": "Kong Zhi Dan Yuan Pei Zhi",
+                    "subs": {
+                        "BGP": {
+                            "name": "BGP",
+                            "isearch": "Border Gateway Protocol"
+                        }
+                    }
+                },
+                "U2020-F_Cfg_Controller1": {
+                    "name": "Layer-3拓扑收集",
+                    "isearch": "Kong Zhi Dan Yuan Pei Zhi",
+                    "subs": {
+                        "BGP1": {
+                            "name": "BGP",
+                            "isearch": "Border Gateway Protocol"
+                        }
+                    }
+                }
+            }
+        },
+        "abbr": "U2020-F_U2000_App",
+        "name": "网络管理",
+        "order": 0,
+        "preferNewWindow": false,
+        "href": "/nmsnetworkmgrwebsite/v1/webswing/indexforwebswing.html",
+        "tags": {
+            "NCE-App.Common": true,
+            "U2000-F_FixedNetwork_Mgr_Scnr": true
+        },
+        "emit": [
+            "jumpSPAPage",
+            "{'Href': '/nmsnetworkmgrwebsite/v1/webswing/indexforwebswing.html'}"
+        ],
+        "icon": {
+            "url": "/nmsnetworkmgrwebsite/v1/solution/networkManage.png"
+        },
+        "isearch": "Wang Luo Guan Li"
+    }
+}

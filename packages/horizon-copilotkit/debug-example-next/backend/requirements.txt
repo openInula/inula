@@ -1,0 +1,14 @@
+fastapi>=0.100.0
+uvicorn[standard]>=0.23.0
+pydantic>=2.0.0
+python-dotenv>=1.0.0
+httpx>=0.24.0
+openai>=1.0.0
+aiofiles>=23.0.0
+python-multipart>=0.0.6
+structlog>=23.0.0
+sse-starlette>=2.0.0
+reactivex>=4.0.4
+aiohttp>=3.9.0
+jsonschema>=4.20.0
+requests>=2.31.0 

@@ -1,0 +1,78 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "stream",
+  "tasks": {
+    "build": {
+      "cache": false,
+      "persistent": false,
+      "interactive": false,
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
+    },
+    "dev": {
+      "dependsOn": [
+        "^build"
+      ],
+      "cache": false,
+      "persistent": true
+    },
+    "test": {
+      "cache": false,
+      "dependsOn": [
+        "build"
+      ],
+      "outputs": [
+        "coverage/**"
+      ]
+    },
+    "lint": {
+      "cache": false
+    },
+    "check-types": {
+      "cache": false,
+      "dependsOn": [
+        "build"
+      ]
+    },
+    "type-check": {
+      "cache": false,
+      "dependsOn": [
+        "build"
+      ]
+    },
+    "clean": {
+      "cache": false
+    },
+    "preview": {
+      "cache": false,
+      "dependsOn": [
+        "build"
+      ]
+    },
+    "analyze": {
+      "cache": false,
+      "dependsOn": [
+        "build"
+      ]
+    },
+    "//#check-prettier": {},
+    "//#format": {
+      "cache": false
+    },
+    "//#freshbuild": {
+      "cache": false
+    },
+    "link:global": {
+      "cache": false,
+      "persistent": false
+    },
+    "unlink:global": {
+      "cache": false,
+      "persistent": false
+    }
+  }
+}

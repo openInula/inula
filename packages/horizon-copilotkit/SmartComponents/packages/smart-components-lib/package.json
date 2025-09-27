@@ -1,0 +1,47 @@
+{
+  "name": "@smart-components/react",
+  "version": "1.0.0",
+  "description": "AI-powered React components library",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build",
+    "lint": "echo 'Linting not configured yet'"
+  },
+  "keywords": [
+    "react",
+    "components",
+    "ai",
+    "smart-components",
+    "ui-library"
+  ],
+  "author": "ysr",
+  "license": "MIT",
+  "peerDependencies": {
+    "antd": "^5.26.5",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^24.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "rollup": "^3.0.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "tslib": "^2.8.1",
+    "typescript": "^4.9.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YYYSSSRRR/SmartComponent"
+  }
+}

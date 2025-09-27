@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修复验证测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-box { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .output { background: #f8f9fa; padding: 10px; margin-top: 10px; border-radius: 4px; white-space: pre-wrap; font-family: monospace; }
+        #test-element { padding: 10px; background: #e9ecef; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>修复验证测试</h1>
+    
+    <div id="test-element">测试元素</div>
+    
+    <div class="test-box">
+        <h3>成功测试</h3>
+        <button onclick="runSuccessTest()">运行成功测试</button>
+        <div id="success-output" class="output"></div>
+    </div>
+    
+    <div class="test-box">
+        <h3>失败测试</h3>
+        <button onclick="runFailTest()">运行失败测试</button>
+        <div id="fail-output" class="output"></div>
+    </div>
+
+    <script src="../dist/index.browser.js"></script>
+    <script>
+        const engine = new PlaywrightExecutionEngine({
+            logLevel: 'info',
+            timeout: 30000
+        });
+
+        async function runSuccessTest() {
+            const output = document.getElementById('success-output');
+            output.textContent = '运行中...';
+            
+            const script = `
+import { test, expect } from '@playwright/test';
+
+test('成功测试', async ({ page }) => {
+  // 这个测试应该成功
+  await expect(page.locator('#test-element')).toBeVisible();
+  await expect(page.locator('#test-element')).toHaveText('测试元素');
+});`;
+
+            try {
+                const result = await engine.runScript(script, 'success-test');
+                console.log('成功测试结果:', result);
+                
+                const displayResult = [
+                    `状态: ${result.success ? '✅ 成功' : '❌ 失败'}`,
+                    `耗时: ${result.duration}ms`,
+                    `脚本: ${result.scriptName}`,
+                    `测试数量: ${result.results ? result.results.length : 0}`,
+                    '',
+                    '测试详情:',
+                    result.results ? result.results.map(test => 
+                        `  ${test.success ? '✅' : '❌'} ${test.name || '未知测试'}`
+                    ).join('\n') : '  无测试结果'
+                ].join('\n');
+                
+                output.textContent = displayResult;
+            } catch (error) {
+                output.textContent = `错误: ${error.message}`;
+            }
+        }
+
+        async function runFailTest() {
+            const output = document.getElementById('fail-output');
+            output.textContent = '运行中...';
+            
+            const script = `
+import { test, expect } from '@playwright/test';
+
+test('失败测试', async ({ page }) => {
+  // 这个测试应该失败
+  await expect(page.locator('#不存在的元素')).toBeVisible();
+  await expect(page.locator('#test-element')).toHaveText('错误的文本');
+});`;
+
+            try {
+                const result = await engine.runScript(script, 'fail-test');
+                console.log('失败测试结果:', result);
+                
+                const displayResult = [
+                    `状态: ${result.success ? '✅ 成功' : '❌ 失败'}`,
+                    `耗时: ${result.duration}ms`,
+                    `脚本: ${result.scriptName}`,
+                    `测试数量: ${result.results ? result.results.length : 0}`,
+                    '',
+                    '测试详情:',
+                    result.results ? result.results.map(test => 
+                        `  ${test.success ? '✅' : '❌'} ${test.name || '未知测试'}${test.error ? '\n    错误: ' + test.error.message : ''}`
+                    ).join('\n') : '  无测试结果'
+                ].join('\n');
+                
+                output.textContent = displayResult;
+            } catch (error) {
+                output.textContent = `错误: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "openinula",
+
+    /* Linting */
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+
+    /* Path mapping */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@copilotkit/copilot-client": ["../../copilot-client/src"],
+      "@copilotkit/shared": ["../../shared/src"],
+      "@copilotkit/playwright-actuator": ["../../playwright-actuator/src"],
+      "react": ["./node_modules/openinula/@types/index.d.ts"],
+      "react-dom": ["./node_modules/openinula/@types/index.d.ts"],
+      "react-is": ["./node_modules/openinula/@types/index.d.ts"],
+      "react/*": ["./node_modules/openinula/*"],
+      "react-dom/*": ["./node_modules/openinula/*"],
+      "react/jsx-runtime": ["./node_modules/openinula/jsx-runtime"],
+      "openinula": ["./node_modules/openinula/@types/index.d.ts"],
+      "openinula/*": ["./node_modules/openinula/*"]
+    }
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+} 
