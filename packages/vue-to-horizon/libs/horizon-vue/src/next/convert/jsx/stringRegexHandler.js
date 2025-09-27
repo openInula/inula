@@ -196,6 +196,20 @@ const convertJsxNoCloseTag = input => {
   return input.replaceAll(/<br>/g, '<br/>');
 };
 
+// 支持动态事件/指令参数归一化
+const normalizeDynamicDirectiveArgs = input => {
+  // @[] 动态事件到 v-on:
+  let result = input.replace(/@\[(.*?)\]((\.[a-z0-9]+)*)(="[^"]*")?/gi, (m, name, modifiers, _, handler = '') => {
+    const modStr = (modifiers || '').replace(/\./g, '__');
+    return `v-on:${name}${modStr}${handler || ''}`;
+  });
+  // v-on:[] -> v-on:
+  result = result.replace(/v-on:\[([^\]]+)\]/gi, (m, name) => `v-on:${name}`);
+  // 通用 v-xxx:[arg] -> v-xxx:arg
+  result = result.replace(/v-([a-zA-Z-]+):\[([^\]]+)\]/g, (m, dir, arg) => `v-${dir}:${arg}`);
+  return result;
+};
+
 // 正则表达式匹配 v-model.xxx 语法
 const regex = /v-model\.(\w+)/g;
 const removeModelModifiers = input => {
@@ -215,6 +229,7 @@ const DefaultHardCodeHandler = {
   JSXNotes: convertJSXNotes,
   DynamicBinding: convertVueBindingToReact,
   ShortBinding: convertVBindShorthand,
+  DynamicArgs: normalizeDynamicDirectiveArgs,
   ShortOn: convertVueShortEventToReact,
   ShortSlot: convertVueShortSlotToReact,
   vShow: transformVShowSyntax,

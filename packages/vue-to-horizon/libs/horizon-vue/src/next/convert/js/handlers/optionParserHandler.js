@@ -6,7 +6,7 @@ import { JSErrors } from '../../../errors.js'
 import { DATA_REACTIVE, INSTANCE } from '../../jsx/consts.js'
 import { watchParser } from './watchHandler.js'
 import { propsParser } from './propsHandler.js'
-import {getIsPinia} from '../jsUtils.js';
+import { getIsPinia } from '../jsUtils.js';
 
 /**
  * 找到Object的key和value
@@ -392,8 +392,10 @@ function componentsParser(ast, reactCovert) {
         t.identifier('components'),
         t.objectExpression(
           ast.properties.map(node => {
-            const name = reactCovert.sourceCodeContext.optionTypeRegistComponentMap.get(node.key.name);
-            return t.objectProperty(t.identifier(node.key.name), t.identifier(name));
+            const keyName = node.key.name || node.key.value;
+            const mapped = reactCovert.sourceCodeContext.optionTypeRegistComponentMap.get(keyName);
+            const targetName = mapped || keyName;
+            return t.objectProperty(t.identifier(keyName), t.identifier(targetName));
           })
         )
       ),

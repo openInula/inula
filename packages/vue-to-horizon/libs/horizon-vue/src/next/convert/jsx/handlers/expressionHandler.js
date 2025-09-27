@@ -206,6 +206,10 @@ export function createNodeByVueVariable(name, reactCovert, path) {
   // 处理特殊的 $ 开头的属性
   else if (name.startsWith('$')) {
     switch (name) {
+      case '$event': {
+        // 将模板中的 $event 识别为当前事件参数 e
+        return t.identifier('e');
+      }
       case '$emit': {
         // 将模板中的 $emit(...) 统一映射为 emit(...)
         // 若不存在 emit，则自动注入: const emit = defineEmits(props);
