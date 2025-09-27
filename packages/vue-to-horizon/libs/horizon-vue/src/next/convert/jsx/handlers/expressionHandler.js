@@ -206,6 +206,20 @@ export function createNodeByVueVariable(name, reactCovert, path) {
   // 处理特殊的 $ 开头的属性
   else if (name.startsWith('$')) {
     switch (name) {
+      case '$emit': {
+        // 将模板中的 $emit(...) 统一映射为 emit(...)
+        // 若不存在 emit，则自动注入: const emit = defineEmits(props);
+        reactCovert.sourceCodeContext.addExtrasImport('defineEmits', globalLibPaths.vue);
+        reactCovert.addCodeAstToHorizonForOnce('emit', () => {
+          return t.variableDeclaration('const', [
+            t.variableDeclarator(
+              t.identifier('emit'),
+              t.callExpression(t.identifier('defineEmits'), [t.identifier(reactCovert.sourceCodeContext.propsName)])
+            ),
+          ]);
+        });
+        return t.identifier('emit');
+      }
       case '$store':
         // 处理 Vuex store
         reactCovert.sourceCodeContext.addExtrasImport('useStore', globalLibPaths.vuex.path);
