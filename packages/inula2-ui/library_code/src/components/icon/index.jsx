@@ -29,7 +29,7 @@ const Icon = ({
       case "brand": 
         return "fab";
       default:
-        alert(`Invalid theme: ${theme}`);
+        // alert(`Invalid theme: ${theme}`);
         return "";
     }
   };

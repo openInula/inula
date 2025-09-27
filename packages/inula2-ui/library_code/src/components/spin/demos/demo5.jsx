@@ -7,7 +7,7 @@ const SpinDemo = () => {
   watch(() => {
     if (auto) {
       percent = "auto";
-      return;
+      // return;
     } else {
       percent = -50;
       const interval = setInterval(() => {
