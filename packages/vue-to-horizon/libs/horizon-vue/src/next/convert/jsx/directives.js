@@ -170,7 +170,7 @@ function getKeyModifierBody(modifier, functionBody) {
       t.memberExpression(t.identifier(EVENT_PARAM_NAME), t.identifier('key')),
       t.stringLiteral(keyMap.delete[1])
     );
-    condition =  t.logicalExpression('||', expressionDelete, expressionBackspace)
+    condition = t.logicalExpression('||', expressionDelete, expressionBackspace)
   } else {
     condition = t.binaryExpression(
       '===',
@@ -284,8 +284,24 @@ export function handleOnDirective(path, name, value) {
         path.replaceWith(t.jSXAttribute(t.jSXIdentifier(eventName), t.jSXExpressionContainer(functionExpression)));
       }
     } else {
-      // 事件绑定的执行语句,转换成箭头函数
-      const functionBlock = t.blockStatement(templateAst.program.body);
+
+      const body = templateAst.program.body;
+
+      // 当表达式为成员表达式且未被调用时（如 overlayEvent.onClick），强制补全调用并透传 event
+      if (
+        Array.isArray(body) &&
+        body.length === 1 &&
+        body[0] &&
+        body[0].type === 'ExpressionStatement' &&
+        !t.isCallExpression(body[0].expression) &&
+        (t.isMemberExpression(body[0].expression) || t.isOptionalMemberExpression?.(body[0].expression))
+      ) {
+        const callee = body[0].expression;
+        const call = t.callExpression(callee, [t.identifier(EVENT_PARAM_NAME)]);
+        body[0] = t.expressionStatement(call);
+      }
+
+      const functionBlock = t.blockStatement(body);
 
       if (eventModifierList.length > 0) {
         const newAttribute = t.jsxAttribute(
