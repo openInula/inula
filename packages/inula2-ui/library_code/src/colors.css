@@ -1,0 +1,65 @@
+:root {
+  /* 主要按钮颜色 */
+  --inula-color-primary: #1677ff;
+  --inula-color-primary-hover: #4096ff;
+  --inula-color-primary-active: #0958d9;
+
+  /* 默认按钮颜色 */
+  --inula-color-default-bg: #fff;
+  --inula-color-default-border: #d9d9d9;
+  --inula-color-default-text: #333;
+  --inula-color-default-hover-bg: #f0f7ff;
+  --inula-color-default-active-bg: #e6f4ff;
+
+  /* 虚线按钮颜色 */
+  --inula-color-dashed-border: #d9d9d9;
+
+  /* 文本按钮颜色 */
+  --inula-color-text: #1677ff;
+  --inula-color-text-hover-bg: #e6f4ff;
+  --inula-color-text-active-bg: #bae0ff;
+
+  /* 链接按钮颜色 */
+  --inula-color-link: #1677ff;
+  --inula-color-link-hover: #0958d9;
+
+  /* 危险按钮颜色 */
+  --inula-color-danger: #ff4d4f;
+  --inula-color-danger-bg: #fff1f0;
+  --inula-color-danger-hover-bg: #ff4d4f;
+  --inula-color-danger-hover-text: #fff;
+  --inula-color-danger-active-bg: #d9363e;
+
+  /* 幽灵按钮背景色 */
+  --inula-color-ghost-bg-hover: rgba(22, 119, 255, 0.08);
+  --inula-color-ghost-bg-active: rgba(22, 119, 255, 0.16);
+
+  /* 禁用状态颜色 */
+  --inula-color-disabled-bg: rgba(0,0,0,0.04);
+  --inula-color-disabled-text: rgba(0,0,0,0.25);
+  --inula-color-disabled-border: #d9d9d9;
+
+  /* 加载中 spinner 颜色 */
+  --inula-color-spinner: #ccc;
+  --inula-color-spinner-active: #1677ff;
+
+  /* demo 深色背景 */
+  --inula-demo-dark-bg: #222;
+
+  /* icon 默认颜色 */
+  --inula-icon-default: #555555;
+
+  /* indeterminate-checkbox */
+  --inula-checkbox-indeterminate-hover-bg: #4096ff;
+  --inula-checkbox-indeterminate-disabled-after: #b8b8b8;
+
+  /* switch */
+  --inula-switch-default-bg: #bfbfbf;
+  --inula-switch-default-hover-bg: #8c8c8c;
+
+  --inula-switch-checked-bg: #1677ff;
+  --inula-switch-checked-hover-bg: #4096ff;
+
+  --inula-switch-disabled-bg: #d5d5d5;
+  --inula-switch-checked-disabled-bg: #67a6ff;
+} 

@@ -1,0 +1,21 @@
+{
+  "name": "inula-next-vite-app",
+  "private": true,
+  "version": "0.0.6",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@openinula/next": "^0.0.5"
+  },
+  "devDependencies": {
+    "@openinula/unplugin": "^0.0.2",
+    "vite": "^4.4.9"
+  },
+  "keywords": [
+    "inula-next"
+  ]
+}
