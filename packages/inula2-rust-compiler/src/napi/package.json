@@ -1,0 +1,41 @@
+{
+  "name": "inula-compiler-napi",
+  "version": "0.1.0",
+  "description": "openInula 2.0 编译器 NAPI 绑定",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "build": "napi build --platform --release",
+    "build:debug": "napi build --platform",
+    "build:wasm": "napi build --platform --target wasm32-unknown-unknown",
+    "test": "node test.js"
+  },
+  "keywords": [
+    "inula",
+    "compiler",
+    "napi",
+    "rust",
+    "jsx"
+  ],
+  "author": "openInula Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@napi-rs/cli": "^2.16.0"
+  },
+  "napi": {
+    "name": "inula_compiler_napi",
+    "triples": {
+      "defaults": true,
+      "additional": [
+        "x86_64-unknown-linux-gnu",
+        "aarch64-unknown-linux-gnu",
+        "x86_64-apple-darwin",
+        "aarch64-apple-darwin",
+        "x86_64-pc-windows-msvc",
+        "aarch64-pc-windows-msvc"
+      ]
+    }
+  }
+}
+
+
