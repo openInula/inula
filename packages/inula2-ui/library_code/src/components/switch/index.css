@@ -1,0 +1,146 @@
+.inula-switch,
+.inula-switch-default {
+  min-width: 48px;
+  height: 22px;
+  border-radius: 11px;
+  background-color: var(--inula-switch-default-bg);
+  position: relative;
+}
+
+.inula-switch:hover {
+  cursor: pointer;
+  background-color: var(--inula-switch-default-hover-bg);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.inula-switch-expand {
+  min-width: 100%;
+  opacity: 0;
+  padding: 0 13px;
+}
+
+/* 切换手柄按钮 */
+.inula-switch-btn {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #fff;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 2px 4px 0 rgba(0, 35, 11, 0.2);
+}
+
+.inula-switch-btn-checked {
+  left: calc(100% - 20px);
+}
+
+/* 非选中禁用状态 */
+.inula-switch-disabled {
+  background-color: var(--inula-switch-disabled-bg);
+  cursor: not-allowed;
+}
+
+.inula-switch-disabled:hover {
+  background-color: var(--inula-switch-disabled-bg);
+  cursor: not-allowed;
+}
+
+/* 选中状态 */
+.inula-switch-checked {
+  background-color: var(--inula-switch-checked-bg);
+  transition: background-color 0.3s ease-in-out;
+}
+
+.inula-switch-checked:hover {
+  background-color: var(--inula-switch-checked-hover-bg);
+}
+
+/* 选中禁用状态 */
+.inula-switch-checked-disabled {
+  background-color: var(--inula-switch-checked-disabled-bg);
+  cursor: not-allowed !important;
+}
+
+.inula-switch-checked-disabled:hover {
+  background-color: var(--inula-switch-checked-disabled-bg);
+}
+
+.inula-switch-content {
+  width: calc(100% - 18px);
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #fff;
+  right: 0;
+  transition: transform 0.3s;
+}
+
+.inula-switch-content-checked {
+  right: unset;
+  left: 0;
+}
+
+/* loading样式 */
+.inula-switch-loading:hover {
+  cursor: not-allowed;
+  background-color: var(--inula-switch-default-bg) !important;
+}
+
+.inula-switch-checked-loading:hover {
+  cursor: not-allowed;
+  background-color: var(--inula-switch-checked-bg) !important;
+}
+
+.inula-switch-loading-circle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--inula-switch-checked-disabled-bg);
+  border-top-color: #fff;
+  border-bottom-color: #fff;
+  border-left-color: #fff;
+  border-radius: 50%;
+  animation: inula-switch-spin 0.8s linear infinite;
+  top: 2px;
+  left: 2px;
+}
+
+@keyframes inula-switch-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* 小尺寸开关 */
+.inula-switch-small {
+  min-width: 28px;
+  height: 16px;
+  border-radius: 8px;
+}
+
+.inula-switch-small .inula-switch-btn {
+  width: 12px;
+  height: 12px;
+}
+
+.inula-switch-small .inula-switch-btn-checked {
+  left: calc(100% - 14px); 
+}
+
+.inula-switch-small .inula-switch-content {
+  width: calc(100% - 12px);
+  font-size: 10px;
+}
+
+.inula-switch-small .inula-switch-loading-circle {
+  width: 8px;
+  height: 8px;
+}

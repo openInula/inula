@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "declaration": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "baseUrl": "./",
+    "paths": {
+      "@@/*": [".dumi/tmp/*"],
+      "inulaUI": ["src"],
+      "inulaUI/*": ["src/*", "*"]
+    },
+    "allowJs": true,
+    "checkJs": false
+  },
+  "include": [".dumirc.ts", "src/**/*"]
+}

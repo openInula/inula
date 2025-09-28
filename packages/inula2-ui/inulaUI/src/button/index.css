@@ -1,0 +1,231 @@
+.inula-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  padding: 0 16px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s;
+  outline: none;
+}
+
+/* 主按钮 */
+.inula-btn-primary {
+  background: #1677ff;
+  border-color: #1677ff;
+  color: #fff;
+}
+.inula-btn-primary:hover {
+  background: #4096ff;
+  border-color: #4096ff;
+  color: #fff;
+}
+.inula-btn-primary:active {
+  background: #0958d9;
+  border-color: #0958d9;
+  color: #fff;
+}
+
+/* 默认按钮 */
+.inula-btn-default {
+  background: #fff;
+  border-color: #d9d9d9;
+  color: #333;
+}
+.inula-btn-default:hover {
+  color: #1677ff;
+  border-color: #1677ff;
+  background: #f0f7ff;
+}
+.inula-btn-default:active {
+  background: #e6f4ff;
+  border-color: #1677ff;
+  color: #1677ff;
+}
+
+/* 虚线按钮 */
+.inula-btn-dashed {
+  border-style: dashed;
+  background: #fff;
+  border-color: #d9d9d9;
+  color: #333;
+}
+.inula-btn-dashed:hover {
+  color: #1677ff;
+  border-color: #1677ff;
+  background: #f0f7ff;
+}
+.inula-btn-dashed:active {
+  background: #e6f4ff;
+  border-color: #1677ff;
+  color: #1677ff;
+}
+
+/* 文本按钮 */
+.inula-btn-text {
+  background: none;
+  border: none;
+  color: #1677ff;
+  box-shadow: none;
+}
+.inula-btn-text:hover {
+  background: #e6f4ff;
+  color: #0958d9;
+}
+.inula-btn-text:active {
+  background: #bae0ff;
+  color: #0958d9;
+}
+
+/* 链接按钮 */
+.inula-btn-link {
+  background: none;
+  border: none;
+  color: #1677ff;
+  text-decoration: underline;
+  box-shadow: none;
+}
+.inula-btn-link:hover {
+  color: #0958d9;
+  background: none;
+  text-decoration: underline;
+}
+.inula-btn-link:active {
+  color: #0958d9;
+  background: none;
+}
+
+/* 危险按钮 */
+.inula-btn-danger {
+  color: #ff4d4f;
+  border-color: #ff4d4f;
+  background: #fff1f0;
+}
+.inula-btn-danger:hover {
+  color: #fff;
+  background: #ff4d4f;
+  border-color: #ff4d4f;
+}
+.inula-btn-primary.inula-btn-danger {
+  background: #ff4d4f;
+  color: #fff;
+  border-color: #ff4d4f;
+}
+.inula-btn-primary.inula-btn-danger:hover {
+  background: #d9363e;
+  border-color: #d9363e;
+  color: #fff;
+}
+.inula-btn-primary.inula-btn-danger:active {
+  background: #d9363e;
+  border-color: #d9363e;
+  color: #fff;
+}
+
+/* 幽灵按钮基础样式 */
+.inula-btn-ghost {
+  background: transparent !important;
+  color: #1677ff;
+  border: 1px solid #1677ff;
+  box-shadow: none;
+}
+
+/* 幽灵主按钮 */
+.inula-btn-primary.inula-btn-ghost {
+  color: #1677ff;
+  border-color: #1677ff;
+  background: transparent;
+}
+.inula-btn-primary.inula-btn-ghost:hover {
+  color: #4096ff;
+  border-color: #4096ff;
+  background: rgba(22, 119, 255, 0.08);
+}
+.inula-btn-primary.inula-btn-ghost:active {
+  color: #4096ff;
+  border-color: #4096ff;
+  background: rgba(22, 119, 255, 0.16);
+}
+
+/* 幽灵危险按钮 */
+.inula-btn-danger.inula-btn-ghost,
+.inula-btn-primary.inula-btn-danger.inula-btn-ghost {
+  color: #ff4d4f;
+  border-color: #ff4d4f;
+  background: transparent;
+}
+.inula-btn-danger.inula-btn-ghost:hover,
+.inula-btn-primary.inula-btn-danger.inula-btn-ghost:hover {
+  color: #fff;
+  background: #ff4d4f;
+  border-color: #ff4d4f;
+}
+.inula-btn-danger.inula-btn-ghost:active {
+  color: #ff4d4f;
+  background: #ff4d4f;
+  border-color: #ff4d4f;
+}
+
+/* 幽灵默认按钮 */
+.inula-btn-default.inula-btn-ghost {
+  color: #1677ff;
+  border-color: #1677ff;
+  background: transparent;
+}
+.inula-btn-default.inula-btn-ghost:hover {
+  color: #4096ff;
+  border-color: #4096ff;
+  background: rgba(22, 119, 255, 0.08);
+}
+.inula-btn-default.inula-btn-ghost:active {
+  color: #4096ff;
+  border-color: #4096ff;
+  background: rgba(22, 119, 255, 0.16);
+}
+
+/* 禁用 */
+.inula-btn-disabled,
+.inula-btn:disabled,
+.inula-btn-disabled:hover,
+.inula-btn:disabled:hover,
+.inula-btn-disabled:active,
+.inula-btn:disabled:active {
+  cursor: not-allowed;
+  opacity: 0.5;
+  background: #fff !important;
+  color: #333 !important;
+  border-color: #d9d9d9 !important;
+  box-shadow: none !important;
+}
+
+/* 加载中 */
+.inula-btn-loading {
+  position: relative;
+}
+.inula-btn-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ccc;
+  border-top: 2px solid #1677ff;
+  border-radius: 50%;
+  animation: inula-spin 0.8s linear infinite;
+  margin-right: 8px;
+}
+@keyframes inula-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 幽灵按钮在深色背景下更明显 */
+.demo-dark-bg {
+  background: #222;
+  padding: 16px;
+  display: inline-block;
+  border-radius: 6px;
+} 
