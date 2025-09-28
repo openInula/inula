@@ -1,0 +1,107 @@
+{
+  "name": "openinula",
+  "displayName": "openinula-vsc",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.101.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescript",
+    "onLanguage:typescriptreact"
+  ],
+  "main": "./dist/extension.js", 
+  "contributes": {
+    "commands": [
+      {
+        "command": "openinula.analyzeFile",
+        "title": "Analyze Current File"
+      },
+      {
+        "command": "hello world",
+        "title": "test"
+      },
+      {
+        "command": "yourLanguageId",
+        "title": "showhover"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "icon": "",
+          "id": "inulaComponents",
+          "name": "Inula Components"
+        }
+      ]
+    },
+    "languages": [
+      {
+        "id": "javascript",
+        "extensions": [
+          ".js",
+          ".jsx"
+        ]
+      },
+      {
+        "id": "typescript",
+        "extensions": [
+          ".ts",
+          ".tsx"
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.28.0",
+    "@babel/core": "^7.28.0",
+    "@babel/plugin-syntax-jsx": "^7.27.1",
+    "@babel/preset-env": "^7.28.0",
+    "@babel/preset-react": "^7.27.1",
+    "@babel/preset-typescript": "^7.27.1",
+    "@babel/register": "^7.27.1",
+    "@types/jest": "^30.0.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^20.19.8",
+    "@types/vscode": "^1.101.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2",
+    "babel-plugin-jsx": "^1.2.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^9.25.1",
+    "jest": "^30.0.4",
+    "ts-jest": "^29.4.0",
+    "ts-loader": "^9.5.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
+    "webpack": "^5.99.7",
+    "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.28.0",
+    "@babel/traverse": "^7.28.0",
+    "@babel/types": "^7.28.0",
+    "@openinula/babel-api": "^0.0.2",
+    "@openinula/error-handler": "^0.0.4",
+    "@openinula/jsx-view-parser": "^0.0.4",
+    "@openinula/reactivity-parser": "^0.0.4"
+  }
+}
