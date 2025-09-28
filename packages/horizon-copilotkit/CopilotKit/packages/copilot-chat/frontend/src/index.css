@@ -1,0 +1,26 @@
+/* 移除 @tailwind base 以避免重置页面原有样式 */
+@tailwind components;
+@tailwind utilities;
+
+/* 修复聊天组件中的样式问题 */
+.chatbot-message p {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* 聊天窗口内所有p标签的margin重置 */
+.bg-white.rounded-lg.shadow-xl p {
+  margin: 0 !important;
+}
+
+/* 标题高度调整 */
+.bg-blue-600.text-white.rounded-t-lg h3 {
+  margin: 0 !important;
+  line-height: 1.2 !important;
+}
+
+/* 欢迎消息样式调整 */
+.text-center.text-gray-500 p {
+  margin: 0 !important;
+  line-height: 1.4 !important;
+}

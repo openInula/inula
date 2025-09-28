@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playwright 执行引擎 - 开发调试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        
+        .demo-section {
+            margin: 30px 0;
+            padding: 25px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        
+        h2 {
+            color: #495057;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+        
+        .result {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .api-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .api-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .version-info {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: #e9ecef;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎭 Playwright 执行引擎</h1>
+        
+        <div id="status" class="status">
+            正在加载引擎...
+        </div>
+        
+        <div class="demo-section">
+            <h2>基础 API 测试</h2>
+            <div class="api-info">
+                <div class="api-card">
+                    <h3>页面操作</h3>
+                    <button onclick="testPageAPI()">测试页面 API</button>
+                    <div id="page-result" class="result"></div>
+                </div>
+                
+                <div class="api-card">
+                    <h3>元素定位</h3>
+                    <button onclick="testLocatorAPI()">测试定位器 API</button>
+                    <div id="locator-result" class="result"></div>
+                </div>
+                
+                <div class="api-card">
+                    <h3>等待机制</h3>
+                    <button onclick="testWaitAPI()">测试等待 API</button>
+                    <div id="wait-result" class="result"></div>
+                </div>
+                
+                <div class="api-card">
+                    <h3>期望断言</h3>
+                    <button onclick="testExpectAPI()">测试断言 API</button>
+                    <div id="expect-result" class="result"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>脚本执行测试</h2>
+            <textarea id="script-input" placeholder="在这里输入 Playwright 脚本进行测试...">
+// 示例脚本
+const page = engine.createPage();
+await page.goto('https://example.com');
+console.log('页面标题:', await page.title());
+            </textarea>
+            <br>
+            <button onclick="runCustomScript()">执行脚本</button>
+            <button onclick="clearResults()">清空结果</button>
+            <div id="script-result" class="result"></div>
+        </div>
+        
+        <div class="version-info">
+            <h3>版本信息</h3>
+            <div id="version-info">正在获取版本信息...</div>
+        </div>
+    </div>
+
+    <!-- 开发模式下使用 ES 模块 -->
+    <script type="module">
+        import PlaywrightExecutionEngine from './src/index.js';
+        
+        let engine = null;
+        
+        async function initEngine() {
+            try {
+                // 检查兼容性
+                if (!PlaywrightExecutionEngine.checkCompatibility()) {
+                    throw new Error('浏览器不兼容');
+                }
+                
+                // 创建引擎实例
+                engine = PlaywrightExecutionEngine.create({
+                    logLevel: 'debug',
+                    timeout: 10000
+                });
+                
+                // 更新状态
+                const statusEl = document.getElementById('status');
+                statusEl.className = 'status success';
+                statusEl.textContent = '✅ Playwright 执行引擎加载成功！';
+                
+                // 显示版本信息
+                const versionEl = document.getElementById('version-info');
+                versionEl.innerHTML = `
+                    <strong>版本:</strong> ${PlaywrightExecutionEngine.getVersion()}<br>
+                    <strong>构建时间:</strong> ${typeof __BUILD_TIME__ !== 'undefined' ? __BUILD_TIME__ : '开发模式'}<br>
+                    <strong>兼容性:</strong> ✅ 所有功能可用
+                `;
+                
+                console.log('🎭 引擎初始化完成');
+                
+            } catch (error) {
+                console.error('引擎初始化失败:', error);
+                const statusEl = document.getElementById('status');
+                statusEl.className = 'status error';
+                statusEl.textContent = `❌ 引擎加载失败: ${error.message}`;
+            }
+        }
+        
+        // 全局测试函数
+        window.testPageAPI = async function() {
+            const resultEl = document.getElementById('page-result');
+            try {
+                const page = engine.createPage();
+                const url = page.url();
+                const title = page.title();
+                
+                resultEl.textContent = `当前页面:\nURL: ${url}\n标题: ${title}\n\n✅ 页面 API 测试成功`;
+            } catch (error) {
+                resultEl.textContent = `❌ 测试失败: ${error.message}`;
+            }
+        };
+        
+        window.testLocatorAPI = async function() {
+            const resultEl = document.getElementById('locator-result');
+            try {
+                const page = engine.createPage();
+                const locator = page.locator('h1');
+                const textContent = await locator.textContent();
+                
+                resultEl.textContent = `定位器测试:\n选择器: h1\n文本内容: ${textContent}\n\n✅ 定位器 API 测试成功`;
+            } catch (error) {
+                resultEl.textContent = `❌ 测试失败: ${error.message}`;
+            }
+        };
+        
+        window.testWaitAPI = async function() {
+            const resultEl = document.getElementById('wait-result');
+            try {
+                const page = engine.createPage();
+                const startTime = Date.now();
+                await page.waitForTimeout(1000);
+                const endTime = Date.now();
+                
+                resultEl.textContent = `等待测试:\n开始时间: ${new Date(startTime).toLocaleTimeString()}\n结束时间: ${new Date(endTime).toLocaleTimeString()}\n实际耗时: ${endTime - startTime}ms\n\n✅ 等待 API 测试成功`;
+            } catch (error) {
+                resultEl.textContent = `❌ 测试失败: ${error.message}`;
+            }
+        };
+        
+        window.testExpectAPI = async function() {
+            const resultEl = document.getElementById('expect-result');
+            try {
+                const expect = engine.expect;
+                const title = document.title;
+                
+                // 测试断言
+                expect(title).toBeTruthy();
+                expect(title).toContain('Playwright');
+                
+                resultEl.textContent = `断言测试:\n页面标题: "${title}"\n断言 1: 标题存在 ✅\n断言 2: 标题包含 "Playwright" ✅\n\n✅ 断言 API 测试成功`;
+            } catch (error) {
+                resultEl.textContent = `❌ 测试失败: ${error.message}`;
+            }
+        };
+        
+        window.runCustomScript = async function() {
+            const scriptInput = document.getElementById('script-input');
+            const resultEl = document.getElementById('script-result');
+            
+            try {
+                const script = scriptInput.value;
+                if (!script.trim()) {
+                    throw new Error('请输入脚本内容');
+                }
+                
+                resultEl.textContent = '正在执行脚本...\n';
+                
+                // 执行脚本
+                const result = await engine.runScript(script, 'custom-script');
+                
+                resultEl.textContent += `\n执行结果:\n${JSON.stringify(result, null, 2)}`;
+                
+            } catch (error) {
+                resultEl.textContent = `❌ 脚本执行失败: ${error.message}\n\n${error.stack || ''}`;
+            }
+        };
+        
+        window.clearResults = function() {
+            document.querySelectorAll('.result').forEach(el => {
+                el.textContent = '';
+            });
+        };
+        
+        // 初始化
+        initEngine();
+    </script>
+</body>
+</html>

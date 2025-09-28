@@ -1,0 +1,30 @@
+{
+  "name": "smart-components-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monorepo for Smart Components library and examples",
+  "workspaces": [
+    "packages/smart-components-lib",
+    "packages/smart-components-example"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "dev": "npm run dev --workspace=packages/smart-components-example",
+    "build:lib": "npm run build --workspace=packages/smart-components-lib",
+    "dev:lib": "npm run dev --workspace=packages/smart-components-lib",
+    "clean": "npm run clean --workspaces --if-present",
+    "install:all": "npm install",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "devDependencies": {
+    "@types/node": "^16.18.126",
+    "typescript": "^4.9.5"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "author": "ysr",
+  "license": "MIT"
+}

@@ -1,0 +1,43 @@
+{
+  "name": "copilotkit-debug-example-next",
+  "version": "1.0.0",
+  "description": "CopilotKit Debug Example Next - 基于 copilot-client 和 runtime-next 的完整调试示例",
+  "private": true,
+  "scripts": {
+    "install-all": "npm run install-backend && npm run install-frontend",
+    "install-backend": "cd backend && pip install -r requirements.txt",
+    "install-frontend": "cd frontend && npm install",
+    "dev": "concurrently \"npm run dev-backend\" \"npm run dev-frontend\"",
+    "dev-backend": "cd backend && python server.py",
+    "dev-frontend": "cd frontend && npm run dev",
+    "build": "npm run build-frontend",
+    "build-frontend": "cd frontend && npm run build",
+    "start": "concurrently \"npm run start-backend\" \"npm run start-frontend\"",
+    "start-backend": "cd backend && python server.py",
+    "start-frontend": "cd frontend && npm start",
+    "clean": "rm -rf backend/__pycache__ backend/*.pyc frontend/node_modules frontend/.next",
+    "health": "curl http://localhost:8000/health",
+    "test-openai": "cd backend && python -c \"from server import test_openai; test_openai()\"",
+    "test-deepseek": "cd backend && python -c \"from server import test_deepseek; test_deepseek()\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "workspaces": [
+    "frontend"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0",
+    "python": ">=3.9.0"
+  },
+  "keywords": [
+    "copilotkit",
+    "ai",
+    "chatbot",
+    "react",
+    "python",
+    "debug",
+    "example"
+  ]
+} 

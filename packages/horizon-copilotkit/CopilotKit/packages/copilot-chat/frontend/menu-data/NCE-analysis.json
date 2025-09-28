@@ -1,0 +1,29 @@
+[
+    {
+      "id": "U2020-F_U2000_App",
+      "name": "网络管理",
+      "primaryFunction": "网络基础设施的配置、监控和维护管理功能入口",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/nmsnetworkmgrwebsite/v1/webswing/indexforwebswing.html'}"
+      ]
+    },
+    {
+      "id": "SecPolicyImport",
+      "name": "工单策略管理",
+      "primaryFunction": "管理系统工单的免审核策略配置，包括查看任务列表、审核状态管理、时间范围设置以及通过日历界面配置工作日和排班策略",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/secpolicyimportwebsite/index.html#path=/secpolicyimportwebsite/mainEntry'}"
+      ]
+    },
+    {
+      "id": "NEAntitheftMgr",
+      "name": "网元防盗",
+      "primaryFunction": "监控和保护IP网络设备（网元）免受未经授权的访问或盗窃，通过加载和显示防盗状态信息来确保网络安全。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.u2000.unitedmgr.topo.action.DoNEAntitheftMgrAction'}"
+      ]
+    }
+  ]

@@ -1,0 +1,1 @@
+export { useSmartComponents, useAutoRegister } from './useSmartComponents';

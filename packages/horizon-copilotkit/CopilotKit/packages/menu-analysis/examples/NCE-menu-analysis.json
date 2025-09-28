@@ -1,0 +1,1614 @@
+[
+    {
+      "id": "U2020-F_U2000_App",
+      "name": "网络管理",
+      "primaryFunction": "网络基础设施的配置、监控和维护管理功能入口",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/nmsnetworkmgrwebsite/v1/webswing/indexforwebswing.html'}"
+      ]
+    },
+    {
+      "id": "SecPolicyImport",
+      "name": "工单策略管理",
+      "primaryFunction": "管理系统工单的免审核策略配置，包括查看任务列表、审核状态管理、时间范围设置以及通过日历界面配置工作日和排班策略",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/secpolicyimportwebsite/index.html#path=/secpolicyimportwebsite/mainEntry'}"
+      ]
+    },
+    {
+      "id": "NEAntitheftMgr",
+      "name": "网元防盗",
+      "primaryFunction": "监控和保护IP网络设备（网元）免受未经授权的访问或盗窃，通过加载和显示防盗状态信息来确保网络安全。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.u2000.unitedmgr.topo.action.DoNEAntitheftMgrAction'}"
+      ]
+    },
+    {
+      "id": "UserMgr",
+      "name": "网元用户管理",
+      "primaryFunction": "管理IP网元用户以防止IP盗用，提供用户身份验证和访问控制功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.nesecurity.action.DoNEUserMgrAction'}"
+      ]
+    },
+    {
+      "id": "LoginMgr",
+      "name": "网元登录管理",
+      "primaryFunction": "管理和监控IP网元设备的登录安全，防止未授权访问和IP盗用，可能涉及登录策略配置或安全审计功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.nesecurity.action.DoNELoginMgrAction'}"
+      ]
+    },
+    {
+      "id": "CommSvcMgr",
+      "name": "网元通信服务管理",
+      "primaryFunction": "监控和管理IP网元设备的通信服务状态，包括防盗功能检测和加载状态显示，确保网络通信的安全性和稳定性。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.nesecurity.action.DoNEsCommSvcMgrAction'}"
+      ]
+    },
+    {
+      "id": "RadiusCfgMgr",
+      "name": "RADIUS配置管理",
+      "primaryFunction": "管理和配置RADIUS（远程认证拨号用户服务）相关的网络设置，可能涉及IP网元防盗功能的加载和监控，用于用户认证、授权和计费的安全管理。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.nesecurity.action.DoNERadiusConfigAction'}"
+      ]
+    },
+    {
+      "id": "SyslogManage",
+      "name": "网元Syslog运行日志",
+      "primaryFunction": "提供网络设备（网元）的Syslog运行日志查看功能，用于监控和分析设备运行状态、安全事件和系统活动，支持日志加载和实时显示。",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'SyslogManage'}"
+      ]
+    },
+    {
+      "id": "NELock",
+      "name": "网元锁定",
+      "primaryFunction": "提供IP网元锁定、网元登录锁定和网元锁定配置功能，用于管理和控制网络元素的访问与操作权限，防止未授权访问或配置更改。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/nmsnetworkmgrwebsite/index.html?noBroadCastBox&refr-flags=e&noAutoLoadPIU&loadTopPIU=refr,U2020SolutionPIU,ua-info,webswingPIU,U2000MenuConfigPIU,TransExtMenuPiu,TransMenuAuthorityPiu&primaryMenuId=NELock'}"
+      ]
+    },
+    {
+      "id": "ChangeAudit",
+      "name": "变更审计",
+      "primaryFunction": "监控和审计IP网元防盗相关的变更操作，提供变更历史记录和审计追踪功能，确保系统安全性和合规性。",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'DmsCASManage'}"
+      ]
+    },
+    {
+      "id": "neSecurityBatchCfgMgr",
+      "name": "网元安全批量设置",
+      "primaryFunction": "批量配置和管理IP网元设备的防盗安全策略，可能涉及IP地址保护、访问控制或安全规则设置，但当前页面处于加载状态，具体操作功能需等待加载完成。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/nmsnetworkmgrwebsite/index.html?noBroadCastBox&refr-flags=e&noAutoLoadPIU&loadTopPIU=refr,U2020SolutionPIU,ua-info,webswingPIU,U2000MenuConfigPIU,TransExtMenuPiu,TransMenuAuthorityPiu&primaryMenuId=NESecurityBatchConfig'}"
+      ]
+    },
+    {
+      "id": "NECertMgmt",
+      "name": "设备证书管理",
+      "primaryFunction": "管理设备证书的生命周期，包括查看证书列表、申请新证书、替换或吊销现有证书、管理信任证书，以及执行证书相关任务如ESN校验和同步操作。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/necertmgmtwebsite/index.html?noAutoLoadPIU&loadTopPIU=webswingPIU&refr-flags=e#path=/necertmgmtwebsite/mainEntry'}"
+      ]
+    },
+    {
+      "id": "Bamboo",
+      "name": "竹云对接管理",
+      "primaryFunction": "管理竹云系统对接相关的配置和监控，包括IP网元防盗功能的加载状态检查与维护，确保系统集成安全性和稳定性。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/transextwebsite/BamBooConfig.html'}"
+      ]
+    },
+    {
+      "id": "LogManagement",
+      "name": "日志管理",
+      "primaryFunction": "提供设备证书的监控、管理和操作功能，包括查看证书状态、设备信息列表、执行证书替换、吊销管理、信任证书维护以及任务中心处理",
+      "emit": [
+        "jumpSPAPage",
+        "%7B'Href': '/eviewwebsite/index.html?nceapp=Common_Security#path=/plat/{value.menuApp}/v1/{value.menuId}'%7D",
+        true
+      ]
+    },
+    {
+      "id": "UserManagement",
+      "name": "用户管理",
+      "primaryFunction": "设备证书管理功能，包括查看设备证书列表、进行证书替换、身份证书申请、模板证书链管理、证书替换任务处理、吊销列表管理、ESN校验以及信任证书的新增和同步删除操作",
+      "emit": [
+        "jumpSPAPage",
+        "%7B'Href': '/eviewwebsite/index.html?nceapp=Common_Security#path=/plat/smapp/v1/{value.menuId}'%7D",
+        true
+      ]
+    },
+    {
+      "id": "SecuritySetting",
+      "name": "用户策略",
+      "primaryFunction": "管理系统用户的安全策略配置，包括账号策略（如密码错误锁定、账号停用）、登录控制（IP地址和时间限制）、验证码设置、会话管理（自动注销）和双因素认证，以增强系统访问安全性。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/eviewwebsite/index.html?nceapp=Common_Security#path=/plat/smapp/v1/smapp.entry.account.policy'}"
+      ]
+    },
+    {
+      "id": "ProxyACL",
+      "name": "代理服务访问控制列表",
+      "primaryFunction": "管理IP网元设备的访问控制策略，防止非法IP访问和网络攻击，提供网络安全防护功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'Porttrunking ACL', 'isTab': 'false'}"
+      ]
+    },
+    {
+      "id": "DccView",
+      "name": "DCC视图",
+      "primaryFunction": "提供IP网元防盗功能的监控视图，用于实时显示网络元素防盗状态和加载进度",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.dccmgr.DoDcnViewAction'}"
+      ]
+    },
+    {
+      "id": "WebTopo",
+      "name": "物理拓扑",
+      "primaryFunction": "展示网络设备的物理连接拓扑结构，提供IP网元防盗功能的可视化监控界面，用于实时监控网络设备的安全状态和连接关系",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/eviewwebsite/index.html?noBroadCastBox&refr-flags=e&refr-flags=S&agencyId=1#path=/topowebsite&topoClassId=3001&isMainTopo=true'}"
+      ]
+    },
+    {
+      "id": "CustomTopo",
+      "name": "自定义视图",
+      "primaryFunction": "提供IP网元防盗功能的定制化视图展示和监控界面，允许用户根据特定需求配置和查看网络设备的安全防护状态",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.u2000.unitedmgr.topo.action.DoCustomViewAction', 'febsMenuId': 'U2020-F_U2000_App.U2020-F_Topology.U2020-F_Tp_View.CustomTopo'}"
+      ]
+    },
+    {
+      "id": "ClockTopo",
+      "name": "时钟视图",
+      "primaryFunction": "提供网络拓扑的时钟同步状态可视化监控，支持通过资源树图例和过滤功能查看特定区域（如广州、佛山等）的PTN/SPN设备时钟状态，并可进行问题单验证和布局调整操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/eviewwebsite/index.html#path=/topowebsite&topoClassId=3102'}"
+      ]
+    },
+    {
+      "id": "OpticalRouteResView",
+      "name": "光路数字视图",
+      "primaryFunction": "提供IP网元设备的防盗监控数字可视化界面，实时展示光路连接状态和网络设备安全状态，用于监控和防护网络基础设施安全",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/eviewwebsite/index.html#path=/dumbResTopo/topoManagement'}"
+      ]
+    },
+    {
+      "id": "Ne",
+      "name": "网元(传送)",
+      "primaryFunction": "监控和管理IP网元设备的防盗功能状态，可能涉及设备安全策略的加载和状态显示",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.common.action.DoNeSearchAction'}"
+      ]
+    },
+    {
+      "id": "FiberWavelink",
+      "name": "纤缆/微波链路",
+      "primaryFunction": "展示光纤电缆和微波链路设备的统计信息和拓扑结构，包括设备类型数量统计、网元信息展示和网络拓扑可视化功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.common.action.DoFiberAutoSearchAction'}"
+      ]
+    },
+    {
+      "id": "Link_Search_Web",
+      "name": "链路",
+      "primaryFunction": "网络链路拓扑管理和设备统计监控，提供物理拓扑树展示、设备类型数量统计、资源树图例过滤和布局收藏功能，支持网络设备（如PTN系列）的链路状态监控和问题单验证操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/inventorydmwebsite/v1/inventorydm/linksearch/index.html?refr-flags=e#/page'}"
+      ]
+    },
+    {
+      "id": "AutoDiscovery",
+      "name": "网元",
+      "primaryFunction": "提供网络设备（网元）的统计信息展示和管理功能，包括设备类型数量统计、网元列表查看，以及可能的操作如过滤、收藏或拓扑查看，用于网络资源监控和维护。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/neresentrywebsite/v1/#/autodiscovery'}"
+      ]
+    },
+    {
+      "id": "nedetect",
+      "name": "网元自动发现",
+      "primaryFunction": "自动发现和管理网络中的网元设备，提供设备类型统计和数量展示功能，支持对发现的网元进行相关操作管理",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/unitedmgrwebsite/autoNeDiscovery/autoNeDiscovery.html?refr-flags=e#/autoNeDiscovery'}"
+      ]
+    },
+    {
+      "id": "TransDcnMgr",
+      "name": "传送DCN管理",
+      "primaryFunction": "提供传送网络DCN（数据通信网络）设备的集中监控和统计管理功能，包括设备类型数量统计、网元信息展示和拓扑结构查看，支持对PTN等传输设备进行统一管理和操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.dcn.DoDcnAction'}"
+      ]
+    },
+    {
+      "id": "DeviceManagement",
+      "name": "网元接入",
+      "primaryFunction": "提供网络设备（网元）的接入管理和统计视图，包括设备类型分布统计、资源树导航和拓扑展示，支持设备监控和问题验证操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/neresentrywebsite/v1/#/devicemanagement'}"
+      ]
+    },
+    {
+      "id": "GcliMgr",
+      "name": "即插即用管理",
+      "primaryFunction": "管理系统中的即插即用设备或服务，可能涉及设备的自动识别、配置、状态监控或集成管理，但由于页面内容缺失，具体功能需进一步确认。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/gcliwebsite/dist/gcli/view/index.html'}"
+      ]
+    },
+    {
+      "id": "RouterDcnMgr",
+      "name": "路由器DCN管理",
+      "primaryFunction": "提供路由器DCN网络设备的可视化管理和统计监控功能，包括设备类型数量统计、网络拓扑展示、资源树管理以及问题单验证等运维操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'RouterDCNCommand'}"
+      ]
+    },
+    {
+      "id": "NEIPSecManage",
+      "name": "IPSec IKE统计",
+      "primaryFunction": "展示IPSec IKE协议相关的网络设备统计信息，包括按设备类型分类的数量统计和详细的网元设备清单，用于网络管理员监控和分析IPSec VPN连接状态及设备分布情况",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/ipnesecuritywebsite/manage/index.html'}"
+      ]
+    },
+    {
+      "id": "IPNetworkHC",
+      "name": "IP设备健康检查",
+      "primaryFunction": "监控和展示IP网络设备的健康状态统计信息，包括设备类型分布统计和网元详细信息展示，支持通过操作按钮进行设备健康检查、问题单验证等维护操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'configVerifyCommand'}"
+      ]
+    },
+    {
+      "id": "OCMgr",
+      "name": "路由器室外柜管理",
+      "primaryFunction": "提供路由器室外柜设备的统计监控和管理功能，包括设备类型数量统计、网元信息展示和拓扑结构查看，支持对PTN系列设备进行集中管理和操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.crossneutil.ccu.CCUMenuItemAction'}"
+      ]
+    },
+    {
+      "id": "BrasGlobalMgr",
+      "name": "BRAS全局管理",
+      "primaryFunction": "提供BRAS设备的全局监控和统计管理功能，包括设备类型分布统计、网元资源树状展示、物理拓扑可视化以及问题单验证管理，支持对PTN系列网络设备进行集中监控和操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.routermgr.healthinfo.runinfo.BrasGlobalMgrMenuItemAction'}"
+      ]
+    },
+    {
+      "id": "L2L3StaticPathView",
+      "name": "L2+L3静态业务路径视图",
+      "primaryFunction": "展示网络设备统计信息和物理拓扑结构，提供L2/L3层静态业务路径的可视化监控和管理功能，支持通过资源树和过滤布局进行网络设备查询和拓扑展示",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.diagnosis.sevdiagnosis.action.DoL2L3PathViewerAction'}"
+      ]
+    },
+    {
+      "id": "PtnHealthCheck",
+      "name": "PTN网络健康检查",
+      "primaryFunction": "提供PTN网络设备的健康状态监控和统计分析功能，包括设备类型分布统计、网元信息展示和网络拓扑可视化，支持通过资源树和物理拓扑树进行网络结构导航和问题单验证操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/healthcheckwebsite/healthcheck/main.html'}"
+      ]
+    },
+    {
+      "id": "PtnSwitchOverWebsite",
+      "name": "SPN智能倒换",
+      "primaryFunction": "提供SPN网络设备的智能倒换管理和监控功能，包括设备类型统计、拓扑视图展示和操作控制，以支持网络故障恢复和资源优化。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/ptnswitchoverwebsite/dist/index.html'}"
+      ]
+    },
+    {
+      "id": "IPAddrConflictCheck",
+      "name": "IP地址冲突检查",
+      "primaryFunction": "检测和展示网络中IP地址冲突情况，通过设备类型统计表格和详细数据表格显示冲突信息，提供操作按钮进行冲突检查、处理和报告生成",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/ipnemgrwebsite/dist/html/ipAddrConflictCheck.html'}"
+      ]
+    },
+    {
+      "id": "PRBS",
+      "name": "伪随机码测试",
+      "primaryFunction": "提供网络设备伪随机码测试功能，包括设备类型统计展示、测试数据查看和操作执行，支持对PTN、OptiX等网络设备进行性能测试和验证",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.fault.action.DoPRBSTestAction'}"
+      ]
+    },
+    {
+      "id": "HealthAnalysis",
+      "name": "网元健康度分析",
+      "primaryFunction": "提供网络设备（网元）的健康状态监控和分析功能，包括设备类型统计、数量统计和问题单验证，支持通过资源树和拓扑视图进行设备管理和状态查看",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.fault.action.DoHealthAnalysisAction'}"
+      ]
+    },
+    {
+      "id": "IPInstrumentFreeMeasurement",
+      "name": "免仪表测量",
+      "primaryFunction": "IP地址冲突检测和校验管理，提供网络设备IP地址的监控、冲突检查、导出和配置设置功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.ip.common.action.DoIPInstrumentFreeMeasurementAction'}"
+      ]
+    },
+    {
+      "id": "FaultDiagnosis",
+      "name": "故障诊断",
+      "primaryFunction": "网络IP地址冲突检测和诊断功能，通过展示IP地址、掩码、网元设备、接口和VPN信息，提供IP地址冲突校验、实时检查、数据导出和过滤操作，帮助运维人员识别和解决网络中的IP地址配置冲突问题",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/nmsnetworkmgrwebsite/index.html?noBroadCastBox&refr-flags=e&noAutoLoadPIU&loadTopPIU=refr,U2020SolutionPIU,ua-info,webswingPIU,U2000MenuConfigPIU,TransExtMenuPiu,TransMenuAuthorityPiu&primaryMenuId=FaultDiagnosis'}"
+      ]
+    },
+    {
+      "id": "IPNETest",
+      "name": "IP网元测试",
+      "primaryFunction": "提供IP网络设备的综合测试和诊断功能，包括业务级诊断、业务保护能力检查、业务中断分析、以太专线运维，以及执行Y.1564、RFC 2544和伪随机码等标准化测试，用于网络性能验证和故障排查。",
+      "emit": [
+        "jumpu2000client",
+        "{'CmdId': 'addTempDnsCommand'}"
+      ]
+    },
+    {
+      "id": "IPTestSuite",
+      "name": "IP测试套",
+      "primaryFunction": "提供IP网络性能测试和诊断功能套件，包括业务级诊断检查、以太OAM管理、业务保护能力验证、业务中断分析、以太专线运维，以及免仪表测试执行（支持Y.1564测试、RFC 2544测试和伪随机码测试等多种标准化网络性能测试协议）",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'testSuiteManagerCommand'}"
+      ]
+    },
+    {
+      "id": "taskMgtWebSwing",
+      "name": "网元升级任务管理",
+      "primaryFunction": "管理和监控网络元素升级任务，包括诊断、检查、测试执行和运维功能，如业务级诊断、以太OAM管理、业务保护能力检查、线性复用段管理、业务中断分析、以太专线运维、Y.1564测试、RFC 2544测试和伪随机码测试，以支持网络升级和维护流程。",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'TaskManagement'}"
+      ]
+    },
+    {
+      "id": "softArchiveMgtWebSwing",
+      "name": "网元软件库管理",
+      "primaryFunction": "提供网络设备软件版本和诊断工具的集中管理，包括业务诊断、OAM管理、保护能力检查、业务中断分析、以太专线运维以及自动化测试执行（如Y.1564、RFC 2544、伪随机码测试）的加载和维护功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'SoftwareArchiveManagemnt'}"
+      ]
+    },
+    {
+      "id": "onlineBoardUgWebSwing",
+      "name": "自动升级/在线单板升级",
+      "primaryFunction": "提供网络设备的在线单板自动升级功能，支持对业务级诊断、业务保护能力、线性复用段管理、业务中断分析、以太专线运维等关键业务模块进行在线升级和维护，确保网络设备功能的持续优化和稳定运行",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'displayOnlineBoard', 'isTab': 'false'}"
+      ]
+    },
+    {
+      "id": "boardSoftUgWebSwing",
+      "name": "板级软件加载",
+      "primaryFunction": "提供网络设备板级软件加载和固件升级功能，支持多种业务级诊断测试工具的加载和管理，包括以太OAM管理、业务保护能力检查、线性复用段管理、业务中断分析、以太专线运维以及Y.1564测试、RFC 2544测试、伪随机码测试等专业测试工具的加载执行",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'loadBoardSoft'}"
+      ]
+    },
+    {
+      "id": "boardPatchUgWebSwing",
+      "name": "板级补丁升级",
+      "primaryFunction": "提供网络设备板级硬件补丁和固件升级功能，支持对业务诊断、OAM管理、保护能力检查、业务中断分析、以太专线运维以及各类测试（Y.1564、RFC 2544、伪随机码）等模块的底层硬件组件进行版本更新和漏洞修复，确保系统稳定性和功能完整性。",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'loadBoardPatch'}"
+      ]
+    },
+    {
+      "id": "ugSerMgtWebSwing",
+      "name": "升级相关服务管理",
+      "primaryFunction": "提供网络升级相关的诊断、测试和管理服务监控功能，包括业务级诊断、业务保护检查、线性复用段管理、业务中断分析、以太专线运维，以及执行Y.1564测试、RFC 2544测试和伪随机码测试的管理和状态监控。",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'serviceManagement', 'isTab': 'false'}"
+      ]
+    },
+    {
+      "id": "uUpgrade",
+      "name": "网元向导式升级",
+      "primaryFunction": "提供网络设备（网元）的向导式升级功能，通过分步骤引导用户完成设备固件或软件的升级过程，包括升级前检查、升级包选择、升级执行和结果验证等流程",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/nesmartupgradewebsite/uUpgrade/dist/uupgrade_home.html'}"
+      ]
+    },
+    {
+      "id": "neLicMgtWebSwing",
+      "name": "网元License管理",
+      "primaryFunction": "管理系统网元（如网络设备）的软件许可证，包括许可证的分配、激活、监控和合规性检查，确保网络功能正常运行和授权合规。",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'U2000_nelicense_showNELicenseFrame'}"
+      ]
+    },
+    {
+      "id": "backupRvWebSwing",
+      "name": "网元数据备份/恢复",
+      "primaryFunction": "提供网络元素数据的备份和恢复功能，确保业务连续性、故障恢复和数据完整性，支持电信运维中的关键操作如业务诊断、OAM管理和测试执行。",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'showDeviceInfoPan'}"
+      ]
+    },
+    {
+      "id": "backupPolicyWebSwing",
+      "name": "网元备份策略管理",
+      "primaryFunction": "管理网络元素的备份策略，包括配置、监控和维护备份机制，以确保业务连续性和数据恢复能力，可能涉及自动化备份调度、策略优化和故障恢复支持。",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'policyManagement'}"
+      ]
+    },
+    {
+      "id": "backupPolicyWeb",
+      "name": "网元备份策略管理",
+      "primaryFunction": "管理网络元素的备份策略，包括配置、监控和维护备份机制，以确保网络业务连续性和故障恢复能力。基于页面文本内容推断，该菜单可能涉及业务级诊断、业务保护能力检查、线性复用段管理、业务中断分析等备份相关操作，以支持以太网OAM管理和专线运维。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/dcwebsite/serviceApp/dist/necmnNeBackup.html'}"
+      ]
+    },
+    {
+      "id": "SysSettingWebSwing",
+      "name": "网元传输协议设置",
+      "primaryFunction": "提供网络设备传输协议相关的诊断、测试和管理功能，包括业务级诊断检查、以太OAM管理、业务保护能力检查、线性复用段管理、业务中断分析、以太专线运维，以及多种标准化测试（Y.1564测试、RFC 2544测试、伪随机码测试）的执行和管理",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'SystemSetting', 'isTab': 'false'}"
+      ]
+    },
+    {
+      "id": "IP_TCAT",
+      "name": "IP割接工具",
+      "primaryFunction": "网元备份策略管理，包括查看和管理网络设备的备份策略配置、状态监控、策略启用/禁用操作，支持备份策略的筛选、刷新、导出和迁移功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.ip.common.action.DoIPTCATAction'}"
+      ]
+    },
+    {
+      "id": "IP-Traffic-Optimization",
+      "name": "IP流量优化",
+      "primaryFunction": "配置和管理网络设备（网元）的南向连接，包括监控BGP邻居状态、聚合规格，并提供添加、删除、重置和刷新连接的操作功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/iptrafficwebsite/dist/southConnectionIndex.html'}"
+      ]
+    },
+    {
+      "id": "PCEP",
+      "name": "PCEP",
+      "primaryFunction": "网络业务割接和迁移管理平台，提供IP业务迁移、端口迁移、VPLS VLAN迁移、IP扩容、链路容量调整、V5V8迁移、YANG迁移、应急隧道路由调整等网络运维操作的一站式管理功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/pcewebsite/policy/policy_accordion/policy_accordion.html?local=PCEPConfiguration'}"
+      ]
+    },
+    {
+      "id": "NATConfiguration",
+      "name": "控制单元NAT配置",
+      "primaryFunction": "网络地址转换配置管理，用于IP业务割接、迁移、扩容和链路调整等网络运维操作，包括端口迁移、VLAN迁移、链路容量调整、隧道路由管理等网络基础设施的配置和维护",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/pcewebsite/policy/nat_configuration/nat_configuration.html'}"
+      ]
+    },
+    {
+      "id": "BGP",
+      "name": "BGP",
+      "primaryFunction": "网络业务割接和迁移管理平台，提供IP业务迁移、端口迁移、VPLS VLAN迁移、IP扩容、链路容量调整、V5V8迁移、YANG迁移、应急Tunnel路由调整等网络运维操作的工作流管理功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/bgpwebsite/dist/index.html'}"
+      ]
+    },
+    {
+      "id": "U2020-F_Cfg_CfgMgr",
+      "name": "网元配置数据管理",
+      "primaryFunction": "提供网络设备配置数据的集中管理和维护功能，包括IP业务割接管理、VPLS VLAN迁移、IP扩容向导、V5V8迁移、YANG迁移、应急Tunnel路由调整等工作流程管理，支持端口迁移、扩容加点减点、链路容量调整、隧道迁移等网络配置操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.config.action.manage.DoConfigDataMgrAction'}"
+      ]
+    },
+    {
+      "id": "U2020-F_Cfg_OptPwr",
+      "name": "光功率/衰减管理",
+      "primaryFunction": "监控和管理光纤网络中的光功率水平和信号衰减性能，确保光传输质量和网络稳定性",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.wdm.action.DoOpticalPowerMgrAction'}"
+      ]
+    },
+    {
+      "id": "U2020-F_Cfg_OptPwr_Web",
+      "name": "光功率/衰减管理",
+      "primaryFunction": "监控和管理光纤网络中的光功率水平和信号衰减性能，包括实时监测光功率参数、分析衰减变化趋势、优化光信号传输质量，确保光纤通信系统的稳定运行和性能指标达标",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/transnewebsite/serviceApp/dist/wdmMultipleOpticalPowerManagement.html'}"
+      ]
+    },
+    {
+      "id": "BGP_Manage",
+      "name": "BGP管理",
+      "primaryFunction": "提供IP业务割接、迁移、扩容、链路调整等网络运维管理功能，包括VPLS VLAN迁移、静态场景扩容、端口IP修改、V5V8迁移、YANG迁移、应急隧道路由调整和故障光纤分析等网络配置操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.ip.common.route.menuaction.BgpManageMenuAction'}"
+      ]
+    },
+    {
+      "id": "ProfileManagement",
+      "name": "模板管理",
+      "primaryFunction": "提供各类网络服务质量(QoS)模板的集中管理和配置功能，包括EoW QoS、IP QoS、CBQoS、DS域、HQoS、端口队列、接口CAR、接口QoS、ATM策略、业务QoS、MSTP QoS、PTN Qos、SR Policy颜色模板、路由策略模板等多种网络服务质量控制模板的加载和管理",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.u2000.unitedmgr.topo.action.DoProfileManagementAction'}"
+      ]
+    },
+    {
+      "id": "NETimeSync",
+      "name": "网元时间同步",
+      "primaryFunction": "提供网络设备时间同步配置和管理功能，确保网络中所有网元设备的时间一致性，支持时间源配置、同步状态监控和时间偏差调整等操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.u2000.unitedmgr.nesyntime.action.DoSynNETimeMenuAction'}"
+      ]
+    },
+    {
+      "id": "NETimeLocalization",
+      "name": "网元时间本地化",
+      "primaryFunction": "管理和配置网络设备的时间同步设置，确保设备时间本地化以支持QoS模板、路由策略等网络功能的正确加载和运行。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href':'/unitedmgrwebsite/nelocaltime/nelocaltime.html?refr-flags=e','name':{'zh':'网元时间本地化管理','en':'NE Time Localization Management'}}"
+      ]
+    },
+    {
+      "id": "NE_Charset_Management",
+      "name": "网元字符集",
+      "primaryFunction": "提供网络设备字符集配置管理功能，支持多种QoS模板、策略模板和业务模板的配置与管理，包括EoW QoS、IP QoS、MSTP QoS、PTN QoS等各种网络服务质量相关的字符集模板设置",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href':'/unitedmgrwebsite/necharsets/necharsets.html?refr-flags=e','name':{'zh':'网元字符集管理','en':'NE CharSet Management'}}"
+      ]
+    },
+    {
+      "id": "MicroProtGroup",
+      "name": "微波保护组",
+      "primaryFunction": "提供微波通信网络中各类QoS（服务质量）模板的集中管理和配置功能，包括EoW QoS、IP QoS、CBQoS、DS域、HQoS、端口队列、接口CAR、ATM策略、业务QoS、MSTP QoS、PTN QoS等多种网络服务质量策略模板的加载和管理",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.rtn.action.DoRtnProtectGroupMgrAction'}"
+      ]
+    },
+    {
+      "id": "WDMOTNLinkMgmt",
+      "name": "WDM/OTN光层链路",
+      "primaryFunction": "提供WDM/OTN光层链路的监控和管理功能，包括SM TTI自动匹配、光纤链路检测和网元自动调测等自动化运维操作的状态监控和进度显示",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.wdm.action.DoWDMOTNLinkCardMenuAction'}"
+      ]
+    },
+    {
+      "id": "WDMConfig",
+      "name": "波分配置",
+      "primaryFunction": "WDM光网络波分复用配置管理，包括ALC管理、IPA管理、远端设备管理、5G半有源设备信息管理、网元坐标信息管理和FlexGrid波长转换管理等子系统配置功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.wdm.action.DoWDMConfigCardMenuAction'}"
+      ]
+    },
+    {
+      "id": "NEBitErrThreshold",
+      "name": "网元告警误码门限设置",
+      "primaryFunction": "配置和管理网络元素（如WDM、IPA、远端设备、5G半有源设备、FlexGrid波长转换等）的告警和误码阈值参数，用于监控和优化网络性能，确保系统稳定运行。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.fault.action.DoNEFaultBitErrorThresholdAction'}"
+      ]
+    },
+    {
+      "id": "NEAutoCreateAttr",
+      "name": "网元自动创建属性",
+      "primaryFunction": "网络设备自动属性配置管理，提供波分配置WDM ALC、IPA管理、远端设备管理、5G半有源远端设备信息、网元坐标信息、FlexGrid波长转换等网络资源配置功能的集中管理和监控界面",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.config.action.manage.DoNMServerAction'}"
+      ]
+    },
+    {
+      "id": "NEAttributes",
+      "name": "网元告警属性",
+      "primaryFunction": "配置和管理网络设备（网元）的告警相关属性设置，包括告警阈值、告警级别、告警通知规则等基础告警参数配置功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.fault.action.DoNEFaultAttributesAction'}"
+      ]
+    },
+    {
+      "id": "PowerMgr",
+      "name": "网元功耗",
+      "primaryFunction": "监控和管理网络设备（如WDM、IPA、5G半有源设备等）的功耗数据，提供配置和状态加载功能，支持远程设备信息维护和波长转换管理",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.config.action.DoNEAndBoardPowerAction'}"
+      ]
+    },
+    {
+      "id": "NEAutoRelease",
+      "name": "网元功能自动解除",
+      "primaryFunction": "提供网络设备功能自动解除的管理界面，用于监控和管理WDM ALC配置、IPA管理、远端设备管理、5G半有源设备信息、网元坐标信息以及FlexGrid波长转换等网络功能的自动释放和状态管理",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.config.action.manage.DoNeAutoReleaseAction'}"
+      ]
+    },
+    {
+      "id": "MplsOamSwitch",
+      "name": "MPLS OAM配置切换",
+      "primaryFunction": "提供MPLS OAM（操作、管理和维护）相关配置的切换管理功能，包括波分配置、WDM ALC管理、IPA管理、远端设备管理、5G半有源设备信息管理、网元坐标信息管理和FlexGrid波长转换管理等网络配置模块的加载和切换操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.ptnnemgr.action.DoSwitchOAMAction'}"
+      ]
+    },
+    {
+      "id": "BatchConfiguration",
+      "name": "网元批量配置",
+      "primaryFunction": "提供网络设备（网元）的批量配置管理功能，包括时钟设置、单板/端口属性配置、业务套餐管理、保护组倒换、智能特性开关、License授权管理、通信协议配置、电源管理等网络运维相关的批量操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.wdm.action.DoBatchConfigurationCardMenuAction'}"
+      ]
+    },
+    {
+      "id": "ApplicationAwareIPv6NetworkingMgr",
+      "name": "APN管理",
+      "primaryFunction": "网络接入点名称(APN)的配置和管理功能，包括网元设备的批量配置、时钟同步、单板/端口属性设置、业务套餐配置、带宽管理、保护组倒换、智能特性维护、License授权管理、通信协议配置等网络基础设施的集中管理",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/ipapnwebsite/apn/dist/apnManagement.html'}"
+      ]
+    },
+    {
+      "id": "CheckPointMgr",
+      "name": "网元回退任务管理",
+      "primaryFunction": "监控和管理网元设备配置回退任务的执行状态和进度，包括时钟配置、单板属性设置、业务套餐配置、License管理、网络协议配置等多种网元操作任务的回滚处理",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'neRestoreCommand'}"
+      ]
+    },
+    {
+      "id": "NodeProtect",
+      "name": "节点保护",
+      "primaryFunction": "提供网络节点设备的批量配置管理和保护功能，包括时钟同步、单板/端口属性设置、业务套餐配置、保护组倒换管理、License授权管理、通信协议配置等系统级保护和管理操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'noderedun:showMcApsWindow'}"
+      ]
+    },
+    {
+      "id": "LinkBFD",
+      "name": "链路BFD",
+      "primaryFunction": "配置和管理网络设备间的双向转发检测(BFD)协议，用于快速检测链路故障和实现网络高可用性",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'linkbfdCommand'}"
+      ]
+    },
+    {
+      "id": "IPNetworkACL",
+      "name": "IP网络ACL",
+      "primaryFunction": "网络访问控制列表管理功能，用于配置和管理IP网络层面的安全策略、访问控制规则和权限设置，包括网络流量过滤、安全策略实施和网络访问权限控制等核心网络安全功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'netAclCommand'}"
+      ]
+    },
+    {
+      "id": "IPNetworkNTP",
+      "name": "IP网络NTP",
+      "primaryFunction": "网络时间协议(NTP)配置管理功能，用于对网元设备进行时间同步相关的批量配置和管理操作，包括时钟操作、单板/端口属性设置、业务套餐配置、保护组管理、智能特性开关维护等网络时间同步相关的系统配置功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'netNtpCommand'}"
+      ]
+    },
+    {
+      "id": "IPNeCloudLicConfig",
+      "name": "IP网元云化License配置",
+      "primaryFunction": "提供IP网络设备云化License的统一配置管理平台，支持批量配置、授权管理、状态监控和容量控制等功能，实现网络设备License资源的集中化管理和自动化部署",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/ipnecloudlicensewebsite/license/index.html'}"
+      ]
+    },
+    {
+      "id": "PTNResAnalysis",
+      "name": "PTN资源智能分析",
+      "primaryFunction": "展示和管理PTN（分组传送网）资源智能分析任务的配置和监控界面，提供任务列表查看、任务创建功能，支持监控任务执行进度、运行状态、执行周期等关键指标",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/ipptnresanalysiswebsite/taskmgr/index.html'}"
+      ]
+    },
+    {
+      "id": "NATConfiguration1",
+      "name": "控制单元NAT配置",
+      "primaryFunction": "网络地址转换(NAT)配置管理功能，用于设置和控制网络设备中的地址转换规则，实现内网与外网之间的IP地址映射和转换，支持网络通信的安全性和地址资源优化",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/pcewebsite/policy/nat_configuration/nat_configuration.html'}"
+      ]
+    },
+    {
+      "id": "BGP1",
+      "name": "BGP",
+      "primaryFunction": "网络设备批量配置管理，包括时钟设置、单板/端口属性配置、业务套餐管理、License授权管理、通信协议配置（OSPF/IGP）、邻居发现、电源管理等网络运维功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/bgpwebsite/dist/index.html'}"
+      ]
+    },
+    {
+      "id": "U2020-F_Cfg_SynNE",
+      "name": "同步网元配置数据",
+      "primaryFunction": "批量同步和管理网络设备（网元）的配置数据，包括时钟设置、单板/端口属性、业务套餐配置、带宽管理、保护组倒换、智能特性开关、License授权管理、通信协议参数设置等多种网络设备配置参数的集中同步操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.u2000.unitedmgr.nesynchronization.action.DoNESynchronizationAction'}"
+      ]
+    },
+    {
+      "id": "Configuration_Item_Management",
+      "name": "配置项管理",
+      "primaryFunction": "提供网络设备（网元）各类配置项的集中管理和批量操作功能，包括时钟配置、单板/端口属性设置、业务套餐配置、License授权管理、通信协议参数设置等系统级配置管理",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/unitedmgrwebsite/configitemmanagement/configitemmanagement.html?refr-flags=e#/page'}"
+      ]
+    },
+    {
+      "id": "NameRuleMgr",
+      "name": "命名规则",
+      "primaryFunction": "提供网元配置管理相关的批量操作功能集合，包括时钟配置、单板属性设置、业务套餐配置、License管理、网络协议配置等系统级批量配置管理功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/inventorydmwebsite/v1/inventorydm/namerule/index.html?refr-flags=e&spaTabId=NameRuleMgr','name':{'zh':'命名规则','en':'Naming Define Rule'}}"
+      ]
+    },
+    {
+      "id": "showNeAreaFrame",
+      "name": "维护区域管理",
+      "primaryFunction": "提供网络设备（网元）批量配置和维护操作的集中管理界面，包括时钟配置、单板/端口属性设置、业务套餐配置、保护组管理、License授权管理、通信协议配置等系统维护功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/invgrpwebsite/maintenanceregion'}"
+      ]
+    },
+    {
+      "id": "NE_Partition",
+      "name": "网元分区",
+      "primaryFunction": "提供网元设备的批量配置和管理功能，包括时钟配置、单板/端口属性设置、业务套餐配置、License授权管理、通信协议配置等网络设备运维操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/unitedmgrwebsite/NEPartition/index.html?refr-flags=e'}"
+      ]
+    },
+    {
+      "id": "NE_Partition_Rules",
+      "name": "网元自动分区策略",
+      "primaryFunction": "提供网元自动分区策略的配置和管理功能，包括批量配置时钟、单板/端口属性设置、业务套餐配置、保护组倒换、智能特性开关维护、DCN带宽管理、License授权管理、通信参数设置（如OSPF、IGP）、域管理、邻居发现、以及第三方设备接入等自动化操作，以优化网络资源分配和运维效率。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/unitedmgrwebsite/NEAutoPartitionRules/index.html?refr-flags=e'}"
+      ]
+    },
+    {
+      "id": "nat_config_mgr",
+      "name": "NAT配置",
+      "primaryFunction": "网络地址转换配置管理，用于实现IP地址映射和转换功能，支持网络设备间的地址转换规则设置",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/unitedmgrwebsite/natconfig/natconfig.html?refr-flags=e#/page'}"
+      ]
+    },
+    {
+      "id": "FTP_SET",
+      "name": "FTP账号管理",
+      "primaryFunction": "FTP服务器账号的集中管理和维护功能，包括账号的创建、修改、删除、权限设置等操作，用于网络设备文件传输服务的账号控制",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/unitedmgrwebsite/ftpmanagement/ftpmanagement.html?refr-flags=e'}"
+      ]
+    },
+    {
+      "id": "isstarDevelopPlatform",
+      "name": "iSStar开发平台",
+      "primaryFunction": "提供网元设备的批量配置和管理功能，包括时钟配置、单板/端口属性设置、业务套餐配置、License授权管理、通信协议管理、电源管理等网络设备运维开发相关的集中操作平台",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'openScriptCommand'}"
+      ]
+    },
+    {
+      "id": "integration_task_management",
+      "name": "集中任务管理",
+      "primaryFunction": "提供网络设备批量配置任务的集中监控和管理功能，包括时钟配置、单板属性设置、业务套餐配置、License管理、网络协议配置等各类网元批量操作任务的执行状态监控和进度查看",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'Executing ITM command'}"
+      ]
+    },
+    {
+      "id": "CommParam",
+      "name": "网元通信参数",
+      "primaryFunction": "提供网元通信相关的批量配置和管理功能，包括时钟配置、单板/端口属性设置、业务套餐配置、带宽管理、保护组倒换、智能特性开关维护、DCN带宽提速、License授权管理、OSPF参数设置、IGP管理、邻居发现、电源管理通信平面等网络通信参数的集中配置和管理",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/neresentrywebsite/v1/#/communicationparametersaccordion'}"
+      ]
+    },
+    {
+      "id": "U2020-F_Sys_Preference",
+      "name": "惯用选项",
+      "primaryFunction": "提供网络设备（网元）批量配置和管理的快捷操作入口，包括时钟配置、单板属性设置、业务套餐配置、License管理、通信协议配置等系统运维常用功能选项",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'iview mfrm system setting', 'isTab': 'false'}"
+      ]
+    },
+    {
+      "id": "U2020-F_Sys_ScriptImpExp",
+      "name": "导入/导出脚本",
+      "primaryFunction": "提供网络设备配置脚本的批量导入和导出功能，支持多种网元配置操作（包括时钟配置、单板属性设置、业务套餐配置、License管理、通信协议配置等）的脚本化批量处理",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.u2000.unitedmgr.scriptexportimport.ShowMgrPaneAction'}"
+      ]
+    },
+    {
+      "id": "U2020-F_Sys_NeAdaptor",
+      "name": "网元适配包管理",
+      "primaryFunction": "管理系统级网元配置和适配包操作，包括批量配置时钟、单板/端口属性设置、业务套餐配置、License管理、通信协议管理、电源管理等功能，支持加载和监控各种网元适配任务的执行状态。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.u2000.unitedmgr.neadapterpkgmgr.action.DoNeAdapterPkgMgrAction','isTab': 'false'}"
+      ]
+    },
+    {
+      "id": "CP",
+      "name": "控制平面性能",
+      "primaryFunction": "监控和管理网络控制平面的各项性能配置操作状态，包括网元配置、时钟同步、业务管理、License授权、通信协议管理等批量操作的加载进度监控和性能状态展示",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'CP_PFM_MODULE:openPerformance'}"
+      ]
+    },
+    {
+      "id": "performance_rmonhistorycontrol",
+      "name": "RMON历史控制组管理",
+      "primaryFunction": "监控和管理网络设备的RMON（远程网络监控）历史控制组配置，包括网元批量配置、单板/端口属性设置、业务套餐配置、License授权管理、通信协议管理等网络性能监控相关的历史数据控制功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.performance.action.DoRmonHistoryControlAction'}"
+      ]
+    },
+    {
+      "id": "MseRslPfmAnalyze",
+      "name": "MSE/RSL性能分析",
+      "primaryFunction": "提供网络设备（网元）性能监控和分析功能，包括时钟配置、单板/端口属性设置、业务套餐配置、带宽利用率监控、保护组管理、智能特性维护、License授权管理、通信协议配置等网络性能相关的批量配置和状态监控",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.performance.action.DoMseRslPfmAnalyzeAction'}"
+      ]
+    },
+    {
+      "id": "WDM",
+      "name": "WDM性能",
+      "primaryFunction": "提供WDM（波分复用）网络性能监控和管理功能，包括网元配置、时钟同步、单板/端口属性设置、业务套餐配置、带宽利用率监控、保护组管理、智能特性维护、License授权管理、通信协议配置等综合性能管理操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.wdm.action.DoBrowseWDMPfmFromMenuAction'}"
+      ]
+    },
+    {
+      "id": "SDH",
+      "name": "SDH性能",
+      "primaryFunction": "提供SDH网络设备性能监控和管理功能，包括网元配置、时钟同步、单板/端口属性设置、业务套餐配置、带宽利用率监控、保护组管理、智能特性维护、License授权管理、通信协议配置等网络性能相关操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.sdh.action.DoBrowseSDHPfmFromMenuAction'}"
+      ]
+    },
+    {
+      "id": "PerfDataAnalysis",
+      "name": "传送性能数据分析",
+      "primaryFunction": "提供网络传输设备性能数据的监控和分析功能，包括网元配置状态、时钟同步、带宽利用率、保护组管理、智能特性控制、License授权管理、通信协议状态等关键性能指标的实时监控和数据分析",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.performance.action.DoAnalysisHisPfmAction'}"
+      ]
+    },
+    {
+      "id": "EtherPortFlow",
+      "name": "查询以太端口流速",
+      "primaryFunction": "查询和监控以太网端口的实时流速数据，提供网络性能监控和流量分析功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.performance.action.DoQueryEtherPortFlowAction'}"
+      ]
+    },
+    {
+      "id": "ThresholdTemplate",
+      "name": "性能门限模板",
+      "primaryFunction": "提供网络设备性能监控门限的模板化管理功能，用于批量配置和管理各类网元设备的性能阈值参数，包括带宽利用率、时钟同步、业务配置、保护组管理、智能特性开关等网络性能相关的标准化阈值设置",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.performance.action.DoPfmAttriTemplateAction'}"
+      ]
+    },
+    {
+      "id": "MonitorTemplate",
+      "name": "性能事件监视模板",
+      "primaryFunction": "提供网络设备性能监控模板配置功能，支持对网元时钟配置、单板/端口属性设置、业务套餐配置、带宽利用率监控、保护组管理、智能特性开关、License授权管理、通信协议配置等网络性能相关参数的批量配置和监控模板管理",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.performance.action.DoPfmMonitorTemplateAction'}"
+      ]
+    },
+    {
+      "id": "NePfmMonitorTime",
+      "name": "网元性能监视时间",
+      "primaryFunction": "配置和管理网元性能监控相关的定时参数和监控周期设置，包括各类网元操作（如单板配置、业务管理、License管理、通信参数设置等）的加载和执行时间监控",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.performance.action.DoPfmNEMonitorTimeAction'}"
+      ]
+    },
+    {
+      "id": "NePfmCollectionConfig",
+      "name": "网元性能采集配置",
+      "primaryFunction": "配置和管理网络设备（网元）的性能数据采集参数和策略，包括时钟同步、单板/端口属性设置、业务套餐配置、带宽利用率监控、保护组管理、智能特性开关、License授权管理、通信协议配置等批量操作功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.performance.action.DoPfmCollectionConfigAction'}"
+      ]
+    },
+    {
+      "id": "NePfmZeroDataDisplay",
+      "name": "性能事件零数据模板管理",
+      "primaryFunction": "管理系统性能监控中零数据事件的处理模板配置，包括网元时钟配置、单板属性设置、业务套餐配置、保护组管理、智能特性开关维护、License授权管理、通信协议参数设置等批量配置操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/transnewebsite/serviceApp/dist/ptnRmonZerodispTemplate.html'}"
+      ]
+    },
+    {
+      "id": "MonitorConfiguration",
+      "name": "性能实例",
+      "primaryFunction": "提供网元设备性能配置和管理的集中操作界面，包括时钟配置、单板/端口属性设置、业务套餐配置、带宽管理、保护组倒换、智能特性维护、License授权管理、通信协议配置等网络性能相关的批量配置和管理功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'CmdId': 'IPMS_MonitorConfiguration','isTab': 'true'}"
+      ]
+    },
+    {
+      "id": "MonitorTemplate1",
+      "name": "PTN(V8)性能事件监视模板",
+      "primaryFunction": "提供PTN V8网络设备的性能事件监视模板配置和管理功能，用于监控网络设备的各种性能指标和事件状态，包括时钟配置、单板/端口属性设置、保护组倒换、智能特性开关、License管理、通信协议配置等网络运维相关功能的集中监视模板管理",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/vpnexpansionwebsite/template/service/index.html', 'openType': 'new'}"
+      ]
+    },
+    {
+      "id": "DataQueryWeb",
+      "name": "历史性能数据",
+      "primaryFunction": "展示各类网络设备配置操作的加载状态和历史性能指标监控，包括时钟配置、单板/端口属性设置、业务套餐配置、带宽利用率监控、保护组管理、智能特性维护、License授权管理、通信协议配置等网络性能数据的统计和展示",
+      "emit": [
+        "jump2QueryHdDlg",
+        "{'isTab': 'false'}"
+      ]
+    },
+    {
+      "id": "NM Status",
+      "name": "全网维护状态",
+      "primaryFunction": "监控和展示全网网元设备的批量配置操作加载状态，包括时钟配置、单板/端口属性设置、业务套餐配置、保护组管理、智能特性开关、License授权管理、通信协议状态等各类维护操作的实时执行进度和状态监控",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.spanmodule.action.DoMaintainStateAction'}"
+      ]
+    },
+    {
+      "id": "NMTaskMgrPro",
+      "name": "网管任务管理进度",
+      "primaryFunction": "监控和展示网管系统中各类批量配置和管理任务的执行进度状态，包括时钟配置、单板属性设置、业务套餐配置、License管理、网络协议配置等多项网络运维任务的实时加载状态监控",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.config.action.manage.DoCfgDMGuageAction', 'isTab': 'false'}"
+      ]
+    },
+    {
+      "id": "NMTaskMgrPro_Web",
+      "name": "网管任务管理进度",
+      "primaryFunction": "监控和管理网络设备配置任务的执行进度和状态，包括时钟配置、单板属性设置、业务套餐配置、License管理、通信协议配置等多种网络运维任务的实时加载状态跟踪",
+      "emit": [
+        "openTransNeWebServiceTaskManageProgress"
+      ]
+    },
+    {
+      "id": "fmAlarmView",
+      "name": "当前告警",
+      "primaryFunction": "实时监控和管理网络系统中的当前告警信息，提供告警数据的查看、过滤、排序、导出、确认和清除等操作功能，支持对告警级别、状态、时间等关键信息的综合管理",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/eviewwebsite/index.html?nceapp=Common_Alarm#path=/fmAlarmApp/fmAlarmView'}"
+      ]
+    },
+    {
+      "id": "fmAlarmLog",
+      "name": "告警日志",
+      "primaryFunction": "提供网络设备告警信息的查询、展示、导出和管理功能，包括告警状态监控、时间追踪、源设备定位、清除确认操作以及告警数据分析报表生成",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/eviewwebsite/index.html?nceapp=Common_Alarm#path=/fmAlarmApp/fmAlarmLog'}"
+      ]
+    },
+    {
+      "id": "fmHistoryAlarm",
+      "name": "历史告警",
+      "primaryFunction": "提供历史告警数据的查询、展示、导出和管理功能，包括告警信息的筛选、排序、导出操作，以及告警状态的查看和维护",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/eviewwebsite/index.html?nceapp=Common_Alarm#path=/fmAlarmApp/fmHistoryAlarm'}"
+      ]
+    },
+    {
+      "id": "fmShieldedAlarm",
+      "name": "被屏蔽告警",
+      "primaryFunction": "展示和管理被系统规则屏蔽的告警信息，包括查看屏蔽告警的详细信息、维护状态、告警规则匹配情况，并提供告警数据导出功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/eviewwebsite/index.html?nceapp=Common_Alarm#path=/fmAlarmApp/fmShieldedAlarm'}"
+      ]
+    },
+    {
+      "id": "fmEventView",
+      "name": "事件日志",
+      "primaryFunction": "提供系统事件日志的查询、过滤、导出和管理功能，包括查看安全事件详情（如用户登出事件）、自定义导出规则、设置自动刷新和排序选项，支持对日志数据进行批量操作和分析",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/eviewwebsite/index.html?nceapp=Common_Alarm#path=/fmAlarmApp/event'}"
+      ]
+    },
+    {
+      "id": "fmAlarmStatistics",
+      "name": "告警日志统计",
+      "primaryFunction": "提供告警日志的上传、过滤、统计分析和可视化功能，支持按多种条件（告警名称、级别、状态、时间等）筛选告警数据，生成统计表格和图表（饼图、柱状图），并可导出统计结果",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/eviewwebsite/index.html#path=/fmAlarmApp/fmAlarmStatistics&type=alarm'}"
+      ]
+    },
+    {
+      "id": "fmEventStatistics",
+      "name": "事件日志统计",
+      "primaryFunction": "提供事件日志数据的上传、过滤、统计分析和可视化功能，支持用户通过表单上传日志文件（基于taskId/jobId等参数），应用多维度过滤条件（事件名称、级别、时间范围等），生成统计表格和图表（饼图/柱状图），并支持数据导出操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/eviewwebsite/index.html#path=/fmAlarmApp/fmAlarmStatistics&type=event'}"
+      ]
+    },
+    {
+      "id": "fmAlarmSettings",
+      "name": "告警设置",
+      "primaryFunction": "配置和管理告警系统的个性化显示、通知规则、以及维护相关设置，包括颜色定制、声音设置、规则定义（如屏蔽、汇聚、自动确认）、通知模板管理、以及系统集成（如短信平台和Trap报文）",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/eviewwebsite/index.html?nceapp=Common_Alarm#path=/fmAlarmApp/fmAlarmSettings'}"
+      ]
+    },
+    {
+      "id": "ConfigureConstructionTask",
+      "name": "配置工程任务",
+      "primaryFunction": "提供网络工程任务的批量配置和管理功能，包括时钟设置、单板/端口属性调整、业务套餐配置、保护组管理、智能特性开关、DCN带宽提速、License授权管理、通信协议设置等，以支持高效的系统运维和自动化操作。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.u2000.inventory.projectalarm.action.DoProjectAlarmAction', 'isTab': 'true','openType':'new'}"
+      ]
+    },
+    {
+      "id": "NEAlarmRules",
+      "name": "网元告警规则",
+      "primaryFunction": "网络设备告警规则的配置和管理功能，包括时钟配置、单板/端口属性设置、业务套餐配置、带宽利用率监控、保护组管理、智能特性开关、License授权管理、通信协议配置等批量网元操作规则的集中管理",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.u2000.unitedmgr.topo.action.DoNEAlarmRulesAction'}"
+      ]
+    },
+    {
+      "id": "QueryDumpTool",
+      "name": "日志查询工具",
+      "primaryFunction": "提供告警和事件日志的查询、筛选和个性化显示设置功能，包括告警级别颜色自定义、告警声音设置、字体高亮显示等视觉和听觉定制选项",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.u2000.unitedmgr.topo.action.DoQueryDumpToolAction'}"
+      ]
+    },
+    {
+      "id": "TrapReceiver",
+      "name": "Trap报文",
+      "primaryFunction": "展示和管理网络设备上报的Trap报文信息，包括报文接收开关控制、时间范围设置、报文数据查看（厂商、设备信息、上报时间等统计）、高级搜索筛选、数据刷新和删除操作，支持对未转为告警或事件的Trap报文进行监控和管理",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/alarm360website/fm360trappacket.html?noAutoLoadPIU=true&loadTopPIU=webswingPIU&refr-flags=e#path=/alarm360website/fm360trappacket'}"
+      ]
+    },
+    {
+      "id": "WDMFiberSyn",
+      "name": "WDM光纤同步",
+      "primaryFunction": "提供WDM网络设备的批量配置和同步管理功能，包括时钟同步、单板/端口属性设置、业务套餐配置、保护组管理、智能特性维护、License授权管理、网络协议配置（OSPF/IGP）、电源管理等综合运维操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.te.common.action.DoFiberSynAction'}"
+      ]
+    },
+    {
+      "id": "PipeWeb",
+      "name": "管道",
+      "primaryFunction": "提供网络设备（网元）批量配置和管理功能，包括时钟设置、单板/端口属性配置、业务套餐管理、保护组倒换、智能特性维护、带宽管理、License授权管理、通信协议配置等系统级运维操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/inventorydmwebsite/v1/inventorydm/cablepipemanager/index.html?refr-flags=e#/cablepipemanager'}"
+      ]
+    },
+    {
+      "id": "LinkWeb",
+      "name": "链路",
+      "primaryFunction": "提供网络设备（网元）的批量配置和管理功能，包括时钟设置、单板/端口属性配置、业务套餐管理、带宽利用率监控、保护组倒换、智能特性开关维护、License授权管理、通信协议配置（OSPF/IGP）、域管理、邻居发现以及电源管理等综合网络链路运维操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/inventorydmwebsite/v1/inventorydm/linkmgmt/index.html?refr-flags=e#/linkmgmt/page'}"
+      ]
+    },
+    {
+      "id": "LinkGroupWeb",
+      "name": "链路组",
+      "primaryFunction": "网络设备链路配置与管理功能集合，包括时钟配置、单板端口属性设置、业务套餐配置、保护组管理、智能特性开关维护、带宽利用率监控、License授权管理、通信协议配置等网络运维操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/inventorydmwebsite/v1/inventorydm/linkgroupmgmt/index.html?refr-flags=e#/linkgroupmgmt/page'}"
+      ]
+    },
+    {
+      "id": "LineManageWeb",
+      "name": "纤缆/微波链路",
+      "primaryFunction": "提供网络设备（如网元、单板、端口）的批量配置和管理功能，包括时钟操作、属性设置、类型替换、业务套餐配置、压缩配置、带宽利用率监控、保护组倒换、智能特性开关维护、DCN带宽提速、临时宽限期管理、OSU业务管理、OLA虚拟化状态、ASON/TSDN精简模式配置、第三方波长接入、网元层级管理、批量迁移、物理角色设置、CPE/CO代理转发、基础发功提升、ORG使能、License授权管理（包括微波网元、RTU、OSU、容量控制模式）、通信配置（OSPF参数、IGP管理、域管理）、邻居发现、第三方CPE自动接入、LMP协议状态监控，以及电源管理通信平面。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/inventorydmwebsite/v1/inventorydm/fibermgmt/index.html?refr-flags=e#/fibermgmt/page'}"
+      ]
+    },
+    {
+      "id": "PhysicsInventory",
+      "name": "物理存量",
+      "primaryFunction": "提供网络设备物理存量统计与管理功能，包括网元信息展示、状态监控（通信状态、管理状态）、过滤查询、自定义模板管理、数据导出和标记操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/phyinvmgrwebsite/v1/dist/index.html?refr-flags=e#/phyinv/ne'}"
+      ]
+    },
+    {
+      "id": "OpticalElectrialModule",
+      "name": "路由器与交换机光电模块",
+      "primaryFunction": "提供网络设备光电模块的批量配置和管理功能，包括时钟同步、端口属性设置、单板类型替换、业务套餐配置、保护组管理、智能特性维护、带宽管理、License授权管理、通信协议配置等网络设备运维操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/ipnemgrwebsite/dist/html/opticalElectrialModule.html'}"
+      ]
+    },
+    {
+      "id": "U2020-F_Res_Report",
+      "name": "存量报表",
+      "primaryFunction": "展示网元配置操作的状态监控和加载进度报表，包括时钟配置、单板属性设置、业务套餐配置、License管理、通信参数设置等各类网元批量操作的执行状态和耗时统计",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.u2000.unitedmgr.topo.action.DoInventoryReportAction'}"
+      ]
+    },
+    {
+      "id": "IPAlloacate",
+      "name": "IP地址管理",
+      "primaryFunction": "管理和配置网络设备（网元）的IP地址及相关网络参数，包括批量配置、通信设置、协议管理、以及许可证控制，以支持网络运维和优化。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/ippoolwebsite/v1/ipaddrmgmt/index.html'}"
+      ]
+    },
+    {
+      "id": "Res_Pool_Manage",
+      "name": "资源池管理",
+      "primaryFunction": "管理多种类型的资源池（如RD、RT、BD、EVI、EVPL、ServiceID、IGP、Locator、私网IP地址、BFDID等），包括查看资源池列表（显示名称、起始值、结束值、描述、策略、资源占用数和优选状态），支持通过按钮操作进行创建、编辑、同步和删除资源池，以优化资源分配和监控使用情况。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/nmlrespoolwebsite/management/index.html'}"
+      ]
+    },
+    {
+      "id": "U2020-F_Res_ProjDoc",
+      "name": "工程文档",
+      "primaryFunction": "提供网络工程配置和管理文档的访问，包括时钟配置、单板/端口设置、业务套餐、保护组管理、智能特性开关、License授权、通信协议配置、电源管理等批量操作和状态监控功能，用于系统维护和优化。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.u2000.unitedmgr.topo.action.DoProjectDocumentAction'}"
+      ]
+    },
+    {
+      "id": "U2020-F_Srv_Auth",
+      "name": "客户管理",
+      "primaryFunction": "网络设备配置管理功能集合，包括网元时钟配置、单板端口属性设置、业务套餐配置、License授权管理、通信协议管理、电源管理等批量网络运维操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/inventorydmwebsite/v1/inventorydm/customermanagement/index.html#path=/inventorydmwebsite/customermanagement'}"
+      ]
+    },
+    {
+      "id": "U2020-F_Srv_Tpl",
+      "name": "业务模板",
+      "primaryFunction": "提供客户信息管理和业务模板配置功能，包括查看客户基本信息（名称、法人代表、联系方式等）、管理客户关联的网络设备（OLT设备列表）、支持客户信息的创建、修改、搜索和刷新操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.ip.common.action.DoServiceTemplateAction'}"
+      ]
+    },
+    {
+      "id": "U2020-F_Srv_Disc",
+      "name": "自动发现业务",
+      "primaryFunction": "提供客户业务自动发现和管理功能，包括客户信息展示、业务设备状态监控（如OLT设备）、客户搜索筛选、以及客户信息的创建、修改等操作管理",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.ip.common.action.DoServiceDiscoveryAction'}"
+      ]
+    },
+    {
+      "id": "U2020-F_Srv_CompositeSrv",
+      "name": "组合业务",
+      "primaryFunction": "提供网络设备（网元）的批量配置和管理功能集合，包括时钟配置、单板/端口属性设置、业务套餐配置、保护组管理、智能特性维护、带宽管理、License授权管理、通信协议配置等综合运维操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.composite.action.DoMgrCompositeServiceAction'}"
+      ]
+    },
+    {
+      "id": "U2020-F_Srv_Resouce",
+      "name": "业务资源",
+      "primaryFunction": "提供客户信息管理和业务资源展示功能，包括客户基本信息查看、客户关联设备资源列表展示，支持客户创建、修改、搜索和刷新等操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.ip.common.action.DoServiceResourceAction'}"
+      ]
+    },
+    {
+      "id": "U2020-F_Srv_Import",
+      "name": "导入业务",
+      "primaryFunction": "提供网络设备（网元）批量配置和业务导入功能，包括时钟配置、单板/端口属性设置、业务套餐配置、License管理、通信协议配置等各类网络运维操作的批量导入和配置管理",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.ip.common.commonfunc.menuaction.SvcImpMenuAction'}"
+      ]
+    },
+    {
+      "id": "Static_Tnl_Create",
+      "name": "静态Tunnel",
+      "primaryFunction": "提供网络设备（网元）的批量配置管理功能，包括时钟设置、单板/端口属性配置、业务套餐管理、带宽利用率监控、保护组倒换、智能特性开关维护、DCN带宽提速、License授权管理、通信协议配置（OSPF/IGP）、邻居发现管理、电源管理等综合网络运维操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.ip.tunnel.action.DoTunnelCreateAction', 'openType': 'new'}"
+      ]
+    },
+    {
+      "id": "Static_L3VPN_Create",
+      "name": "静态L3VPN业务",
+      "primaryFunction": "提供L3VPN（三层虚拟专用网络）业务的静态配置和管理功能，包括网元批量配置、单板/端口属性设置、业务套餐配置、保护组管理、智能特性维护、DCN带宽管理、License授权管理、路由协议配置（OSPF/IGP）、邻居发现、第三方设备接入等网络运维操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.ip.l3vpn.action.NewL3vpnServiceAction', 'openType': 'new'}"
+      ]
+    },
+    {
+      "id": "VPLS_Create",
+      "name": "VPLS业务",
+      "primaryFunction": "提供VPLS（Virtual Private LAN Service）相关的网络配置和管理功能，包括网元批量配置、单板/端口属性设置、业务套餐配置、保护组倒换、智能特性开关维护、License管理、通信协议设置（如OSPF、IGP）、以及第三方设备接入管理等，以支持虚拟局域网服务的部署、监控和维护。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.ip.vpls.menuaction.VplsCreateMenuAction', 'openType': 'new'}"
+      ]
+    },
+    {
+      "id": "PWE3_Create",
+      "name": "PWE3业务",
+      "primaryFunction": "提供PWE3（伪线仿真边缘到边缘）业务的批量配置和管理功能，包括时钟配置、单板/端口属性设置、业务套餐配置、保护组管理、智能特性开关维护、License授权管理、网络协议参数设置等网络运维操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.ip.pwe3.action.DoCreatePwe3ServiceAction', 'openType': 'new'}"
+      ]
+    },
+    {
+      "id": "E_AGGR_Create",
+      "name": "汇聚业务",
+      "primaryFunction": "提供网络设备（网元）的批量配置和管理功能，包括时钟设置、单板/端口属性配置、业务套餐管理、保护组倒换、智能特性开关、带宽管理、License授权管理、通信协议配置等综合运维操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.ip.eaggr.action.DoCreateEaggrServiceAction'}"
+      ]
+    },
+    {
+      "id": "EVPN_Create",
+      "name": "L2 EVPN业务",
+      "primaryFunction": "提供二层EVPN业务的创建和管理功能，包括业务基本属性配置、业务接入点管理、隧道策略设置以及VPN实例资源分配，支持MP2MP业务类型和Any-to-Any拓扑的配置",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/vpnfulfillmentwebsite/l2sm/service/l2allocation/index.html', 'openType': 'new','name': {'zh': 'L2 EVPN业务', 'en': 'L2 EVPN Service'}}"
+      ]
+    },
+    {
+      "id": "CBR_Create",
+      "name": "CBR业务",
+      "primaryFunction": "提供CBR（电路仿真业务）的配置和管理功能，包括业务基本信息设置、接入点配置、业务实例查看、路由计算和通道管理，支持时延优化、自动匹配子通道等专业电信网络功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/vpnfulfillmentwebsite/l2sm/cbrService/allocation/index.html', 'openType': 'new','name': {'zh': 'CBR业务创建', 'en': 'CBR Service Creation'}}"
+      ]
+    },
+    {
+      "id": "Dynamic_L3VPN_Create",
+      "name": "MBGP L3VPN业务",
+      "primaryFunction": "创建和管理基于MBGP协议的L3VPN业务，包括配置基本参数、业务节点、业务接入点以及隧道策略（IPv4/IPv6），支持预部署和下发配置操作。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/vpnfulfillmentwebsite/l3sm/service/allocation/index.html', 'openType': 'new'}"
+      ]
+    },
+    {
+      "id": "Dynamic_Tnl_Create",
+      "name": "动态Tunnel",
+      "primaryFunction": "提供网络设备（网元）的批量配置和管理功能，包括时钟同步、单板/端口属性设置、业务套餐配置、保护组管理、智能特性维护、带宽管理、License授权管理、通信协议配置等网络运维操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/vpnfulfillmentwebsite/mplstunnel/tunnel/allocation/index.html', 'openType': 'new'}"
+      ]
+    },
+    {
+      "id": "Flex_Create",
+      "name": "FlexE 通道",
+      "primaryFunction": "创建和管理FlexE（灵活以太网）通道配置，包括设置通道基本属性、带宽参数、保护类型、业务接入点、OAM配置、APS保护组参数，以及进行路径计算和配置下发操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/flexewebsite/flexconfig/service/flexeAllocation/index.html', 'openType': 'new'}"
+      ]
+    },
+    {
+      "id": "FgTunnel_Create",
+      "name": "MTN FG 通道",
+      "primaryFunction": "创建和管理MTN FG（灵活网格）光传输通道，包括配置通道基本属性、业务接入点、路由约束、OAM参数和APS保护组设置，支持双向倒换保护和路径计算功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/flexewebsite/flexconfig/service/fgTunnelAllocation/index.html', 'openType': 'new'}"
+      ]
+    },
+    {
+      "id": "SR_Policy_Create",
+      "name": "SR Policy",
+      "primaryFunction": "提供网络设备（网元）的批量配置和管理功能，包括时钟设置、单板/端口属性配置、业务套餐管理、保护组倒换、智能特性开关维护、License授权管理、通信协议配置（OSPF/IGP）、邻居发现以及电源管理等综合网络运维操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/vpnfulfillmentwebsite/srpolicy/srpolicy/allocation/index.html', 'openType': 'new'}"
+      ]
+    },
+    {
+      "id": "Static_Tnl_View",
+      "name": "静态Tunnel",
+      "primaryFunction": "提供网络设备（网元）批量配置管理功能，包括时钟设置、单板/端口属性配置、业务套餐管理、带宽利用率监控、保护组倒换、智能特性开关、DCN带宽提速、License授权管理、通信协议配置（OSPF/IGP）、邻居发现、电源管理等网络运维相关的批量操作和状态监控",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.ip.common.action.DoStaticTunnelAction'}"
+      ]
+    },
+    {
+      "id": "Static_L3VPN_View",
+      "name": "静态L3VPN业务",
+      "primaryFunction": "提供L3VPN（三层虚拟专用网络）业务的静态配置和管理功能，包括网络设备批量配置、业务参数设置、协议管理、许可证授权管理以及各类网络优化特性的配置维护",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.ip.common.action.DoStaticL3VPNAction'}"
+      ]
+    },
+    {
+      "id": "MPLS_Manage",
+      "name": "MPLS保护环管理",
+      "primaryFunction": "MPLS网络保护环的配置、监控和管理功能，包括保护组倒换管理、网络性能监控、业务配置优化以及网络故障保护机制维护",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.ip.ring.RingMenuAction'}"
+      ]
+    },
+    {
+      "id": "VPLS_View",
+      "name": "VPLS业务",
+      "primaryFunction": "提供虚拟专用局域网服务(VPLS)的网络业务配置和管理功能，包括网元批量配置、时钟同步、单板/端口属性设置、业务套餐配置、保护组管理、智能特性维护、带宽管理、License授权管理、路由协议配置等电信网络运维操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.ip.vpls.menuaction.VplsServiceMenuAction'}"
+      ]
+    },
+    {
+      "id": "PWE3_View",
+      "name": "PWE3业务",
+      "primaryFunction": "提供PWE3（伪线仿真边缘到边缘）业务的批量配置和管理功能，包括时钟配置、单板/端口属性设置、业务套餐配置、保护组管理、智能特性维护、License授权管理、网络协议配置（OSPF/IGP）、以及第三方设备接入管理等综合网络业务管理",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.ip.pwe3.action.DoManagePwe3ServiceAction'}"
+      ]
+    },
+    {
+      "id": "E_AGGR_View",
+      "name": "汇聚业务",
+      "primaryFunction": "提供网络设备（网元）的批量配置和管理功能，包括时钟同步、单板/端口属性设置、业务套餐配置、保护组管理、智能特性维护、带宽管理、License授权管理、通信协议配置等网络运维操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.ip.eaggr.action.DoManageEaggrServiceAction'}"
+      ]
+    },
+    {
+      "id": "L2_Multicast_View",
+      "name": "二层组播业务",
+      "primaryFunction": "提供二层网络组播业务的管理和配置功能，包括网元批量配置、单板端口属性设置、业务套餐配置、保护组管理、智能特性维护、License授权管理、网络协议配置（OSPF/IGP）、邻居发现以及第三方设备接入管理等综合组播业务运维功能",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.ip.etree.menuaction.ETreeServiceMgrMenuAction'}"
+      ]
+    },
+    {
+      "id": "IPHardService",
+      "name": "IP硬管道业务",
+      "primaryFunction": "SR Policy物理拓扑管理和业务路径配置，包括工作路径和保护路径的创建与带宽利用率监控",
+      "emit": [
+        "jumpSPAPage",
+        "{'Action': 'com.huawei.nml.ip.common.action.DoIPHardServiceAction'}"
+      ]
+    },
+    {
+      "id": "EVPN_View",
+      "name": "L2 EVPN业务",
+      "primaryFunction": "提供L2 EVPN业务的集中监控和管理功能，包括业务状态查看、告警监控、业务配置同步、锁定/解锁操作，以及基于多种条件（业务类型、拓扑类型、运行状态、告警状态等）的业务筛选和查询",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/vpnfulfillmentwebsite/l2sm/service/l2list/index.html', 'openType': 'new','name': {'zh': 'L2 EVPN业务', 'en': 'L2 EVPN Service'}}"
+      ]
+    },
+    {
+      "id": "CBR_View",
+      "name": "CBR业务",
+      "primaryFunction": "提供跨域业务资源的管理和监控功能，包括业务列表展示、业务创建、批量删除、数据同步、告警状态刷新和高级筛选查询等操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/vpnfulfillmentwebsite/l2sm/cbrService/manage/index.html', 'openType': 'new','name': {'zh': 'CBR业务管理', 'en': 'CBR Service Management'}}"
+      ]
+    },
+    {
+      "id": "Dynamic_L3VPN_View",
+      "name": "MBGP L3VPN业务",
+      "primaryFunction": "管理和监控MBGP L3VPN业务实例，包括业务创建、状态查看（告警、运行、一致性、锁定）、筛选过滤、同步操作以及批量处理功能，支持通过业务名称、模板、客户等属性进行数据管理。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/vpnfulfillmentwebsite/l3sm/service/list/index.html', 'openType': 'new'}"
+      ]
+    },
+    {
+      "id": "Dynamic_Tnl_View",
+      "name": "动态Tunnel",
+      "primaryFunction": "提供网络设备（网元）的批量配置和管理功能，包括时钟同步、单板/端口属性设置、业务套餐配置、带宽管理、保护组倒换、智能特性维护、License授权管理、通信协议配置等网络运维操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/vpnfulfillmentwebsite/mplstunnel/tunnel/management/index.html', 'openType': 'new'}"
+      ]
+    },
+    {
+      "id": "Flex_View",
+      "name": "FlexE 通道",
+      "primaryFunction": "管理FlexE通道的创建、配置、监控和操作，包括通道属性设置（如带宽、保护类型、切片关联）、状态跟踪（部署、告警、修改历史）、以及通过筛选和表格视图进行数据管理和维护。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/flexewebsite/flexconfig/service/flexeList/index.html', 'openType': 'new'}"
+      ]
+    },
+    {
+      "id": "FgTunnel_View",
+      "name": "MTN FG 通道",
+      "primaryFunction": "管理MTN FG通道的配置、监控和操作，包括通道创建、筛选、状态查看、同步和部署管理，支持带宽、保护类型和网络元素配置。",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/flexewebsite/flexconfig/service/fgTunnelList/index.html', 'openType': 'new'}"
+      ]
+    },
+    {
+      "id": "SR_Policy_View",
+      "name": "SR Policy",
+      "primaryFunction": "提供网络设备（网元）的批量配置和管理功能，包括时钟设置、单板/端口属性配置、业务套餐管理、License授权管理、通信协议配置等系统级运维操作",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/vpnfulfillmentwebsite/srpolicy/srpolicy/management/index.html', 'openType': 'new'}"
+      ]
+    },
+    {
+      "id": "U2020-F_Srv_TplUI",
+      "name": "参数模板",
+      "primaryFunction": "提供网络业务参数模板的集中管理和查看功能，支持按业务类型和模板类型筛选，展示L2EVPN、SR_TP_Tunnel、5G-L3VPN等多种网络协议的参数模板配置信息、创建/更新时间及责任人",
+      "emit": [
+        "jumpSPAPage",
+        "{'Href': '/vpndefinationwebsite/app/list/index.html', 'openType': 'new'}"
+      ]
+    }
+  ]

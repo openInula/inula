@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playwright 执行引擎演示</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .demo-section {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .demo-section h3 {
+            color: #495057;
+            margin-top: 0;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 10px;
+            resize: vertical;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .output {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-top: 10px;
+        }
+        
+        .test-page {
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            background: white;
+        }
+        
+        .test-element {
+            margin: 10px 0;
+        }
+        
+        .test-element input, .test-element select, .test-element button {
+            margin: 5px;
+            padding: 8px;
+        }
+        
+        .result-box {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            display: none;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 标签页样式 */
+        .tab-container {
+            margin-bottom: 30px;
+        }
+
+        .tab-nav {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            margin-bottom: 0;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #495057;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+            min-width: 140px;
+        }
+
+        .tab-button:hover {
+            background: #e9ecef;
+            color: #007bff;
+        }
+
+        .tab-button.active {
+            background: white;
+            color: #007bff;
+            border-bottom-color: #007bff;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            min-height: 400px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-inner {
+            padding: 20px;
+        }
+
+        .api-category {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .api-category h5 {
+            margin: 0 0 10px 0;
+            color: #856404;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .mini-test {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+        }
+
+        .mini-test h6 {
+            margin: 0 0 10px 0;
+            color: #495057;
+            font-size: 14px;
+        }
+
+        .mini-test textarea {
+            height: 120px;
+            font-size: 12px;
+        }
+
+        .mini-test button {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .mini-test .output {
+            max-height: 150px;
+            font-size: 11px;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎭 Playwright 执行引擎演示</h1>
+        <p>在浏览器中直接运行 Playwright 脚本</p>
+    </div>
+
+    <!-- 测试页面元素 -->
+    <div class="test-page">
+        <h3>🎯 测试页面</h3>
+        <p>这些元素可以被 Playwright 脚本操作：</p>
+        
+        <div class="test-element">
+            <label for="username">用户名:</label>
+            <input type="text" id="username" placeholder="请输入用户名" />
+        </div>
+        
+        <div class="test-element">
+            <label for="password">密码:</label>
+            <input type="password" id="password" placeholder="请输入密码" />
+        </div>
+        
+        <div class="test-element">
+            <label for="email">邮箱:</label>
+            <input type="email" id="email" placeholder="example@email.com" />
+        </div>
+        
+        <div class="test-element">
+            <label for="country">国家:</label>
+            <select id="country">
+                <option value="">选择国家</option>
+                <option value="cn">中国</option>
+                <option value="us">美国</option>
+                <option value="jp">日本</option>
+            </select>
+        </div>
+        
+        <div class="test-element">
+            <label>
+                <input type="checkbox" id="agree" />
+                我同意服务条款
+            </label>
+        </div>
+        
+        <div class="test-element">
+            <button id="submit-btn" onclick="showResult()">提交</button>
+            <button id="reset-btn" onclick="resetForm()">重置</button>
+            <button id="disabled-btn" disabled>禁用按钮</button>
+        </div>
+
+        <div class="test-element">
+            <label for="multi-select">多选下拉:</label>
+            <select id="multi-select" multiple>
+                <option value="option1">选项1</option>
+                <option value="option2">选项2</option>
+                <option value="option3">选项3</option>
+            </select>
+        </div>
+
+        <div class="test-element">
+            <fieldset>
+                <legend>单选按钮组:</legend>
+                <label><input type="radio" name="gender" value="male"> 男</label>
+                <label><input type="radio" name="gender" value="female"> 女</label>
+                <label><input type="radio" name="gender" value="other"> 其他</label>
+            </fieldset>
+        </div>
+
+        <div class="test-element">
+            <label for="file-input">文件上传:</label>
+            <input type="file" id="file-input" />
+        </div>
+
+        <div class="test-element">
+            <label for="textarea-input">文本域:</label>
+            <textarea id="textarea-input" placeholder="输入多行文本"></textarea>
+        </div>
+
+        <div class="test-element">
+            <div id="hover-target" style="padding: 10px; background: #f0f0f0; cursor: pointer;">
+                悬停测试区域 (鼠标悬停会变色)
+            </div>
+        </div>
+
+        <div class="test-element">
+            <div id="dynamic-content" style="display: none; padding: 10px; background: #d4edda;">
+                动态显示的内容
+            </div>
+            <button onclick="toggleDynamicContent()">切换动态内容</button>
+        </div>
+        
+        <div class="debug-section" style="margin: 20px 0; padding: 10px; border: 2px solid #ccc;">
+            <h4>调试工具</h4>
+            <button onclick="debugGlobalScope()">调试全局作用域</button>
+            <button onclick="testLocatorDirect()">直接测试 LocatorAdapter</button>
+            <div id="debug-output" style="margin-top: 10px; padding: 10px; background: #f5f5f5; font-family: monospace; white-space: pre-wrap;"></div>
+        </div>
+
+        <div class="test-element">
+            <div class="nested-elements">
+                <div data-testid="parent-container">
+                    <span class="child-element">子元素1</span>
+                    <span class="child-element">子元素2</span>
+                    <span class="child-element">子元素3</span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="result" class="result-box">
+            表单提交成功！
+        </div>
+    </div>
+
+    <!-- 标签页容器 -->
+    <div class="tab-container">
+        <div class="tab-nav">
+            <button class="tab-button active" onclick="switchTab('basic-operations')">🎯 基础操作</button>
+            <button class="tab-button" onclick="switchTab('modern-locators')">🔍 现代定位器</button>
+            <button class="tab-button" onclick="switchTab('waiting-assertions')">⏱️ 等待断言</button>
+            <button class="tab-button" onclick="switchTab('advanced-features')">🔧 高级功能</button>
+            <button class="tab-button" onclick="switchTab('custom-testing')">✏️ 自定义测试</button>
+        </div>
+
+        <!-- 🎯 基础操作测试 -->
+        <div id="basic-operations" class="tab-content active">
+            <div class="tab-inner">
+                <div class="api-category">
+                    <h5>页面导航和基础操作</h5>
+                    <p>测试页面导航、元素交互、表单填写等基础功能</p>
+                </div>
+                
+                <div class="test-grid">
+                    <div class="mini-test">
+                        <h6>表单填写测试</h6>
+                        <textarea id="basic-form">import { test, expect } from '@playwright/test';
+
+test('基础表单填写', async ({ page }) => {
+  await page.fill('#username', 'testuser');
+  await page.fill('#password', 'password123');
+  await page.fill('#email', 'test@example.com');
+  await page.selectOption('#country', 'cn');
+  await page.check('#agree');
+  await page.click('#submit-btn');
+  
+  await expect(page.locator('#result')).toBeVisible();
+});</textarea>
+                        <button onclick="runMiniScript('basic-form')">运行</button>
+                        <div id="basic-form-output" class="output"></div>
+                    </div>
+
+                    <div class="mini-test">
+                        <h6>键盘操作测试</h6>
+                        <textarea id="keyboard-test">import { test, expect } from '@playwright/test';
+
+test('键盘操作', async ({ page }) => {
+  await page.click('#username');
+  await page.type('#username', 'Hello');
+  await page.press('#username', 'Home');
+  await page.type('#username', 'Hi ');
+  
+  await expect(page.locator('#username'))
+    .toHaveValue('Hi Hello');
+});</textarea>
+                        <button onclick="runMiniScript('keyboard-test')">运行</button>
+                        <div id="keyboard-test-output" class="output"></div>
+                    </div>
+
+                    <div class="mini-test">
+                        <h6>鼠标操作测试</h6>
+                        <textarea id="mouse-test">import { test, expect } from '@playwright/test';
+
+test('鼠标操作', async ({ page }) => {
+  // 单击和双击
+  await page.click('#username');
+  await page.dblclick('#password');
+  
+  // 悬停操作
+  await page.hover('#hover-target');
+  
+  console.log('鼠标操作完成');
+});</textarea>
+                        <button onclick="runMiniScript('mouse-test')">运行</button>
+                        <div id="mouse-test-output" class="output"></div>
+                    </div>
+
+                    <div class="mini-test">
+                        <h6>复选框和单选按钮</h6>
+                        <textarea id="checkbox-radio-test">import { test, expect } from '@playwright/test';
+
+test('复选框和单选按钮', async ({ page }) => {
+  // 复选框操作
+  await page.check('#agree');
+  await expect(page.locator('#agree')).toBeChecked();
+  
+  await page.uncheck('#agree');
+  await expect(page.locator('#agree')).not.toBeChecked();
+  
+  // 单选按钮操作
+  await page.check('input[value="male"]');
+  await expect(page.locator('input[value="male"]')).toBeChecked();
+});</textarea>
+                        <button onclick="runMiniScript('checkbox-radio-test')">运行</button>
+                        <div id="checkbox-radio-test-output" class="output"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔍 现代定位器测试 -->
+        <div id="modern-locators" class="tab-content">
+            <div class="tab-inner">
+                <div class="api-category">
+                    <h5>语义化定位器 (Semantic Locators)</h5>
+                    <p>测试 getByRole, getByLabel, getByText, getByTestId 等现代定位器</p>
+                </div>
+                
+                <div class="test-grid">
+                    <div class="mini-test">
+                        <h6>getByLabel 定位器</h6>
+                        <textarea id="getbylabel-test">import { test, expect } from '@playwright/test';
+
+test('getByLabel 定位器', async ({ page }) => {
+  await page.getByLabel('用户名').fill('user123');
+  await page.getByLabel('密码').fill('pass123');
+  await page.getByLabel('邮箱').fill('test@example.com');
+  
+  await expect(page.getByLabel('用户名')).toHaveValue('user123');
+  await expect(page.getByLabel('密码')).toHaveValue('pass123');
+});</textarea>
+                        <button onclick="runMiniScript('getbylabel-test')">运行</button>
+                        <div id="getbylabel-test-output" class="output"></div>
+                    </div>
+
+                    <div class="mini-test">
+                        <h6>getByRole 定位器</h6>
+                        <textarea id="getbyrole-test">import { test, expect } from '@playwright/test';
+
+test('getByRole 定位器', async ({ page }) => {
+  // 按钮角色
+  await page.getByRole('button', { name: '提交' }).click();
+  await expect(page.locator('#result')).toBeVisible();
+  
+  await page.getByRole('button', { name: '重置' }).click();
+  await expect(page.locator('#result')).toBeHidden();
+  
+  // 下拉框角色
+  await page.getByRole('combobox').selectOption('us');
+});</textarea>
+                        <button onclick="runMiniScript('getbyrole-test')">运行</button>
+                        <div id="getbyrole-test-output" class="output"></div>
+                    </div>
+
+                    <div class="mini-test">
+                        <h6>getByText 定位器</h6>
+                        <textarea id="getbytext-test">import { test, expect } from '@playwright/test';
+
+test('getByText 定位器', async ({ page }) => {
+  // 精确文本匹配
+  await page.getByText('提交').click();
+  await expect(page.locator('#result')).toBeVisible();
+  
+  // 部分文本匹配
+  await page.getByText('重置').click();
+  
+  // 验证文本存在
+  await expect(page.getByText('表单提交成功！')).toBeHidden();
+});</textarea>
+                        <button onclick="runMiniScript('getbytext-test')">运行</button>
+                        <div id="getbytext-test-output" class="output"></div>
+                    </div>
+
+                    <div class="mini-test">
+                        <h6>getByTestId 定位器</h6>
+                        <textarea id="getbytestid-test">import { test, expect } from '@playwright/test';
+
+test('getByTestId 定位器', async ({ page }) => {
+  const container = page.getByTestId('parent-container');
+  await expect(container).toBeVisible();
+  
+  // 验证容器内的子元素
+  const childElements = container.locator('.child-element');
+  await expect(childElements).toHaveCount(3);
+  
+  console.log('找到容器和子元素');
+});</textarea>
+                        <button onclick="runMiniScript('getbytestid-test')">运行</button>
+                        <div id="getbytestid-test-output" class="output"></div>
+                    </div>
+
+                    <div class="mini-test">
+                        <h6>定位器链式操作</h6>
+                        <textarea id="locator-chaining-test">import { test, expect } from '@playwright/test';
+
+test('定位器链式操作', async ({ page }) => {
+  const container = page.getByTestId('parent-container');
+  
+  // 获取第一个子元素
+  const firstChild = container.locator('.child-element').first();
+  await expect(firstChild).toHaveText('子元素1');
+  
+  // 获取最后一个子元素
+  const lastChild = container.locator('.child-element').last();
+  await expect(lastChild).toHaveText('子元素3');
+  
+  // 获取第二个元素
+  const secondChild = container.locator('.child-element').nth(1);
+  await expect(secondChild).toHaveText('子元素2');
+});</textarea>
+                        <button onclick="runMiniScript('locator-chaining-test')">运行</button>
+                        <div id="locator-chaining-test-output" class="output"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ⏱️ 等待和断言测试 -->
+        <div id="waiting-assertions" class="tab-content">
+            <div class="tab-inner">
+                <div class="api-category">
+                    <h5>等待机制和高级断言</h5>
+                    <p>测试各种等待策略、元素状态检查、内容断言等功能</p>
+                </div>
+                
+                <div class="test-grid">
+                    <div class="mini-test">
+                        <h6>可见性断言</h6>
+                        <textarea id="visibility-test">import { test, expect } from '@playwright/test';
+
+test('可见性断言', async ({ page }) => {
+  // 检查初始状态
+  await expect(page.locator('#result')).toBeHidden();
+  await expect(page.locator('#submit-btn')).toBeVisible();
+  await expect(page.locator('#disabled-btn')).toBeVisible();
+  
+  // 触发显示
+  await page.click('#submit-btn');
+  await expect(page.locator('#result')).toBeVisible();
+});</textarea>
+                        <button onclick="runMiniScript('visibility-test')">运行</button>
+                        <div id="visibility-test-output" class="output"></div>
+                    </div>
+
+                    <div class="mini-test">
+                        <h6>元素状态断言</h6>
+                        <textarea id="state-test">import { test, expect } from '@playwright/test';
+
+test('元素状态断言', async ({ page }) => {
+  // 按钮状态检查
+  await expect(page.locator('#submit-btn')).toBeEnabled();
+  await expect(page.locator('#disabled-btn')).toBeDisabled();
+  
+  // 复选框状态
+  await expect(page.locator('#agree')).not.toBeChecked();
+  await page.check('#agree');
+  await expect(page.locator('#agree')).toBeChecked();
+});</textarea>
+                        <button onclick="runMiniScript('state-test')">运行</button>
+                        <div id="state-test-output" class="output"></div>
+                    </div>
+
+                    <div class="mini-test">
+                        <h6>内容断言</h6>
+                        <textarea id="content-test">import { test, expect } from '@playwright/test';
+
+test('内容断言', async ({ page }) => {
+  await page.fill('#username', 'test123');
+  await page.fill('#email', 'test@example.com');
+  
+  // 值断言
+  await expect(page.locator('#username')).toHaveValue('test123');
+  await expect(page.locator('#email')).toHaveValue('test@example.com');
+  
+  // 文本断言
+  await expect(page.getByText('用户名:')).toBeVisible();
+  await expect(page.locator('label[for="username"]')).toHaveText('用户名:');
+});</textarea>
+                        <button onclick="runMiniScript('content-test')">运行</button>
+                        <div id="content-test-output" class="output"></div>
+                    </div>
+
+                    <div class="mini-test">
+                        <h6>属性断言</h6>
+                        <textarea id="attribute-test">import { test, expect } from '@playwright/test';
+
+test('属性断言', async ({ page }) => {
+  // 属性检查
+  await expect(page.locator('#username')).toHaveAttribute('type', 'text');
+  await expect(page.locator('#password')).toHaveAttribute('type', 'password');
+  await expect(page.locator('#email')).toHaveAttribute('type', 'email');
+  
+  // ID 检查
+  await expect(page.locator('#submit-btn')).toHaveId('submit-btn');
+  
+  // Placeholder 检查
+  await expect(page.locator('#username')).toHaveAttribute('placeholder', '请输入用户名');
+});</textarea>
+                        <button onclick="runMiniScript('attribute-test')">运行</button>
+                        <div id="attribute-test-output" class="output"></div>
+                    </div>
+
+                    <div class="mini-test">
+                        <h6>等待机制测试</h6>
+                        <textarea id="waiting-test">import { test, expect } from '@playwright/test';
+
+test('等待机制', async ({ page }) => {
+  // 等待元素可见
+  await page.waitForSelector('#submit-btn', { state: 'visible' });
+  
+  // 等待元素隐藏
+  await expect(page.locator('#result')).toBeHidden();
+  
+  // 触发显示并等待
+  await page.click('#submit-btn');
+  await page.waitForSelector('#result:visible');
+  
+  // 验证显示成功
+  await expect(page.locator('#result')).toBeVisible();
+});</textarea>
+                        <button onclick="runMiniScript('waiting-test')">运行</button>
+                        <div id="waiting-test-output" class="output"></div>
+                    </div>
+
+                    <div class="mini-test">
+                        <h6>数量断言</h6>
+                        <textarea id="count-test">import { test, expect } from '@playwright/test';
+
+test('数量断言', async ({ page }) => {
+  // 检查子元素数量
+  await expect(page.locator('.child-element')).toHaveCount(3);
+  
+  // 检查选项数量
+  await expect(page.locator('#country option')).toHaveCount(4);
+  await expect(page.locator('#multi-select option')).toHaveCount(3);
+  
+  // 检查单选按钮数量
+  await expect(page.locator('input[name="gender"]')).toHaveCount(3);
+});</textarea>
+                        <button onclick="runMiniScript('count-test')">运行</button>
+                        <div id="count-test-output" class="output"></div>
+                    </div>
+
+                    <div class="mini-test">
+                        <h6>故意失败的测试</h6>
+                        <textarea id="failure-test">import { test, expect } from '@playwright/test';
+
+test('故意失败的测试', async ({ page }) => {
+  // 这个测试应该失败，因为用户名输入框不应该有值"不存在的值"
+  await expect(page.locator('#username')).toHaveValue('不存在的值');
+  
+  // 这个测试也应该失败，因为这个元素不存在
+  await expect(page.locator('#不存在的元素')).toBeVisible();
+});</textarea>
+                        <button onclick="runMiniScript('failure-test')">运行</button>
+                        <div id="failure-test-output" class="output"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔧 高级功能测试 -->
+        <div id="advanced-features" class="tab-content">
+            <div class="tab-inner">
+                <div class="api-category">
+                    <h5>JavaScript 执行、XPath、动态内容等高级功能</h5>
+                    <p>测试 evaluate、XPath 选择器、动态内容处理等高级特性</p>
+                </div>
+                
+                <div class="test-grid">
+                    <div class="mini-test">
+                        <h6>JavaScript 执行</h6>
+                        <textarea id="evaluate-test">import { test, expect } from '@playwright/test';
+
+test('JavaScript 执行', async ({ page }) => {
+  // 执行 JavaScript 获取页面信息
+  const title = await page.evaluate(() => document.title);
+  console.log('页面标题:', title);
+  
+  // 修改元素内容
+  await page.evaluate(() => {
+    document.querySelector('#hover-target').style.backgroundColor = 'lightblue';
+    document.querySelector('#hover-target').textContent = '已通过 JS 修改';
+  });
+  
+  await expect(page.locator('#hover-target')).toHaveText('已通过 JS 修改');
+});</textarea>
+                        <button onclick="runMiniScript('evaluate-test')">运行</button>
+                        <div id="evaluate-test-output" class="output"></div>
+                    </div>
+
+                    <div class="mini-test">
+                        <h6>XPath 选择器</h6>
+                        <textarea id="xpath-test">import { test, expect } from '@playwright/test';
+
+test('XPath 选择器', async ({ page }) => {
+  // 使用 XPath 定位元素
+  await page.fill('xpath=//input[@id="username"]', 'xpath_user');
+  await page.click('xpath=//button[contains(text(), "提交")]');
+  
+  // XPath 断言
+  await expect(page.locator('xpath=//input[@id="username"]'))
+    .toHaveValue('xpath_user');
+  
+  // 复杂 XPath - 只选择测试页面区域内的按钮
+  const buttons = page.locator('xpath=//*[@class="test-page"]//button[not(@disabled)]');
+  await expect(buttons).toHaveCount(5);
+});</textarea>
+                        <button onclick="runMiniScript('xpath-test')">运行</button>
+                        <div id="xpath-test-output" class="output"></div>
+                    </div>
+
+                    <div class="mini-test">
+                        <h6>动态内容测试</h6>
+                        <textarea id="dynamic-test">import { test, expect } from '@playwright/test';
+
+test('动态内容', async ({ page }) => {
+  // 初始状态检查
+  await expect(page.locator('#dynamic-content')).toBeHidden();
+  
+  // 触发显示
+  await page.click('text=切换动态内容');
+  await expect(page.locator('#dynamic-content')).toBeVisible();
+  
+  // 再次切换
+  await page.click('text=切换动态内容');
+  await expect(page.locator('#dynamic-content')).toBeHidden();
+});</textarea>
+                        <button onclick="runMiniScript('dynamic-test')">运行</button>
+                        <div id="dynamic-test-output" class="output"></div>
+                    </div>
+
+                    <div class="mini-test">
+                        <h6>多选下拉框</h6>
+                        <textarea id="multiselect-test">import { test, expect } from '@playwright/test';
+
+test('多选下拉框', async ({ page }) => {
+  // 选择多个选项
+  await page.selectOption('#multi-select', ['option1', 'option3']);
+  
+  // 验证选择结果
+  const selectedOptions = await page.evaluate(() => {
+    const select = document.querySelector('#multi-select');
+    return Array.from(select.selectedOptions).map(option => option.value);
+  });
+  
+  console.log('已选择:', selectedOptions);
+  expect(selectedOptions).toContain('option1');
+  expect(selectedOptions).toContain('option3');
+});</textarea>
+                        <button onclick="runMiniScript('multiselect-test')">运行</button>
+                        <div id="multiselect-test-output" class="output"></div>
+                    </div>
+
+                    <div class="mini-test">
+                        <h6>文本域操作</h6>
+                        <textarea id="textarea-test">import { test, expect } from '@playwright/test';
+
+test('文本域操作', async ({ page }) => {
+  const longText = '这是一段长文本\\n包含多行内容\\n用于测试文本域功能';
+  
+  await page.fill('#textarea-input', longText);
+  await expect(page.locator('#textarea-input')).toHaveValue(longText);
+  
+  // 追加文本
+  await page.focus('#textarea-input');
+  await page.press('#textarea-input', 'End');
+  await page.type('#textarea-input', '\\n额外添加的内容');
+  
+  const finalValue = await page.locator('#textarea-input').inputValue();
+  console.log('最终文本:', finalValue);
+});</textarea>
+                        <button onclick="runMiniScript('textarea-test')">运行</button>
+                        <div id="textarea-test-output" class="output"></div>
+                    </div>
+
+                    <div class="mini-test">
+                        <h6>条件等待测试</h6>
+                        <textarea id="conditional-wait-test">import { test, expect } from '@playwright/test';
+
+test('条件等待', async ({ page }) => {
+  // 等待函数条件
+  await page.waitForFunction(() => {
+    return document.querySelector('#submit-btn') !== null;
+  });
+  
+  // 等待超时测试
+  await page.waitForTimeout(500);
+  
+  // 等待元素状态变化
+  await page.click('#submit-btn');
+  await page.waitForFunction(() => {
+    const result = document.querySelector('#result');
+    return result && result.style.display !== 'none';
+  });
+  
+  console.log('条件等待完成');
+});</textarea>
+                        <button onclick="runMiniScript('conditional-wait-test')">运行</button>
+                        <div id="conditional-wait-test-output" class="output"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✏️ 自定义测试区域 -->
+        <div id="custom-testing" class="tab-content">
+            <div class="tab-inner">
+                <div class="api-category">
+                    <h5>编写你自己的测试脚本</h5>
+                    <p>在这里可以自由编写和测试 Playwright 脚本</p>
+                </div>
+                
+                <div class="demo-section">
+                    <textarea id="custom-script" placeholder="在这里编写你的 Playwright 脚本...">import { test, expect } from '@playwright/test';
+
+test('我的自定义测试', async ({ page }) => {
+  // 在这里编写你的测试代码
+  await page.fill('#username', '自定义用户');
+  await page.click('#submit-btn');
+  
+  await expect(page.locator('#result')).toBeVisible();
+  await expect(page.locator('#result')).toHaveText('表单提交成功！');
+  
+  console.log('自定义测试完成！');
+});</textarea>
+                    <button onclick="runScript('custom-script')">运行自定义脚本</button>
+                    <div id="custom-script-output" class="output"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载 Playwright 执行引擎 -->
+    <script src="../dist/index.browser.js"></script>
+    
+    <script>
+        // 初始化引擎
+        const engine = new PlaywrightExecutionEngine({
+            logLevel: 'info',
+            timeout: 30000
+        });
+
+        // 标签页切换函数
+        function switchTab(tabId) {
+            // 移除所有标签页的激活状态
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 激活点击的标签页
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // 调试全局作用域函数
+        function debugGlobalScope() {
+            console.log('=== 全局作用域调试 ===');
+            console.log('window.PlaywrightExecutionEngine:', typeof window.PlaywrightExecutionEngine);
+            console.log('window.PlaywrightPageAdapter:', typeof window.PlaywrightPageAdapter);
+            console.log('window.PlaywrightLocatorAdapter:', typeof window.PlaywrightLocatorAdapter);
+            console.log('window.PlaywrightWaitManager:', typeof window.PlaywrightWaitManager);
+            console.log('window.PlaywrightEventSimulator:', typeof window.PlaywrightEventSimulator);
+            console.log('window.PlaywrightExpectAdapter:', typeof window.PlaywrightExpectAdapter);
+            console.log('window.PlaywrightLogger:', typeof window.PlaywrightLogger);
+            console.log('window.PlaywrightRuntime:', typeof window.PlaywrightRuntime);
+            console.log('==============================');
+            
+            // 测试创建实例
+            try {
+                const page = new window.PlaywrightPageAdapter();
+                console.log('PageAdapter 实例创建成功:', page);
+                console.log('PageAdapter.locator 方法:', typeof page.locator);
+                
+                const testLocator = page.locator('div');
+                console.log('创建 locator 成功:', testLocator);
+                console.log('Locator 构造函数:', testLocator.constructor.name);
+            } catch (error) {
+                console.error('创建实例失败:', error);
+            }
+        }
+
+        // 直接测试 LocatorAdapter 的函数
+        function testLocatorDirect() {
+            const output = document.getElementById('debug-output');
+            output.textContent = '';
+            
+            try {
+                console.log('=== 直接 LocatorAdapter 测试 ===');
+                
+                // 1. 检查 LocatorAdapter 类
+                console.log('LocatorAdapter 类存在:', typeof window.PlaywrightLocatorAdapter);
+                console.log('PageAdapter 类存在:', typeof window.PlaywrightPageAdapter);
+                
+                // 2. 创建 PageAdapter 实例
+                const page = new window.PlaywrightPageAdapter();
+                console.log('PageAdapter 实例:', page);
+                console.log('PageAdapter locator 方法:', typeof page.locator);
+                
+                // 3. 直接使用 LocatorAdapter 构造函数
+                const directLocator = new window.PlaywrightLocatorAdapter('[data-testid="parent-container"]', page);
+                console.log('直接创建的 LocatorAdapter:', directLocator);
+                console.log('直接创建的 LocatorAdapter 类型:', directLocator.constructor.name);
+                console.log('直接创建的 LocatorAdapter 有 locator 方法:', typeof directLocator.locator);
+                
+                // 4. 通过 page.locator 创建
+                const pageLocator = page.locator('[data-testid="parent-container"]');
+                console.log('通过 page.locator 创建的:', pageLocator);
+                console.log('通过 page.locator 创建的类型:', pageLocator.constructor.name);
+                console.log('通过 page.locator 创建的有 locator 方法:', typeof pageLocator.locator);
+                
+                // 5. 通过 page.getByTestId 创建
+                const testIdLocator = page.getByTestId('parent-container');
+                console.log('通过 page.getByTestId 创建的:', testIdLocator);
+                console.log('通过 page.getByTestId 创建的类型:', testIdLocator.constructor.name);
+                console.log('通过 page.getByTestId 创建的有 locator 方法:', typeof testIdLocator.locator);
+                
+                // 6. 测试嵌套 locator 调用
+                console.log('尝试调用 testIdLocator.locator...');
+                const nestedLocator = testIdLocator.locator('.child-element');
+                console.log('嵌套 locator 成功:', nestedLocator);
+                
+                output.textContent = '所有测试成功! 查看控制台了解详细信息。';
+                
+            } catch (error) {
+                console.error('测试失败:', error);
+                console.error('错误堆栈:', error.stack);
+                output.textContent = `测试失败: ${error.message}\n堆栈: ${error.stack}`;
+            }
+        }
+
+        // 运行迷你脚本的函数
+        async function runMiniScript(scriptId) {
+            const scriptElement = document.getElementById(scriptId);
+            const outputElement = document.getElementById(scriptId + '-output');
+            const button = scriptElement.nextElementSibling;
+            
+            // 禁用按钮并显示加载状态
+            button.disabled = true;
+            button.innerHTML = '<span class="loading"></span> 运行中...';
+            
+            // 清空输出
+            outputElement.textContent = '';
+            
+            // 执行测试前重置页面状态，防止用例相互影响
+            outputElement.textContent = '🔄 正在重置页面状态...';
+            resetForm();
+            await new Promise(resolve => setTimeout(resolve, 300)); // 短暂延迟让用户看到重置过程
+            outputElement.textContent = ''; // 清空重置提示
+            
+            try {
+                const script = scriptElement.value;
+                
+                // 添加控制台输出重定向
+                const originalLog = console.log;
+                const originalError = console.error;
+                const originalWarn = console.warn;
+                
+                const logs = [];
+                
+                console.log = (...args) => {
+                    logs.push('[LOG] ' + args.join(' '));
+                    originalLog.apply(console, args);
+                };
+                
+                console.error = (...args) => {
+                    logs.push('[ERROR] ' + args.join(' '));
+                    originalError.apply(console, args);
+                };
+                
+                console.warn = (...args) => {
+                    logs.push('[WARN] ' + args.join(' '));
+                    originalWarn.apply(console, args);
+                };
+                
+                // 执行脚本
+                const result = await engine.runScript(script, scriptId);
+                
+                // 恢复控制台
+                console.log = originalLog;
+                console.error = originalError;
+                console.warn = originalWarn;
+                
+                // 显示结果
+                const output = [
+                    `${result.success ? '✅ 成功' : '❌ 失败'} (${result.duration}ms)`,
+                    ...logs,
+                    result.results && result.results.length > 0 ? 
+                        result.results.map(test => 
+                            `${test.success ? '✅' : '❌'} ${test.name}${test.error ? ' - ' + test.error.message : ''}`
+                        ).join('\n') : '',
+                    !result.success && result.error ? `错误: ${result.error.message}` : ''
+                ].filter(line => line).join('\n');
+                
+                outputElement.textContent = output;
+                
+            } catch (error) {
+                outputElement.textContent = `❌ 执行失败: ${error.message}`;
+                console.error('迷你脚本执行失败:', error);
+            } finally {
+                // 恢复按钮
+                button.disabled = false;
+                button.textContent = '运行';
+            }
+        }
+
+        // 运行脚本的通用函数
+        async function runScript(scriptId) {
+            const scriptElement = document.getElementById(scriptId);
+            const outputElement = document.getElementById(scriptId + '-output');
+            const button = scriptElement.nextElementSibling;
+            
+            // 禁用按钮并显示加载状态
+            button.disabled = true;
+            button.innerHTML = '<span class="loading"></span> 执行中...';
+            
+            // 清空输出
+            if (outputElement) {
+                outputElement.textContent = '';
+            } else {
+                console.error('找不到输出元素:', scriptId + '-output');
+                return;
+            }
+            
+            // 执行测试前重置页面状态，防止用例相互影响
+            if (outputElement) {
+                outputElement.textContent = '🔄 正在重置页面状态...';
+            }
+            resetForm();
+            await new Promise(resolve => setTimeout(resolve, 300)); // 短暂延迟让用户看到重置过程
+            if (outputElement) {
+                outputElement.textContent = ''; // 清空重置提示
+            }
+            
+            try {
+                const script = scriptElement.value;
+                console.log('执行脚本:', script);
+                
+                // 添加控制台输出重定向
+                const originalLog = console.log;
+                const originalError = console.error;
+                const originalWarn = console.warn;
+                
+                const logs = [];
+                
+                console.log = (...args) => {
+                    logs.push('[LOG] ' + args.join(' '));
+                    originalLog.apply(console, args);
+                };
+                
+                console.error = (...args) => {
+                    logs.push('[ERROR] ' + args.join(' '));
+                    originalError.apply(console, args);
+                };
+                
+                console.warn = (...args) => {
+                    logs.push('[WARN] ' + args.join(' '));
+                    originalWarn.apply(console, args);
+                };
+                
+                // 执行脚本
+                const result = await engine.runScript(script, scriptId);
+                
+                // 恢复控制台
+                console.log = originalLog;
+                console.error = originalError;
+                console.warn = originalWarn;
+                
+                // 显示结果
+                const output = [
+                    `📊 执行结果: ${result.success ? '✅ 成功' : '❌ 失败'}`,
+                    `⏱️ 耗时: ${result.duration}ms`,
+                    `🧪 脚本名称: ${result.scriptName}`,
+                    `📝 测试数量: ${result.results ? result.results.length : 0}`,
+                    '',
+                    '📋 详细日志:',
+                    ...logs,
+                    '',
+                    '🔍 测试详情:',
+                    result.results && result.results.length > 0 ? 
+                        result.results.map(test => 
+                            `  ${test.success ? '✅' : '❌'} ${test.name} (${test.duration || 0}ms)${test.error ? '\n    错误: ' + test.error.message : ''}`
+                        ).join('\n') : '  无测试结果',
+                    !result.success && result.error ? `\n💥 执行错误:\n  ${result.error.message}` : ''
+                ].filter(line => line).join('\n');
+                
+                if (outputElement) {
+                    outputElement.textContent = output;
+                }
+                
+            } catch (error) {
+                if (outputElement) {
+                    outputElement.textContent = `❌ 执行失败:\n${error.message}\n\n堆栈信息:\n${error.stack}`;
+                }
+                console.error('脚本执行失败:', error);
+            } finally {
+                // 恢复按钮
+                button.disabled = false;
+                button.textContent = '运行脚本';
+            }
+        }
+
+        // 测试页面的辅助函数
+        function showResult() {
+            document.getElementById('result').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('result').style.display = 'none';
+            // 只清空测试页面区域的表单元素，不影响测试脚本的 textarea
+            document.querySelectorAll('.test-page input, .test-page select, .test-page textarea').forEach(element => {
+                if (element.type === 'checkbox' || element.type === 'radio') {
+                    element.checked = false;
+                } else if (element.tagName === 'SELECT' && element.multiple) {
+                    Array.from(element.options).forEach(option => option.selected = false);
+                } else {
+                    element.value = '';
+                }
+            });
+        }
+
+        function toggleDynamicContent() {
+            const content = document.getElementById('dynamic-content');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+            } else {
+                content.style.display = 'none';
+            }
+        }
+
+        // 悬停效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const hoverTarget = document.getElementById('hover-target');
+            if (hoverTarget) {
+                hoverTarget.addEventListener('mouseenter', function() {
+                    this.style.backgroundColor = '#e9ecef';
+                });
+                hoverTarget.addEventListener('mouseleave', function() {
+                    this.style.backgroundColor = '#f0f0f0';
+                });
+            }
+        });
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎭 Playwright 执行引擎演示页面加载完成');
+            console.log('引擎版本:', PlaywrightExecutionEngine.getVersion());
+            
+            // 检查兼容性
+            if (PlaywrightExecutionEngine.checkCompatibility()) {
+                console.log('✅ 浏览器兼容性检查通过');
+            } else {
+                console.warn('⚠️ 浏览器兼容性存在问题');
+            }
+        });
+    </script>
+</body>
+</html>
