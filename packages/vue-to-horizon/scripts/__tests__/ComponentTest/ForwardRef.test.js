@@ -42,11 +42,11 @@ describe('ForwardRef', () => {
   });
 
   it('memo组件包裹的类组件', () => {
-    class Component extends Horizon.Component {
-      render() {
-        return <button>123</button>;
-      }
-    }
+   class Component extends Horizon.Component {
+     render() {
+       return <button>123</button>;
+     }
+   }
 
     const Wrapper = Horizon.memo(Component);
 

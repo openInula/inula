@@ -4,11 +4,9 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var _regeneratorRuntime = require('@babel/runtime/regenerator');
 
-function _interopDefaultLegacy(e) {
-  return e && typeof e === 'object' && 'default' in e ? e : { default: e };
-}
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
-var _regeneratorRuntime__default = /*#__PURE__*/ _interopDefaultLegacy(_regeneratorRuntime);
+var _regeneratorRuntime__default = /*#__PURE__*/_interopDefaultLegacy(_regeneratorRuntime);
 
 /*
  * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
@@ -38,21 +36,13 @@ var TYPE_MEMO = 10;
 var TYPE_LAZY = 11;
 
 function _typeof(o) {
-  '@babel/helpers - typeof';
+  "@babel/helpers - typeof";
 
-  return (
-    (_typeof =
-      'function' == typeof Symbol && 'symbol' == typeof Symbol.iterator
-        ? function (o) {
-            return typeof o;
-          }
-        : function (o) {
-            return o && 'function' == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype
-              ? 'symbol'
-              : typeof o;
-          }),
-    _typeof(o)
-  );
+  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
+    return typeof o;
+  } : function (o) {
+    return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+  }, _typeof(o);
 }
 
 function _assertThisInitialized(self) {
@@ -63,70 +53,66 @@ function _assertThisInitialized(self) {
 }
 
 function _possibleConstructorReturn(self, call) {
-  if (call && (_typeof(call) === 'object' || typeof call === 'function')) {
+  if (call && (_typeof(call) === "object" || typeof call === "function")) {
     return call;
   } else if (call !== void 0) {
-    throw new TypeError('Derived constructors may only return object or undefined');
+    throw new TypeError("Derived constructors may only return object or undefined");
   }
   return _assertThisInitialized(self);
 }
 
 function _getPrototypeOf(o) {
-  _getPrototypeOf = Object.setPrototypeOf
-    ? Object.getPrototypeOf.bind()
-    : function _getPrototypeOf(o) {
-        return o.__proto__ || Object.getPrototypeOf(o);
-      };
+  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
+    return o.__proto__ || Object.getPrototypeOf(o);
+  };
   return _getPrototypeOf(o);
 }
 
 function _setPrototypeOf(o, p) {
-  _setPrototypeOf = Object.setPrototypeOf
-    ? Object.setPrototypeOf.bind()
-    : function _setPrototypeOf(o, p) {
-        o.__proto__ = p;
-        return o;
-      };
+  _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
+    o.__proto__ = p;
+    return o;
+  };
   return _setPrototypeOf(o, p);
 }
 
 function _inherits(subClass, superClass) {
-  if (typeof superClass !== 'function' && superClass !== null) {
-    throw new TypeError('Super expression must either be null or a function');
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
   }
   subClass.prototype = Object.create(superClass && superClass.prototype, {
     constructor: {
       value: subClass,
       writable: true,
-      configurable: true,
-    },
+      configurable: true
+    }
   });
-  Object.defineProperty(subClass, 'prototype', {
-    writable: false,
+  Object.defineProperty(subClass, "prototype", {
+    writable: false
   });
   if (superClass) _setPrototypeOf(subClass, superClass);
 }
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
-    throw new TypeError('Cannot call a class as a function');
+    throw new TypeError("Cannot call a class as a function");
   }
 }
 
 function toPrimitive(t, r) {
-  if ('object' != _typeof(t) || !t) return t;
+  if ("object" != _typeof(t) || !t) return t;
   var e = t[Symbol.toPrimitive];
   if (void 0 !== e) {
-    var i = e.call(t, r || 'default');
-    if ('object' != _typeof(i)) return i;
-    throw new TypeError('@@toPrimitive must return a primitive value.');
+    var i = e.call(t, r || "default");
+    if ("object" != _typeof(i)) return i;
+    throw new TypeError("@@toPrimitive must return a primitive value.");
   }
-  return ('string' === r ? String : Number)(t);
+  return ("string" === r ? String : Number)(t);
 }
 
 function toPropertyKey(t) {
-  var i = toPrimitive(t, 'string');
-  return 'symbol' == _typeof(i) ? i : String(i);
+  var i = toPrimitive(t, "string");
+  return "symbol" == _typeof(i) ? i : String(i);
 }
 
 function _defineProperties(target, props) {
@@ -134,36 +120,21 @@ function _defineProperties(target, props) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
     descriptor.configurable = true;
-    if ('value' in descriptor) descriptor.writable = true;
+    if ("value" in descriptor) descriptor.writable = true;
     Object.defineProperty(target, toPropertyKey(descriptor.key), descriptor);
   }
 }
 function _createClass(Constructor, protoProps, staticProps) {
   if (protoProps) _defineProperties(Constructor.prototype, protoProps);
   if (staticProps) _defineProperties(Constructor, staticProps);
-  Object.defineProperty(Constructor, 'prototype', {
-    writable: false,
+  Object.defineProperty(Constructor, "prototype", {
+    writable: false
   });
   return Constructor;
 }
 
-function _callSuper(t, o, e) {
-  return (
-    (o = _getPrototypeOf(o)),
-    _possibleConstructorReturn(
-      t,
-      _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)
-    )
-  );
-}
-function _isNativeReflectConstruct() {
-  try {
-    var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
-  } catch (t) {}
-  return (_isNativeReflectConstruct = function () {
-    return !!t;
-  })();
-}
+function _callSuper(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
+function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function () { return !!t; })(); }
 /*
  * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
  *
@@ -183,7 +154,7 @@ function _isNativeReflectConstruct() {
  */
 // eslint-disable-next-line
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-var Component = /*#__PURE__*/ (function () {
+var Component = /*#__PURE__*/function () {
   function Component(props, context) {
     _classCallCheck(this, Component);
     this.context = void 0;
@@ -194,32 +165,30 @@ var Component = /*#__PURE__*/ (function () {
     this.props = props;
     this.context = context;
   }
-  _createClass(Component, [
-    {
-      key: 'setState',
-      value: function setState(state, callback) {
-        {
-          console.error('Can not call `this.setState` in the constructor of class component, it will do nothing');
-        }
-      },
-    },
-  ]);
+  _createClass(Component, [{
+    key: "setState",
+    value: function setState(state, callback) {
+      {
+        console.error('Can not call `this.setState` in the constructor of class component, it will do nothing');
+      }
+    }
+  }]);
   return Component;
-})(); // 兼容三方件 react-lifecycles-compat，它会读取 isReactComponent 属性值，不添加会导致 eview-ui 官网白屏
+}(); // 兼容三方件 react-lifecycles-compat，它会读取 isReactComponent 属性值，不添加会导致 eview-ui 官网白屏
 Component.contextType = void 0;
 Component.prototype.isReactComponent = true;
 
 /**
  * 支持PureComponent
  */
-var PureComponent = /*#__PURE__*/ (function (_Component2) {
+var PureComponent = /*#__PURE__*/function (_Component2) {
   _inherits(PureComponent, _Component2);
   function PureComponent(props, context) {
     _classCallCheck(this, PureComponent);
     return _callSuper(this, PureComponent, [props, context]);
   }
   return _createClass(PureComponent);
-})(Component);
+}(Component);
 
 /*
  * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
@@ -238,7 +207,7 @@ var PureComponent = /*#__PURE__*/ (function (_Component2) {
 
 function createRef$1() {
   return {
-    current: null,
+    current: null
   };
 }
 
@@ -260,11 +229,7 @@ function createRef$1() {
 // 当条件不成立报错
 // 接收模板
 function throwIfTrue(condition, errTemplate) {
-  for (
-    var _len = arguments.length, errExpressions = new Array(_len > 2 ? _len - 2 : 0), _key = 2;
-    _key < _len;
-    _key++
-  ) {
+  for (var _len = arguments.length, errExpressions = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
     errExpressions[_key - 2] = arguments[_key];
   }
   if (condition) {
@@ -279,19 +244,17 @@ function throwIfTrue(condition, errTemplate) {
 }
 
 function _extends() {
-  _extends = Object.assign
-    ? Object.assign.bind()
-    : function (target) {
-        for (var i = 1; i < arguments.length; i++) {
-          var source = arguments[i];
-          for (var key in source) {
-            if (Object.prototype.hasOwnProperty.call(source, key)) {
-              target[key] = source[key];
-            }
-          }
+  _extends = Object.assign ? Object.assign.bind() : function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
         }
-        return target;
-      };
+      }
+    }
+    return target;
+  };
   return _extends.apply(this, arguments);
 }
 
@@ -302,7 +265,7 @@ function _defineProperty(obj, key, value) {
       value: value,
       enumerable: true,
       configurable: true,
-      writable: true,
+      writable: true
     });
   } else {
     obj[key] = value;
@@ -416,21 +379,21 @@ var LazyComponent = 'LazyComponent';
  * vNode结构的变化标志
  */
 
-var InitFlag = /**     */ 0;
+var InitFlag = /**     */0;
 // vNode节点的flags
-var DirectAddition = /**  */ 1 << 0; // 在本次更新前入股父dom没有子节点，说明本次可以直接添加至父节点，不需要通过 getSiblingDom 找到 before 节点
-var Addition = /**     */ 1 << 1;
-var Update = /**     */ 1 << 2;
-var Deletion = /**     */ 1 << 3;
-var ResetText = /**     */ 1 << 4;
-var Callback = /**     */ 1 << 5;
-var DidCapture = /**     */ 1 << 6;
-var Ref = /**     */ 1 << 7;
-var Snapshot = /**     */ 1 << 8;
-var Interrupted = /**     */ 1 << 9; // 被中断了，抛出错误的vNode以及它的父vNode
-var ShouldCapture = /**     */ 1 << 11;
-var ForceUpdate = /**     */ 1 << 12; // For suspense
-var Clear = /**     */ 1 << 13;
+var DirectAddition = /**  */1 << 0; // 在本次更新前入股父dom没有子节点，说明本次可以直接添加至父节点，不需要通过 getSiblingDom 找到 before 节点
+var Addition = /**     */1 << 1;
+var Update = /**     */1 << 2;
+var Deletion = /**     */1 << 3;
+var ResetText = /**     */1 << 4;
+var Callback = /**     */1 << 5;
+var DidCapture = /**     */1 << 6;
+var Ref = /**     */1 << 7;
+var Snapshot = /**     */1 << 8;
+var Interrupted = /**     */1 << 9; // 被中断了，抛出错误的vNode以及它的父vNode
+var ShouldCapture = /**     */1 << 11;
+var ForceUpdate = /**     */1 << 12; // For suspense
+var Clear = /**     */1 << 13;
 var LifecycleEffectArr = Update | Callback | Ref | Snapshot;
 var FlagUtils = {
   removeFlag: function (node, flag) {
@@ -490,11 +453,11 @@ var FlagUtils = {
   },
   markClear: function (node) {
     node.flags |= Clear;
-  },
+  }
 };
 
 var BELONG_CLASS_VNODE_KEY = typeof Symbol === 'function' ? Symbol('belongClassVNode') : 'belongClassVNode';
-var VNode = /*#__PURE__*/ _createClass(function VNode(tag, props, key, realNode) {
+var VNode = /*#__PURE__*/_createClass(function VNode(tag, props, key, realNode) {
   _classCallCheck(this, VNode);
   this.tag = void 0;
   this.key = void 0;
@@ -650,7 +613,7 @@ var VNode = /*#__PURE__*/ _createClass(function VNode(tag, props, key, realNode)
         didCapture: false,
         promiseResolved: false,
         oldChildStatus: '',
-        childStatus: '',
+        childStatus: ''
       };
       this.src = null;
       break;
@@ -681,26 +644,22 @@ var VNode = /*#__PURE__*/ _createClass(function VNode(tag, props, key, realNode)
  * props 其他常规属性
  */
 function JSXElement(type, key, ref, vNode, props, source) {
-  var ele = _defineProperty(
-    {
-      // 元素标识符
-      vtype: TYPE_COMMON_ELEMENT,
-      src: null,
-      // 属于元素的内置属性
-      type: type,
-      key: key,
-      ref: ref,
-      props: props,
-    },
-    BELONG_CLASS_VNODE_KEY,
-    vNode
-  );
+  var ele = _defineProperty({
+    // 元素标识符
+    vtype: TYPE_COMMON_ELEMENT,
+    src: null,
+    // 属于元素的内置属性
+    type: type,
+    key: key,
+    ref: ref,
+    props: props
+  }, BELONG_CLASS_VNODE_KEY, vNode);
   // 兼容IE11不支持Symbol
   if (typeof BELONG_CLASS_VNODE_KEY === 'string') {
     Object.defineProperty(ele, BELONG_CLASS_VNODE_KEY, {
       configurable: false,
       enumerable: false,
-      value: vNode,
+      value: vNode
     });
   }
   {
@@ -709,7 +668,7 @@ function JSXElement(type, key, ref, vNode, props, source) {
       configurable: false,
       enumerable: false,
       writable: false,
-      value: source,
+      value: source
     });
   }
   return ele;
@@ -752,7 +711,7 @@ function buildElement(isClone, type, setting, children) {
   if (setting !== null && setting !== void 0 && setting.__source) {
     src = {
       fileName: setting.__source.fileName,
-      lineNumber: setting.__source.lineNumber,
+      lineNumber: setting.__source.lineNumber
     };
   }
   return JSXElement(element, key, ref, vNode, props, src);
@@ -766,11 +725,7 @@ function createElement(type, setting) {
   return buildElement(false, type, setting, children);
 }
 function cloneElement(element, setting) {
-  for (
-    var _len2 = arguments.length, children = new Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2;
-    _key2 < _len2;
-    _key2++
-  ) {
+  for (var _len2 = arguments.length, children = new Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
     children[_key2 - 2] = arguments[_key2];
   }
   return buildElement(true, element, setting, children);
@@ -822,17 +777,9 @@ function callMapFun(children, arr, prefix, callback) {
     if (isValidElement(mappedChild)) {
       var childKey = prefix === '' ? getItemKey(children, 0) : '';
       var mappedKey = getItemKey(mappedChild, 0);
-      var newKey =
-        prefix + childKey + (mappedChild.key && mappedKey !== getItemKey(children, 0) ? '.$' + mappedChild.key : '');
+      var newKey = prefix + childKey + (mappedChild.key && mappedKey !== getItemKey(children, 0) ? '.$' + mappedChild.key : '');
       // 返回一个修改key的children
-      mappedChild = JSXElement(
-        mappedChild.type,
-        newKey,
-        mappedChild.ref,
-        mappedChild[BELONG_CLASS_VNODE_KEY],
-        mappedChild.props,
-        mappedChild.src
-      );
+      mappedChild = JSXElement(mappedChild.type, newKey, mappedChild.ref, mappedChild[BELONG_CLASS_VNODE_KEY], mappedChild.props, mappedChild.src);
     }
     arr.push(mappedChild);
   }
@@ -903,7 +850,7 @@ var Children = {
       return child;
     });
     return result;
-  },
+  }
 };
 
 /*
@@ -925,11 +872,11 @@ function createContext(val) {
     vtype: TYPE_CONTEXT,
     value: val,
     Provider: null,
-    Consumer: null,
+    Consumer: null
   };
   context.Provider = {
     vtype: TYPE_PROVIDER,
-    _context: context,
+    _context: context
   };
   context.Consumer = context;
   return context;
@@ -949,13 +896,13 @@ function createContext(val) {
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-var LayStatus = /*#__PURE__*/ (function (LayStatus) {
-  LayStatus['UnProcessed'] = 'UnProcessed';
-  LayStatus['Pending'] = 'Pending';
-  LayStatus['Fulfilled'] = 'Fulfilled';
-  LayStatus['Rejected'] = 'Rejected';
+var LayStatus = /*#__PURE__*/function (LayStatus) {
+  LayStatus["UnProcessed"] = "UnProcessed";
+  LayStatus["Pending"] = "Pending";
+  LayStatus["Fulfilled"] = "Fulfilled";
+  LayStatus["Rejected"] = "Rejected";
   return LayStatus;
-})(LayStatus || {});
+}(LayStatus || {});
 // lazyContent随着阶段改变，_value改变:
 // 1. 未初始化 -> promiseCtor: () => promise
 // 2. pending -> promise
@@ -967,21 +914,18 @@ function lazyLoader(lazyContent) {
     var promise = lazyContent._value();
     lazyContent._status = LayStatus.Pending;
     lazyContent._value = promise;
-    promise.then(
-      function (module) {
-        if (lazyContent._status === LayStatus.Pending) {
-          var defaultExport = module.default;
-          lazyContent._status = LayStatus.Fulfilled;
-          lazyContent._value = defaultExport;
-        }
-      },
-      function (error) {
-        if (lazyContent._status === LayStatus.Pending) {
-          lazyContent._status = LayStatus.Rejected;
-          lazyContent._value = error;
-        }
+    promise.then(function (module) {
+      if (lazyContent._status === LayStatus.Pending) {
+        var defaultExport = module.default;
+        lazyContent._status = LayStatus.Fulfilled;
+        lazyContent._value = defaultExport;
       }
-    );
+    }, function (error) {
+      if (lazyContent._status === LayStatus.Pending) {
+        lazyContent._status = LayStatus.Rejected;
+        lazyContent._value = error;
+      }
+    });
   }
   if (lazyContent._status === LayStatus.Fulfilled) {
     return lazyContent._value;
@@ -994,9 +938,9 @@ function lazy(promiseCtor) {
     vtype: TYPE_LAZY,
     _content: {
       _status: LayStatus.UnProcessed,
-      _value: promiseCtor,
+      _value: promiseCtor
     },
-    _load: lazyLoader,
+    _load: lazyLoader
   };
 }
 
@@ -1019,13 +963,13 @@ function forwardRef(render) {
     vtype: TYPE_FORWARD_REF,
     $$typeof: TYPE_FORWARD_REF,
     // 规避三方件hoist-non-react-statics中，通过$$typeof获取类型，但获取不到，导致render被覆盖
-    render: render,
+    render: render
   };
 
   // 控制vtype不能修改，规避三方件hoist-non-react-statics修改vtype导致问题
   Object.defineProperty(forwardRefJSXElement, 'vtype', {
     configurable: false,
-    writable: false,
+    writable: false
   });
   return forwardRefJSXElement;
 }
@@ -1050,13 +994,13 @@ function memo(type, compare) {
     $$typeof: TYPE_MEMO,
     // 规避三方件hoist-non-react-statics中，通过$$typeof获取类型，但获取不到，导致type被覆盖
     type: type,
-    compare: compare === undefined ? null : compare,
+    compare: compare === undefined ? null : compare
   };
 
   // 控制vtype不能修改，规避三方件hoist-non-react-statics修改vtype导致问题
   Object.defineProperty(memoJSXElement, 'vtype', {
     configurable: false,
-    writable: false,
+    writable: false
   });
   return memoJSXElement;
 }
@@ -1076,11 +1020,11 @@ function memo(type, compare) {
  * See the Mulan PSL v2 for more details.
  */
 var randomKey = Math.random().toString(16).slice(2);
-var INTERNAL_VNODE = '_inula_vNode_' + randomKey;
-var INTERNAL_PROPS = '_inula_props_' + randomKey;
-var INTERNAL_NONDELEGATEEVENTS = '_inula_nonDelegatedEvents_' + randomKey;
-var HANDLER_KEY = '_inula_valueChangeHandler_' + randomKey;
-var EVENT_KEY = '_inula_ev_' + randomKey;
+var INTERNAL_VNODE = "_inula_vNode_" + randomKey;
+var INTERNAL_PROPS = "_inula_props_" + randomKey;
+var INTERNAL_NONDELEGATEEVENTS = "_inula_nonDelegatedEvents_" + randomKey;
+var HANDLER_KEY = "_inula_valueChangeHandler_" + randomKey;
+var EVENT_KEY = "_inula_ev_" + randomKey;
 
 // 通过 VNode 实例获取 DOM 节点
 function getDom(vNode) {
@@ -1166,15 +1110,11 @@ function travelChildren(beginVNode, handleVNode, isFinish) {
 }
 
 // 从beginVNode开始深度遍历vNode树，对每个vNode调用handleVNode方法
-function travelVNodeTree(
-  beginVNode,
-  handleVNode,
-  childFilter,
-  // 返回true不处理child
-  finishVNode,
-  // 结束遍历节点，有时候和beginVNode不相同
-  handleWhenToParent
-) {
+function travelVNodeTree(beginVNode, handleVNode, childFilter,
+// 返回true不处理child
+finishVNode,
+// 结束遍历节点，有时候和beginVNode不相同
+handleWhenToParent) {
   var node = beginVNode;
   while (true) {
     var ret = handleVNode(node);
@@ -1263,18 +1203,12 @@ function isDomContainer(vNode) {
   return vNode.tag === DomComponent || vNode.tag === TreeRoot || vNode.tag === DomPortal;
 }
 function findDomVNode(vNode) {
-  var ret = travelVNodeTree(
-    vNode,
-    function (node) {
-      if (node.tag === DomComponent || node.tag === DomText) {
-        return node;
-      }
-      return null;
-    },
-    null,
-    vNode,
-    null
-  );
+  var ret = travelVNodeTree(vNode, function (node) {
+    if (node.tag === DomComponent || node.tag === DomText) {
+      return node;
+    }
+    return null;
+  }, null, vNode, null);
   return ret;
 }
 function findDOMByClassInst(inst) {
@@ -1488,7 +1422,7 @@ function getBiggerIdx(node) {
   var left = 0;
   var right = taskQueue.length - 1;
   while (left <= right) {
-    var middle = left + ((right - left) >> 1);
+    var middle = left + (right - left >> 1);
     if (compare(taskQueue[middle], node) > 0) {
       right = middle - 1;
     } else {
@@ -1553,7 +1487,7 @@ function callTasks() {
 
     // 循环执行task
     while (task !== null) {
-      if (isOverTime());
+      if (isOverTime()) ;
       var callback = task.callback;
       if (callback !== null) {
         task.callback = null;
@@ -1596,7 +1530,7 @@ function runAsync(callback) {
   var task = {
     id: idCounter++,
     callback: callback,
-    order: idCounter + increment,
+    order: idCounter + increment
   };
   add(task);
   if (!isWaiting && !isProcessing) {
@@ -1636,7 +1570,7 @@ function callRenderQueue$1() {
     isCallingRenderQueue = true;
     try {
       var callback;
-      while ((callback = renderQueue.shift())) {
+      while (callback = renderQueue.shift()) {
         callback();
       }
       renderQueue = null;
@@ -1691,22 +1625,14 @@ var PATH_DELIMITER = ',';
  * @param vNode
  */
 function markVNodePath(vNode) {
-  vNode.path = '' + vNode.parent.path + PATH_DELIMITER + vNode.cIndex;
+  vNode.path = "" + vNode.parent.path + PATH_DELIMITER + vNode.cIndex;
 }
 function getPathArr(vNode) {
   return vNode.path.split(PATH_DELIMITER);
 }
 
 var typeLazyMap = _defineProperty(_defineProperty({}, TYPE_FORWARD_REF, ForwardRef), TYPE_MEMO, MemoComponent);
-var typeMap = _extends(
-  {},
-  typeLazyMap,
-  _defineProperty(
-    _defineProperty(_defineProperty({}, TYPE_PROVIDER, ContextProvider), TYPE_CONTEXT, ContextConsumer),
-    TYPE_LAZY,
-    LazyComponent
-  )
-);
+var typeMap = _extends({}, typeLazyMap, _defineProperty(_defineProperty(_defineProperty({}, TYPE_PROVIDER, ContextProvider), TYPE_CONTEXT, ContextConsumer), TYPE_LAZY, LazyComponent));
 function newVirtualNode(tag, key, vNodeProps, realNode) {
   return new VNode(tag, vNodeProps, key, realNode);
 }
@@ -1715,11 +1641,7 @@ function isClassComponent(comp) {
   // 如果使用 getPrototypeOf 方法获取构造函数，不能兼容业务组组件继承组件的使用方式，会误认为是函数组件
   // 如果使用静态属性，部分函数高阶组件会将类组件的静态属性复制到自身，导致误判为类组件
   // 既然已经兼容使用了该标识符，那么继续使用
-  return (
-    ((_comp$prototype = comp.prototype) === null || _comp$prototype === void 0
-      ? void 0
-      : _comp$prototype.isReactComponent) === true
-  );
+  return ((_comp$prototype = comp.prototype) === null || _comp$prototype === void 0 ? void 0 : _comp$prototype.isReactComponent) === true;
 }
 
 // 解析懒组件的tag
@@ -1783,7 +1705,7 @@ function createUndeterminedVNode(type, key, props, source) {
     vNodeTag = typeMap[type.vtype];
     isLazy = type.vtype === TYPE_LAZY;
   } else {
-    throw Error('Component type is invalid, got: ' + (type === null || type === undefined ? type : componentType));
+    throw Error("Component type is invalid, got: " + (type === null || type === undefined ? type : componentType));
   }
   var vNode = newVirtualNode(vNodeTag, key, props);
   vNode.type = type;
@@ -1791,7 +1713,7 @@ function createUndeterminedVNode(type, key, props, source) {
   if (isLazy) {
     vNode.lazyType = type;
   }
-  vNode.src = source;
+  vNode.src = source ;
   return vNode;
 }
 function getElementTag(element) {
@@ -1896,7 +1818,7 @@ function onlyUpdateChildVNodes(processing) {
 var NSS = {
   html: 'http://www.w3.org/1999/xhtml',
   math: 'http://www.w3.org/1998/Math/MathML',
-  svg: 'http://www.w3.org/2000/svg',
+  svg: 'http://www.w3.org/2000/svg'
 };
 
 // 创建DOM元素
@@ -1934,9 +1856,7 @@ function createDom(tagName, parentNamespace, doc) {
 function getFocusedDom(doc) {
   var _currentDocument$acti;
   var currentDocument = doc !== null && doc !== void 0 ? doc : document;
-  return (_currentDocument$acti = currentDocument.activeElement) !== null && _currentDocument$acti !== void 0
-    ? _currentDocument$acti
-    : currentDocument.body;
+  return (_currentDocument$acti = currentDocument.activeElement) !== null && _currentDocument$acti !== void 0 ? _currentDocument$acti : currentDocument.body;
 }
 
 // 如果 input 或者 textarea 元素中有文字被选中时，activeElement 属性就会返回该元素
@@ -1949,11 +1869,7 @@ function getIFrameFocusedDom() {
     try {
       var _focusedDom$contentWi;
       // 访问 HTMLIframeElement 的 contentDocument 可能会导致浏览器抛出错误
-      if (
-        typeof ((_focusedDom$contentWi = focusedDom.contentWindow) === null || _focusedDom$contentWi === void 0
-          ? void 0
-          : _focusedDom$contentWi.location.href) === 'string'
-      ) {
+      if (typeof ((_focusedDom$contentWi = focusedDom.contentWindow) === null || _focusedDom$contentWi === void 0 ? void 0 : _focusedDom$contentWi.location.href) === 'string') {
         // iframe 的内容为同源
         focusedDom = getFocusedDom(focusedDom.contentWindow.document);
       } else {
@@ -2028,7 +1944,7 @@ function setSelectionRange(dom, range) {
 function getSelectionRange(dom) {
   var selectionRange = {
     start: 0,
-    end: 0,
+    end: 0
   };
   if (!dom) {
     return selectionRange;
@@ -2096,7 +2012,7 @@ function getSelectionInfo() {
   var focusedDom = getIFrameFocusedDom();
   return {
     focusedDom: focusedDom,
-    selectionRange: hasSelectionProperties(focusedDom) ? getSelectionRange(focusedDom) : null,
+    selectionRange: hasSelectionProperties(focusedDom) ? getSelectionRange(focusedDom) : null
   };
 }
 // 防止选择范围内的信息因为节点删除或其他原因导致的信息丢失
@@ -2105,15 +2021,13 @@ function resetSelectionRange(preSelectionRangeData) {
   var currentFocusedDom = getIFrameFocusedDom();
 
   // 先前 focus 的元素
-  var preFocusedDom =
-    preSelectionRangeData === null || preSelectionRangeData === void 0 ? void 0 : preSelectionRangeData.focusedDom;
+  var preFocusedDom = preSelectionRangeData === null || preSelectionRangeData === void 0 ? void 0 : preSelectionRangeData.focusedDom;
   if (!preFocusedDom) {
     return;
   }
 
   // 先前的选择范围信息
-  var preSelectionRange =
-    preSelectionRangeData === null || preSelectionRangeData === void 0 ? void 0 : preSelectionRangeData.selectionRange;
+  var preSelectionRange = preSelectionRangeData === null || preSelectionRangeData === void 0 ? void 0 : preSelectionRangeData.selectionRange;
   if (currentFocusedDom !== preFocusedDom && isInDocument(preFocusedDom)) {
     if (preSelectionRange !== null) {
       setSelectionRange(preFocusedDom, preSelectionRange);
@@ -2132,7 +2046,7 @@ function resetSelectionRange(preSelectionRangeData) {
         ancestors.push({
           dom: ancestor,
           scrollLeft: scrollLeft,
-          scrollTop: scrollTop,
+          scrollTop: scrollTop
         });
       }
       ancestor = ancestor.parentNode;
@@ -2168,22 +2082,7 @@ function resetSelectionRange(preSelectionRangeData) {
 /**
  * 不需要加长度单位的 css 属性
  */
-var noUnitCSS = [
-  'animationIterationCount',
-  'columnCount',
-  'columns',
-  'gridArea',
-  'fontWeight',
-  'lineClamp',
-  'lineHeight',
-  'opacity',
-  'order',
-  'orphans',
-  'tabSize',
-  'widows',
-  'zIndex',
-  'zoom',
-];
+var noUnitCSS = ['animationIterationCount', 'columnCount', 'columns', 'gridArea', 'fontWeight', 'lineClamp', 'lineHeight', 'opacity', 'order', 'orphans', 'tabSize', 'widows', 'zIndex', 'zoom'];
 var length = noUnitCSS.length;
 for (var i = 0; i < length; i++) {
   var cssKey = noUnitCSS[i];
@@ -2195,16 +2094,7 @@ for (var i = 0; i < length; i++) {
   noUnitCSS.push('Moz' + attributeKey);
 }
 function isNeedUnitCSS(styleName) {
-  return !(
-    noUnitCSS.includes(styleName) ||
-    styleName.startsWith('borderImage') ||
-    styleName.startsWith('flex') ||
-    styleName.startsWith('gridRow') ||
-    styleName.startsWith('gridColumn') ||
-    styleName.startsWith('stroke') ||
-    styleName.startsWith('box') ||
-    styleName.endsWith('Opacity')
-  );
+  return !(noUnitCSS.includes(styleName) || styleName.startsWith('borderImage') || styleName.startsWith('flex') || styleName.startsWith('gridRow') || styleName.startsWith('gridColumn') || styleName.startsWith('stroke') || styleName.startsWith('box') || styleName.endsWith('Opacity'));
 }
 
 /**
@@ -2215,7 +2105,7 @@ function isNeedUnitCSS(styleName) {
 function adjustStyleValue(name, value) {
   var validValue = value;
   if (typeof value === 'number' && value !== 0 && isNeedUnitCSS(name)) {
-    validValue = value + 'px';
+    validValue = value + "px";
   } else if (value === '' || value === null || value === undefined || typeof value === 'boolean') {
     validValue = '';
   }
@@ -2260,89 +2150,40 @@ function setStyles(dom, styles) {
 /* eslint-disable no-sparse-arrays */
 
 // 属性值的数据类型
-var PROPERTY_TYPE = /*#__PURE__*/ (function (PROPERTY_TYPE) {
-  PROPERTY_TYPE[(PROPERTY_TYPE['BOOLEAN'] = 0)] = 'BOOLEAN';
-  PROPERTY_TYPE[(PROPERTY_TYPE['STRING'] = 1)] = 'STRING';
-  PROPERTY_TYPE[(PROPERTY_TYPE['SPECIAL'] = 2)] = 'SPECIAL';
-  PROPERTY_TYPE[(PROPERTY_TYPE['BOOLEAN_STR'] = 3)] = 'BOOLEAN_STR';
+var PROPERTY_TYPE = /*#__PURE__*/function (PROPERTY_TYPE) {
+  PROPERTY_TYPE[PROPERTY_TYPE["BOOLEAN"] = 0] = "BOOLEAN";
+  PROPERTY_TYPE[PROPERTY_TYPE["STRING"] = 1] = "STRING";
+  PROPERTY_TYPE[PROPERTY_TYPE["SPECIAL"] = 2] = "SPECIAL";
+  PROPERTY_TYPE[PROPERTY_TYPE["BOOLEAN_STR"] = 3] = "BOOLEAN_STR";
   return PROPERTY_TYPE;
-})({}); // 字符串类型的 true false
+}({}); // 字符串类型的 true false
 // 属性相关数据
 // 依次为 propertyName、type、attributeName、attributeNamespace，不填则使用默认值
 // type 默认 STRING
 // attributeName 默认与 propertyName 相同
 // attributeNamespace 默认 null
 var propertiesData = [
-  // 一些特殊属性
-  ['children', PROPERTY_TYPE.SPECIAL],
-  ['dangerouslySetInnerHTML', PROPERTY_TYPE.SPECIAL],
-  ['defaultValue', PROPERTY_TYPE.SPECIAL],
-  ['defaultChecked', PROPERTY_TYPE.SPECIAL],
-  ['innerHTML', PROPERTY_TYPE.SPECIAL],
-  ['style', PROPERTY_TYPE.SPECIAL],
-  // propertyName 和 attributeName 不一样
-  ['acceptCharset', , 'accept-charset'],
-  ['className', , 'class'],
-  ['htmlFor', , 'for'],
-  ['httpEquiv', , 'http-equiv'],
-  // 字符串类型的 true false
-  ['contentEditable', PROPERTY_TYPE.BOOLEAN_STR, 'contenteditable'],
-  ['spellCheck', PROPERTY_TYPE.BOOLEAN_STR, 'spellcheck'],
-  ['draggable', PROPERTY_TYPE.BOOLEAN_STR],
-  ['value', PROPERTY_TYPE.BOOLEAN_STR],
-  // SVG 相关，字符串类型的 true false
-  ['autoReverse', PROPERTY_TYPE.BOOLEAN_STR],
-  ['externalResourcesRequired', PROPERTY_TYPE.BOOLEAN_STR],
-  ['focusable', PROPERTY_TYPE.BOOLEAN_STR],
-  ['preserveAlpha', PROPERTY_TYPE.BOOLEAN_STR],
-  // 布尔类型
-  ['allowFullScreen', PROPERTY_TYPE.BOOLEAN, 'allowfullscreen'],
-  ['async', PROPERTY_TYPE.BOOLEAN],
-  ['autoFocus', PROPERTY_TYPE.BOOLEAN, 'autofocus'],
-  ['autoPlay', PROPERTY_TYPE.BOOLEAN, 'autoplay'],
-  ['controls', PROPERTY_TYPE.BOOLEAN],
-  ['default', PROPERTY_TYPE.BOOLEAN],
-  ['defer', PROPERTY_TYPE.BOOLEAN],
-  ['disabled', PROPERTY_TYPE.BOOLEAN],
-  ['disablePictureInPicture', PROPERTY_TYPE.BOOLEAN, 'disablepictureinpicture'],
-  ['disableRemotePlayback', PROPERTY_TYPE.BOOLEAN, 'disableremoteplayback'],
-  ['formNoValidate', PROPERTY_TYPE.BOOLEAN, 'formnovalidate'],
-  ['hidden', PROPERTY_TYPE.BOOLEAN],
-  ['loop', PROPERTY_TYPE.BOOLEAN],
-  ['noModule', PROPERTY_TYPE.BOOLEAN, 'nomodule'],
-  ['noValidate', PROPERTY_TYPE.BOOLEAN, 'novalidate'],
-  ['open', PROPERTY_TYPE.BOOLEAN],
-  ['playsInline', PROPERTY_TYPE.BOOLEAN, 'playsinline'],
-  ['readOnly', PROPERTY_TYPE.BOOLEAN, 'readonly'],
-  ['required', PROPERTY_TYPE.BOOLEAN],
-  ['reversed', PROPERTY_TYPE.BOOLEAN],
-  ['scoped', PROPERTY_TYPE.BOOLEAN],
-  ['seamless', PROPERTY_TYPE.BOOLEAN],
-  ['itemScope', PROPERTY_TYPE.BOOLEAN, 'itemscope'],
-  // 框架需要当做 property 来处理的，而不是 attribute 来处理的属性
-  ['checked', PROPERTY_TYPE.BOOLEAN],
-  ['multiple', PROPERTY_TYPE.BOOLEAN],
-  ['muted', PROPERTY_TYPE.BOOLEAN],
-  ['selected', PROPERTY_TYPE.BOOLEAN],
-  // SVG 属性
-  // xlink namespace 的 SVG 属性
-  ['xlinkActuate', , 'xlink:actuate', 'http://www.w3.org/1999/xlink'],
-  ['xlinkArcrole', , 'xlink:arcrole', 'http://www.w3.org/1999/xlink'],
-  ['xlinkRole', , 'xlink:role', 'http://www.w3.org/1999/xlink'],
-  ['xlinkShow', , 'xlink:show', 'http://www.w3.org/1999/xlink'],
-  ['xlinkTitle', , 'xlink:title', 'http://www.w3.org/1999/xlink'],
-  ['xlinkType', , 'xlink:type', 'http://www.w3.org/1999/xlink'],
-  // xml namespace 的 SVG 属性
-  ['xmlBase', , 'xml:base', 'http://www.w3.org/XML/1998/namespace'],
-  ['xmlLang', , 'xml:lang', 'http://www.w3.org/XML/1998/namespace'],
-  ['xmlSpace', , 'xml:space', 'http://www.w3.org/XML/1998/namespace'],
-  // HTML and SVG 中都有的属性，大小写敏感
-  ['tabIndex', , 'tabindex'],
-  ['crossOrigin', , 'crossorigin'],
-  // 接受 URL 的属性
-  ['xlinkHref', , 'xlink:href', 'http://www.w3.org/1999/xlink'],
-  ['formAction', , 'formaction'],
-];
+// 一些特殊属性
+['children', PROPERTY_TYPE.SPECIAL], ['dangerouslySetInnerHTML', PROPERTY_TYPE.SPECIAL], ['defaultValue', PROPERTY_TYPE.SPECIAL], ['defaultChecked', PROPERTY_TYPE.SPECIAL], ['innerHTML', PROPERTY_TYPE.SPECIAL], ['style', PROPERTY_TYPE.SPECIAL],
+// propertyName 和 attributeName 不一样
+['acceptCharset',, 'accept-charset'], ['className',, 'class'], ['htmlFor',, 'for'], ['httpEquiv',, 'http-equiv'],
+// 字符串类型的 true false
+['contentEditable', PROPERTY_TYPE.BOOLEAN_STR, 'contenteditable'], ['spellCheck', PROPERTY_TYPE.BOOLEAN_STR, 'spellcheck'], ['draggable', PROPERTY_TYPE.BOOLEAN_STR], ['value', PROPERTY_TYPE.BOOLEAN_STR],
+// SVG 相关，字符串类型的 true false
+['autoReverse', PROPERTY_TYPE.BOOLEAN_STR], ['externalResourcesRequired', PROPERTY_TYPE.BOOLEAN_STR], ['focusable', PROPERTY_TYPE.BOOLEAN_STR], ['preserveAlpha', PROPERTY_TYPE.BOOLEAN_STR],
+// 布尔类型
+['allowFullScreen', PROPERTY_TYPE.BOOLEAN, 'allowfullscreen'], ['async', PROPERTY_TYPE.BOOLEAN], ['autoFocus', PROPERTY_TYPE.BOOLEAN, 'autofocus'], ['autoPlay', PROPERTY_TYPE.BOOLEAN, 'autoplay'], ['controls', PROPERTY_TYPE.BOOLEAN], ['default', PROPERTY_TYPE.BOOLEAN], ['defer', PROPERTY_TYPE.BOOLEAN], ['disabled', PROPERTY_TYPE.BOOLEAN], ['disablePictureInPicture', PROPERTY_TYPE.BOOLEAN, 'disablepictureinpicture'], ['disableRemotePlayback', PROPERTY_TYPE.BOOLEAN, 'disableremoteplayback'], ['formNoValidate', PROPERTY_TYPE.BOOLEAN, 'formnovalidate'], ['hidden', PROPERTY_TYPE.BOOLEAN], ['loop', PROPERTY_TYPE.BOOLEAN], ['noModule', PROPERTY_TYPE.BOOLEAN, 'nomodule'], ['noValidate', PROPERTY_TYPE.BOOLEAN, 'novalidate'], ['open', PROPERTY_TYPE.BOOLEAN], ['playsInline', PROPERTY_TYPE.BOOLEAN, 'playsinline'], ['readOnly', PROPERTY_TYPE.BOOLEAN, 'readonly'], ['required', PROPERTY_TYPE.BOOLEAN], ['reversed', PROPERTY_TYPE.BOOLEAN], ['scoped', PROPERTY_TYPE.BOOLEAN], ['seamless', PROPERTY_TYPE.BOOLEAN], ['itemScope', PROPERTY_TYPE.BOOLEAN, 'itemscope'],
+// 框架需要当做 property 来处理的，而不是 attribute 来处理的属性
+['checked', PROPERTY_TYPE.BOOLEAN], ['multiple', PROPERTY_TYPE.BOOLEAN], ['muted', PROPERTY_TYPE.BOOLEAN], ['selected', PROPERTY_TYPE.BOOLEAN],
+// SVG 属性
+// xlink namespace 的 SVG 属性
+['xlinkActuate',, 'xlink:actuate', 'http://www.w3.org/1999/xlink'], ['xlinkArcrole',, 'xlink:arcrole', 'http://www.w3.org/1999/xlink'], ['xlinkRole',, 'xlink:role', 'http://www.w3.org/1999/xlink'], ['xlinkShow',, 'xlink:show', 'http://www.w3.org/1999/xlink'], ['xlinkTitle',, 'xlink:title', 'http://www.w3.org/1999/xlink'], ['xlinkType',, 'xlink:type', 'http://www.w3.org/1999/xlink'],
+// xml namespace 的 SVG 属性
+['xmlBase',, 'xml:base', 'http://www.w3.org/XML/1998/namespace'], ['xmlLang',, 'xml:lang', 'http://www.w3.org/XML/1998/namespace'], ['xmlSpace',, 'xml:space', 'http://www.w3.org/XML/1998/namespace'],
+// HTML and SVG 中都有的属性，大小写敏感
+['tabIndex',, 'tabindex'], ['crossOrigin',, 'crossorigin'],
+// 接受 URL 的属性
+['xlinkHref',, 'xlink:href', 'http://www.w3.org/1999/xlink'], ['formAction',, 'formaction']];
 var propsDetailData = {};
 propertiesData.forEach(function (record) {
   var propName = record[0];
@@ -2363,7 +2204,7 @@ propertiesData.forEach(function (record) {
     propName: propName,
     type: type,
     attrName: attrName,
-    attrNS: attrNS,
+    attrNS: attrNS
   };
 });
 function getPropDetails(name) {
@@ -2385,24 +2226,7 @@ function getPropDetails(name) {
  * See the Mulan PSL v2 for more details.
  */
 var INVALID_EVENT_NAME_REGEX = /^on[^A-Z]/;
-var voidTagElements = [
-  'area',
-  'base',
-  'br',
-  'col',
-  'embed',
-  'hr',
-  'img',
-  'input',
-  'keygen',
-  'link',
-  'meta',
-  'param',
-  'source',
-  'track',
-  'wbr',
-  'menuitem',
-];
+var voidTagElements = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr', 'menuitem'];
 
 // 是内置元素
 function isNativeElement(tagName, props) {
@@ -2416,7 +2240,7 @@ function isInvalidBoolean(attributeName, value, propDetails) {
   // 布尔值校验
   if (typeof value === 'boolean') {
     var isBooleanType = propDetails.type === PROPERTY_TYPE.BOOLEAN_STR || propDetails.type === PROPERTY_TYPE.BOOLEAN;
-    if (isBooleanType || (attributeName.startsWith('data-') && attributeName.startsWith('aria-'))) {
+    if (isBooleanType || attributeName.startsWith('data-') && attributeName.startsWith('aria-')) {
       return false;
     }
 
@@ -2495,11 +2319,9 @@ function validateProps(type, props) {
     var invalidProps = Object.keys(props).filter(function (key) {
       return !isValidProp(type, key, props[key]);
     });
-    var propString = invalidProps
-      .map(function (prop) {
-        return '`' + prop + '`';
-      })
-      .join(', ');
+    var propString = invalidProps.map(function (prop) {
+      return '`' + prop + '`';
+    }).join(', ');
     if (invalidProps.length >= 1) {
       console.error('Invalid value for prop %s on <%s> tag.', propString, type);
     }
@@ -2523,78 +2345,14 @@ function validateProps(type, props) {
 
 // 不需要装换的svg属性集合
 var svgHumpAttr = new Set();
-[
-  'allowReorder',
-  'autoReverse',
-  'baseFrequency',
-  'baseProfile',
-  'calcMode',
-  'clipPathUnits',
-  'contentScriptType',
-  'contentStyleType',
-  'diffuseConstant',
-  'edgeMode',
-  'externalResourcesRequired',
-  'filterRes',
-  'filterUnits',
-  'glyphRef',
-  'gradientTransform',
-  'gradientUnits',
-  'kernelMatrix',
-  'kernelUnitLength',
-  'keyPoints',
-  'keySplines',
-  'keyTimes',
-  'lengthAdjust',
-  'limitingConeAngle',
-  'markerHeight',
-  'markerUnits',
-  'markerWidth',
-  'maskContentUnits',
-  'maskUnits',
-  'numOctaves',
-  'pathLength',
-  'patternContentUnits',
-  'patternTransform,',
-  'patternUnits',
-  'pointsAtX',
-  'pointsAtY',
-  'pointsAtZ',
-  'preserveAlpha',
-  'preserveAspectRatio',
-  'primitiveUnits',
-  'referrerPolicy',
-  'refX',
-  'refY',
-  'repeatCount',
-  'repeatDur',
-  'requiredExtensions',
-  'requiredFeatures',
-  'specularConstant',
-  'specularExponent',
-  'spreadMethod',
-  'startOffset',
-  'stdDeviation',
-  'stitchTiles',
-  'surfaceScale',
-  'systemLanguage',
-  'tableValues',
-  'targetX',
-  'targetY',
-  'textLength',
-  'viewBox',
-  'viewTarget',
-  'xChannelSelector',
-  'yChannelSelector',
-  'zoomAndPan',
-].forEach(function (name) {
+['allowReorder', 'autoReverse', 'baseFrequency', 'baseProfile', 'calcMode', 'clipPathUnits', 'contentScriptType', 'contentStyleType', 'diffuseConstant', 'edgeMode', 'externalResourcesRequired', 'filterRes', 'filterUnits', 'glyphRef', 'gradientTransform', 'gradientUnits', 'kernelMatrix', 'kernelUnitLength', 'keyPoints', 'keySplines', 'keyTimes', 'lengthAdjust', 'limitingConeAngle', 'markerHeight', 'markerUnits', 'markerWidth', 'maskContentUnits', 'maskUnits', 'numOctaves', 'pathLength', 'patternContentUnits', 'patternTransform,', 'patternUnits', 'pointsAtX', 'pointsAtY', 'pointsAtZ', 'preserveAlpha', 'preserveAspectRatio', 'primitiveUnits', 'referrerPolicy', 'refX', 'refY', 'repeatCount', 'repeatDur', 'requiredExtensions', 'requiredFeatures', 'specularConstant', 'specularExponent', 'spreadMethod', 'startOffset', 'stdDeviation', 'stitchTiles', 'surfaceScale', 'systemLanguage', 'tableValues', 'targetX', 'targetY', 'textLength', 'viewBox', 'viewTarget', 'xChannelSelector', 'yChannelSelector', 'zoomAndPan'].forEach(function (name) {
   return svgHumpAttr.add(name);
 });
 
 // 驼峰 变 “-”
 function convertToLowerCase(str) {
   var replacer = function (match, char) {
-    return '-' + char.toLowerCase();
+    return "-" + char.toLowerCase();
   };
   return str.replace(/([A-Z])/g, replacer);
 }
@@ -2665,7 +2423,7 @@ function getInitValue$1(dom, props) {
   var initChecked = checked != null ? checked : defaultChecked;
   return {
     initValue: initValue,
-    initChecked: initChecked,
+    initChecked: initChecked
   };
 }
 function getInputPropsWithoutValue(dom, props) {
@@ -2678,7 +2436,7 @@ function getInputPropsWithoutValue(dom, props) {
     value: undefined,
     defaultValue: undefined,
     defaultChecked: undefined,
-    checked: checked,
+    checked: checked
   });
 }
 function updateInputValue(dom, props) {
@@ -2723,7 +2481,7 @@ function concatChildren(children) {
 function getOptionPropsWithoutValue(dom, props) {
   var content = concatChildren(props.children);
   return _extends({}, props, {
-    children: content || undefined, // 覆盖children
+    children: content || undefined // 覆盖children
   });
 }
 
@@ -2779,7 +2537,7 @@ function updateValue$1(options, newValues, isMultiple) {
 }
 function getSelectPropsWithoutValue(dom, properties) {
   return _extends({}, properties, {
-    value: undefined,
+    value: undefined
   });
 }
 function updateSelectValue(dom, props) {
@@ -2848,7 +2606,7 @@ function getInitValue(props) {
 }
 function getTextareaPropsWithoutValue(dom, properties) {
   return _extends({}, properties, {
-    value: undefined,
+    value: undefined
   });
 }
 function updateTextareaValue(dom, props) {
@@ -2964,42 +2722,7 @@ var portalDefaultDelegatedEvents = ['onMouseDown', 'onMouseUp', 'onKeyDown', 'on
 var allDelegatedNativeEvents = new Set();
 
 // Inula事件和原生事件对应关系
-var inulaEventToNativeMap = new Map([
-  ['onKeyPress', ['keypress']],
-  ['onTextInput', ['textInput']],
-  ['onClick', ['click']],
-  ['onDoubleClick', ['dblclick']],
-  ['onFocus', ['focusin']],
-  ['onBlur', ['focusout']],
-  ['onInput', ['input']],
-  ['onWheel', ['wheel']],
-  ['onMouseOut', ['mouseout']],
-  ['onMouseOver', ['mouseover']],
-  ['onPointerOut', ['pointerout']],
-  ['onPointerOver', ['pointerover']],
-  ['onContextMenu', ['contextmenu']],
-  ['onDragEnd', ['dragend']],
-  ['onKeyDown', ['keydown']],
-  ['onKeyUp', ['keyup']],
-  ['onMouseDown', ['mousedown']],
-  ['onMouseMove', ['mousemove']],
-  ['onMouseUp', ['mouseup']],
-  ['onSelectChange', ['selectionchange']],
-  ['onTouchEnd', ['touchend']],
-  ['onTouchMove', ['touchmove']],
-  ['onTouchStart', ['touchstart']],
-  ['onCompositionEnd', ['compositionend']],
-  ['onCompositionStart', ['compositionstart']],
-  ['onCompositionUpdate', ['compositionupdate']],
-  ['onChange', ['change', 'click', 'focusout', 'input']],
-  ['onSelect', ['select']],
-  ['onMouseEnter', ['mouseout', 'mouseover']],
-  ['onMouseLeave', ['mouseout', 'mouseover']],
-  ['onAnimationEnd', ['animationend']],
-  ['onAnimationIteration', ['animationiteration']],
-  ['onAnimationStart', ['animationstart']],
-  ['onTransitionEnd', ['transitionend']],
-]);
+var inulaEventToNativeMap = new Map([['onKeyPress', ['keypress']], ['onTextInput', ['textInput']], ['onClick', ['click']], ['onDoubleClick', ['dblclick']], ['onFocus', ['focusin']], ['onBlur', ['focusout']], ['onInput', ['input']], ['onWheel', ['wheel']], ['onMouseOut', ['mouseout']], ['onMouseOver', ['mouseover']], ['onPointerOut', ['pointerout']], ['onPointerOver', ['pointerover']], ['onContextMenu', ['contextmenu']], ['onDragEnd', ['dragend']], ['onKeyDown', ['keydown']], ['onKeyUp', ['keyup']], ['onMouseDown', ['mousedown']], ['onMouseMove', ['mousemove']], ['onMouseUp', ['mouseup']], ['onSelectChange', ['selectionchange']], ['onTouchEnd', ['touchend']], ['onTouchMove', ['touchmove']], ['onTouchStart', ['touchstart']], ['onCompositionEnd', ['compositionend']], ['onCompositionStart', ['compositionstart']], ['onCompositionUpdate', ['compositionupdate']], ['onChange', ['change', 'click', 'focusout', 'input']], ['onSelect', ['select']], ['onMouseEnter', ['mouseout', 'mouseover']], ['onMouseLeave', ['mouseout', 'mouseover']], ['onAnimationEnd', ['animationend']], ['onAnimationIteration', ['animationiteration']], ['onAnimationStart', ['animationstart']], ['onTransitionEnd', ['transitionend']]]);
 var NativeEventToInulaMap = {
   click: 'click',
   wheel: 'wheel',
@@ -3032,7 +2755,7 @@ var NativeEventToInulaMap = {
   transitionend: 'transitionEnd',
   compositionstart: 'compositionStart',
   compositionend: 'compositionEnd',
-  compositionupdate: 'compositionUpdate',
+  compositionupdate: 'compositionUpdate'
 };
 var EVENT_TYPE_BUBBLE = 'Bubble';
 var EVENT_TYPE_CAPTURE = 'Capture';
@@ -3047,7 +2770,7 @@ inulaEventToNativeMap.forEach(function (dependencies, inulaEvent) {
 function transformToInulaEvent(nativeEvtName) {
   var name = NativeEventToInulaMap[nativeEvtName];
   // 例：dragEnd -> onDragEnd
-  return !name ? '' : 'on' + name[0].toUpperCase() + name.slice(1);
+  return !name ? '' : "on" + name[0].toUpperCase() + name.slice(1);
 }
 
 /*
@@ -3071,7 +2794,7 @@ function setPropertyWritable(obj, propName) {
   var desc = Object.getOwnPropertyDescriptor(obj, propName);
   if (!desc || !desc.writable) {
     Object.defineProperty(obj, propName, {
-      writable: true,
+      writable: true
     });
   }
 }
@@ -3113,19 +2836,11 @@ function getNearestMountedVNode(vNode) {
 
 // 兼容IE的event key
 
-var uniqueKeyMap = new Map([
-  ['Esc', 'Escape'],
-  ['Spacebar', ' '],
-  ['Left', 'ArrowLeft'],
-  ['Up', 'ArrowUp'],
-  ['Right', 'ArrowRight'],
-  ['Down', 'ArrowDown'],
-  ['Del', 'Delete'],
-]);
+var uniqueKeyMap = new Map([['Esc', 'Escape'], ['Spacebar', ' '], ['Left', 'ArrowLeft'], ['Up', 'ArrowUp'], ['Right', 'ArrowRight'], ['Down', 'ArrowDown'], ['Del', 'Delete']]);
 var noop = function () {};
 
 // 兼容IE浏览器，无法修改Event属性
-var WrappedEvent = /*#__PURE__*/ (function () {
+var WrappedEvent = /*#__PURE__*/function () {
   function WrappedEvent(customEventName, nativeEvtName, nativeEvent) {
     var _this = this,
       _key;
@@ -3182,16 +2897,14 @@ var WrappedEvent = /*#__PURE__*/ (function () {
     var orgKey = (_key = nativeEvent.key) !== null && _key !== void 0 ? _key : '';
     this.key = uniqueKeyMap.get(orgKey) || orgKey;
   }
-  _createClass(WrappedEvent, [
-    {
-      key: 'isDefaultPrevented',
-      value: function isDefaultPrevented() {
-        return this.nativeEvent.defaultPrevented;
-      },
-    },
-  ]);
+  _createClass(WrappedEvent, [{
+    key: "isDefaultPrevented",
+    value: function isDefaultPrevented() {
+      return this.nativeEvent.defaultPrevented;
+    }
+  }]);
   return WrappedEvent;
-})();
+}();
 
 // 创建普通自定义事件对象实例，和原生事件对应
 function decorateNativeEvent(customEventName, nativeEvtName, nativeEvent) {
@@ -3251,7 +2964,7 @@ function getListenersFromTree(targetVNode, inulaEvtName, nativeEvent, eventType)
             vNode: vNode,
             listener: captureListener,
             currentTarget: realNode,
-            event: nativeEvent,
+            event: nativeEvent
           });
         }
       }
@@ -3262,7 +2975,7 @@ function getListenersFromTree(targetVNode, inulaEvtName, nativeEvent, eventType)
             vNode: vNode,
             listener: bubbleListener,
             currentTarget: realNode,
-            event: nativeEvent,
+            event: nativeEvent
           });
         }
       }
@@ -3316,7 +3029,7 @@ function getMouseListenersFromTree(event, target, commonParent) {
           vNode: vNode,
           listener: listener,
           currentTarget: currentTarget,
-          event: event,
+          event: event
         });
       }
     }
@@ -3362,11 +3075,7 @@ var BySync = 'BY_SYNC';
 var InRender = 'IN_RENDER';
 var InEvent = 'IN_EVENT';
 // 当前执行模式标记
-var executeMode = _defineProperty(
-  _defineProperty(_defineProperty(_defineProperty({}, ByAsync, false), BySync, false), InRender, false),
-  InEvent,
-  false
-);
+var executeMode = _defineProperty(_defineProperty(_defineProperty(_defineProperty({}, ByAsync, false), BySync, false), InRender, false), InEvent, false);
 function changeMode(mode) {
   var state = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
   executeMode[mode] = state;
@@ -3405,7 +3114,7 @@ var EffectConstant = {
   // dependence发生了改变
   LayoutEffect: 2,
   // 同步触发的effect
-  Effect: 4, // 异步触发的effect
+  Effect: 4 // 异步触发的effect
 };
 
 /*
@@ -3475,10 +3184,7 @@ function callUseEffects(vNode) {
   if (effectList !== null) {
     effectList.forEach(function (effect) {
       var effectConstant = effect.effectConstant;
-      if (
-        (effectConstant & EffectConstant.Effect) !== EffectConstant.NoEffect &&
-        (effectConstant & EffectConstant.DepsChange) !== EffectConstant.NoEffect
-      ) {
+      if ((effectConstant & EffectConstant.Effect) !== EffectConstant.NoEffect && (effectConstant & EffectConstant.DepsChange) !== EffectConstant.NoEffect) {
         hookEffects.push(effect);
         hookRemoveEffects.push(effect);
 
@@ -3547,13 +3253,13 @@ function callUseLayoutEffectCreate(vNode) {
   }
 }
 
-var UpdateState = /*#__PURE__*/ (function (UpdateState) {
-  UpdateState['Update'] = 'Update';
-  UpdateState['Override'] = 'Override';
-  UpdateState['ForceUpdate'] = 'ForceUpdate';
-  UpdateState['Error'] = 'Error';
+var UpdateState = /*#__PURE__*/function (UpdateState) {
+  UpdateState["Update"] = "Update";
+  UpdateState["Override"] = "Override";
+  UpdateState["ForceUpdate"] = "ForceUpdate";
+  UpdateState["Error"] = "Error";
   return UpdateState;
-})({});
+}({});
 
 // 创建update对象
 function newUpdate() {
@@ -3562,7 +3268,7 @@ function newUpdate() {
     // 更新的类型
     content: null,
     // ClassComponent的content是setState第一个参数，TreeRoot的content是InulaDOM.render的第一个参数
-    callback: null, // setState的第二个参数，InulaDOM.render的第三个参数
+    callback: null // setState的第二个参数，InulaDOM.render的第三个参数
   };
 }
 
@@ -3612,12 +3318,10 @@ function collectCallbacks(vNode, update) {
 // 遍历处理updates, 更新vNode的state
 function calcUpdates(vNode, props, inst, toProcessUpdates) {
   var newState = vNode.state;
-  toProcessUpdates === null || toProcessUpdates === void 0
-    ? void 0
-    : toProcessUpdates.forEach(function (update) {
-        newState = calcState(vNode, update, inst, newState, props);
-        collectCallbacks(vNode, update);
-      });
+  toProcessUpdates === null || toProcessUpdates === void 0 ? void 0 : toProcessUpdates.forEach(function (update) {
+    newState = calcState(vNode, update, inst, newState, props);
+    collectCallbacks(vNode, update);
+  });
   vNode.shouldUpdate = false;
   vNode.state = newState;
 }
@@ -3660,7 +3364,7 @@ function createPortal(children, realNode) {
     vtype: TYPE_PORTAL,
     key: key == '' ? '' : '' + key,
     children: children,
-    realNode: realNode,
+    realNode: realNode
   };
 }
 
@@ -3681,7 +3385,7 @@ function createPortal(children, realNode) {
 function startUpdate(element, treeRoot, callback) {
   var update = newUpdate();
   update.content = {
-    element: element,
+    element: element
   };
   if (typeof callback === 'function') {
     update.callback = callback;
@@ -3724,23 +3428,19 @@ function watchValueChange(dom) {
     // currentVal存储最新值，并重写value的setter、getter
     var currentVal = String(dom[keyForValue]);
     var setFunc = descriptor === null || descriptor === void 0 ? void 0 : descriptor.set;
-    Object.defineProperty(
-      dom,
-      keyForValue,
-      _extends({}, descriptor, {
-        set: function (value) {
-          currentVal = String(value);
-          setFunc === null || setFunc === void 0 ? void 0 : setFunc.apply(this, [value]);
-        },
-      })
-    );
+    Object.defineProperty(dom, keyForValue, _extends({}, descriptor, {
+      set: function (value) {
+        currentVal = String(value);
+        setFunc === null || setFunc === void 0 ? void 0 : setFunc.apply(this, [value]);
+      }
+    }));
     dom[HANDLER_KEY] = {
       getValue: function () {
         return currentVal;
       },
       setValue: function (value) {
         currentVal = String(value);
-      },
+      }
     };
   }
 }
@@ -3802,7 +3502,7 @@ function controlInputValue(inputDom, props) {
 
   // 如果是 radio，找出同一form内，name相同的Radio，更新它们Handler的Value
   if (type === 'radio' && isNotNull(name)) {
-    var radioList = document.querySelectorAll('input[type="radio"][name="' + name + '"]');
+    var radioList = document.querySelectorAll("input[type=\"radio\"][name=\"" + name + "\"]");
     for (var i = 0; i < radioList.length; i++) {
       var radio = radioList[i];
       if (radio === inputDom) {
@@ -3879,8 +3579,7 @@ function tryControlValue() {
  */
 
 function getWrapperEvents(nativeEventTarget, fromInst, toInst, nativeEvent, targetInst) {
-  var vWindow =
-    nativeEventTarget.window === nativeEventTarget ? nativeEventTarget : nativeEventTarget.ownerDocument.defaultView;
+  var vWindow = nativeEventTarget.window === nativeEventTarget ? nativeEventTarget : nativeEventTarget.ownerDocument.defaultView;
 
   // 起点或者终点为空的话默认值为所在window
   var fromNode = (fromInst === null || fromInst === void 0 ? void 0 : fromInst.realNode) || vWindow;
@@ -3912,7 +3611,7 @@ function getEndpointVNode(domEventName, targetInst, nativeEvent) {
     toVNode = related ? getNearestVNode(related) : null;
     if (toVNode !== null) {
       var nearestMounted = getNearestMountedVNode(toVNode);
-      if (toVNode !== nearestMounted || (toVNode.tag !== DomComponent && toVNode.tag !== DomText)) {
+      if (toVNode !== nearestMounted || toVNode.tag !== DomComponent && toVNode.tag !== DomText) {
         toVNode = null;
       }
     }
@@ -3979,7 +3678,7 @@ var RIGHT_MOUSE_BUTTON = 2;
 function shouldTriggerChangeEvent(targetDom, evtName) {
   var type = targetDom.type;
   var domTag = getDomTag(targetDom);
-  if (domTag === 'select' || (domTag === 'input' && type === 'file')) {
+  if (domTag === 'select' || domTag === 'input' && type === 'file') {
     return evtName === 'change';
   } else if (domTag === 'input' && (type === 'checkbox' || type === 'radio')) {
     if (evtName === 'click') {
@@ -4118,11 +3817,7 @@ function handleEventMain(nativeEvtName, isCapture, nativeEvent, vNode, targetDom
  * See the Mulan PSL v2 for more details.
  */
 // 触发委托事件
-function triggerDelegatedEvent(
-  nativeEvtName,
-  isCapture,
-  targetDom,
-  nativeEvent // 事件对象event
+function triggerDelegatedEvent(nativeEvtName, isCapture, targetDom, nativeEvent // 事件对象event
 ) {
   // 执行之前的调度事件
   runDiscreteUpdates();
@@ -4161,10 +3856,7 @@ function lazyDelegateOnRoot(currentRoot, eventName) {
     var nativeFullName = isCapture ? nativeEvent + 'capture' : nativeEvent;
 
     // 事件存储在DOM节点属性，避免多个VNode(root和portal)对应同一个DOM, 造成事件重复监听
-    currentRoot.realNode[EVENT_KEY] =
-      (_currentRoot$realNode = currentRoot.realNode[EVENT_KEY]) !== null && _currentRoot$realNode !== void 0
-        ? _currentRoot$realNode
-        : {};
+    currentRoot.realNode[EVENT_KEY] = (_currentRoot$realNode = currentRoot.realNode[EVENT_KEY]) !== null && _currentRoot$realNode !== void 0 ? _currentRoot$realNode : {};
     var events = currentRoot.realNode[EVENT_KEY];
     if (!events[nativeFullName]) {
       events[nativeFullName] = listenToNativeEvent(nativeEvent, currentRoot.realNode, isCapture);
@@ -4306,7 +3998,7 @@ function setDomProps(dom, props, isNativeTag, isInit) {
       }
     } else if (propName === 'dangerouslySetInnerHTML') {
       dom.innerHTML = propVal.__html;
-    } else if (!isInit || (propVal !== null && propVal !== undefined)) {
+    } else if (!isInit || propVal !== null && propVal !== undefined) {
       updateCommonProp(dom, propName, propVal, isNativeTag);
     }
   }
@@ -4359,10 +4051,7 @@ function compareProps(oldProps, newProps) {
     propName = keysOfNewProps[_i];
     newPropValue = newProps[propName];
     oldPropValue = oldProps !== null && oldProps !== undefined ? oldProps[propName] : null;
-    if (
-      newPropValue === oldPropValue ||
-      ((newPropValue === null || newPropValue === undefined) && (oldPropValue === null || oldPropValue === undefined))
-    ) {
+    if (newPropValue === oldPropValue || (newPropValue === null || newPropValue === undefined) && (oldPropValue === null || oldPropValue === undefined)) {
       // 新旧属性值未发生变化，或者新旧属性皆为空值，不需要进行处理
       continue;
     }
@@ -4456,12 +4145,7 @@ function getChildNS(parentNS, tagName) {
 // 获取容器
 function getNSCtx(parentNS, type, dom) {
   var _dom$namespaceURI;
-  return dom
-    ? getChildNS(
-        (_dom$namespaceURI = dom.namespaceURI) !== null && _dom$namespaceURI !== void 0 ? _dom$namespaceURI : null,
-        dom.nodeName
-      )
-    : getChildNS(parentNS, type);
+  return dom ? getChildNS((_dom$namespaceURI = dom.namespaceURI) !== null && _dom$namespaceURI !== void 0 ? _dom$namespaceURI : null, dom.nodeName) : getChildNS(parentNS, type);
 }
 function prepareForSubmit() {
   selectionInfo = getSelectionInfo();
@@ -4476,8 +4160,7 @@ function newDom(tagName, props, parentNamespace, vNode) {
   var _getCurrentRoot;
   // document取值于treeRoot对应的DOM的ownerDocument。
   // 解决：在iframe中使用top的inula时，inula在创建DOM时用到的document并不是iframe的document，而是top中的document的问题。
-  var rootDom =
-    (_getCurrentRoot = getCurrentRoot()) === null || _getCurrentRoot === void 0 ? void 0 : _getCurrentRoot.realNode;
+  var rootDom = (_getCurrentRoot = getCurrentRoot()) === null || _getCurrentRoot === void 0 ? void 0 : _getCurrentRoot.realNode;
   var doc = isDocument(rootDom) ? rootDom : rootDom.ownerDocument;
   var dom = createDom(tagName, parentNamespace, doc);
   // 将 vNode 节点挂到 DOM 对象上
@@ -4525,12 +4208,7 @@ function isTextChild(type, props) {
   if (childType === 'string' || childType === 'number') {
     return true;
   } else {
-    return (
-      props.dangerouslySetInnerHTML &&
-      typeof props.dangerouslySetInnerHTML === 'object' &&
-      props.dangerouslySetInnerHTML.__html !== null &&
-      props.dangerouslySetInnerHTML.__html !== undefined
-    );
+    return props.dangerouslySetInnerHTML && typeof props.dangerouslySetInnerHTML === 'object' && props.dangerouslySetInnerHTML.__html !== null && props.dangerouslySetInnerHTML.__html !== undefined;
   }
 }
 function newTextDom(text, processing) {
@@ -4554,14 +4232,7 @@ function submitDomUpdate(tag, vNode) {
         updateVNodeProps(element, newProps);
         // 应用diff更新Properties.
         // 当一个选中的radio改变名称,浏览器使另一个radio的复选框为false.
-        if (
-          type === 'input' &&
-          newProps.type === 'radio' &&
-          newProps.name !== null &&
-          newProps.name !== undefined &&
-          newProps.checked !== null &&
-          newProps.checked !== undefined
-        ) {
+        if (type === 'input' && newProps.type === 'radio' && newProps.name !== null && newProps.name !== undefined && newProps.checked !== null && newProps.checked !== undefined) {
           updateCommonProp(element, 'checked', newProps.checked, true);
         }
         var isNativeTag = isNativeElement(type, newProps);
@@ -4606,17 +4277,7 @@ function hideDom(tag, dom) {
 function unHideDom(tag, dom, props) {
   if (tag === DomComponent) {
     var _props$style$display, _props$style;
-    dom.style.display = adjustStyleValue(
-      'display',
-      (_props$style$display =
-        props === null || props === void 0
-          ? void 0
-          : (_props$style = props.style) === null || _props$style === void 0
-            ? void 0
-            : _props$style.display) !== null && _props$style$display !== void 0
-        ? _props$style$display
-        : ''
-    );
+    dom.style.display = adjustStyleValue('display', (_props$style$display = props === null || props === void 0 ? void 0 : (_props$style = props.style) === null || _props$style === void 0 ? void 0 : _props$style.display) !== null && _props$style$display !== void 0 ? _props$style$display : '');
   } else if (tag === DomText) {
     dom.textContent = props;
   }
@@ -4681,11 +4342,11 @@ function resetContext(providerVNode) {
  */
 
 // hooks阶段
-var HookStage = /*#__PURE__*/ (function (HookStage) {
-  HookStage[(HookStage['Init'] = 1)] = 'Init';
-  HookStage[(HookStage['Update'] = 2)] = 'Update';
+var HookStage = /*#__PURE__*/function (HookStage) {
+  HookStage[HookStage["Init"] = 1] = "Init";
+  HookStage[HookStage["Update"] = 2] = "Update";
   return HookStage;
-})({});
+}({});
 var hookStage = null;
 function getHookStage() {
   return hookStage;
@@ -4733,7 +4394,7 @@ function createHook() {
   var processingVNode = getProcessingVNode();
   var newHook = {
     state: state,
-    hIndex: processingVNode.hooks.length,
+    hIndex: processingVNode.hooks.length
   };
   currentHook = newHook;
   processingVNode.hooks.push(newHook);
@@ -4748,8 +4409,7 @@ function getNextHook(hook, hooks) {
 // 原因：1.比对hook的数量有没有变化（非必要）；2.从上一次执行中的hook获取removeEffect
 function getCurrentHook() {
   var processingVNode = getProcessingVNode();
-  currentHook =
-    currentHook !== null ? getNextHook(currentHook, processingVNode.hooks) : processingVNode.hooks[0] || null;
+  currentHook = currentHook !== null ? getNextHook(currentHook, processingVNode.hooks) : processingVNode.hooks[0] || null;
   if (lastTimeHook !== null) {
     lastTimeHook = getNextHook(lastTimeHook, processingVNode.oldHooks);
   } else {
@@ -4882,13 +4542,13 @@ function runFunctionWithHooks(funcComp, props, arg, processing) {
 // 当前vNode和element是同样的类型
 // LazyComponent 会修改type的类型，所以特殊处理这种类型
 var isSameType = function (vNode, ele) {
-  return vNode.type === ele.type || (vNode.isLazyComponent && vNode.lazyType === ele.type);
+  return vNode.type === ele.type || vNode.isLazyComponent && vNode.lazyType === ele.type;
 };
 function isTextType(newChild) {
   return typeof newChild === 'string' || typeof newChild === 'number';
 }
 function isIteratorType(newChild) {
-  return (typeof Symbol === 'function' && newChild[Symbol.iterator]) || newChild['@@iterator'];
+  return typeof Symbol === 'function' && newChild[Symbol.iterator] || newChild['@@iterator'];
 }
 function getIteratorFn(maybeIterable) {
   return maybeIterable[Symbol.iterator] || maybeIterable['@@iterator'];
@@ -4911,12 +4571,12 @@ function isObjectType(newChild) {
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-var DiffCategory = /*#__PURE__*/ (function (DiffCategory) {
-  DiffCategory['TEXT_NODE'] = 'TEXT_NODE';
-  DiffCategory['OBJECT_NODE'] = 'OBJECT_NODE';
-  DiffCategory['ARR_NODE'] = 'ARR_NODE';
+var DiffCategory = /*#__PURE__*/function (DiffCategory) {
+  DiffCategory["TEXT_NODE"] = "TEXT_NODE";
+  DiffCategory["OBJECT_NODE"] = "OBJECT_NODE";
+  DiffCategory["ARR_NODE"] = "ARR_NODE";
   return DiffCategory;
-})(DiffCategory || {}); // 检查是不是被 FRAGMENT 或 StrictMode 包裹
+}(DiffCategory || {}); // 检查是不是被 FRAGMENT 或 StrictMode 包裹
 function isNoKeyFragmentOrStrictMode(child) {
   return child != null && (child.type === TYPE_FRAGMENT || child.type === TYPE_STRICT_MODE) && child.key === null;
 }
@@ -5006,53 +4666,56 @@ function getNewNode(parentNode, newChild, oldNode) {
   }
   var resultNode = null;
   switch (newNodeType) {
-    case DiffCategory.TEXT_NODE: {
-      if (oldNode === null || oldNode.tag !== DomText) {
-        resultNode = createDomTextVNode(String(newChild));
-      } else {
-        resultNode = updateVNode(oldNode, String(newChild));
+    case DiffCategory.TEXT_NODE:
+      {
+        if (oldNode === null || oldNode.tag !== DomText) {
+          resultNode = createDomTextVNode(String(newChild));
+        } else {
+          resultNode = updateVNode(oldNode, String(newChild));
+        }
+        break;
       }
-      break;
-    }
-    case DiffCategory.ARR_NODE: {
-      if (oldNode === null || oldNode.tag !== Fragment) {
-        resultNode = createFragmentVNode(null, newChild);
-      } else {
-        resultNode = updateVNode(oldNode, newChild);
+    case DiffCategory.ARR_NODE:
+      {
+        if (oldNode === null || oldNode.tag !== Fragment) {
+          resultNode = createFragmentVNode(null, newChild);
+        } else {
+          resultNode = updateVNode(oldNode, newChild);
+        }
+        break;
       }
-      break;
-    }
-    case DiffCategory.OBJECT_NODE: {
-      if (newChild.vtype === TYPE_COMMON_ELEMENT) {
-        if (newChild.type === TYPE_FRAGMENT) {
-          if (oldNode === null || oldNode.tag !== Fragment) {
-            var key = oldNode !== null ? oldNode.key : newChild.key;
-            resultNode = createFragmentVNode(key, newChild.props.children);
+    case DiffCategory.OBJECT_NODE:
+      {
+        if (newChild.vtype === TYPE_COMMON_ELEMENT) {
+          if (newChild.type === TYPE_FRAGMENT) {
+            if (oldNode === null || oldNode.tag !== Fragment) {
+              var key = oldNode !== null ? oldNode.key : newChild.key;
+              resultNode = createFragmentVNode(key, newChild.props.children);
+            } else {
+              resultNode = updateVNode(oldNode, newChild.props.children);
+            }
+            break;
+          }
+          if (oldNode === null || !isSameType(oldNode, newChild)) {
+            resultNode = createVNodeFromElement(newChild);
+            resultNode.ref = newChild.ref;
+            resultNode[BELONG_CLASS_VNODE_KEY] = newChild[BELONG_CLASS_VNODE_KEY];
           } else {
-            resultNode = updateVNode(oldNode, newChild.props.children);
+            resultNode = updateVNode(oldNode, newChild.props);
+            resultNode.ref = newChild.ref;
+            resultNode[BELONG_CLASS_VNODE_KEY] = newChild[BELONG_CLASS_VNODE_KEY];
+          }
+          break;
+        } else if (newChild.vtype === TYPE_PORTAL) {
+          if (oldNode === null || oldNode.tag !== DomPortal || oldNode.realNode !== newChild.realNode) {
+            resultNode = createPortalVNode(newChild);
+          } else {
+            resultNode = updateVNode(oldNode, newChild.children || []);
           }
           break;
         }
-        if (oldNode === null || !isSameType(oldNode, newChild)) {
-          resultNode = createVNodeFromElement(newChild);
-          resultNode.ref = newChild.ref;
-          resultNode[BELONG_CLASS_VNODE_KEY] = newChild[BELONG_CLASS_VNODE_KEY];
-        } else {
-          resultNode = updateVNode(oldNode, newChild.props);
-          resultNode.ref = newChild.ref;
-          resultNode[BELONG_CLASS_VNODE_KEY] = newChild[BELONG_CLASS_VNODE_KEY];
-        }
-        break;
-      } else if (newChild.vtype === TYPE_PORTAL) {
-        if (oldNode === null || oldNode.tag !== DomPortal || oldNode.realNode !== newChild.realNode) {
-          resultNode = createPortalVNode(newChild);
-        } else {
-          resultNode = updateVNode(oldNode, newChild.children || []);
-        }
         break;
       }
-      break;
-    }
   }
   if (resultNode) {
     resultNode.parent = parentNode;
@@ -5069,15 +4732,11 @@ function transRightChildrenToArray(child) {
 }
 function transLeftChildrenToMap(startChild, rightEndVNode) {
   var leftChildrenMap = new Map();
-  travelChildren(
-    startChild,
-    function (node) {
-      leftChildrenMap.set(node.key !== null ? node.key : node.eIndex, node);
-    },
-    function (node) {
-      return node === rightEndVNode;
-    }
-  );
+  travelChildren(startChild, function (node) {
+    leftChildrenMap.set(node.key !== null ? node.key : node.eIndex, node);
+  }, function (node) {
+    return node === rightEndVNode;
+  });
   return leftChildrenMap;
 }
 function getOldNodeFromMap(nodeMap, newIdx, newChild) {
@@ -5226,15 +4885,7 @@ function diffArrayNodesHandler(parentNode, firstChild, newChildren) {
     var isDirectAdd = false;
     // 是否可以扩大至非dom类型节点待确认
     // 如果dom节点在上次添加前没有节点，说明本次添加时，可以直接添加到最后，不需要通过 getSiblingDom 函数找到 before 节点
-    if (
-      parentNode.tag === DomComponent &&
-      ((_parentNode$oldProps = parentNode.oldProps) === null || _parentNode$oldProps === void 0
-        ? void 0
-        : (_parentNode$oldProps$ = _parentNode$oldProps.children) === null || _parentNode$oldProps$ === void 0
-          ? void 0
-          : _parentNode$oldProps$.length) === 0 &&
-      rightIdx - leftIdx === newChildren.length
-    ) {
+    if (parentNode.tag === DomComponent && ((_parentNode$oldProps = parentNode.oldProps) === null || _parentNode$oldProps === void 0 ? void 0 : (_parentNode$oldProps$ = _parentNode$oldProps.children) === null || _parentNode$oldProps$ === void 0 ? void 0 : _parentNode$oldProps$.length) === 0 && rightIdx - leftIdx === newChildren.length) {
       isDirectAdd = true;
     }
     var isAddition = parentNode.tag === DomPortal || !parentNode.isCreated;
@@ -5511,27 +5162,27 @@ function createChildrenByDiff(parentNode, firstChild, newChild, isComparing) {
 var OBSERVER_KEY = typeof Symbol === 'function' ? Symbol('_inulaObserver') : '_inulaObserver';
 
 // 特殊处理的keys
-var KeyTypes = /*#__PURE__*/ (function (KeyTypes) {
-  KeyTypes['RAW_VALUE'] = '_rawValue';
-  KeyTypes['COLLECTION_CHANGE'] = '_collectionChange';
-  KeyTypes['GET'] = 'get';
-  KeyTypes['SIZE'] = 'size';
-  KeyTypes['VALUE'] = 'value';
-  KeyTypes['WATCH'] = 'watch';
-  KeyTypes['LENGTH'] = 'length';
-  KeyTypes['PROTOTYPE'] = 'prototype';
-  KeyTypes['HAS_OWN_PROPERTY'] = 'hasOwnProperty';
-  KeyTypes['ADD_LISTENER'] = 'addListener';
-  KeyTypes['REMOVE_LISTENER'] = 'removeListener';
+var KeyTypes = /*#__PURE__*/function (KeyTypes) {
+  KeyTypes["RAW_VALUE"] = "_rawValue";
+  KeyTypes["COLLECTION_CHANGE"] = "_collectionChange";
+  KeyTypes["GET"] = "get";
+  KeyTypes["SIZE"] = "size";
+  KeyTypes["VALUE"] = "value";
+  KeyTypes["WATCH"] = "watch";
+  KeyTypes["LENGTH"] = "length";
+  KeyTypes["PROTOTYPE"] = "prototype";
+  KeyTypes["HAS_OWN_PROPERTY"] = "hasOwnProperty";
+  KeyTypes["ADD_LISTENER"] = "addListener";
+  KeyTypes["REMOVE_LISTENER"] = "removeListener";
   return KeyTypes;
-})({});
-var ReactiveFlags = /*#__PURE__*/ (function (ReactiveFlags) {
-  ReactiveFlags['IS_SKIP'] = '_isSkip';
-  ReactiveFlags['IS_SHALLOW'] = '_isShallow';
-  ReactiveFlags['IS_READONLY'] = '_isReadonly';
-  ReactiveFlags['IS_REF'] = '_isRef';
+}({});
+var ReactiveFlags = /*#__PURE__*/function (ReactiveFlags) {
+  ReactiveFlags["IS_SKIP"] = "_isSkip";
+  ReactiveFlags["IS_SHALLOW"] = "_isShallow";
+  ReactiveFlags["IS_READONLY"] = "_isReadonly";
+  ReactiveFlags["IS_REF"] = "_isRef";
   return ReactiveFlags;
-})({});
+}({});
 
 /*
  * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
@@ -5594,7 +5245,7 @@ function resolveMutation(from, to) {
   return {
     mutation: true,
     from: from,
-    to: to,
+    to: to
   };
 }
 function isShallow(value) {
@@ -5630,7 +5281,7 @@ function useRefImpl(value) {
   if (stage === HookStage.Init) {
     hook = createHook();
     hook.state = {
-      current: value,
+      current: value
     };
   } else if (stage === HookStage.Update) {
     hook = getCurrentHook();
@@ -5721,13 +5372,9 @@ function createEffect(effectFunc, removeFunc, deps, effectConstant) {
     effect: effectFunc,
     removeEffect: removeFunc,
     dependencies: deps,
-    effectConstant: effectConstant,
+    effectConstant: effectConstant
   };
-  (_getProcessingVNode = getProcessingVNode()) === null || _getProcessingVNode === void 0
-    ? void 0
-    : (_getProcessingVNode$e = _getProcessingVNode.effectList) === null || _getProcessingVNode$e === void 0
-      ? void 0
-      : _getProcessingVNode$e.push(effect);
+  (_getProcessingVNode = getProcessingVNode()) === null || _getProcessingVNode === void 0 ? void 0 : (_getProcessingVNode$e = _getProcessingVNode.effectList) === null || _getProcessingVNode$e === void 0 ? void 0 : _getProcessingVNode$e.push(effect);
   return effect;
 }
 function useEffectForInit(effectFunc, deps, effectType) {
@@ -5743,8 +5390,7 @@ function useEffectForUpdate(effectFunc, deps, effectType) {
   var removeFunc;
   if (getLastTimeHook() !== null) {
     var _getLastTimeHook;
-    var effect =
-      (_getLastTimeHook = getLastTimeHook()) === null || _getLastTimeHook === void 0 ? void 0 : _getLastTimeHook.state;
+    var effect = (_getLastTimeHook = getLastTimeHook()) === null || _getLastTimeHook === void 0 ? void 0 : _getLastTimeHook.state;
     // removeEffect是通过执行effect返回的，所以需要在上一次hook中获取
     removeFunc = effect.removeEffect;
     var lastDeps = effect.dependencies;
@@ -5804,7 +5450,7 @@ function useCallbackImpl(func, dependencies) {
     hook = createHook();
     hook.state = {
       func: func,
-      dependencies: deps,
+      dependencies: deps
     };
   } else if (stage === HookStage.Update) {
     hook = getCurrentHook();
@@ -5815,7 +5461,7 @@ function useCallbackImpl(func, dependencies) {
     }
     hook.state = {
       func: func,
-      dependencies: deps,
+      dependencies: deps
     };
   }
   return func;
@@ -5857,7 +5503,7 @@ function useMemoImpl(fun, deps) {
   }
   hook.state = {
     result: result,
-    dependencies: nextDeps,
+    dependencies: nextDeps
   };
   return hook.state.result;
 }
@@ -5896,11 +5542,7 @@ function useImperativeHandleImpl(ref, func, dependencies) {
   if (stage === null) {
     throwNotInFuncError();
   }
-  var params = isNotNull(dependencies)
-    ? dependencies === null || dependencies === void 0
-      ? void 0
-      : dependencies.concat([ref])
-    : null;
+  var params = isNotNull(dependencies) ? dependencies === null || dependencies === void 0 ? void 0 : dependencies.concat([ref]) : null;
   useLayoutEffectImpl(effectFunc.bind(null, func, ref), params);
 }
 
@@ -5924,7 +5566,7 @@ function insertUpdate(action, hook) {
   var newUpdate = {
     action: action,
     state: null,
-    didCalculated: false,
+    didCalculated: false
   };
   var updates = hook.state.updates;
   // 更新updates数组，newUpdate添加至数组尾部
@@ -5980,7 +5622,7 @@ function useReducerForInit(reducer, initArg, init, isUseState) {
     trigger: trigger,
     reducer: reducer,
     updates: null,
-    isUseState: isUseState,
+    isUseState: isUseState
   };
   return [hook.state.stateValue, trigger];
 }
@@ -6081,110 +5723,110 @@ function createInstance(curVNode) {
   var instanceHandler = {
     get: function (target, prop) {
       switch (prop) {
-        case '$parent': {
-          var vNode = target.parent;
-          if (!vNode) {
-            return;
-          }
-
-          // 特殊处理：
-          // 因为vue-to-horizon工具会把<component :is="Comp"></component>编译成<DirectiveComponent componentName="Comp">，多包了一层组件
-          // 因为vue-to-horizon工具会把<Comp v-xxx>编译成<DirectiveComponent componentName="Comp">，多包了一层组件
-          while (
-            !isComponentVNode(vNode) ||
-            vNode.type.name === DYNAMIC_COMPONENT ||
-            vNode.type.name === DIRECTIVE_COMPONENT
-          ) {
-            var _vNode;
-            if (!vNode.parent) {
+        case '$parent':
+          {
+            var vNode = target.parent;
+            if (!vNode) {
               return;
             }
-            vNode = (_vNode = vNode) === null || _vNode === void 0 ? void 0 : _vNode.parent;
-          }
-          return createInstance(vNode);
-        }
-        case '$vnode': {
-          return target;
-        }
-        case '$el': {
-          var _vNode2 = findDomVNode(target);
-          if (_vNode2) {
-            return _vNode2.realNode;
-          }
-          break;
-        }
-        case '$props': {
-          return target.props;
-        }
-        case '$children': {
-          var _vNode3 = target.child;
-          if (!_vNode3 || typeof _vNode3 !== 'object') {
-            return [];
-          }
-          var children = [];
-          var child = _vNode3.child;
-          while (child) {
-            if (
-              child.tag === 'FunctionComponent' ||
-              child.tag === 'ClassComponent' ||
-              typeof child.type === 'function'
-            ) {
-              children.push(createInstance(child));
-            }
-            child = child.next;
-          }
-          return children;
-        }
-        case '$root': {
-          var rootNode = getTreeRootVNode(target);
-          return createInstance(rootNode.child);
-        }
-        case '$refs': {
-          if (!target.instanceVariables) {
-            target.instanceVariables = {};
-          }
-          if (!target.instanceVariables['$refs']) {
-            target.instanceVariables['$refs'] = {};
-          }
-          var refs = target.instanceVariables['$refs'];
-          return new Proxy(refs, {
-            set: function (target, prop, value) {
-              target[prop] = value;
-              return true;
-            },
-            get: function (target, property) {
-              if (target[property]) {
-                var val = target[property];
-                return toInstance(val);
+
+            // 特殊处理：
+            // 因为vue-to-horizon工具会把<component :is="Comp"></component>编译成<DirectiveComponent componentName="Comp">，多包了一层组件
+            // 因为vue-to-horizon工具会把<Comp v-xxx>编译成<DirectiveComponent componentName="Comp">，多包了一层组件
+            while (!isComponentVNode(vNode) || vNode.type.name === DYNAMIC_COMPONENT || vNode.type.name === DIRECTIVE_COMPONENT) {
+              var _vNode;
+              if (!vNode.parent) {
+                return;
               }
-              return undefined;
-            },
-          });
-        }
-        default: {
-          if (!target.instanceVariables) {
-            target.instanceVariables = _defineProperty({}, ReactiveFlags.IS_SHALLOW, true);
-          }
-
-          // 优先访问dataReactive数据
-          if (target.instanceVariables[dataReactiveKey]) {
-            if (Object.prototype.hasOwnProperty.call(target.instanceVariables[dataReactiveKey], prop)) {
-              return target.instanceVariables[dataReactiveKey][prop];
+              vNode = (_vNode = vNode) === null || _vNode === void 0 ? void 0 : _vNode.parent;
             }
+            return createInstance(vNode);
           }
-
-          // 优先访问props数据
-          if (target.instanceVariables[propsKey]) {
-            if (Object.prototype.hasOwnProperty.call(target.instanceVariables[propsKey], prop)) {
-              return target.instanceVariables[propsKey][prop];
+        case '$vnode':
+          {
+            return target;
+          }
+        case '$el':
+          {
+            var _vNode2 = findDomVNode(target);
+            if (_vNode2) {
+              return _vNode2.realNode;
             }
+            break;
           }
-          if (Object.prototype.hasOwnProperty.call(target.instanceVariables, prop)) {
-            return target.instanceVariables[prop];
+        case '$props':
+          {
+            return target.props;
           }
-          console.error('Instance Method/Variables ' + String(prop) + ' not implemented.');
-          return undefined;
-        }
+        case '$children':
+          {
+            var _vNode3 = target.child;
+            if (!_vNode3 || typeof _vNode3 !== 'object') {
+              return [];
+            }
+            var children = [];
+            var child = _vNode3.child;
+            while (child) {
+              if (child.tag === 'FunctionComponent' || child.tag === 'ClassComponent' || typeof child.type === 'function') {
+                children.push(createInstance(child));
+              }
+              child = child.next;
+            }
+            return children;
+          }
+        case '$root':
+          {
+            var rootNode = getTreeRootVNode(target);
+            return createInstance(rootNode.child);
+          }
+        case '$refs':
+          {
+            if (!target.instanceVariables) {
+              target.instanceVariables = {};
+            }
+            if (!target.instanceVariables['$refs']) {
+              target.instanceVariables['$refs'] = {};
+            }
+            var refs = target.instanceVariables['$refs'];
+            return new Proxy(refs, {
+              set: function (target, prop, value) {
+                target[prop] = value;
+                return true;
+              },
+              get: function (target, property) {
+                if (target[property]) {
+                  var val = target[property];
+                  return toInstance(val);
+                }
+                return undefined;
+              }
+            });
+          }
+        default:
+          {
+            if (!target.instanceVariables) {
+              target.instanceVariables = _defineProperty({}, ReactiveFlags.IS_SHALLOW, true);
+            }
+
+            // 优先访问dataReactive数据
+            if (target.instanceVariables[dataReactiveKey]) {
+              if (Object.prototype.hasOwnProperty.call(target.instanceVariables[dataReactiveKey], prop)) {
+                return target.instanceVariables[dataReactiveKey][prop];
+              }
+            }
+
+            // 优先访问props数据
+            if (target.instanceVariables[propsKey]) {
+              if (Object.prototype.hasOwnProperty.call(target.instanceVariables[propsKey], prop)) {
+                return target.instanceVariables[propsKey][prop];
+              }
+            }
+            if (Object.prototype.hasOwnProperty.call(target.instanceVariables, prop)) {
+              return target.instanceVariables[prop];
+            }
+            console.error("Instance Method/Variables " + String(prop) + " not implemented.");
+            return undefined;
+          }
       }
     },
     set: function (target, prop, val) {
@@ -6245,23 +5887,17 @@ function createInstance(curVNode) {
           configurable: true,
           enumerable: true,
           value: undefined,
-          writable: false,
+          writable: false
         };
       }
       if (target.instanceVariables) {
         // 检查 dataReactive
-        if (
-          target.instanceVariables[dataReactiveKey] &&
-          Object.prototype.hasOwnProperty.call(target.instanceVariables[dataReactiveKey], prop)
-        ) {
+        if (target.instanceVariables[dataReactiveKey] && Object.prototype.hasOwnProperty.call(target.instanceVariables[dataReactiveKey], prop)) {
           return Object.getOwnPropertyDescriptor(target.instanceVariables[dataReactiveKey], prop);
         }
 
         // 检查 props
-        if (
-          target.instanceVariables[propsKey] &&
-          Object.prototype.hasOwnProperty.call(target.instanceVariables[propsKey], prop)
-        ) {
+        if (target.instanceVariables[propsKey] && Object.prototype.hasOwnProperty.call(target.instanceVariables[propsKey], prop)) {
           return Object.getOwnPropertyDescriptor(target.instanceVariables[propsKey], prop);
         }
 
@@ -6273,7 +5909,7 @@ function createInstance(curVNode) {
 
       // 检查原始对象
       return Object.getOwnPropertyDescriptor(target, prop);
-    },
+    }
   };
   var instance = new Proxy(curVNode, instanceHandler);
 
@@ -6393,7 +6029,7 @@ function markRaw(value) {
     Object.defineProperty(value, ReactiveFlags.IS_SKIP, {
       configurable: true,
       enumerable: false,
-      value: true,
+      value: true
     });
   }
   return value;
@@ -6415,7 +6051,7 @@ function createRef(rawValue, isShallow) {
   }
   return new RefImpl(rawValue, isShallow);
 }
-var RefImpl = /*#__PURE__*/ (function () {
+var RefImpl = /*#__PURE__*/function () {
   function RefImpl(value, isShallow) {
     _classCallCheck(this, RefImpl);
     this._value = void 0;
@@ -6427,37 +6063,34 @@ var RefImpl = /*#__PURE__*/ (function () {
     this._rawValue = isShallow ? value : toRaw(value);
     this._value = isShallow ? value : toReactive(value);
   }
-  _createClass(RefImpl, [
-    {
-      key: 'value',
-      get: function () {
-        this.observer.useProp('value');
-        return this._value;
-      },
-      set: function (newVal) {
-        var useDirectValue = this._isShallow || isShallow(newVal);
-        newVal = useDirectValue ? newVal : toRaw(newVal);
-        if (!isSame$1(newVal, this._rawValue)) {
-          var mutation = {
-            mutation: true,
-            from: this._rawValue,
-            to: newVal,
-          };
-          this._rawValue = newVal;
-          this._value = useDirectValue ? newVal : toReactive(newVal);
-          this.observer.setProp('value', mutation);
-        }
-      },
+  _createClass(RefImpl, [{
+    key: "value",
+    get: function () {
+      this.observer.useProp('value');
+      return this._value;
     },
-    {
-      key: OBSERVER_KEY,
-      get: function () {
-        return this.observer;
-      },
-    },
-  ]);
+    set: function (newVal) {
+      var useDirectValue = this._isShallow || isShallow(newVal);
+      newVal = useDirectValue ? newVal : toRaw(newVal);
+      if (!isSame$1(newVal, this._rawValue)) {
+        var mutation = {
+          mutation: true,
+          from: this._rawValue,
+          to: newVal
+        };
+        this._rawValue = newVal;
+        this._value = useDirectValue ? newVal : toReactive(newVal);
+        this.observer.setProp('value', mutation);
+      }
+    }
+  }, {
+    key: OBSERVER_KEY,
+    get: function () {
+      return this.observer;
+    }
+  }]);
   return RefImpl;
-})();
+}();
 function isRef(ref) {
   return Boolean(ref && ref[ReactiveFlags.IS_REF]);
 }
@@ -6481,7 +6114,7 @@ function toRef(source, key, defaultValue) {
     return ref(source);
   }
 }
-var GetterRefImpl = /*#__PURE__*/ (function () {
+var GetterRefImpl = /*#__PURE__*/function () {
   function GetterRefImpl(getter) {
     _classCallCheck(this, GetterRefImpl);
     this._isRef = true;
@@ -6489,21 +6122,19 @@ var GetterRefImpl = /*#__PURE__*/ (function () {
     this._getter = void 0;
     this._getter = getter;
   }
-  _createClass(GetterRefImpl, [
-    {
-      key: 'value',
-      get: function () {
-        return this._getter();
-      },
-    },
-  ]);
+  _createClass(GetterRefImpl, [{
+    key: "value",
+    get: function () {
+      return this._getter();
+    }
+  }]);
   return GetterRefImpl;
-})();
+}();
 function propertyToRef(source, key, defaultValue) {
   var val = source[key];
   return isRef(val) ? val : new ObjectRefImpl(source, key, defaultValue);
 }
-var ObjectRefImpl = /*#__PURE__*/ (function () {
+var ObjectRefImpl = /*#__PURE__*/function () {
   function ObjectRefImpl(object, key, defaultValue) {
     _classCallCheck(this, ObjectRefImpl);
     this._isRef = true;
@@ -6514,20 +6145,18 @@ var ObjectRefImpl = /*#__PURE__*/ (function () {
     this._key = key;
     this._defaultValue = defaultValue;
   }
-  _createClass(ObjectRefImpl, [
-    {
-      key: 'value',
-      get: function () {
-        var val = this._object[this._key];
-        return val === undefined ? this._defaultValue : val;
-      },
-      set: function (newVal) {
-        this._object[this._key] = newVal;
-      },
+  _createClass(ObjectRefImpl, [{
+    key: "value",
+    get: function () {
+      var val = this._object[this._key];
+      return val === undefined ? this._defaultValue : val;
     },
-  ]);
+    set: function (newVal) {
+      this._object[this._key] = newVal;
+    }
+  }]);
   return ObjectRefImpl;
-})();
+}();
 function toRefs(object) {
   var ret = isArray(object) ? new Array(object.length) : {};
   for (var _key in object) {
@@ -6587,33 +6216,21 @@ function getValOrProxy(key, isShallow, value, rawObj, listener, listeners) {
   }
 
   // 对于value也需要进一步代理
-  return createProxy(
-    value,
-    {
-      current: function (change) {
-        if (!change.parents) change.parents = [];
-        change.parents.push(rawObj);
-        var mutation = resolveMutation(
-          _extends({}, rawObj, _defineProperty({}, key, change.mutation.from)),
-          _extends({}, rawObj, _defineProperty({}, key, change.mutation.to))
-        );
-        listener.current(
-          _extends({}, change, {
-            mutation: mutation,
-          })
-        );
-        listeners.forEach(function (lst) {
-          return lst(
-            _extends({}, change, {
-              mutation: mutation,
-            })
-          );
-        });
-      },
-    },
-    false,
-    reduxAdapterMap.get(rawObj)
-  );
+  return createProxy(value, {
+    current: function (change) {
+      if (!change.parents) change.parents = [];
+      change.parents.push(rawObj);
+      var mutation = resolveMutation(_extends({}, rawObj, _defineProperty({}, key, change.mutation.from)), _extends({}, rawObj, _defineProperty({}, key, change.mutation.to)));
+      listener.current(_extends({}, change, {
+        mutation: mutation
+      }));
+      listeners.forEach(function (lst) {
+        return lst(_extends({}, change, {
+          mutation: mutation
+        }));
+      });
+    }
+  }, false, reduxAdapterMap.get(rawObj));
 }
 function registerListener(rawObj, listener, listeners) {
   getObserver(rawObj).addListener(function (change) {
@@ -6651,8 +6268,7 @@ function baseSetFun(rawObj, key, value, receiver) {
   }
   var oldLength = isArr ? rawObj.length : 0;
   var oldObj = isPanelActive() ? JSON.parse(JSON.stringify(rawObj)) : null;
-  var hadKey =
-    isArr && isValidIntegerKey(key) ? Number(key) < rawObj.length : Object.prototype.hasOwnProperty.call(rawObj, key);
+  var hadKey = isArr && isValidIntegerKey(key) ? Number(key) < rawObj.length : Object.prototype.hasOwnProperty.call(rawObj, key);
   var ret = Reflect.set(rawObj, key, newValue, receiver);
   var newLength = isArr ? rawObj.length : 0;
   var observer = getObserver(rawObj);
@@ -6788,7 +6404,7 @@ function createObjectProxy(rawObj, listener) {
     set: baseSetFun,
     deleteProperty: deleteProperty,
     has: has,
-    ownKeys: ownKeys,
+    ownKeys: ownKeys
   };
   registerListener(rawObj, listener, listeners);
   return new Proxy(rawObj, handler);
@@ -6812,69 +6428,58 @@ function createObjectProxy(rawObj, listener) {
 /**
  * 一个对象（对象、数组、集合）对应一个Observer
  */
-var HooklessObserver = /*#__PURE__*/ (function () {
+var HooklessObserver = /*#__PURE__*/function () {
   function HooklessObserver() {
     _classCallCheck(this, HooklessObserver);
     this.listeners = [];
   }
-  _createClass(HooklessObserver, [
-    {
-      key: 'useProp',
-      value: function useProp(key) {},
-    },
-    {
-      key: 'addListener',
-      value: function addListener(listener) {
-        this.listeners.push(listener);
-      },
-    },
-    {
-      key: 'removeListener',
-      value: function removeListener(listener) {
-        this.listeners = this.listeners.filter(function (item) {
-          return item != listener;
-        });
-      },
-    },
-    {
-      key: 'getListeners',
-      value: function getListeners() {
-        return this.listeners;
-      },
-    },
-    {
-      key: 'setProp',
-      value: function setProp(key, mutation) {
-        this.triggerChangeListeners(mutation);
-      },
-    },
-    {
-      key: 'triggerChangeListeners',
-      value: function triggerChangeListeners(mutation) {
-        this.listeners.forEach(function (listener) {
-          listener(mutation);
-        });
-      },
-    },
-    {
-      key: 'triggerUpdate',
-      value: function triggerUpdate(vNode) {},
-    },
-    {
-      key: 'allChange',
-      value: function allChange() {},
-    },
-    {
-      key: 'arrayLengthChange',
-      value: function arrayLengthChange() {},
-    },
-    {
-      key: 'clearByVNode',
-      value: function clearByVNode(vNode) {},
-    },
-  ]);
+  _createClass(HooklessObserver, [{
+    key: "useProp",
+    value: function useProp(key) {}
+  }, {
+    key: "addListener",
+    value: function addListener(listener) {
+      this.listeners.push(listener);
+    }
+  }, {
+    key: "removeListener",
+    value: function removeListener(listener) {
+      this.listeners = this.listeners.filter(function (item) {
+        return item != listener;
+      });
+    }
+  }, {
+    key: "getListeners",
+    value: function getListeners() {
+      return this.listeners;
+    }
+  }, {
+    key: "setProp",
+    value: function setProp(key, mutation) {
+      this.triggerChangeListeners(mutation);
+    }
+  }, {
+    key: "triggerChangeListeners",
+    value: function triggerChangeListeners(mutation) {
+      this.listeners.forEach(function (listener) {
+        listener(mutation);
+      });
+    }
+  }, {
+    key: "triggerUpdate",
+    value: function triggerUpdate(vNode) {}
+  }, {
+    key: "allChange",
+    value: function allChange() {}
+  }, {
+    key: "arrayLengthChange",
+    value: function arrayLengthChange() {}
+  }, {
+    key: "clearByVNode",
+    value: function clearByVNode(vNode) {}
+  }]);
   return HooklessObserver;
-})();
+}();
 
 /*
  * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
@@ -6897,7 +6502,7 @@ function createArrayProxy(rawObj, listener) {
   }
   var handler = {
     get: get,
-    set: baseSetFun,
+    set: baseSetFun
   };
   registerListener(rawObj, listener, listeners);
   return new Proxy(rawObj, handler);
@@ -6996,32 +6601,26 @@ function baseDeleteFun(rawObj, value, type, proxies) {
     }
     var mutation;
     if (type === 'Set') {
-      mutation = resolveMutation(
-        {
-          _type: type,
-          values: oldValues,
-        },
-        {
-          _type: type,
-          values: Array.from(rawObj.values()),
-        }
-      );
+      mutation = resolveMutation({
+        _type: type,
+        values: oldValues
+      }, {
+        _type: type,
+        values: Array.from(rawObj.values())
+      });
     } else if (type === 'Map') {
-      mutation = resolveMutation(
-        {
-          _type: type,
-          entries: oldValues,
-        },
-        {
-          _type: type,
-          entries: Array.from(rawObj.entries()),
-        }
-      );
+      mutation = resolveMutation({
+        _type: type,
+        entries: oldValues
+      }, {
+        _type: type,
+        entries: Array.from(rawObj.entries())
+      });
     } else {
       mutation = {
         mutation: true,
         from: value,
-        to: rawObj,
+        to: rawObj
       };
     }
     observer.setProp(value, mutation);
@@ -7047,21 +6646,18 @@ function baseAddFunOfSet(rawObj, value, listener, listeners, type, proxies) {
     triggerSetWatchers(observer);
     var mutation;
     if (type === 'Set') {
-      mutation = resolveMutation(
-        {
-          _type: type,
-          values: oldValues,
-        },
-        {
-          _type: type,
-          values: Array.from(rawObj.values()),
-        }
-      );
+      mutation = resolveMutation({
+        _type: type,
+        values: oldValues
+      }, {
+        _type: type,
+        values: Array.from(rawObj.values())
+      });
     } else {
       mutation = {
         mutation: true,
         from: rawObj,
-        to: value,
+        to: value
       };
     }
     observer.setProp(value, mutation, undefined, value);
@@ -7098,7 +6694,7 @@ function createWeakSetProxy(rawObj, listener) {
     get: get,
     add: add,
     delete: deleteFun,
-    has: has,
+    has: has
   };
   function get(rawObj, key, receiver) {
     return baseGetFun(rawObj, key, receiver, listeners, handler, 'WeakSet');
@@ -7136,48 +6732,40 @@ function createSetProxy(rawObj, listener) {
   function clear(rawObj) {
     baseClearFun(rawObj, valProxies, 'Set');
   }
-  var handler = _defineProperty(
-    {
-      get: get,
-      add: add,
-      delete: deleteFun,
-      has: has,
-      clear: clear,
-      forEach: forEach,
-      forOf: forOf,
-      entries: entries,
-      keys: keys,
-      values: values,
-    },
-    typeof Symbol === 'function' ? Symbol.iterator : '@@iterator',
-    forOf
-  );
+  var handler = _defineProperty({
+    get: get,
+    add: add,
+    delete: deleteFun,
+    has: has,
+    clear: clear,
+    forEach: forEach,
+    forOf: forOf,
+    entries: entries,
+    keys: keys,
+    values: values
+  }, typeof Symbol === 'function' ? Symbol.iterator : '@@iterator', forOf);
   function get(rawObj, key, receiver) {
     return baseGetFun(rawObj, key, receiver, listeners, handler, 'Set');
   }
   function wrapIterator(rawObj, rawIt) {
     var observer = getObserver(rawObj);
     observer.useProp(KeyTypes.COLLECTION_CHANGE);
-    return _defineProperty(
-      {
-        next: function () {
-          var _rawIt$next = rawIt.next(),
-            value = _rawIt$next.value,
-            done = _rawIt$next.done;
-          if (!done) {
-            observer.useProp(KeyTypes.COLLECTION_CHANGE);
-          }
-          return {
-            value: getValOrProxy('valueChange', false, value, rawObj, listener, listeners),
-            done: done,
-          };
-        },
-      },
-      typeof Symbol === 'function' ? Symbol.iterator : '@@iterator',
-      function () {
-        return this;
+    return _defineProperty({
+      next: function () {
+        var _rawIt$next = rawIt.next(),
+          value = _rawIt$next.value,
+          done = _rawIt$next.done;
+        if (!done) {
+          observer.useProp(KeyTypes.COLLECTION_CHANGE);
+        }
+        return {
+          value: getValOrProxy('valueChange', false, value, rawObj, listener, listeners),
+          done: done
+        };
       }
-    );
+    }, typeof Symbol === 'function' ? Symbol.iterator : '@@iterator', function () {
+      return this;
+    });
   }
   function keys(rawObj) {
     return wrapIterator(rawObj, rawObj.keys());
@@ -7218,7 +6806,7 @@ function createWeakMapProxy(rawObj, listener) {
     get: get,
     set: set,
     delete: deleteFun,
-    has: has,
+    has: has
   };
   function getFun(rawObj, key) {
     var observer = getObserver(rawObj);
@@ -7286,16 +6874,13 @@ function createMapProxy(rawObj, listener) {
     var oldValues = [].concat(Array.from(rawObj.entries()));
     rawObj.set(keyProxy, value);
     var observer = getObserver(rawObj);
-    var mutation = resolveMutation(
-      {
-        _type: 'Map',
-        entries: oldValues,
-      },
-      {
-        _type: 'Map',
-        entries: Array.from(rawObj.entries()),
-      }
-    );
+    var mutation = resolveMutation({
+      _type: 'Map',
+      entries: oldValues
+    }, {
+      _type: 'Map',
+      entries: Array.from(rawObj.entries())
+    });
     observer.setProp(KeyTypes.COLLECTION_CHANGE, mutation);
     observer.setProp(key, mutation, oldValue, value);
     return rawObj;
@@ -7318,117 +6903,78 @@ function createMapProxy(rawObj, listener) {
     var observer = getObserver(rawObj);
     var isReduxAdapter = reduxAdapterMap.get(rawObj);
     observer.useProp(KeyTypes.COLLECTION_CHANGE);
-    return _defineProperty(
-      {
-        next: function () {
-          var _rawIt$next = rawIt.next(),
-            value = _rawIt$next.value,
-            done = _rawIt$next.done;
-          if (done) {
-            return {
-              value: getValOrProxy(value, false, value, rawObj, listener, listeners),
-              done: done,
-            };
-          }
-          observer.useProp(KeyTypes.COLLECTION_CHANGE);
-          var newVal;
-          if (type === 'entries') {
-            //ENTRY CHANGED
-            newVal = [
-              createProxy(
-                value[0],
-                {
-                  current: function (change) {
-                    if (!change.parents) change.parents = [];
-                    change.parents.push(rawObj);
-                    var mutation = resolveMutation(
-                      _extends(
-                        {},
-                        rawObj,
-                        _defineProperty({}, 'itemChange', {
-                          key: change.mutation.from,
-                          value: value[1],
-                        })
-                      ),
-                      _extends(
-                        {},
-                        rawObj,
-                        _defineProperty({}, 'itemChange', {
-                          key: change.mutation.to,
-                          value: value[1],
-                        })
-                      )
-                    );
-                    listener.current(
-                      _extends({}, change, {
-                        mutation: mutation,
-                      })
-                    );
-                    listeners.forEach(function (lst) {
-                      return lst(
-                        _extends({}, change, {
-                          mutation: mutation,
-                        })
-                      );
-                    });
-                  },
-                },
-                false,
-                isReduxAdapter
-              ),
-              createProxy(
-                value[1],
-                {
-                  current: function (change) {
-                    if (!change.parents) change.parents = [];
-                    change.parents.push(rawObj);
-                    var mutation = resolveMutation(
-                      _extends({}, rawObj, {
-                        item: {
-                          key: value[0],
-                          value: change.mutation.from,
-                        },
-                      }),
-                      _extends({}, rawObj, {
-                        item: {
-                          key: value[0],
-                          value: change.mutation.to,
-                        },
-                      })
-                    );
-                    listener.current(
-                      _extends({}, change, {
-                        mutation: mutation,
-                      })
-                    );
-                    listeners.forEach(function (lst) {
-                      return lst(
-                        _extends({}, change, {
-                          mutation: mutation,
-                        })
-                      );
-                    });
-                  },
-                },
-                false,
-                isReduxAdapter
-              ),
-            ];
-          } else {
-            // SINGLE VALUE CHANGED
-            newVal = getValOrProxy(type === 'keys' ? 'key' : 'value', false, value, rawObj, listener, listeners);
-          }
+    return _defineProperty({
+      next: function () {
+        var _rawIt$next = rawIt.next(),
+          value = _rawIt$next.value,
+          done = _rawIt$next.done;
+        if (done) {
           return {
-            value: newVal,
-            done: done,
+            value: getValOrProxy(value, false, value, rawObj, listener, listeners),
+            done: done
           };
-        },
-      },
-      typeof Symbol === 'function' ? Symbol.iterator : '@@iterator',
-      function () {
-        return this;
+        }
+        observer.useProp(KeyTypes.COLLECTION_CHANGE);
+        var newVal;
+        if (type === 'entries') {
+          //ENTRY CHANGED
+          newVal = [createProxy(value[0], {
+            current: function (change) {
+              if (!change.parents) change.parents = [];
+              change.parents.push(rawObj);
+              var mutation = resolveMutation(_extends({}, rawObj, _defineProperty({}, 'itemChange', {
+                key: change.mutation.from,
+                value: value[1]
+              })), _extends({}, rawObj, _defineProperty({}, 'itemChange', {
+                key: change.mutation.to,
+                value: value[1]
+              })));
+              listener.current(_extends({}, change, {
+                mutation: mutation
+              }));
+              listeners.forEach(function (lst) {
+                return lst(_extends({}, change, {
+                  mutation: mutation
+                }));
+              });
+            }
+          }, false, isReduxAdapter), createProxy(value[1], {
+            current: function (change) {
+              if (!change.parents) change.parents = [];
+              change.parents.push(rawObj);
+              var mutation = resolveMutation(_extends({}, rawObj, {
+                item: {
+                  key: value[0],
+                  value: change.mutation.from
+                }
+              }), _extends({}, rawObj, {
+                item: {
+                  key: value[0],
+                  value: change.mutation.to
+                }
+              }));
+              listener.current(_extends({}, change, {
+                mutation: mutation
+              }));
+              listeners.forEach(function (lst) {
+                return lst(_extends({}, change, {
+                  mutation: mutation
+                }));
+              });
+            }
+          }, false, isReduxAdapter)];
+        } else {
+          // SINGLE VALUE CHANGED
+          newVal = getValOrProxy(type === 'keys' ? 'key' : 'value', false, value, rawObj, listener, listeners);
+        }
+        return {
+          value: newVal,
+          done: done
+        };
       }
-    );
+    }, typeof Symbol === 'function' ? Symbol.iterator : '@@iterator', function () {
+      return this;
+    });
   }
   function keys(rawObj) {
     return wrapIterator(rawObj, rawObj.keys(), 'keys');
@@ -7442,21 +6988,17 @@ function createMapProxy(rawObj, listener) {
   function forOf(rawObj) {
     return wrapIterator(rawObj, rawObj.entries(), 'entries');
   }
-  var handler = _defineProperty(
-    {
-      get: get,
-      set: set,
-      delete: deleteFun,
-      clear: clear,
-      has: has,
-      entries: entries,
-      forEach: forEach,
-      keys: keys,
-      values: values,
-    },
-    typeof Symbol === 'function' ? Symbol.iterator : '@@iterator',
-    forOf
-  );
+  var handler = _defineProperty({
+    get: get,
+    set: set,
+    delete: deleteFun,
+    clear: clear,
+    has: has,
+    entries: entries,
+    forEach: forEach,
+    keys: keys,
+    values: values
+  }, typeof Symbol === 'function' ? Symbol.iterator : '@@iterator', forOf);
   registerListener(rawObj, listener, listeners);
   return new Proxy(rawObj, handler);
 }
@@ -7557,40 +7099,32 @@ function createProxy(rawObj, listener) {
   // 创建Proxy
   var proxyObj;
   if (isShallow) {
-    proxyObj = createObjectProxy(
-      rawObj,
-      {
-        current: function (change) {
-          listener === null || listener === void 0 ? void 0 : listener.current(change);
-        },
-      },
-      true
-    );
+    proxyObj = createObjectProxy(rawObj, {
+      current: function (change) {
+        listener === null || listener === void 0 ? void 0 : listener.current(change);
+      }
+    }, true);
   } else if (isArray(rawObj)) {
     // 数组
     proxyObj = createArrayProxy(rawObj, {
       current: function (change) {
         listener === null || listener === void 0 ? void 0 : listener.current(change);
-      },
+      }
     });
   } else if (isCollection(rawObj)) {
     // 集合
     proxyObj = createCollectionProxy(rawObj, {
       current: function (change) {
         listener === null || listener === void 0 ? void 0 : listener.current(change);
-      },
+      }
     });
   } else {
     // 原生对象 或 函数
-    proxyObj = createObjectProxy(
-      rawObj,
-      {
-        current: function (change) {
-          listener === null || listener === void 0 ? void 0 : listener.current(change);
-        },
-      },
-      false
-    );
+    proxyObj = createObjectProxy(rawObj, {
+      current: function (change) {
+        listener === null || listener === void 0 ? void 0 : listener.current(change);
+      }
+    }, false);
   }
   proxyMap.set(rawObj, proxyObj);
   proxyMap.set(proxyObj, proxyObj);
@@ -7629,7 +7163,7 @@ function readonlyProxy(rawObj) {
     },
     deleteProperty: function () {
       throw Error('Trying to change readonly variable');
-    },
+    }
   });
 }
 
@@ -7676,7 +7210,7 @@ var idGenerator = {
   id: 0,
   get: function (prefix) {
     return prefix.toString() + this.id++;
-  },
+  }
 };
 var storeMap = new Map();
 var pendingMap = new WeakMap();
@@ -7691,15 +7225,13 @@ function tryNextAction(storeObj, proxyObj, config, plannedActions) {
       devtools.emit(QUEUE_FINISHED, {
         store: storeObj,
         endedAt: timestamp,
-        duration: duration,
+        duration: duration
       });
     }
     return;
   }
   var nextAction = plannedActions.shift();
-  var result = config.actions
-    ? config.actions[nextAction.action].bind(storeObj, proxyObj).apply(void 0, nextAction.payload)
-    : undefined;
+  var result = config.actions ? config.actions[nextAction.action].bind(storeObj, proxyObj).apply(void 0, nextAction.payload) : undefined;
   if (isPromise$1(result)) {
     result.then(function (value) {
       nextAction.resolve(value);
@@ -7737,16 +7269,9 @@ function createStore$1(config) {
   }
   var id = config.id || idGenerator.get('UNNAMED_STORE');
   var listener = {
-    current: function (listener) {},
+    current: function (listener) {}
   };
-  var proxyObj = createProxy(
-    config.state,
-    listener,
-    (_config$options = config.options) === null || _config$options === void 0 ? void 0 : _config$options.isReduxAdapter,
-    (_config$options2 = config.options) === null || _config$options2 === void 0
-      ? void 0
-      : _config$options2.isReduxAdapter
-  );
+  var proxyObj = createProxy(config.state, listener, (_config$options = config.options) === null || _config$options === void 0 ? void 0 : _config$options.isReduxAdapter, (_config$options2 = config.options) === null || _config$options2 === void 0 ? void 0 : _config$options2.isReduxAdapter);
   if (proxyObj !== undefined) {
     pendingMap.set(proxyObj, false);
   }
@@ -7761,18 +7286,16 @@ function createStore$1(config) {
     $c: $c,
     $queue: $queue,
     $config: config,
-    $subscriptions: [
-      function (change) {
-        devtools.emit(STATE_CHANGE, {
-          store: storeObj,
-          change: change,
-        });
-      },
-    ],
+    $subscriptions: [function (change) {
+      devtools.emit(STATE_CHANGE, {
+        store: storeObj,
+        change: change
+      });
+    }],
     $subscribe: function (listener) {
       devtools.emit(SUBSCRIBED, {
         store: storeObj,
-        listener: listener,
+        listener: listener
       });
       storeObj.$subscriptions.push(listener);
       return function () {
@@ -7781,12 +7304,12 @@ function createStore$1(config) {
     },
     $unsubscribe: function (listener) {
       devtools.emit(UNSUBSCRIBED, {
-        store: storeObj,
+        store: storeObj
       });
       storeObj.$subscriptions = storeObj.$subscriptions.filter(function (item) {
         return item != listener;
       });
-    },
+    }
   };
   listener.current = function () {
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
@@ -7811,16 +7334,16 @@ function createStore$1(config) {
           store: storeObj,
           action: {
             action: action,
-            payload: payload,
+            payload: payload
           },
-          fromQueue: true,
+          fromQueue: true
         });
         return new Promise(function (resolve) {
           if (!pendingMap.get(proxyObj)) {
             pendingMap.set(proxyObj, Date.now());
             devtools.emit(QUEUE_PENDING, {
               store: storeObj,
-              startedAt: pendingMap.get(proxyObj),
+              startedAt: pendingMap.get(proxyObj)
             });
             var result = config.actions[action].bind(storeObj, proxyObj).apply(void 0, payload);
             if (isPromise$1(result)) {
@@ -7837,7 +7360,7 @@ function createStore$1(config) {
             plannedActions.push({
               action: action,
               payload: payload,
-              resolve: resolve,
+              resolve: resolve
             });
           }
         });
@@ -7852,9 +7375,9 @@ function createStore$1(config) {
           store: storeObj,
           action: {
             action: action,
-            payload: payload,
+            payload: payload
           },
-          fromQueue: false,
+          fromQueue: false
         });
         return config.actions[action].bind(storeObj, proxyObj).apply(void 0, payload);
       };
@@ -7870,12 +7393,12 @@ function createStore$1(config) {
             store: storeObj,
             action: {
               action: action,
-              payload: payload,
+              payload: payload
             },
-            fromQueue: false,
+            fromQueue: false
           });
           return config.actions[action].bind(storeObj, proxyObj).apply(void 0, payload);
-        },
+        }
       });
     });
   }
@@ -7884,12 +7407,12 @@ function createStore$1(config) {
       var computeFn = config.computed[computeKey].bind(storeObj, readonlyProxy(proxyObj));
       // 让store.$c[computeKey]可以访问到computed的值
       Object.defineProperty($c, computeKey, {
-        get: computeFn,
+        get: computeFn
       });
 
       // 让store[computeKey]可以访问到computed的值
       Object.defineProperty(storeObj, computeKey, {
-        get: computeFn,
+        get: computeFn
       });
     });
   }
@@ -7904,13 +7427,13 @@ function createStore$1(config) {
         },
         set: function (value) {
           proxyObj[key] = value;
-        },
+        }
       });
     });
   }
   storeMap.set(id, storeObj);
   devtools.emit(INITIALIZED, {
-    store: storeObj,
+    store: storeObj
   });
   return createGetStore(storeObj);
 }
@@ -7957,12 +7480,7 @@ function getType$1(value) {
   if (!value) return 'nullish';
   if (value.nativeEvent) return 'event';
   if (typeof value === 'function') return 'function';
-  if (
-    ((_value$constructor = value.constructor) === null || _value$constructor === void 0
-      ? void 0
-      : _value$constructor.name) === 'VNode'
-  )
-    return 'vnode';
+  if (((_value$constructor = value.constructor) === null || _value$constructor === void 0 ? void 0 : _value$constructor.name) === 'VNode') return 'vnode';
   if (isWeakMap(value)) return 'weakMap';
   if (isWeakSet(value)) return 'weakSet';
   if (isMap(value)) return 'map';
@@ -7991,19 +7509,19 @@ function makeProxySnapshot(obj) {
       return {
         _type: 'VNode',
         id: window['__INULA_DEV_HOOK__'].getVnodeId(obj),
-        tag: obj.tag,
+        tag: obj.tag
       };
     }
     // WEAK MAP
     if (type === 'weakMap') {
       return {
-        _type: 'WeakMap',
+        _type: 'WeakMap'
       };
     }
     // WEAK SET
     if (type === 'weakSet') {
       return {
-        _type: 'WeakSet',
+        _type: 'WeakSet'
       };
     }
     // MAP
@@ -8015,9 +7533,9 @@ function makeProxySnapshot(obj) {
             value = _ref[1];
           return {
             key: makeProxySnapshot(key),
-            value: makeProxySnapshot(value),
+            value: makeProxySnapshot(value)
           };
-        }),
+        })
       };
     }
     // SET
@@ -8026,17 +7544,14 @@ function makeProxySnapshot(obj) {
         _type: 'Set',
         values: Array.from(obj).map(function (value) {
           return makeProxySnapshot(value);
-        }),
+        })
       };
     }
     // ARRAY
     if (type === 'array') {
-      if (
-        visited.some(function (item) {
-          return item === obj;
-        })
-      )
-        return '<Cyclic ' + obj.toString() + '>';
+      if (visited.some(function (item) {
+        return item === obj;
+      })) return "<Cyclic " + obj.toString() + ">";
       clone = [];
       obj.forEach(function (item) {
         return clone.push(makeProxySnapshot(item, visited.concat([obj])));
@@ -8045,17 +7560,14 @@ function makeProxySnapshot(obj) {
     }
     // OBJECT
     if (type === 'object') {
-      if (
-        visited.some(function (item) {
-          return item === obj;
-        })
-      )
-        return '<Cyclic ' + obj.toString() + '>';
+      if (visited.some(function (item) {
+        return item === obj;
+      })) return "<Cyclic " + obj.toString() + ">";
       clone = {};
       Object.entries(obj).forEach(function (_ref2) {
         var id = _ref2[0],
           value = _ref2[1];
-        return (clone[id] = makeProxySnapshot(value, visited.concat([obj])));
+        return clone[id] = makeProxySnapshot(value, visited.concat([obj]));
       });
       return clone;
     }
@@ -8065,7 +7577,7 @@ function makeProxySnapshot(obj) {
     console.error('cannot serialize object. ', {
       err: err,
       obj: obj,
-      type: type,
+      type: type
     });
   }
 }
@@ -8082,7 +7594,7 @@ function makeStoreSnapshot(_ref3) {
   var snapshot = makeProxySnapshot({
     data: data,
     type: type,
-    sessionId: sessionId,
+    sessionId: sessionId
   });
   return snapshot;
 }
@@ -8100,18 +7612,15 @@ var devtools = {
     if (!isPanelActive()) {
       return;
     }
-    window.postMessage(
-      {
-        type: 'INULA_DEV_TOOLS',
-        payload: makeStoreSnapshot({
-          type: type,
-          data: data,
-        }),
-        from: 'dev tool hook',
-      },
-      ''
-    );
-  },
+    window.postMessage({
+      type: 'INULA_DEV_TOOLS',
+      payload: makeStoreSnapshot({
+        type: type,
+        data: data
+      }),
+      from: 'dev tool hook'
+    }, '');
+  }
 };
 
 // collects components that are dependent on inulax store and their ids
@@ -8139,14 +7648,8 @@ function getAffectedComponents() {
     }
     res[key] = Array.from(subRes).map(function (vNode) {
       return {
-        name:
-          vNode === null || vNode === void 0
-            ? void 0
-            : vNode.type
-                .toString()
-                .replace(/\{.*\}/, '{...}')
-                .replace('function ', ''),
-        nodeId: window.__INULA_DEV_HOOK__.getVnodeId(vNode),
+        name: vNode === null || vNode === void 0 ? void 0 : vNode.type.toString().replace(/\{.*\}/, '{...}').replace('function ', ''),
+        nodeId: window.__INULA_DEV_HOOK__.getVnodeId(vNode)
       };
     });
   });
@@ -8155,47 +7658,23 @@ function getAffectedComponents() {
 
 // listens to messages from background
 window.addEventListener('message', function (messageEvent) {
-  var _messageEvent$data,
-    _messageEvent$data$pa,
-    _messageEvent$data2,
-    _messageEvent$data2$p,
-    _messageEvent$data3,
-    _messageEvent$data3$p,
-    _messageEvent$data4,
-    _messageEvent$data4$p;
-  if (
-    (messageEvent === null || messageEvent === void 0
-      ? void 0
-      : (_messageEvent$data = messageEvent.data) === null || _messageEvent$data === void 0
-        ? void 0
-        : (_messageEvent$data$pa = _messageEvent$data.payload) === null || _messageEvent$data$pa === void 0
-          ? void 0
-          : _messageEvent$data$pa.type) === 'inulax request observed components'
-  ) {
+  var _messageEvent$data, _messageEvent$data$pa, _messageEvent$data2, _messageEvent$data2$p, _messageEvent$data3, _messageEvent$data3$p, _messageEvent$data4, _messageEvent$data4$p;
+  if ((messageEvent === null || messageEvent === void 0 ? void 0 : (_messageEvent$data = messageEvent.data) === null || _messageEvent$data === void 0 ? void 0 : (_messageEvent$data$pa = _messageEvent$data.payload) === null || _messageEvent$data$pa === void 0 ? void 0 : _messageEvent$data$pa.type) === 'inulax request observed components') {
     // get observed components
     setTimeout(function () {
-      window.postMessage(
-        {
-          type: 'INULA_DEV_TOOLS',
-          payload: {
-            type: OBSERVED_COMPONENTS,
-            data: getAffectedComponents(),
-          },
-          from: 'dev tool hook',
+      window.postMessage({
+        type: 'INULA_DEV_TOOLS',
+        payload: {
+          type: OBSERVED_COMPONENTS,
+          data: getAffectedComponents()
         },
-        ''
-      );
+        from: 'dev tool hook'
+      }, '');
     }, 100);
   }
 
   // executes store action
-  if (
-    ((_messageEvent$data2 = messageEvent.data) === null || _messageEvent$data2 === void 0
-      ? void 0
-      : (_messageEvent$data2$p = _messageEvent$data2.payload) === null || _messageEvent$data2$p === void 0
-        ? void 0
-        : _messageEvent$data2$p.type) === 'inulax executue action'
-  ) {
+  if (((_messageEvent$data2 = messageEvent.data) === null || _messageEvent$data2 === void 0 ? void 0 : (_messageEvent$data2$p = _messageEvent$data2.payload) === null || _messageEvent$data2$p === void 0 ? void 0 : _messageEvent$data2$p.type) === 'inulax executue action') {
     var data = messageEvent.data.payload.data;
     var store = getStore(data.storeId);
     if (!(store !== null && store !== void 0 && store[data.action])) return;
@@ -8205,15 +7684,7 @@ window.addEventListener('message', function (messageEvent) {
   }
 
   // queues store action
-  if (
-    (messageEvent === null || messageEvent === void 0
-      ? void 0
-      : (_messageEvent$data3 = messageEvent.data) === null || _messageEvent$data3 === void 0
-        ? void 0
-        : (_messageEvent$data3$p = _messageEvent$data3.payload) === null || _messageEvent$data3$p === void 0
-          ? void 0
-          : _messageEvent$data3$p.type) === 'inulax queue action'
-  ) {
+  if ((messageEvent === null || messageEvent === void 0 ? void 0 : (_messageEvent$data3 = messageEvent.data) === null || _messageEvent$data3 === void 0 ? void 0 : (_messageEvent$data3$p = _messageEvent$data3.payload) === null || _messageEvent$data3$p === void 0 ? void 0 : _messageEvent$data3$p.type) === 'inulax queue action') {
     var _data = messageEvent.data.payload.data;
     var _store = getStore(_data.storeId);
     if (!(_store !== null && _store !== void 0 && _store[_data.action])) return;
@@ -8223,15 +7694,7 @@ window.addEventListener('message', function (messageEvent) {
   }
 
   // queues change store state
-  if (
-    (messageEvent === null || messageEvent === void 0
-      ? void 0
-      : (_messageEvent$data4 = messageEvent.data) === null || _messageEvent$data4 === void 0
-        ? void 0
-        : (_messageEvent$data4$p = _messageEvent$data4.payload) === null || _messageEvent$data4$p === void 0
-          ? void 0
-          : _messageEvent$data4$p.type) === 'inulax change state'
-  ) {
+  if ((messageEvent === null || messageEvent === void 0 ? void 0 : (_messageEvent$data4 = messageEvent.data) === null || _messageEvent$data4 === void 0 ? void 0 : (_messageEvent$data4$p = _messageEvent$data4.payload) === null || _messageEvent$data4$p === void 0 ? void 0 : _messageEvent$data4$p.type) === 'inulax change state') {
     var _data2 = messageEvent.data.payload;
     var _store2 = getStore(_data2.storeId);
     if (!_store2) return;
@@ -8266,7 +7729,7 @@ window.addEventListener('message', function (messageEvent) {
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-var resolvedPromise = /*#__PURE__*/ Promise.resolve();
+var resolvedPromise = /*#__PURE__*/Promise.resolve();
 var currentFlushPromise = null;
 var isFlushing = false;
 var isPending = false;
@@ -8324,81 +7787,20 @@ function nextTick(fn) {
   });
 }
 
-function _createForOfIteratorHelper$2(r, e) {
-  var t = ('undefined' != typeof Symbol && r[Symbol.iterator]) || r['@@iterator'];
-  if (!t) {
-    if (Array.isArray(r) || (t = _unsupportedIterableToArray$2(r)) || (e && r && 'number' == typeof r.length)) {
-      t && (r = t);
-      var n = 0,
-        F = function () {};
-      return {
-        s: F,
-        n: function () {
-          return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] };
-        },
-        e: function (r) {
-          throw r;
-        },
-        f: F,
-      };
-    }
-    throw new TypeError(
-      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.'
-    );
-  }
-  var o,
-    a = !0,
-    u = !1;
-  return {
-    s: function () {
-      t = t.call(r);
-    },
-    n: function () {
-      var r = t.next();
-      return ((a = r.done), r);
-    },
-    e: function (r) {
-      ((u = !0), (o = r));
-    },
-    f: function () {
-      try {
-        a || null == t.return || t.return();
-      } finally {
-        if (u) throw o;
-      }
-    },
-  };
-}
-function _unsupportedIterableToArray$2(r, a) {
-  if (r) {
-    if ('string' == typeof r) return _arrayLikeToArray$2(r, a);
-    var t = {}.toString.call(r).slice(8, -1);
-    return (
-      'Object' === t && r.constructor && (t = r.constructor.name),
-      'Map' === t || 'Set' === t
-        ? Array.from(r)
-        : 'Arguments' === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t)
-          ? _arrayLikeToArray$2(r, a)
-          : void 0
-    );
-  }
-}
-function _arrayLikeToArray$2(r, a) {
-  (null == a || a > r.length) && (a = r.length);
-  for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
-  return n;
-}
-var ObserverType = /*#__PURE__*/ (function (ObserverType) {
-  ObserverType['REF'] = 'REF';
-  ObserverType['REACTIVE'] = 'REACTIVE';
-  ObserverType['COMPUTED'] = 'COMPUTED';
+function _createForOfIteratorHelper$2(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray$2(r)) || e && r && "number" == typeof r.length) { t && (r = t); var n = 0, F = function () {}; return { s: F, n: function () { return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] }; }, e: function (r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function () { t = t.call(r); }, n: function () { var r = t.next(); return a = r.done, r; }, e: function (r) { u = !0, o = r; }, f: function () { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray$2(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray$2(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray$2(r, a) : void 0; } }
+function _arrayLikeToArray$2(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+var ObserverType = /*#__PURE__*/function (ObserverType) {
+  ObserverType["REF"] = "REF";
+  ObserverType["REACTIVE"] = "REACTIVE";
+  ObserverType["COMPUTED"] = "COMPUTED";
   return ObserverType;
-})({});
+}({});
 
 /**
  * 一个对象（对象、数组、集合）对应一个Observer
  */
-var Observer = /*#__PURE__*/ (function () {
+var Observer = /*#__PURE__*/function () {
   function Observer(type, source) {
     _classCallCheck(this, Observer);
     this.type = void 0;
@@ -8416,225 +7818,201 @@ var Observer = /*#__PURE__*/ (function () {
   }
 
   // 对象的属性被使用时调用
-  _createClass(Observer, [
-    {
-      key: 'useProp',
-      value: function useProp(key) {
-        // 用于watchEffect 和 watch的监听
-        addRContext(this, key);
-        var vNodes = this.keyVNodes.get(key);
-        if (!vNodes) {
-          vNodes = new Set();
-          this.keyVNodes.set(key, vNodes);
+  _createClass(Observer, [{
+    key: "useProp",
+    value: function useProp(key) {
+      // 用于watchEffect 和 watch的监听
+      addRContext(this, key);
+      var vNodes = this.keyVNodes.get(key);
+      if (!vNodes) {
+        vNodes = new Set();
+        this.keyVNodes.set(key, vNodes);
+      }
+      var processingVNode = getProcessingVNode();
+      if (processingVNode === null) {
+        // 异常场景
+        return;
+      }
+      if (!processingVNode.observers) {
+        processingVNode.observers = new Set();
+      }
+
+      // vNode -> Observers
+      processingVNode.observers.add(this);
+
+      // key -> vNodes，记录这个prop被哪些VNode使用了
+      vNodes.add(processingVNode);
+
+      // vNode -> keys，记录这个VNode使用了哪些props
+      var keys = this.vNodeKeys.get(processingVNode);
+      if (!keys) {
+        keys = new Set();
+        this.vNodeKeys.set(processingVNode, keys);
+      }
+      keys.add(key);
+    }
+
+    // 对象的属性被赋值时调用
+  }, {
+    key: "setProp",
+    value: function setProp(key, mutation, oldValue, newValue) {
+      var _this = this;
+      var dirtyLevel = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : DirtyLevels.Dirty;
+      var vNodes = this.keyVNodes.get(key);
+
+      // 这里需要过滤调COLLECTION_CHANGE，因为这个是集合的变化，不是具体的某个prop的变化，否则会重复触发
+      if (key !== KeyTypes.COLLECTION_CHANGE) {
+        // 触发：store.$s.watch('key', () => {})
+        if (this.watchers[key]) {
+          this.watchers[key].forEach(function (cb) {
+            cb(key, oldValue, newValue, mutation);
+          });
         }
-        var processingVNode = getProcessingVNode();
-        if (processingVNode === null) {
-          // 异常场景
-          return;
-        }
-        if (!processingVNode.observers) {
-          processingVNode.observers = new Set();
-        }
-
-        // vNode -> Observers
-        processingVNode.observers.add(this);
-
-        // key -> vNodes，记录这个prop被哪些VNode使用了
-        vNodes.add(processingVNode);
-
-        // vNode -> keys，记录这个VNode使用了哪些props
-        var keys = this.vNodeKeys.get(processingVNode);
-        if (!keys) {
-          keys = new Set();
-          this.vNodeKeys.set(processingVNode, keys);
-        }
-        keys.add(key);
-      },
-
-      // 对象的属性被赋值时调用
-    },
-    {
-      key: 'setProp',
-      value: function setProp(key, mutation, oldValue, newValue) {
-        var _this = this;
-        var dirtyLevel = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : DirtyLevels.Dirty;
-        var vNodes = this.keyVNodes.get(key);
-
-        // 这里需要过滤调COLLECTION_CHANGE，因为这个是集合的变化，不是具体的某个prop的变化，否则会重复触发
-        if (key !== KeyTypes.COLLECTION_CHANGE) {
-          // 触发：store.$s.watch('key', () => {})
-          if (this.watchers[key]) {
-            this.watchers[key].forEach(function (cb) {
-              cb(key, oldValue, newValue, mutation);
+        if (this.listeners.length) {
+          // 异步触发
+          queueJob(function () {
+            _this.triggerChangeListeners({
+              mutation: mutation,
+              vNodes: vNodes
             });
-          }
-          if (this.listeners.length) {
-            // 异步触发
-            queueJob(function () {
-              _this.triggerChangeListeners({
-                mutation: mutation,
-                vNodes: vNodes,
-              });
-            });
-          }
+          });
         }
-        var keyRContexts = this.rContexts[key];
-        if (keyRContexts) {
-          var _iterator = _createForOfIteratorHelper$2(keyRContexts.keys()),
-            _step;
-          try {
-            for (_iterator.s(); !(_step = _iterator.n()).done; ) {
-              var rContext = _step.value;
-              var tracking = void 0;
-              if (tracking === undefined) {
-                tracking = keyRContexts.get(rContext) === rContext._trackId;
+      }
+      var keyRContexts = this.rContexts[key];
+      if (keyRContexts) {
+        var _iterator = _createForOfIteratorHelper$2(keyRContexts.keys()),
+          _step;
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var rContext = _step.value;
+            var tracking = void 0;
+            if (tracking === undefined) {
+              tracking = keyRContexts.get(rContext) === rContext._trackId;
+            }
+            if (rContext._dirtyLevel < dirtyLevel && tracking) {
+              if (rContext._shouldSchedule === undefined || rContext._shouldSchedule === false) {
+                rContext._shouldSchedule = rContext._dirtyLevel === DirtyLevels.NotDirty;
               }
-              if (rContext._dirtyLevel < dirtyLevel && tracking) {
-                if (rContext._shouldSchedule === undefined || rContext._shouldSchedule === false) {
-                  rContext._shouldSchedule = rContext._dirtyLevel === DirtyLevels.NotDirty;
-                }
-                rContext._dirtyLevel = dirtyLevel;
-              }
-              if (rContext._shouldSchedule && tracking) {
-                if (rContext.type === ContextType.COMPUTED) {
-                  // 触发依赖
-                  rContext.trigger();
-                } else {
-                  if (!rContext.runs && rContext._dirtyLevel !== DirtyLevels.MaybeDirty_ComputedSideEffect) {
-                    rContext._shouldSchedule = false;
+              rContext._dirtyLevel = dirtyLevel;
+            }
+            if (rContext._shouldSchedule && tracking) {
+              if (rContext.type === ContextType.COMPUTED) {
+                // 触发依赖
+                rContext.trigger();
+              } else {
+                if (!rContext.runs && rContext._dirtyLevel !== DirtyLevels.MaybeDirty_ComputedSideEffect) {
+                  rContext._shouldSchedule = false;
 
-                    // 异步触发
-                    queueJob(rContext.job);
-                  }
+                  // 异步触发
+                  queueJob(rContext.job);
                 }
               }
             }
-          } catch (err) {
-            _iterator.e(err);
-          } finally {
-            _iterator.f();
           }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
         }
-      },
-    },
-    {
-      key: 'triggerChangeListeners',
-      value: function triggerChangeListeners(_ref) {
-        var mutation = _ref.mutation,
-          vNodes = _ref.vNodes;
-        var nodesList = vNodes ? Array.from(vNodes) : [];
-        this.listeners.forEach(function (listener) {
-          return listener({
-            mutation: mutation,
-            vNodes: nodesList.map(function (vNode) {
-              var _vNode$type, _realNode, _realNode$outerHTML;
-              var realNode = vNode.realNode;
-              var searchedNode = vNode;
-              while (searchedNode && !realNode) {
-                var _searchedNode, _searchedNode2;
-                searchedNode =
-                  (_searchedNode = searchedNode) === null || _searchedNode === void 0 ? void 0 : _searchedNode.child;
-                realNode =
-                  (_searchedNode2 = searchedNode) === null || _searchedNode2 === void 0
-                    ? void 0
-                    : _searchedNode2.realNode;
-              }
-              return {
-                type:
-                  vNode === null || vNode === void 0
-                    ? void 0
-                    : (_vNode$type = vNode.type) === null || _vNode$type === void 0
-                      ? void 0
-                      : _vNode$type.name,
-                id: devtools.getVNodeId(vNode),
-                path: vNode.path,
-                element:
-                  (_realNode = realNode) === null || _realNode === void 0
-                    ? void 0
-                    : (_realNode$outerHTML = _realNode.outerHTML) === null || _realNode$outerHTML === void 0
-                      ? void 0
-                      : _realNode$outerHTML.substr(0, 100),
-              };
-            }),
-          });
+      }
+    }
+  }, {
+    key: "triggerChangeListeners",
+    value: function triggerChangeListeners(_ref) {
+      var mutation = _ref.mutation,
+        vNodes = _ref.vNodes;
+      var nodesList = vNodes ? Array.from(vNodes) : [];
+      this.listeners.forEach(function (listener) {
+        return listener({
+          mutation: mutation,
+          vNodes: nodesList.map(function (vNode) {
+            var _vNode$type, _realNode, _realNode$outerHTML;
+            var realNode = vNode.realNode;
+            var searchedNode = vNode;
+            while (searchedNode && !realNode) {
+              var _searchedNode, _searchedNode2;
+              searchedNode = (_searchedNode = searchedNode) === null || _searchedNode === void 0 ? void 0 : _searchedNode.child;
+              realNode = (_searchedNode2 = searchedNode) === null || _searchedNode2 === void 0 ? void 0 : _searchedNode2.realNode;
+            }
+            return {
+              type: vNode === null || vNode === void 0 ? void 0 : (_vNode$type = vNode.type) === null || _vNode$type === void 0 ? void 0 : _vNode$type.name,
+              id: devtools.getVNodeId(vNode),
+              path: vNode.path,
+              element: (_realNode = realNode) === null || _realNode === void 0 ? void 0 : (_realNode$outerHTML = _realNode.outerHTML) === null || _realNode$outerHTML === void 0 ? void 0 : _realNode$outerHTML.substr(0, 100)
+            };
+          })
         });
-      },
-    },
-    {
-      key: 'triggerUpdate',
-      value: function triggerUpdate(vNode) {
-        // 触发VNode更新
-        launchUpdateFromVNode(vNode);
-      },
-    },
-    {
-      key: 'addListener',
-      value: function addListener(listener) {
-        this.listeners.push(listener);
-      },
-    },
-    {
-      key: 'removeListener',
-      value: function removeListener(listener) {
-        this.listeners = this.listeners.filter(function (item) {
-          return item != listener;
-        });
-      },
+      });
+    }
+  }, {
+    key: "triggerUpdate",
+    value: function triggerUpdate(vNode) {
+      // 触发VNode更新
+      launchUpdateFromVNode(vNode);
+    }
+  }, {
+    key: "addListener",
+    value: function addListener(listener) {
+      this.listeners.push(listener);
+    }
+  }, {
+    key: "removeListener",
+    value: function removeListener(listener) {
+      this.listeners = this.listeners.filter(function (item) {
+        return item != listener;
+      });
+    }
 
-      // 触发所有使用的props的VNode更新
-    },
-    {
-      key: 'allChange',
-      value: function allChange() {
-        var keyIt = this.keyVNodes.keys();
-        var keyItem = keyIt.next();
-        while (!keyItem.done) {
+    // 触发所有使用的props的VNode更新
+  }, {
+    key: "allChange",
+    value: function allChange() {
+      var keyIt = this.keyVNodes.keys();
+      var keyItem = keyIt.next();
+      while (!keyItem.done) {
+        this.setProp(keyItem.value, {});
+        keyItem = keyIt.next();
+      }
+    }
+  }, {
+    key: "arrayLengthChange",
+    value: function arrayLengthChange(length) {
+      var keyIt = this.keyVNodes.keys();
+      var keyItem = keyIt.next();
+      while (!keyItem.done) {
+        if (keyItem.value >= length) {
           this.setProp(keyItem.value, {});
-          keyItem = keyIt.next();
         }
-      },
-    },
-    {
-      key: 'arrayLengthChange',
-      value: function arrayLengthChange(length) {
-        var keyIt = this.keyVNodes.keys();
-        var keyItem = keyIt.next();
-        while (!keyItem.done) {
-          if (keyItem.value >= length) {
-            this.setProp(keyItem.value, {});
-          }
-          keyItem = keyIt.next();
-        }
-      },
+        keyItem = keyIt.next();
+      }
+    }
 
-      // 删除Observer中保存的这个VNode的关系数据
-    },
-    {
-      key: 'clearByVNode',
-      value: function clearByVNode(vNode) {
-        var _this2 = this;
-        var keys = this.vNodeKeys.get(vNode);
-        if (keys) {
-          keys.forEach(function (key) {
-            var vNodes = _this2.keyVNodes.get(key);
-            vNodes.delete(vNode);
-            if (vNodes.size === 0) {
-              _this2.keyVNodes.delete(key);
-            }
-          });
-        }
-        this.vNodeKeys.delete(vNode);
-      },
-    },
-  ]);
+    // 删除Observer中保存的这个VNode的关系数据
+  }, {
+    key: "clearByVNode",
+    value: function clearByVNode(vNode) {
+      var _this2 = this;
+      var keys = this.vNodeKeys.get(vNode);
+      if (keys) {
+        keys.forEach(function (key) {
+          var vNodes = _this2.keyVNodes.get(key);
+          vNodes.delete(vNode);
+          if (vNodes.size === 0) {
+            _this2.keyVNodes.delete(key);
+          }
+        });
+      }
+      this.vNodeKeys.delete(vNode);
+    }
+  }]);
   return Observer;
-})();
+}();
 
 function computed(getterOrOptions, options) {
   if (typeof getterOrOptions === 'function') {
     var computedInst = new ComputedImpl({
       get: getterOrOptions,
-      triggerAnyway: options === null || options === void 0 ? void 0 : options.triggerAnyway,
+      triggerAnyway: options === null || options === void 0 ? void 0 : options.triggerAnyway
     });
     return computedInst;
   } else {
@@ -8647,7 +8025,7 @@ function useComputed(getterOrOptions, options) {
     if (typeof getterOrOptions === 'function') {
       objRef.current = new ComputedImpl({
         get: getterOrOptions,
-        triggerAnyway: options === null || options === void 0 ? void 0 : options.triggerAnyway,
+        triggerAnyway: options === null || options === void 0 ? void 0 : options.triggerAnyway
       });
     } else {
       objRef.current = new ComputedImpl(getterOrOptions);
@@ -8655,7 +8033,7 @@ function useComputed(getterOrOptions, options) {
   }
   return objRef.current;
 }
-var ComputedImpl = /*#__PURE__*/ (function () {
+var ComputedImpl = /*#__PURE__*/function () {
   function ComputedImpl(options) {
     _classCallCheck(this, ComputedImpl);
     this._value = void 0;
@@ -8673,71 +8051,52 @@ var ComputedImpl = /*#__PURE__*/ (function () {
     // 设置dirty
     this.rContext.setDirty(true);
   }
-  _createClass(ComputedImpl, [
-    {
-      key: 'value',
-      get: function () {
-        if (this.rContext.isDirty()) {
-          this.rContext.run();
-        }
-        this.observer.useProp('value');
-        return this._value;
-      },
-      set: function (newValue) {
-        if (this.setter) {
-          this.setter(newValue);
-        } else {
-          console.warn('Write operation failed: computed value is readonly');
-        }
-      },
+  _createClass(ComputedImpl, [{
+    key: "value",
+    get: function () {
+      if (this.rContext.isDirty()) {
+        this.rContext.run();
+      }
+      this.observer.useProp('value');
+      return this._value;
     },
-    {
-      key: 'updateValue',
-      value: function updateValue() {
-        var oldValue = this._value;
-        this._value = this.getter();
-        if (!isSame$1(oldValue, this._value)) {
-          this.observer.setProp(
-            'value',
-            {
-              mutation: true,
-              from: oldValue,
-              to: this._value,
-            },
-            undefined,
-            undefined,
-            DirtyLevels.Dirty
-          );
-        }
-      },
-    },
-    {
-      key: 'trigger',
-      value: function trigger() {
-        this.observer.setProp(
-          'value',
-          {
-            mutation: true,
-            from: this._value,
-            to: this._value,
-          },
-          undefined,
-          undefined,
-          this.rContext._dirtyLevel === DirtyLevels.MaybeDirty_ComputedSideEffect
-            ? DirtyLevels.MaybeDirty_ComputedSideEffect
-            : DirtyLevels.MaybeDirty
-        );
-      },
-    },
-    {
-      key: 'stop',
-      value: function stop() {
-        this.rContext.stop();
-      },
-    },
-  ]);
+    set: function (newValue) {
+      if (this.setter) {
+        this.setter(newValue);
+      } else {
+        console.warn('Write operation failed: computed value is readonly');
+      }
+    }
+  }, {
+    key: "updateValue",
+    value: function updateValue() {
+      var oldValue = this._value;
+      this._value = this.getter();
+      if (!isSame$1(oldValue, this._value)) {
+        this.observer.setProp('value', {
+          mutation: true,
+          from: oldValue,
+          to: this._value
+        }, undefined, undefined, DirtyLevels.Dirty);
+      }
+    }
+  }, {
+    key: "trigger",
+    value: function trigger() {
+      this.observer.setProp('value', {
+        mutation: true,
+        from: this._value,
+        to: this._value
+      }, undefined, undefined, this.rContext._dirtyLevel === DirtyLevels.MaybeDirty_ComputedSideEffect ? DirtyLevels.MaybeDirty_ComputedSideEffect : DirtyLevels.MaybeDirty);
+    }
+  }, {
+    key: "stop",
+    value: function stop() {
+      this.rContext.stop();
+    }
+  }]);
   return ComputedImpl;
-})();
+}();
 function triggerComputed(computed) {
   return computed.value;
 }
@@ -8746,7 +8105,7 @@ function triggerComputed(computed) {
  * RContextScope收集RContext，用于在组件销毁时，清除组件中的RContext，如：清除组件中注册的watch
  */
 var activeRContextScope = null;
-var RContextScope = /*#__PURE__*/ (function () {
+var RContextScope = /*#__PURE__*/function () {
   function RContextScope() {
     _classCallCheck(this, RContextScope);
     /**
@@ -8758,40 +8117,36 @@ var RContextScope = /*#__PURE__*/ (function () {
   /**
    * 激活当前作用域
    */
-  _createClass(RContextScope, [
-    {
-      key: 'on',
-      value: function on() {
-        // eslint-disable-next-line @typescript-eslint/no-this-alias
-        activeRContextScope = this;
-      },
+  _createClass(RContextScope, [{
+    key: "on",
+    value: function on() {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      activeRContextScope = this;
+    }
 
-      /**
-       * 停用当前作用域
-       */
-    },
-    {
-      key: 'off',
-      value: function off() {
-        activeRContextScope = null;
-      },
+    /**
+     * 停用当前作用域
+     */
+  }, {
+    key: "off",
+    value: function off() {
+      activeRContextScope = null;
+    }
 
-      /**
-       * 停止当前作用域及其所有RContext
-       */
-    },
-    {
-      key: 'stop',
-      value: function stop() {
-        for (var i = 0, l = this.rContexts.length; i < l; i++) {
-          cleanupRContext(this.rContexts[i]);
-        }
-        this.rContexts = [];
-      },
-    },
-  ]);
+    /**
+     * 停止当前作用域及其所有RContext
+     */
+  }, {
+    key: "stop",
+    value: function stop() {
+      for (var i = 0, l = this.rContexts.length; i < l; i++) {
+        cleanupRContext(this.rContexts[i]);
+      }
+      this.rContexts = [];
+    }
+  }]);
   return RContextScope;
-})();
+}();
 function recordRContextScope(rContext) {
   var scope = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : activeRContextScope;
   if (scope) {
@@ -8799,87 +8154,26 @@ function recordRContextScope(rContext) {
   }
 }
 
-function _createForOfIteratorHelper$1(r, e) {
-  var t = ('undefined' != typeof Symbol && r[Symbol.iterator]) || r['@@iterator'];
-  if (!t) {
-    if (Array.isArray(r) || (t = _unsupportedIterableToArray$1(r)) || (e && r && 'number' == typeof r.length)) {
-      t && (r = t);
-      var n = 0,
-        F = function () {};
-      return {
-        s: F,
-        n: function () {
-          return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] };
-        },
-        e: function (r) {
-          throw r;
-        },
-        f: F,
-      };
-    }
-    throw new TypeError(
-      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.'
-    );
-  }
-  var o,
-    a = !0,
-    u = !1;
-  return {
-    s: function () {
-      t = t.call(r);
-    },
-    n: function () {
-      var r = t.next();
-      return ((a = r.done), r);
-    },
-    e: function (r) {
-      ((u = !0), (o = r));
-    },
-    f: function () {
-      try {
-        a || null == t.return || t.return();
-      } finally {
-        if (u) throw o;
-      }
-    },
-  };
-}
-function _unsupportedIterableToArray$1(r, a) {
-  if (r) {
-    if ('string' == typeof r) return _arrayLikeToArray$1(r, a);
-    var t = {}.toString.call(r).slice(8, -1);
-    return (
-      'Object' === t && r.constructor && (t = r.constructor.name),
-      'Map' === t || 'Set' === t
-        ? Array.from(r)
-        : 'Arguments' === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t)
-          ? _arrayLikeToArray$1(r, a)
-          : void 0
-    );
-  }
-}
-function _arrayLikeToArray$1(r, a) {
-  (null == a || a > r.length) && (a = r.length);
-  for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
-  return n;
-}
-var ContextType = /*#__PURE__*/ (function (ContextType) {
-  ContextType['COMPUTED'] = 'COMPUTE';
-  ContextType['WATCH'] = 'WATCH';
+function _createForOfIteratorHelper$1(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray$1(r)) || e && r && "number" == typeof r.length) { t && (r = t); var n = 0, F = function () {}; return { s: F, n: function () { return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] }; }, e: function (r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function () { t = t.call(r); }, n: function () { var r = t.next(); return a = r.done, r; }, e: function (r) { u = !0, o = r; }, f: function () { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray$1(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray$1(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray$1(r, a) : void 0; } }
+function _arrayLikeToArray$1(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+var ContextType = /*#__PURE__*/function (ContextType) {
+  ContextType["COMPUTED"] = "COMPUTE";
+  ContextType["WATCH"] = "WATCH";
   return ContextType;
-})({});
-var DirtyLevels = /*#__PURE__*/ (function (DirtyLevels) {
-  DirtyLevels[(DirtyLevels['NotDirty'] = 0)] = 'NotDirty';
-  DirtyLevels[(DirtyLevels['QueryingDirty'] = 1)] = 'QueryingDirty';
-  DirtyLevels[(DirtyLevels['MaybeDirty_ComputedSideEffect'] = 2)] = 'MaybeDirty_ComputedSideEffect';
-  DirtyLevels[(DirtyLevels['MaybeDirty'] = 3)] = 'MaybeDirty';
-  DirtyLevels[(DirtyLevels['Dirty'] = 4)] = 'Dirty';
+}({});
+var DirtyLevels = /*#__PURE__*/function (DirtyLevels) {
+  DirtyLevels[DirtyLevels["NotDirty"] = 0] = "NotDirty";
+  DirtyLevels[DirtyLevels["QueryingDirty"] = 1] = "QueryingDirty";
+  DirtyLevels[DirtyLevels["MaybeDirty_ComputedSideEffect"] = 2] = "MaybeDirty_ComputedSideEffect";
+  DirtyLevels[DirtyLevels["MaybeDirty"] = 3] = "MaybeDirty";
+  DirtyLevels[DirtyLevels["Dirty"] = 4] = "Dirty";
   return DirtyLevels;
-})({});
+}({});
 var currentRContext = null;
 var reactiveContextStack = [];
 var NOOP = function () {};
-var RContext = /*#__PURE__*/ (function () {
+var RContext = /*#__PURE__*/function () {
   function RContext(fn, type) {
     var trigger = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : NOOP;
     var job = arguments.length > 3 ? arguments[3] : undefined;
@@ -8901,95 +8195,81 @@ var RContext = /*#__PURE__*/ (function () {
     this.job = job;
     recordRContextScope(this);
   }
-  _createClass(RContext, [
-    {
-      key: 'start',
-      value: function start() {
-        this._trackId++;
-        cleanupRContext(this);
-        currentRContext = this;
-        reactiveContextStack.push(this);
-        return endRContext;
-      },
-    },
-    {
-      key: 'run',
-      value: function run() {
-        this._dirtyLevel = DirtyLevels.NotDirty;
-        var end = this.start();
-        try {
-          this.runs++;
-          return this.fn();
-        } finally {
-          this.runs--;
-          end();
-        }
-      },
-    },
-    {
-      key: 'stop',
-      value: function stop() {
-        this._trackId++;
-        cleanupRContext(this);
-      },
-    },
-    {
-      key: 'isDirty',
-      value: function isDirty() {
-        if (
-          this._dirtyLevel === DirtyLevels.MaybeDirty ||
-          this._dirtyLevel === DirtyLevels.MaybeDirty_ComputedSideEffect
-        ) {
-          this._dirtyLevel = DirtyLevels.QueryingDirty;
-          if (this.reactiveDependents) {
-            var _iterator = _createForOfIteratorHelper$1(this.reactiveDependents),
-              _step;
-            try {
-              for (_iterator.s(); !(_step = _iterator.n()).done; ) {
-                var observer = _step.value;
-                if (observer.type === ObserverType.COMPUTED && observer.source) {
-                  triggerComputed(observer.source);
-                  if (this._dirtyLevel >= DirtyLevels.Dirty) {
-                    return true; // 如果已经确定为脏，直接返回
-                  }
+  _createClass(RContext, [{
+    key: "start",
+    value: function start() {
+      this._trackId++;
+      cleanupRContext(this);
+      currentRContext = this;
+      reactiveContextStack.push(this);
+      return endRContext;
+    }
+  }, {
+    key: "run",
+    value: function run() {
+      this._dirtyLevel = DirtyLevels.NotDirty;
+      var end = this.start();
+      try {
+        this.runs++;
+        return this.fn();
+      } finally {
+        this.runs--;
+        end();
+      }
+    }
+  }, {
+    key: "stop",
+    value: function stop() {
+      this._trackId++;
+      cleanupRContext(this);
+    }
+  }, {
+    key: "isDirty",
+    value: function isDirty() {
+      if (this._dirtyLevel === DirtyLevels.MaybeDirty || this._dirtyLevel === DirtyLevels.MaybeDirty_ComputedSideEffect) {
+        this._dirtyLevel = DirtyLevels.QueryingDirty;
+        if (this.reactiveDependents) {
+          var _iterator = _createForOfIteratorHelper$1(this.reactiveDependents),
+            _step;
+          try {
+            for (_iterator.s(); !(_step = _iterator.n()).done;) {
+              var observer = _step.value;
+              if (observer.type === ObserverType.COMPUTED && observer.source) {
+                triggerComputed(observer.source);
+                if (this._dirtyLevel >= DirtyLevels.Dirty) {
+                  return true; // 如果已经确定为脏，直接返回
                 }
               }
-            } catch (err) {
-              _iterator.e(err);
-            } finally {
-              _iterator.f();
             }
-          }
-          if (this._dirtyLevel === DirtyLevels.QueryingDirty) {
-            this._dirtyLevel = DirtyLevels.NotDirty;
+          } catch (err) {
+            _iterator.e(err);
+          } finally {
+            _iterator.f();
           }
         }
-        return this._dirtyLevel >= DirtyLevels.Dirty;
-      },
-    },
-    {
-      key: 'setDirty',
-      value: function setDirty(v) {
-        this._dirtyLevel = v ? DirtyLevels.Dirty : DirtyLevels.NotDirty;
-      },
-    },
-    {
-      key: 'setDirtyLevel',
-      value: function setDirtyLevel(dirtyLevel) {
-        this._dirtyLevel = dirtyLevel;
-      },
-    },
-  ]);
+        if (this._dirtyLevel === DirtyLevels.QueryingDirty) {
+          this._dirtyLevel = DirtyLevels.NotDirty;
+        }
+      }
+      return this._dirtyLevel >= DirtyLevels.Dirty;
+    }
+  }, {
+    key: "setDirty",
+    value: function setDirty(v) {
+      this._dirtyLevel = v ? DirtyLevels.Dirty : DirtyLevels.NotDirty;
+    }
+  }, {
+    key: "setDirtyLevel",
+    value: function setDirtyLevel(dirtyLevel) {
+      this._dirtyLevel = dirtyLevel;
+    }
+  }]);
   return RContext;
-})();
+}();
 function endRContext() {
   var _reactiveContextStack;
   reactiveContextStack.pop();
-  currentRContext =
-    (_reactiveContextStack = reactiveContextStack[reactiveContextStack.length - 1]) !== null &&
-    _reactiveContextStack !== void 0
-      ? _reactiveContextStack
-      : null;
+  currentRContext = (_reactiveContextStack = reactiveContextStack[reactiveContextStack.length - 1]) !== null && _reactiveContextStack !== void 0 ? _reactiveContextStack : null;
 }
 
 // 清除 RContext 和 响应式数据 的绑定，双向清除
@@ -8998,7 +8278,7 @@ function cleanupRContext(rContext) {
     var _iterator2 = _createForOfIteratorHelper$1(rContext.reactiveDependents),
       _step2;
     try {
-      for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
+      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
         var observer = _step2.value;
         // 遍历 observer 的所有属性
         for (var prop in observer.rContexts) {
@@ -9112,12 +8392,7 @@ function captureFunctionComponent(processing, funcComp, nextProps) {
   // 在执行exeFunctionHook前先设置stateChange为false
   setStateChange(false);
   var newElements = createComponentRContext(function () {
-    return runFunctionWithHooks(
-      processing.tag === ForwardRef ? funcComp.render : funcComp,
-      nextProps,
-      processing.tag === ForwardRef ? processing.ref : undefined,
-      processing
-    );
+    return runFunctionWithHooks(processing.tag === ForwardRef ? funcComp.render : funcComp, nextProps, processing.tag === ForwardRef ? processing.ref : undefined, processing);
   }, processing);
 
   // 这里需要判断是否可以复用，因为函数组件比起其他组件，多了context、stateChange、或者store改变了 三个因素
@@ -9139,13 +8414,13 @@ function captureRender$c(processing) {
   return captureFunctionComponent(processing, Component, resolvedProps);
 }
 
-var FunctionComponentRender = /*#__PURE__*/ Object.freeze({
+var FunctionComponentRender = /*#__PURE__*/Object.freeze({
   __proto__: null,
   bubbleRender: bubbleRender$c,
   setStateChange: setStateChange,
   isStateChange: isStateChange,
   captureFunctionComponent: captureFunctionComponent,
-  captureRender: captureRender$c,
+  captureRender: captureRender$c
 });
 
 /*
@@ -9204,23 +8479,15 @@ function captureRender$b(processing, shouldUpdate) {
   return captureMemoComponent(processing, shouldUpdate);
 }
 
-var MemoComponentRender = /*#__PURE__*/ Object.freeze({
+var MemoComponentRender = /*#__PURE__*/Object.freeze({
   __proto__: null,
   bubbleRender: bubbleRender$b,
   captureMemoComponent: captureMemoComponent,
-  captureRender: captureRender$b,
+  captureRender: captureRender$b
 });
 
 function bubbleRender$a() {}
-var LazyRendererMap = _defineProperty(
-  _defineProperty(
-    _defineProperty(_defineProperty({}, FunctionComponent, captureFunctionComponent), ClassComponent, captureRender$9),
-    ForwardRef,
-    captureFunctionComponent
-  ),
-  MemoComponent,
-  captureMemoComponent
-);
+var LazyRendererMap = _defineProperty(_defineProperty(_defineProperty(_defineProperty({}, FunctionComponent, captureFunctionComponent), ClassComponent, captureRender$9), ForwardRef, captureFunctionComponent), MemoComponent, captureMemoComponent);
 function mergeDefaultProps(Component, props) {
   if (Component && Component.defaultProps) {
     var clonedProps = _extends({}, props);
@@ -9260,13 +8527,7 @@ function captureLazyComponent(processing, lazyComponent, shouldUpdate) {
     }
   } else {
     // lazy加载的组件类型未受支持
-    throwIfTrue(
-      true,
-      'Element type is invalid. Received a promise that resolves to: %s. ' +
-        'Lazy element type must resolve to a class or function.%s',
-      Component,
-      ''
-    );
+    throwIfTrue(true, 'Element type is invalid. Received a promise that resolves to: %s. ' + 'Lazy element type must resolve to a class or function.%s', Component, '');
     return null;
   }
 }
@@ -9274,11 +8535,11 @@ function captureRender$a(processing, shouldUpdate) {
   return captureLazyComponent(processing, processing.type, shouldUpdate);
 }
 
-var LazyComponentRender = /*#__PURE__*/ Object.freeze({
+var LazyComponentRender = /*#__PURE__*/Object.freeze({
   __proto__: null,
   bubbleRender: bubbleRender$a,
   mergeDefaultProps: mergeDefaultProps,
-  captureRender: captureRender$a,
+  captureRender: captureRender$a
 });
 
 function callDerivedStateFromProps(processing, getDerivedStateFromProps, nextProps) {
@@ -9505,12 +8766,9 @@ function captureRender$9(processing) {
     processUpdates(processing, inst, nextProps);
 
     // 如果 props, state, context 都没有变化且 isForceUpdate 为 false则不需要更新
-    shouldUpdate =
-      oldProps !== processing.props ||
-      inst.state !== processing.state ||
-      processing.isForceUpdate ||
-      // 响应式状态管理器中的值变化，需要更新
-      processing.isStoreChange;
+    shouldUpdate = oldProps !== processing.props || inst.state !== processing.state || processing.isForceUpdate ||
+    // 响应式状态管理器中的值变化，需要更新
+    processing.isStoreChange;
     if (shouldUpdate) {
       // derivedStateFromProps会修改nextState，因此需要调用
       callDerivedStateFromProps(processing, ctor.getDerivedStateFromProps, nextProps);
@@ -9546,11 +8804,11 @@ function captureRender$9(processing) {
 }
 function bubbleRender$9() {}
 
-var ClassComponentRender = /*#__PURE__*/ Object.freeze({
+var ClassComponentRender = /*#__PURE__*/Object.freeze({
   __proto__: null,
   getCurrentContext: getCurrentContext,
   captureRender: captureRender$9,
-  bubbleRender: bubbleRender$9,
+  bubbleRender: bubbleRender$9
 });
 
 /*
@@ -9582,10 +8840,10 @@ function captureRender$8(processing) {
 }
 function bubbleRender$8() {}
 
-var ContextConsumerRender = /*#__PURE__*/ Object.freeze({
+var ContextConsumerRender = /*#__PURE__*/Object.freeze({
   __proto__: null,
   captureRender: captureRender$8,
-  bubbleRender: bubbleRender$8,
+  bubbleRender: bubbleRender$8
 });
 
 /*
@@ -9707,23 +8965,17 @@ function handleContextChange(processing, context) {
   var isMatch = false;
 
   // 从vNode开始遍历
-  travelVNodeTree(
-    vNode,
-    function (node) {
-      var depContexts = node.depContexts;
-      if (depContexts && depContexts.length) {
-        isMatch = matchDependencies(depContexts, context, node) || isMatch;
-      }
-    },
-    function (node) {
-      return (
-        // 如果这是匹配的provider，则不要更深入地扫描
-        node.tag === ContextProvider && node.type === processing.type
-      );
-    },
-    processing,
-    null
-  );
+  travelVNodeTree(vNode, function (node) {
+    var depContexts = node.depContexts;
+    if (depContexts && depContexts.length) {
+      isMatch = matchDependencies(depContexts, context, node) || isMatch;
+    }
+  }, function (node) {
+    return (
+      // 如果这是匹配的provider，则不要更深入地扫描
+      node.tag === ContextProvider && node.type === processing.type
+    );
+  }, processing, null);
 
   // 找到了依赖context的子节点，触发一次更新
   if (isMatch) {
@@ -9765,10 +9017,10 @@ function bubbleRender$7(processing) {
   resetContext(processing);
 }
 
-var ContextProviderRender = /*#__PURE__*/ Object.freeze({
+var ContextProviderRender = /*#__PURE__*/Object.freeze({
   __proto__: null,
   captureRender: captureRender$7,
-  bubbleRender: bubbleRender$7,
+  bubbleRender: bubbleRender$7
 });
 
 /*
@@ -9790,10 +9042,10 @@ function captureRender$6(processing) {
 }
 function bubbleRender$6() {}
 
-var ForwardRefRender = /*#__PURE__*/ Object.freeze({
+var ForwardRefRender = /*#__PURE__*/Object.freeze({
   __proto__: null,
   captureRender: captureRender$6,
-  bubbleRender: bubbleRender$6,
+  bubbleRender: bubbleRender$6
 });
 
 /*
@@ -9820,10 +9072,10 @@ function captureRender$5(processing) {
   return captureFragment(processing);
 }
 
-var FragmentRender = /*#__PURE__*/ Object.freeze({
+var FragmentRender = /*#__PURE__*/Object.freeze({
   __proto__: null,
   bubbleRender: bubbleRender$5,
-  captureRender: captureRender$5,
+  captureRender: captureRender$5
 });
 
 /*
@@ -9882,22 +9134,16 @@ function bubbleRender$4(processing) {
     var vNode = processing.child;
     if (vNode !== null) {
       // 向下递归它的子节点，查找所有终端节点。
-      travelVNodeTree(
-        vNode,
-        function (node) {
-          if (node.tag === DomComponent || node.tag === DomText) {
-            appendChildElement(dom, node.realNode);
-          }
-        },
-        function (node) {
-          return (
-            // 已经append到父节点，或者是DomPortal都不需要处理child了
-            node.tag === DomComponent || node.tag === DomText || node.tag === DomPortal
-          );
-        },
-        processing,
-        null
-      );
+      travelVNodeTree(vNode, function (node) {
+        if (node.tag === DomComponent || node.tag === DomText) {
+          appendChildElement(dom, node.realNode);
+        }
+      }, function (node) {
+        return (
+          // 已经append到父节点，或者是DomPortal都不需要处理child了
+          node.tag === DomComponent || node.tag === DomText || node.tag === DomPortal
+        );
+      }, processing, null);
     }
     processing.realNode = dom;
     if (initDomProps(dom, type, newProps)) {
@@ -9929,10 +9175,10 @@ function captureRender$4(processing) {
   return processing.child;
 }
 
-var DomComponentRender = /*#__PURE__*/ Object.freeze({
+var DomComponentRender = /*#__PURE__*/Object.freeze({
   __proto__: null,
   bubbleRender: bubbleRender$4,
-  captureRender: captureRender$4,
+  captureRender: captureRender$4
 });
 
 /*
@@ -9970,10 +9216,10 @@ function captureRender$3(processing) {
   return capturePortalComponent(processing);
 }
 
-var DomPortalRender = /*#__PURE__*/ Object.freeze({
+var DomPortalRender = /*#__PURE__*/Object.freeze({
   __proto__: null,
   bubbleRender: bubbleRender$3,
-  captureRender: captureRender$3,
+  captureRender: captureRender$3
 });
 
 /*
@@ -9996,12 +9242,7 @@ function bubbleRender$2(processing) {
 function updateTreeRoot(processing) {
   setNamespaceCtx(processing, processing.realNode);
   var updates = processing.updates;
-  throwIfTrue(
-    processing.isCreated || updates === null,
-    'If the root does not have an updates, we should have already ' +
-      'bailed out. This error is likely caused by a bug. Please ' +
-      'file an issue.'
-  );
+  throwIfTrue(processing.isCreated || updates === null, 'If the root does not have an updates, we should have already ' + 'bailed out. This error is likely caused by a bug. Please ' + 'file an issue.');
   var newProps = processing.props;
   var oldState = processing.state;
   var oldElement = oldState !== null ? oldState.element : null;
@@ -10019,10 +9260,10 @@ function captureRender$2(processing) {
   return updateTreeRoot(processing);
 }
 
-var TreeRootRender = /*#__PURE__*/ Object.freeze({
+var TreeRootRender = /*#__PURE__*/Object.freeze({
   __proto__: null,
   bubbleRender: bubbleRender$2,
-  captureRender: captureRender$2,
+  captureRender: captureRender$2
 });
 
 /*
@@ -10055,21 +9296,17 @@ function bubbleRender$1(processing) {
     // 初始化
     if (typeof newText !== 'string') {
       // 如果存在bug，可能出现这种情况
-      throwIfTrue(
-        processing.realNode === null,
-        'We must have new text for new mounted node. This error is likely ' +
-          'caused by a bug in Inula. Please file an issue.'
-      );
+      throwIfTrue(processing.realNode === null, 'We must have new text for new mounted node. This error is likely ' + 'caused by a bug in Inula. Please file an issue.');
     }
     // 获得对应节点
     processing.realNode = newTextDom(newText, processing);
   }
 }
 
-var DomTextRender = /*#__PURE__*/ Object.freeze({
+var DomTextRender = /*#__PURE__*/Object.freeze({
   __proto__: null,
   captureRender: captureRender$1,
-  bubbleRender: bubbleRender$1,
+  bubbleRender: bubbleRender$1
 });
 
 /*
@@ -10086,12 +9323,12 @@ var DomTextRender = /*#__PURE__*/ Object.freeze({
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-var SuspenseChildStatus = /*#__PURE__*/ (function (SuspenseChildStatus) {
-  SuspenseChildStatus['Init'] = '';
-  SuspenseChildStatus['ShowChild'] = 'showChild';
-  SuspenseChildStatus['ShowFallback'] = 'showFallback';
+var SuspenseChildStatus = /*#__PURE__*/function (SuspenseChildStatus) {
+  SuspenseChildStatus["Init"] = "";
+  SuspenseChildStatus["ShowChild"] = "showChild";
+  SuspenseChildStatus["ShowFallback"] = "showFallback";
   return SuspenseChildStatus;
-})({});
+}({});
 
 // 创建fallback子节点
 function createFallback(processing, fallbackChildren) {
@@ -10201,20 +9438,13 @@ function bubbleRender(processing) {
   var _ref = processing.suspenseState,
     childStatus = _ref.childStatus,
     oldChildStatus = _ref.oldChildStatus;
-  if (
-    childStatus === SuspenseChildStatus.ShowFallback ||
-    (!processing.isCreated && oldChildStatus === SuspenseChildStatus.ShowFallback)
-  ) {
+  if (childStatus === SuspenseChildStatus.ShowFallback || !processing.isCreated && oldChildStatus === SuspenseChildStatus.ShowFallback) {
     FlagUtils.markUpdate(processing);
   }
   return null;
 }
 function canCapturePromise(vNode) {
-  return (
-    (vNode === null || vNode === void 0 ? void 0 : vNode.suspenseState.childStatus) !==
-      SuspenseChildStatus.ShowFallback &&
-    (vNode === null || vNode === void 0 ? void 0 : vNode.props.fallback) !== undefined
-  );
+  return (vNode === null || vNode === void 0 ? void 0 : vNode.suspenseState.childStatus) !== SuspenseChildStatus.ShowFallback && (vNode === null || vNode === void 0 ? void 0 : vNode.props.fallback) !== undefined;
 }
 
 // 处理Suspense子组件抛出的promise
@@ -10291,65 +9521,18 @@ function listenToPromise(suspenseVNode) {
   }
 }
 
-var SuspenseComponentRender = /*#__PURE__*/ Object.freeze({
+var SuspenseComponentRender = /*#__PURE__*/Object.freeze({
   __proto__: null,
   SuspenseChildStatus: SuspenseChildStatus,
   captureSuspenseComponent: captureSuspenseComponent,
   captureRender: captureRender,
   bubbleRender: bubbleRender,
   handleSuspenseChildThrowError: handleSuspenseChildThrowError,
-  listenToPromise: listenToPromise,
+  listenToPromise: listenToPromise
 });
 
 var _ClassComponent$Conte;
-var componentRenders =
-  ((_ClassComponent$Conte = {}),
-  _defineProperty(
-    _defineProperty(
-      _defineProperty(
-        _defineProperty(
-          _defineProperty(
-            _defineProperty(
-              _defineProperty(
-                _defineProperty(
-                  _defineProperty(
-                    _defineProperty(_ClassComponent$Conte, ClassComponent, ClassComponentRender),
-                    ContextConsumer,
-                    ContextConsumerRender
-                  ),
-                  ContextProvider,
-                  ContextProviderRender
-                ),
-                ForwardRef,
-                ForwardRefRender
-              ),
-              Fragment,
-              FragmentRender
-            ),
-            FunctionComponent,
-            FunctionComponentRender
-          ),
-          DomComponent,
-          DomComponentRender
-        ),
-        DomPortal,
-        DomPortalRender
-      ),
-      TreeRoot,
-      TreeRootRender
-    ),
-    DomText,
-    DomTextRender
-  ),
-  _defineProperty(
-    _defineProperty(
-      _defineProperty(_ClassComponent$Conte, LazyComponent, LazyComponentRender),
-      MemoComponent,
-      MemoComponentRender
-    ),
-    SuspenseComponent,
-    SuspenseComponentRender
-  ));
+var componentRenders = (_ClassComponent$Conte = {}, _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_ClassComponent$Conte, ClassComponent, ClassComponentRender), ContextConsumer, ContextConsumerRender), ContextProvider, ContextProviderRender), ForwardRef, ForwardRefRender), Fragment, FragmentRender), FunctionComponent, FunctionComponentRender), DomComponent, DomComponentRender), DomPortal, DomPortalRender), TreeRoot, TreeRootRender), DomText, DomTextRender), _defineProperty(_defineProperty(_defineProperty(_ClassComponent$Conte, LazyComponent, LazyComponentRender), MemoComponent, MemoComponentRender), SuspenseComponent, SuspenseComponentRender));
 
 /*
  * Copyright (c) 2023 Huawei Technologies Co.,Ltd.
@@ -10379,11 +9562,12 @@ function setTreeContextValue(processing) {
       setNamespaceCtx(processing, processing.realNode);
       pushCurrentRoot(processing);
       break;
-    case ContextProvider: {
-      var newValue = processing.props.value;
-      setContext(processing, newValue);
-      break;
-    }
+    case ContextProvider:
+      {
+        var newValue = processing.props.value;
+        setContext(processing, newValue);
+        break;
+      }
     // No Default
   }
 }
@@ -10407,7 +9591,7 @@ function captureVNode(processing) {
 }
 function markRef(processing) {
   var ref = processing.ref;
-  if ((processing.isCreated && ref !== null) || (!processing.isCreated && processing.oldRef !== ref)) {
+  if (processing.isCreated && ref !== null || !processing.isCreated && processing.oldRef !== ref) {
     FlagUtils.markRef(processing);
   }
 }
@@ -10456,7 +9640,7 @@ function createClassErrorUpdate(vNode, error) {
 
       // @ts-ignore
       this.componentDidCatch(error, {
-        componentStack: '',
+        componentStack: ''
       });
     };
   }
@@ -10488,20 +9672,17 @@ function handleRenderThrowError(sourceVNode, error) {
   var vNode = sourceVNode.parent;
   do {
     switch (vNode.tag) {
-      case TreeRoot: {
-        vNode.shouldUpdate = true;
-        launchUpdateFromVNode(vNode);
-        handleRootError(error);
-        return;
-      }
+      case TreeRoot:
+        {
+          vNode.shouldUpdate = true;
+          launchUpdateFromVNode(vNode);
+          handleRootError(error);
+          return;
+        }
       case ClassComponent:
         var ctor = vNode.type;
         var instance = vNode.realNode;
-        if (
-          (vNode.flags & DidCapture) === InitFlag &&
-          (typeof ctor.getDerivedStateFromError === 'function' ||
-            (instance !== null && typeof instance.componentDidCatch === 'function'))
-        ) {
+        if ((vNode.flags & DidCapture) === InitFlag && (typeof ctor.getDerivedStateFromError === 'function' || instance !== null && typeof instance.componentDidCatch === 'function')) {
           FlagUtils.markShouldCapture(vNode);
 
           // Class捕捉到异常，触发一次刷新
@@ -10567,7 +9748,7 @@ function handleSubmitError(vNode, error) {
             consoleError(error);
           }
           instance.componentDidCatch(error, {
-            componentStack: '',
+            componentStack: ''
           });
         }
         return;
@@ -10630,60 +9811,58 @@ function callStateCallback(vNode, obj) {
 function callAfterSubmitLifeCycles(vNode) {
   switch (vNode.tag) {
     case FunctionComponent:
-    case ForwardRef: {
-      // 执行useLayoutEffect的create方法
-      callUseLayoutEffectCreate(vNode);
-      callUseEffects(vNode);
-      return;
-    }
-    case ClassComponent: {
-      var instance = vNode.realNode;
-      if ((vNode.flags & Update) === Update) {
-        if (vNode.isCreated) {
-          instance.componentDidMount();
-        } else {
-          var prevProps = vNode.isLazyComponent ? mergeDefaultProps(vNode.type, vNode.oldProps) : vNode.oldProps;
-          var prevState = vNode.oldState;
-          instance.componentDidUpdate(prevProps, prevState, instance.__snapshotResult);
+    case ForwardRef:
+      {
+        // 执行useLayoutEffect的create方法
+        callUseLayoutEffectCreate(vNode);
+        callUseEffects(vNode);
+        return;
+      }
+    case ClassComponent:
+      {
+        var instance = vNode.realNode;
+        if ((vNode.flags & Update) === Update) {
+          if (vNode.isCreated) {
+            instance.componentDidMount();
+          } else {
+            var prevProps = vNode.isLazyComponent ? mergeDefaultProps(vNode.type, vNode.oldProps) : vNode.oldProps;
+            var prevState = vNode.oldState;
+            instance.componentDidUpdate(prevProps, prevState, instance.__snapshotResult);
+          }
+        }
+        callStateCallback(vNode, instance);
+        return;
+      }
+    case TreeRoot:
+      {
+        var _instance = vNode.child !== null ? vNode.child.realNode : null;
+        callStateCallback(vNode, _instance);
+        return;
+      }
+    case DomComponent:
+      {
+        if (vNode.isCreated && (vNode.flags & Update) === Update) {
+          // button、input、select、textarea、如果有 autoFocus 属性需要focus
+          if (shouldAutoFocus(vNode.type, vNode.props)) {
+            vNode.realNode.focus();
+          }
         }
       }
-      callStateCallback(vNode, instance);
-      return;
-    }
-    case TreeRoot: {
-      var _instance = vNode.child !== null ? vNode.child.realNode : null;
-      callStateCallback(vNode, _instance);
-      return;
-    }
-    case DomComponent: {
-      if (vNode.isCreated && (vNode.flags & Update) === Update) {
-        // button、input、select、textarea、如果有 autoFocus 属性需要focus
-        if (shouldAutoFocus(vNode.type, vNode.props)) {
-          vNode.realNode.focus();
-        }
-      }
-    }
 
     // No Default
   }
 }
 function hideOrUnhideAllChildren(vNode, isHidden) {
-  travelVNodeTree(
-    vNode,
-    function (node) {
-      var instance = node.realNode;
-      if (node.tag === DomComponent || node.tag === DomText) {
-        if (isHidden) {
-          hideDom(node.tag, instance);
-        } else {
-          unHideDom(node.tag, instance, node.props);
-        }
+  travelVNodeTree(vNode, function (node) {
+    var instance = node.realNode;
+    if (node.tag === DomComponent || node.tag === DomText) {
+      if (isHidden) {
+        hideDom(node.tag, instance);
+      } else {
+        unHideDom(node.tag, instance, node.props);
       }
-    },
-    null,
-    vNode,
-    null
-  );
+    }
+  }, null, vNode, null);
 }
 function handleRef(vNode, ref, val) {
   if (ref !== null && ref !== undefined) {
@@ -10717,20 +9896,14 @@ function detachRef(vNode, isOldRef) {
 
 // 卸载vNode，递归遍历子vNode
 function unmountNestedVNodes(vNode) {
-  travelVNodeTree(
-    vNode,
-    function (node) {
-      unmountVNode(node);
-    },
-    function (node) {
-      return (
-        // 如果是DomPortal，不需要遍历child
-        node.tag === DomPortal
-      );
-    },
-    vNode,
-    null
-  );
+  travelVNodeTree(vNode, function (node) {
+    unmountVNode(node);
+  }, function (node) {
+    return (
+      // 如果是DomPortal，不需要遍历child
+      node.tag === DomPortal
+    );
+  }, vNode, null);
 }
 
 // 遍历所有子节点：删除dom节点，detach ref 和 调用componentWillUnmount()
@@ -10739,50 +9912,44 @@ function unmountDomComponents(vNode) {
 
   // 这两个变量要一起更新
   var currentParent;
-  travelVNodeTree(
-    vNode,
-    function (node) {
-      if (!currentParentIsValid) {
-        var parent = node.parent;
-        var tag;
-        while (parent !== null) {
-          tag = parent.tag;
-          if (tag === DomComponent || tag === TreeRoot || tag === DomPortal) {
-            currentParent = parent.realNode;
-            break;
-          }
-          parent = parent.parent;
+  travelVNodeTree(vNode, function (node) {
+    if (!currentParentIsValid) {
+      var parent = node.parent;
+      var tag;
+      while (parent !== null) {
+        tag = parent.tag;
+        if (tag === DomComponent || tag === TreeRoot || tag === DomPortal) {
+          currentParent = parent.realNode;
+          break;
         }
-        currentParentIsValid = true;
+        parent = parent.parent;
       }
-      if (node.tag === DomComponent || node.tag === DomText) {
-        // 卸载vNode，递归遍历子vNode
-        unmountNestedVNodes(node);
-
-        // 在所有子项都卸载后，删除dom树中的节点
-        removeChildDom(currentParent, node.realNode);
-      } else if (node.tag === DomPortal) {
-        if (node.child !== null) {
-          currentParent = node.realNode;
-        }
-      } else {
-        unmountVNode(node);
-      }
-    },
-    function (node) {
-      return (
-        // 如果是dom不用再遍历child
-        node.tag === DomComponent || node.tag === DomText
-      );
-    },
-    vNode,
-    function (node) {
-      if (node.tag === DomPortal) {
-        // 当离开portal，需要重新设置parent
-        currentParentIsValid = false;
-      }
+      currentParentIsValid = true;
     }
-  );
+    if (node.tag === DomComponent || node.tag === DomText) {
+      // 卸载vNode，递归遍历子vNode
+      unmountNestedVNodes(node);
+
+      // 在所有子项都卸载后，删除dom树中的节点
+      removeChildDom(currentParent, node.realNode);
+    } else if (node.tag === DomPortal) {
+      if (node.child !== null) {
+        currentParent = node.realNode;
+      }
+    } else {
+      unmountVNode(node);
+    }
+  }, function (node) {
+    return (
+      // 如果是dom不用再遍历child
+      node.tag === DomComponent || node.tag === DomText
+    );
+  }, vNode, function (node) {
+    if (node.tag === DomPortal) {
+      // 当离开portal，需要重新设置parent
+      currentParentIsValid = false;
+    }
+  });
 }
 
 // 卸载一个vNode，不会递归
@@ -10790,31 +9957,35 @@ function unmountVNode(vNode) {
   switch (vNode.tag) {
     case FunctionComponent:
     case ForwardRef:
-    case MemoComponent: {
-      callEffectRemove(vNode);
-      detachCompReactive(vNode);
-      break;
-    }
-    case ClassComponent: {
-      detachRef(vNode);
-      var instance = vNode.realNode;
-      // 当constructor中抛出异常时，instance会是null，这里判断一下instance是否为空
-      // suspense打断时不需要触发WillUnmount
-      if (instance && typeof instance.componentWillUnmount === 'function' && !vNode.isSuspended) {
-        callComponentWillUnmount(vNode, instance);
+    case MemoComponent:
+      {
+        callEffectRemove(vNode);
+        detachCompReactive(vNode);
+        break;
       }
-      detachCompReactive(vNode);
-      break;
-    }
-    case DomComponent: {
-      detachRef(vNode);
-      break;
-    }
-    case DomPortal: {
-      // 这里会递归
-      unmountDomComponents(vNode);
-      break;
-    }
+    case ClassComponent:
+      {
+        detachRef(vNode);
+        var instance = vNode.realNode;
+        // 当constructor中抛出异常时，instance会是null，这里判断一下instance是否为空
+        // suspense打断时不需要触发WillUnmount
+        if (instance && typeof instance.componentWillUnmount === 'function' && !vNode.isSuspended) {
+          callComponentWillUnmount(vNode, instance);
+        }
+        detachCompReactive(vNode);
+        break;
+      }
+    case DomComponent:
+      {
+        detachRef(vNode);
+        break;
+      }
+    case DomPortal:
+      {
+        // 这里会递归
+        unmountDomComponents(vNode);
+        break;
+      }
   }
 }
 
@@ -10845,8 +10016,7 @@ function insertOrAppendPlacementNode(node, beforeDom, parent) {
     realNode = node.realNode;
   if (isDomVNode(node)) {
     insertDom(parent, realNode, beforeDom);
-  } else if (tag === DomPortal);
-  else {
+  } else if (tag === DomPortal) ; else {
     // 插入子节点们
     var child = node.child;
     while (child !== null) {
@@ -10943,21 +10113,24 @@ function submitUpdate(vNode) {
   switch (vNode.tag) {
     case FunctionComponent:
     case ForwardRef:
-    case MemoComponent: {
-      // 执行useLayoutEffect的remove方法
-      callUseLayoutEffectRemove(vNode);
-      break;
-    }
+    case MemoComponent:
+      {
+        // 执行useLayoutEffect的remove方法
+        callUseLayoutEffectRemove(vNode);
+        break;
+      }
     case DomComponent:
-    case DomText: {
-      submitDomUpdate(vNode.tag, vNode);
-      break;
-    }
-    case SuspenseComponent: {
-      submitSuspenseComponent(vNode);
-      listenToPromise(vNode);
-      break;
-    }
+    case DomText:
+      {
+        submitDomUpdate(vNode.tag, vNode);
+        break;
+      }
+    case SuspenseComponent:
+      {
+        submitSuspenseComponent(vNode);
+        listenToPromise(vNode);
+        break;
+      }
   }
 }
 function submitResetTextContent(vNode) {
@@ -11086,11 +10259,7 @@ function checkLoopingUpdateLimit() {
   if (loopingUpdateCount > LOOPING_UPDATE_LIMIT) {
     loopingUpdateCount = 0;
     lastRoot = null;
-    throw Error(
-      'The number of updates exceeds the upper limit ' +
-        LOOPING_UPDATE_LIMIT +
-        '.\n      A component maybe repeatedly invokes setState on componentWillUpdate or componentDidUpdate.'
-    );
+    throw Error("The number of updates exceeds the upper limit " + LOOPING_UPDATE_LIMIT + ".\n      A component maybe repeatedly invokes setState on componentWillUpdate or componentDidUpdate.");
   }
 }
 function submitToRender(treeRoot) {
@@ -11168,10 +10337,7 @@ var processing = null;
 // 为重新进行深度遍历做准备
 function resetProcessingVariables(startUpdateVNode) {
   // 创建processing
-  processing = updateVNode(
-    startUpdateVNode,
-    startUpdateVNode === null || startUpdateVNode === void 0 ? void 0 : startUpdateVNode.props
-  );
+  processing = updateVNode(startUpdateVNode, startUpdateVNode === null || startUpdateVNode === void 0 ? void 0 : startUpdateVNode.props);
   setBuildResult(BuildInComplete);
   unrecoverableErrorDuringBuild = null;
 }
@@ -11291,11 +10457,9 @@ function calcStartUpdateVNode(treeRoot) {
   var toUpdateNodes = Array.from(treeRoot.toUpdateNodes);
   // 所有待更新元素的parent为null说明所有node的父元素已经被卸载，应该从根节点发起更新
   // Array.every方法对于空数组总返回true
-  if (
-    toUpdateNodes.every(function (node) {
-      return node.parent === null;
-    })
-  ) {
+  if (toUpdateNodes.every(function (node) {
+    return node.parent === null;
+  })) {
     return treeRoot;
   }
   if (toUpdateNodes.length === 1) {
@@ -11380,9 +10544,7 @@ function buildVNodeTree(treeRoot) {
   setStartVNode(startVNode);
 
   // 清空toUpdateNodes
-  (_treeRoot$toUpdateNod = treeRoot.toUpdateNodes) === null || _treeRoot$toUpdateNod === void 0
-    ? void 0
-    : _treeRoot$toUpdateNod.clear();
+  (_treeRoot$toUpdateNod = treeRoot.toUpdateNodes) === null || _treeRoot$toUpdateNod === void 0 ? void 0 : _treeRoot$toUpdateNod.clear();
   if (startVNode.tag !== TreeRoot) {
     // 不是根节点
     // 设置namespace，用于createElement
@@ -11489,14 +10651,10 @@ function launchUpdateFromVNode(vNode) {
   }
 
   // 保存待刷新的节点
-  (_treeRoot$toUpdateNod2 = treeRoot.toUpdateNodes) === null || _treeRoot$toUpdateNod2 === void 0
-    ? void 0
-    : _treeRoot$toUpdateNod2.add(vNode);
-  if (
-    checkMode(BySync) &&
-    // 非批量
-    !checkMode(InRender)
-  ) {
+  (_treeRoot$toUpdateNod2 = treeRoot.toUpdateNodes) === null || _treeRoot$toUpdateNod2 === void 0 ? void 0 : _treeRoot$toUpdateNod2.add(vNode);
+  if (checkMode(BySync) &&
+  // 非批量
+  !checkMode(InRender)) {
     // 不是渲染阶段触发
 
     // 业务直接调用Inula.render的时候会进入这个分支，同步渲染。
@@ -11584,7 +10742,7 @@ var HookName = {
   MemoHook: 'Memo',
   RefHook: 'Ref',
   ReducerHook: 'Reducer',
-  CallbackHook: 'Callback',
+  CallbackHook: 'Callback'
 };
 var helper = {
   travelVNodeTree: function (rootVNode, fun) {
@@ -11600,42 +10758,39 @@ var helper = {
         return {
           name: HookName.StateHook,
           hIndex: hIndex,
-          value: state.stateValue,
+          value: state.stateValue
         };
       } else if (state.reducer) {
         return {
           name: HookName.ReducerHook,
           hIndex: hIndex,
-          value: state.stateValue,
+          value: state.stateValue
         };
       }
     } else if (isRefHook(state)) {
       return {
         name: HookName.RefHook,
         hIndex: hIndex,
-        value: state.current,
+        value: state.current
       };
     } else if (isEffectHook(state)) {
-      var name =
-        state.effectConstant == EffectConstant.LayoutEffect || EffectConstant.LayoutEffect | EffectConstant.DepsChange
-          ? HookName.LayoutEffectHook
-          : HookName.EffectHook;
+      var name = state.effectConstant == EffectConstant.LayoutEffect || EffectConstant.LayoutEffect | EffectConstant.DepsChange ? HookName.LayoutEffectHook : HookName.EffectHook;
       return {
         name: name,
         hIndex: hIndex,
-        value: state.effect,
+        value: state.effect
       };
     } else if (isCallbackHook(state)) {
       return {
         name: HookName.CallbackHook,
         hIndex: hIndex,
-        value: state.func,
+        value: state.func
       };
     } else if (isMemoHook(state)) {
       return {
         name: HookName.MemoHook,
         hIndex: hIndex,
-        value: state.result,
+        value: state.result
       };
     }
     return null;
@@ -11682,32 +10837,21 @@ var helper = {
       });
       info['Hooks'] = logHookInfo;
     }
-    travelVNodeTree(
-      vNode,
-      function (node) {
-        if (node.tag === DomComponent) {
-          var _dom$parentNode;
-          // 找到组件的第一个dom元素，返回它所在父节点的全部子节点
-          var dom = node.realNode;
-          info['Nodes'] =
-            dom === null || dom === void 0
-              ? void 0
-              : (_dom$parentNode = dom.parentNode) === null || _dom$parentNode === void 0
-                ? void 0
-                : _dom$parentNode.childNodes;
-          return true;
-        }
-        return false;
-      },
-      null,
-      vNode,
-      null
-    );
+    travelVNodeTree(vNode, function (node) {
+      if (node.tag === DomComponent) {
+        var _dom$parentNode;
+        // 找到组件的第一个dom元素，返回它所在父节点的全部子节点
+        var dom = node.realNode;
+        info['Nodes'] = dom === null || dom === void 0 ? void 0 : (_dom$parentNode = dom.parentNode) === null || _dom$parentNode === void 0 ? void 0 : _dom$parentNode.childNodes;
+        return true;
+      }
+      return false;
+    }, null, vNode, null);
     return info;
   },
   getElementTag: function (element) {
     return getElementTag(element);
-  },
+  }
 };
 function injectUpdater() {
   var hook = window.__INULA_DEV_HOOK__;
@@ -11958,79 +11102,18 @@ function createRootElement(container, option) {
     },
     unmount: function () {
       destroy(container);
-    },
+    }
   };
 }
 
-function _createForOfIteratorHelper(r, e) {
-  var t = ('undefined' != typeof Symbol && r[Symbol.iterator]) || r['@@iterator'];
-  if (!t) {
-    if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || (e && r && 'number' == typeof r.length)) {
-      t && (r = t);
-      var n = 0,
-        F = function () {};
-      return {
-        s: F,
-        n: function () {
-          return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] };
-        },
-        e: function (r) {
-          throw r;
-        },
-        f: F,
-      };
-    }
-    throw new TypeError(
-      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.'
-    );
-  }
-  var o,
-    a = !0,
-    u = !1;
-  return {
-    s: function () {
-      t = t.call(r);
-    },
-    n: function () {
-      var r = t.next();
-      return ((a = r.done), r);
-    },
-    e: function (r) {
-      ((u = !0), (o = r));
-    },
-    f: function () {
-      try {
-        a || null == t.return || t.return();
-      } finally {
-        if (u) throw o;
-      }
-    },
-  };
-}
-function _unsupportedIterableToArray(r, a) {
-  if (r) {
-    if ('string' == typeof r) return _arrayLikeToArray(r, a);
-    var t = {}.toString.call(r).slice(8, -1);
-    return (
-      'Object' === t && r.constructor && (t = r.constructor.name),
-      'Map' === t || 'Set' === t
-        ? Array.from(r)
-        : 'Arguments' === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t)
-          ? _arrayLikeToArray(r, a)
-          : void 0
-    );
-  }
-}
-function _arrayLikeToArray(r, a) {
-  (null == a || a > r.length) && (a = r.length);
-  for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
-  return n;
-}
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var n = 0, F = function () {}; return { s: F, n: function () { return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] }; }, e: function (r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function () { t = t.call(r); }, n: function () { var r = t.next(); return a = r.done, r; }, e: function (r) { u = !0, o = r; }, f: function () { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function batchUpdate(callback) {
   asyncUpdates(callback);
 }
 function getLinkedList() {
-  var _marked = /*#__PURE__*/ _regeneratorRuntime__default['default'].mark(getIterator);
+  var _marked = /*#__PURE__*/_regeneratorRuntime__default["default"].mark(getIterator);
   var firstNode = null;
   var lastNode = null;
   function clear() {
@@ -12039,26 +11122,25 @@ function getLinkedList() {
   }
   function getIterator() {
     var curNode;
-    return _regeneratorRuntime__default['default'].wrap(function getIterator$(_context) {
-      while (1)
-        switch ((_context.prev = _context.next)) {
-          case 0:
-            curNode = firstNode;
-          case 1:
-            if (!curNode) {
-              _context.next = 7;
-              break;
-            }
-            _context.next = 4;
-            return curNode.value;
-          case 4:
-            curNode = curNode.next;
-            _context.next = 1;
+    return _regeneratorRuntime__default["default"].wrap(function getIterator$(_context) {
+      while (1) switch (_context.prev = _context.next) {
+        case 0:
+          curNode = firstNode;
+        case 1:
+          if (!curNode) {
+            _context.next = 7;
             break;
-          case 7:
-          case 'end':
-            return _context.stop();
-        }
+          }
+          _context.next = 4;
+          return curNode.value;
+        case 4:
+          curNode = curNode.next;
+          _context.next = 1;
+          break;
+        case 7:
+        case "end":
+          return _context.stop();
+      }
     }, _marked);
   }
   function add(element) {
@@ -12067,7 +11149,7 @@ function getLinkedList() {
       newNode = {
         value: element,
         prev: null,
-        next: null,
+        next: null
       };
       firstNode = lastNode = newNode;
       return newNode;
@@ -12075,7 +11157,7 @@ function getLinkedList() {
       newNode = {
         value: element,
         prev: lastNode,
-        next: null,
+        next: null
       };
       lastNode.next = newNode;
       lastNode = newNode;
@@ -12098,7 +11180,7 @@ function getLinkedList() {
     add: add,
     clear: clear,
     removeNode: removeNode,
-    getIterator: getIterator,
+    getIterator: getIterator
   };
 }
 function getListenerManager() {
@@ -12115,7 +11197,7 @@ function getListenerManager() {
       var _iterator = _createForOfIteratorHelper(listeners),
         _step;
       try {
-        for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
           var _listener = _step.value;
           _listener();
         }
@@ -12132,7 +11214,7 @@ function getListenerManager() {
   return {
     clear: clear,
     trigger: trigger,
-    subscribe: subscribe,
+    subscribe: subscribe
   };
 }
 var nullListenerStore = {};
@@ -12172,7 +11254,7 @@ function createSubscription(store) {
     addNestedSub: addNestedSub,
     triggerNestedSubs: triggerNestedSubs,
     trySubscribe: trySubscribe,
-    tryUnsubscribe: tryUnsubscribe,
+    tryUnsubscribe: tryUnsubscribe
   };
   return subscription;
 }
@@ -12189,9 +11271,7 @@ var isDependsOnOwnProps = function (propsMapping) {
 function handleMapToProps(mapStateToProps) {
   if (typeof mapStateToProps === 'function') {
     var proxy = function mapToPropsProxy(stateOrDispatch, ownProps) {
-      return proxy.dependsOnOwnProps
-        ? proxy.mapToProps(stateOrDispatch, ownProps)
-        : proxy.mapToProps(stateOrDispatch, undefined);
+      return proxy.dependsOnOwnProps ? proxy.mapToProps(stateOrDispatch, ownProps) : proxy.mapToProps(stateOrDispatch, undefined);
     };
     proxy.dependsOnOwnProps = true;
     proxy.mapToProps = function (stateOrDispatch, ownProps) {
@@ -12218,7 +11298,7 @@ function handleMapDispatchToProps(dispatch, mapDispatchToProps) {
   if (!mapDispatchToProps) {
     var selector = function () {
       return {
-        dispatch: dispatch,
+        dispatch: dispatch
       };
     };
     selector.dependsOnOwnProps = false;
@@ -12317,52 +11397,39 @@ function pureSelectorCreator(mapStateToProps, mapDispatchToProps, mergeProps, di
   };
 }
 
-var _excluded = ['reduxAdapterRef'];
+var _excluded = ["reduxAdapterRef"];
 var DefaultContext = createContext(null);
 function Provider(_ref) {
   var store = _ref.store,
     _ref$context = _ref.context,
     context = _ref$context === void 0 ? DefaultContext : _ref$context,
     children = _ref.children;
-  var ctxValue = useMemo(
-    function () {
-      var subscription = createSubscription(store);
-      return {
-        store: store,
-        subscription: subscription,
-      };
-    },
-    [store]
-  );
-  var prevStoreValue = useMemo(
-    function () {
-      return store.getState();
-    },
-    [store]
-  );
-  useLayoutEffect(
-    function () {
-      var subscription = ctxValue.subscription;
-      subscription.stateChange = subscription.triggerNestedSubs;
-      subscription.trySubscribe();
-      if (prevStoreValue !== store.getState()) {
-        subscription.triggerNestedSubs();
-      }
-      return function () {
-        subscription.tryUnsubscribe();
-        subscription.stateChange = undefined;
-      };
-    },
-    [ctxValue, prevStoreValue]
-  );
+  var ctxValue = useMemo(function () {
+    var subscription = createSubscription(store);
+    return {
+      store: store,
+      subscription: subscription
+    };
+  }, [store]);
+  var prevStoreValue = useMemo(function () {
+    return store.getState();
+  }, [store]);
+  useLayoutEffect(function () {
+    var subscription = ctxValue.subscription;
+    subscription.stateChange = subscription.triggerNestedSubs;
+    subscription.trySubscribe();
+    if (prevStoreValue !== store.getState()) {
+      subscription.triggerNestedSubs();
+    }
+    return function () {
+      subscription.tryUnsubscribe();
+      subscription.stateChange = undefined;
+    };
+  }, [ctxValue, prevStoreValue]);
   var Context = context; // NOTE: bind redux API to inula API requires this renaming;
-  return createElement(
-    Context.Provider,
-    {
-      value: ctxValue,
-    },
-    children
-  );
+  return createElement(Context.Provider, {
+    value: ctxValue
+  }, children);
 }
 function createStoreHook(context) {
   return function () {
@@ -12372,12 +11439,9 @@ function createStoreHook(context) {
 function createSelectorHook(context) {
   var store = createStoreHook(context)();
   return function useSelector() {
-    var selector =
-      arguments.length > 0 && arguments[0] !== undefined
-        ? arguments[0]
-        : function (state) {
-            return state;
-          };
+    var selector = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function (state) {
+      return state;
+    };
     return useSelectorWithStore(store, selector);
   };
 }
@@ -12397,12 +11461,9 @@ var useStore = function () {
   return createStoreHook(DefaultContext)();
 };
 function connect() {
-  var mapStateToProps =
-    arguments.length > 0 && arguments[0] !== undefined
-      ? arguments[0]
-      : function () {
-          return {};
-        };
+  var mapStateToProps = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {
+    return {};
+  };
   var mapDispatchToProps = arguments.length > 1 ? arguments[1] : undefined;
   var mergeProps = arguments.length > 2 ? arguments[2] : undefined;
   var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
@@ -12412,7 +11473,7 @@ function connect() {
     mapStateToProps: mapStateToProps,
     mapDispatchToProps: mapDispatchToProps,
     mergeProps: mergeProps,
-    options: options,
+    options: options
   };
   var _options$context = options.context,
     storeContext = _options$context === void 0 ? DefaultContext : _options$context;
@@ -12426,63 +11487,40 @@ function connect() {
       var propsFromContext = props.context;
       var reduxAdapterRef = props.reduxAdapterRef,
         wrappedProps = _objectWithoutPropertiesLoose(props, _excluded);
-      var usedContext = useMemo(
-        function () {
-          return propsFromContext &&
-            propsFromContext.Consumer &&
-            isContextConsumer(createElement(propsFromContext.Consumer, {}))
-            ? propsFromContext
-            : storeContext;
-        },
-        [propsFromContext, storeContext]
-      );
+      var usedContext = useMemo(function () {
+        return propsFromContext && propsFromContext.Consumer && isContextConsumer(createElement(propsFromContext.Consumer, {})) ? propsFromContext : storeContext;
+      }, [propsFromContext, storeContext]);
       var context = useContext(usedContext);
       // 判断store是来自context还是props
       var isStoreFromProps = !!props.store && !!props.store.getState && !!props.store.dispatch;
       var store = isStoreFromProps ? props.store : context.store;
-      var _useMemo = useMemo(
-          function () {
-            var subscription = createSubscription(store, isStoreFromProps ? null : context.subscription);
-            var triggerNestedSubs = subscription.triggerNestedSubs.bind(subscription);
-            return [subscription, triggerNestedSubs];
-          },
-          [store, isStoreFromProps, context]
-        ),
+      var _useMemo = useMemo(function () {
+          var subscription = createSubscription(store, isStoreFromProps ? null : context.subscription);
+          var triggerNestedSubs = subscription.triggerNestedSubs.bind(subscription);
+          return [subscription, triggerNestedSubs];
+        }, [store, isStoreFromProps, context]),
         subscription = _useMemo[0],
         triggerNestedSubs = _useMemo[1];
       // 如果在调用listener中间组件被卸载subscription会变为空，
       // 在一开始就复制一份triggerNestedSubs保证即使组件卸载也可以正常使用
 
-      var overrideContext = useMemo(
-        function () {
-          return isStoreFromProps
-            ? context
-            : _extends({}, context, {
-                subscription: subscription,
-              });
-        },
-        [isStoreFromProps, context, subscription]
-      );
+      var overrideContext = useMemo(function () {
+        return isStoreFromProps ? context : _extends({}, context, {
+          subscription: subscription
+        });
+      }, [isStoreFromProps, context, subscription]);
 
       // 使用Ref存储最新的子组件Props，再更新时进行比较，防止多余的渲染
       var latestChildProps = useRef();
       var latestWrappedProps = useRef(wrappedProps);
       var childPropsFromStore = useRef();
       var isRendering = useRef(false);
-      var selector = useMemo(
-        function () {
-          return getSelector(store, selectorOptions);
-        },
-        [store]
-      );
-      var childProps = useMemo(
-        function () {
-          return childPropsFromStore.current && wrappedProps === latestWrappedProps.current
-            ? childPropsFromStore.current
-            : selector(store.getState(), wrappedProps);
-        },
-        [store, wrappedProps, latestWrappedProps]
-      );
+      var selector = useMemo(function () {
+        return getSelector(store, selectorOptions);
+      }, [store]);
+      var childProps = useMemo(function () {
+        return childPropsFromStore.current && wrappedProps === latestWrappedProps.current ? childPropsFromStore.current : selector(store.getState(), wrappedProps);
+      }, [store, wrappedProps, latestWrappedProps]);
       useEffect(function () {
         latestChildProps.current = childProps;
         latestWrappedProps.current = wrappedProps;
@@ -12492,65 +11530,50 @@ function connect() {
           triggerNestedSubs();
         }
       });
-      useEffect(
-        function () {
-          var isUnsubscribe = false;
-          var update = function () {
-            if (isUnsubscribe) {
-              return;
+      useEffect(function () {
+        var isUnsubscribe = false;
+        var update = function () {
+          if (isUnsubscribe) {
+            return;
+          }
+          var latestStoreState = store.getState();
+          var newChildProps = selector(latestStoreState, latestWrappedProps.current);
+          // 如果新的子组件的 props 和之前的不同，就更新 ref 对象的值，并强制更新组件
+          if (newChildProps === latestChildProps.current) {
+            if (!isRendering.current) {
+              triggerNestedSubs();
             }
-            var latestStoreState = store.getState();
-            var newChildProps = selector(latestStoreState, latestWrappedProps.current);
-            // 如果新的子组件的 props 和之前的不同，就更新 ref 对象的值，并强制更新组件
-            if (newChildProps === latestChildProps.current) {
-              if (!isRendering.current) {
-                triggerNestedSubs();
-              }
-            } else {
-              latestChildProps.current = newChildProps;
-              childPropsFromStore.current = newChildProps;
-              isRendering.current = true;
-              forceUpdate();
-            }
-          };
-          // 订阅store的变化
-          subscription.stateChange = update;
-          subscription.trySubscribe();
-          update();
-          return function () {
-            isUnsubscribe = true;
-            subscription.tryUnsubscribe();
-            subscription.stateChange = undefined;
-          };
-        },
-        [store, subscription, selector]
-      );
-      var renderComponent = useMemo(
-        function () {
-          return createElement(
-            Component,
-            _extends({}, childProps, {
-              ref: reduxAdapterRef,
-            })
-          );
-        },
-        [Component, childProps, reduxAdapterRef]
-      );
-      return createElement(
-        usedContext.Provider,
-        {
-          value: overrideContext,
-        },
-        renderComponent
-      );
+          } else {
+            latestChildProps.current = newChildProps;
+            childPropsFromStore.current = newChildProps;
+            isRendering.current = true;
+            forceUpdate();
+          }
+        };
+        // 订阅store的变化
+        subscription.stateChange = update;
+        subscription.trySubscribe();
+        update();
+        return function () {
+          isUnsubscribe = true;
+          subscription.tryUnsubscribe();
+          subscription.stateChange = undefined;
+        };
+      }, [store, subscription, selector]);
+      var renderComponent = useMemo(function () {
+        return createElement(Component, _extends({}, childProps, {
+          ref: reduxAdapterRef
+        }));
+      }, [Component, childProps, reduxAdapterRef]);
+      return createElement(usedContext.Provider, {
+        value: overrideContext
+      }, renderComponent);
     };
     if (options.forwardRef) {
       var forwarded = forwardRef(function (props, ref) {
-        return Wrapper(
-          _extends({}, props, {
-            reduxAdapterRef: ref,
-          })
-        );
+        return Wrapper(_extends({}, props, {
+          reduxAdapterRef: ref
+        }));
       });
       return forwarded;
     }
@@ -12589,31 +11612,28 @@ function useSelectorWithStore(store, selector) {
   });
 
   // 订阅存储并在状态更改时更新组件
-  useLayoutEffect(
-    function () {
-      var update = function () {
-        var newState = store.getState();
-        if (newState === latestState.current) {
-          return;
-        }
-        var newSelectedState = latestSelector.current(newState);
-        if (newSelectedState === latestSelectedState.current) {
-          return;
-        }
-        latestSelectedState.current = newSelectedState;
-        latestState.current = newState;
-        forceUpdate();
-      };
-      update();
-      var unsubscribe = store.subscribe(function () {
-        return update();
-      });
-      return function () {
-        return unsubscribe();
-      };
-    },
-    [store]
-  );
+  useLayoutEffect(function () {
+    var update = function () {
+      var newState = store.getState();
+      if (newState === latestState.current) {
+        return;
+      }
+      var newSelectedState = latestSelector.current(newState);
+      if (newSelectedState === latestSelectedState.current) {
+        return;
+      }
+      latestSelectedState.current = newSelectedState;
+      latestState.current = newState;
+      forceUpdate();
+    };
+    update();
+    var unsubscribe = store.subscribe(function () {
+      return update();
+    });
+    return function () {
+      return unsubscribe();
+    };
+  }, [store]);
   return selectedState;
 }
 
@@ -12626,7 +11646,7 @@ function createStore(reducer, preloadedState, enhancers) {
   var store = createStore$1({
     id: 'defaultStore',
     state: {
-      stateWrapper: preloadedState,
+      stateWrapper: preloadedState
     },
     actions: {
       dispatch: function (state, action) {
@@ -12641,11 +11661,11 @@ function createStore(reducer, preloadedState, enhancers) {
         } // NOTE: reducer should never return undefined, in this case, do not change state
         state.stateWrapper = result;
         return action;
-      },
+      }
     },
     options: {
-      isReduxAdapter: true,
-    },
+      isReduxAdapter: true
+    }
   })();
   var result = {
     reducer: reducer,
@@ -12662,10 +11682,10 @@ function createStore(reducer, preloadedState, enhancers) {
       reducer = newReducer;
     },
     _inulaXstore: store,
-    dispatch: store.$a.dispatch,
+    dispatch: store.$a.dispatch
   };
   result.dispatch({
-    type: 'InulaX',
+    type: 'InulaX'
   });
   store.reduxHandler = result;
   if (typeof enhancers === 'function') {
@@ -12696,7 +11716,7 @@ function applyMiddlewares(createStore, middlewares) {
     });
     storeObj.dispatch = dispatch;
     return _extends({}, storeObj, {
-      dispatch: dispatch,
+      dispatch: dispatch
     });
   };
 }
@@ -12744,7 +11764,7 @@ function batch(fn) {
   fn();
 }
 
-var reduxAdapter = /*#__PURE__*/ Object.freeze({
+var reduxAdapter = /*#__PURE__*/Object.freeze({
   __proto__: null,
   createStore: createStore,
   combineReducers: combineReducers,
@@ -12759,7 +11779,7 @@ var reduxAdapter = /*#__PURE__*/ Object.freeze({
   useDispatch: useDispatch,
   connect: connect,
   createSelectorHook: createSelectorHook,
-  createDispatchHook: createDispatchHook,
+  createDispatchHook: createDispatchHook
 });
 
 /*
@@ -12783,28 +11803,24 @@ function watch(source, fn) {
     immediate = _ref.immediate;
   if (isRef(source)) {
     return doWatch(source, fn, {
-      immediate: immediate,
+      immediate: immediate
     });
   } else if (isReactive(source)) {
     return doWatch(source, fn, {
       deep: deep,
-      immediate: immediate,
+      immediate: immediate
     });
   } else if (isArray(source)) {
     var stops = source.map(function (s, index) {
-      return watch(
-        s,
-        function (val, prevVal) {
-          var vals = getSourcesValue(source);
-          var prevVals = getSourcesValue(source);
-          vals[index] = val;
-          prevVals[index] = prevVal === INITIAL_WATCHER_VALUE ? undefined : prevVal;
-          fn(vals, prevVals);
-        },
-        {
-          immediate: immediate,
-        }
-      );
+      return watch(s, function (val, prevVal) {
+        var vals = getSourcesValue(source);
+        var prevVals = getSourcesValue(source);
+        vals[index] = val;
+        prevVals[index] = prevVal === INITIAL_WATCHER_VALUE ? undefined : prevVal;
+        fn(vals, prevVals);
+      }, {
+        immediate: immediate
+      });
     });
     return function () {
       stops.forEach(function (stop) {
@@ -12816,11 +11832,11 @@ function watch(source, fn) {
       if (deep) {
         return doWatch(source, fn, {
           deep: deep,
-          immediate: immediate,
+          immediate: immediate
         });
       } else {
         return doWatch(source, fn, {
-          immediate: immediate,
+          immediate: immediate
         });
       }
     } else {
@@ -12986,30 +12002,27 @@ function act(fun) {
     // testing-library会返回Promise
     return {
       then: function (resolve, reject) {
-        funRet.then(
-          function () {
-            if (typeof setImmediate === 'function') {
-              // 通过setImmediate回调，用于等待业务的setTimeout完成
-              setImmediate(function () {
-                callRenderQueue();
-                resolve();
-              });
-            } else {
+        funRet.then(function () {
+          if (typeof setImmediate === 'function') {
+            // 通过setImmediate回调，用于等待业务的setTimeout完成
+            setImmediate(function () {
               callRenderQueue();
               resolve();
-            }
-          },
-          function (err) {
-            reject(err);
+            });
+          } else {
+            callRenderQueue();
+            resolve();
           }
-        );
-      },
+        }, function (err) {
+          reject(err);
+        });
+      }
     };
   } else {
     return {
       then: function (resolve) {
         resolve();
-      },
+      }
     };
   }
 }
@@ -13052,7 +12065,7 @@ var vueReactive = {
   toRaw: toRaw,
   nextTick: nextTick,
   useInstance: useInstance,
-  toInstance: toInstance,
+  toInstance: toInstance
 };
 var Horizon = {
   Children: Children,
@@ -13105,7 +12118,7 @@ var Horizon = {
   StrictMode: TYPE_STRICT_MODE,
   Suspense: TYPE_SUSPENSE,
   // vue reactive api
-  vueReactive: vueReactive,
+  vueReactive: vueReactive
 };
 
 exports.Children = Children;
@@ -13128,7 +12141,7 @@ exports.createPortal = createPortal;
 exports.createRef = createRef$1;
 exports.createRoot = createRootElement;
 exports.createStore = createStore$1;
-exports['default'] = Horizon;
+exports["default"] = Horizon;
 exports.findDOMNode = findDOMNode;
 exports.flushSync = syncUpdates;
 exports.forwardRef = forwardRef;

@@ -2,6 +2,8 @@ import t from '@babel/types';
 import parser from '@babel/parser';
 import tsCompile from './ts/index.js';
 import LOG from '../logHelper.js';
+import {createNodeByVueVariable} from './jsx/handlers/expressionHandler.js';
+
 
 const defaultParseOption = {
   sourceType: 'module', // 默认为 "script"
@@ -83,14 +85,11 @@ export function getAttributeNodeName(attribute) {
 export function kebabToPascalCase(str) {
   return str
     .split('-')
-    .map(
-      (word, index) =>
-        // 对于每个单词，只处理首字母大写，其余保持原样
-        index === 0 && word
-          ? word.charAt(0).toUpperCase() + word.slice(1) // 第一个单词
-          : word
-            ? word.charAt(0).toUpperCase() + word.slice(1)
-            : '' // 其他单词
+    .map((word, index) =>
+      // 对于每个单词，只处理首字母大写，其余保持原样
+      index === 0 && word ?
+        (word.charAt(0).toUpperCase() + word.slice(1)) : // 第一个单词
+        (word ? word.charAt(0).toUpperCase() + word.slice(1) : '') // 其他单词
     )
     .join('');
 }
@@ -102,7 +101,7 @@ export function kebabToPascalCase(str) {
  * @returns {string} 转换后的大驼峰命名字符串
  */
 export function convertToCamelCase(str) {
-  return str.replace(/-([a-z])/g, g => g[1].toUpperCase());
+  return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
 }
 
 /**
@@ -155,6 +154,7 @@ export function getValueByNode(node, isValue) {
   return value;
 }
 
+
 /**
  * 解析指令的值
  * @param {string} value - 指令值字符串
@@ -179,6 +179,7 @@ function parseDirectiveValue(value) {
 /**
  * 获取指令节点的值
  * @param {Object} node - 指令节点
+ * @param {Object} reactCovert
  * @returns {Object} - 返回处理后的值节点
  *
  * @example
@@ -194,19 +195,25 @@ function parseDirectiveValue(value) {
  * // <div v-custom={message} />
  * // 返回: t.identifier("message")
  */
-export function getDirectiveValueByNode(node) {
-  let value = node.value;
+export function getDirectiveValueByNode(node, reactCovert) {
+  const value = node.value;
 
   if (t.isJSXExpressionContainer(node.value)) {
     // JSX 表达式容器的情况
     // 例如: v-custom={message}
     // 从容器中提取表达式部分
-    value = node.value.expression;
-  } else if (t.isStringLiteral(node.value)) {
+    return node.value.expression;
+  }
+  if (t.isStringLiteral(node.value)) {
+    // props、directive等替换情况
+    const newNode = createNodeByVueVariable(node.value.value, reactCovert);
+    if (newNode) {
+      return newNode;
+    }
     // 字符串字面量的情况
     // 例如: v-custom="message" 或 v-custom="'message'"
     const parsedValue = parseDirectiveValue(node.value.value);
-    value = typeof parsedValue === 'string' ? t.stringLiteral(parsedValue) : parsedValue;
+    return typeof parsedValue === 'string' ? t.stringLiteral(parsedValue) : parsedValue;
   }
 
   return value;

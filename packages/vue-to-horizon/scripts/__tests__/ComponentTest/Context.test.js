@@ -26,9 +26,13 @@ describe('Context Test', () => {
     const defaultValue = { type: LanguageTypes.JAVASCRIPT };
     const SystemLanguageContext = Horizon.createContext(defaultValue);
     const SystemLanguageConsumer = SystemLanguageContext.Consumer;
-    const SystemLanguageProvider = props => {
+    const SystemLanguageProvider = (props) => {
       LogUtils.log('SystemLanguageProvider');
-      return <SystemLanguageContext.Provider value={props.type}>{props.children}</SystemLanguageContext.Provider>;
+      return (
+        <SystemLanguageContext.Provider value={props.type}>
+          {props.children}
+        </SystemLanguageContext.Provider>
+      );
     };
 
     const Consumer = () => {
@@ -53,7 +57,7 @@ describe('Context Test', () => {
       }
     }
 
-    const App = props => {
+    const App = (props) => {
       LogUtils.log('App');
       return (
         <SystemLanguageProvider type={props.value}>
@@ -74,18 +78,25 @@ describe('Context Test', () => {
       'Middle',
       'Middle',
       'Consumer',
-      'Consumer DOM mutations',
+      'Consumer DOM mutations'
     ]);
 
     // 组件不变，Middle没有更新，消费者也不会执行
     Horizon.render(<App value={LanguageTypes.JAVA} />, container);
     expect(container.querySelector('p').innerHTML).toBe('Java');
-    expect(LogUtils.getAndClear()).toEqual(['App', 'SystemLanguageProvider']);
+    expect(LogUtils.getAndClear()).toEqual([
+      'App',
+      'SystemLanguageProvider'
+    ]);
 
     Horizon.render(<App value={LanguageTypes.JAVASCRIPT} />, container);
     expect(container.querySelector('p').innerHTML).toBe('JavaScript');
     // 组件更新，但是Middle没有更新，会绕过Middle
-    expect(LogUtils.getAndClear()).toEqual(['App', 'SystemLanguageProvider', 'Consumer DOM mutations']);
+    expect(LogUtils.getAndClear()).toEqual([
+      'App',
+      'SystemLanguageProvider',
+      'Consumer DOM mutations'
+    ]);
   });
 
   it('嵌套consumer provider', () => {
@@ -95,9 +106,13 @@ describe('Context Test', () => {
     };
     const NumberContext = Horizon.createContext(0);
     const NumberConsumer = NumberContext.Consumer;
-    const NumberProvider = props => {
+    const NumberProvider = (props) => {
       LogUtils.log(`SystemLanguageProvider: ${props.type}`);
-      return <NumberContext.Provider value={props.type}>{props.children}</NumberContext.Provider>;
+      return (
+        <NumberContext.Provider value={props.type}>
+          {props.children}
+        </NumberContext.Provider>
+      );
     };
 
     const Consumer = () => {
@@ -122,7 +137,7 @@ describe('Context Test', () => {
       }
     }
 
-    const App = props => {
+    const App = (props) => {
       LogUtils.log('App');
       return (
         <NumberProvider type={props.value}>
@@ -144,7 +159,7 @@ describe('Context Test', () => {
       'SystemLanguageProvider: 2',
       'Middle',
       'Consumer',
-      'Consumer DOM mutations',
+      'Consumer DOM mutations'
     ]);
     // 更新
     Horizon.render(<App value={Num.TWO} />, container);
@@ -153,7 +168,7 @@ describe('Context Test', () => {
       'App',
       'SystemLanguageProvider: 2',
       'SystemLanguageProvider: 3',
-      'Consumer DOM mutations',
+      'Consumer DOM mutations'
     ]);
   });
 
@@ -166,10 +181,18 @@ describe('Context Test', () => {
     const NewNumberContext = Horizon.createContext(1);
     const NumberConsumer = NumberContext.Consumer;
     const NumberProvider = props => {
-      return <NumberContext.Provider value={props.type}>{props.children}</NumberContext.Provider>;
+      return (
+        <NumberContext.Provider value={props.type}>
+          {props.children}
+        </NumberContext.Provider>
+      );
     };
     const NewNumberProvider = props => {
-      return <NewNumberContext.Provider value={props.type}>{props.children}</NewNumberContext.Provider>;
+      return (
+        <NewNumberContext.Provider value={props.type}>
+          {props.children}
+        </NewNumberContext.Provider>
+      );
     };
 
     class Middle extends Horizon.Component {
@@ -181,7 +204,7 @@ describe('Context Test', () => {
       }
     }
 
-    const NewApp = props => {
+    const NewApp = (props) => {
       return (
         <NewNumberProvider value={props.value}>
           <Middle>
@@ -196,7 +219,7 @@ describe('Context Test', () => {
       );
     };
 
-    const App = props => {
+    const App = (props) => {
       return (
         <NumberProvider value={props.value}>
           <Middle>
@@ -228,7 +251,11 @@ describe('Context Test', () => {
     function Provider(props) {
       return (
         <Consumer>
-          {value => <NumContext.Provider value={props.value || value * 2}>{props.children}</NumContext.Provider>}
+          {value => (
+            <NumContext.Provider value={props.value || value * 2}>
+              {props.children}
+            </NumContext.Provider>
+          )}
         </Consumer>
       );
     }
@@ -248,11 +275,15 @@ describe('Context Test', () => {
           <Middle>
             <Middle>
               <Provider>
-                <Consumer>{value => <p>{value}</p>}</Consumer>
+                <Consumer>
+                  {value => <p>{value}</p>}
+                </Consumer>
               </Provider>
             </Middle>
             <Middle>
-              <Consumer>{value => <p id="p">{value}</p>}</Consumer>
+              <Consumer>
+                {value => <p id='p'>{value}</p>}
+              </Consumer>
             </Middle>
           </Middle>
         </Provider>
@@ -277,7 +308,9 @@ describe('Context Test', () => {
       const [num, _setNum] = Horizon.useState(0);
       setNum = _setNum;
       LogUtils.log('ReturnDom');
-      return <p>{`Context: ${props.context}, Num: ${num}`}</p>;
+      return (
+        <p>{`Context: ${props.context}, Num: ${num}`}</p>
+      );
     };
 
     const App = props => {
@@ -295,11 +328,15 @@ describe('Context Test', () => {
 
     Horizon.render(<App value={2} />, container);
     expect(container.querySelector('p').innerHTML).toBe('Context: 2, Num: 0');
-    expect(LogUtils.getAndClear()).toEqual(['Consumer', 'ReturnDom']);
+    expect(LogUtils.getAndClear()).toEqual([
+      'Consumer',
+      'ReturnDom'
+    ]);
     setNum(3);
     expect(container.querySelector('p').innerHTML).toBe('Context: 2, Num: 3');
     expect(LogUtils.getAndClear()).toEqual(['ReturnDom']);
   });
+
 
   it('consumer可以拿到其他context的值', () => {
     const NumContext = Horizon.createContext(1);

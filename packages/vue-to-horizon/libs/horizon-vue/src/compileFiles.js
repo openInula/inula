@@ -72,11 +72,7 @@ function scanPath(vuePath, whitelist, blacklist) {
   };
 }
 
-function compileFiles(
-  vueSrcPath,
-  out,
-  { clean = true, jsx = true, whitelist, blacklist, lastBuild, configPath, componentConfigPath }
-) {
+function compileFiles(vueSrcPath, out, { clean = true, jsx = true, whitelist, blacklist, lastBuild, configPath, componentConfigPath }) {
   console.log({ vueSrcPath });
   const successLog = [];
   const errorLog = [];
@@ -117,7 +113,7 @@ function compileFiles(
             keys.forEach(key => {
               item.attributesMap[convertToCamelCase(key)] = item.attributesMap[key];
             });
-          });
+          })
         }
       } catch (e) {
         LOG.error('read component config file failed');

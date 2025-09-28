@@ -1,6 +1,6 @@
-import { traverse } from '@babel/core';
-import t from '@babel/types';
-import { kebabToPascalCase } from '../../nodeUtils.js';
+import { traverse } from '@babel/core'
+import t from '@babel/types'
+import { kebabToPascalCase } from '../../nodeUtils.js'
 
 /**
  * 示例1 - 处理默认插槽:
@@ -135,7 +135,11 @@ export function handleSlotTag(templateAst, reactCovert) {
             const slotProps = t.objectExpression(propsProperties);
 
             // 生成插槽调用表达式: SlotHeader?.({name: "header"})
-            const callExpression = t.optionalCallExpression(t.identifier(componentName), [slotProps], true);
+            const callExpression = t.optionalCallExpression(
+              t.identifier(componentName),
+              [slotProps],
+              true
+            );
 
             // 根据上下文决定是否需要JSX表达式容器包装
             const finalExpression = isInJSXExpressionContainer(path)
@@ -209,7 +213,10 @@ export function generatePropsChildren(path, sourceCodeContext, dynamicName = nul
   } else {
     // 默认插槽需要 fallback 到 children
     // 当默认插槽内容不存在时，使用 props.children 作为后备内容
-    const propsChildren = t.memberExpression(t.identifier(sourceCodeContext.propsName), t.identifier('children'));
+    const propsChildren = t.memberExpression(
+      t.identifier(sourceCodeContext.propsName),
+      t.identifier('children')
+    );
     // 生成: props['template_default']?.() || props.children
     finalExpression = t.logicalExpression('||', templateAndCall, propsChildren);
   }

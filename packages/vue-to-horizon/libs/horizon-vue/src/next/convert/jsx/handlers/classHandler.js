@@ -75,10 +75,16 @@ export function mergeClassNames(path) {
     }
 
     // 创建新的classnames调用
-    const classNamesCall = t.callExpression(t.identifier('classnames'), classNamesArgs);
+    const classNamesCall = t.callExpression(
+      t.identifier('classnames'),
+      classNamesArgs
+    );
 
     // 创建新的className属性
-    const newClassAttr = t.jsxAttribute(t.jsxIdentifier('className'), t.jsxExpressionContainer(classNamesCall));
+    const newClassAttr = t.jsxAttribute(
+      t.jsxIdentifier('className'),
+      t.jsxExpressionContainer(classNamesCall)
+    );
 
     newAttrs.push(newClassAttr);
     path.node.openingElement.attributes = newAttrs;

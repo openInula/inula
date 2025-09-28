@@ -11,11 +11,11 @@ export {
    *  import a from './a.jsx'
    *  registerComponent('a', a)
    */
-  registerComponent,
+    registerComponent,
   /**
    * 全局加载组件
    * import GlobalComponent from 'adapters/component'
    * <GlobalComponent componentName={'You Registered component'}  {...props} />
    */
-  GlobalComponent,
+    GlobalComponent
 };

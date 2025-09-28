@@ -2,7 +2,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest'; // 如果配置了 globals: true 可省略
 import convertTemplate from '../../../../src/next/convert/jsx/index.js';
 import { generateReactCode } from '../../util.js';
-import SourceCodeContext from '../../../../src/next/convert/sourceCodeContext.js';
+import SourceCodeContext from "../../../../src/next/convert/sourceCodeContext.js";
 
 // Mock 工具函数修改为 vitest 的语法
 vi.mock('@src/next/logHelper');
@@ -15,7 +15,7 @@ describe('Vue 模板转 React JSX 测试', () => {
     mockReactConvert = {
       sourceCodeContext: new SourceCodeContext(),
       name: 'TodoItem',
-      path: '/mock/path',
+      path: '/mock/path'
     };
   });
 
@@ -51,6 +51,7 @@ describe('Vue 模板转 React JSX 测试', () => {
         "<select value={selected} onChange={($event) => {selected = $event.target.value}} />"
       `);
     });
+
   });
 
   describe('组件名称转换', () => {

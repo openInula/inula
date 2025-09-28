@@ -50,11 +50,9 @@ describe('useRef Hook Test', () => {
       const ref = useRef(1);
       return (
         <>
-          <button
-            onClick={() => {
-              ref.current += 1;
-            }}
-          >
+          <button onClick={() => {
+            ref.current += 1;
+          }}>
             button
           </button>
           <Text text={ref.current} />;

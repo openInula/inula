@@ -1,4 +1,4 @@
-import t, { NullLiteral } from '@babel/types';
+import t, {NullLiteral} from '@babel/types';
 import LOG from '../../../logHelper.js';
 
 /**
@@ -78,7 +78,7 @@ export function propsParser(ast, reactCovert) {
             objectExpression.push(t.objectProperty(t.identifier('type'), t.identifier('Function')));
           }
         } else {
-          objectExpression = [t.objectProperty(t.identifier('default'), t.identifier('undefined'))];
+          objectExpression =  [t.objectProperty(t.identifier('default'), t.identifier('undefined'))];
         }
         properties.push(t.objectProperty(t.identifier(prop.key.name), t.objectExpression(objectExpression)));
       }

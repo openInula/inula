@@ -15,18 +15,18 @@
 
 import * as Horizon from '@cloudsop/horizon/index.ts';
 import * as LogUtils from '../../jest/logUtils';
-import { clearStore, createStore, useStore } from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
-import { Text, triggerClickEvent } from '../../jest/commonComponents';
-import { getObserver } from '../../../../libs/horizon/src/horizonx/proxy/ProxyHandler';
-import { describe, beforeEach, afterEach, it, expect } from '@jest/globals';
+import {clearStore, createStore, useStore} from '../../../../libs/horizon/src/horizonx/store/StoreHandler';
+import {Text, triggerClickEvent} from '../../jest/commonComponents';
+import {getObserver} from '../../../../libs/horizon/src/horizonx/proxy/ProxyHandler';
+import {describe, beforeEach, afterEach, it, expect} from '@jest/globals';
 
 describe('测试 Class VNode 清除时，对引用清除', () => {
-  const { unmountComponentAtNode } = Horizon;
-  let container: HTMLElement | null = null;
+  const {unmountComponentAtNode} = Horizon;
+  let container:HTMLElement|null = null;
   let globalState = {
     name: 'bing dun dun',
     isWin: true,
-    isShow: true,
+    isShow: true
   };
 
   beforeEach(() => {
@@ -41,7 +41,7 @@ describe('测试 Class VNode 清除时，对引用清除', () => {
         setWin: (state, val) => {
           state.isWin = val;
         },
-        hide: state => {
+        hide: (state) => {
           state.isShow = false;
         },
         updateName: (state, val) => {
@@ -66,24 +66,21 @@ describe('测试 Class VNode 清除时，对引用清除', () => {
       userStore = useStore('user');
 
       render() {
-        if (!this.userStore) return <div />;
+        if(!this.userStore) return <div />;
         // Do not modify the store data in the render method. Otherwise, an infinite loop may occur.
         this.userStore.updateName(this.userStore.name === 'bing dun dun' ? 'huo dun dun' : 'bing dun dun');
 
-        return (
-          <div>
-            <Text id={'name'} text={`name: ${this.userStore.name}`} />
-            <Text id={'isWin'} text={`isWin: ${this.userStore.isWin}`} />
-          </div>
-        );
+        return <div>
+          <Text id={'name'} text={`name: ${this.userStore.name}`}/>
+          <Text id={'isWin'} text={`isWin: ${this.userStore.isWin}`}/>
+        </div>;
       }
     }
 
     expect(() => {
-      Horizon.render(<Child />, container);
-    }).toThrow(
-      'The number of updates exceeds the upper limit 50.\n' +
-        '      A component maybe repeatedly invokes setState on componentWillUpdate or componentDidUpdate.'
-    );
+      Horizon.render(<Child/>, container);
+    }).toThrow('The number of updates exceeds the upper limit 50.\n' +
+      '      A component maybe repeatedly invokes setState on componentWillUpdate or componentDidUpdate.');
+
   });
 });

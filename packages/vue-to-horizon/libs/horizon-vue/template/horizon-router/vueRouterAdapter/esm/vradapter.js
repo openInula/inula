@@ -1,13 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useMemo,
-  useRef,
-  useEffect,
-  createElement,
-  useState,
-  useLayoutEffect,
-} from '@cloudsop/horizon';
+import { createContext, useContext, useMemo, useRef, useEffect, createElement, useState, useLayoutEffect } from '@cloudsop/horizon';
 import { jsx } from '@cloudsop/horizon/jsx-runtime';
 
 function isBrowser() {
@@ -27,38 +18,36 @@ function isSupportsPopState() {
   return window.navigator.userAgent.indexOf('Trident') === -1;
 }
 
-var Action = /*#__PURE__*/ (function (Action) {
-  Action['pop'] = 'POP';
-  Action['push'] = 'PUSH';
-  Action['replace'] = 'REPLACE';
+var Action = /*#__PURE__*/function (Action) {
+  Action["pop"] = "POP";
+  Action["push"] = "PUSH";
+  Action["replace"] = "REPLACE";
   return Action;
-})({});
-var EventType = /*#__PURE__*/ (function (EventType) {
-  EventType['PopState'] = 'popstate';
-  EventType['HashChange'] = 'hashchange';
+}({});
+var EventType = /*#__PURE__*/function (EventType) {
+  EventType["PopState"] = "popstate";
+  EventType["HashChange"] = "hashchange";
   return EventType;
-})({});
-var PopDirection = /*#__PURE__*/ (function (PopDirection) {
-  PopDirection['back'] = 'back';
-  PopDirection['forward'] = 'forward';
-  PopDirection['unknown'] = '';
+}({});
+var PopDirection = /*#__PURE__*/function (PopDirection) {
+  PopDirection["back"] = "back";
+  PopDirection["forward"] = "forward";
+  PopDirection["unknown"] = "";
   return PopDirection;
-})({});
+}({});
 
 function _extends() {
-  _extends = Object.assign
-    ? Object.assign.bind()
-    : function (target) {
-        for (var i = 1; i < arguments.length; i++) {
-          var source = arguments[i];
-          for (var key in source) {
-            if (Object.prototype.hasOwnProperty.call(source, key)) {
-              target[key] = source[key];
-            }
-          }
+  _extends = Object.assign ? Object.assign.bind() : function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
         }
-        return target;
-      };
+      }
+    }
+    return target;
+  };
   return _extends.apply(this, arguments);
 }
 
@@ -78,7 +67,7 @@ function parsePath(url) {
   var pathname = url || '/';
   var parsedPath = {
     search: '',
-    hash: '',
+    hash: ''
   };
   var hashIdx = url.indexOf('#');
   if (hashIdx > -1) {
@@ -100,16 +89,13 @@ function createLocation(current, to, state, key) {
   var urlObj = typeof to === 'string' ? parsePath(to) : to;
   // 随机key长度取6
   var getRandKey = genRandomKey(6);
-  var location = _extends(
-    {
-      pathname: pathname,
-      search: '',
-      hash: '',
-      state: state,
-      key: typeof key === 'string' ? key : getRandKey(),
-    },
-    urlObj
-  );
+  var location = _extends({
+    pathname: pathname,
+    search: '',
+    hash: '',
+    state: state,
+    key: typeof key === 'string' ? key : getRandKey()
+  }, urlObj);
   if (!location.pathname) {
     location.pathname = pathname ? pathname : '/';
   } else if (!location.pathname.startsWith('/')) {
@@ -137,9 +123,7 @@ function normalizeSlash(path) {
   return tempPath;
 }
 function hasBasename(path, prefix) {
-  return (
-    path.toLowerCase().indexOf(prefix.toLowerCase()) === 0 && ['/', '?', '#', ''].includes(path.charAt(prefix.length))
-  );
+  return path.toLowerCase().indexOf(prefix.toLowerCase()) === 0 && ['/', '?', '#', ''].includes(path.charAt(prefix.length));
 }
 function stripBasename(path, prefix) {
   return hasBasename(path, prefix) ? path.substring(prefix.length) : path;
@@ -177,7 +161,7 @@ function createMemoryRecord(initVal, fn) {
   }
   return {
     getDelta: getDelta,
-    addRecord: addRecord,
+    addRecord: addRecord
   };
 }
 function genRandomKey(length) {
@@ -218,42 +202,34 @@ function parseRelativePath(to, from) {
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
-    throw new TypeError('Cannot call a class as a function');
+    throw new TypeError("Cannot call a class as a function");
   }
 }
 
 function _typeof(o) {
-  '@babel/helpers - typeof';
+  "@babel/helpers - typeof";
 
-  return (
-    (_typeof =
-      'function' == typeof Symbol && 'symbol' == typeof Symbol.iterator
-        ? function (o) {
-            return typeof o;
-          }
-        : function (o) {
-            return o && 'function' == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype
-              ? 'symbol'
-              : typeof o;
-          }),
-    _typeof(o)
-  );
+  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
+    return typeof o;
+  } : function (o) {
+    return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+  }, _typeof(o);
 }
 
 function toPrimitive(t, r) {
-  if ('object' != _typeof(t) || !t) return t;
+  if ("object" != _typeof(t) || !t) return t;
   var e = t[Symbol.toPrimitive];
   if (void 0 !== e) {
-    var i = e.call(t, r || 'default');
-    if ('object' != _typeof(i)) return i;
-    throw new TypeError('@@toPrimitive must return a primitive value.');
+    var i = e.call(t, r || "default");
+    if ("object" != _typeof(i)) return i;
+    throw new TypeError("@@toPrimitive must return a primitive value.");
   }
-  return ('string' === r ? String : Number)(t);
+  return ("string" === r ? String : Number)(t);
 }
 
 function toPropertyKey(t) {
-  var i = toPrimitive(t, 'string');
-  return 'symbol' == _typeof(i) ? i : String(i);
+  var i = toPrimitive(t, "string");
+  return "symbol" == _typeof(i) ? i : String(i);
 }
 
 function _defineProperties(target, props) {
@@ -261,58 +237,55 @@ function _defineProperties(target, props) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
     descriptor.configurable = true;
-    if ('value' in descriptor) descriptor.writable = true;
+    if ("value" in descriptor) descriptor.writable = true;
     Object.defineProperty(target, toPropertyKey(descriptor.key), descriptor);
   }
 }
 function _createClass(Constructor, protoProps, staticProps) {
   if (protoProps) _defineProperties(Constructor.prototype, protoProps);
   if (staticProps) _defineProperties(Constructor, staticProps);
-  Object.defineProperty(Constructor, 'prototype', {
-    writable: false,
+  Object.defineProperty(Constructor, "prototype", {
+    writable: false
   });
   return Constructor;
 }
 
-var TransitionManager = /*#__PURE__*/ (function () {
+var TransitionManager = /*#__PURE__*/function () {
   function TransitionManager() {
     _classCallCheck(this, TransitionManager);
     this.prompt = void 0;
     this.prompt = null;
   }
-  _createClass(TransitionManager, [
-    {
-      key: 'setPrompt',
-      value: function setPrompt(prompt) {
-        var _this = this;
-        this.prompt = prompt;
+  _createClass(TransitionManager, [{
+    key: "setPrompt",
+    value: function setPrompt(prompt) {
+      var _this = this;
+      this.prompt = prompt;
 
-        // 清除Prompt
-        return function () {
-          if (_this.prompt === prompt) {
-            _this.prompt = null;
-          }
-        };
-      },
-    },
-    {
-      key: 'confirmJumpTo',
-      value: function confirmJumpTo(location, action, userConfirmationFunc, callBack) {
-        if (this.prompt !== null) {
-          var result = typeof this.prompt === 'function' ? this.prompt(location, action) : this.prompt;
-          if (typeof result === 'string') {
-            typeof userConfirmationFunc === 'function' ? userConfirmationFunc(result, callBack) : callBack(true);
-          } else {
-            callBack(result !== false);
-          }
-        } else {
-          callBack(true);
+      // 清除Prompt
+      return function () {
+        if (_this.prompt === prompt) {
+          _this.prompt = null;
         }
-      },
-    },
-  ]);
+      };
+    }
+  }, {
+    key: "confirmJumpTo",
+    value: function confirmJumpTo(location, action, userConfirmationFunc, callBack) {
+      if (this.prompt !== null) {
+        var result = typeof this.prompt === 'function' ? this.prompt(location, action) : this.prompt;
+        if (typeof result === 'string') {
+          typeof userConfirmationFunc === 'function' ? userConfirmationFunc(result, callBack) : callBack(true);
+        } else {
+          callBack(result !== false);
+        }
+      } else {
+        callBack(true);
+      }
+    }
+  }]);
   return TransitionManager;
-})();
+}();
 
 function warning(condition, message) {
   if (condition) {
@@ -322,70 +295,9 @@ function warning(condition, message) {
   }
 }
 
-function _createForOfIteratorHelper$3(r, e) {
-  var t = ('undefined' != typeof Symbol && r[Symbol.iterator]) || r['@@iterator'];
-  if (!t) {
-    if (Array.isArray(r) || (t = _unsupportedIterableToArray$3(r)) || (e && r && 'number' == typeof r.length)) {
-      t && (r = t);
-      var n = 0,
-        F = function () {};
-      return {
-        s: F,
-        n: function () {
-          return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] };
-        },
-        e: function (r) {
-          throw r;
-        },
-        f: F,
-      };
-    }
-    throw new TypeError(
-      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.'
-    );
-  }
-  var o,
-    a = !0,
-    u = !1;
-  return {
-    s: function () {
-      t = t.call(r);
-    },
-    n: function () {
-      var r = t.next();
-      return ((a = r.done), r);
-    },
-    e: function (r) {
-      ((u = !0), (o = r));
-    },
-    f: function () {
-      try {
-        a || null == t.return || t.return();
-      } finally {
-        if (u) throw o;
-      }
-    },
-  };
-}
-function _unsupportedIterableToArray$3(r, a) {
-  if (r) {
-    if ('string' == typeof r) return _arrayLikeToArray$3(r, a);
-    var t = {}.toString.call(r).slice(8, -1);
-    return (
-      'Object' === t && r.constructor && (t = r.constructor.name),
-      'Map' === t || 'Set' === t
-        ? Array.from(r)
-        : 'Arguments' === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t)
-          ? _arrayLikeToArray$3(r, a)
-          : void 0
-    );
-  }
-}
-function _arrayLikeToArray$3(r, a) {
-  (null == a || a > r.length) && (a = r.length);
-  for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
-  return n;
-}
+function _createForOfIteratorHelper$3(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray$3(r)) || e && r && "number" == typeof r.length) { t && (r = t); var n = 0, F = function () {}; return { s: F, n: function () { return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] }; }, e: function (r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function () { t = t.call(r); }, n: function () { var r = t.next(); return a = r.done, r; }, e: function (r) { u = !0, o = r; }, f: function () { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray$3(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray$3(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray$3(r, a) : void 0; } }
+function _arrayLikeToArray$3(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 // 抽取BrowserHistory和HashHistory中相同的方法
 function getBaseHistory() {
   var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'browser';
@@ -439,7 +351,7 @@ function getBaseHistory() {
     };
     var trigger = {
       type: listener.type,
-      trigger: wrapper,
+      trigger: wrapper
     };
     listeners.push(trigger);
     setupListener(1);
@@ -457,7 +369,7 @@ function getBaseHistory() {
     var _iterator = _createForOfIteratorHelper$3(unListeners),
       _step;
     try {
-      for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
         var unListen = _step.value;
         unListen();
       }
@@ -497,7 +409,7 @@ function getBaseHistory() {
       var location = _extends({}, historyProps.location);
       var commonArgs = {
         location: location,
-        action: historyProps.action,
+        action: historyProps.action
       };
       var popArgs = {
         to: createPath(location),
@@ -505,8 +417,8 @@ function getBaseHistory() {
         information: {
           delta: delta,
           direction: delta > 0 ? PopDirection.forward : PopDirection.back,
-          type: Action.pop,
-        },
+          type: Action.pop
+        }
       };
       for (var i = 0; i < listeners.length && !pauseTrigger; i++) {
         var listener = listeners[i];
@@ -525,7 +437,7 @@ function getBaseHistory() {
     addListener: addListener,
     block: block,
     destroy: destroy,
-    getUpdateStateFunc: getUpdateStateFunc,
+    getUpdateStateFunc: getUpdateStateFunc
   };
 }
 
@@ -558,7 +470,7 @@ function createBrowserHistory() {
   var listen = function (listener) {
     var trigger = {
       type: 'common',
-      listener: listener,
+      listener: listener
     };
     return addListener(trigger);
   };
@@ -579,7 +491,7 @@ function createBrowserHistory() {
     push: push,
     replace: replace,
     destroy: destroy,
-    createHref: createHref,
+    createHref: createHref
   };
   var updateState = getUpdateStateFunc(history);
   function getHistoryState() {
@@ -594,16 +506,11 @@ function createBrowserHistory() {
       state = _ref.state;
     var pathname = window.location.pathname;
     pathname = basename ? stripBasename(pathname, basename) : pathname;
-    return createLocation(
-      '',
-      {
-        pathname: pathname,
-        search: search,
-        hash: hash,
-      },
-      state,
-      key
-    );
+    return createLocation('', {
+      pathname: pathname,
+      search: search,
+      hash: hash
+    }, state, key);
   }
 
   // 拦截页面POP事件后，防止返回到的页面被重复拦截
@@ -619,7 +526,7 @@ function createBrowserHistory() {
           // 执行跳转行为
           updateState({
             action: action,
-            location: location,
+            location: location
           });
         } else {
           revertPopState(location, history.location);
@@ -662,18 +569,14 @@ function createBrowserHistory() {
         if (forceRefresh) {
           window.location.href = href;
         } else {
-          browserHistory.pushState(
-            {
-              key: key,
-              state: state,
-            },
-            '',
-            href
-          );
+          browserHistory.pushState({
+            key: key,
+            state: state
+          }, '', href);
           recordOperator.addRecord(history.location, location, action);
           updateState({
             action: action,
-            location: location,
+            location: location
           });
         }
       } else {
@@ -696,18 +599,14 @@ function createBrowserHistory() {
         if (forceRefresh) {
           window.location.replace(href);
         } else {
-          browserHistory.replaceState(
-            {
-              key: key,
-              state: state,
-            },
-            '',
-            href
-          );
+          browserHistory.replaceState({
+            key: key,
+            state: state
+          }, '', href);
           recordOperator.addRecord(history.location, location, action);
           updateState({
             action: action,
-            location: location,
+            location: location
           });
         }
       } else {
@@ -723,14 +622,14 @@ function normalizeBase(base) {
   if (!base) {
     if (typeof document !== 'undefined') {
       var baseEl = document.querySelector('base');
-      base = (baseEl && baseEl.getAttribute('href')) || '/';
+      base = baseEl && baseEl.getAttribute('href') || '/';
       base = base.replace(/^\w+:\/\/[^\/]+/, '');
     } else {
       base = '/';
     }
   }
   if (base[0] !== '/' && base[0] !== '#') {
-    base = '/' + base;
+    base = "/" + base;
   }
   return normalizeSlash(base);
 }
@@ -774,7 +673,7 @@ function parseURL(location) {
     fullPath: path + (searchString && '?') + searchString + hash,
     path: path,
     query: query,
-    hash: decode(hash),
+    hash: decode(hash)
   };
 }
 function stringifyUrl(location) {
@@ -807,13 +706,9 @@ function normalizeQuery(query) {
   for (var key in query) {
     var value = query[key];
     if (value !== undefined) {
-      normalizedQuery[key] = Array.isArray(value)
-        ? value.map(function (v) {
-            return v == null ? null : '' + v;
-          })
-        : value == null
-          ? value
-          : '' + value;
+      normalizedQuery[key] = Array.isArray(value) ? value.map(function (v) {
+        return v == null ? null : '' + v;
+      }) : value == null ? value : '' + value;
     }
   }
   return normalizedQuery;
@@ -829,12 +724,9 @@ function decode(text) {
   return decodeURIComponent(String(text));
 }
 function shallowCompareArray(a, b) {
-  return Array.isArray(b)
-    ? a.length === b.length &&
-        a.every(function (v, i) {
-          return b[i] === v;
-        })
-    : a.length === 1 && a[0] === b;
+  return Array.isArray(b) ? a.length === b.length && a.every(function (v, i) {
+    return b[i] === v;
+  }) : a.length === 1 && a[0] === b;
 }
 function compareParams(a, b) {
   var aKeys = Object.keys(a);
@@ -863,14 +755,7 @@ function compareParams(a, b) {
 function isSameRouteLocation(a, b) {
   var matchLengthA = a.matched.length - 1;
   var matchLengthB = b.matched.length - 1;
-  return (
-    matchLengthA >= -1 &&
-    matchLengthA === matchLengthB &&
-    a.matched[matchLengthA] === b.matched[matchLengthB] &&
-    compareParams(a.params, b.params) &&
-    stringifyQuery(a.query) === stringifyQuery(b.query) &&
-    a.hash === b.hash
-  );
+  return matchLengthA >= -1 && matchLengthA === matchLengthB && a.matched[matchLengthA] === b.matched[matchLengthB] && compareParams(a.params, b.params) && stringifyQuery(a.query) === stringifyQuery(b.query) && a.hash === b.hash;
 }
 function createCallBackList() {
   var callbacks = [];
@@ -888,8 +773,8 @@ function createCallBackList() {
       return callbacks.slice(0);
     },
     clear: function () {
-      return (callbacks.length = 0);
-    },
+      return callbacks.length = 0;
+    }
   };
 }
 function guardEvent(e) {
@@ -915,21 +800,15 @@ function includesParams(outer, inner) {
       var innerValue = inner[key];
       var outerValue = outer[key];
       if (typeof innerValue === 'string') {
-        if (innerValue !== outerValue)
-          return {
-            v: false,
-          };
+        if (innerValue !== outerValue) return {
+          v: false
+        };
       } else {
-        if (
-          !Array.isArray(outerValue) ||
-          outerValue.length !== innerValue.length ||
-          innerValue.some(function (value, i) {
-            return value !== outerValue[i];
-          })
-        )
-          return {
-            v: false,
-          };
+        if (!Array.isArray(outerValue) || outerValue.length !== innerValue.length || innerValue.some(function (value, i) {
+          return value !== outerValue[i];
+        })) return {
+          v: false
+        };
       }
     },
     _ret;
@@ -961,12 +840,12 @@ function createVueBaseHistory(handler, base) {
   var baseHistory = createBrowserHistory({
     basename: urlBase,
     locationHandler: locationHandler,
-    baseHandler: hrefHandler,
+    baseHandler: hrefHandler
   });
   var listen = function (listener) {
     return baseHistory.addListener({
       type: 'pop',
-      listener: listener,
+      listener: listener
     });
   };
   var listenLocation = function (listener) {
@@ -988,7 +867,7 @@ function createVueBaseHistory(handler, base) {
     listenLocation: listenLocation,
     replace: replace,
     destroy: baseHistory.destroy,
-    createHref: createHrefHandler(urlBase),
+    createHref: createHrefHandler(urlBase)
   };
 
   // let location and state readonly
@@ -997,14 +876,14 @@ function createVueBaseHistory(handler, base) {
       enumerable: true,
       get: function () {
         return createPath(locationHandler ? locationHandler(baseHistory.location) : baseHistory.location);
-      },
+      }
     },
     state: {
       enumerable: true,
       get: function () {
         return baseHistory.location.state;
-      },
-    },
+      }
+    }
   });
   return historyAdapter;
 }
@@ -1043,7 +922,7 @@ function createWebHashHistory(base) {
   };
   var hashHandlers = {
     locationHandler: getLocation,
-    baseHandler: getBase,
+    baseHandler: getBase
   };
   return createVueBaseHistory(hashHandlers, base);
 }
@@ -1070,16 +949,16 @@ var START_LOCATION = {
   hash: '',
   fullPath: '/',
   meta: {},
-  matched: [],
+  matched: []
 };
-var ErrorTypes = /*#__PURE__*/ (function (ErrorTypes) {
-  ErrorTypes[(ErrorTypes['MATCHER_NOT_FOUND'] = 1)] = 'MATCHER_NOT_FOUND';
-  ErrorTypes[(ErrorTypes['NAVIGATION_GUARD_REDIRECT'] = 2)] = 'NAVIGATION_GUARD_REDIRECT';
-  ErrorTypes[(ErrorTypes['NAVIGATION_ABORTED'] = 4)] = 'NAVIGATION_ABORTED';
-  ErrorTypes[(ErrorTypes['NAVIGATION_CANCELLED'] = 8)] = 'NAVIGATION_CANCELLED';
-  ErrorTypes[(ErrorTypes['NAVIGATION_DUPLICATED'] = 16)] = 'NAVIGATION_DUPLICATED';
+var ErrorTypes = /*#__PURE__*/function (ErrorTypes) {
+  ErrorTypes[ErrorTypes["MATCHER_NOT_FOUND"] = 1] = "MATCHER_NOT_FOUND";
+  ErrorTypes[ErrorTypes["NAVIGATION_GUARD_REDIRECT"] = 2] = "NAVIGATION_GUARD_REDIRECT";
+  ErrorTypes[ErrorTypes["NAVIGATION_ABORTED"] = 4] = "NAVIGATION_ABORTED";
+  ErrorTypes[ErrorTypes["NAVIGATION_CANCELLED"] = 8] = "NAVIGATION_CANCELLED";
+  ErrorTypes[ErrorTypes["NAVIGATION_DUPLICATED"] = 16] = "NAVIGATION_DUPLICATED";
   return ErrorTypes;
-})({});
+}({});
 
 /*
  * Copyright (c) 2020 Huawei Technologies Co.,Ltd.
@@ -1101,7 +980,7 @@ var CurrentRouteRecord = createContext(null);
 
 // provide match depth for <RouterView/>
 var ViewDepth = createContext({
-  depth: 0,
+  depth: 0
 });
 
 /*
@@ -1119,16 +998,16 @@ var ViewDepth = createContext({
  * See the Mulan PSL v2 for more details.
  */
 
-var TokenType = /*#__PURE__*/ (function (TokenType) {
-  TokenType['Delimiter'] = 'delimiter';
-  TokenType['Static'] = 'static';
-  TokenType['Param'] = 'param';
-  TokenType['WildCard'] = 'wildcard';
-  TokenType['LBracket'] = '(';
-  TokenType['RBracket'] = ')';
-  TokenType['Pattern'] = 'pattern';
+var TokenType = /*#__PURE__*/function (TokenType) {
+  TokenType["Delimiter"] = "delimiter";
+  TokenType["Static"] = "static";
+  TokenType["Param"] = "param";
+  TokenType["WildCard"] = "wildcard";
+  TokenType["LBracket"] = "(";
+  TokenType["RBracket"] = ")";
+  TokenType["Pattern"] = "pattern";
   return TokenType;
-})({});
+}({});
 
 // 解析URL中的动态参数，以实现TypeScript提示功能
 
@@ -1169,7 +1048,7 @@ function lexer(path) {
   }
   var urlPath = cleanPath(path);
   if (urlPath !== '*' && !urlPath.startsWith('/')) {
-    throw new Error('Url must start with "/".');
+    throw new Error("Url must start with \"/\".");
   }
   var getLiteral = function () {
     var name = '';
@@ -1189,7 +1068,7 @@ function lexer(path) {
     if (curChar === '/') {
       tokens.push({
         type: TokenType.Delimiter,
-        value: urlPath[i],
+        value: urlPath[i]
       });
       skipChar(1);
       continue;
@@ -1199,7 +1078,7 @@ function lexer(path) {
       skipChar(1);
       tokens.push({
         type: TokenType.Param,
-        value: getLiteral(),
+        value: getLiteral()
       });
       continue;
     }
@@ -1207,7 +1086,7 @@ function lexer(path) {
     if ((prevChar === '/' || prevChar === undefined) && curChar === '*') {
       tokens.push({
         type: TokenType.WildCard,
-        value: urlPath[i],
+        value: urlPath[i]
       });
       skipChar(1);
       continue;
@@ -1216,14 +1095,14 @@ function lexer(path) {
     if (prevChar === '/' && validChar.test(curChar)) {
       tokens.push({
         type: TokenType.Static,
-        value: getLiteral(),
+        value: getLiteral()
       });
       continue;
     }
     if (curChar === '(') {
       tokens.push({
         type: TokenType.LBracket,
-        value: '(',
+        value: '('
       });
       skipChar(1);
       continue;
@@ -1231,7 +1110,7 @@ function lexer(path) {
     if (curChar === ')') {
       tokens.push({
         type: TokenType.RBracket,
-        value: ')',
+        value: ')'
       });
       skipChar(1);
       continue;
@@ -1239,7 +1118,7 @@ function lexer(path) {
     if (['*', '?', '$', '^', '+'].includes(curChar)) {
       tokens.push({
         type: TokenType.Pattern,
-        value: curChar,
+        value: curChar
       });
       skipChar(1);
       continue;
@@ -1247,7 +1126,7 @@ function lexer(path) {
     if (validChar.test(curChar)) {
       tokens.push({
         type: TokenType.Pattern,
-        value: getLiteral(),
+        value: getLiteral()
       });
       continue;
     }
@@ -1257,86 +1136,25 @@ function lexer(path) {
   return tokens;
 }
 
-function _createForOfIteratorHelper$2(r, e) {
-  var t = ('undefined' != typeof Symbol && r[Symbol.iterator]) || r['@@iterator'];
-  if (!t) {
-    if (Array.isArray(r) || (t = _unsupportedIterableToArray$2(r)) || (e && r && 'number' == typeof r.length)) {
-      t && (r = t);
-      var n = 0,
-        F = function () {};
-      return {
-        s: F,
-        n: function () {
-          return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] };
-        },
-        e: function (r) {
-          throw r;
-        },
-        f: F,
-      };
-    }
-    throw new TypeError(
-      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.'
-    );
-  }
-  var o,
-    a = !0,
-    u = !1;
-  return {
-    s: function () {
-      t = t.call(r);
-    },
-    n: function () {
-      var r = t.next();
-      return ((a = r.done), r);
-    },
-    e: function (r) {
-      ((u = !0), (o = r));
-    },
-    f: function () {
-      try {
-        a || null == t.return || t.return();
-      } finally {
-        if (u) throw o;
-      }
-    },
-  };
-}
-function _unsupportedIterableToArray$2(r, a) {
-  if (r) {
-    if ('string' == typeof r) return _arrayLikeToArray$2(r, a);
-    var t = {}.toString.call(r).slice(8, -1);
-    return (
-      'Object' === t && r.constructor && (t = r.constructor.name),
-      'Map' === t || 'Set' === t
-        ? Array.from(r)
-        : 'Arguments' === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t)
-          ? _arrayLikeToArray$2(r, a)
-          : void 0
-    );
-  }
-}
-function _arrayLikeToArray$2(r, a) {
-  (null == a || a > r.length) && (a = r.length);
-  for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
-  return n;
-}
+function _createForOfIteratorHelper$2(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray$2(r)) || e && r && "number" == typeof r.length) { t && (r = t); var n = 0, F = function () {}; return { s: F, n: function () { return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] }; }, e: function (r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function () { t = t.call(r); }, n: function () { var r = t.next(); return a = r.done, r; }, e: function (r) { u = !0, o = r; }, f: function () { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray$2(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray$2(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray$2(r, a) : void 0; } }
+function _arrayLikeToArray$2(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 
 // 不同类型参数的匹配得分
-var MatchScore = /*#__PURE__*/ (function (MatchScore) {
-  MatchScore[(MatchScore['static'] = 10)] = 'static';
-  MatchScore[(MatchScore['param'] = 6)] = 'param';
-  MatchScore[(MatchScore['wildcard'] = 3)] = 'wildcard';
-  MatchScore[(MatchScore['placeholder'] = -1)] = 'placeholder';
+var MatchScore = /*#__PURE__*/function (MatchScore) {
+  MatchScore[MatchScore["static"] = 10] = "static";
+  MatchScore[MatchScore["param"] = 6] = "param";
+  MatchScore[MatchScore["wildcard"] = 3] = "wildcard";
+  MatchScore[MatchScore["placeholder"] = -1] = "placeholder";
   return MatchScore;
-})(MatchScore || {}); // 兼容 react v5 matched类型
+}(MatchScore || {}); // 兼容 react v5 matched类型
 var defaultOption = {
   // url匹配时是否大小写敏感
   caseSensitive: false,
   // 是否严格匹配url结尾的/
   strictMode: false,
   // 是否完全精确匹配
-  exact: false,
+  exact: false
 };
 // 正则表达式中需要转义的字符
 var REGEX_CHARS_RE = /[.+*?^${}()[\]/\\]/g;
@@ -1387,52 +1205,53 @@ function createPathParser(pathname) {
     var token = tokens[tokenIdx];
     var nextToken = tokens[tokenIdx + 1];
     switch (token.type) {
-      case TokenType.Delimiter: {
-        // 该分隔符后有可选参数则该分割符在匹配时是可选的
-        var hasOptional = lookToNextDelimiter(tokenIdx + 1);
-        // 该分隔符为最后一个且strictMode===false时，该分割符在匹配时是可选的
-        var isSlashOptional = nextToken === undefined && !strictMode;
-        pattern += '/' + (hasOptional || isSlashOptional ? '?' : '');
-        break;
-      }
+      case TokenType.Delimiter:
+        {
+          // 该分隔符后有可选参数则该分割符在匹配时是可选的
+          var hasOptional = lookToNextDelimiter(tokenIdx + 1);
+          // 该分隔符为最后一个且strictMode===false时，该分割符在匹配时是可选的
+          var isSlashOptional = nextToken === undefined && !strictMode;
+          pattern += "/" + (hasOptional || isSlashOptional ? '?' : '');
+          break;
+        }
       case TokenType.Static:
         pattern += token.value.replace(REGEX_CHARS_RE, '\\$&');
         if (nextToken && nextToken.type === TokenType.Pattern) {
-          pattern += '(.' + nextToken.value + ')';
+          pattern += "(." + nextToken.value + ")";
           keys.push(String(asteriskCount));
           asteriskCount++;
         }
         scores.push(MatchScore.static);
         break;
-      case TokenType.Param: {
-        // 动态参数支持形如/:param、/:param*、/:param?、/:param(\\d+)的形式
-        var paramRegexp = '';
-        if (nextToken) {
-          switch (nextToken.type) {
-            case TokenType.LBracket:
-              // 跳过当前Token和左括号
-              tokenIdx += 2;
-              while (tokens[tokenIdx].type !== TokenType.RBracket) {
-                paramRegexp += tokens[tokenIdx].value;
+      case TokenType.Param:
+        {
+          // 动态参数支持形如/:param、/:param*、/:param?、/:param(\\d+)的形式
+          var paramRegexp = '';
+          if (nextToken) {
+            switch (nextToken.type) {
+              case TokenType.LBracket:
+                // 跳过当前Token和左括号
+                tokenIdx += 2;
+                while (tokens[tokenIdx].type !== TokenType.RBracket) {
+                  paramRegexp += tokens[tokenIdx].value;
+                  tokenIdx++;
+                }
+                paramRegexp = "(" + paramRegexp + ")";
+                break;
+              case TokenType.Pattern:
                 tokenIdx++;
-              }
-              paramRegexp = '(' + paramRegexp + ')';
-              break;
-            case TokenType.Pattern:
-              tokenIdx++;
-              paramRegexp += '(' + (nextToken.value === '*' ? '.*' : BASE_PARAM_PATTERN) + ')' + nextToken.value;
-              break;
+                paramRegexp += "(" + (nextToken.value === '*' ? '.*' : BASE_PARAM_PATTERN) + ")" + nextToken.value;
+                break;
+            }
           }
+          pattern += paramRegexp ? "(?:" + paramRegexp + ")" : "(" + BASE_PARAM_PATTERN + ")";
+          keys.push(token.value);
+          scores.push(MatchScore.param);
+          break;
         }
-        pattern += paramRegexp ? '(?:' + paramRegexp + ')' : '(' + BASE_PARAM_PATTERN + ')';
-        keys.push(token.value);
-        scores.push(MatchScore.param);
-        break;
-      }
       case TokenType.WildCard:
         keys.push(token.value);
-        pattern +=
-          '((?:' + BASE_PARAM_PATTERN + ')' + (onlyHasWildCard ? '?' : '') + '(?:/(?:' + BASE_PARAM_PATTERN + '))*)';
+        pattern += "((?:" + BASE_PARAM_PATTERN + ")" + (onlyHasWildCard ? '?' : '') + "(?:/(?:" + BASE_PARAM_PATTERN + "))*)";
         scores.push(onlyHasWildCard ? MatchScore.wildcard : MatchScore.placeholder);
         break;
     }
@@ -1440,13 +1259,13 @@ function createPathParser(pathname) {
   var isWildCard = lastToken.type === TokenType.WildCard;
   if (!isWildCard && !exact) {
     if (!strictMode) {
-      pattern += '(?:[' + escapeStr(DefaultDelimiter) + '](?=$))?';
+      pattern += "(?:[" + escapeStr(DefaultDelimiter) + "](?=$))?";
     }
     if (lastToken.type !== TokenType.Delimiter) {
-      pattern += '(?=[' + escapeStr(DefaultDelimiter) + ']|$)';
+      pattern += "(?=[" + escapeStr(DefaultDelimiter) + "]|$)";
     }
   } else {
-    pattern += strictMode ? '$' : '[' + escapeStr(DefaultDelimiter) + ']?$';
+    pattern += strictMode ? '$' : "[" + escapeStr(DefaultDelimiter) + "]?$";
   }
   var flag = caseSensitive ? '' : 'i';
   var regexp = new RegExp(pattern, flag);
@@ -1474,10 +1293,7 @@ function createPathParser(pathname) {
           (_params$ = params['*']).push.apply(_params$, value);
         }
         // 完成通配符参数解析后将placeholder替换为wildcard参数的分值
-        parseScore.splice.apply(
-          parseScore,
-          [scores.indexOf(MatchScore.placeholder), 1].concat(new Array(value.length).fill(MatchScore.wildcard))
-        );
+        parseScore.splice.apply(parseScore, [scores.indexOf(MatchScore.placeholder), 1].concat(new Array(value.length).fill(MatchScore.wildcard)));
       } else {
         params[key] = param ? param : undefined;
       }
@@ -1489,7 +1305,7 @@ function createPathParser(pathname) {
       path: pathname,
       url: url,
       score: parseScore,
-      params: params,
+      params: params
     };
   }
 
@@ -1501,7 +1317,7 @@ function createPathParser(pathname) {
     var _iterator = _createForOfIteratorHelper$2(tokens),
       _step;
     try {
-      for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
         var _token = _step.value;
         switch (_token.type) {
           case TokenType.Static:
@@ -1513,15 +1329,16 @@ function createPathParser(pathname) {
             }
             path += params[_token.value];
             break;
-          case TokenType.WildCard: {
-            var wildCard = params['*'];
-            if (wildCard instanceof Array) {
-              path += wildCard.join('/');
-            } else {
-              path += wildCard;
+          case TokenType.WildCard:
+            {
+              var wildCard = params['*'];
+              if (wildCard instanceof Array) {
+                path += wildCard.join('/');
+              } else {
+                path += wildCard;
+              }
+              break;
             }
-            break;
-          }
           case TokenType.Delimiter:
             path += _token.value;
             break;
@@ -1539,77 +1356,16 @@ function createPathParser(pathname) {
     keys: keys,
     score: scores,
     compile: compile,
-    parse: parse,
+    parse: parse
   };
 }
 
-function _createForOfIteratorHelper$1(r, e) {
-  var t = ('undefined' != typeof Symbol && r[Symbol.iterator]) || r['@@iterator'];
-  if (!t) {
-    if (Array.isArray(r) || (t = _unsupportedIterableToArray$1(r)) || (e && r && 'number' == typeof r.length)) {
-      t && (r = t);
-      var n = 0,
-        F = function () {};
-      return {
-        s: F,
-        n: function () {
-          return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] };
-        },
-        e: function (r) {
-          throw r;
-        },
-        f: F,
-      };
-    }
-    throw new TypeError(
-      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.'
-    );
-  }
-  var o,
-    a = !0,
-    u = !1;
-  return {
-    s: function () {
-      t = t.call(r);
-    },
-    n: function () {
-      var r = t.next();
-      return ((a = r.done), r);
-    },
-    e: function (r) {
-      ((u = !0), (o = r));
-    },
-    f: function () {
-      try {
-        a || null == t.return || t.return();
-      } finally {
-        if (u) throw o;
-      }
-    },
-  };
-}
-function _unsupportedIterableToArray$1(r, a) {
-  if (r) {
-    if ('string' == typeof r) return _arrayLikeToArray$1(r, a);
-    var t = {}.toString.call(r).slice(8, -1);
-    return (
-      'Object' === t && r.constructor && (t = r.constructor.name),
-      'Map' === t || 'Set' === t
-        ? Array.from(r)
-        : 'Arguments' === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t)
-          ? _arrayLikeToArray$1(r, a)
-          : void 0
-    );
-  }
-}
-function _arrayLikeToArray$1(r, a) {
-  (null == a || a > r.length) && (a = r.length);
-  for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
-  return n;
-}
+function _createForOfIteratorHelper$1(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray$1(r)) || e && r && "number" == typeof r.length) { t && (r = t); var n = 0, F = function () {}; return { s: F, n: function () { return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] }; }, e: function (r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function () { t = t.call(r); }, n: function () { var r = t.next(); return a = r.done, r; }, e: function (r) { u = !0, o = r; }, f: function () { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray$1(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray$1(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray$1(r, a) : void 0; } }
+function _arrayLikeToArray$1(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 var defaultMatcherOption = {
   strict: false,
-  sensitive: false,
+  sensitive: false
 };
 function isRouteName(name) {
   return typeof name === 'string' || typeof name === 'undefined';
@@ -1619,7 +1375,7 @@ function getLocationParams(params, keys) {
   var _iterator = _createForOfIteratorHelper$1(keys),
     _step;
   try {
-    for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
       var _key = _step.value;
       if (_key in params) {
         newParams[_key] = params[_key];
@@ -1643,17 +1399,14 @@ function convertRecordToBranch(record, option) {
     compile: parser.compile,
     component: record.component,
     key: parser.keys,
-    children: [],
+    children: []
   };
 }
 function agnosticRouteMatcher(routes) {
   var option = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultMatcherOption;
-  var branchHandler =
-    arguments.length > 2 && arguments[2] !== undefined
-      ? arguments[2]
-      : function (item) {
-          return item;
-        };
+  var branchHandler = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function (item) {
+    return item;
+  };
   var branches = [];
   var branchesMap = new Map();
   function addBranch(route) {
@@ -1665,17 +1418,14 @@ function agnosticRouteMatcher(routes) {
       var concatSlash = parent.path.endsWith('/') ? '' : '/';
       normalizedRecord.path = parent.path + (path ? concatSlash + path : '');
     }
-    var recordParserOption = mergeDefault(
-      {
-        exact: true,
-        caseSensitive: option.sensitive,
-        strictMode: option.strict,
-      },
-      {
-        caseSensitive: route.sensitive,
-        strictMode: route.strict,
-      }
-    );
+    var recordParserOption = mergeDefault({
+      exact: true,
+      caseSensitive: option.sensitive,
+      strictMode: option.strict
+    }, {
+      caseSensitive: route.sensitive,
+      strictMode: route.strict
+    });
     var branch = convertRecordToBranch(normalizedRecord, recordParserOption);
     if (parent) {
       branch.parent = parent;
@@ -1690,7 +1440,7 @@ function agnosticRouteMatcher(routes) {
       var _iterator2 = _createForOfIteratorHelper$1(route.children),
         _step2;
       try {
-        for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
           var child = _step2.value;
           addBranch(child, branch);
         }
@@ -1707,11 +1457,9 @@ function agnosticRouteMatcher(routes) {
       }
       return a.parent ? -1 : 1;
     });
-    return originalBranch
-      ? function () {
-          return delBranch(originalBranch);
-        }
-      : function () {};
+    return originalBranch ? function () {
+      return delBranch(originalBranch);
+    } : function () {};
   }
   function getNamedBranch(name) {
     if (branchesMap.has(name)) {
@@ -1769,7 +1517,7 @@ function agnosticRouteMatcher(routes) {
       var _iterator3 = _createForOfIteratorHelper$1(branches),
         _step3;
       try {
-        for (_iterator3.s(); !(_step3 = _iterator3.n()).done; ) {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
           var b = _step3.value;
           if (b.regexp.test(path)) {
             branch = b;
@@ -1786,11 +1534,9 @@ function agnosticRouteMatcher(routes) {
         name = branch.raw.name;
       }
     } else {
-      branch = from.name
-        ? branchesMap.get(from.name)
-        : branches.find(function (b) {
-            return b.regexp.test(from.path);
-          });
+      branch = from.name ? branchesMap.get(from.name) : branches.find(function (b) {
+        return b.regexp.test(from.path);
+      });
       if (!branch) {
         throw Error('route now found');
       }
@@ -1807,14 +1553,14 @@ function agnosticRouteMatcher(routes) {
     // push is 800 times faster than unshift
     matched.reverse();
     if (matched.length < 1) {
-      console.warn('url "' + path + '" has no matched route');
+      console.warn("url \"" + path + "\" has no matched route");
     }
     return {
       name: name,
       path: path,
       params: params,
       matched: matched,
-      meta: merge(matched),
+      meta: merge(matched)
     };
   }
   routes.forEach(function (r) {
@@ -1825,7 +1571,7 @@ function agnosticRouteMatcher(routes) {
     addBranch: addBranch,
     delBranch: delBranch,
     matchPath: matchPath,
-    getNamedBranch: getNamedBranch,
+    getNamedBranch: getNamedBranch
   };
 }
 function merge(data) {
@@ -1836,8 +1582,7 @@ function merge(data) {
 function mergeDefault(defaultOptions, partialOptions) {
   var mergedOption = {};
   for (var _key2 in defaultOptions) {
-    mergedOption[_key2] =
-      _key2 in partialOptions && partialOptions[_key2] != null ? partialOptions[_key2] : defaultOptions[_key2];
+    mergedOption[_key2] = _key2 in partialOptions && partialOptions[_key2] != null ? partialOptions[_key2] : defaultOptions[_key2];
   }
   return mergedOption;
 }
@@ -1849,7 +1594,7 @@ function _defineProperty(obj, key, value) {
       value: value,
       enumerable: true,
       configurable: true,
-      writable: true,
+      writable: true
     });
   } else {
     obj[key] = value;
@@ -1874,17 +1619,9 @@ function _defineProperty(obj, key, value) {
 
 var NavigationFailureSymbol = Symbol('navigation failure');
 function createRouterError(type, params) {
-  return _extends(
-    new Error(),
-    _defineProperty(
-      {
-        type: type,
-      },
-      NavigationFailureSymbol,
-      true
-    ),
-    params
-  );
+  return _extends(new Error(), _defineProperty({
+    type: type
+  }, NavigationFailureSymbol, true), params);
 }
 function isNavigationFailure(error, type) {
   return error instanceof Error && NavigationFailureSymbol in error && (type == null || Boolean(error.type & type));
@@ -1915,46 +1652,33 @@ function useLink(props) {
   var currentRoute = useContext(RouteContext);
   var to = props.to,
     replace = props.replace;
-  var route = useMemo(
-    function () {
-      return router.resolve(to);
-    },
-    [to]
-  );
-  var activeBranchIndex = useMemo(
-    function () {
-      var matched = route.matched;
-      var length = matched.length;
-      var targetMatched = matched[length - 1];
-      var currentMatched = currentRoute.matched;
-      if (!targetMatched || currentMatched.length === 0) {
-        return -1;
-      }
-      var index = currentMatched.findIndex(function (m) {
-        return m === targetMatched;
-      });
-      if (index > -1) {
-        return index;
-      }
-      var parentRecordPath = matched[length - 2] ? matched[length - 2].path : '';
-      if (
-        length > 1 &&
-        targetMatched.path === parentRecordPath &&
-        currentMatched[currentMatched.length - 1].path !== parentRecordPath
-      ) {
-        return currentMatched.findIndex(function (m) {
-          return m === matched[length - 2];
-        });
-      }
+  var route = useMemo(function () {
+    return router.resolve(to);
+  }, [to]);
+  var activeBranchIndex = useMemo(function () {
+    var matched = route.matched;
+    var length = matched.length;
+    var targetMatched = matched[length - 1];
+    var currentMatched = currentRoute.matched;
+    if (!targetMatched || currentMatched.length === 0) {
+      return -1;
+    }
+    var index = currentMatched.findIndex(function (m) {
+      return m === targetMatched;
+    });
+    if (index > -1) {
       return index;
-    },
-    [route, currentRoute]
-  );
+    }
+    var parentRecordPath = matched[length - 2] ? matched[length - 2].path : '';
+    if (length > 1 && targetMatched.path === parentRecordPath && currentMatched[currentMatched.length - 1].path !== parentRecordPath) {
+      return currentMatched.findIndex(function (m) {
+        return m === matched[length - 2];
+      });
+    }
+    return index;
+  }, [route, currentRoute]);
   var isActive = activeBranchIndex > -1 && includesParams(currentRoute.params, route.params);
-  var isExactActive =
-    activeBranchIndex > -1 &&
-    activeBranchIndex === currentRoute.matched.length - 1 &&
-    isSameRouteLocation(currentRoute, route);
+  var isExactActive = activeBranchIndex > -1 && activeBranchIndex === currentRoute.matched.length - 1 && isSameRouteLocation(currentRoute, route);
   function navigate(e) {
     if (guardEvent(e)) {
       return router[replace ? 'replace' : 'push'](to);
@@ -1965,7 +1689,7 @@ function useLink(props) {
     route: route,
     navigate: navigate,
     isActive: isActive,
-    isExactActive: isExactActive,
+    isExactActive: isExactActive
   };
 }
 function useRouteWatch(callback, config) {
@@ -2016,7 +1740,7 @@ function RouterLink(props) {
     children = props.children;
   var link = useLink({
     to: to,
-    replace: replace,
+    replace: replace
   });
   var activeClass = props.activeClass,
     exactActiveClass = props.exactActiveClass;
@@ -2031,11 +1755,11 @@ function RouterLink(props) {
     classes.push(getLinkClass(exactActiveClass, linkExactActiveClass, 'router-link-exact-active'));
   }
   var className = classes.length > 0 ? classes.join(' ') : undefined;
-  return jsx('a', {
+  return jsx("a", {
     onClick: link.navigate,
     href: link.route.fullPath,
     className: className,
-    children: children,
+    children: children
   });
 }
 
@@ -2066,12 +1790,9 @@ function RouterView() {
     matched = _useContext.matched;
   var _useContext2 = useContext(ViewDepth),
     depth = _useContext2.depth;
-  var nextDepth = useMemo(
-    function () {
-      return calcNextDepth(depth, matched);
-    },
-    [depth]
-  );
+  var nextDepth = useMemo(function () {
+    return calcNextDepth(depth, matched);
+  }, [depth]);
   var routeRecord = matched[nextDepth];
   if (routeRecord) {
     var component = routeRecord.component,
@@ -2079,81 +1800,20 @@ function RouterView() {
     var nextComponent = createElement(component, props);
     return jsx(ViewDepth.Provider, {
       value: {
-        depth: nextDepth + 1,
+        depth: nextDepth + 1
       },
       children: jsx(CurrentRouteRecord.Provider, {
         value: routeRecord,
-        children: nextComponent,
-      }),
+        children: nextComponent
+      })
     });
   }
   return null;
 }
 
-function _createForOfIteratorHelper(r, e) {
-  var t = ('undefined' != typeof Symbol && r[Symbol.iterator]) || r['@@iterator'];
-  if (!t) {
-    if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || (e && r && 'number' == typeof r.length)) {
-      t && (r = t);
-      var n = 0,
-        F = function () {};
-      return {
-        s: F,
-        n: function () {
-          return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] };
-        },
-        e: function (r) {
-          throw r;
-        },
-        f: F,
-      };
-    }
-    throw new TypeError(
-      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.'
-    );
-  }
-  var o,
-    a = !0,
-    u = !1;
-  return {
-    s: function () {
-      t = t.call(r);
-    },
-    n: function () {
-      var r = t.next();
-      return ((a = r.done), r);
-    },
-    e: function (r) {
-      ((u = !0), (o = r));
-    },
-    f: function () {
-      try {
-        a || null == t.return || t.return();
-      } finally {
-        if (u) throw o;
-      }
-    },
-  };
-}
-function _unsupportedIterableToArray(r, a) {
-  if (r) {
-    if ('string' == typeof r) return _arrayLikeToArray(r, a);
-    var t = {}.toString.call(r).slice(8, -1);
-    return (
-      'Object' === t && r.constructor && (t = r.constructor.name),
-      'Map' === t || 'Set' === t
-        ? Array.from(r)
-        : 'Arguments' === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t)
-          ? _arrayLikeToArray(r, a)
-          : void 0
-    );
-  }
-}
-function _arrayLikeToArray(r, a) {
-  (null == a || a > r.length) && (a = r.length);
-  for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
-  return n;
-}
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var n = 0, F = function () {}; return { s: F, n: function () { return n >= r.length ? { done: !0 } : { done: !1, value: r[n++] }; }, e: function (r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function () { t = t.call(r); }, n: function () { var r = t.next(); return a = r.done, r; }, e: function (r) { u = !0, o = r; }, f: function () { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function normalizeRouteRecord(record) {
   return {
     beforeEnter: record.beforeEnter,
@@ -2165,22 +1825,18 @@ function normalizeRouteRecord(record) {
     path: record.path,
     props: record.props || {},
     redirected: record.redirect,
-    updateGuards: new Set(),
+    updateGuards: new Set()
   };
 }
 function initRouter(options) {
   var history = options.history,
     routes = options.routes;
-  var matcher = agnosticRouteMatcher(
-    routes,
-    {
-      sensitive: options.sensitive,
-      strict: options.strict,
-    },
-    function (item) {
-      return normalizeRouteRecord(item);
-    }
-  );
+  var matcher = agnosticRouteMatcher(routes, {
+    sensitive: options.sensitive,
+    strict: options.strict
+  }, function (item) {
+    return normalizeRouteRecord(item);
+  });
   var beforeEachGuards = createCallBackList();
   var beforeResolveGuards = createCallBackList();
   var afterEachGuards = createCallBackList();
@@ -2190,18 +1846,15 @@ function initRouter(options) {
     from = _extends({}, from || router.currentRoute);
     if (typeof to === 'string') {
       var normalizedLocation = parseURL(to, from.path);
-      var _matchedRoute = matcher.matchPath(
-        {
-          path: normalizedLocation.path,
-        },
-        from
-      );
+      var _matchedRoute = matcher.matchPath({
+        path: normalizedLocation.path
+      }, from);
       return _extends(normalizedLocation, _matchedRoute);
     }
     var matcherLocation;
     if (to.path != null) {
       matcherLocation = _extends({}, to, {
-        path: parseURL(to.path, from.path).path,
+        path: parseURL(to.path, from.path).path
       });
     } else {
       var targetParams = _extends({}, to.params);
@@ -2212,25 +1865,20 @@ function initRouter(options) {
         }
       }
       matcherLocation = _extends({}, to, {
-        params: targetParams,
+        params: targetParams
       });
     }
     var matchedRoute = matcher.matchPath(matcherLocation, from);
-    var fullPath = stringifyUrl(
-      _extends(to, {
-        path: matchedRoute.path,
-      })
-    );
+    var fullPath = stringifyUrl(_extends(to, {
+      path: matchedRoute.path
+    }));
     var query = normalizeQuery(to.query);
     var hash = to.hash || '';
-    return _extends(
-      {
-        fullPath: fullPath,
-        query: query,
-        hash: hash,
-      },
-      matchedRoute
-    );
+    return _extends({
+      fullPath: fullPath,
+      query: query,
+      hash: hash
+    }, matchedRoute);
   }
   async function push(to, redirectFrom) {
     var replace = typeof to === 'string' ? false : to.replace;
@@ -2239,44 +1887,35 @@ function initRouter(options) {
     var from = router.currentRoute;
     var redirectLocation = extractRedirect(target);
     if (redirectLocation) {
-      return push(
-        _extends(redirectLocation, {
-          replace: to,
-          force: force,
-        }),
-        redirectFrom || target
-      );
+      return push(_extends(redirectLocation, {
+        replace: to,
+        force: force
+      }), redirectFrom || target);
     }
     target.redirectedFrom = redirectFrom;
     var failure;
     if (!force && isSameRouteLocation(target, from)) {
       failure = createRouterError(ErrorTypes.NAVIGATION_DUPLICATED, {
         to: target,
-        from: from,
+        from: from
       });
     }
-    return failure
-      ? Promise.resolve(failure)
-      : triggerGuards(target, from)
-          .catch(function (err) {
-            return triggerError(err, target, from);
-          })
-          .then(function (failure) {
-            if (failure) {
-              Promise.reject('infinite redirect in navigation guard');
-            } else {
-              doNavigate(target, true, replace);
-            }
-            triggerAfterEach(target, from);
-          });
+    return failure ? Promise.resolve(failure) : triggerGuards(target, from).catch(function (err) {
+      return triggerError(err, target, from);
+    }).then(function (failure) {
+      if (failure) {
+        Promise.reject('infinite redirect in navigation guard');
+      } else {
+        doNavigate(target, true, replace);
+      }
+      triggerAfterEach(target, from);
+    });
   }
   function replace(to) {
     var dest = typeof to === 'string' ? parseURL(to) : to;
-    return push(
-      _extends(dest, {
-        replace: true,
-      })
-    );
+    return push(_extends(dest, {
+      replace: true
+    }));
   }
   function extractRedirect(to) {
     var lastMatched = to.matched[to.matched.length - 1];
@@ -2288,33 +1927,27 @@ function initRouter(options) {
           newTarget = locationToObject(newTarget, router.currentRoute);
         } else {
           newTarget = {
-            path: newTarget,
+            path: newTarget
           };
         }
       }
-      return _extends(
-        {
-          query: to.query,
-          hash: to.hash,
-          params: newTarget.path != null ? {} : to.params,
-        },
-        newTarget
-      );
+      return _extends({
+        query: to.query,
+        hash: to.hash,
+        params: newTarget.path != null ? {} : to.params
+      }, newTarget);
     }
     return null;
   }
   async function pop(to) {
     var target = router.resolve(to);
     var from = router.currentRoute;
-    return triggerGuards(target, from)
-      .catch(function (error) {
-        return triggerError(error, target, from);
-      })
-      .then(function (failure) {
-        doNavigate(target, false);
-        triggerAfterEach(target, from, failure);
-      })
-      .catch();
+    return triggerGuards(target, from).catch(function (error) {
+      return triggerError(error, target, from);
+    }).then(function (failure) {
+      doNavigate(target, false);
+      triggerAfterEach(target, from, failure);
+    }).catch();
   }
   async function triggerGuards(to, from) {
     var guards = [];
@@ -2325,7 +1958,7 @@ function initRouter(options) {
     var _iterator = _createForOfIteratorHelper(leavingRecords),
       _step;
     try {
-      for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
         var record = _step.value;
         record.leaveGuards.forEach(function (guard) {
           guards.push(guardToPromise(guard, to, from));
@@ -2336,85 +1969,80 @@ function initRouter(options) {
     } finally {
       _iterator.f();
     }
-    return runGuardQueue(guards)
-      .then(function () {
-        guards = [];
-        var _iterator2 = _createForOfIteratorHelper(beforeEachGuards.list()),
-          _step2;
-        try {
-          for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
-            var beforeEachGuard = _step2.value;
-            guards.push(guardToPromise(beforeEachGuard, to, from));
-          }
-        } catch (err) {
-          _iterator2.e(err);
-        } finally {
-          _iterator2.f();
+    return runGuardQueue(guards).then(function () {
+      guards = [];
+      var _iterator2 = _createForOfIteratorHelper(beforeEachGuards.list()),
+        _step2;
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var beforeEachGuard = _step2.value;
+          guards.push(guardToPromise(beforeEachGuard, to, from));
         }
-        return runGuardQueue(guards);
-      })
-      .then(function () {
-        guards = [];
-        var _iterator3 = _createForOfIteratorHelper(updateRecords),
-          _step3;
-        try {
-          for (_iterator3.s(); !(_step3 = _iterator3.n()).done; ) {
-            var record = _step3.value;
-            record.updateGuards.forEach(function (guard) {
-              guards.push(guardToPromise(guard, to, from));
-            });
-          }
-        } catch (err) {
-          _iterator3.e(err);
-        } finally {
-          _iterator3.f();
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+      return runGuardQueue(guards);
+    }).then(function () {
+      guards = [];
+      var _iterator3 = _createForOfIteratorHelper(updateRecords),
+        _step3;
+      try {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+          var record = _step3.value;
+          record.updateGuards.forEach(function (guard) {
+            guards.push(guardToPromise(guard, to, from));
+          });
         }
-        return runGuardQueue(guards);
-      })
-      .then(function () {
-        guards = [];
-        var _iterator4 = _createForOfIteratorHelper(enterRecords),
-          _step4;
-        try {
-          for (_iterator4.s(); !(_step4 = _iterator4.n()).done; ) {
-            var record = _step4.value;
-            if (record.beforeEnter) {
-              if (Array.isArray(record.beforeEnter)) {
-                var beforeEnters = record.beforeEnter.map(function (r) {
-                  return guardToPromise(r, to, from);
-                });
-                guards = guards.concat(beforeEnters);
-              } else {
-                guards.push(guardToPromise(record.beforeEnter, to, from));
-              }
+      } catch (err) {
+        _iterator3.e(err);
+      } finally {
+        _iterator3.f();
+      }
+      return runGuardQueue(guards);
+    }).then(function () {
+      guards = [];
+      var _iterator4 = _createForOfIteratorHelper(enterRecords),
+        _step4;
+      try {
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+          var record = _step4.value;
+          if (record.beforeEnter) {
+            if (Array.isArray(record.beforeEnter)) {
+              var beforeEnters = record.beforeEnter.map(function (r) {
+                return guardToPromise(r, to, from);
+              });
+              guards = guards.concat(beforeEnters);
+            } else {
+              guards.push(guardToPromise(record.beforeEnter, to, from));
             }
           }
-        } catch (err) {
-          _iterator4.e(err);
-        } finally {
-          _iterator4.f();
         }
-        return runGuardQueue(guards);
-      })
-      .then(function () {
-        guards = [];
-        var _iterator5 = _createForOfIteratorHelper(beforeResolveGuards.list()),
-          _step5;
-        try {
-          for (_iterator5.s(); !(_step5 = _iterator5.n()).done; ) {
-            var _guard = _step5.value;
-            guards.push(guardToPromise(_guard, to, from));
-          }
-        } catch (err) {
-          _iterator5.e(err);
-        } finally {
-          _iterator5.f();
+      } catch (err) {
+        _iterator4.e(err);
+      } finally {
+        _iterator4.f();
+      }
+      return runGuardQueue(guards);
+    }).then(function () {
+      guards = [];
+      var _iterator5 = _createForOfIteratorHelper(beforeResolveGuards.list()),
+        _step5;
+      try {
+        for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+          var _guard = _step5.value;
+          guards.push(guardToPromise(_guard, to, from));
         }
-        return runGuardQueue(guards);
-      })
-      .catch(function (err) {
-        Promise.reject(err);
-      });
+      } catch (err) {
+        _iterator5.e(err);
+      } finally {
+        _iterator5.f();
+      }
+      return runGuardQueue(guards);
+    }).catch(function (err) {
+      Promise.reject(err);
+    });
   }
   function doNavigate(to, triggerHistory, replace) {
     if (triggerHistory) {
@@ -2425,7 +2053,7 @@ function initRouter(options) {
       }
     }
     notifyUpdate({
-      currentRoute: to,
+      currentRoute: to
     });
   }
   function triggerAfterEach(to, from, failure) {
@@ -2437,7 +2065,7 @@ function initRouter(options) {
     var _iterator6 = _createForOfIteratorHelper(exceptListeners.list()),
       _step6;
     try {
-      for (_iterator6.s(); !(_step6 = _iterator6.n()).done; ) {
+      for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
         var trigger = _step6.value;
         trigger(error, to, from);
       }
@@ -2462,19 +2090,15 @@ function initRouter(options) {
     app.component('RouterLink', RouterLink);
     app.component('RouterView', RouterView);
     var routerInstance = initRouter(options);
-    app.rootComponent = createElement(
-      RouterProvider,
-      {
-        router: routerInstance,
-      },
-      app.rootComponent
-    );
+    app.rootComponent = createElement(RouterProvider, {
+      router: routerInstance
+    }, app.rootComponent);
     app.config.globalProperties.$router = routerInstance;
     Object.defineProperty(app.config.globalProperties, '$route', {
       enumerable: true,
       get: function () {
         return routerInstance.currentRoute;
-      },
+      }
     });
   }
   function subscribeRouteChange(observer) {
@@ -2515,7 +2139,7 @@ function initRouter(options) {
       return Promise.resolve();
     },
     install: install,
-    subscribeRouteChange: subscribeRouteChange,
+    subscribeRouteChange: subscribeRouteChange
   };
   return router;
 }
@@ -2527,11 +2151,9 @@ function analyseChangingRecord(to, from) {
   var _loop = function () {
     var recordFrom = from.matched[i];
     if (recordFrom) {
-      if (
-        to.matched.find(function (m) {
-          return m === recordFrom;
-        })
-      ) {
+      if (to.matched.find(function (m) {
+        return m === recordFrom;
+      })) {
         updateRecords.push(recordFrom);
       } else {
         leavingRecords.push(recordFrom);
@@ -2539,11 +2161,9 @@ function analyseChangingRecord(to, from) {
     }
     var recordTo = to.matched[i];
     if (recordTo) {
-      if (
-        from.matched.findIndex(function (m) {
-          return m === recordTo;
-        }) === -1
-      ) {
+      if (from.matched.findIndex(function (m) {
+        return m === recordTo;
+      }) === -1) {
         enterRecords.push(recordTo);
       }
     }
@@ -2554,28 +2174,24 @@ function analyseChangingRecord(to, from) {
   return {
     leavingRecords: leavingRecords,
     updateRecords: updateRecords,
-    enterRecords: enterRecords,
+    enterRecords: enterRecords
   };
 }
 function guardToPromise(guard, to, from) {
   var promise = new Promise(function (resolve, reject) {
     var next = function (valid) {
       if (valid === false) {
-        reject(
-          createRouterError(ErrorTypes.NAVIGATION_ABORTED, {
-            from: from,
-            to: to,
-          })
-        );
+        reject(createRouterError(ErrorTypes.NAVIGATION_ABORTED, {
+          from: from,
+          to: to
+        }));
       } else if (valid instanceof Error) {
         reject(valid);
-      } else if (typeof valid === 'string' || (valid && typeof valid === 'object')) {
-        reject(
-          createRouterError(ErrorTypes.NAVIGATION_GUARD_REDIRECT, {
-            from: to,
-            to: valid,
-          })
-        );
+      } else if (typeof valid === 'string' || valid && typeof valid === 'object') {
+        reject(createRouterError(ErrorTypes.NAVIGATION_GUARD_REDIRECT, {
+          from: to,
+          to: valid
+        }));
       } else {
         resolve(null);
       }
@@ -2672,8 +2288,8 @@ function RouterProvider(props) {
     value: router,
     children: jsx(RouteContext.Provider, {
       value: location,
-      children: children,
-    }),
+      children: children
+    })
   });
 }
 
@@ -2708,22 +2324,5 @@ function useRegisterGuards(name, guard) {
   return null;
 }
 
-export {
-  onBeforeRouteLeave as BeforeRouteLeave,
-  onBeforeRouteUpdate as BeforeRouteUpdate,
-  RouterLink,
-  RouterProvider,
-  RouterView,
-  START_LOCATION,
-  createRouter,
-  createWebHashHistory,
-  createWebHistory,
-  isNavigationFailure,
-  onBeforeRouteLeave,
-  onBeforeRouteUpdate,
-  useLink,
-  useRoute,
-  useRouteWatch,
-  useRouter,
-};
+export { onBeforeRouteLeave as BeforeRouteLeave, onBeforeRouteUpdate as BeforeRouteUpdate, RouterLink, RouterProvider, RouterView, START_LOCATION, createRouter, createWebHashHistory, createWebHistory, isNavigationFailure, onBeforeRouteLeave, onBeforeRouteUpdate, useLink, useRoute, useRouteWatch, useRouter };
 //# sourceMappingURL=vradapter.js.map

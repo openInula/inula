@@ -55,7 +55,7 @@ const transformVShowSyntax = input => {
 
     return `${space}${attr}"${value}"`;
   });
-};
+}
 
 /**
  * 将模板中的各种类型绑定值转换为字符串
@@ -224,37 +224,6 @@ const transformXlink = input => {
   return input.replaceAll('xlink:href', 'href');
 };
 
-/**
- * 处理 Vue 3 的 $slots 和 $attrs 语法
- * 这些在 Vue 3 中是自动注入的，但在转换时需要特殊处理
- */
-const transformVue3SpecialSyntax = input => {
-  // 处理 $slots
-  input = input.replace(/\$slots\.(\w+)/g, (match, slotName) => {
-    LOG.warn(`Converting $slots.${slotName} to slots.${slotName}`);
-    return `slots.${slotName}`;
-  });
-  // 处理 $attrs
-  input = input.replace(/\$attrs\.(\w+)/g, (match, attrName) => {
-    LOG.warn(`Converting $attrs.${attrName} to attrs.${attrName}`);
-    return `attrs.${attrName}`;
-  });
-
-  // 处理独立的 $attrs（没有属性访问）
-  input = input.replace(/\$attrs(?=\s|>|\)|,|;)/g, match => {
-    LOG.warn(`Converting $attrs to attrs`);
-    return `attrs`;
-  });
-
-  // 处理展开语法的 $attrs {...$attrs}
-  input = input.replace(/\{\s*\.\.\.\s*\$attrs\s*\}/g, match => {
-    LOG.warn(`Converting {...$attrs} to {...attrs}`);
-    return `{...attrs}`;
-  });
-
-  return input;
-};
-
 const DefaultHardCodeHandler = {
   DoubleBracket: convertDoubleBracket,
   JSXNotes: convertJSXNotes,
@@ -268,7 +237,6 @@ const DefaultHardCodeHandler = {
   modelModifiers: removeModelModifiers,
   vOnSyntax: transformVDirectiveSyntax,
   xlink: transformXlink,
-  vue3Special: transformVue3SpecialSyntax,
 };
 
 /**
