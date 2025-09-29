@@ -1,0 +1,651 @@
+@import '../../colors.css';
+
+/* 输入框外层包装器 */
+.inula-input-affix-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  color: var(--inula-color-primary-text);
+  background: var(--inula-color-default-bg);
+  border: 1px solid var(--inula-color-default-border);
+  border-radius: 4px;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+  /* overflow: hidden; */
+}
+
+.inula-input-affix-wrapper:hover {
+  border-color: var(--inula-color-primary-hover);
+  box-shadow: 0 2px 8px rgba(22, 119, 255, 0.1);
+}
+
+.inula-input-affix-wrapper:focus-within {
+  border-color: var(--inula-color-primary);
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
+}
+
+/* 输入框本体 */
+.inula-input {
+  flex: 1 1 auto;
+  /* 关键：允许在有清除/统计/后缀时可收缩，避免把右侧元素挤没 */
+  min-width: 0;
+  /* 不强制占满 100%，交给 flex 分配剩余空间 */
+  width: auto;
+  font-size: 14px;
+  line-height: 1.5;
+  background: transparent;
+  border: none;
+  outline: none;
+  height: 40px;
+  padding: 0 16px;
+  color: var(--inula-color-primary-text);
+  transition: all 0.3s ease;
+  border-radius: 4px;
+}
+
+.inula-input::placeholder {
+  color: #999;
+  font-size: 14px;
+}
+
+/* 尺寸变体 */
+.inula-input-large {
+  height: 40px;
+  font-size: 16px;
+  padding: 0 20px;
+}
+
+.inula-input-large::placeholder {
+  font-size: 16px;
+}
+
+.inula-input-default,
+.inula-input-medium {
+  height: 32px;
+  font-size: 14px;
+  padding: 0 16px;
+}
+
+.inula-input-small {
+  height: 24px;
+  font-size: 13px;
+  padding: 0 12px;
+}
+
+.inula-input-small::placeholder {
+  font-size: 13px;
+}
+
+/* 形态变体 - 支持Form传递的CSS变量 */
+.inula-input-outlined {
+  background: var(--inula-color-default-bg);
+}
+
+.inula-input-filled {
+  background: var(--inula-form-variant-bg, var(--inula-variant-filled-bg));
+  border: 1px solid var(--inula-form-variant-border, transparent);
+  box-shadow: none !important;
+}
+
+/* 让 textarea 与 input 的 filled 形态一致：把样式下沉到外层包装器 */
+.inula-input-affix-wrapper:has(.inula-input-filled) {
+  background: var(--inula-form-variant-bg, var(--inula-variant-filled-bg));
+  border-color: var(--inula-form-variant-border, transparent);
+  box-shadow: none !important;
+}
+
+/* borderless 形态的特殊处理 */
+.inula-input-affix-wrapper-borderless {
+  border: var(--inula-form-variant-border, none) !important;
+  box-shadow: none !important;
+  background: var(--inula-form-variant-bg, transparent);
+}
+
+.inula-input-affix-wrapper-borderless:hover {
+  border: var(--inula-form-variant-border, none) !important;
+  box-shadow: none !important;
+  background: var(--inula-form-variant-hover-bg, var(--inula-variant-borderless-hover-bg));
+}
+
+.inula-input-affix-wrapper-borderless:focus-within {
+  border: var(--inula-form-variant-border, none) !important;
+  box-shadow: none !important;
+  background: var(--inula-form-variant-focus-bg, var(--inula-variant-borderless-focus-bg));
+}
+
+/* borderless 形态禁用状态 */
+.inula-input-affix-wrapper-borderless.inula-input-disabled:hover,
+.inula-input-affix-wrapper-borderless:has(.inula-input:disabled):hover {
+  border: none !important;
+  box-shadow: none !important;
+  background: var(--inula-color-disabled-bg);
+  border-radius: 4px;
+}
+
+.inula-input-affix-wrapper-borderless.inula-input-disabled:focus-within,
+.inula-input-affix-wrapper-borderless:has(.inula-input:disabled):focus-within {
+  border: none !important;
+  box-shadow: none !important;
+  background: var(--inula-color-disabled-bg);
+  border-radius: 4px;
+}
+
+.inula-input-filled:hover {
+  background: var(--inula-variant-filled-hover-bg);
+  box-shadow: none !important;
+}
+.inula-input-affix-wrapper:has(.inula-input-filled):hover {
+  background: var(--inula-variant-filled-hover-bg);
+  box-shadow: none !important;
+}
+
+.inula-input-filled:focus-within {
+  background: var(--inula-variant-filled-focus-bg);
+  border: 1px solid var(--inula-color-primary);
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
+}
+.inula-input-affix-wrapper:has(.inula-input-filled):focus-within {
+  background: var(--inula-variant-filled-focus-bg);
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
+}
+
+/* filled 形态禁用状态 */
+.inula-input-affix-wrapper.inula-input-disabled .inula-input-filled:hover,
+.inula-input-affix-wrapper:has(.inula-input:disabled) .inula-input-filled:hover {
+  background: var(--inula-color-disabled-bg);
+}
+
+.inula-input-affix-wrapper.inula-input-disabled .inula-input-filled:focus-within,
+.inula-input-affix-wrapper:has(.inula-input:disabled) .inula-input-filled:focus-within {
+  background: var(--inula-color-disabled-bg);
+}
+
+.inula-input-borderless {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.inula-input-borderless:hover {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.inula-input-borderless:focus-within {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* borderless 形态禁用状态 */
+.inula-input-affix-wrapper.inula-input-disabled .inula-input-borderless:hover,
+.inula-input-affix-wrapper:has(.inula-input:disabled) .inula-input-borderless:hover {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.inula-input-affix-wrapper.inula-input-disabled .inula-input-borderless:focus-within,
+.inula-input-affix-wrapper:has(.inula-input:disabled) .inula-input-borderless:focus-within {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* .inula-input-underlined {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+} */
+
+.inula-input-underlined:hover {
+  border-bottom-color: var(--inula-color-primary-hover);
+}
+
+.inula-input-underlined:focus-within {
+  border-bottom-color: var(--inula-color-primary);
+  box-shadow: none;
+}
+
+/* underlined 形态的特殊处理 - 支持Form传递的CSS变量 */
+.inula-input-affix-wrapper-underlined {
+  border: var(--inula-form-variant-border, none) !important;
+  border-bottom: var(--inula-form-variant-bottom-border, 1px solid var(--inula-variant-underlined-border)) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: var(--inula-form-variant-bg, transparent);
+}
+
+.inula-input-affix-wrapper-underlined:hover {
+  border: var(--inula-form-variant-border, none) !important;
+  border-bottom: var(--inula-form-variant-bottom-hover-border, 1px solid var(--inula-variant-underlined-hover-border)) !important;
+  box-shadow: none !important;
+  background: var(--inula-form-variant-hover-bg, transparent);
+}
+
+.inula-input-affix-wrapper-underlined:focus-within {
+  border: var(--inula-form-variant-border, none) !important;
+  border-bottom: var(--inula-form-variant-bottom-focus-border, 1px solid var(--inula-variant-underlined-focus-border)) !important;
+  box-shadow: none !important;
+  background: var(--inula-form-variant-focus-bg, transparent);
+}
+
+/* underlined 形态禁用状态 */
+.inula-input-affix-wrapper-underlined.inula-input-disabled:hover,
+.inula-input-affix-wrapper-underlined:has(.inula-input:disabled):hover {
+  border: none !important;
+  border-bottom: 2px solid var(--inula-color-disabled-border) !important;
+  box-shadow: none !important;
+}
+
+.inula-input-affix-wrapper-underlined.inula-input-disabled:focus-within,
+.inula-input-affix-wrapper-underlined:has(.inula-input:disabled):focus-within {
+  border: none !important;
+  border-bottom: 2px solid var(--inula-color-disabled-border) !important;
+  box-shadow: none !important;
+}
+
+/* 禁用状态 */
+.inula-input-disabled,
+.inula-input:disabled {
+  background: var(--inula-color-disabled-bg);
+  color: var(--inula-color-disabled-text);
+  border-color: var(--inula-color-disabled-border);
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+/* 禁用状态下禁用hover效果 */
+.inula-input-affix-wrapper.inula-input-disabled:hover,
+.inula-input-affix-wrapper:has(.inula-input:disabled):hover {
+  border-color: var(--inula-color-disabled-border);
+  box-shadow: none;
+}
+
+.inula-input-disabled:hover,
+.inula-input:disabled:hover {
+  border-color: var(--inula-color-disabled-border);
+  box-shadow: none;
+}
+
+.inula-input-disabled:focus-within,
+.inula-input:disabled:focus-within {
+  border-color: var(--inula-color-disabled-border);
+  box-shadow: none;
+}
+
+/* 禁用状态下禁用focus效果 */
+.inula-input-affix-wrapper.inula-input-disabled:focus-within,
+.inula-input-affix-wrapper:has(.inula-input:disabled):focus-within {
+  border-color: var(--inula-color-disabled-border);
+  box-shadow: none;
+}
+
+/* 输入框包装器 */
+.inula-input-wrapper {
+  display: inline-flex;
+  align-items: stretch;
+  vertical-align: middle;
+  width: 100%;
+  border-radius: 4px;
+}
+
+/* 前后缀标签 */
+.inula-input-addon {
+  display: inline-flex;
+  align-items: center;
+  background: #f8f9fa;
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 0 16px;
+  border: 1px solid var(--inula-color-default-border);
+  border-radius: 8px;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.inula-input-addon:hover {
+  background: #f0f2f5;
+  border-color: var(--inula-color-primary-hover);
+}
+
+.inula-input-addon-before {
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.inula-input-addon-after {
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.inula-input-has-addon-before .inula-input-affix-wrapper {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.inula-input-has-addon-after .inula-input-affix-wrapper {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* 尺寸适配 */
+.inula-input-wrapper-large .inula-input-addon {
+  font-size: 16px;
+  padding: 0 20px;
+  min-height: 48px;
+}
+
+.inula-input-wrapper-small .inula-input-addon {
+  font-size: 13px;
+  padding: 0 12px;
+  min-height: 32px;
+}
+
+/* 补充 medium 尺寸别名以便与 Form 的 size 对齐 */
+.inula-input-wrapper-medium .inula-input-addon {
+  font-size: 14px;
+  padding: 0 16px;
+  min-height: 40px;
+}
+
+/* 字数统计 */
+.inula-input-count {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  color: #999;
+  font-size: 12px;
+  user-select: none;
+  white-space: nowrap;
+  font-weight: 400;
+}
+
+.inula-input-has-count {
+  /* 为右侧预留最小空间，避免计数器被挤压隐藏 */
+  padding-right: 0;
+}
+
+.inula-input-count-inside {
+  /* position: absolute; */
+  margin-right: 12px;
+  /* top: 50%;
+  transform: translateY(-50%); */
+  color: #999;
+  font-size: 12px;
+  background: transparent;
+  pointer-events: none;
+  user-select: none;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 清除按钮样式 */
+.inula-input-clear {
+  /* position: absolute; */
+  margin-right: 12px;
+  /* top: 50%;
+  transform: translateY(-50%); */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.1);
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.inula-input-affix-wrapper:hover .inula-input-clear {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.inula-input-clear:hover {
+  background: rgba(0, 0, 0, 0.2);
+  color: #333;
+}
+
+
+
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .inula-input {
+    font-size: 16px; /* 防止iOS缩放 */
+    border-radius: 4px;
+  }
+  
+  .inula-input-large {
+    font-size: 16px;
+    border-radius: 4px;
+  }
+  
+  .inula-input-small {
+    font-size: 16px;
+    border-radius: 4px;
+  }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .inula-input-affix-wrapper {
+    background: #1f1f1f;
+    border-color: #434343;
+    color: #fff;
+  }
+  
+  .inula-input {
+    color: #fff;
+  }
+  
+  .inula-input::placeholder {
+    color: #666;
+  }
+  
+  .inula-input-filled {
+    background: #262626;
+  }
+  
+  .inula-input-filled:hover {
+    background: #303030;
+  }
+  
+  .inula-input-addon {
+    background: #262626;
+    color: #ccc;
+    border-color: #434343;
+  }
+  
+  .inula-input-addon:hover {
+    background: #303030;
+  }
+}
+
+/* textarea 样式 */
+.inula-textarea {
+  flex: 1;
+  width: 100%;
+  font-size: 14px;
+  line-height: 1.5;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 10px 16px;
+  color: var(--inula-color-primary-text);
+  transition: all 0.3s ease;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.inula-textarea, textarea {
+  height: auto;
+  box-sizing: border-box;
+}
+
+.inula-textarea::placeholder {
+  color: #999;
+  font-size: 14px;
+}
+
+/* textarea 尺寸变体 */
+.inula-textarea.inula-input-large {
+  font-size: 16px;
+  padding: 12px 20px;
+}
+
+.inula-textarea.inula-input-large::placeholder {
+  font-size: 16px;
+}
+
+.inula-textarea.inula-input-default {
+  font-size: 14px;
+  padding: 10px 16px;
+}
+
+.inula-textarea.inula-input-small {
+  font-size: 13px;
+  padding: 8px 12px;
+}
+
+.inula-textarea.inula-input-small::placeholder {
+  font-size: 13px;
+}
+
+/* textarea 自动调整高度样式 */
+.inula-textarea.inula-input-auto-size {
+  resize: none;
+  overflow: auto;
+  transition: height 0.3s ease;
+}
+
+/* textarea 禁用状态 */
+.inula-textarea:disabled {
+  background: var(--inula-color-disabled-bg);
+  color: var(--inula-color-disabled-text);
+  cursor: not-allowed;
+}
+
+/* textarea 聚焦状态 */
+.inula-textarea:focus {
+  outline: none;
+}
+
+/* textarea 响应式设计 */
+@media (max-width: 768px) {
+  .inula-textarea {
+    font-size: 16px; /* 防止iOS缩放 */
+  }
+  
+  .inula-textarea.inula-input-large {
+    font-size: 16px;
+  }
+  
+  .inula-textarea.inula-input-small {
+    font-size: 16px;
+  }
+}
+
+/* 深色模式下的 textarea */
+@media (prefers-color-scheme: dark) {
+  .inula-textarea {
+    color: #fff;
+  }
+  
+  .inula-textarea::placeholder {
+    color: #666;
+  }
+}
+
+/* 滚动条美化 */
+.inula-input,
+.inula-textarea {
+  scrollbar-width: thin;
+  scrollbar-color: var(--inula-select-disabled-text);
+}
+
+.inula-input::-webkit-scrollbar,
+.inula-textarea::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background: transparent;
+  border-radius: 8px;
+}
+
+.inula-input::-webkit-scrollbar-thumb,
+.inula-textarea::-webkit-scrollbar-thumb {
+  background: #b3b3b3;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.inula-input::-webkit-scrollbar-thumb:hover,
+.inula-textarea::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+.inula-input::-webkit-scrollbar-corner,
+.inula-textarea::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  .inula-input,
+  .inula-textarea {
+    scrollbar-color: #444 transparent;
+  }
+  .inula-input::-webkit-scrollbar,
+  .inula-textarea::-webkit-scrollbar {
+    background: transparent;
+  }
+  .inula-input::-webkit-scrollbar-thumb,
+  .inula-textarea::-webkit-scrollbar-thumb {
+    background: #444;
+  }
+  .inula-input::-webkit-scrollbar-thumb:hover,
+  .inula-textarea::-webkit-scrollbar-thumb:hover {
+    background: #888;
+  }
+  .inula-input::-webkit-scrollbar-corner,
+  .inula-textarea::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
+
+/* error 状态 */
+.inula-input-error,
+.inula-input-affix-wrapper.inula-input-error {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 0 0 2px rgba(255,77,79,0.1) !important;
+}
+.inula-input-error:focus,
+.inula-input-affix-wrapper.inula-input-error:focus-within {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 0 0 3px rgba(255,77,79,0.15) !important;
+}
+
+/* warning 状态 */
+.inula-input-warning,
+.inula-input-affix-wrapper.inula-input-warning {
+  border-color: #faad14 !important;
+  box-shadow: 0 0 0 2px rgba(250,173,20,0.1) !important;
+}
+.inula-input-warning:focus,
+.inula-input-affix-wrapper.inula-input-warning:focus-within {
+  border-color: #faad14 !important;
+  box-shadow: 0 0 0 3px rgba(250,173,20,0.15) !important;
+}

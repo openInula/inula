@@ -1,0 +1,310 @@
+@import '../../colors.css';
+.inula-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  padding: 0 16px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid var(--inula-color-default-border);
+  background: var(--inula-color-default-bg);
+  color: var(--inula-color-primary-text);
+  cursor: pointer;
+  transition: all 0.2s;
+  outline: none;
+}
+
+/* 主按钮 */
+.inula-btn-primary {
+  background: var(--inula-color-primary);
+  border-color: var(--inula-color-primary);
+  color: #fff;
+}
+.inula-btn-primary:hover {
+  background: var(--inula-color-primary-hover);
+  border-color: var(--inula-color-primary-hover);
+  color: #fff;
+}
+.inula-btn-primary:active {
+  background: var(--inula-color-primary-active);
+  border-color: var(--inula-color-primary-active);
+  color: #fff;
+}
+
+/* 默认按钮 */
+.inula-btn-default {
+  background: var(--inula-color-default-bg);
+  border-color: var(--inula-color-default-border);
+  color: var(--inula-color-primary-text);
+}
+.inula-btn-default:hover {
+  color: var(--inula-color-primary);
+  border-color: var(--inula-color-primary);
+  background: var(--inula-color-default-hover-bg);
+}
+.inula-btn-default:active {
+  background: var(--inula-color-default-active-bg);
+  border-color: var(--inula-color-primary);
+  color: var(--inula-color-primary);
+}
+
+/* 虚线按钮 */
+.inula-btn-dashed {
+  border-style: dashed;
+  background: var(--inula-color-default-bg);
+  border-color: var(--inula-color-dashed-border);
+  color: var(--inula-color-primary-text);
+}
+.inula-btn-dashed:hover {
+  color: var(--inula-color-primary);
+  border-color: var(--inula-color-primary);
+  background: var(--inula-color-default-hover-bg);
+}
+.inula-btn-dashed:active {
+  background: var(--inula-color-default-active-bg);
+  border-color: var(--inula-color-primary);
+  color: var(--inula-color-primary);
+}
+
+/* 文本按钮 */
+.inula-btn-text {
+  background: none;
+  border: none;
+  color: var(--inula-color-text);
+  box-shadow: none;
+}
+.inula-btn-text:hover {
+  background: var(--inula-color-text-hover-bg);
+  color: var(--inula-color-primary-active);
+}
+.inula-btn-text:active {
+  background: var(--inula-color-text-active-bg);
+  color: var(--inula-color-primary-active);
+}
+
+/* 链接按钮 */
+.inula-btn-link {
+  background: none;
+  border: none;
+  color: var(--inula-color-link);
+  text-decoration: underline;
+  box-shadow: none;
+}
+.inula-btn-link:hover {
+  color: var(--inula-color-link-hover);
+  background: none;
+  text-decoration: underline;
+}
+.inula-btn-link:active {
+  color: var(--inula-color-link-hover);
+  background: none;
+}
+
+/* 危险按钮 */
+.inula-btn-danger {
+  color: var(--inula-color-danger);
+  border-color: var(--inula-color-danger);
+  background: var(--inula-color-danger-bg);
+}
+.inula-btn-danger:hover {
+  color: var(--inula-color-danger-hover-text);
+  background: var(--inula-color-danger-hover-bg);
+  border-color: var(--inula-color-danger-hover-bg);
+}
+.inula-btn-primary.inula-btn-danger {
+  background: var(--inula-color-danger);
+  color: #fff;
+  border-color: var(--inula-color-danger);
+}
+.inula-btn-primary.inula-btn-danger:hover {
+  background: var(--inula-color-danger-active-bg);
+  border-color: var(--inula-color-danger-active-bg);
+  color: #fff;
+}
+.inula-btn-primary.inula-btn-danger:active {
+  background: var(--inula-color-danger-active-bg);
+  border-color: var(--inula-color-danger-active-bg);
+  color: #fff;
+}
+
+/* 幽灵按钮基础样式 */
+.inula-btn-ghost {
+  background: transparent !important;
+  color: var(--inula-color-primary);
+  border: 1px solid var(--inula-color-primary);
+  box-shadow: none;
+}
+
+/* 幽灵主按钮 */
+.inula-btn-primary.inula-btn-ghost {
+  color: var(--inula-color-primary);
+  border-color: var(--inula-color-primary);
+  background: transparent;
+}
+.inula-btn-primary.inula-btn-ghost:hover {
+  color: var(--inula-color-primary-hover);
+  border-color: var(--inula-color-primary-hover);
+  background: var(--inula-color-ghost-bg-hover);
+}
+.inula-btn-primary.inula-btn-ghost:active {
+  color: var(--inula-color-primary-hover);
+  border-color: var(--inula-color-primary-hover);
+  background: var(--inula-color-ghost-bg-active);
+}
+
+/* 幽灵危险按钮 */
+.inula-btn-danger.inula-btn-ghost,
+.inula-btn-primary.inula-btn-danger.inula-btn-ghost {
+  color: var(--inula-color-danger);
+  border-color: var(--inula-color-danger);
+  background: transparent;
+}
+.inula-btn-danger.inula-btn-ghost:hover,
+.inula-btn-primary.inula-btn-danger.inula-btn-ghost:hover {
+  color: #fff;
+  background: var(--inula-color-danger);
+  border-color: var(--inula-color-danger);
+}
+.inula-btn-danger.inula-btn-ghost:active {
+  color: var(--inula-color-danger);
+  background: var(--inula-color-danger);
+  border-color: var(--inula-color-danger);
+}
+
+/* 幽灵默认按钮 */
+.inula-btn-default.inula-btn-ghost {
+  color: var(--inula-color-primary);
+  border-color: var(--inula-color-primary);
+  background: transparent;
+}
+.inula-btn-default.inula-btn-ghost:hover {
+  color: var(--inula-color-primary-hover);
+  border-color: var(--inula-color-primary-hover);
+  background: var(--inula-color-ghost-bg-hover);
+}
+.inula-btn-default.inula-btn-ghost:active {
+  color: var(--inula-color-primary-hover);
+  border-color: var(--inula-color-primary-hover);
+  background: var(--inula-color-ghost-bg-active);
+}
+
+/* 禁用 */
+.inula-btn-disabled,
+.inula-btn:disabled,
+.inula-btn-disabled:hover,
+.inula-btn:disabled:hover,
+.inula-btn-disabled:active,
+.inula-btn:disabled:active {
+  cursor: not-allowed;
+  opacity: 0.5;
+  /* background: var(--inula-color-disabled-bg) !important; */
+  /* color: var(--inula-color-disabled-text) !important; */
+  border-color: var(--inula-color-disabled-border) !important;
+  box-shadow: none !important;
+}
+
+/* 加载中 */
+.inula-btn-loading {
+  position: relative;
+}
+.inula-btn-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--inula-color-spinner);
+  border-top: 2px solid var(--inula-color-spinner-active);
+  border-radius: 50%;
+  animation: inula-spin 0.8s linear infinite;
+  margin-right: 8px;
+}
+@keyframes inula-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 幽灵按钮在深色背景下更明显 */
+.demo-dark-bg {
+  background: var(--inula-demo-dark-bg);
+  padding: 16px;
+  display: inline-block;
+  border-radius: 6px;
+}
+
+/* Button 变体样式 */
+
+/* Filled 变体 - 支持Form传递的CSS变量 */
+.inula-btn-filled {
+  background: var(--inula-form-variant-bg, var(--inula-variant-filled-bg));
+  border: 0px solid var(--inula-form-variant-border, transparent);
+}
+
+.inula-btn-filled:hover {
+  background: var(--inula-form-variant-hover-bg, var(--inula-variant-filled-hover-bg));
+  border-color: var(--inula-form-variant-border, transparent);
+}
+
+.inula-btn-filled:focus-within {
+  border: var(--inula-form-variant-border, none) !important;
+  box-shadow: none !important;
+  background: var(--inula-form-variant-focus-bg, var(--inula-variant-borderless-focus-bg));
+}
+
+.inula-btn-filled.inula-btn-disabled {
+  background: var(--inula-color-disabled-bg);
+  border-color: transparent;
+}
+
+/* Borderless 变体 - 支持Form传递的CSS变量 */
+.inula-btn-borderless {
+  border: var(--inula-form-variant-border, none) !important;
+  box-shadow: none !important;
+  background: var(--inula-form-variant-bg, transparent);
+}
+
+.inula-btn-borderless:hover {
+  border: var(--inula-form-variant-border, none) !important;
+  box-shadow: none !important;
+  background: var(--inula-form-variant-hover-bg, var(--inula-variant-borderless-hover-bg));
+}
+
+.inula-btn-borderless:focus-within {
+  border: var(--inula-form-variant-border, none) !important;
+  box-shadow: none !important;
+  background: var(--inula-form-variant-focus-bg, var(--inula-variant-borderless-focus-bg));
+}
+
+.inula-btn-borderless.inula-btn-disabled {
+  background: var(--inula-color-disabled-bg);
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Underlined 变体 - 支持Form传递的CSS变量 */
+.inula-btn-underlined {
+  border: var(--inula-form-variant-border, none) !important;
+  border-bottom: var(--inula-form-variant-bottom-border, 1px solid var(--inula-variant-underlined-border)) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: var(--inula-form-variant-bg, transparent);
+}
+
+.inula-btn-underlined:hover {
+  border: var(--inula-form-variant-border, none) !important;
+  border-bottom: var(--inula-form-variant-bottom-hover-border, 1px solid var(--inula-variant-underlined-hover-border)) !important;
+  box-shadow: none !important;
+  background: var(--inula-form-variant-hover-bg, transparent);
+}
+
+.inula-btn-underlined:focus-within {
+  border: var(--inula-form-variant-border, none) !important;
+  border-bottom: var(--inula-form-variant-bottom-focus-border, 1px solid var(--inula-variant-underlined-focus-border)) !important;
+  box-shadow: none !important;
+  background: var(--inula-form-variant-focus-bg, transparent);
+}
+
+.inula-btn-underlined.inula-btn-disabled {
+  border: none !important;
+  border-bottom: 1px solid var(--inula-color-disabled-border) !important;
+  box-shadow: none !important;
+} 

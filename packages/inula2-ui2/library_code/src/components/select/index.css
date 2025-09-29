@@ -1,0 +1,293 @@
+@import '../../colors.css';
+
+.inula-select {
+  position: relative;
+  display: inline-block;
+  min-width: 160px;
+  font-size: 14px;
+  color: var(--inula-color-primary-text);
+  background: var(--inula-select-bg);
+}
+
+.inula-select-disabled {
+  opacity: 0.6;
+  background: var(--inula-color-disabled-bg);
+  cursor: not-allowed;
+}
+
+.inula-select-disabled .inula-select-selection {
+  background: var(--inula-color-disabled-bg);
+  border-color: var(--inula-color-disabled-border);
+  color: var(--inula-color-disabled-text);
+  cursor: not-allowed;
+}
+
+.inula-select-disabled .inula-select-selection:hover {
+  border-color: var(--inula-color-disabled-border);
+  box-shadow: none;
+}
+
+.inula-select-disabled .inula-select-arrow {
+  color: var(--inula-color-disabled-text);
+}
+
+.inula-select-disabled .inula-select-placeholder {
+  color: var(--inula-color-disabled-text);
+}
+
+.inula-select-selection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* 让表单级变体生效：优先使用表单注入的变量 */
+  border: 1px solid var(--inula-select-border);
+  /* 通过可选的变量单独控制边框颜色，避免 border 简写被忽略 */
+  border-color: var(--inula-form-variant-border-color, var(--inula-select-border));
+  background: var(--inula-form-variant-bg, var(--inula-select-bg));
+  border-radius: 4px;
+  padding: 0 12px;
+  height: 32px;
+  cursor: pointer;
+  transition: border 0.2s, box-shadow 0.2s, background 0.2s;
+  box-sizing: border-box;
+}
+
+.inula-select:not(.inula-select-disabled) .inula-select-selection:hover,
+.inula-select:not(.inula-select-disabled) .inula-select-selection:focus {
+  border-color: var(--inula-form-variant-focus-border-color, var(--inula-select-hover-border));
+  /* 若表单级提供了 hover 背景，则使用之 */
+  background: var(--inula-form-variant-hover-bg, var(--inula-form-variant-bg, var(--inula-select-bg)));
+  box-shadow: 0 0 0 2px rgba(24,144,255,0.12);
+}
+
+.inula-select-placeholder {
+  color: var(--inula-select-disabled-text);
+}
+
+.inula-select-arrow {
+  margin-left: 8px;
+  font-size: 12px;
+  color: var(--inula-select-arrow-color);
+  display: flex;
+  align-items: center;
+}
+
+.inula-select-dropdown {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  z-index: 1000;
+  min-width: 100%;
+  background: var(--inula-select-bg);
+  border: 1px solid var(--inula-select-border);
+  border-radius: 6px;
+  margin-top: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 4px 0;
+  animation: selectDropdownIn 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes selectDropdownIn {
+  0% { opacity: 0; transform: translateY(-8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.inula-select-option {
+  padding: 8px 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  transition: background 0.2s, color 0.2s;
+  font-size: 14px;
+  line-height: 1.5;
+  border-radius: 0;
+  color: var(--inula-select-tag-text);
+}
+
+.inula-select-option:hover {
+  background: var(--inula-select-option-hover-bg);
+  color: var(--inula-select-tag-hover-text);
+}
+
+.inula-select-option-selected {
+  background: var(--inula-select-active-bg);
+  color: var(--inula-select-tag-hover-text);
+  font-weight: 500;
+}
+
+.inula-select-option-disabled {
+  color: var(--inula-select-disabled-text);
+  cursor: not-allowed;
+  background: var(--inula-select-bg);
+}
+
+.inula-select-option-disabled:hover {
+  background: var(--inula-select-bg);
+  color: var(--inula-select-disabled-text);
+}
+
+.inula-select-clear {
+  display: flex;
+  align-items: center;
+  margin-left: 8px;
+  color: var(--inula-select-disabled-text);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.inula-select-clear:hover {
+  color: var(--inula-select-tag-hover-text);
+}
+
+.inula-select-multiple .inula-select-selection {
+  min-height: 36px;
+  flex-wrap: wrap;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.inula-select-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+}
+
+.inula-select-tag {
+  display: inline-flex;
+  align-items: center;
+  background: var(--inula-select-disabled-bg);
+  color: var(--inula-select-tag-text);
+  border-radius: 3px;
+  padding: 0 6px;
+  font-size: 13px;
+  margin-right: 2px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+.inula-select-tag:hover {
+  background: var(--inula-select-tag-hover-bg);
+}
+.inula-select-tag-close {
+  margin-left: 4px;
+  font-size: 12px;
+  color: var(--inula-select-disabled-text);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.inula-select-tag-close:hover {
+  color: var(--inula-select-tag-hover-text);
+} 
+.inula-select-arrow-container {
+  display: flex;
+  align-items: center;
+}
+.inula-select-group-title {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--inula-select-arrow-color);
+  background-color: var(--inula-select-disabled-bg);
+  font-weight: 500;
+  border-bottom: 1px solid var(--inula-select-border-top);
+}
+
+.inula-select-group-title:not(:first-child) {
+  border-top: 1px solid var(--inula-select-border-top);
+}
+
+/* Select 变体样式 */
+
+/* Filled 变体 - 支持Form传递的CSS变量 */
+.inula-select-filled .inula-select-selection {
+  background: var(--inula-form-variant-bg, var(--inula-variant-filled-bg));
+  border: 1px solid var(--inula-form-variant-border, transparent);
+}
+
+.inula-select-filled .inula-select-selection:hover {
+  background: var(--inula-form-variant-hover-bg, var(--inula-variant-filled-hover-bg));
+  border-color: var(--inula-form-variant-border, transparent);
+}
+
+.inula-select-filled .inula-select-selection:focus-within {
+  background: var(--inula-form-variant-focus-bg, var(--inula-variant-filled-focus-bg));
+  border-color: var(--inula-form-variant-focus-border, var(--inula-select-hover-border));
+}
+
+.inula-select-filled.inula-select-disabled .inula-select-selection {
+  background: var(--inula-color-disabled-bg);
+  border-color: transparent;
+}
+
+/* Borderless 变体 - 支持Form传递的CSS变量 */
+.inula-select-borderless .inula-select-selection {
+  border: var(--inula-form-variant-border, none) !important;
+  box-shadow: none !important;
+  background: var(--inula-form-variant-bg, transparent);
+}
+
+.inula-select-borderless .inula-select-selection:hover {
+  border: var(--inula-form-variant-border, none) !important;
+  box-shadow: none !important;
+  background: var(--inula-form-variant-hover-bg, var(--inula-variant-borderless-hover-bg));
+}
+
+.inula-select-borderless .inula-select-selection:focus-within {
+  border: var(--inula-form-variant-border, none) !important;
+  box-shadow: none !important;
+  background: var(--inula-form-variant-focus-bg, var(--inula-variant-borderless-focus-bg));
+}
+
+.inula-select-borderless.inula-select-disabled .inula-select-selection {
+  background: var(--inula-color-disabled-bg);
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Underlined 变体 - 支持Form传递的CSS变量 */
+.inula-select-underlined .inula-select-selection {
+  /* 组件级 underlined：优先显示底部边框 */
+  border: none !important;
+  border-bottom: 1px solid var(--inula-variant-underlined-border) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent;
+}
+
+.inula-select-underlined .inula-select-selection:hover {
+  border: none !important;
+  border-bottom: 1px solid var(--inula-variant-underlined-hover-border) !important;
+  box-shadow: none !important;
+  background: transparent;
+}
+
+.inula-select-underlined .inula-select-selection:focus-within {
+  border: none !important;
+  border-bottom: 1px solid var(--inula-variant-underlined-focus-border) !important;
+  box-shadow: none !important;
+  background: transparent;
+}
+
+.inula-select-underlined.inula-select-disabled .inula-select-selection {
+  border: none !important;
+  border-bottom: 1px solid var(--inula-color-disabled-border) !important;
+  box-shadow: none !important;
+}
+
+.inula-select-no-data {
+  display: flex;
+  justify-content: center;  
+  align-items: center;
+  padding: 30px;
+  color: var(--inula-select-disabled-text);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.inula-select-no-data:hover {
+  background: var(--inula-select-bg);
+  color: var(--inula-select-disabled-text);
+}

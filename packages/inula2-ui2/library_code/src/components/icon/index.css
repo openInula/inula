@@ -1,0 +1,54 @@
+.inula-icon {
+    font-size: 24px;
+    color: var(--inula-icon-default);
+}
+
+@keyframes icon-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.inula-icon-spin {
+  animation: icon-spin 1.5s linear infinite;
+  transform-origin: center center;
+}
+
+/* Icon表样式 */
+.inula-icon-table {
+  /* width: 80%; */
+  /* height: 600px; */
+  overflow-y: scroll;
+  /* border: 1px solid #f0f0f0; */
+  /* background-color: #fAf8f9; */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 20px;
+  gap:20px;
+}
+
+.inula-icon-item {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border-radius: 1px solid #f0f0f0;
+  height: 90px;
+  width: 10%;
+  padding: 20px;
+  justify-content: flex-start;
+  gap: 20px;
+  border-radius: 8px;
+}
+
+.inula-icon-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transform: scale(1.01);
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.inula-icon-item-text {
+  font-size: 16px;
+  font-family: "宋体";
+}

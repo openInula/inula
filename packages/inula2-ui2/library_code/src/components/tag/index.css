@@ -1,0 +1,29 @@
+.inula-tag{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 8px;border:1px solid var(--inula-color-default-border,#d9d9d9);border-radius:4px;background:#fafafa;color:#595959;font-size:12px;line-height:22px;user-select:none;transition:all .2s}
+.inula-tag-borderless{border-color:transparent;background:transparent}
+.inula-tag-round{border-radius:999px}
+.inula-tag-disabled{opacity:.5;cursor:not-allowed}
+.inula-tag-icon{display:inline-flex}
+.inula-tag-close{appearance:none;border:0;background:transparent;color:inherit;cursor:pointer;padding:0 2px;font-size:12px;line-height:1}
+.inula-tag-default{background:#fafafa;border-color:#d9d9d9;color:#595959}
+.inula-tag-success{background:#f6ffed;border-color:#b7eb8f;color:#389e0d}
+.inula-tag-processing{background:#e6f7ff;border-color:#91d5ff;color:#1677ff}
+.inula-tag-warning{background:#fffbe6;border-color:#ffe58f;color:#d48806}
+.inula-tag-error{background:#fff2f0;border-color:#ffccc7;color:#cf1322}
+.inula-tag-magenta{background:#fff0f6;border-color:#ffadd2;color:#eb2f96}
+.inula-tag-red{background:#fff1f0;border-color:#ffa39e;color:#cf1322}
+.inula-tag-volcano{background:#fff2e8;border-color:#ffbb96;color:#d46b08}
+.inula-tag-orange{background:#fff7e6;border-color:#ffd591;color:#fa8c16}
+.inula-tag-gold{background:#fffbe6;border-color:#ffe58f;color:#d48806}
+.inula-tag-lime{background:#fcffe6;border-color:#eaff8f;color:#7cb305}
+.inula-tag-green{background:#f6ffed;border-color:#b7eb8f;color:#389e0d}
+.inula-tag-cyan{background:#e6fffb;border-color:#87e8de;color:#08979c}
+.inula-tag-blue{background:#e6f7ff;border-color:#91d5ff;color:#1677ff}
+.inula-tag-geekblue{background:#f0f5ff;border-color:#adc6ff;color:#2f54eb}
+.inula-tag-purple{background:#f9f0ff;border-color:#d3adf7;color:#722ed1}
+.inula-tag-custom{color:#fff}
+.inula-tag-small{height:20px;padding:0 6px;font-size:12px}
+.inula-tag-large{height:28px;padding:0 10px;font-size:14px}
+.inula-tag-checkable{cursor:pointer;border-style:solid}
+.inula-tag-checkable-checked{background:#e6f4ff;border-color:#91caff;color:#1677ff}
+.inula-tag-dashed{border-style:dashed;cursor:pointer;color:#8c8c8c;background:#fafafa}
+

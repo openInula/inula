@@ -1,0 +1,17 @@
+# 依赖目录
+node_modules/
+.vscode/
+.idea/
+
+# 构建产物
+dist/
+build/
+*.log
+
+# 缓存文件
+.cache/
+*.tmp
+
+# 包管理器文件
+yarn.lock
+package-lock.json

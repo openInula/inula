@@ -1,0 +1,191 @@
+.inula-tree {
+  list-style: none;
+}
+
+.inula-tree li {
+  list-style: none;
+}
+
+.inula-tree ul {
+  padding-left: 24px;
+}
+
+.inula-tree-node {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 节点孩子样式 */
+.inula-tree-node .inula-tree-children {
+  position: relative;
+  opacity: 1;
+  /* max-height: var(--max-height); */
+  transition: all 0.3s ease-in-out;
+}
+
+.inula-tree-node .inula-tree-children.inula-tree-children-fold {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+}
+
+/* 节点内容样式 */
+.inula-tree-node-content {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+
+/* switcher展开按钮样式 */
+.inula-tree-node .inula-tree-node-content .inula-icon {
+  transition: all 0.3s ease-in-out;
+}
+
+.inula-tree-node-content .inula-tree-node-content-switcher {
+  min-width: 24px;
+  min-height: 24px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inula-tree-node-content .inula-tree-node-content-switcher:hover {
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.inula-tree-node-content .inula-tree-node-content-switcher.noSwitcher {
+  pointer-events: none;
+}
+
+/* 异步switcher加载 */
+.inula-tree-node-content-switcher.isLoading .inula-icon {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* title: checkbox + text */
+.inula-tree-node-content-title {
+  display: flex;
+  position: relative;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+}
+
+.inula-tree-node-content .inula-tree-node-content-title.indent {
+  margin-left: 24px;
+}
+
+/* 内容中文本样式 */
+.inula-tree-node-content .inula-tree-node-content-text {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  width: max-content;
+  padding: 0 4px;
+  border-radius: 5px;
+}
+
+.inula-tree-node-content .inula-tree-node-content-text.isSelected {
+  background-color: #e6f4ff;
+}
+
+.inula-tree-node-content .inula-tree-node-content-text:hover {
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.inula-tree-node-content .inula-tree-node-content-text.disabled {
+  cursor: not-allowed;
+  background-color: rgba(0, 0, 0, 0);
+  color: var(--inula-select-disabled-text);
+}
+
+/* 连接线样式 */
+.inula-tree-node-content-title.showLine::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  height: calc(100% + 12px);
+  width: 8px;
+  border-left: 1px solid #d9d9d9;
+  left: -14px;
+}
+
+.inula-tree-node[data-leaf="true"]:last-child
+  .inula-tree-node-content-title.showLine::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  height: 24px;
+  width: 8px;
+  border-left: 1px solid #d9d9d9;
+  border-bottom: 1px solid #d9d9d9;
+  left: -14px;
+}
+
+.inula-tree-node[data-leaf="true"]:first-child
+  .inula-tree-node-content-title.showLine::before {
+  content: "";
+  position: absolute;
+  top: 0px;
+  height: 100%;
+  width: 8px;
+  border-left: 1px solid #d9d9d9;
+  left: -14px;
+}
+
+.inula-tree-node[data-leaf="true"]:first-child.inula-tree-node[data-leaf="true"]:last-child
+  .inula-tree-node-content-title.showLine::before {
+  content: "";
+  position: absolute;
+  top: 0px;
+  height: 12px;
+  width: 8px;
+  border-left: 1px solid #d9d9d9;
+  border-bottom: 1px solid #d9d9d9;
+  left: -14px;
+}
+
+.inula-tree-node .inula-tree-children.showLine::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: -4px;
+  height: 100%;
+  border-left: 1px solid #d9d9d9;
+}
+
+.inula-tree-node-content-line {
+  width: 8px;
+  height: 1px;
+  background-color: #d9d9d9;
+
+  position: absolute;
+  left: -14px;
+  top: 12px;
+  z-index: 1;
+
+  pointer-events: none;
+}
+
+/* 虚拟列表样式 */
+.virtual-list-container {
+  position: relative;
+  overflow-y: auto;
+  will-change: transform;
+}
+
+.virtual-list-content {
+  position: relative;
+  width: 100%;
+}

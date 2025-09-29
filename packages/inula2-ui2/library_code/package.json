@@ -1,0 +1,46 @@
+{
+  "name": "inula-ui",
+  "version": "0.0.8",
+  "description": "openinula2.0 组件库",
+  "author": "陈海彬、涂宇恒",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cychenhaibin/openinula2.0_library.git"
+  },
+  "type": "module",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.cjs.js"
+    },
+    "./notification": {
+      "import": "./dist/notification.es.js",
+      "require": "./dist/notification.cjs.js"
+    },
+    "./style.css": "./dist/style.css",
+    "./dist/*": "./dist/*"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@openinula/next": "^0.0.5"
+  },
+  "devDependencies": {
+    "@openinula/unplugin": "^0.0.2",
+    "vite": "^4.4.9"
+  },
+  "keywords": [
+    "inula-next"
+  ]
+}

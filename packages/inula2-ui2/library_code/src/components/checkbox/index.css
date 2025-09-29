@@ -1,0 +1,128 @@
+/* checkbox */
+.inula-checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  gap: 8px;
+}
+
+/* 禁用样式 */
+.inula-checkbox-input-disabled {
+  cursor: not-allowed !important;
+  background-color: var(--inula-color-disabled-bg) !important;
+  color: var(--inula-color-disabled-text) !important;
+  border: 1px solid var(--inula-color-disabled-border) !important;
+}
+
+.inula-checkbox-disabled {
+  color: var(--inula-color-disabled-text) !important;
+}
+
+/* 普通checkbox样式 */
+.inula-checkbox-input {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+
+  /* 清除默认样式 */
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding: 0px;
+  margin: 0px;
+
+  cursor: pointer;
+  border: 1px solid var(--inula-color-default-border);
+  background-color: var(--inula-color-default-bg);
+  color: white;
+}
+
+.inula-checkbox-input:checked {
+  background: var(--inula-color-primary);
+  position: relative;
+}
+
+.inula-checkbox-input:checked::after {
+  content: "\f00c"; /* Font Awesome check图标 */
+  font-family: "Font Awesome 6 Free";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  /* color: white; */
+  font-weight: 900;
+}
+
+/* indeterminate checkbox样式 */
+.inula-checkbox-indeterminate {
+  position: relative;
+  background: var(--inula-color-default-bg);
+  transition: background 0.3s ease;
+}
+
+/* indeterminate状态移除选中背景色 */
+.inula-checkbox-indeterminate:checked {
+  background: var(--inula-color-default-bg)!important;
+}
+
+/* indeterminate状态移除图标 */
+.inula-checkbox-indeterminate:checked::after {
+  content: "" !important;  
+}
+
+/* indeterminate 伪元素样式 */
+.inula-checkbox-indeterminate::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  background: var(--inula-color-primary);
+  transform: translate(-50%, -50%);
+}
+
+/* indeterminate hover */
+.inula-checkbox-indeterminate:hover {
+    background: var(--inula-checkbox-indeterminate-hover-bg) !important;
+}
+
+/* indeterminate active */
+.inula-checkbox-indeterminate:active {
+  animation: indeterminate-expand 0.3s ease-out;  
+}
+
+@keyframes indeterminate-expand {
+    0% {
+        box-shadow: 0 0 0 0 rgba(64, 135, 255, 0.8);
+    }
+    100% {
+        box-shadow: 0 0 0 12px rgba(64, 135, 255, 0);
+    }
+}
+
+
+/* indeterminate 禁用 */
+.inula-checkbox-indeterminate-disabled:hover {
+  background: var(--inula-color-disabled-bg)!important;
+}
+
+.inula-checkbox-indeterminate-disabled::after {
+  background: var(--inula-checkbox-indeterminate-disabled-after);
+}
+
+.inula-checkbox-indeterminate-disabled:active {
+  animation: none;
+}
+
+/* checkboxgroup */
+.inula-checkbox-group {
+  display: flex;
+  gap: 10px;
+  flex-direction: row;
+  flex-wrap: nowrap;  
+  align-items: center;
+  justify-content: flex-start;
+}
