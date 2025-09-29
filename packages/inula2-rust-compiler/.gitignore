@@ -1,0 +1,451 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+*.lcov
+.nyc_output
+
+# Production
+build
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Temporary files
+*.tmp
+*.temp
+.cache
+
+# OS generated files
+Thumbs.db
+.DS_Store
+
+# Rust related
+/target
+/inula
+/node_modules
+/alignment-test-results
+/inula-rust-integration-results
+/test-results
+/pkg
+/Cargo.lock
+/vendor
+/wasm-build/target
+/wasm-build/pkg
+/node-tests
+/benchmark
+
+# WASM build outputs
+*.wasm
+*.node
+*.d.ts
+Cargo.toml.wasm
+Cargo-wasm.toml
+inula_compiler_rs.node
+pkg/*.js
+wasm-build/pkg/*.js
+
+# Test results and reports
+rust-compiler-test-results-*.json
+compiler-comparison-*.json
+*-test-results-*.json
+*-compiler-*.json
+*-output.json
+*-result.json
+*-report.json
+*-test-report.json
+*-validation-report.json
+*-comparison-report.json
+*-performance-test-report.json
+*-consistency-test-report.json
+*-architecture-test-report.json
+*-apis-test-report.json
+*-bitmap-test-report.json
+*-compiler-test-report.json
+*-consistency-validation-report.json
+*-rust-compiler-test-report.json
+*-real-compiler-test-report.json
+*-real-consistency-test-report.json
+*-real-performance-test-report.json
+*-real-rust-compiler-test-report.json
+*-real-compiler-comparison-report.json
+*-output-consistency-test-report.json
+*-openinula-apis-test-report.json
+*-large-bitmap-test-report.json
+*-inula2-architecture-test-report.json
+*-actual-rust-compiler-test-report.json
+*-strict-consistency-validation-report.json
+compiler-test-results/
+test-rust-project/
+*/target
+
+# Temporary files and directories
+.tmp/
+*.tmp
+*.temp
+*.log
+
+# Debug and analysis files
+debug-*.js
+analyze-*.js
+compare-*.js
+test-*.js
+comprehensive_compiler_test.rs
+real_compiler_test.rs
+run_compiler_tests.rs
+
+STANDARDS_COMPLIANCE_*.md
+TEST_*.md
+ARCHITECTURE_*.md
+BENCHMARK_*.md
+INTEGRATION_*.md
+ANALYZER_*.md
+AST_*.md
+CACHE_*.md
+CLEANUP_*.md
+CODE_MERGE_*.md
+DUPLICATE_*.md
+FINAL_*.md
+OPENINULA_*.md
+IMPROVED_*.md
+RUST_COMPILER_*.md
+REAL_*.md
+VIEW_*.md
+
+
+# Performance test outputs
+benchmark/equiv-stderr.log
+benchmark/test_output.json
+
+# Node.js test outputs
+node-tests/*-output.json
+node-tests/*-result.json
+node-tests/*-report.json
+node-tests/*-fixed-*.json
+node-tests/*-actual-*.json
+node-tests/*-correct-*.json
+
+# Shell scripts (except project scripts)
+*.sh
+!push_to_gitcode.sh
+!bench/run-consistency.sh
+!bench/performance_benchmark.sh
+!bench/production_validation.sh
+!nodejs-wrapper/scripts/build.sh
+
+# Large binary files
+*.deb
+*.dmg
+*.exe
+*.msi
+*.pkg
+*.rpm
+*.tar.gz
+*.zip
+*.7z
+*.rar
+*.bak
+*-report
+
+# Keep important JSON files
+!package.json
+!package-lock.json
+!tsconfig.json
+!Cargo.toml
+
+benchmarks/out_*
+!bench/run-consistency.sh
+
+# Node.js wrapper specific
+nodejs-wrapper/dist/
+nodejs-wrapper/node_modules/
+nodejs-wrapper/compiled-output.js
+nodejs-wrapper/compiled-output.js.map
+nodejs-wrapper/test-component.jsx
+nodejs-wrapper/test-demo.js
+nodejs-wrapper/simple-cli-demo.cjs
+nodejs-wrapper/simple-cli-demo.js
+nodejs-wrapper/programmatic-demo.cjs
+nodejs-wrapper/DEMO_SUMMARY.md
+
+# WASM build specific
+wasm-build/pkg/
+wasm-build/target/
+wasm-build/vendor.bak/
+wasm-build/complex_test.jsx
+wasm-build/test.jsx
+
+# Embedded git repositories
+examples/*
+*/target/*
+test_output/*
+
+# Build outputs and artifacts
+build/
+dist/
+out/
+*.o
+*.so
+*.dylib
+*.dll
+*.exe
+*.bin
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak
+*.orig
+
+# Logs and debug files
+*.log
+logs/
+debug.log
+error.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+.nyc_output
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+.env.test
+.env.production
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Rust specific
+target/
+Cargo.lock
+**/*.rs.bk
+*.pdb
+
+# WebAssembly
+*.wasm
+*.wasm.map
+
+# Node.js native modules
+*.node
+
+# TypeScript
+*.tsbuildinfo
+
+# Test results
+test-results/
+test-output/
+coverage/
+*.test.js
+*.spec.js
+
+# Documentation build
+docs/_build/
+docs/build/
+
+# Backup files
+*.backup
+*.bak
+*.old
+
+# Lock files (keep package-lock.json but ignore others)
+yarn.lock
+pnpm-lock.yaml
+
+# Local configuration files
+config.local.*
+*.local.*
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Large files that shouldn't be in git
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.mp3
+*.wav
+*.flac
+
+# IDE specific
+*.sublime-project
+*.sublime-workspace
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# System files
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Application specific
+*.pid
+*.seed
+*.pid.lock
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+.env.test
+.env.production
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*

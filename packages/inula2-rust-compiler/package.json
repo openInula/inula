@@ -1,0 +1,46 @@
+{
+  "name": "inula2-rust-compiler",
+  "version": "1.0.0",
+  "description": "Rust implementation of Inula 2.0 compiler with NAPI, WASM, and Node.js support",
+  "main": "src/nodejs/dist/index.js",
+  "types": "src/nodejs/dist/index.d.ts",
+  "scripts": {
+    "build:napi": "cd src/napi && npm run build",
+    "build:wasm": "cd src/wasm && wasm-pack build --target nodejs --out-dir pkg",
+    "build:nodejs": "cd src/nodejs && npm run build",
+    "build:all": "npm run build:napi && npm run build:wasm && npm run build:nodejs",
+    "test": "npm run test:unit && npm run test:integration && npm run test:performance",
+    "test:unit": "cd src/napi && cargo test",
+    "test:integration": "node tests/integration/",
+    "test:performance": "node tests/performance/",
+    "benchmark": "node benchmarks/",
+    "clean": "rm -rf src/*/target src/*/node_modules src/*/dist",
+    "docs": "npm run docs:api && npm run docs:guides",
+    "docs:api": "echo 'Generating API documentation...'",
+    "docs:guides": "echo 'Generating usage guides...'"
+  },
+  "keywords": [
+    "inula",
+    "compiler",
+    "rust",
+    "napi",
+    "wasm",
+    "jsx",
+    "react"
+  ],
+  "author": "Inula Team",
+  "license": "MIT",
+  "workspaces": [
+    "src/napi",
+    "src/wasm", 
+    "src/nodejs"
+  ],
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}
+
+
+
+

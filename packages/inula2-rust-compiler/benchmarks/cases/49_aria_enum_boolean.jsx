@@ -1,0 +1,46 @@
+function AriaEnumBoolean({ state, role, level }) {
+  return (
+    <div
+      role={role}
+      aria-level={level}
+      aria-orientation="horizontal"
+      aria-sort="ascending"
+      aria-current="page"
+      aria-posinset={state.position}
+      aria-setsize={state.total}
+      aria-valuemin={state.min}
+      aria-valuemax={state.max}
+      aria-valuenow={state.value}
+      aria-valuetext={state.text}
+      aria-expanded={state.expanded}
+      aria-selected={state.selected}
+      aria-checked={state.checked}
+      aria-pressed={state.pressed}
+      aria-disabled={state.disabled}
+      aria-hidden={state.hidden}
+      aria-busy={state.busy}
+      aria-invalid={state.invalid}
+      aria-required={state.required}
+      aria-readonly={state.readonly}
+      aria-multiline={state.multiline}
+      aria-multiselectable={state.multiselectable}
+      aria-autocomplete="inline"
+      aria-haspopup="menu"
+      aria-modal="true"
+      aria-live="polite"
+      aria-atomic="true"
+      aria-relevant="additions text"
+      aria-dropeffect="copy"
+      aria-grabbed="false"
+      aria-activedescendant="item1"
+      aria-controls="menu1"
+      aria-describedby="desc1"
+      aria-flowto="next1"
+      aria-labelledby="label1"
+      aria-owns="list1"
+      className="aria-component"
+    >
+      Content
+    </div>
+  );
+}

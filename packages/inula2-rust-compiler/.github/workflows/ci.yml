@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Show tool versions
+        run: |
+          rustc -Vv
+          cargo -V
+          node -v
+          npm -v || true
+
+      - name: Build wasm-build (release)
+        working-directory: wasm-build
+        run: cargo build --release
+
+      - name: Run Rust tests (wasm-build)
+        working-directory: wasm-build
+        run: cargo test --release --all-features -- --nocapture
+
+      - name: Run Rust vs TS output consistency check
+        run: |
+          bash bench/run-consistency.sh
+
+
+
