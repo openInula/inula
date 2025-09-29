@@ -42,7 +42,10 @@ function onMouseMove(event: MouseEvent) {
   event.preventDefault();
   event.stopPropagation();
 
-  const target = (event.target as any)._inula_VNode;
+  // const target = (event.target as any)._inula_VNode;
+  const key = Object.keys(event.target).find(k => k.startsWith('_inula_vNode_'));
+  const target = key ? event.target[key] : null;
+
   if (target) {
     const id = VNodeToIdMap.get(getUserComponent(target));
     const vNode = queryVNode(id);
