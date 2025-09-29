@@ -15,6 +15,16 @@
 
 import assign from 'object-assign';
 import { VNode } from '../../../inula/src/renderer/vnode/VNode';
+import {
+  ClassComponent,
+  FunctionComponent,
+  ContextProvider,
+  ContextConsumer,
+  ForwardRef,
+  SuspenseComponent,
+  MemoComponent,
+  DomComponent,
+} from '../../../inula/src/renderer/vnode/VNodeTags';
 
 const overlayStyles = {
   background: 'rgba(120, 170, 210, 0.7)',
@@ -22,6 +32,50 @@ const overlayStyles = {
   margin: 'rgba(255, 155, 0, 0.3)',
   border: 'rgba(255, 200, 50, 0.3)',
 };
+
+// 获取组件的显示名称
+function getComponentDisplayName(vNode: VNode): string {
+  if (!vNode || vNode.tag === DomComponent) {
+    // 对于DOM组件，返回标签名称
+    if (vNode.type && typeof vNode.type === 'string') {
+      return `<${vNode.type}>`;
+    }
+    return 'DOM';
+  }
+
+  const { tag, type } = vNode;
+  
+  // 根据不同的组件类型返回名称
+  switch (tag) {
+    case ClassComponent:
+    case FunctionComponent: {
+      const name = type?.displayName || type?.name;
+      return name || 'Anonymous';
+    }
+    case ContextProvider: {
+      const contextName = type?._context?.displayName;
+      return contextName ? `${contextName}.Provider` : 'Provider';
+    }
+    case ContextConsumer: {
+      const contextName = type?._context?.displayName;
+      return contextName ? `${contextName}.Consumer` : 'Consumer';
+    }
+    case ForwardRef: {
+      const name = type?.displayName || 'Anonymous';
+      return name;
+    }
+    case SuspenseComponent: {
+      return 'Suspense';
+    }
+    case MemoComponent: {
+      const name = type?.displayName || type?.name || type?.render?.name;
+      return name ? `Memo(${name})` : 'Memo(Anonymous)';
+    }
+    default: {
+      return 'Component';
+    }
+  }
+}
 
 type Rect = {
   bottom: number;
@@ -139,16 +193,34 @@ class OverlayRect {
   border: HTMLElement;
   padding: HTMLElement;
   content: HTMLElement;
+  label: HTMLElement;
 
   constructor(doc: Document, container: HTMLElement) {
     this.node = doc.createElement('div');
     this.border = doc.createElement('div');
     this.padding = doc.createElement('div');
     this.content = doc.createElement('div');
+    this.label = doc.createElement('div');
 
     this.border.style.borderColor = overlayStyles.border;
     this.padding.style.borderColor = overlayStyles.padding;
     this.content.style.backgroundColor = overlayStyles.background;
+
+    // 设置标签样式
+    assign(this.label.style, {
+      position: 'absolute',
+      top: '0',
+      left: '0',
+      backgroundColor: 'rgba(70, 184, 213, 0.8)',
+      color: 'white',
+      padding: '2px 6px',
+      fontSize: '12px',
+      fontFamily: 'monospace',
+      borderRadius: '2px',
+      whiteSpace: 'nowrap',
+      pointerEvents: 'none',
+      zIndex: '10000001',
+    });
 
     assign(this.node.style, {
       borderColor: overlayStyles.margin,
@@ -161,6 +233,7 @@ class OverlayRect {
     this.node.appendChild(this.border);
     this.border.appendChild(this.padding);
     this.padding.appendChild(this.content);
+    this.node.appendChild(this.label);
     container.appendChild(this.node);
   }
 
@@ -170,7 +243,7 @@ class OverlayRect {
     }
   }
 
-  update(boxRect: Rect, eleStyle: any) {
+  update(boxRect: Rect, eleStyle: any, componentName?: string) {
     setBoxStyle(eleStyle, 'margin', this.node);
     setBoxStyle(eleStyle, 'border', this.border);
     setBoxStyle(eleStyle, 'padding', this.padding);
@@ -196,6 +269,14 @@ class OverlayRect {
       top: boxRect.top - eleStyle.marginTop + 'px',
       left: boxRect.left - eleStyle.marginLeft + 'px',
     });
+
+    // 设置组件名称标签
+    if (componentName) {
+      this.label.textContent = componentName;
+      this.label.style.display = 'block';
+    } else {
+      this.label.style.display = 'none';
+    }
   }
 }
 
@@ -225,7 +306,7 @@ class ElementOverlay {
   }
 
   execute(nodes: Array<VNode>) {
-    const elements = nodes.filter(node => node.tag === 'DomComponent');
+    const elements = nodes.filter(node => node.tag === DomComponent);
 
     // 有几个 element 就添加几个 OverlayRect
     while (this.rects.length > elements.length) {
@@ -257,7 +338,20 @@ class ElementOverlay {
       outerBox.left = Math.min(outerBox.left, boxRect.left - eleStyle.marginLeft);
 
       const rect = this.rects[index];
-      rect.update(boxRect, eleStyle);
+      
+      // 获取组件名称 - 查找对应的非DOM组件父节点
+      let componentName = '';
+      let currentNode = element.parent;
+      while (currentNode && currentNode.tag === DomComponent) {
+        currentNode = currentNode.parent;
+      }
+      if (currentNode) {
+        componentName = getComponentDisplayName(currentNode);
+      } else {
+        componentName = getComponentDisplayName(element);
+      }
+      
+      rect.update(boxRect, eleStyle, componentName);
     });
   }
 }
