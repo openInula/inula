@@ -1,0 +1,45 @@
+{
+  "name": "@openinula/migrator",
+  "version": "0.1.0",
+  "description": "CLI to migrate React 17/18 code to OpenInula 2.0 syntax using jscodeshift",
+  "private": false,
+  "bin": {
+    "inula-migrate": "bin/inula-migrate",
+    "inula-rollback": "bin/inula-rollback",
+    "openinula_migrator": "bin/inula-migrate"
+  },
+  "scripts": {
+    "dev": "node src/index.js --help",
+    "test": "vitest run",
+    "cli": "node bin/inula-migrate",
+    "build": "echo 'no build step for JS'",
+    "format": "prettier --write ."
+  },
+  "keywords": [
+    "openinula",
+    "react",
+    "codemod",
+    "jscodeshift",
+    "cli",
+    "migration"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^12.1.0",
+    "diff": "^5.2.0",
+    "fast-glob": "^3.3.2",
+    "jscodeshift": "^0.16.1",
+    "p-limit": "^5.0.0",
+    "prettier": "^2.8.8",
+    "recast": "^0.23.9"
+  },
+  "devDependencies": {
+    "vitest": "^2.0.5"
+  }
+}
+
