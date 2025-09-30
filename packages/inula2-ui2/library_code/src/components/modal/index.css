@@ -1,0 +1,136 @@
+/* 遮罩层 */
+.inula-modal-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  padding-top: 100px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s cubic-bezier(.4,0,.2,1);
+  z-index: 1000;
+}
+.inula-modal-mask-center{
+    align-items: center;
+    padding-top: 0;
+}
+.inula-modal-mask-show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 弹窗主体 */
+.inula-modal {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px 24px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18), 0 1.5px 6px rgba(0,0,0,0.08);
+  min-width: 320px;
+  max-width: 90vw;
+  width: 520px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  animation: modal-fade-in 0.2s cubic-bezier(.4,0,.2,1);
+}
+@keyframes modal-fade-in {
+  from { transform: scale(0.98) translateY(16px); opacity: 0.7; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* 标题栏 */
+.inula-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.inula-modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1d2129;
+  line-height: 1.4;
+}
+.inula-modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #bfbfbf;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.inula-modal-close:hover {
+  color: #1677ff;
+  background: #f0f5ff;
+}
+
+/* 内容区 */
+.inula-modal-body {
+  font-size: 15px;
+  color: #333;
+  overflow: auto;
+  flex: 1;
+  line-height: 1.7;
+}
+
+.inula-modal-footer-default {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 10px 0 0;
+    cursor: pointer;
+}
+
+/* 页脚 */
+.inula-modal-footer {
+  padding: 10px 0 0;
+  text-align: right;
+  border-radius: 0 0 8px 8px;
+}
+
+/* 移动端适配 */
+@media (max-width: 600px) {
+  .inula-modal {
+    min-width: 0;
+    width: 98vw;
+    max-width: 99vw;
+    padding: 0;
+  }
+  .inula-modal-header, .inula-modal-body, .inula-modal-footer {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+.inula-modal-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw !important;
+  height: 100% !important;
+  padding: 10px 0!important;
+  max-width: none !important;
+  max-height: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  z-index: 1001;
+}
+.inula-modal-fullscreen .inula-modal-header,
+.inula-modal-fullscreen .inula-modal-footer,
+.inula-modal-fullscreen .inula-modal-footer-default {
+  padding: 24px !important;
+}
+.inula-modal-fullscreen .inula-modal-body {
+  flex: 1;
+  padding: 24px !important;
+}

@@ -1,0 +1,297 @@
+@import '../../colors.css';
+.inula-form {
+  width: 100%;
+}
+
+.inula-form-vertical .inula-form-item {
+  display: block;
+}
+
+.inula-form-horizontal .inula-form-item {
+  display: flex;
+}
+
+.inula-form-inline .inula-form-item {
+  display: inline-flex;
+  margin-right: 16px;
+  margin-bottom: 16px;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.inula-form-inline .inula-form-item:last-child {
+  margin-right: 0;
+}
+
+.inula-form-inline .inula-form-item-label {
+  flex: 0 0 auto;
+  margin-right: 8px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  height: 32px;
+}
+
+.inula-form-inline .inula-form-item-label label {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  margin: 0;
+}
+
+.inula-form-inline .inula-form-item-control {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  height: 32px;
+}
+
+.inula-form-inline .inula-form-item-control-input {
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  height: 32px;
+}
+
+.inula-form-inline .inula-form-item-control-input > * {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.inula-form-label-left .inula-form-item-label {
+  text-align: left;
+}
+
+.inula-form-label-right .inula-form-item-label {
+  text-align: right;
+}
+
+.inula-form-item {
+  margin-bottom: 16px;
+}
+
+.inula-form-item-label {
+  flex: 0 0 120px;
+  line-height: 32px;
+  color: #333;
+  font-size: 14px;
+}
+
+.inula-form-item-required .inula-form-item-label label::before {
+  display: inline-block;
+  margin-right: 4px;
+  color: #ff4d4f;
+  content: '*';
+}
+
+/* Required Mark 样式 */
+.inula-form-item-required-asterisk {
+  color: #ff4d4f;
+  margin-right: 4px;
+  font-weight: normal;
+}
+
+.inula-form-item-required-text {
+  color: var(--inula-color-disabled-text);
+  font-size: 12px;
+  margin-left: 4px;
+  font-weight: normal;
+}
+
+.inula-form-item-optional {
+  color: #999;
+  font-size: 12px;
+  margin-left: 4px;
+  font-weight: normal;
+  display: inline-block;
+}
+
+.inula-form-item-required-custom {
+  background: #ff4d4f;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-right: 4px;
+  font-weight: normal;
+  display: inline-block;
+}
+
+.inula-form-item-optional-custom {
+  background: #f0f0f0;
+  color: #666;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-right: 4px;
+  font-weight: normal;
+  display: inline-block;
+}
+
+/* Required Mark 模式样式 */
+.inula-form-required-mark-hidden .inula-form-item-required .inula-form-item-label label::before {
+  display: none;
+}
+
+.inula-form-required-mark-optional .inula-form-item-required .inula-form-item-label label::before {
+  display: none;
+}
+
+.inula-form-required-mark-customize .inula-form-item-required .inula-form-item-label label::before {
+  display: none;
+}
+
+.inula-form-item-control {
+  flex: 1;
+}
+
+.inula-form-item-control-input {
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.inula-form-item-has-error .inula-form-item-control-input .inula-input,
+.inula-form-item-has-error .inula-form-item-control-input .inula-input-affix-wrapper {
+  border-color: #ff4d4f;
+}
+
+.inula-form-item-explain {
+  color: #ff4d4f;
+  font-size: 12px;
+  line-height: 1.6;
+  margin-top: 4px;
+  text-align: left;
+}
+
+.inula-form-item-extra {
+  color: #666;
+  font-size: 12px;
+  line-height: 1.6;
+  margin-top: 4px;
+}
+
+.inula-form-disabled {
+  /* 表单禁用状态，具体禁用效果由各个控件自己处理 */
+  opacity: 0.6;
+}
+
+/* Form 变体样式 */
+
+/* Filled 变体 - 参考 Ant Design 5.0 设计规范 */
+.inula-form-filled {
+  /* 提供给子组件读取的边框/背景变量 */
+  --inula-form-variant-bg: var(--inula-variant-filled-bg);
+  --inula-form-variant-hover-bg: var(--inula-variant-filled-hover-bg);
+  --inula-form-variant-focus-bg: var(--inula-variant-filled-focus-bg);
+  --inula-form-variant-border-color: transparent;
+  --inula-form-variant-focus-border-color: var(--inula-color-primary);
+}
+
+.inula-form-filled .inula-form-item-control-input .inula-input,
+.inula-form-filled .inula-form-item-control-input .inula-input-affix-wrapper,
+.inula-form-filled .inula-form-item-control-input .inula-select {
+  background: var(--inula-form-variant-bg);
+  border-color: var(--inula-form-variant-border-color);
+}
+
+.inula-form-filled .inula-form-item-control-input .inula-input:hover,
+.inula-form-filled .inula-form-item-control-input .inula-input-affix-wrapper:hover,
+.inula-form-filled .inula-form-item-control-input .inula-select:hover {
+  background: var(--inula-variant-filled-hover-bg);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.inula-form-filled .inula-form-item-control-input .inula-input:focus-within,
+.inula-form-filled .inula-form-item-control-input .inula-input-affix-wrapper:focus-within,
+.inula-form-filled .inula-form-item-control-input .inula-select:focus-within {
+  background: var(--inula-form-variant-focus-bg);
+  border-color: var(--inula-form-variant-focus-border-color);
+}
+
+/* Borderless 变体 - 参考 Ant Design 5.0 设计规范 */
+.inula-form-borderless {
+  --inula-form-variant-bg: transparent;
+  --inula-form-variant-hover-bg: var(--inula-variant-borderless-hover-bg);
+  --inula-form-variant-focus-bg: var(--inula-variant-borderless-focus-bg);
+  --inula-form-variant-border-color: transparent;
+  --inula-form-variant-focus-border-color: transparent;
+}
+
+.inula-form-borderless .inula-form-item-control-input .inula-input,
+.inula-form-borderless .inula-form-item-control-input .inula-input-affix-wrapper,
+.inula-form-borderless .inula-form-item-control-input .inula-select {
+  border: none !important;
+  box-shadow: none !important;
+  background: var(--inula-form-variant-bg);
+}
+
+.inula-form-borderless .inula-form-item-control-input .inula-input:hover,
+.inula-form-borderless .inula-form-item-control-input .inula-input-affix-wrapper:hover,
+.inula-form-borderless .inula-form-item-control-input .inula-select:hover {
+  border: none !important;
+  box-shadow: none !important;
+  background: var(--inula-variant-borderless-hover-bg);
+}
+
+.inula-form-borderless .inula-form-item-control-input .inula-input:focus-within,
+.inula-form-borderless .inula-form-item-control-input .inula-input-affix-wrapper:focus-within,
+.inula-form-borderless .inula-form-item-control-input .inula-select:focus-within {
+  border: none !important;
+  box-shadow: none !important;
+  background: var(--inula-form-variant-focus-bg);
+}
+
+/* Underlined 变体 - 参考 Ant Design 5.0 设计规范 */
+.inula-form-underlined .inula-form-item-control-input .inula-input,
+.inula-form-underlined .inula-form-item-control-input .inula-input-affix-wrapper,
+.inula-form-underlined .inula-form-item-control-input .inula-select {
+  border: none !important;
+  border-bottom: 0.5px solid var(--inula-variant-underlined-border) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent;
+}
+
+.inula-form-underlined .inula-form-item-control-input .inula-input:hover,
+.inula-form-underlined .inula-form-item-control-input .inula-input-affix-wrapper:hover,
+.inula-form-underlined .inula-form-item-control-input .inula-select:hover {
+  border: none !important;
+  border-bottom: 0.5px solid var(--inula-variant-underlined-hover-border) !important;
+  box-shadow: none !important;
+}
+
+.inula-form-underlined .inula-form-item-control-input .inula-input:focus-within,
+.inula-form-underlined .inula-form-item-control-input .inula-input-affix-wrapper:focus-within,
+.inula-form-underlined .inula-form-item-control-input .inula-select:focus-within {
+  border: none !important;
+  border-bottom: 0.5px solid var(--inula-variant-underlined-focus-border) !important;
+  box-shadow: none !important;
+}
+
+/* 额外覆盖：让 Select 在 Form 的 underlined 形态下仅显示底边框 */
+.inula-form-underlined .inula-select .inula-select-selection {
+  border: none !important;
+  border-bottom: 0.5px solid var(--inula-variant-underlined-border) !important;
+  background: transparent;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.inula-form-underlined .inula-select .inula-select-selection:hover {
+  border: none !important;
+  border-bottom: 0.5px solid var(--inula-variant-underlined-hover-border) !important;
+  background: transparent;
+}
+.inula-form-underlined .inula-select .inula-select-selection:focus,
+.inula-form-underlined .inula-select .inula-select-selection:focus-within {
+  border: none !important;
+  border-bottom: 0.5px solid var(--inula-variant-underlined-focus-border) !important;
+  background: transparent;
+}
+
+/* 表单尺寸样式 */
+
+

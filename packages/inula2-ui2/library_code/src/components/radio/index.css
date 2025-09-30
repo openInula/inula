@@ -1,0 +1,157 @@
+@import '../../colors.css';
+
+.radio-group {
+  display: flex;
+  gap: 16px;
+}
+.radio-item {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.radio-item input[type="radio"] {
+  margin-right: 6px;
+}
+
+.inula-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.inula-radio-group.horizontal {
+  flex-direction: row;
+  gap: 24px;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.inula-radio-wrapper {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  user-select: none;
+  margin-bottom: 0;
+  margin-right: 16px;
+}
+
+.inula-radio-wrapper:last-child {
+  margin-right: 0;
+}
+
+.inula-radio-large .inula-radio-inner {
+  width: 20px;
+  height: 20px;
+}
+.inula-radio-large .inula-radio-label {
+  font-size: 16px;
+}
+
+.inula-radio-small .inula-radio-inner {
+  width: 12px;
+  height: 12px;
+}
+.inula-radio-small .inula-radio-label {
+  font-size: 12px;
+}
+
+.inula-radio {
+  position: relative;
+  display: inline-block;
+  line-height: 1;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+.inula-radio-input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  width: 0;
+  height: 0;
+}
+
+.inula-radio-inner {
+  display: block;
+  width: 16px;
+  height: 16px;
+  background-color: var(--inula-radio-bg);
+  border: 1px solid var(--inula-radio-border);
+  border-radius: 50%;
+  transition: all 0.2s;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.inula-radio:hover .inula-radio-inner {
+  border-color: var(--inula-radio-hover-border);
+  box-shadow: var(--inula-radio-hover-shadow);
+}
+
+.inula-radio-checked .inula-radio-inner {
+  border-color: var(--inula-radio-checked-border);
+}
+
+.inula-radio-checked .inula-radio-inner::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  background: var(--inula-radio-checked-bg);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  transition: all 0.2s;
+}
+
+.inula-radio-disabled .inula-radio-inner,
+.inula-radio-wrapper--disabled .inula-radio-inner {
+  background-color: var(--inula-radio-disabled-bg);
+  border-color: var(--inula-radio-disabled-border);
+  cursor: not-allowed;
+}
+
+.inula-radio-disabled .inula-radio-label,
+.inula-radio-wrapper--disabled .inula-radio-label {
+  color: var(--inula-radio-disabled-label);
+}
+
+.inula-radio-readonly .inula-radio-inner,
+.inula-radio-wrapper--readonly .inula-radio-inner {
+  background-color: var(--inula-radio-readonly-bg);
+  border-color: var(--inula-radio-readonly-border);
+  cursor: not-allowed;
+}
+
+.inula-radio-readonly .inula-radio-label,
+.inula-radio-wrapper--readonly .inula-radio-label {
+  color: var(--inula-radio-readonly-label);
+}
+
+.inula-radio-disabled.inula-radio-checked .inula-radio-inner::after,
+.inula-radio-wrapper--disabled.inula-radio-checked .inula-radio-inner::after {
+  background: var(--inula-radio-disabled-dot);
+}
+
+.inula-radio-readonly.inula-radio-checked .inula-radio-inner::after,
+.inula-radio-wrapper--readonly.inula-radio-checked .inula-radio-inner::after {
+  background: var(--inula-radio-readonly-dot);
+}
+
+.inula-radio-disabled:hover .inula-radio-inner,
+.inula-radio-wrapper--disabled:hover .inula-radio-inner,
+.inula-radio-readonly:hover .inula-radio-inner,
+.inula-radio-wrapper--readonly:hover .inula-radio-inner {
+  border-color: var(--inula-radio-disabled-border);
+  box-shadow: none;
+}
+
+.inula-radio-readonly:hover .inula-radio-inner,
+.inula-radio-wrapper--readonly:hover .inula-radio-inner,
+.inula-radio-readonly .inula-radio-inner:hover,
+.inula-radio-wrapper--readonly .inula-radio-inner:hover {
+  border-color: var(--inula-radio-readonly-border) !important;
+  box-shadow: none !important;
+} 

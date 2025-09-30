@@ -1,0 +1,112 @@
+:root {
+  /* 主要颜色 */
+  --inula-color-primary: #1677ff;
+  /* 主要颜色 hover */
+  --inula-color-primary-hover: #4096ff;
+  /* 主要颜色 active */
+  --inula-color-primary-active: #0958d9;
+  /* 默认背景颜色 */
+  --inula-color-default-bg: #fff;
+  /* 默认背景颜色 hover */
+  --inula-color-default-hover-bg: #f0f7ff;
+  /* 默认背景颜色 active */
+  --inula-color-default-active-bg: #e6f4ff;
+  /* 警告背景颜色*/
+  --inula-color-warning-bg: #fffbe6;
+  /* 危险背景颜色*/
+  --inula-color-danger-bg: #fff2f0;
+  /* 默认边框颜色 */
+  --inula-color-default-border: #d9d9d9;
+  /* 警告边框颜色 */
+  --inula-color-warning-border: #ffe58f;
+  /* 危险边框颜色 */
+  --inula-color-danger-border: #ffccc7;
+  /* 默认文字颜色 */
+  --inula-color-primary-text: #333;
+  /* 次要文字颜色 */
+  --inula-color-secondary-text: #666;
+  /* 禁用文字颜色 */
+  --inula-color-disabled-text: #999;
+  /* 警告文字颜色 */
+  --inula-color-warning-text: #faad14;
+  /* 危险文字颜色 */
+  --inula-color-danger-text: #ff4d4f;
+
+  /* 虚线按钮颜色 */
+  --inula-color-dashed-border: #d9d9d9;
+
+  /* 文本按钮颜色 */
+  --inula-color-text: #1677ff;
+  --inula-color-text-hover-bg: #e6f4ff;
+  --inula-color-text-active-bg: #bae0ff;
+
+  /* 链接按钮颜色 */
+  --inula-color-link: #1677ff;
+  --inula-color-link-hover: #0958d9;
+
+  /* 危险按钮颜色 */
+  --inula-color-danger: #ff4d4f;
+  --inula-color-danger-bg: #fff1f0;
+  --inula-color-danger-hover-bg: #ff4d4f;
+  --inula-color-danger-hover-text: #fff;
+  --inula-color-danger-active-bg: #d9363e;
+
+  /* 幽灵按钮背景色 */
+  --inula-color-ghost-bg-hover: rgba(22, 119, 255, 0.08);
+  --inula-color-ghost-bg-active: rgba(22, 119, 255, 0.16);
+
+  /* 禁用状态颜色 */
+  --inula-color-disabled-bg: #fff;
+  --inula-color-disabled-text: #333;
+  --inula-color-disabled-border: #d9d9d9;
+
+  /* 加载中 spinner 颜色 */
+  --inula-color-spinner: #ccc;
+  --inula-color-spinner-active: #1677ff;
+
+  /* demo 深色背景 */
+  --inula-demo-dark-bg: #222;
+
+  /* Radio 颜色 */
+  --inula-radio-bg: #fff;
+  --inula-radio-border: #d9d9d9;
+  --inula-radio-hover-border: #1677ff;
+  --inula-radio-hover-shadow: 0 0 0 2px rgba(64,158,255,0.12);
+  --inula-radio-checked-border: #1677ff;
+  --inula-radio-checked-bg: #1677ff;
+  --inula-radio-disabled-bg: #f5f5f5;
+  --inula-radio-disabled-border: #d9d9d9;
+  --inula-radio-disabled-dot: #d9d9d9;
+  --inula-radio-disabled-label: #c0c4cc;
+  --inula-radio-readonly-bg: #eaf4ff;
+  --inula-radio-readonly-border: #b3c6e6;
+  --inula-radio-readonly-label: #bfbfbf;
+  --inula-radio-readonly-dot: #b3d4fc;
+
+  /* Select 颜色 */
+  --inula-select-bg: #fff;
+  --inula-select-border: #d9d9d9;
+  --inula-select-option-hover-bg: #f5faff;
+  --inula-select-border-top: #e8e8e8;
+  --inula-select-hover-border: #4096ff;
+  --inula-select-hover-bg: #f0f7ff;
+  --inula-select-active-bg: #e6f4ff;
+  --inula-select-disabled-bg: #f5f5f5;
+  --inula-select-disabled-text: #bfbfbf;
+  --inula-select-disabled-border: #d9d9d9;
+  --inula-select-readonly-bg: #eaf4ff;
+  --inula-select-tag-hover-bg: #e6f4ff;
+  --inula-select-tag-hover-text: #1677ff;
+  --inula-select-arrow-color: #999;
+  --inula-select-tag-text: #333;
+
+  /* 变体样式颜色 - 参考 Ant Design 5.0 设计规范 */
+  --inula-variant-filled-bg: #fafafa;
+  --inula-variant-filled-hover-bg: #f0f0f0;
+  --inula-variant-filled-focus-bg: #ffffff;
+  --inula-variant-borderless-hover-bg: rgba(0, 0, 0, 0.04);
+  --inula-variant-borderless-focus-bg: rgba(0, 0, 0, 0.08);
+  --inula-variant-underlined-border: #d9d9d9;
+  --inula-variant-underlined-hover-border: #4096ff;
+  --inula-variant-underlined-focus-border: #1677ff;
+} 

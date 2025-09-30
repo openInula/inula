@@ -1,0 +1,214 @@
+/* --- Card --- */
+.inula-card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--inula-color-default-bg);
+}
+
+/* 悬停浮空效果*/
+.inula-card-hoverable:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transform: scale(1.01);
+  transition: all 0.3s ease-in-out;
+}
+
+/* 卡片大小 */
+.inula-card.inula-card-default {
+  border-radius: 8px;
+  width: 300px;
+}
+
+.inula-card.inula-card-small {
+  border-radius: 8px;
+  width: 300px;
+}
+
+.inula-card.inula-card-gridbox {
+  width: 950px;
+}
+
+/* 卡片边框样式 */
+.inula-card.inula-card-outlined {
+  border: 1px solid #f0f0f0;
+}
+
+.inula-card.inula-card-borderless {
+  border: none;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03),
+    0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+}
+
+/* 卡片头部 */
+.inula-card-header {
+  min-height: 8px; /* 合56px */
+  padding: 24px;
+  font-size: 16px;
+  background-color: transparent;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.inula-card-header.inula-card-header-inner {
+  background-color: #fafafa;
+}
+
+.inula-card-header.inula-card-header-small {
+  padding: 12px;
+  font-size: 14px;
+}
+
+.inula-card-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inula-card-header-content .inula-card-header-title {
+  font-weight: bold;
+}
+
+.inula-card-header-content .inula-card-header-extra {
+  color: rgba(0, 0, 0, 0.88);
+}
+
+/* 卡片封面 */
+.inula-card-cover {
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+}
+
+.inula-card-cover img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* 卡片内容 */
+.inula-card-body {
+  width: calc(100% - 48px);
+  min-height: 8px;
+  padding: 24px;
+}
+
+.inula-card-body.inula-card-body-small {
+  padding: 12px;
+}
+
+.inula-card-body.inula-card-body-gridbox {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100% !important;
+  padding: 0 !important;
+}
+
+/* 卡片加载中状态 */
+.inula-card-loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100px;
+}
+
+.inula-card-loading-spinner {
+  display: flex;
+  gap: 8px;
+  width: 80px;
+  height: 20px;
+}
+
+.loading-bar {
+  width: 100%;
+  height: 15px;
+  background: linear-gradient(90deg, #f0f0f0 0%, #bfbfbf 50%, #f0f0f0 100%);
+  background-size: 200% 100%;
+  animation: loading 2s infinite linear;
+  border-radius: 4px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 100% 0;
+  }
+  50% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* 卡片底部操作栏 */
+.inula-card-actions {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  min-height: 56px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.inula-card-actions-item {
+  position: relative;
+}
+
+.inula-card-actions-item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  height: 100%;
+  width: 1px;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* --- CardMeta --- */
+.inula-card-meta {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.inula-card-meta-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 100%;
+}
+
+.inula-card-meta-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  object-fit: cover;
+}
+
+.inula-card-meta-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.inula-card-meta-title {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.inula-card-meta-description {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* --- CardGrid --- */
+.inula-card-grid {
+  height: 64px;
+  border: 1px solid #f0f0f0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inula-card-grid-hoverable:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transform: scale(1.01);
+  transition: all 0.3s ease-in-out;
+}

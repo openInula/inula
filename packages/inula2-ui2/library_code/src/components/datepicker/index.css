@@ -1,0 +1,1181 @@
+/* DatePicker Container */
+.inula-datepicker {
+  position: relative;
+  display: inline-block;
+  width: 280px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+/* DatePicker Input */
+.inula-datepicker-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 32px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  transition: all 0.3s;
+  cursor: pointer;
+  background-color: #fff;
+  box-sizing: border-box;
+  padding-right: 4px;
+}
+
+.inula-datepicker-input:hover {
+  border-color: #40a9ff;
+}
+
+.inula-datepicker-input:focus-within {
+  border-color: #40a9ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  outline: 0;
+}
+
+.inula-datepicker:focus {
+  outline: none;
+}
+
+.inula-datepicker-input input {
+  flex: 1;
+  height: 100%;
+  padding: 0 11px;
+  border: none;
+  outline: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+/* 单选模式输入框样式重置 */
+.inula-datepicker:not(.inula-datepicker-range) .inula-datepicker-input input {
+  text-align: left;
+}
+
+.inula-datepicker-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 100%;
+  color: rgba(0, 0, 0, 0.25);
+}
+
+.inula-datepicker-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 100%;
+  color: rgba(0, 0, 0, 0.25);
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.inula-datepicker-clear:hover {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* DatePicker Dropdown */
+.inula-datepicker-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1050;
+  width: 280px;
+  margin-top: 4px;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  outline: none;
+  animation: antFadeIn 0.2s;
+  border: 1px solid #f0f0f0;
+}
+
+@keyframes antFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* DatePicker Header */
+.inula-datepicker-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.inula-datepicker-header button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0;
+  outline: none;
+  color: rgba(0, 0, 0, 0.25);
+  transition: all 0.2s;
+  border-radius: 4px;
+}
+
+.inula-datepicker-header button:hover {
+  color: rgba(0, 0, 0, 0.65);
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.inula-datepicker-header button:active {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* 箭头图标样式 */
+.inula-datepicker-header button::before {
+  content: '';
+  display: block;
+  width: 7px;
+  height: 7px;
+  border: 1.5px solid currentColor;
+  border-right: 0;
+  border-bottom: 0;
+  transform-origin: center;
+}
+
+/* 上一年按钮 - 双左箭头 */
+.inula-datepicker-prev-year::before {
+  transform: rotate(-45deg);
+  margin-right: 2px;
+}
+
+.inula-datepicker-prev-year::after {
+  content: '';
+  display: block;
+  width: 7px;
+  height: 7px;
+  border: 1.5px solid currentColor;
+  border-right: 0;
+  border-bottom: 0;
+  transform: rotate(-45deg);
+  margin-left: -3px;
+}
+
+/* 上一月按钮 - 单左箭头 */
+.inula-datepicker-prev-month::before {
+  transform: rotate(-45deg);
+}
+
+/* 下一月按钮 - 单右箭头 */
+.inula-datepicker-next-month::before {
+  transform: rotate(135deg);
+}
+
+/* 下一年按钮 - 双右箭头 */
+.inula-datepicker-next-year::before {
+  transform: rotate(135deg);
+  margin-left: 2px;
+}
+
+.inula-datepicker-next-year::after {
+  content: '';
+  display: block;
+  width: 7px;
+  height: 7px;
+  border: 1.5px solid currentColor;
+  border-right: 0;
+  border-bottom: 0;
+  transform: rotate(135deg);
+  margin-right: -3px;
+}
+
+.inula-datepicker-header-view {
+  flex: 1;
+  text-align: center;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 14px;
+  line-height: 28px;
+}
+
+/* DatePicker Body */
+.inula-datepicker-body {
+  padding: 8px 12px;
+}
+
+.inula-datepicker-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 8px;
+}
+
+.inula-datepicker-weekday {
+  text-align: center;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 30px;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.inula-datepicker-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.inula-datepicker-day,
+.inula-datepicker-week {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  border-radius: 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s;
+  font-size: 14px;
+  margin: 1px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.inula-datepicker-day:hover {
+  background-color: #f5f5f5;
+}
+
+.inula-datepicker-day.empty {
+  cursor: default;
+}
+
+.inula-datepicker-day.today {
+  color: #1890ff;
+  font-weight: 500;
+  /** 内边框 **/
+  /* box-shadow: inset 0 0 0 1px #1890ff; */
+  border: 1px solid transparent;
+  outline: 1px solid #1890ff;
+  outline-offset: -2px;
+  /* border: 1px solid #1890ff; */
+  margin: 0;
+  position: relative;
+}
+
+.inula-datepicker-day.today::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #1890ff;
+}
+
+.inula-datepicker-day.selected {
+  background-color: #1890ff;
+  color: #fff;
+  font-weight: 500;
+}
+
+.inula-datepicker-day.selected:hover {
+  background-color: #40a9ff;
+}
+
+.inula-datepicker-day.disabled {
+  color: rgba(0, 0, 0, 0.25);
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.inula-datepicker-day.disabled:hover {
+  background-color: #f5f5f5;
+}
+
+/* Week View */
+.inula-datepicker-weeks {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.inula-datepicker-week {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.85);
+  margin: 1px;
+}
+
+.inula-datepicker-week.selected:hover {
+  background-color: #40a9ff;
+}
+
+/* Week Row Style */
+.inula-datepicker-week-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border-radius: 4px;
+  margin-bottom: 2px;
+}
+
+.inula-datepicker-week-row:hover {
+  background-color: rgba(24, 144, 255, 0.04);
+  border-radius: 4px;
+}
+
+/* Other month day style */
+.inula-datepicker-day.other-month {
+  color: rgba(0, 0, 0, 0.25);
+}
+
+/* Week Selection Style - 修复周选择样式 */
+.inula-datepicker-week-row .week-selected {
+  background-color: #1890ff;
+  color: #fff;
+  border-radius: 0;
+  margin: 0;
+  position: relative;
+}
+
+.inula-datepicker-week-row .week-selected:hover {
+  color: #fff;
+  background-color: #40a9ff;
+}
+
+/* 周范围选择样式 - 新增完整的周范围选择样式 */
+.inula-datepicker-week.range-start {
+  background: #1677ff;
+  color: #fff;
+  border-radius: 4px 0 0 4px;
+}
+
+.inula-datepicker-week.range-end {
+  background: #1677ff;
+  color: #fff;
+  border-radius: 0 4px 4px 0;
+}
+
+.inula-datepicker-week.range-start.range-end {
+  border-radius: 4px;
+}
+
+.inula-datepicker-week.in-range {
+  background: #e6f4ff;
+  color: #1677ff;
+  border-radius: 0;
+}
+
+.inula-datepicker-week.range-hover {
+  background: #bae0ff;
+  color: #1677ff;
+  border-radius: 0;
+}
+
+.inula-datepicker-week.range-start:hover {
+  background: #4096ff;
+}
+
+.inula-datepicker-week.range-end:hover {
+  background: #4096ff;
+}
+
+/* 周选择时的日期样式调整 */
+.inula-datepicker-day.week-selected {
+  border: none;
+  margin: 0;
+  border-radius: 0;
+  background-color: #1890ff;
+  color: #fff;
+}
+
+.inula-datepicker-day.week-selected:hover {
+  background-color: #40a9ff;
+}
+
+/* 当日期在选中周内但不是今天时，移除今天的样式 */
+.inula-datepicker-day.week-selected.today {
+  outline: none;
+}
+
+.inula-datepicker-day.week-selected.today::after {
+  display: none;
+}
+
+/* 周数显示样式 */
+.inula-datepicker-week-numbers {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  width: 25px;
+  gap: 3px;
+}
+
+.inula-datepicker-week-number {
+  margin: 1px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.45);
+  padding: 0 4px;
+}
+
+/* 调整周视图的布局 */
+.inula-datepicker-body {
+  position: relative;
+}
+
+/* 调整星期标题的布局 */
+.inula-datepicker-weekdays {
+  margin-left: 30px;
+}
+
+/* Week View */
+.inula-datepicker-weeks {
+  margin-left: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* Month View */
+.inula-datepicker-months {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.inula-datepicker-month {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.85);
+  margin: 10px;
+}
+
+.inula-datepicker-month:hover {
+  background-color: #f5f5f5;
+  border-color: #d9d9d9;
+}
+
+.inula-datepicker-month.selected {
+  background-color: #1890ff;
+  color: #fff;
+  font-weight: 500;
+  border-color: #1890ff;
+}
+
+.inula-datepicker-month.selected:hover {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+}
+
+/* Quarter View */
+.inula-datepicker-quarters {
+  display: flex;
+  justify-content: space-around;
+}
+
+.inula-datepicker-quarter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.85);
+  border: 1px solid transparent;
+  padding: 0 15px;
+}
+
+.inula-datepicker-quarter:hover {
+  background-color: #f5f5f5;
+}
+
+.inula-datepicker-quarter.selected {
+  background-color: #1890ff;
+  color: #fff;
+  border-color: #1890ff;
+}
+
+.inula-datepicker-quarter.selected:hover {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+}
+
+/* Year View */
+.inula-datepicker-years {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.inula-datepicker-year {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px;
+  height: 25px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.inula-datepicker-year:hover {
+  background-color: #f5f5f5;
+  border-color: #d9d9d9;
+}
+
+.inula-datepicker-year.selected {
+  background-color: #1890ff;
+  color: #fff;
+  font-weight: 500;
+  border-color: #1890ff;
+}
+
+.inula-datepicker-year.selected:hover {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+}
+
+/* DatePicker Footer */
+.inula-datepicker-footer {
+  display: flex;
+  justify-content: center;
+  padding: 5px 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.inula-datepicker-today,
+.inula-datepicker-confirm {
+  padding: 0 10px;
+  height: 28px;
+  line-height: 28px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+  color: #1890ff;
+  transition: all 0.3s;
+  border-radius: 2px;
+  font-size: 14px;
+}
+
+.inula-datepicker-today:hover,
+.inula-datepicker-confirm:hover {
+  color: #40a9ff;
+  background-color: rgba(24, 144, 255, 0.1);
+}
+
+.inula-datepicker-confirm {
+  background-color: #1890ff;
+  color: #fff;
+}
+
+.inula-datepicker-confirm:hover {
+  background-color: #40a9ff;
+  color: #fff;
+}
+
+/* DatePicker Sizes */
+.inula-datepicker-small .inula-datepicker-input {
+  height: 24px;
+}
+
+.inula-datepicker-small .inula-datepicker-input input {
+  font-size: 12px;
+  padding: 0 8px;
+}
+
+.inula-datepicker-small .inula-datepicker-icon {
+  padding-right: 4px;
+}
+
+.inula-datepicker-large .inula-datepicker-input {
+  height: 40px;
+}
+
+.inula-datepicker-large .inula-datepicker-input input {
+  font-size: 16px;
+  padding: 0 12px;
+}
+
+.inula-datepicker-large .inula-datepicker-icon {
+  padding-right: 12px;
+}
+
+/* DatePicker Disabled */
+.inula-datepicker-disabled {
+  cursor: not-allowed;
+}
+
+.inula-datepicker-disabled .inula-datepicker-input {
+  background-color: #f5f5f5;
+  border-color: #d9d9d9;
+  color: rgba(0, 0, 0, 0.25);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.inula-datepicker-disabled .inula-datepicker-input:hover {
+  border-color: #d9d9d9;
+}
+
+.inula-datepicker-disabled .inula-datepicker-input:focus-within {
+  box-shadow: none;
+}
+
+.inula-datepicker-disabled .inula-datepicker-input input {
+  cursor: not-allowed;
+  color: rgba(0, 0, 0, 0.25);
+}
+
+/* 额外的Ant Design风格元素 */
+.inula-datepicker-input::placeholder {
+  color: rgba(0, 0, 0, 0.25);
+}
+
+.inula-datepicker-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 20px;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.06);
+  transform: rotate(45deg);
+  z-index: -1;
+}
+
+/* 添加一些额外的Ant Design风格 */
+.inula-datepicker-input input::placeholder {
+  color: rgba(0, 0, 0, 0.25);
+}
+
+.inula-datepicker-day {
+  transition: all 0.2s;
+}
+
+/* 确保日期单元格正确显示 */
+.inula-datepicker-weekday-header {
+  margin-bottom: 8px;
+}
+
+.inula-datepicker-weekday {
+  text-align: center;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 30px;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* 范围选择器样式 */
+.inula-datepicker-range {
+  width: 350px;
+}
+
+.inula-datepicker-range .inula-datepicker-dropdown {
+  width: 600px;
+}
+
+.inula-datepicker-range-wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+.inula-datepicker-calendar {
+  width: 280px;
+  padding: 8px;
+}
+
+/* 确保日历内容正确显示 */
+.inula-datepicker-calendar .inula-datepicker-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.inula-datepicker-calendar .inula-datepicker-weekdays {
+  margin-left: 0;
+}
+
+.inula-datepicker-calendar .inula-datepicker-weeks {
+  margin-left: 0;
+}
+
+/* 修复日期单元格显示问题 */
+.inula-datepicker-day {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 4px;
+  margin: 2px;
+}
+
+.inula-datepicker-weekday-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 8px;
+}
+
+.inula-datepicker-weekday {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+}
+
+/* 范围内的日期样式 */
+.inula-datepicker-day.in-range {
+  background-color: rgba(24, 144, 255, 0.1);
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.inula-datepicker-day.range-start {
+  background-color: #1890ff;
+  color: #fff;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.inula-datepicker-day.range-end {
+  background-color: #1890ff;
+  color: #fff;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* 范围内的周样式 - 修复周范围选择样式 */
+.inula-datepicker-week.in-range {
+  background-color: rgba(24, 144, 255, 0.1);
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.inula-datepicker-week.range-start {
+  background-color: #1890ff;
+  color: #fff;
+}
+
+.inula-datepicker-week.range-end {
+  background-color: #1890ff;
+  color: #fff;
+}
+
+/* 范围内的月份样式 */
+.inula-datepicker-month.in-range {
+  background-color: rgba(24, 144, 255, 0.1);
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.inula-datepicker-month.range-start {
+  background-color: #1890ff;
+  color: #fff;
+}
+
+.inula-datepicker-month.range-end {
+  background-color: #1890ff;
+  color: #fff;
+}
+
+/* 范围内的季度样式 */
+.inula-datepicker-quarter.in-range {
+  background-color: rgba(24, 144, 255, 0.1);
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.inula-datepicker-quarter.range-start {
+  background-color: #1890ff;
+  color: #fff;
+}
+
+.inula-datepicker-quarter.range-end {
+  background-color: #1890ff;
+  color: #fff;
+}
+
+/* 范围内的年份样式 */
+.inula-datepicker-year.in-range {
+  background-color: rgba(24, 144, 255, 0.1);
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.inula-datepicker-year.range-start {
+  background-color: #1890ff;
+  color: #fff;
+}
+
+.inula-datepicker-year.range-end {
+  background-color: #1890ff;
+  color: #fff;
+}
+
+/* 范围选择器样式 */
+.inula-datepicker-range {
+  max-width: 350px;
+}
+
+.inula-datepicker-range .inula-datepicker-input {
+  min-width: 320px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* 重置范围选择器输入框的 padding */
+.inula-datepicker-range .inula-datepicker-input .inula-datepicker-range-start,
+.inula-datepicker-range .inula-datepicker-input .inula-datepicker-range-end {
+  padding: 0 8px;
+}
+
+/* 范围选择器输入框 */
+.inula-datepicker-range .inula-datepicker-input .inula-datepicker-range-start,
+.inula-datepicker-range .inula-datepicker-input .inula-datepicker-range-end {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.85);
+  cursor: pointer;
+  padding: 0;
+  text-align: center;
+}
+
+.inula-datepicker-range .inula-datepicker-input .inula-datepicker-range-start::placeholder,
+.inula-datepicker-range .inula-datepicker-input .inula-datepicker-range-end::placeholder {
+  color: rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+
+.inula-datepicker-range .inula-datepicker-input .inula-datepicker-range-start:disabled,
+.inula-datepicker-range .inula-datepicker-input .inula-datepicker-range-end:disabled {
+  color: rgba(0, 0, 0, 0.25);
+  cursor: not-allowed;
+}
+
+/* 范围选择器分隔符 */
+.inula-datepicker-separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  color: rgba(0, 0, 0, 0.25);
+  font-size: 14px;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* 范围选择器图标位置调整 */
+.inula-datepicker-range .inula-datepicker-icon {
+  margin: 4px;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  padding-right: 0;
+}
+
+/* 范围选择器焦点状态 */
+.inula-datepicker-range .inula-datepicker-input .inula-datepicker-range-start:focus,
+.inula-datepicker-range .inula-datepicker-input .inula-datepicker-range-end:focus {
+  background: rgba(24, 144, 255, 0.06);
+  border-radius: 2px;
+}
+
+/* 范围选择器悬停状态 */
+.inula-datepicker-range .inula-datepicker-input:hover .inula-datepicker-range-start,
+.inula-datepicker-range .inula-datepicker-input:hover .inula-datepicker-range-end {
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 2px;
+}
+
+/* 范围选择器下拉面板 - 双月显示 */
+.inula-datepicker-range .inula-datepicker-dropdown {
+  width: 630px;
+}
+
+.inula-datepicker-range .inula-datepicker-body {
+  display: flex;
+}
+
+.inula-datepicker-range .inula-datepicker-panel {
+  flex: 1;
+  padding: 8px;
+}
+
+.inula-datepicker-range .inula-datepicker-panel + .inula-datepicker-panel {
+  border-left: 1px solid #f0f0f0;
+}
+
+.inula-datepicker-range .inula-datepicker-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  height: 40px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+  margin: -8px -8px 8px -8px;
+}
+
+.inula-datepicker-range .inula-datepicker-panel-header button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  color: rgba(0, 0, 0, 0.65);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.inula-datepicker-range .inula-datepicker-panel-header button:hover {
+  background: #f5f5f5;
+  border-color: #4096ff;
+  color: #4096ff;
+}
+
+.inula-datepicker-range .inula-datepicker-panel-header button:active {
+  background: #e6f4ff;
+  border-color: #1677ff;
+  color: #1677ff;
+}
+
+.inula-datepicker-range .inula-datepicker-panel-title {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+  cursor: pointer;
+  padding: 0 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.inula-datepicker-range .inula-datepicker-panel-title:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+/* 范围选择日期样式 */
+.inula-datepicker-day.range-start {
+  background: #1677ff;
+  color: #fff;
+  border-radius: 4px 0 0 4px;
+}
+
+.inula-datepicker-day.range-end {
+  background: #1677ff;
+  color: #fff;
+  border-radius: 0 4px 4px 0;
+}
+
+.inula-datepicker-day.range-start.range-end {
+  border-radius: 4px;
+}
+
+.inula-datepicker-day.in-range {
+  background: #e6f4ff;
+  color: #1677ff;
+  border-radius: 0;
+}
+
+.inula-datepicker-day.range-hover {
+  background: #bae0ff;
+  color: #1677ff;
+  border-radius: 0;
+}
+
+.inula-datepicker-day.range-start:hover {
+  background: #4096ff;
+}
+
+.inula-datepicker-day.range-end:hover {
+  background: #4096ff;
+}
+
+/* 范围选择器周视图样式 - 修复周范围选择样式 */
+.inula-datepicker-week.range-start {
+  background: #1677ff;
+  color: #fff;
+  border-radius: 4px 0 0 4px;
+}
+
+.inula-datepicker-week.range-end {
+  background: #1677ff;
+  color: #fff;
+  border-radius: 0 4px 4px 0;
+}
+
+.inula-datepicker-week.range-start.range-end {
+  border-radius: 4px;
+}
+
+.inula-datepicker-week.in-range {
+  background: #e6f4ff;
+  color: #1677ff;
+  border-radius: 0;
+}
+
+.inula-datepicker-week.range-hover {
+  background: #bae0ff;
+  color: #1677ff;
+  border-radius: 0;
+}
+
+/* 范围选择器月份视图样式 */
+.inula-datepicker-month.range-start {
+  background: #1677ff;
+  color: #fff;
+  border-radius: 4px 0 0 4px;
+}
+
+.inula-datepicker-month.range-end {
+  background: #1677ff;
+  color: #fff;
+  border-radius: 0 4px 4px 0;
+}
+
+.inula-datepicker-month.range-start.range-end {
+  border-radius: 4px;
+}
+
+.inula-datepicker-month.in-range {
+  background: #e6f4ff;
+  color: #1677ff;
+  border-radius: 0;
+}
+
+.inula-datepicker-month.range-hover {
+  background: #bae0ff;
+  color: #1677ff;
+  border-radius: 0;
+}
+
+/* 范围选择器季度视图样式 */
+.inula-datepicker-quarter.range-start {
+  background: #1677ff;
+  color: #fff;
+  border-radius: 4px 0 0 4px;
+}
+
+.inula-datepicker-quarter.range-end {
+  background: #1677ff;
+  color: #fff;
+  border-radius: 0 4px 4px 0;
+}
+
+.inula-datepicker-quarter.range-start.range-end {
+  border-radius: 4px;
+}
+
+.inula-datepicker-quarter.in-range {
+  background: #e6f4ff;
+  color: #1677ff;
+  border-radius: 0;
+}
+
+.inula-datepicker-quarter.range-hover {
+  background: #bae0ff;
+  color: #1677ff;
+  border-radius: 0;
+}
+
+/* 范围选择器年份视图样式 */
+.inula-datepicker-year.range-start {
+  background: #1677ff;
+  color: #fff;
+  border-radius: 4px 0 0 4px;
+}
+
+.inula-datepicker-year.range-end {
+  background: #1677ff;
+  color: #fff;
+  border-radius: 0 4px 4px 0;
+}
+
+.inula-datepicker-year.range-start.range-end {
+  border-radius: 4px;
+}
+
+.inula-datepicker-year.in-range {
+  background: #e6f4ff;
+  color: #1677ff;
+  border-radius: 0;
+}
+
+.inula-datepicker-year.range-hover {
+  background: #bae0ff;
+  color: #1677ff;
+  border-radius: 0;
+}
+
+/* 范围选择器提示文本 */
+.inula-datepicker-range-tip {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+  text-align: center;
+}
+
+/* 范围选择器状态指示 */
+.inula-datepicker-range-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+  background: #f0f0f0;
+  border-radius: 2px;
+  margin: 4px 0;
+}
+
+.inula-datepicker-range-status.selecting {
+  color: #1677ff;
+  background: #e6f4ff;
+}
+
+/* 响应式调整 */
+@media (max-width: 480px) {
+  .inula-datepicker-range .inula-datepicker-dropdown {
+    width: 100vw;
+    max-width: 350px;
+  }
+  
+  .inula-datepicker-range .inula-datepicker-input {
+    min-width: 250px;
+  }
+}
