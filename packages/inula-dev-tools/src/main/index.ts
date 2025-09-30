@@ -56,33 +56,44 @@ const inspectVNode = () => {
 
 let currentPanel = null;
 
-chrome.devtools.inspectedWindow.eval('window.__INULA_DEV_HOOK__', function (isInula, error) {
-  if (!isInula || panelCreated) {
-    return;
+// 检测 Inula 1.0 或 2.0
+chrome.devtools.inspectedWindow.eval(
+  'window.__INULA_DEV_HOOK__ || window.__INULA_DEV_TOOL_V2_HELPER__ || window.__INULA_V2__ || window.__INULA_NEXT__',
+  function (isInula, error) {
+    if (!isInula || panelCreated) {
+      return;
+    }
+
+      panelCreated = true;
+    
+    // 检测版本并打印日志
+    chrome.devtools.inspectedWindow.eval(
+      `console.log('[Inula DevTools] Detected version:', 
+        window.__INULA_V2__ || window.__INULA_NEXT__ ? '2.0' : '1.0')`
+    );
+    
+    chrome.devtools.panels.create('Inula', '', 'panel.html', extensionPanel => {
+      extensionPanel.onShown.addListener(panel => {
+        if (currentPanel === panel) {
+          return;
+        }
+        currentPanel = panel;
+        const container = panel.document.getElementById('root');
+        const element = createElement(Panel, { viewSource, inspectVNode });
+        render(element, container);
+      });
+    });
+
+    chrome.devtools.panels.create('InulaX', '', 'panelX.html', extensionPanel => {
+      extensionPanel.onShown.addListener(panel => {
+        if (currentPanel === panel) {
+          return;
+        }
+        currentPanel = panel;
+        const container = panel.document.getElementById('root');
+        const element = createElement(PanelX, {});
+        render(element, container);
+      });
+    });
   }
-
-  panelCreated = true;
-  chrome.devtools.panels.create('Inula', '', 'panel.html', extensionPanel => {
-    extensionPanel.onShown.addListener(panel => {
-      if (currentPanel === panel) {
-        return;
-      }
-      currentPanel = panel;
-      const container = panel.document.getElementById('root');
-      const element = createElement(Panel, { viewSource, inspectVNode });
-      render(element, container);
-    });
-  });
-
-  chrome.devtools.panels.create('InulaX', '', 'panelX.html', extensionPanel => {
-    extensionPanel.onShown.addListener(panel => {
-      if (currentPanel === panel) {
-        return;
-      }
-      currentPanel = panel;
-      const container = panel.document.getElementById('root');
-      const element = createElement(PanelX, {});
-      render(element, container);
-    });
-  });
-});
+);
