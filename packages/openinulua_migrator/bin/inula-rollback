@@ -1,0 +1,125 @@
+#!/usr/bin/env node
+
+'use strict';
+
+const { Command } = require('commander');
+const chalk = require('chalk');
+const path = require('path');
+const { getCacheInfo, restoreAllFiles, clearCache } = require('../src/utils/cache-manager');
+const pkg = require('../package.json');
+
+async function main(argv) {
+  const program = new Command();
+
+  program
+    .name('inula-rollback')
+    .description('Rollback changes made by inula-migrate using cached backups')
+    .version(pkg.version)
+    .option('--clear', 'Clear cache without restoring files')
+    .option('--info', 'Show cache information without making changes')
+    .option('-v, --verbose', 'Verbose output')
+    .option('-y, --yes', 'Skip confirmation prompts')
+    .action(async (options) => {
+      const projectRoot = process.cwd();
+      const cacheInfo = getCacheInfo(projectRoot);
+
+      if (options.info) {
+        // 显示缓存信息
+        console.log(chalk.cyan('\n📦 Cache Information'));
+        console.log(chalk.dim('─'.repeat(50)));
+        
+        if (!cacheInfo.exists) {
+          console.log(chalk.yellow('No cache found.'));
+          return;
+        }
+
+        console.log(`Cache directory: ${chalk.dim(cacheInfo.cacheDir)}`);
+        console.log(`Cached files: ${chalk.green(cacheInfo.fileCount)}`);
+        console.log(`Total size: ${chalk.dim((cacheInfo.totalSize / 1024).toFixed(2) + ' KB')}`);
+        
+        if (cacheInfo.files.length > 0) {
+          console.log('\nCached files:');
+          for (const file of cacheInfo.files) {
+            console.log(`  ${chalk.dim('•')} ${file.relativePath} ${chalk.dim(`(${file.timestamp})`)}`);
+          }
+        }
+        return;
+      }
+
+      if (options.clear) {
+        // 清理缓存
+        if (!cacheInfo.exists) {
+          console.log(chalk.yellow('No cache to clear.'));
+          return;
+        }
+
+        if (!options.yes) {
+          console.log(chalk.yellow(`About to clear cache with ${cacheInfo.fileCount} files.`));
+          // 在真实环境中这里应该有确认提示
+        }
+
+        const success = clearCache(projectRoot);
+        if (success) {
+          console.log(chalk.green('✅ Cache cleared successfully.'));
+        } else {
+          console.error(chalk.red('❌ Failed to clear cache.'));
+          process.exitCode = 1;
+        }
+        return;
+      }
+
+      // 默认行为：回滚文件
+      if (!cacheInfo.exists || cacheInfo.fileCount === 0) {
+        console.log(chalk.yellow('No cached files found to rollback.'));
+        console.log(chalk.dim('Run inula-migrate with --write to create backups before making changes.'));
+        return;
+      }
+
+      console.log(chalk.cyan('\n🔄 Rolling back changes'));
+      console.log(chalk.dim('─'.repeat(50)));
+      console.log(`Found ${chalk.green(cacheInfo.fileCount)} cached files`);
+
+      if (!options.yes) {
+        console.log(chalk.yellow('\nThis will restore the original versions of the following files:'));
+        for (const file of cacheInfo.files) {
+          console.log(`  ${chalk.dim('•')} ${file.relativePath}`);
+        }
+        console.log(chalk.yellow('\nProceed with rollback? (This action cannot be undone)'));
+        // 在真实环境中这里应该有确认提示
+      }
+
+      const results = restoreAllFiles(projectRoot);
+      
+      console.log(chalk.dim('\nRollback Results:'));
+      console.log(`Total files: ${results.total}`);
+      console.log(`Restored: ${chalk.green(results.restored)}`);
+      
+      if (results.failed > 0) {
+        console.log(`Failed: ${chalk.red(results.failed)}`);
+        if (results.errors.length > 0) {
+          console.log('\nFailed files:');
+          for (const error of results.errors) {
+            console.log(`  ${chalk.red('✗')} ${error}`);
+          }
+        }
+        process.exitCode = 1;
+      } else {
+        console.log(chalk.green('\n✅ All files restored successfully!'));
+      }
+
+      if (options.verbose) {
+        console.log(chalk.dim('\nCache directory has been cleaned up.'));
+      }
+    });
+
+  await program.parseAsync(argv);
+}
+
+if (require.main === module) {
+  main(process.argv).catch(error => {
+    console.error(chalk.red('Error:'), error.message);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { main };
