@@ -1,257 +1,208 @@
 ## openInula 2.0 编译器（Rust 版）
 
-openInula 2.0 是一次从 React-Like 声明式模式转向“编译时响应式”（Compile-time Reactivity）的重大演进。
-本项目尝试使用 Rust 对核心编译器进行“锈化”（Rust 化）重写，目标是在保持优秀开发体验的同时，获得显著的运行时性能与更低的内存占用。
+本仓库提供 openInula 2.0 的 Rust 实现，面向“编译时响应式”（Compile-time Reactivity）。源码位于 `src`，包含：
 
-### 核心理念
+- `jsx_parser::JsxParser`：将 JSX/JS 表达式解析为中间视图单元（`ViewUnit`）数组，并进行模板动静分离。
+- `reactivity_parser::ReactivityParser`：对视图单元与表达式进行依赖分析，产出依赖位图与缓存。
+- `generator::Generator`：基于视图单元与依赖信息生成可执行 JavaScript 代码（创建 DOM、绑定属性与事件等）。
+- 顶层导出函数：`compile_jsx`、`analyze_reactivity`、`generate_code`（均可在 WASM 环境中直接调用）。
 
-- 不使用传统虚拟 DOM diff；改为在编译阶段完成依赖追踪与更新路径规划。
-- 通过编译器在构建时将 JSX/TSX 代码分析为 IR，中间产物携带数据→视图的精确映射。
-- 运行时仅对受影响的 DOM 节点进行精准更新，避免大范围比对与无效渲染。
+### 设计要点
 
-### 编译器架构
+- **编译期依赖追踪**：通过 SWC 解析 AST，抽取标识符依赖，使用 `bitvec` 维护位图（`DependencyInfo.total_bitmap`）。
+- **动静分离与模板提升**：`JsxParser` 会把纯静态结构提升为 `TemplateUnit.template`，动态点记录在 `TemplateUnit.mutable_units` 与 `TemplateUnit.props`。
+- **事件与属性**：事件以 `onXxx` 识别并标记为 `is_event`，在依赖分析阶段跳过；普通属性根据是否存在依赖决定是静态还是动态设置。
+- **结构化 IR（ViewUnit）**：支持 `Html/Text/Exp/For/If/Fragment/Context/Suspense/Template/State/Computed` 等多种单元，便于后端生成器按需处理。
 
-- 分析器（Analyzer）
-  - 解析 JS/JSX，提取状态、计算属性、事件处理器、视图结构，构建数据流与依赖图。
-- IR 构建器（IR Builder）
-  - 将分析结果标准化到 IR，解耦分析与生成，提升可维护性与扩展性。
-- 生成器（Code Generator）
-  - 基于 IR 生成高度优化的 JavaScript 代码，结合运行时库进行细粒度更新。
-- 语法糖插件集（Sugar Plugins）
-  - 统一不同语法形态，降低分析复杂度，兼顾 API 多样性与兼容性。
+### 导出 API（WASM）
 
-### 关键技术点（位图依赖与精准更新）
+- `compile_jsx(jsx: &str) -> JsValue`：解析 JSX/JS 代码，返回 `Vec<ViewUnit>` 的 JSON 字符串。
+- `analyze_reactivity(view_unit_json: &str) -> JsValue`：对视图单元 JSON 做依赖分析，返回 `DependencyInfo` 的 JSON。
+- `generate_code(view_unit_json: &str, dep_info_json: &str) -> JsValue`：基于视图单元与依赖信息生成 JavaScript 代码字符串。
 
-- 依赖位图：每个状态对应一个 bit，使用位运算快速判断依赖变化与更新范围。
-- 依赖缓存：缓存复杂数据（对象/数组）计算结果，避免无效更新与重复计算。
-- 视图生成：静态骨架提升 + 动静分离，静态结构可克隆复用；动态节点以"节点路径 + 位图 + 缓存"驱动更新。
+示例（概念流程）：
 
-#### 目前已完成的inula2.0编译器rust化工作包括以下几个方面：
+```js
+// 伪代码，假设已通过 wasm-pack 构建并引入
+import { compile_jsx, analyze_reactivity, generate_code } from 'inula2-rust-compiler-wasm-pkg';
 
-### 1. 当前完成度
-
-- **整体完成度**：**95%**
-
-  - 所有核心功能（JSX 解析、响应式分析、代码生成）均通过测试，覆盖了常见 React 特性（如状态声明、Suspense、Context、事件处理、模板、计算属性、依赖缓存）。
-  - 测试用例涵盖了主要场景，包括简单 JSX、动态表达式、复杂对象、循环、事件处理器等，表明核心逻辑稳定。
-  - 修复了之前的问题（`test_state_declaration`, `test_dependency_cache`, `test_suspense_handling` 的断言和缓存问题，`test_generate_code` 的事件附加和动态节点生成问题）。
-
-  - **剩余 5%**：
-    - 缺少对复杂边缘情况的测试（如嵌套对象、深层模板、错误输入处理）。
-    - 事件处理器（如 `handleClick`）可能仍被错误识别为依赖项（日志中可能有 `Adding dependency: handleClick`），虽然不影响当前测试，但在复杂场景中可能导致不必要的响应式更新。
-    - 性能优化和文档完善尚未完成，可能影响生产环境使用。
-
-#### a. JSX 解析 (`JsxParser`)
-
-- **完成度**：**95%**
-
-  - 成功解析简单 JSX、状态声明 (`useState`)、Suspense、Context、模板、事件和计算属性。
-
-  - 日志验证了正确输出，如 `[{"type":"State","name":"count","initial_value":"0"},...]` 和 `[{"type":"Suspense","children":[...],"fallback":...}]`。
-
-  - **剩余工作**：
-
-    - 测试复杂嵌套 JSX（如多层 `<Suspense>` 或 `<Context.Provider>`）。
-
-    - 添加错误处理测试（如无效 JSX 语法：`<div className={}>`）。
-
-    - 示例测试：
-
-      ```rust
-      #[wasm_bindgen_test]
-      fn test_invalid_jsx() {
-          let parser = JsxParser::new();
-          let jsx = r#"<div className={}>Invalid</div>"#;
-          assert!(parser.parse(jsx).is_err(), "Expected parse error for invalid JSX");
-      }
-      ```
-
-#### b. 响应式分析 (`ReactivityParser`)
-
-- **完成度**：**90%**
-
-  - 正确分析依赖（如 `count` 在 `{count + 1}`）、复杂对象（如 `{ theme: 'dark' }`）和循环（如 `items.map`）。
-
-  - 修复了 `test_dependency_cache`，确保复杂表达式正确存储到 `DependencyInfo.cache`（如 `"{ theme: \"dark\" }"`）。
-
-  - **剩余工作**：
-
-    - 事件处理器（如 `handleClick`）可能被错误识别为依赖。建议在 `analyze_view_unit` 中跳过事件属性的依赖分析：
-
-      ```rust
-      for (key, prop) in &html_unit.props {
-          if !prop.is_event {
-              self.analyze_expression(&prop.value, &mut dependencies)?;
-          }
-      }
-      ```
-
-    - 测试复杂嵌套表达式（如 `{ nested: { theme: 'dark', count } }`）。
-
-    - 示例测试：
-
-      ```rust
-      #[wasm_bindgen_test]
-      fn test_nested_object_dependency() {
-          let parser = JsxParser::new();
-          let jsx = r#"<div data={{ nested: { theme: 'dark', count } }}>{count}</div>"#;
-          let result = parser.parse(jsx).expect("Failed to parse JSX");
-          let view_unit_json = result.as_string().expect("Parsed JSX result is not a string");
-          let mut reactivity_parser = ReactivityParser::new();
-          let dep_result = reactivity_parser.analyze(&view_unit_json).expect("Analysis failed");
-          let dependencies: DependencyInfo = from_value(dep_result).expect("Failed to convert");
-          assert!(dependencies.cache.contains_key("{ nested: { theme: \"dark\", count } }"), "Nested object not cached");
-          assert!(dependencies.dependencies.contains_key("count"), "Dependency missing");
-      }
-      ```
-
-#### c. 代码生成 (`Generator`)
-
-- **完成度**：**95%**
-
-  - 正确生成状态声明、静态/动态属性、事件监听器和 DOM 结构。
-
-  - `test_generate_code` 验证了 `<template><div className="card">{count}</div><button onClick={handleClick}>Click</button></template>` 的生成代码符合预期。
-
-  - **剩余工作**：
-
-    - 测试复杂模板（如嵌套 `<template>` 或多层 `for` 循环）的生成。
-
-    - 优化动态节点的路径计算（`get_node_ref` 和 `mutable_units`），以确保深层嵌套结构的正确性。
-
-    - 示例测试：
-
-      ```rust
-      #[wasm_bindgen_test]
-      fn test_nested_template() {
-          let parser = JsxParser::new();
-          let jsx = r#"
-              <template>
-                  <div>{count}</div>
-                  <template>
-                      <span>{title}</span>
-                  </template>
-              </template>
-          "#;
-          let result = parser.parse(jsx).expect("Failed to parse JSX");
-          let view_unit_json = result.as_string().expect("Parsed JSX result is not a string");
-          let mut reactivity_parser = ReactivityParser::new();
-          let dep_result = reactivity_parser.analyze(&view_unit_json).expect("Analysis failed");
-          let dep_info: DependencyInfo = from_value(dep_result).expect("Failed to convert");
-          let dep_info_json = serde_json::to_string(&dep_info).expect("Failed to serialize");
-          let generator = Generator::new();
-          let generated_code = generator.generate(&view_unit_json, &dep_info_json).expect("Generation failed").as_string().unwrap();
-          assert!(generated_code.contains("document.createElement('div')"), "Outer template not generated");
-          assert!(generated_code.contains("document.createElement('span')"), "Inner template not generated");
-      }
-      ```
-
-### 环境准备与构建
-
-1) 安装依赖
-
-- Rust 工具链（stable）
-- Node.js（用于对照 TS 编译器与脚本）
-
-2) 构建 Rust CLI（默认开启 analysis 与 codegen 特性）
-
-```bash
-cargo build --release -p wasm-build
+const jsx = `<template><div className="card">{count}</div><button onClick={handleClick}>Click</button></template>`;
+const viewUnitJson = compile_jsx(jsx);               // string(JSON)
+const depInfoJson = analyze_reactivity(viewUnitJson); // string(JSON)
+const code = generate_code(viewUnitJson, depInfoJson); // string(JS)
 ```
 
-编译产物位于：`wasm-build/target/release/inula_rust_cli`
+对应实现位置：
 
-### 一致性基准对比
+```1201:1217:src/lib.rs
+#[wasm_bindgen]
+pub fn compile_jsx(jsx: &str) -> Result<JsValue, JsValue> { /* ... */ }
 
-使用 `bench/run-consistency.sh` 对比 Rust 编译器与 TS 编译器的输出
-```bash
-bash bench/run-consistency.sh
+#[wasm_bindgen]
+pub fn analyze_reactivity(view_unit_json: &str) -> Result<JsValue, JsValue> { /* ... */ }
+
+#[wasm_bindgen]
+pub fn generate_code(view_unit_json: &str, dep_info_json: &str) -> Result<JsValue, JsValue> { /* ... */ }
 ```
 
-脚本会：
+### 视图单元与数据结构
 
-- 读取 `bench/cases` 下的 `.jsx/.tsx` 文件
-- 分别用 Rust CLI 与 TS 脚本编译
-- 规范化空白后进行 diff，对不一致的用例给出差异报告
+核心类型定义见 `src/types.rs`：
 
-### 测试与特性
-
-推荐的特性组合
-
-- 本仓库在 `wasm-build/Cargo.toml` 中已将 `analysis` 与 `codegen` 设为默认启用。
-- 如需禁用，可使用 `--no-default-features` 并手动指定需要的特性。
-
-示例：
-
-```bash
-# 默认：含 analysis + codegen
-cargo test -p wasm-build
-
-# 指定特性
-cargo test -p wasm-build --no-default-features --features analysis,codegen
+```102:116:src/types.rs
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum ViewUnit {
+    Html(HtmlUnit),
+    Text(TextUnit),
+    Exp(ExpUnit),
+    For(ForUnit),
+    If(IfUnit),
+    Fragment(FragmentUnit),
+    Context(ContextUnit),
+    Suspense(Box<SuspenseUnit>),
+    Template(TemplateUnit),
+    State(StateUnit),
+    Computed(ComputedUnit),
+}
 ```
 
-未启用时的降级/提示
+部分关键结构：
 
-- 未启用 `analysis`：`InulaCompiler::compile_jsx` 将返回 "analysis 功能未启用" 的错误提示。
-- 未启用 `codegen`：将生成占位 AST 并输出空函数体代码，用于开发期占位而非生产。
+- `HtmlUnit { tag, props, children }`：普通元素；`props` 中依赖为空且非事件的属性会在模板阶段当作静态属性提升。
+- `TemplateUnit { template, mutable_units, props }`：`template` 为纯静态骨架；`mutable_units` 记录表达式/循环等动态节点路径；`props` 收集动态/事件属性并记录路径。
+- `PropValue { value, dep_id_bitmap, dependencies, is_event }`：属性值与其依赖信息；事件为 `is_event=true`。
+- `DependencyInfo { dependencies, total_bitmap, cache }`：分析结果，包含依赖名→位索引映射、总位图，以及复杂表达式缓存。
 
-### 进度与完整度
+对应实现位置：
 
-当前阶段（迭代中）：
+```1167:1199:src/lib.rs
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DependencyInfo { /* ... */ }
 
-- 架构雏形：完成。包含 Analyzer/IR/Generator 的基本骨架与关键路径。
-- Rust CLI：可用。支持对基准用例进行编译输出，配合脚本进行一致性对比。
-- 一致性验证：提供 `bench/run-consistency.sh` 与若干测试（综合/真实路径）。
-- 位图依赖/缓存思路：已在设计与生成逻辑中体现，仍在加深与打磨中。
+impl DependencyInfo { /* add_dependency / merge ... */ }
+```
 
-初步量化（估算，随迭代更新）：
+### 模块功能概览
 
-- 架构完整度：≈ 70%
-- Analyzer 原型：≈ 60%
-- IR 构建与数据面：≈ 65%
-- 生成器（动静分离/指令化更新）：≈ 55%
-- 语法糖插件：≈ 40%
-- Rust-TS 对照一致性覆盖：≈ 60%
+- `jsx_parser::JsxParser`
+  - 入口：`JsxParser::parse(&self, code: &str) -> Result<JsValue, JsValue>`
+  - 能力：
+    - 解析 `JSXElement/JSXFragment`，识别 `Context`、`Suspense`、`For`、`If`、普通 `HTML` 标签；
+    - 识别 `useState` 形式的状态声明为 `ViewUnit::State`；
+    - 将静态结构提升为模板，动态部分收集到 `TemplateUnit.mutable_units/props`；
+    - 属性表达式通过 `ReactivityParser::analyze_expression_str` 获取依赖集合与位图长度，用于后续生成。
 
-### 路线图（Roadmap）
+- `reactivity_parser::ReactivityParser`
+  - 入口：`analyze(&mut self, view_unit_json)` 与 `analyze_expression_str(&mut self, expr)`
+  - 能力：
+    - 解析 `ViewUnit` JSON，递归分析节点与属性（跳过 `is_event`）；
+    - 解析 JS 表达式，收集标识符依赖，复杂对象/数组表达式写入 `cache`；
+    - 产出 `DependencyInfo`：依赖名→位索引、位图与缓存。
 
-短期（1-2 周）
+- `generator::Generator`
+  - 入口：`generate(&self, view_unit_json, dep_info_json)`
+  - 能力：
+    - 生成 `useState`/计算属性声明（基于 `ViewUnit::State/Computed`）；
+    - 为 `Html/Template/Text/For` 等节点生成 `document.createElement/textNode` 与属性/事件设置；
+    - 根据 `TemplateProp.path` 与 `MutableUnit.path` 生成动态节点引用与插入逻辑。
 
-- 强化 Analyzer：覆盖更多 JSX/TSX 语法形态与边界情况
-- 完成位图传播/合并的端到端验证（状态→模板动态点）
-- 扩充 `bench/cases`，将手工样例迁移到统一用例集
+实现位置示例：
 
-中期（3-6 周）
+```17:75:src/lib.rs
+pub mod jsx_parser { /* JsxParser::parse / transform_template / generate_template ... */ }
+```
 
-- IR 稳定化：字段/关系标准化，增加版本化与兼容层
-- 生成器优化：静态骨架提升策略、模板克隆与复用、事件/属性指令细化
-- Source Map 精度提升，完善告警与调试信息
-- 打通 CI 中的一致性/性能曲线输出
+```729:958:src/lib.rs
+pub mod reactivity_parser { /* ReactivityParser::{analyze, analyze_expression_str, analyze_view_unit} ... */ }
+```
 
-长期（6 周+）
+```961:1164:src/lib.rs
+pub mod generator { /* Generator::{generate, generate_view_unit, get_node_ref} ... */ }
+```
 
-- 完整 Rust 化与运行时库联动优化
-- 插件生态：语法糖/宏/规则扩展
-- 对外 API 稳定并发布 Preview 版本
+### 构建与使用
 
-### 文档
+先决条件：
 
-完整的文档和API参考请查看 [文档中心](./docs/README.md)：
+- Rust stable 工具链
+- Node.js（用于打包 WASM/NAPI 与示例）
 
-- **[API参考](./docs/API_REFERENCE.md)** - 完整的API文档和函数说明
-- **[架构文档](./docs/ARCHITECTURE.md)** - 深入的技术架构和设计原理
-- **[开发者指南](./docs/DEVELOPER_GUIDE.md)** - 开发环境设置和最佳实践
-- **[性能优化指南](./docs/PERFORMANCE_GUIDE.md)** - 性能优化策略和调优技巧
+构建（推荐）：
 
-### 维护与贡献
+```bash
+# 构建 WASM 包（Node.js 目标）
+npm run build:wasm
 
-欢迎提交 Issue/PR 讨论架构与实现细节。建议在提交前：
+# 构建 NAPI 原生扩展（如需）
+npm run build:napi
 
-1. 运行一致性对比与测试用例
-2. 附带对新场景的基准结果或差异截图
-3. 查看[开发者指南](./docs/DEVELOPER_GUIDE.md)了解开发流程
+# 构建 Node.js 封装（如需）
+npm run build:nodejs
 
-### 致谢
+# 一次性构建全部
+npm run build:all
+```
 
-感谢社区在编译时响应式方向的探索与经验分享，也感谢对 Rust 生态与前端工具链的积累，使本项目成为可能。
+脚本来源：`package.json` 中的 `scripts`。
+
+### 使用示例
+
+在 Node.js 中通过 WASM 包（以 `wasm-pack` 产物为例）：
+
+```js
+import { compile_jsx, analyze_reactivity, generate_code } from './src/wasm/pkg';
+
+const jsx = `<div className="card">{count + 1}</div>`;
+const viewUnitJson = compile_jsx(jsx).toString();
+const depInfoJson = analyze_reactivity(viewUnitJson).toString();
+const code = generate_code(viewUnitJson, depInfoJson).toString();
+console.log(code);
+```
+
+在 Rust/WASM 环境中直接调用（省略 wasm 绑定初始化）：
+
+```rust
+use inula2_rust_compiler::{compile_jsx, analyze_reactivity, generate_code};
+
+let jsx = r#"<template><button onClick={handleClick}>{count}</button></template>"#;
+let view_unit = compile_jsx(jsx).unwrap();
+let view_unit_json = view_unit.as_string().unwrap();
+let dep_info = analyze_reactivity(&view_unit_json).unwrap();
+let dep_info_json = dep_info.as_string().unwrap();
+let code = generate_code(&view_unit_json, &dep_info_json).unwrap();
+println!("{}", code.as_string().unwrap());
+```
+
+### 行为细节与约束
+
+- 表达式到字符串：`JsxParser` 对部分表达式（标识符、字面量、对象字面量、`array.map(arrow)`）进行字符串化；其他情况回退到 SWC 代码生成并去除末尾分号。
+- 事件识别：属性名以 `on` 开头且第三个字符为大写字母时标记为事件（如 `onClick`）。事件不会参与依赖分析，仅在代码生成阶段添加 `addEventListener`。
+- 复杂表达式缓存：包含 `{` 或 `[` 的表达式会写入 `DependencyInfo.cache`，用于潜在的二次利用或跳过重复计算。
+- `For`/`If`：
+  - `For` 要求最少提供 `array` 与 `item` 属性，内部子节点作为循环体；
+  - `If` 由若干分支组成，每个分支通过 `condition` 指定条件，子节点作为该分支的内容。
+
+### 工具函数
+
+位图工具位于 `src/utils.rs`：
+
+- `merge_bitmaps(bitmaps: &[BitVec<u8>]) -> BitVec<u8>`：合并多个位图。
+- `bitmap_to_string(bitmap: &BitVec<u8>) -> String`：位图转字符串（如 `101001`）。
+- `get_dependencies_from_bitmap(bitmap: &BitVec<u8>, reactive_map: &HashMap<String, usize>) -> Vec<String>`：从位图和依赖表反查依赖名。
+
+### 开发与测试
+
+常用脚本：
+
+```bash
+npm test            # 运行单元/集成/性能测试（如有对应目录与脚本）
+npm run clean       # 清理构建产物
+npm run benchmark   # 运行基准（如有对应目录与脚本）
+```
+
+仓库工作区（`Cargo.toml`）定义了 `src/napi` 与 `src/wasm` 两个子包，可分别用于 NAPI 扩展与 WASM 产物。
+
+### 许可证
+
+MIT

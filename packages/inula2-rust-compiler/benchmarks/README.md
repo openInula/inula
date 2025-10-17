@@ -223,5 +223,55 @@ node quick-benchmark.js --test-case=simple
 
 MIT License - 详见 [LICENSE](../LICENSE) 文件
 
+# 基准测试与一致性对比
+
+本目录提供对 openInula 2.0 Rust 编译器的性能基准与（可选）与原版 TS 编译器的输出一致性对比。
+
+## 先决条件
+- Node.js
+- 已构建 WASM 包：
+
+```bash
+npm run build:wasm
+```
+
+## 仅运行 Rust 基准
+
+```bash
+node benchmarks/index.js
+```
+
+不会依赖 TS 基线，直接对 Rust 编译流程（compile_jsx → analyze_reactivity → generate_code）做性能测量。
+
+## 启用 TS 基线一致性对比（可选）
+通过环境变量指定 TS 编译器命令，脚本会为每个用例生成同一 JSX 的 TS 输出并与 Rust 输出进行归一化对比。
+
+- TS_BASELINE_CMD：TS 编译器的执行命令（需能从 stdin 读取 JSX，stdout 输出结果）
+- TS_BASELINE_OPTS：额外参数（可选）
+- SAVE_DIFF=1：当存在差异时，将 Rust/TS 输出保存到 `benchmarks/temp/diffs/`
+
+示例：
+
+```bash
+# 方式一：子模块
+# git submodule add <ts-compiler-repo> benchmarks/ts-compiler
+# cd benchmarks/ts-compiler && npm i && npm run build
+TS_BASELINE_CMD="node benchmarks/ts-compiler/dist/cli.js" node benchmarks/index.js
+
+# 方式二：使用已发布包
+TS_BASELINE_CMD="npx inula-ts-compiler@<version>" node benchmarks/index.js
+
+# 方式三：使用本地 dist 路径
+TS_BASELINE_CMD="node ../inula-ts-compiler/dist/cli.js" node benchmarks/index.js
+
+# 保存差异输出
+SAVE_DIFF=1 TS_BASELINE_CMD="node benchmarks/ts-compiler/dist/cli.js" node benchmarks/index.js
+```
+
+当未设置 TS_BASELINE_CMD 时，脚本会打印提示并跳过 TS 基线对比，不会中断基准测试。
+
+## 结果与报告
+脚本将输出每个场景的耗时与内存统计，并生成 `benchmarks/report.html` 简单报告。若启用 `SAVE_DIFF=1` 且发现差异，会在 `benchmarks/temp/diffs/` 下保存对应的 Rust/TS 输出，便于人工核对。
+
 
 

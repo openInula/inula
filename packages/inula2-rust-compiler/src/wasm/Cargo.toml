@@ -56,20 +56,3 @@ lazy_static = "1.4.0"
 
 [package.metadata.wasm-pack.profile.release]
 wasm-opt = false
-
-[profile.release]
-opt-level = "z"
-lto = true
-codegen-units = 1
-panic = "unwind"
-strip = true
-incremental = false
-
-[patch.crates-io]
-swc_common = { git = "https://github.com/swc-project/swc", branch = "main" }
-swc_ecma_ast = { git = "https://github.com/swc-project/swc", branch = "main" }
-swc_ecma_parser = { git = "https://github.com/swc-project/swc", branch = "main" }
-swc_ecma_visit = { git = "https://github.com/swc-project/swc", branch = "main" }
-swc_atoms = { git = "https://github.com/swc-project/swc", branch = "main" }
-swc_allocator = { git = "https://github.com/swc-project/swc", branch = "main" }
-swc_ecma_codegen = { git = "https://github.com/swc-project/swc", branch = "main" }
