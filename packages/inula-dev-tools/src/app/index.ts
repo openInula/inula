@@ -13,7 +13,5 @@
  * See the Mulan PSL v2 for more details.
  */
 
-export * from './types';
-export * from './VersionDetector';
-export * from './DevToolsCore';
+export * from './HookInjector';
 

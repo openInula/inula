@@ -1,222 +1,467 @@
-/**
- * Inula 2.0 版本适配器
- * 将 2.0 版本的数据格式转换为统一格式
+/*
+ * Copyright (c) 2025 Huawei Technologies Co.,Ltd.
+ *
+ * openInula is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
  */
 
-import { ComponentTreeNode, ComponentDetail, InulaVersion } from '../comm/types';
+import { BaseAdapter } from './BaseAdapter';
+import {
+  ComponentTreeNode,
+  ComponentAttributes,
+  ModifyRequest,
+  HighlightInfo,
+  PickElementInfo,
+  NodeType,
+  HookInfo,
+} from '../core/types';
 
-export class V2Adapter {
-  /**
-   * 将 2.0 版本的 CompNode 树转换为统一的组件树格式
-   */
-  parseComponentTree(compNodes: any[]): ComponentTreeNode[] {
-    const result: ComponentTreeNode[] = [];
-    let idCounter = 0;
+/**
+ * V2 适配器 - 适配 @next-packages/ (CompNode架构)
+ */
+export class V2Adapter extends BaseAdapter {
+  private hook: any;
+  private compNodeToIdMap: Map<any, number>;
+  private idToCompNodeMap: Map<number, any>;
+  private nextId: number = 1;
 
-    const traverse = (node: any, parentId?: string | number) => {
-      if (!node) return;
-
-      // 为节点生成唯一 ID
-      const nodeId = node._devToolsId || `comp_${idCounter++}`;
-      
-      // 获取组件名称
-      const name = this.getComponentName(node);
-      const type = this.getComponentType(node);
-
-      const treeNode: ComponentTreeNode = {
-        id: nodeId,
-        name,
-        type,
-        parentId,
-        version: InulaVersion.V2,
-        rawData: node,
-      };
-
-      result.push(treeNode);
-
-      // 递归处理子组件
-      if (node.subComponents && Array.isArray(node.subComponents)) {
-        node.subComponents.forEach((child: any) => {
-          traverse(child, nodeId);
-        });
-      }
-
-      // 处理节点中的其他子节点
-      if (node.nodes && Array.isArray(node.nodes)) {
-        node.nodes.forEach((child: any) => {
-          if (this.isComponentNode(child)) {
-            traverse(child, nodeId);
-          }
-        });
-      }
-    };
-
-    compNodes.forEach(node => traverse(node));
-    return result;
+  constructor() {
+    super();
+    this.hook = window.__INULA_NEXT_DEV_HOOK__;
+    this.compNodeToIdMap = new Map();
+    this.idToCompNodeMap = new Map();
   }
 
   /**
-   * 构建树形结构
+   * 初始化适配器
    */
-  buildTree(nodes: ComponentTreeNode[]): ComponentTreeNode[] {
-    const nodeMap = new Map<string | number, ComponentTreeNode>();
-    const roots: ComponentTreeNode[] = [];
+  initialize(): void {
+    if (!this.hook) {
+      console.warn('V2Adapter: __INULA_NEXT_DEV_HOOK__ not found');
+      return;
+    }
 
-    // 创建节点映射
-    nodes.forEach(node => {
-      nodeMap.set(node.id, { ...node, children: [] });
+    // 监听树的变化
+    this.hook.subscribe?.('treeUpdate', () => {
+      this.notifyTreeUpdate();
     });
 
-    // 构建父子关系
-    nodes.forEach(node => {
-      const currentNode = nodeMap.get(node.id)!;
-      if (node.parentId) {
-        const parent = nodeMap.get(node.parentId);
-        if (parent) {
-          if (!parent.children) {
-            parent.children = [];
-          }
-          parent.children.push(currentNode);
-        } else {
-          roots.push(currentNode);
-        }
-      } else {
-        roots.push(currentNode);
-      }
-    });
-
-    return roots;
+    console.log('V2Adapter initialized');
   }
 
   /**
-   * 将 2.0 版本的组件详情转换为统一格式
+   * 销毁适配器
    */
-  parseComponentDetail(compNode: any, id: string | number): ComponentDetail {
-    return {
+  destroy(): void {
+    this.compNodeToIdMap.clear();
+    this.idToCompNodeMap.clear();
+    this.treeUpdateCallbacks = [];
+  }
+
+  /**
+   * 获取或创建 CompNode 的 ID
+   */
+  private getCompNodeId(compNode: any): number {
+    if (!this.compNodeToIdMap.has(compNode)) {
+      const id = this.nextId++;
+      this.compNodeToIdMap.set(compNode, id);
+      this.idToCompNodeMap.set(id, compNode);
+    }
+    return this.compNodeToIdMap.get(compNode)!;
+  }
+
+  /**
+   * 通过 ID 查找 CompNode
+   */
+  private queryCompNode(id: number): any {
+    return this.idToCompNodeMap.get(id);
+  }
+
+  /**
+   * 清理 CompNode
+   */
+  private clearCompNode(compNode: any): void {
+    const id = this.compNodeToIdMap.get(compNode);
+    if (id !== undefined) {
+      this.compNodeToIdMap.delete(compNode);
+      this.idToCompNodeMap.delete(id);
+    }
+  }
+
+  /**
+   * 解析 CompNode 树
+   */
+  private parseCompNodeTree(compNode: any): ComponentTreeNode | null {
+    if (!compNode) return null;
+
+    const id = this.getCompNodeId(compNode);
+    const name = this.getComponentName(compNode);
+    const type = this.getNodeType(compNode);
+
+    const node: ComponentTreeNode = {
       id,
-      name: this.getComponentName(compNode),
-      type: this.getComponentType(compNode),
-      props: compNode.props || {},
-      state: this.extractState(compNode),
-      hooks: this.extractHooks(compNode),
-      context: this.extractContext(compNode),
-      version: InulaVersion.V2,
-      rawData: compNode,
+      name,
+      type,
     };
+
+    // 解析子组件
+    const children: ComponentTreeNode[] = [];
+    
+    // 解析 subComponents
+    if (compNode.subComponents && Array.isArray(compNode.subComponents)) {
+      compNode.subComponents.forEach((child: any) => {
+        const childNode = this.parseCompNodeTree(child);
+        if (childNode) {
+          children.push(childNode);
+        }
+      });
+    }
+
+    // 解析 slices (children)
+    if (compNode.slices && Array.isArray(compNode.slices)) {
+      compNode.slices.forEach((slice: any) => {
+        if (slice && slice.inulaType === 0) { // InulaNodeType.Comp
+          const childNode = this.parseCompNodeTree(slice);
+          if (childNode) {
+            children.push(childNode);
+          }
+        }
+      });
+    }
+
+    if (children.length > 0) {
+      node.children = children;
+    }
+
+    return node;
   }
 
   /**
    * 获取组件名称
    */
-  private getComponentName(node: any): string {
-    // 尝试从不同位置获取组件名称
-    if (node.name) return node.name;
-    if (node.type?.name) return node.type.name;
-    if (node.fnNode) {
-      // 从函数代码中提取名称
-      const match = node.fnNode.match(/function\s+(\w+)/);
-      if (match) return match[1];
+  private getComponentName(compNode: any): string {
+    if (compNode.type) {
+      if (typeof compNode.type === 'function') {
+        return compNode.type.displayName || compNode.type.name || 'Component';
+      }
     }
-    return 'Anonymous';
-  }
 
-  /**
-   * 获取组件类型
-   */
-  private getComponentType(node: any): string {
-    if (node.type === 'comp') return 'Component';
-    if (node.inulaType !== undefined) {
-      // 根据 InulaNodeType 枚举判断
-      const typeMap: Record<number, string> = {
-        0: 'Component',
-        1: 'For',
-        2: 'Conditional',
-        3: 'Expression',
-        4: 'Hook',
-        5: 'Context',
-        6: 'Children',
-        7: 'Fragment',
-        8: 'Portal',
-        9: 'Suspense',
-      };
-      return typeMap[node.inulaType] || 'Unknown';
+    // 根据 inulaType 判断
+    if (compNode.inulaType === 0) {
+      return compNode.type?.name || 'Component';
+    } else if (compNode.inulaType === 1) {
+      return compNode.tag || 'Element';
+    } else if (compNode.inulaType === 2) {
+      return 'Text';
     }
-    return 'Component';
+
+    return 'Unknown';
   }
 
   /**
-   * 判断是否为组件节点
+   * 获取节点类型
    */
-  private isComponentNode(node: any): boolean {
-    return node && (
-      node.inulaType === 0 || // CompNode
-      node.type === 'comp' ||
-      node.subComponents !== undefined
-    );
+  private getNodeType(compNode: any): NodeType {
+    // 根据 InulaNodeType 判断
+    if (compNode.inulaType === 0) {
+      // CompNode
+      return NodeType.Component;
+    } else if (compNode.inulaType === 1) {
+      // HTMLNode
+      return NodeType.Element;
+    } else if (compNode.inulaType === 2) {
+      // TextNode
+      return NodeType.Text;
+    }
+
+    return NodeType.Component;
   }
 
   /**
-   * 提取状态信息
+   * 获取组件树
    */
-  private extractState(compNode: any): Record<string, any> {
-    const state: Record<string, any> = {};
+  getComponentTree(): ComponentTreeNode[] {
+    if (!this.hook) {
+      return [];
+    }
+
+    // 从 hook 中获取所有根组件节点
+    const roots = [];
+
+    if (this.hook.roots) {
+      roots.push(...this.hook.roots);
+    } else if (this.hook.getRoot) {
+      const root = this.hook.getRoot();
+      if (root) roots.push(root);
+    }
+
+    return roots
+      .map((root: any) => this.parseCompNodeTree(root))
+      .filter((node: ComponentTreeNode | null): node is ComponentTreeNode => node !== null);
+  }
+
+  /**
+   * 获取组件属性
+   */
+  getComponentAttributes(id: number | string): ComponentAttributes | null {
+    const compNode = this.queryCompNode(Number(id));
+    if (!compNode) {
+      return null;
+    }
+
+    const attrs: ComponentAttributes = {
+      id,
+    };
+
+    // Props
+    if (compNode.props && Object.keys(compNode.props).length > 0) {
+      attrs.props = { ...compNode.props };
+    }
+
+    // CompNode 使用响应式状态，可以通过 computations 访问
+    // 这里简化处理，直接显示 props
     
-    // 从 scope 中提取响应式数据
-    if (compNode.scope?.reactiveMap) {
-      Object.entries(compNode.scope.reactiveMap).forEach(([key, value]) => {
-        state[key] = value;
-      });
-    }
-
-    return state;
-  }
-
-  /**
-   * 提取 Hooks 信息
-   */
-  private extractHooks(compNode: any): any[] {
-    const hooks: any[] = [];
-
-    // 检查 computations 中的 hook
-    if (compNode.computations && Array.isArray(compNode.computations)) {
-      compNode.computations.forEach((comp: any, index: number) => {
-        if (comp.length === 1) {
-          // 这可能是一个 hook
-          hooks.push({
-            index,
-            type: 'Hook',
-            value: comp,
-          });
+    // 如果有 updatePropMap，显示可更新的属性
+    if (compNode.updatePropMap) {
+      if (!attrs.props) attrs.props = {};
+      Object.keys(compNode.updatePropMap).forEach(key => {
+        if (!attrs.props![key]) {
+          attrs.props![key] = compNode.props?.[key];
         }
       });
     }
 
-    return hooks;
+    return attrs;
   }
 
   /**
-   * 提取 Context 信息
+   * 修改组件属性
    */
-  private extractContext(compNode: any): Record<string, any> {
-    const context: Record<string, any> = {};
-
-    if (compNode.updateContextMap) {
-      Object.entries(compNode.updateContextMap).forEach(([key, value]) => {
-        context[key] = value;
-      });
+  modifyComponentAttribute(request: ModifyRequest): boolean {
+    const compNode = this.queryCompNode(Number(request.id));
+    if (!compNode) {
+      return false;
     }
 
-    return context;
+    try {
+      if (request.type === 'props') {
+        // 对于 V2，我们需要触发 wave 来更新
+        const propName = request.path[0] as string;
+        if (compNode.updatePropMap && compNode.updatePropMap[propName]) {
+          const [updateFunc, waveBits] = compNode.updatePropMap[propName];
+          const newValue = this.calculateNextValue(
+            compNode.props?.[propName],
+            request.value,
+            request.path.slice(1)
+          );
+          compNode.wave(updateFunc(newValue), waveBits);
+          return true;
+        } else {
+          // 直接更新 props
+          if (!compNode.props) compNode.props = {};
+          this.setValueByPath(compNode.props, request.path, request.value);
+          // 触发更新
+          if (compNode.update) {
+            compNode.update();
+          }
+          return true;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to modify component attribute:', error);
+    }
+
+    return false;
   }
 
   /**
-   * 将统一格式的属性值转换回 2.0 格式用于更新
+   * 计算下一个值
    */
-  formatUpdateData(id: string | number, propName: string, value: any): any {
-    return {
-      id,
-      propName,
-      value,
-    };
+  private calculateNextValue(editValue: any, value: any, path: (string | number)[]): any {
+    if (path.length === 0) {
+      return value;
+    }
+
+    const editValueType = typeof editValue;
+
+    if (
+      editValueType === 'string' ||
+      editValueType === 'undefined' ||
+      editValueType === 'boolean'
+    ) {
+      return value;
+    } else if (editValueType === 'number') {
+      const numValue = Number(value);
+      return isNaN(numValue) ? value : numValue;
+    } else if (editValueType === 'object') {
+      if (editValue === null) {
+        return value;
+      } else {
+        const newValue = Array.isArray(editValue) ? [...editValue] : { ...editValue };
+        let attr = newValue;
+        for (let i = 0; i < path.length - 1; i++) {
+          attr = attr[path[i]];
+        }
+        attr[path[path.length - 1]] = value;
+        return newValue;
+      }
+    }
+
+    return value;
+  }
+
+  /**
+   * 通过路径设置值
+   */
+  private setValueByPath(obj: any, path: (string | number)[], value: any): void {
+    let current = obj;
+    for (let i = 0; i < path.length - 1; i++) {
+      if (!current[path[i]]) {
+        current[path[i]] = {};
+      }
+      current = current[path[i]];
+    }
+    current[path[path.length - 1]] = value;
+  }
+
+  /**
+   * 高亮组件
+   */
+  highlightComponent(id: number | string): HighlightInfo | null {
+    const compNode = this.queryCompNode(Number(id));
+    if (!compNode) {
+      return null;
+    }
+
+    // 查找对应的 DOM 元素
+    const element = this.findDOMElement(compNode);
+    if (element) {
+      return {
+        id,
+        bounds: element.getBoundingClientRect(),
+      };
+    }
+
+    return { id };
+  }
+
+  /**
+   * 查找 CompNode 对应的 DOM 元素
+   */
+  private findDOMElement(compNode: any): HTMLElement | null {
+    // 如果是 HTMLNode，直接返回
+    if (compNode.inulaType === 1 && compNode.node) {
+      return compNode.node as HTMLElement;
+    }
+
+    // 递归查找第一个 HTMLNode
+    if (compNode.nodes && Array.isArray(compNode.nodes)) {
+      for (const node of compNode.nodes) {
+        const element = this.findDOMElement(node);
+        if (element) return element;
+      }
+    }
+
+    if (compNode.slices && Array.isArray(compNode.slices)) {
+      for (const slice of compNode.slices) {
+        const element = this.findDOMElement(slice);
+        if (element) return element;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * 移除高亮
+   */
+  removeHighlight(): void {
+    // 通过消息传递实现
+  }
+
+  /**
+   * 开始选择元素
+   */
+  startPickElement(callback: (info: PickElementInfo) => void): void {
+    // 通过消息传递实现
+  }
+
+  /**
+   * 停止选择元素
+   */
+  stopPickElement(): void {
+    // 通过消息传递实现
+  }
+
+  /**
+   * 查看组件源代码
+   */
+  viewComponentSource(id: number | string): void {
+    const compNode = this.queryCompNode(Number(id));
+    if (compNode) {
+      (globalThis as any).$type = compNode.type;
+    }
+  }
+
+  /**
+   * 打印组件数据
+   */
+  logComponentData(id: number | string): void {
+    const compNode = this.queryCompNode(Number(id));
+    if (compNode) {
+      console.log('CompNode:', compNode);
+      console.log('Props:', compNode.props);
+      console.log('SubComponents:', compNode.subComponents);
+    }
+  }
+
+  /**
+   * 复制到控制台
+   */
+  copyToConsole(id: number | string, path: (string | number)[], attrName: string): void {
+    const compNode = this.queryCompNode(Number(id));
+    if (!compNode) {
+      console.warn(`Could not find compNode with id "${id}"`);
+      return;
+    }
+
+    const value = this.getValueByPath(compNode, path, attrName);
+    console.log(`${path[path.length - 1]}:`, value);
+  }
+
+  /**
+   * 存储为全局变量
+   */
+  storeAsGlobal(id: number | string, path: (string | number)[], attrName: string): void {
+    const compNode = this.queryCompNode(Number(id));
+    if (!compNode) {
+      console.warn(`Could not find compNode with id "${id}"`);
+      return;
+    }
+
+    const value = this.getValueByPath(compNode, path, attrName);
+    const key = `$InulaTemp${Date.now()}`;
+    (window as any)[key] = value;
+    console.log(key);
+    console.log(value);
+  }
+
+  /**
+   * 通过路径获取值
+   */
+  private getValueByPath(compNode: any, path: (string | number)[], attrName: string): any {
+    if (attrName === 'Props') {
+      return path.reduce((prev, curr) => prev?.[curr], compNode.props);
+    }
+    return undefined;
   }
 }
+

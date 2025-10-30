@@ -14,6 +14,5 @@
  */
 
 export * from './types';
-export * from './VersionDetector';
-export * from './DevToolsCore';
+export * from './MessageService';
 

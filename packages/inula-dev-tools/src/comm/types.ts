@@ -1,84 +1,97 @@
-/**
- * 通信层类型定义
- * 支持 Inula 1.0 和 2.0 版本的消息传递
+/*
+ * Copyright (c) 2025 Huawei Technologies Co.,Ltd.
+ *
+ * openInula is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
  */
 
-// 消息来源
-export type MessageSource = 
-  | 'dev-tool-panel' 
-  | 'dev-tool-background' 
-  | 'dev-tool-content-script' 
-  | 'dev-tool-hook';
-
-// Inula 版本
-export enum InulaVersion {
-  V1 = '1.0',
-  V2 = '2.0',
+/**
+ * 消息来源标识
+ */
+export enum MessageSource {
+  DevToolHook = 'INULA_DEV_HOOK',
+  ContentScript = 'INULA_DEV_CONTENT_SCRIPT',
+  DevToolsPanel = 'INULA_DEV_PANEL',
 }
 
-// 消息类型 - 1.0 版本
-export enum MessageType_V1 {
-  AllVNodeTreeInfos = 'all-vnode-tree-infos',
-  ComponentAttrs = 'component-attrs',
-  RequestAllVNodeTreeInfos = 'request-all-vnode-tree-infos',
+/**
+ * 消息类型
+ */
+export enum MessageType {
+  // 通用消息
+  FrameworkDetected = 'framework-detected',
+  VersionInfo = 'version-info',
+  
+  // 组件树相关
+  RequestComponentTree = 'request-component-tree',
+  ComponentTreeData = 'component-tree-data',
+  
+  // 组件属性相关
   RequestComponentAttrs = 'request-component-attrs',
-  ModifyAttrs = 'modify-attrs',
-  InspectDom = 'inspect-dom',
+  ComponentAttrsData = 'component-attrs-data',
+  
+  // 修改操作
+  ModifyProps = 'modify-props',
+  ModifyState = 'modify-state',
+  ModifyHooks = 'modify-hooks',
+  
+  // 调试功能
+  InspectElement = 'inspect-element',
   Highlight = 'highlight',
   RemoveHighlight = 'remove-highlight',
   PickElement = 'pick-element',
   StopPickElement = 'stop-pick-element',
-  InulaX = 'inulax',
+  ViewSource = 'view-source',
+  LogComponentData = 'log-component-data',
+  CopyToConsole = 'copy-to-console',
+  StorageValue = 'storage-value',
 }
 
-// 消息类型 - 2.0 版本
-export enum MessageType_V2 {
-  ComponentTree = 'component-tree',
-  ComponentDetail = 'component-detail',
-  RequestComponentTree = 'request-component-tree',
-  RequestComponentDetail = 'request-component-detail',
-  UpdateComponentProp = 'update-component-prop',
-  InspectElement = 'inspect-element',
-  HighlightComponent = 'highlight-component',
-  UnhighlightComponent = 'unhighlight-component',
-  SelectElement = 'select-element',
-  StopSelectElement = 'stop-select-element',
-}
-
-// 统一消息格式
+/**
+ * 消息结构
+ */
 export interface DevToolMessage<T = any> {
-  type: 'INULA_DEV_TOOLS';
-  payload: {
-    type: string;
-    data?: T;
-    tabId?: number;
-    version?: InulaVersion;
-  };
-  from: MessageSource;
+  source: MessageSource;
+  type: MessageType | string;
+  data?: T;
+  timestamp?: number;
 }
 
-// 组件树节点 - 统一格式
-export interface ComponentTreeNode {
-  id: string | number;
-  name: string;
-  type: string;
-  parentId?: string | number;
-  children?: ComponentTreeNode[];
-  version: InulaVersion;
-  // 原始数据（用于特定版本的操作）
-  rawData?: any;
+/**
+ * 消息处理器
+ */
+export type MessageHandler<T = any> = (data: T) => void | Promise<void>;
+
+/**
+ * 消息总线接口
+ */
+export interface MessageBus {
+  /**
+   * 发送消息
+   */
+  send<T = any>(type: MessageType | string, data?: T): void;
+  
+  /**
+   * 监听消息
+   */
+  on<T = any>(type: MessageType | string, handler: MessageHandler<T>): () => void;
+  
+  /**
+   * 移除监听
+   */
+  off<T = any>(type: MessageType | string, handler: MessageHandler<T>): void;
+  
+  /**
+   * 清除所有监听
+   */
+  clear(): void;
 }
 
-// 组件详情 - 统一格式
-export interface ComponentDetail {
-  id: string | number;
-  name: string;
-  type: string;
-  props?: Record<string, any>;
-  state?: Record<string, any>;
-  hooks?: any[];
-  context?: Record<string, any>;
-  version: InulaVersion;
-  // 原始数据
-  rawData?: any;
-}

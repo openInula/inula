@@ -1,115 +1,143 @@
-/**
- * 通信服务
- * 提供统一的消息发送和接收接口
+/*
+ * Copyright (c) 2025 Huawei Technologies Co.,Ltd.
+ *
+ * openInula is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
  */
 
-import { DevToolMessage, MessageSource, InulaVersion } from './types';
+import { MessageBus, MessageHandler, MessageSource, MessageType, DevToolMessage } from './types';
 
-export class MessageService {
-  private listeners: Map<string, Set<(message: DevToolMessage) => void>> = new Map();
+/**
+ * 消息总线实现
+ */
+export class MessageService implements MessageBus {
+  private handlers = new Map<string, Set<MessageHandler>>();
+  private source: MessageSource;
+
+  constructor(source: MessageSource) {
+    this.source = source;
+  }
 
   /**
-   * 创建标准消息
+   * 创建消息
    */
-  createMessage<T = any>(
-    type: string,
-    data: T,
-    from: MessageSource,
-    options?: {
-      tabId?: number;
-      version?: InulaVersion;
-    }
-  ): DevToolMessage<T> {
+  private createMessage<T>(type: MessageType | string, data?: T): DevToolMessage<T> {
     return {
-      type: 'INULA_DEV_TOOLS',
-      payload: {
-        type,
-        data,
-        tabId: options?.tabId,
-        version: options?.version,
-      },
-      from,
+      source: this.source,
+      type,
+      data,
+      timestamp: Date.now(),
     };
   }
 
   /**
-   * 检查消息来源
+   * 验证消息来源
    */
-  checkMessageSource(message: any, expectedSource: MessageSource): boolean {
-    return message?.from === expectedSource && message?.type === 'INULA_DEV_TOOLS';
-  }
-
-  /**
-   * 提取版本信息
-   */
-  extractVersion(message: DevToolMessage): InulaVersion | undefined {
-    return message.payload.version;
-  }
-
-  /**
-   * 监听特定类型的消息
-   */
-  on(messageType: string, callback: (message: DevToolMessage) => void): void {
-    if (!this.listeners.has(messageType)) {
-      this.listeners.set(messageType, new Set());
+  public isValidMessage(message: any, expectedSource?: MessageSource): message is DevToolMessage {
+    if (!message || typeof message !== 'object') {
+      return false;
     }
-    this.listeners.get(messageType)!.add(callback);
-  }
-
-  /**
-   * 移除消息监听
-   */
-  off(messageType: string, callback: (message: DevToolMessage) => void): void {
-    const callbacks = this.listeners.get(messageType);
-    if (callbacks) {
-      callbacks.delete(callback);
+    if (!message.source || !message.type) {
+      return false;
     }
-  }
-
-  /**
-   * 触发消息
-   */
-  emit(message: DevToolMessage): void {
-    const callbacks = this.listeners.get(message.payload.type);
-    if (callbacks) {
-      callbacks.forEach(callback => callback(message));
+    if (expectedSource && message.source !== expectedSource) {
+      return false;
     }
+    return true;
   }
 
   /**
-   * 发送消息到 background
+   * 发送消息
    */
-  sendToBackground(message: DevToolMessage): void {
-    if (typeof chrome !== 'undefined' && chrome.runtime) {
-      chrome.runtime.sendMessage(message);
-    }
-  }
-
-  /**
-   * 发送消息到 content script
-   */
-  sendToContentScript(tabId: number, message: DevToolMessage): void {
-    if (typeof chrome !== 'undefined' && chrome.tabs) {
-      chrome.tabs.sendMessage(tabId, message);
-    }
-  }
-
-  /**
-   * 发送消息到 panel
-   */
-  sendToPanel(message: DevToolMessage, port?: chrome.runtime.Port): void {
-    if (port) {
-      port.postMessage(message);
-    }
-  }
-
-  /**
-   * 发送消息到页面（通过 window.postMessage）
-   */
-  sendToPage(message: DevToolMessage): void {
+  send<T = any>(type: MessageType | string, data?: T): void {
+    const message = this.createMessage(type, data);
     window.postMessage(message, '*');
+  }
+
+  /**
+   * 监听消息
+   */
+  on<T = any>(type: MessageType | string, handler: MessageHandler<T>): () => void {
+    if (!this.handlers.has(type)) {
+      this.handlers.set(type, new Set());
+    }
+    this.handlers.get(type)!.add(handler);
+
+    // 返回取消监听函数
+    return () => this.off(type, handler);
+  }
+
+  /**
+   * 移除监听
+   */
+  off<T = any>(type: MessageType | string, handler: MessageHandler<T>): void {
+    const handlers = this.handlers.get(type);
+    if (handlers) {
+      handlers.delete(handler);
+      if (handlers.size === 0) {
+        this.handlers.delete(type);
+      }
+    }
+  }
+
+  /**
+   * 分发消息
+   */
+  dispatch(message: DevToolMessage): void {
+    const handlers = this.handlers.get(message.type);
+    if (handlers) {
+      handlers.forEach(handler => {
+        try {
+          handler(message.data);
+        } catch (error) {
+          console.error(`Error handling message ${message.type}:`, error);
+        }
+      });
+    }
+  }
+
+  /**
+   * 清除所有监听
+   */
+  clear(): void {
+    this.handlers.clear();
   }
 }
 
-// 导出单例
-export const messageService = new MessageService();
+/**
+ * 创建Window消息监听器
+ */
+export function createWindowMessageListener(
+  messageService: MessageService,
+  expectedSource?: MessageSource
+): () => void {
+  const listener = (event: MessageEvent) => {
+    // 只接收来自当前窗口的消息
+    if (event.source !== window) {
+      return;
+    }
+
+    const message = event.data;
+    if (!messageService.isValidMessage(message, expectedSource)) {
+      return;
+    }
+
+    messageService.dispatch(message);
+  };
+
+  window.addEventListener('message', listener);
+
+  // 返回清理函数
+  return () => {
+    window.removeEventListener('message', listener);
+  };
+}
+

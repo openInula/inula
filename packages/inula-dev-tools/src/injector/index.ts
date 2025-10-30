@@ -405,22 +405,12 @@ export function contentScriptMessageHandler(event: MessageEvent) {
   const request = event.data;
   if (checkMessageSource(request, DevToolContentScript)) {
     const { payload } = request;
-    const { type, data, version } = payload;
+    const { type, data } = payload;
 
     // 忽略 inulaX 的 actions
     if (type.startsWith('inulax')) {
       return;
     }
-    
-    // 检查是否为 V2 消息
-    const win = window as any;
-    if (version === '2.0' || win.__INULA_V2__ || win.__INULA_DEV_TOOL_V2_HELPER__) {
-      // 使用 V2 处理器
-      handleV2Message(type, data);
-      return;
-    }
-    
-    // V1 处理
     const action = actions.get(type);
     if (action) {
       action.call(this, data);
@@ -516,51 +506,4 @@ export function installDevToolHook() {
   inulaDevHook.attach('startRender', () => {
     sendToContentScript('openInula-framework-detected');
   });
-}
-
-// 处理 V2 消息
-export function handleV2Message(type: string, data: any) {
-  const win = window as any;
-  
-  // 检查是否有 V2 helper
-  if (!win.__INULA_DEV_TOOL_V2_HELPER__) {
-    console.warn('[Inula DevTools] V2 helper not found');
-    return;
-  }
-  
-  const helper = win.__INULA_DEV_TOOL_V2_HELPER__;
-  
-  if (type === RequestAllVNodeTreeInfos || type === 'request-component-tree') {
-    // 请求组件树
-    const tree = helper.collectComponentTree();
-    sendToContentScript(AllVNodeTreeInfos, [tree]);
-  } else if (type === RequestComponentAttrs || type === 'request-component-detail') {
-    // 请求组件详情
-    const attrs = helper.parseCompAttrs(data);
-    if (attrs) {
-      sendToContentScript(ComponentAttrs, attrs);
-    }
-  } else if (type === ModifyAttrs || type === 'update-component-prop') {
-    // 修改组件属性
-    const comp = helper.getCompById(data.id);
-    if (comp && comp.props && data.itemName) {
-      comp.props[data.itemName] = data.value;
-      // 触发组件更新
-      if (comp.wave) {
-        comp.wave(null, 0b1111111111111111);
-      }
-    }
-  } else if (type === Highlight || type === 'highlight-component') {
-    // 高亮组件
-    const comp = helper.getCompById(data.id);
-    if (comp) {
-      const dom = helper.findCompDOM(comp);
-      if (dom) {
-        showHighlight({ element: dom, name: comp.name || 'Component' });
-      }
-    }
-  } else if (type === RemoveHighlight || type === 'unhighlight-component') {
-    // 取消高亮
-    hideHighlight();
-  }
 }

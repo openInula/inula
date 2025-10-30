@@ -13,7 +13,16 @@
  * See the Mulan PSL v2 for more details.
  */
 
-export * from './types';
-export * from './VersionDetector';
-export * from './DevToolsCore';
+/**
+ * Global type declarations for Inula DevTools
+ */
+
+declare global {
+  interface Window {
+    __INULA_DEV_HOOK__?: any;
+    __INULA_NEXT_DEV_HOOK__?: any;
+  }
+}
+
+export {};
 
