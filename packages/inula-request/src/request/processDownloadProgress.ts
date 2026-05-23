@@ -22,26 +22,49 @@ function processDownloadProgress(
 ) {
   // 文件下载过程中更新进度
   if (onProgress) {
-    const reader = stream?.getReader();
+    if (!stream) {
+      return stream;
+    }
+
+    const reader = stream.getReader();
     let totalBytesRead = 0; // 跟踪已读取的字节数
+
+    let canceled = false;
 
     return new ReadableStream({
       start(controller) {
         function read() {
-          reader?.read().then(({ done, value }) => {
-            if (done) {
-              controller.close();
-              return;
-            }
+          reader
+            .read()
+            .then(({ done, value }) => {
+              if (canceled) {
+                return;
+              }
 
-            totalBytesRead += value.byteLength;
-            onProgress!({ loaded: totalBytesRead, total: Number(response.headers.get('Content-Length')) });
-            controller.enqueue(value); // 将读取到的数据块添加到新的 ReadableStream 中
-            read(); // 递归调用，继续读取 stream 直到结束
-          });
+              if (done) {
+                controller.close();
+                return;
+              }
+
+              totalBytesRead += value.byteLength;
+              onProgress!({ loaded: totalBytesRead, total: Number(response.headers.get('Content-Length')) });
+              controller.enqueue(value); // 将读取到的数据块添加到新的 ReadableStream 中
+              read(); // 递归调用，继续读取 stream 直到结束
+            })
+            .catch(error => {
+              if (canceled) {
+                return;
+              }
+
+              controller.error(error);
+            });
         }
 
         read(); //  调用 read 函数以启动从原始 stream 中读取数据的过程
+      },
+      cancel(reason) {
+        canceled = true;
+        return reader.cancel(reason);
       },
     });
   } else {
