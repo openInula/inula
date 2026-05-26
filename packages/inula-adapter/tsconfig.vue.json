@@ -1,0 +1,10 @@
+{
+  "files": [
+    "src/vue/index.ts"
+  ],
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "emitDeclarationOnly": true,
+    "declarationDir": "./build/vue/@types"
+  },
+}
